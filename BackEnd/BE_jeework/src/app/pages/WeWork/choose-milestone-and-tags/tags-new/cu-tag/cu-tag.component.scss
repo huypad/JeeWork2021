@@ -1,0 +1,159 @@
+.cu-tags-badge {
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+
+    .cu-tags-badge, .cu-tags-badge__inner {
+        min-width: 0;
+    }
+
+    .cu-task-row-main__link-text .cu-tags-select__badge.list-view {
+        height: 20px;
+        border-radius: 4px 10px 10px 4px;
+    }
+
+    .cu-tags-select__badge.cu-tags-view_34,
+    .cu-tags-select__badge.list-view {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0 4px 0 0;
+        height: 18px;
+        border-radius: 2px 9px 9px 2px;
+    }
+    
+    .cu-tags-select__badge {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 41px;
+        height: 20px;
+        border-radius: 2px 13px 13px 2px;
+        margin: 0 4px 7px 0;
+        padding: 0 10px 0 8px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        position: relative;
+        overflow: hidden;
+
+        &:not(.cu-tags-select__badge_readonly):hover{
+            .cu-tags-select__name {
+                max-width: calc(100% - 50px);
+            }
+
+            .cu-tags-select__badge-ellipsis,
+            .cu-tags-select__badge-icon-close {
+                display: flex;
+            }
+        }
+
+    }
+
+    .cu-tags-select__click {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .cu-tags-select__name, 
+    .cu-tags-select__name-shadow {
+        font-weight: 500;
+        font-size: 11px;
+        line-height: 19px;
+    }
+
+    .cu-tags-select__name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-family: Gotham Pro,Proxima Nova,arial,serif;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.15;
+        min-width: 0;
+        max-width: 200px;
+        position: absolute;
+    }
+
+    .cu-tags-select__name-shadow {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-family: Gotham Pro,Proxima Nova,arial,serif;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.15;
+        min-width: 0;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        color: transparent;
+    }
+
+    .cu-tags-select__badge-ellipsis {
+        display: none;
+        position: absolute;
+        right: 23px;
+    }
+
+    // .cu-tags-select__badge:not(.cu-tags-select__badge_readonly):hover .cu-tags-select__badge-ellipsis, .cu-tags-select__badge:not(.cu-tags-select__badge_readonly):hover .cu-tags-select__badge-icon-close {
+    //     display: flex;
+    // }
+
+    .cu-tags-select__badge-icon-close {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        background: #fff;
+        border-radius: 0 13px 13px 0;
+        width: 16px;
+        height: 26px;
+        opacity: 1;
+        fill: #fff;
+        padding: 0 3px 1px 2px;
+        cursor: pointer;
+        &:hover {
+            opacity: 1;
+        }
+
+        .icon-close{
+            color:white;
+            padding-top: 7px;
+        }
+    }
+
+    // .cu-tags-select__badge:not(.cu-tags-select__badge_readonly):hover .cu-tags-select__badge-ellipsis, .cu-tags-select__badge:not(.cu-tags-select__badge_readonly):hover .cu-tags-select__badge-icon-close {
+    //     display: flex;
+    // }
+    // .cu-tags-select__badge-icon-close:hover {
+    //     opacity: 1;
+    // }
+    input{
+        &.input_renname{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            width: calc(100%);
+            box-shadow: 0 0 2pt 1pt green;
+            outline: none;
+            border: none;  
+            &:focus{
+                box-shadow: 0 0 2pt 1pt green;
+                outline: none;
+                border: none;   
+            }
+        }
+    }
+    
+}
+
+i{
+    font-size: 12px;
+}

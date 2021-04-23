@@ -1,0 +1,75 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class="kt-portlet__body">
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'projects.duanphongban' | translate }}" readonly
+							class="require" required disabled='true' formControlName="title" />
+					</mat-form-field>
+				</div>
+			</div>
+
+			<div class="row align-items-center">
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="close_status" class="require" required
+							placeholder="{{ trangthai }}">
+							<mat-option [value]="item.value" *ngFor="let item of status">
+								<span>{{item.title}}</span>
+							</mat-option>
+							
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="stop_reminder" class="require" required
+							placeholder="{{ 'projects.reminders' | translate }}">
+							<mat-option [value]="true">
+								<span translate="projects.yes"></span>
+							</mat-option>
+							<mat-option [value]="false">
+								<span translate="projects.no"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'projects.motathem' | translate }}"
+							formControlName="note" />
+					</mat-form-field>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button color="accent" (click)="onSubmit(true)"
+						matTooltip="{{ 'GeneralKey.capnhat' | translate }}">
+						<span translate="GeneralKey.capnhat"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>
+					&nbsp;
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

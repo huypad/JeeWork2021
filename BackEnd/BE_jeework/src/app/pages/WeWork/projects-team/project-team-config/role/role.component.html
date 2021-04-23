@@ -1,0 +1,56 @@
+<div class="kt-form  role-setting-container">
+    <ng-container *ngFor="let group of roles">
+        <div class=" kt-form__group  form-group" style="border-bottom:solid 1px #eee">
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <h5 class="role-title-header">{{('projects.'+group.nhom) | translate }}</h5>
+                </div>
+            </div>
+            <div class="row" *ngIf="group.nhom=='group3'">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <section>
+                        <p *ngFor="let item1 of group.roles">
+                            <mat-checkbox class="text-gray -hover-black" [(ngModel)]="item1['member']" (click)="update($event,item1.id_row,'member')">
+                                <span style="font-size: 16px; font-weight: 500;"> {{item1.title}}</span>
+                            </mat-checkbox>
+                        </p>
+                    </section>
+                </div>
+            </div>
+            <div class="row" *ngIf="group.nhom!='group3'">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <table class="w-100 text-center">
+                        <tr class="role-title">
+                            <th class="text-left">{{'projects.phanquyen' | translate }}</th>
+                            <th>{{'projects.admin' | translate }}</th>
+                            <th>{{'projects.member' | translate }}</th>
+                            <th>{{'projects.customer' | translate }}</th>
+                        </tr>
+                        <tr *ngFor="let item1 of group.roles" class="role">
+                            <td class="text-left">
+                                <div class="role-name">
+                                    {{item1.title}}
+                                </div>
+                                <div class="role-info">
+                                    {{item1.description}}
+                                </div>
+                            </td>
+                            <td>
+                                <mat-checkbox [(ngModel)]="item1['admin']" (click)="update($event,item1.id_row,'admin')" [disabled]="true">
+                                </mat-checkbox>
+                            </td>
+                            <td>
+                                <mat-checkbox [(ngModel)]="item1['member']" (click)="update($event,item1.id_row,'member')">
+                                </mat-checkbox>
+                            </td>
+                            <td>
+                                <mat-checkbox [(ngModel)]="item1['customer']" (click)="update($event,item1.id_row,'customer')">
+                                </mat-checkbox>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>

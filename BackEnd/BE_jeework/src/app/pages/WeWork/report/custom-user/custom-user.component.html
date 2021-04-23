@@ -1,0 +1,32 @@
+<div class="custum-item-user">
+    <div class="avatar">
+        <div class="user url" *ngIf="image!='department';else departmenticon">
+            <ngx-avatar size="35"
+                matTooltip="{{name}}"
+                src="{{image}}"
+                *ngIf="image;else bindText">
+            </ngx-avatar>
+            <ng-template #bindText>
+                <ngx-avatar textSizeRatio="2.5"
+                    matTooltip="{{name}}" 
+                    size="35"
+                    [name]="WeWorkService.getNameUser(name)"
+                    bgColor="{{WeWorkService.getColorNameUser(name)}}">
+                </ngx-avatar>
+            </ng-template>
+        </div>
+        <ng-template #departmenticon>
+            <div class="department">
+                <div class="text-inner">
+                    {{ name[0] }}
+                </div>
+            </div>
+        </ng-template>
+    </div>
+    <div class="name" [ngStyle]="{'color': textcolor}">
+        <span class="url">{{name}}</span>
+    </div>
+    <div class="info">
+        <span > {{info}} </span>
+    </div>
+</div>

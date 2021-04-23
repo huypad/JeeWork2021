@@ -1,0 +1,351 @@
+<div class="comment-box" [popover]="myPopoverB" [popoverOnHover]="false" (click)="clickonbox($event)">
+	<div>
+		<popover-content #myPopoverB [closeOnMouseOutside]="true" class="user-info-container">
+			<div class="user-info">
+				<div class="kt-user-card__avatar">
+					<img alt="" src="{{it.Image}}">
+				</div>
+				<div class="kt-user-card__name">
+					<span class="m-card-user__name">{{it.HoTen}}</span>
+					<br>
+					<span class="m-card-user__username">
+						{{it.ChucVu}} &#x2022;
+						@{{it.Username}}
+					</span>
+				</div>
+			</div>
+		</popover-content>
+	</div>
+	<div class="kt-form__group">
+		<div class="form-group kt-form__group">
+			<div class="kt-margin-bottom-10-mobile comment-input">
+				<div class="user-info-container">
+					<div class="user-info">
+						<div class="kt-user-card__avatar">
+							<img alt="" src="{{UserData.Image}}">
+						</div>
+						<div class="kt-user-card__name">
+							<span class="m-card-user__name">{{UserData.HoTen}}</span>
+							<br>
+							<span class="m-card-user__username">
+								{{UserData.ChucVu}} &#x2022;
+								@{{UserData.Username}}
+							</span>
+						</div>
+					</div>
+					<div class="attachment">
+						<button mat-icon-button type="button" (click)="selectFile_PDF(-1)" matTooltip="Upload File">
+							<mat-icon>attach_file</mat-icon>
+						</button>&nbsp;
+						<input type='file' id="PDFInpdd" (change)="onSelectFile_PDF($event,-1)" style="display: none;">
+					</div>
+				</div>
+				<br />
+				<mat-form-field class="mat-form-field-fluid">
+					<textarea #matInput matInput placeholder="{{'work.nhapnoidungdegui'|translate}}"
+						[(ngModel)]="Comment" (keydown.enter)="CommentInsert($event.target.value,0,0,1)" rows="2"
+						[popover]="myPopoverC" [popoverOnHover]="false" (input)="onSearchChange($event)"
+						(click)="click($event)">
+						</textarea>
+					<popover-content #myPopoverC placement="bottom-left" [closeOnClickOutside]="true">
+						<kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+					</popover-content>
+				</mat-form-field>
+			</div>
+			<div class="row w-100" style="font-weight: 500;font-size:16px">
+				<div style="padding: 5px 15px;flex-grow: 1;">
+					<button [disabled]="Comment == ''" class="btn btn-success float-left" style="padding: 5px 15px;"
+					(click)="CommentInsert(Comment,0,0,1)">
+					<span translate="work.postnow"></span>
+				</button>
+				</div>
+			</div>
+			<div class="kt-margin-bottom-10-mobile" *ngIf="AttachFileComment.length>0">
+				<p style="font-weight:bold">{{AttachFileComment.length}} {{ 'GeneralKey.tepdinhkem' | translate }}</p>
+				<div class="row" *ngFor="let att of AttachFileComment;let ind2 = index">
+					<div class="attach-item w-100">
+						<div class="attach-item-icon">
+							<img src="{{att.icon}}" />
+						</div>
+						<div class="attach-item-name">
+							<p>{{att.filename}}</p>
+							<span>
+								<a href="javascript:;">{{ 'GeneralKey.xemtruoc' | translate }}</a>
+								&nbsp;&middot;&nbsp;
+								<a href="javascript:;">{{ 'GeneralKey.taixuong' | translate }}</a>
+							</span>
+						</div>
+						<div class="attach-item-del">
+							<button mat-icon-button color="warn" type="button" (click)="DeleteFile_PDF(-1,ind2)"
+								matTooltip="{{ 'GeneralKey.xoafile' | translate }}">
+								<mat-icon>delete</mat-icon>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group kt-form__group row">
+			<div class="col-md-12 kt-margin-bottom-10-mobile">
+				<span class="comment-count">{{ListYKien.length}} <span class="text-lowercase"
+						translate="topic.thaoluan"></span></span>
+				<hr />
+				<div>
+					<popover-content #myPopoverChild placement="bottom-left" [closeOnClickOutside]="true">
+						<kt-choose-users [options]="options" (ItemSelected)="ItemSelectedChild($event)">
+						</kt-choose-users>
+					</popover-content>
+				</div>
+				<div *ngFor="let quyen of ListYKien;let vi = index;" class="comment-container">
+					<div class="user-info">
+						<div class="kt-user-card__avatar">
+							<ngx-avatar size="40" src="{{quyen.NguoiTao.image}}"
+								*ngIf="quyen.NguoiTao.image;else bindText">
+							</ngx-avatar>
+							<ng-template #bindText>
+								<ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="40"
+									[name]="this.weworkService.getName(quyen.NguoiTao.hoten)"
+									bgColor="{{weworkService.getColorNameUser(quyen.NguoiTao.hoten)}}">
+								</ngx-avatar>
+							</ng-template>
+						</div>
+						<div class="kt-user-card__name">
+							<p class="m-card-user__name mg-0">{{quyen.NguoiTao.hoten}}</p>
+							<p>{{quyen.CreatedDate}}</p>
+						</div>
+					</div>
+					<div class="content">
+						<div class="comment">
+							<div class="comment-string">
+								<span matTooltip="{{quyen.comment}}" [innerHtml]="parseHtml(quyen.comment)"></span>
+							</div>
+							<div style="min-width: 50px; min-height: 45px;">
+								<ng-container *ngIf="quyen.AllowEdit">
+									<button mat-icon-button (click)="initUpdate(quyen, vi)"
+										matTooltip="{{ 'topic.suabinhluan' | translate}}">
+										<mat-icon style="color: rgb(11, 26, 167);" class="action">create</mat-icon>
+									</button>
+									<button mat-icon-button (click)="remove(quyen, vi)"
+										matTooltip="{{ 'topic.xoabinhluan' | translate}}">
+										<mat-icon style="color: rgb(248, 14, 14);" class="action">delete</mat-icon>
+									</button>
+								</ng-container>
+							</div>
+						</div>
+						<div class="row" *ngIf="quyen.Attachment?quyen.Attachment.length>0:false">
+							<div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of quyen.Attachment;">
+								
+								<div class="image-inline url" (dblclick)="DownloadFile(att2.path)" *ngIf="att2.isImage" style="padding-bottom: 10px;">
+									<img style="max-width: 250px;" src="{{att2.path}}" />
+								</div>
+
+								<div class="attach-item show-action">
+									<div class="attach-item-icon">
+										<img src="{{att2.icon}}" />
+									</div>
+									<div class="attach-item-name">
+										<p>{{att2.filename}}</p>
+									</div>
+									<div class="attach-item-del">
+										<button mat-icon-button class="text-success" (click)="DownloadFile(att2.path)" *ngIf="att2.isImage"
+											type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+											<mat-icon>remove_red_eye</mat-icon>
+										</button>
+										<button mat-icon-button class="text-success" (click)="preview(att2.path)" *ngIf="!att2.isImage"
+											type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+											<mat-icon>remove_red_eye</mat-icon>
+										</button>
+										<button mat-icon-button color="primary" (click)="DownloadFile(att2.path)" *ngIf="!att2.isImage"
+											type="button" matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
+											<mat-icon>cloud_download</mat-icon>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12 comment-like">
+								<a href="javascript:void(0)" (click)="ShowOrHideComment(vi)" class="kt-font-bolder">
+									<span translate="topic.traloi"></span>
+									<span class="comment-num">{{quyen.Children?quyen.Children.length:0}}</span>
+								</a> &nbsp;&middot;&nbsp;
+								<span [popover]="myPopover" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">
+									<a *ngIf="quyen.Like" href="javascript:;" class="{{quyen.Like.title}}"
+										(click)="like(quyen,0)">
+										<img src="{{quyen.Like.icon}}" />
+										{{quyen.Like.title}}
+									</a>
+									<a *ngIf="!quyen.Like" href="javascript:;" (click)="like(quyen,1)">
+										<mat-icon class="thumb_up">thumb_up</mat-icon>
+										<span translate="topic.like"></span>
+									</a>
+								</span>
+								<div>
+									<popover-content #myPopover class="reaction-box-container"
+										[closeOnMouseOutside]="true">
+										<div class="reaction-box">
+											<div class="reaction-icon" *ngFor="let icon of icons"
+												(click)="like(quyen,icon.id_row)">
+												<label>{{icon.title}}</label>
+												<div class="reaction-img">
+													<img src="{{icon.icon}}">
+												</div>
+											</div>
+										</div>
+									</popover-content>
+								</div>
+								<span class="total-like">
+									<ng-container *ngFor="let like of quyen.Likes">
+										<span *ngIf="like.tong>0">
+											<img src="{{like.icon}}" />
+											{{like.tong}}
+										</span>
+									</ng-container>
+								</span>
+							</div>
+						</div>
+						<div id="ykchild{{vi}}" class="child">
+							<div class="comment-inline" *ngFor="let child of quyen.Children; let vic=index">
+								<div class="user-info">
+									<div class="kt-user-card__avatar">
+										<ngx-avatar size="40" src="{{child.NguoiTao.image}}"
+											*ngIf="child.NguoiTao.image;else bindText">
+										</ngx-avatar>
+										<ng-template #bindText>
+											<ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="40"
+												[name]="this.weworkService.getName(child.NguoiTao.hoten)"
+												bgColor="{{weworkService.getColorNameUser(child.NguoiTao.hoten)}}">
+											</ngx-avatar>
+										</ng-template>
+									</div>
+									<div class="kt-user-card__name">
+										<div style="display:flex;    line-height: 27px;">
+											<div class="comment">
+												<div class="comment-string">
+													<span class="m-card-user__name">{{child.NguoiTao.hoten}}</span>
+													<span [innerHtml]="parseHtml(child.comment)"></span>
+												</div>
+												<div style="min-width: 50px; min-height: 45px;">
+													<ng-container *ngIf="child.AllowEdit">
+														<button mat-icon-button (click)="initUpdate(child,vi, vic)"
+															matTooltip="{{ 'topic.suabinhluan' | translate}}">
+															<mat-icon style="color: rgb(11, 26, 167);" class="action">create</mat-icon>
+														</button>
+														<button mat-icon-button (click)="remove(child, vi, vic)"
+															matTooltip="{{ 'topic.xoabinhluan' | translate}}">
+															<mat-icon style="color: rgb(248, 14, 14);" class="action">delete</mat-icon>
+														</button>
+													</ng-container>
+												</div>
+											</div>
+										</div>
+
+										<div *ngIf="child.Attachment?child.Attachment.length>0:false" class="row">
+											<div class="col-md-12 kt-margin-bottom-10-mobile"
+												*ngFor="let att1 of child.Attachment;">
+												<div class="image-inline" *ngIf="att1.isImage">
+													<img style="max-width: 250px;" src="{{att1.path}}" />
+												</div>
+												
+												<div class="attachment-inline" *ngIf="!att1.isImage">
+													<div>
+														<mat-icon>attach_file</mat-icon>
+														{{att1.filename}}
+													</div>
+													<a href="javascript:void(0)" (click)="DownloadFile(att1.path)">{{
+														'GeneralKey.taixuong' | translate}} </a>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12 comment-like">
+												<span [popover]="myPopover" [popoverOnHover]="true"
+													[popoverCloseOnMouseOutside]="true">
+													<a href="javascript:;" *ngIf="child.Like"
+														class="{{child.Like.title}}" (click)="like(child,0)">
+														<img src="{{child.Like.icon}}" />
+														{{child.Like.title}}
+													</a>
+													<a *ngIf="!child.Like" href="javascript:;" (click)="like(child,1)">
+														<mat-icon class="thumb_up">thumb_up</mat-icon>
+														{{ 'topic.like' | translate}}
+													</a>
+												</span>
+												<div>
+													<popover-content #myPopover class="reaction-box-container"
+														[closeOnMouseOutside]="true">
+														<div class="reaction-box">
+															<div class="reaction-icon" *ngFor="let icon of icons"
+																(click)="like(child,icon.id_row)">
+																<label>{{icon.title}}</label>
+																<div class="reaction-img">
+																	<img src="{{icon.icon}}">
+																</div>
+															</div>
+														</div>
+													</popover-content>
+												</div>
+												&nbsp;&middot;&nbsp;
+												<a href="javascript:void(0)" (click)="reply(child, vi)">
+													{{ 'topic.reply' | translate}}
+												</a> &nbsp;&middot;&nbsp; {{child.CreatedDate}}
+												<span class="total-like">
+													<ng-container *ngFor="let like of child.Likes">
+														<span *ngIf="like.tong>0">
+															<img src="{{like.icon}}" />
+															{{like.tong}}
+														</span>
+													</ng-container>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div id="inputtext{{vi}}"
+									class="col-md-12 kt-margin-bottom-10-mobile position:absolute">
+									<mat-form-field class="mat-form-field-fluid">
+										<input matInput placeholder="{{'work.nhapnoidungdegui'|translate}}"
+											autocomplete="off" id="CommentRep{{vi}}"
+											(keydown.enter)="CommentInsert($event.target.value,quyen.id_row,vi,2)"
+											type="text" value="" [popover]="myPopoverChild" [popoverOnHover]="false"
+											(input)="onSearchChangeChild($event, vi)" (click)="click($event, vi)">
+										<button matSuffix mat-icon-button color="primary" type="button"
+											(click)="selectFile_PDF(vi)" matTooltip="{{'GeneralKey.upload'|translate}}">
+											<mat-icon>attach_file</mat-icon>
+										</button>
+										<button matSuffix mat-icon-button color="primary" type="button"
+											(click)="openEmotionDialog(vi,quyen.id_row)">
+											<mat-icon>tag_faces</mat-icon>
+										</button>
+									</mat-form-field>
+
+								</div>
+
+								<input type='file' id="PDFInpdd{{vi}}" (change)="onSelectFile_PDF($event,vi)"
+									style="display: none;">
+								<div class="row">
+									<div class="col-md-12 kt-margin-bottom-10-mobile"
+										*ngFor="let att3 of GetListAttach(vi);let ind1 = index">
+										{{att3.filename}}
+										<button mat-icon-button color="warn" type="button"
+											(click)="DeleteFile_PDF(vi,ind1)" matTooltip="Xóa File">
+											<mat-icon>delete</mat-icon>
+										</button>&nbsp;
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<span #hiddenText
+		style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+	<span id="text-position"
+		style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+</div>

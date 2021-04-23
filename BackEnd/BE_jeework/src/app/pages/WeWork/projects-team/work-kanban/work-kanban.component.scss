@@ -1,0 +1,185 @@
+@import "./../work-list-new/work-list-new.component.scss";
+// .table-kanban {
+//     display: -webkit-inline-box;
+//     overflow: scroll;
+//     width: 100%;
+//     table th,
+//     td {
+//         width: 20%;
+//     }
+//     .width-full {
+//         width: 100%;
+//     }
+//     .css-sticky-header {
+//         background: white;
+//         position: sticky;
+//         top: 0;
+//         // box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+//         z-index: 1;
+//     }
+//     .css-sticky {
+//         background: white;
+//         position: sticky;
+//         top: 0;
+//         // box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+//         z-index: 1;
+//     }
+//     .header-sticky {
+//         height: 70px;
+//     }
+//     .example-box {
+//         min-height: 150px;
+//         color: rgba(0, 0, 0, 0.87);
+//         justify-content: space-between;
+//         box-sizing: border-box;
+//         cursor: move;
+//         background: white;
+//         font-size: 14px;
+//         margin: 1px;
+//         font-family: Arial, Helvetica, sans-serif;
+//         white-space: normal;
+//         text-align: justify;
+//         padding: 5px;
+//         border-radius: 5px;
+//     }
+//     .example-list {
+//         border-radius: 4px;
+//         display: block;
+//     }
+//     //===========================Xử lý image========================
+//     .side {
+//         position: absolute;
+//         right: 10px;
+//         z-index: 999;
+//     }
+//     .cdk-drop-list-dragging {
+//         border: 2px solid green;
+//         border-style: dashed;
+//     }
+//     .cdk-drop-list-receiving {
+//         border: 2px solid blue;
+//         border-style: dashed;
+//     }
+//     .css-content {
+//         max-height: 105px;
+//         line-height: 18px;
+//         -webkit-box-orient: vertical;
+//         overflow: hidden;
+//         text-overflow: ellipsis;
+//     }
+//     .icon-header {
+//         color: gray;
+//         font-size: 10px;
+//         cursor: pointer;
+//     }
+//     .show-icon {
+//         display: none;
+//         padding: 0;
+//         text-align: right;
+//     }
+//     .header-task:hover {
+//         .show-icon {
+//             display: block;
+//         }
+//     }
+//     .icon-menutext {
+//         padding-right: 10px;
+//         color: #0A9562;
+//         padding-left: 8px;
+//     }
+//     .text-menutext {
+//         text-align: left;
+//         padding: 0;
+//     }
+//     .text-menutext:hover {
+//         text-align: left;
+//         padding: 0;
+//         background-color: rgba(10, 149, 98, 0.063);
+//         color: #0A9562;
+//     }
+//     .icon-menuxoa {
+//         padding-right: 10px;
+//         color: red;
+//         padding-left: 8px;
+//     }
+//     .text-menuxoa {
+//         text-align: left;
+//         padding: 0;
+//     }
+//     .text-menuxoa:hover {
+//         text-align: left;
+//         padding: 0;
+//         background-color: rgba(10, 149, 98, 0.063);
+//         color: red;
+//     }
+//     .btn-rounded {
+//         border-radius: 10em;
+//     }
+//     .btn-outline-primary {
+//         color: #4285f4 !important;
+//         background-color: transparent !important;
+//         border: 2px solid #4285f4 !important;
+//         // padding: .84rem 2.14rem !important;
+//         font-size: 1rem !important;
+//         margin: .375rem !important;
+//     }
+//     .example-box:last-child {
+//         border: none;
+//     }
+//     // .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+//     //     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+//     // }
+//     // //====================================================================
+//     // .text {
+//     //     display: block;
+//     //     width: 200px;
+//     //     overflow: hidden;
+//     //     white-space: nowrap;
+//     //     text-overflow: ellipsis;
+//     // }
+//     .title {
+//         font-size: 14px;
+//         font-weight: 600;
+//     }
+//     .text-task {
+//         overflow: hidden;
+//         text-overflow: ellipsis;
+//         -webkit-line-clamp: 2;
+//         display: -webkit-box;
+//         -webkit-box-orient: vertical;
+//     }
+//     .css-title-task {
+//         font-weight: 600;
+//         font-size: 13pt;
+//         cursor: pointer;
+//     }
+//     // .manager2 {
+//     //     font-size: 10pt;
+//     //     cursor: pointer;
+//     //     height: 25px;
+//     //     width: 25px;
+//     //     text-align: center;
+//     //     vertical-align: middle;
+//     //     display: table-cell;
+//     // }
+//     // .manager2:hover {
+//     //     background-color: gray;
+//     //     color: white;
+//     // }
+// }
+
+.drag-target-border {
+	border: orange dashed 2px;
+}
+
+.drag-target-border-green {
+	border: #3c763d dashed 2px;
+}
+
+.drag-hint {
+	border: black dashed 2px;
+}
+
+.drag-over {
+	border: #ff525b dashed 2px !important;
+}

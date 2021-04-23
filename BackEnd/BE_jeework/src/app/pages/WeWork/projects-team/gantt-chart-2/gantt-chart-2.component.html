@@ -1,0 +1,15 @@
+<div style="margin-bottom: 35px;">
+    <gstc [(config)]="config" (onState)="onState($event)" class="custom-gstc"></gstc>
+</div>
+<div class="footer-gantt-chart-2"  >
+    <div class="row h-100">
+        <div class="item border-right url" [ngClass]="{active: view=='gantt'}" (click)="updateView('gantt')"> Xem gantt chart</div>
+        <div class="item border-right url" style="cursor: no-drop;" disabled="true"  [ngClass]="{active: view=='tuychinh'}"> Xem trường dữ liệu tùy chỉnh</div>
+        <!-- <div class="item border-right url" [ngClass]="{active: view=='tuychinh'}" (click)="updateView('tuychinh')"> Xem trường dữ liệu tùy chỉnh</div> -->
+        <div class="item date-select url"> 
+            <i class="fas fa-chevron-left" (click)="updateDate('pre')"></i>
+                <span class="-hover"> {{fromDate|date:'MM/yyyy'}} - {{toDate|date:'MM/yyyy'}} </span>
+            <i class="fas fa-chevron-right" (click)="updateDate('next')"></i>
+        </div>
+    </div>
+</div>

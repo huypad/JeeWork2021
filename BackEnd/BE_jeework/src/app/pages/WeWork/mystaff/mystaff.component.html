@@ -1,0 +1,19 @@
+<kt-portlet>
+    <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
+        <ng-container ktPortletTitle>
+            <div class="kt-form__filtration">
+                <div class="row align-items-center">
+                    <span class="title-header" translate="{{title}}"></span>
+                </div>
+            </div>
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body *ngIf="data.length>0 " class="mystaff pd-0">
+        <div class="row font-chu" *ngFor="let staff of data" style="border-bottom: 1px solid #ddd; padding:5px 10px">
+            <kt-avatar-user [image]="staff.image" size="35" [name]="staff.hoten" [showFull]="true"
+                [info]="staff.tenchucdanh">
+            </kt-avatar-user>
+        </div>
+    </kt-portlet-body>
+
+</kt-portlet>

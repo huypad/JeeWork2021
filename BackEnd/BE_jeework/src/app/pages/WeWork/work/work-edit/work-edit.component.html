@@ -1,0 +1,183 @@
+<div class="kt-portlet position-relative"
+    [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+    <form class="kt-form" [formGroup]="itemForm">
+        <div class="kt-portlet__body">
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <input matInput placeholder="{{ 'work.tencongviec' | translate }}" class="require" required
+                            formControlName="title" />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="position-relative">
+                <div class="form-group kt-form__group row " *ngIf="!(item.id_row > 0)">
+                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                        <mat-form-field class="mat-form-field-fluid ">
+                            <textarea #matInput_Assign matInput placeholder="{{ 'work.giaoviec' | translate }}" rows="3"
+                                [(ngModel)]="_Assign" [popoverOnHover]="false" [ngModelOptions]="{standalone: true}"
+                                [popover]="myPopoverChild" [popoverOnHover]="false"
+                                (input)="onSearchChange_Assign($event)" (click)="click_Assign($event)"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <popover-content #myPopoverChild placement="bottom-left" [closeOnClickOutside]="true">
+                    <kt-choose-users [options]="options_assign" (ItemSelected)="ItemSelected_Assign($event)">
+                    </kt-choose-users>
+                </popover-content>
+            </div>
+            <div class="row">
+                <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <editor apiKey="test" formControlName="NoiDung" [init]="tinyMCE">
+                    </editor>
+                </div>
+            </div>
+            <div class="row" *ngIf="!(item.id_row > 0) && !ShowDrd_Project">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="id_project_team" class="require" required
+                            (selectionChange)="BindList($event.value)"
+                            placeholder="{{ 'topic.projectteam' | translate}}">
+                            <mat-option>
+                                <ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
+                                    [noEntriesFoundLabel]="''">
+                                </ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option value="{{project.id_row}}" *ngFor="let project of filtereproject | async">
+                                <span style="color: black;">{{ project.title }}</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="position-relative">
+                <div class="row" *ngIf="!(item.id_row > 0)">
+                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                        <mat-form-field class="mat-form-field-fluid ">
+                            <textarea #matInput matInput placeholder="{{ 'topic.nguoitheodoi' | translate }}" rows="3"
+                                [popoverOnHover]="false" [(ngModel)]="_Follower" [popover]="follower"
+                                [popoverOnHover]="false" [ngModelOptions]="{standalone: true}"
+                                (input)="onSearchChange($event)" (click)="click($event)"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <popover-content #follower placement="bottom-left" [closeOnClickOutside]="true">
+                    <kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+                </popover-content>
+            </div>
+            <div class="row" *ngIf="!is_edit">
+                <div class="col-md-6 kt-margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="id_milestone" placeholder="{{ 'department.muctieu' | translate}}">
+                            <mat-option *ngFor="let item of List_id_milestone" [value]="item.id_row">
+                                {{item.title}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-6 m--margin-bottom-20-mobile" *ngIf="!is_edit">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input [min]="minDate" matInput placeholder="{{ 'filter.deadline' | translate}}"
+                            formControlName="deadline" [matDatepicker]="deadline" readonly>
+                        <mat-datepicker-toggle matSuffix [for]="deadline"></mat-datepicker-toggle>
+                        <mat-datepicker #deadline></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div *ngIf="!is_edit" class="col-md-6 kt-margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select multiple formControlName="Tags" (selectionChange)="checkTags($event.value)"
+                            placeholder="{{ 'work.danhsachnhan' | translate}}">
+                            <mat-option *ngFor="let item of listTag" [value]="item.id_row">
+                                {{item.title}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 kt-margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select class="require" required placeholder="{{ 'filter.nhomcongviec' | translate}}"
+                            formControlName="id_group">
+                            <mat-option *ngFor="let item of listType" [value]="item.id_row">
+                                {{item.title}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="urgent" placeholder="{{ 'work.mucdouutien' | translate }}">
+                            <mat-option value="false">
+                                <span translate="work.binhthuong"></span>
+                            </mat-option>
+                            <mat-option value="true">
+                                <span translate="work.khancap"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row" *ngIf="!is_edit">
+                <div class="col-md-6 kt-margin-bottom-10-mobile attachment">
+                    <button mat-menu-item (click)="selectFile_PDF(-1)" matTooltip="{{ 'work.upload' | translate }}">
+                        <mat-icon style="color: darkgreen;">add</mat-icon>
+                        <span style="font-size: 9pt; color: darkgreen !important;"
+                            translate="work.tailieudinhkem"></span>
+                    </button>
+                    <input type='file' id="PDFInpdd" (change)="onSelectFile_PDF($event,-1)" style="display: none;">
+                </div>
+            </div>
+            <div *ngIf="!is_edit" class="row comment-box">
+                <div class="col-md-12 kt-margin-bottom-10-mobile" *ngIf="AttachFileComment.length>0">
+                    <p style="font-weight:bold">{{AttachFileComment.length}} {{'GeneralKey.tepdinhkem'|translate}} </p>
+                    <div class="row">
+                        <div class="col-md-6" *ngFor="let att of AttachFileComment;let ind2 = index">
+                            <div class="attach-item">
+                                <div class="attach-item-icon">
+                                    <img src="{{att.icon}}" />
+                                </div>
+                                <div class="attach-item-name">
+                                    <p>{{att.filename}}</p>
+                                    <span>
+                                        <a
+                                            href="javascript:;">{{'GeneralKey.xemtruoc'|translate}}</a>&nbsp;&middot;&nbsp;
+                                        <a href="javascript:;">{{'GeneralKey.taixuong'|translate}}</a>
+                                    </span>
+                                </div>
+                                <div class="attach-item-del">
+                                    <button mat-icon-button color="warn" type="button" (click)="DeleteFile_PDF(-1,ind2)"
+                                        matTooltip="{{'GeneralKey.xoafile'|translate}}">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span #hiddenText_Assign
+                style="visibility:hidden; white-space: pre;font-size:1.1rem;position:absolute">{{_Assign}}</span>
+            <span #hiddenText
+                style="visibility:hidden; white-space: pre;font-size:1.1rem;position:absolute">{{_Follower}}</span>
+        </div>
+    </form>
+    <div class="kt-portlet__foot">
+        <div class="kt-form__actions kt-form__actions--solid">
+            <div class="row text-right">
+                <div class="col-lg-12">
+                    <button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+                        cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+                        <span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+                            class="spinner-button-pad"></div>
+                    </button>&nbsp;
+                    <button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)"
+                        [disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luudong' | translate }}">
+                        <span translate="GeneralKey.luudong"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+                            class="spinner-button-pad"></div>
+                    </button> &nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

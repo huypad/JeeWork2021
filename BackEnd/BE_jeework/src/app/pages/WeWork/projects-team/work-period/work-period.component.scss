@@ -1,0 +1,336 @@
+// /** No CSS for this example */
+// ::ng-deep .mat-checkbox .mat-checkbox-frame {
+//   border-radius: 50%;
+//   border: 1px solid #6fad15;
+// }
+// ::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+//   border-radius: 50%;
+//   border: 1px solid #6fad15;
+// }
+// .kt-form .kt-form__section:last-child,
+//     .kt-form .kt-form__section.kt-form__section--last {
+//         margin-bottom: 0;
+//         text-align: center;
+//     }
+//     .colauto {
+//         padding-left: 30px;
+//         padding-right: 30px;
+//     }
+//     .tieude {
+//         text-align: left;
+//         padding-left: 15px;
+//         color: darkorange !important;
+//     }
+//     .tieudecongtac {
+//         text-align: left;
+//         padding-left: 20px;
+//         color: green !important;
+//         font-size: 13pt;
+//     }
+//     .img-circle {
+//         height: 180px;
+//         width: 180px;
+//     }
+//     .lylich {
+//         font-weight: bold;
+//     }
+//     :host>>>.mat-expansion-panel-body {
+//         padding: 0 !important;
+//         width: 100%;
+//     }
+//     #rcorners {
+//         border-radius: 50%;
+//         border: 1px solid orange;
+//         padding: 13px;
+//         width: 20px;
+//         height: 20px;
+//         background-color: orange
+//     }
+//     .center {
+//         align-items: center;
+//         justify-content: center;
+//         display: flex;
+//     }
+//     .header-center {
+//         align-items: center;
+//         display: flex;
+//         padding: 0px !important;
+//     }
+//     .row-title-class {
+//         color: darkgreen;
+//         font-weight: bold;
+//     }
+//     .row-hoten-class {
+//         color: black;
+//         font-weight: bold;
+//     }
+//     .row-nhanvien {
+//         color: orange;
+//         font-style: italic;
+//     }
+//     .row-ngaysinh-class {
+//         color: orange
+//     }
+//     .row-class {
+//         padding-bottom: 10px;
+//         padding-top: 10px;
+//         font-size: 11pt;
+//         /* font-weight: bold; */
+//     }
+//     .row-class-nhanvien {
+//         padding-bottom: 10px;
+//         padding-top: 10px;
+//         font-size: 11pt;
+//         /* font-weight: bold; */
+//     }
+//     :host>>>perfect-scrollbar>.ps.ps--active-x>.ps__rail-x {
+//         display: none;
+//     }
+//     .ngay-css {
+//         display: flex;
+//         /* padding: 25px; */
+//     }
+//     .pie {
+//         border-radius: 50%;
+//         width: 30px;
+//         height: 30px;
+//         background: conic-gradien(#1c5bb3 0%, #9a9a9a 0 100%);
+//     }
+//     .side {
+//         position: absolute;
+//         right: 10px;
+//         z-index: 999;
+//     }
+//     .users {
+//         overflow: hidden;
+//         position: relative;
+//         float: left;
+//         height: 30px;
+//         padding-left: 10px;
+//     }
+//     .user {
+//         overflow: hidden;
+//         float: left;
+//         -webkit-box-sizing: border-box;
+//         -moz-box-sizing: border-box;
+//         box-sizing: border-box;
+//         -moz-border-radius: 50%;
+//         -webkit-border-radius: 50%;
+//         border-radius: 50%;
+//         margin-left: -8px;
+//         background: rgba(0, 0, 0, 0.1);
+//         border: 2px solid #f3f3f3;
+//     }
+//     a:hover {
+//         color: #1f73e9;
+//         text-decoration: navy;
+//     }
+//     .a {
+//         color: rgb(8, 0, 0);
+//         /*white*/
+//     }
+//     .mat-tree-custom {
+//       overflow: hidden;
+//   }
+//   .mat-tree-custom mat-tree-node {
+//       overflow: visible !important;
+//   }
+//   .mat-tree-custom .mat-tree-node {
+//       white-space: nowrap;
+//       height: 30px;
+//   }
+//     .mat-tree-custom .mat-tree-node .btn-node {
+//       transition: all .1s;
+//       opacity: 0;
+//       transform: translateX(-10px);
+//   }
+//   .mat-tree-custom .mat-tree-node .hover {
+//       transition-delay: 0s;
+//   }
+//   .mat-tree-custom .mat-tree-node:hover .btn-node {
+//       opacity: 1;
+//       transform: translateX(0px);
+//       border-radius: 100%;
+//   }
+//   .mat-tree-custom .mat-tree-node{
+//     white-space: nowrap;
+//     height: 30px;
+//   }
+//    .placeholder {
+//     width: 6px;
+//     height: 6px;
+//     position: absolute;
+//     left: 11px;
+//     bottom: 11px;
+//     border-radius: 100%;
+//     background: rgba(200,200,200,1);
+//     background: rgba(var(--palette-neutral-20,200, 200, 200),1);
+//     display: block;
+// }
+// .mat-tree-custom .mat-tree-node:hover .placeholder {
+//     display: none;
+// }
+.calendar {
+    position: absolute;
+    top: 38px;
+    background-color: #fff;
+    box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.16);
+    z-index: 20;
+    width: 210px;
+    &__wrapper {
+      position: relative;
+      width: 100%;
+    }
+    &__input-wrapper {
+      width: 210px;
+      position: relative;
+      height: 36px;
+      cursor: pointer;
+    }
+    &__input {
+      width: 210px;
+      height: 100%;
+      outline: none;
+      border: 2px solid #dddddd;
+      border-radius: 2px;
+      padding: 0 12px;
+      font-family: OpenSans, sans-serif;
+      font-size: 13px;
+      color: #101820;
+      cursor: pointer;
+      box-sizing: border-box;
+      &:focus, &:active {
+        border-color: #ffa228;
+      }
+    }
+    &__navs {
+      background-image: linear-gradient(to right, rgb(140, 211, 140), green);
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+    }
+    &__nav-btn {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      color: #fff;
+      font-size: 22px;
+      padding: 0;
+      height: auto;
+      &[disabled]{
+        color: transparent;
+        pointer-events: none;
+        cursor: not-allowed;
+      }
+    }
+    &__month-nav {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px 5px 8px;
+      color: #fff;
+      font-family: Raleway, sans-serif;
+      font-size: 14px;
+      span {
+        line-height: 1;
+      }
+    }
+    &__year-nav {
+      height: 100%;
+      font-size: 10px;
+      padding: 3px 40px 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      color: #fff;
+      font-family: OpenSans, sans-serif;
+    }
+    &__day-names {
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      background-image: linear-gradient(to right, rgb(243, 201, 128), orange);
+      border-top: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+      padding: 0 5px;
+    }
+    &__day-name {
+      color: #fff;
+      font-family: OpenSans, sans-serif;
+      font-size: 11px;
+    }
+    &__weeks {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+    }
+    &__week {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      &:hover {
+        & .calendar__date:not(.disabled) {
+          color: #f12c09;
+        }
+      }
+    }
+    &__date, &__day-name {
+      text-align: center;
+      padding: 3px;
+      width: 14.29%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    &__date {
+      height: 30px;
+      position: relative;
+      &:after {
+        content: '';
+        height: 30px * 0.9;
+        width: 30px * 0.9;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        transition: all 1s;
+        z-index: 1;
+      }
+      &.disabled {
+        color: #e0e0e0;
+        cursor: not-allowed;
+      }
+      &.prev {
+        background-color: #f7f7f7;
+      }
+      &.selected {
+        background-color: #9ecff8;
+        color: black;
+        &.prev {
+          background-color: #9ecff8;
+          color: black;
+        }
+      }
+      &.today {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+    }
+    &__number {
+      z-index: 10;
+      font-size: 12px;
+      font-family: OpenSans, sans-serif;
+    }
+  }
+  
+  .icon_calendar {
+    display: block;
+    width: 17px;
+    height: 20px;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+  }

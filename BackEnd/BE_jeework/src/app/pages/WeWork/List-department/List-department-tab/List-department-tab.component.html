@@ -1,0 +1,120 @@
+<div class="kt-portlet project-team">
+    <div class="row control-section font-chu kt-layout">
+        <div class="control-section {{activeLink != 'report'? 'w-100':'col-md-12'}}">
+            <div class="content-wrapper control-section">
+                <div class="content-wrapper report-container">
+                    <kt-portlet>
+                        <kt-portlet-header>
+                            <ng-container ktPortletTitle>
+                                <button type="button" mat-icon-button (click)="goBack()"
+                                    matTooltip="{{'GeneralKey.trolai'|translate}}">
+                                    <i class="flaticon2-back"></i>
+                                </button>
+                                <h5 class="mg-0 url -hover" style="padding-top: 5px; color: #48465b;"
+                                    [matMenuTriggerFor]="menu">{{Department}}</h5>
+                                <mat-menu #menu="matMenu">
+                                    <button (click)="Add()" mat-menu-item>Chỉnh sửa</button>
+                                    <button (click)="Delete()" mat-menu-item>Xóa</button>
+                                </mat-menu>
+                            </ng-container>
+                            <ng-container ktPortletTools>
+                            </ng-container>
+                        </kt-portlet-header>
+                        <ng-container class="portlet-body" mPortletBody>
+                            <nav mat-tab-nav-bar>
+                                <a mat-tab-link [routerLink]="['./projects']" (click)="click('projects')"
+                                    [active]="activeLink == 'projects'">{{'department.project' | translate}}</a>
+                                <a mat-tab-link [routerLink]="['./milestones']" (click)="click('milestones')"
+                                    [active]="activeLink == 'milestones'">{{'department.muctieu' | translate}}</a>
+                                <a *ngIf="commonService.CheckRole_WeWork(3403).length>0" mat-tab-link
+                                    [routerLink]="['./report/', this.ID_Department]" (click)="click('report')"
+                                    [active]="activeLink == 'report'">{{'GeneralKey.report' | translate}}</a>
+                            </nav>
+                            <button *ngIf="activeLink == 'projects'" (click)="AddNewProject()"
+                                class="btn btn-outline-success"
+                                style="border-radius:0px;border-top-left-radius:20px;border-bottom-left-radius:20px;position: absolute;top: 65px;right: 10px;z-index: 10;"
+                                matTooltip="{{ 'projects.themmoiproject' | translate }}" type="button">
+                                <span translate="projects.themmoiproject"></span>
+                            </button>
+                            <button *ngIf="activeLink == 'milestones'" (click)="AddMileston()"
+                                class="btn btn-outline-primary"
+                                style="border-radius:0px;border-top-left-radius:20px;border-bottom-left-radius:20px;position: absolute;top: 65px;right: 10px;z-index: 10;"
+                                matTooltip="{{ ' department.createmilestone' | translate }}" type="button">
+                                <span translate="department.createmilestone"></span>
+                            </button>
+                            <router-outlet></router-outlet>
+                        </ng-container>
+                    </kt-portlet>
+                </div>
+            </div>
+        </div>
+        <!-- Ẩn tab-right -->
+        <div class="control-section tab-right d-none" style="padding: 10px;" *ngIf="item && activeLink != 'report'">
+            <kt-portlet>
+
+                <kt-portlet-body class="border">
+                    <div class="row font-chu">
+                        <div class="col-md-12 ">
+                            <h4><span style="color: black;text-transform:uppercase">{{item.title}}</span></h4>
+                        </div>
+                        <div class="col-md-12" style="display: flex;">
+                            <div>
+                                <mat-icon style="color: black;">list</mat-icon>&nbsp;
+                            </div>
+                            <div>
+                                <span style="color: black;">
+                                    {{'GeneralKey.department' | translate}} · {{item["TenCoCau"]}}
+                                </span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="col-md-12">
+                            <mat-accordion>
+                                <mat-expansion-panel style="box-shadow:none;" class="setting-padding">
+                                    <mat-expansion-panel-header style="padding:0; padding-right: 5px;">
+                                        <mat-panel-title style=" font-size: 13px;">
+                                            <div style="display: flex;">
+                                                <div>
+                                                    <mat-icon style="color: black;">bookmark</mat-icon>&nbsp;
+                                                </div>
+                                                <div>
+                                                    <span style="color: black;">{{'work.managedby' | translate}}
+                                                        {{item.Owners.length}}
+                                                        {{'work.people' | translate}}</span>
+                                                </div>
+                                            </div>
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <div style="display:flex" *ngFor="let us of item.Owners">
+                                        <div>
+                                            <ngx-avatar size="35" matTooltip="{{us.hoten}}" src="{{us.image}}"
+                                                *ngIf="us.image;else bindText">
+                                            </ngx-avatar>
+                                            <ng-template #bindText>
+                                                <ngx-avatar textSizeRatio="2.5" matTooltip="{{us.hoten}}"
+                                                    [name]="WeWorkService.getNameUser(us.hoten)"
+                                                    bgColor="{{WeWorkService.getColorNameUser(us.hoten)}}">
+                                                </ngx-avatar>
+                                            </ng-template>
+                                        </div>
+                                        <div class="font-chu">
+                                            <div class="col-md-12" style="font-weight: bold;">
+                                                <span>{{us.hoten}}</span>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <span>@{{us.Username}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                        </div>
+                        <hr>
+
+                    </div>
+                </kt-portlet-body>
+
+            </kt-portlet>
+        </div>
+    </div>
+</div>

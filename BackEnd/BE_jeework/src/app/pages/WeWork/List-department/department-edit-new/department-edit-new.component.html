@@ -1,0 +1,589 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+
+    <div class="position-relative" style="padding:35px">
+
+        <ng-container [ngSwitch]="step">
+
+            <ng-container *ngSwitchCase="1">
+                <div class="cu-view-space" style="min-height: 300px;">
+                    <div class="close-dialog">
+                        <div class="float-left" *ngIf="isComplete">
+                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+                        </div>
+                        <div class="float-right">
+                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+                        </div>
+                    </div>
+                    <h1 style="margin-top: 20px; font-size: 40px;">
+                        {{ (item.id_row > 0 ? 'department.chinhsua' : 'department.themmoi') |translate}}
+                    </h1>
+
+                    <form class="kt-form" [formGroup]="itemFormGroup">
+                        <div class="kt-form__group">
+                            <div class="row">
+                                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                                    <mat-form-field class="mat-form-field-fluid ">
+                                        <input matInput placeholder="{{ 'department.ten' | translate }}"
+                                            formControlName="title" class="require" required #focusInput />
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                                    <section class="example-section">
+                                        <mat-checkbox class="example-margin" [(ngModel)]="IsDataStaff_HR"
+                                            [ngModelOptions]="{standalone: true}">
+                                            {{"department.laydulieutuphanmemnhansu" | translate}}
+                                        </mat-checkbox>
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                                    <m-dropdown-tree [data]="datatree" [DropdownTitle]="title"
+                                        (SelectedItemTree)="GetValueNode($event)" formControlName="dept_name">
+                                    </m-dropdown-tree>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="IsUpdate">
+                                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                                    <section class="example-section">
+                                        <mat-checkbox class="example-margin" [(ngModel)]="ReUpdated"
+                                            [ngModelOptions]="{standalone: true}">
+                                            {{"department.capnhatdulieutuphanmemnhansu" | translate}} </mat-checkbox>
+                                    </section>
+                                </div>
+                            </div> -->
+                        </div>
+                    </form>
+
+                    <button class="btn btn-success btn-next" [disabled]="isCompleteStep1()" type="button"
+                        (click)="Next()">
+                        {{ (isComplete? 'department.trolaituychinh' : 'department.tieptheo') |translate}}
+                    </button>
+                </div>
+            </ng-container>
+
+
+            <ng-container *ngSwitchCase="2">
+                <div class="cu-view-space">
+                    <div class="close-dialog d-flex">
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+                        </div>
+                        <div class="text-center" style="flex-grow: 1;">
+                            <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chonnguoithamgia'|translate}}
+                            </h1>
+                        </div>
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+                        </div>
+                    </div>
+                    <div class="chonnguoithamgia" style="margin-top:15px">
+                        <h3>{{ 'department.chusohuu'|translate}}</h3>
+                        <div class="row" style="margin-top: 15px;">
+                            <ng-container *ngFor="let us of getlist_Owners();let index = index">
+                                <div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+                                    style="justify-content: flex-end;">
+                                    <ng-container>
+                                        <kt-avatar-user [image]="us.image" size="40" [name]="us.hoten">
+                                        </kt-avatar-user>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="getlist_Owners() && getlist_Owners().length > 3">
+
+                                <div class="m--img-rounded m--marginless m--img-centered background"
+                                    [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 44,'height.px':44}">
+                                    <div class="user w-100 h-100"
+                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                        [ngStyle]="{'font-size.px': 20}">
+                                        +{{getlist_Owners().length-3}}
+                                    </div>
+                                </div>
+                                <mat-menu #menu1="matMenu">
+                                    <div *ngFor="let user of getlist_Owners();let index = index"
+                                        style="justify-content: flex-end;">
+                                        <ng-container *ngIf="index > 2">
+                                            <div class="position-relative">
+                                                <i class="fas fa-times scale-hover-01 url"
+                                                    style="position: absolute;top:0;right:0"
+                                                    (click)="ItemSelected(user)"></i>
+                                                <div class="row">
+                                                    <kt-avatar-user [image]="user.image" size="50" [name]="user.hoten"
+                                                        [showFull]="true" [info]="'@' + user.username">
+                                                    </kt-avatar-user>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </mat-menu>
+                            </ng-container>
+                            
+                        </div>
+                    </div>
+
+                    <mat-menu #owner="matMenu">
+                        <div class="page-work-detail">
+                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                                (ItemSelected)="ItemSelected($event)">
+                            </kt-choose-users>
+                        </div>
+                    </mat-menu>
+                    <div class="chonnguoithamgia" style="margin-top:15px">
+                        <h3>{{ 'department.thanhvien'|translate}}</h3>
+
+                        <div class="row" style="margin-top: 15px;">
+                            <ng-container *ngFor="let us of getlist_Assign();let index = index">
+                                <div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+                                    style="justify-content: flex-end;">
+                                    <ng-container>
+                                        <kt-avatar-user [image]="us.image" size="40" [name]="us.hoten">
+                                        </kt-avatar-user>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="getlist_Assign() && getlist_Assign().length > 3">
+
+                                <div class="m--img-rounded m--marginless m--img-centered background"
+                                    [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 44,'height.px':44}">
+                                    <div class="user w-100 h-100"
+                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                        [ngStyle]="{'font-size.px': 20}">
+                                        +{{getlist_Assign().length-3}}
+                                    </div>
+                                </div>
+                                <mat-menu #menu1="matMenu">
+                                    <div *ngFor="let user of getlist_Assign();let index = index"
+                                        style="justify-content: flex-end;">
+                                        <ng-container *ngIf="index > 2">
+                                            <div class="position-relative">
+                                                <i class="fas fa-times scale-hover-01 url"
+                                                    style="position: absolute;top:0;right:0"
+                                                    (click)="ItemSelected(user,2)"></i>
+                                                <div class="row">
+                                                    <kt-avatar-user [image]="user.image" size="50" [name]="user.hoten"
+                                                        [showFull]="true" [info]="'@' + user.username">
+                                                    </kt-avatar-user>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </mat-menu>
+                            </ng-container>
+                            <div matTooltip="Chọn người" matTooltipPosition="above" class="url user"
+                                [matMenuTriggerFor]="assignee"
+                                style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;width: 44px;height: 44px; ">
+                                <mat-icon style="font-size: 28px!important;">person_add</mat-icon>
+                            </div>
+                            <div style="    font-size: 20px; padding: 7px;">
+                                <span class="url" [matMenuTriggerFor]="assignee">{{
+                                    'department.themthanhvien'|translate}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <mat-menu #assignee="matMenu">
+                        <div class="page-work-detail">
+                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                                (ItemSelected)="ItemSelected($event,2)">
+                            </kt-choose-users>
+                        </div>
+                    </mat-menu>
+
+                    <button class="btn btn-success btn-next" type="button" (click)="Next()">
+                        {{ (isComplete? 'department.trolaituychinh':'department.tieptheo') |translate}}
+                    </button>
+                </div>
+            </ng-container>
+
+
+            <ng-container *ngSwitchCase="3">
+                <div class="cu-view-space">
+                    <div class="close-dialog d-flex">
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+                        </div>
+                        <div class="text-center" style="flex-grow: 1;">
+                            <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chontrangthai'|translate}}
+                            </h1>
+                        </div>
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+                        </div>
+                    </div>
+
+                    <div class="view-template d-flex">
+                        <div class="col-md-6">
+                            <div class="header-view-title" style="color: black;">
+                                {{ 'department.maudangchon'|translate}}
+                            </div>
+                            <ng-container *ngFor="let demo of litsTemplateDemo">
+                                <div class="template-selected" *ngIf="demo.id_row == TempSelected">
+                                    {{demo.title}}
+                                </div>
+                            </ng-container>
+                            <div class="header-view" style="margin-top: 5px;">
+                                <div class="header-view-title">
+                                    {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
+                                </div>
+                                <i class="fas fa-plus url text-success " (click)="addTemplate()"
+                                    style="font-size: 20px;" matTooltipPosition="above" matTooltip="Thêm mẫu mới"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 item-template"
+                                    [ngStyle]="{'color': TempSelected==demo.id_row?'green':''}"
+                                    *ngFor="let demo of litsTemplateDemo">
+                                    <div class="title-template url">
+                                        <span (click)="ChangeTemplate(demo.id_row)"
+                                            *ngIf="updateTemp!=demo.id_row;else update">{{demo.title}}</span>
+                                        <ng-template #update>
+                                            <app-focus-block type="text" isbd="true" style="width:100%"
+                                                value="{{demo.title}}" (out)="focusOutTemp($event,demo,true);">
+                                            </app-focus-block>
+                                        </ng-template>
+                                    </div>
+                                    <div class="edit-template ">
+                                        <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
+                                            matTooltip="Chỉnh sửa">edit</mat-icon>
+                                        <mat-icon class="-hover url" (click)="Delete_Templete(demo.id_row,false)"
+                                            matTooltip="Xóa">close</mat-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="add-new-template w-100">
+                                    <button class="btn text-success" (click)="addTemplate()" *ngIf="!isAddTemplate">
+                                        <i class="fas fa-plus"></i> &nbsp;
+                                        <span>{{ 'department.themmau'|translate}}</span>
+                                    </button>
+                                    <div *ngIf="isAddTemplate">
+                                        <app-focus-block type="text" isbd="true" style="width:100%"
+                                            (out)="focusOutTemp($event,{});">
+                                        </app-focus-block>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="header-view row">
+                                <div class="header-view-title">
+                                    {{ 'department.danhsachtrangthai'|translate}}
+                                </div>
+                                <ng-container *ngFor="let stt of listSTT">
+                                    <div class="status-input col-12 form-control"
+                                        *ngIf="!stt.IsFinal && !stt.IsDeadline">
+                                        <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                            <div class="row" style="width:200px;">
+                                                <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                    (click)="ChangeColor(color,stt)"
+                                                    *ngFor="let color of defaultColors">
+                                                </div>
+                                            </div>
+                                        </mat-menu>
+                                        <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                            [matMenuTriggerFor]="color"></button>
+                                        <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+
+                                        </div>
+                                        <div class="input">
+                                            <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                                (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                                (focusout)="sttFocusout(stt.StatusName,stt)"
+                                                [(ngModel)]="stt.StatusName" class="">
+                                        </div>
+                                        <div class="action-input">
+                                            <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                            <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                                *ngIf="idfocus!=stt.id_row"></i>
+                                        </div>
+                                        <mat-menu #menu1="matMenu">
+                                            <button mat-menu-item (click)="input.focus()">
+                                                {{ 'department.doiten'|translate}}
+
+                                            </button>
+                                            <button mat-menu-item (click)="changeColor.click();">
+                                                {{ 'department.doimau'|translate}}
+
+                                            </button>
+                                            <button mat-menu-item (click)="Delete_Templete(stt.id_row,true)"
+                                                *ngIf="!stt.IsTodo">
+                                                {{ 'GeneralKey.xoa'|translate}}
+                                            </button>
+                                        </mat-menu>
+                                    </div>
+                                </ng-container>
+
+                                <div class="status-input col-12 form-control" *ngIf="isAddStatus">
+                                    <div class="input">
+                                        <app-focus-block type="text" placeholder="Thêm trạng thái mới" isbd="true"
+                                            style="width:100%" (out)="focusOutSTT($event);">
+                                        </app-focus-block>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-success" style="padding: 5px 10px;" (click)="isAddStatus=true"
+                                    *ngIf="!isAddStatus">
+                                    <i class="fas fa-plus"></i> &nbsp;
+                                    {{ 'department.themtrangthai'|translate}}
+                                </button>
+                            </div>
+
+                            <div class="header-view row" style="margin-top: 15px!important;">
+                                <div class="header-view-title">
+                                    {{ 'department.trangthaitre'|translate}}
+                                </div>
+                                <ng-container *ngFor="let stt of listSTT">
+                                    <div class="status-input col-12   form-control" *ngIf="stt.IsDeadline">
+                                        <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                            <div class="row" style="width:200px;">
+                                                <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                    (click)="ChangeColor(color,stt)"
+                                                    *ngFor="let color of defaultColors">
+                                                </div>
+                                            </div>
+                                        </mat-menu>
+                                        <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                            [matMenuTriggerFor]="color"></button>
+                                        <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+
+                                        </div>
+                                        <div class="input">
+                                            <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                                (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                                (focusout)="sttFocusout(stt.StatusName,stt)"
+                                                [(ngModel)]="stt.StatusName" class="">
+                                        </div>
+                                        <div class="action-input">
+                                            <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                            <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                                *ngIf="idfocus!=stt.id_row"></i>
+                                        </div>
+                                        <mat-menu #menu1="matMenu">
+                                            <button mat-menu-item (click)="input.focus()">
+                                                {{ 'department.doiten'|translate}}
+                                            </button>
+                                            <button mat-menu-item (click)="changeColor.click();">
+                                                {{ 'department.doimau'|translate}}
+                                            </button>
+
+                                        </mat-menu>
+                                    </div>
+                                </ng-container>
+                            </div>
+
+                            <div class="header-view row" style="margin-top: 15px!important;">
+                                <div class="header-view-title">
+                                    {{ 'department.trangthaidone'|translate}}
+                                </div>
+                                <ng-container *ngFor="let stt of listSTT">
+                                    <div class="status-input col-12 form-control" *ngIf="stt.IsFinal">
+                                        <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                            <div class="row" style="width:200px;">
+                                                <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                    (click)="ChangeColor(color,stt)"
+                                                    *ngFor="let color of defaultColors">
+                                                </div>
+                                            </div>
+                                        </mat-menu>
+                                        <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                            [matMenuTriggerFor]="color"></button>
+                                        <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+
+                                        </div>
+                                        <div class="input">
+                                            <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                                (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                                (focusout)="sttFocusout(stt.StatusName,stt)"
+                                                [(ngModel)]="stt.StatusName" class="">
+                                        </div>
+                                        <div class="action-input">
+                                            <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                            <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                                *ngIf="idfocus!=stt.id_row"></i>
+                                        </div>
+                                        <mat-menu #menu1="matMenu">
+                                            <button mat-menu-item (click)="input.focus()">
+                                                {{ 'department.doiten'|translate}}
+                                            </button>
+                                            <button mat-menu-item (click)="changeColor.click();">
+                                                {{ 'department.doimau'|translate}}
+                                            </button>
+                                        </mat-menu>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success btn-next" type="button" (click)="Next()">
+                        {{ (isComplete?'department.trolaituychinh':'department.tieptheo')|translate}}
+                    </button>
+                </div>
+            </ng-container>
+            
+
+            <ng-container *ngSwitchCase="4">
+                <div class="cu-view-space">
+                    <div class="close-dialog d-flex">
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+                        </div>
+                        <div class="text-center" style="flex-grow: 1;">
+                            <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.caidatchedoxem'|translate}}
+                            </h1>
+                        </div>
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+                        </div>
+                    </div>
+
+                    <div class="view-template" style="min-height: 400px;">
+                        <div class="row">
+                            <div class="col-md-6 pd-0" *ngFor="let view of listDefaultView">
+                                <div class=" card card-view {{view.isCheck?'card-active':''}}">
+                                    <div class="card-body row">
+                                        <div style="flex-grow:1;">
+                                            <img src="{{view.icon}}" style="margin-right: 5px;" width="20px" alt="">
+                                            {{view.view_name}}
+                                        </div>
+                                        <mat-slide-toggle [disabled]="view.is_default" [(ngModel)]="view.isCheck">
+                                        </mat-slide-toggle>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success btn-next" type="button" (click)="Next();isComplete=true;">
+                        {{ (isComplete?'department.trolaituychinh':'department.tieptheo')|translate}}
+                    </button>
+                </div>
+            </ng-container>
+
+
+            <ng-container *ngSwitchDefault>
+                <div class="cu-view-space">
+                    <div class="close-dialog d-flex">
+                        <div>
+                            <mat-icon class="scale-2 url" *ngIf="!IsUpdate" (click)="isComplete=false;Pre()">
+                                chevron_left</mat-icon>
+                        </div>
+                        <div class="text-center" style="flex-grow: 1;">
+                            <h1 style="margin-top: -15px; font-size: 40px;">
+                                {{getTitle()}}
+                            </h1>
+                        </div>
+                        <div>
+                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+                        </div>
+                    </div>
+
+                    <div class="view-template" style="min-height: 400px;">
+                        <div class="w=100" style="margin-top: 25px;">
+                            <table class="w-100 table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td class="border line-tab url" (click)="viewDetail(1)">
+                                            <div class="line-title">
+                                                {{ 'department.ten'|translate}}
+                                            </div>
+                                            <div class="line-value" *ngIf="itemFormGroup">
+                                                {{ itemFormGroup.controls["title"].value }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border line-tab url" (click)="viewDetail(2)">
+                                            <div class="line-title">
+                                                {{ 'department.nguoithamgia'|translate}}
+                                            </div>
+                                            <div class="line-value">
+                                                <div class="row">
+                                                    <ng-container *ngFor="let us of list_Owners;let index = index">
+                                                        <div *ngIf="index < 3"
+                                                            class="user url scale-hover-02 position-relative"
+                                                            style="justify-content: flex-end;">
+                                                            <ng-container>
+                                                                <kt-avatar-user [image]="us.image" size="30"
+                                                                    [name]="us.hoten">
+                                                                </kt-avatar-user>
+                                                            </ng-container>
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="list_Owners && list_Owners.length > 3">
+
+                                                        <div class="m--img-rounded m--marginless m--img-centered background"
+                                                            [matMenuTriggerFor]="menu1"
+                                                            [ngStyle]="{'width.px': 34,'height.px':34}">
+                                                            <div class="user w-100 h-100"
+                                                                style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                                                [ngStyle]="{'font-size.px': 16}">
+                                                                +{{list_Owners.length-3}}
+                                                            </div>
+                                                        </div>
+                                                        <mat-menu #menu1="matMenu">
+                                                            <div *ngFor="let user of list_Owners;let index = index"
+                                                                style="justify-content: flex-end;margin-bottom: 5px;">
+                                                                <ng-container *ngIf="index > 2">
+                                                                    <div class="position-relative">
+                                                                        <div class="row">
+                                                                            <kt-avatar-user [image]="user.image"
+                                                                                size="35" [name]="user.hoten"
+                                                                                [showFull]="true"
+                                                                                [info]="'@' + user.username">
+                                                                            </kt-avatar-user>
+                                                                        </div>
+                                                                    </div>
+                                                                </ng-container>
+                                                            </div>
+                                                        </mat-menu>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border line-tab url" (click)="viewDetail(3)">
+                                            <div class="line-title">
+                                                {{ 'filter.status'|translate}}
+                                            </div>
+                                            <div class="line-value">
+                                                <div class="row h-100">
+                                                    <div class="box-stt" matTooltip="{{stt.StatusName}}"
+                                                        matTooltipPosition="above"
+                                                        [ngStyle]="{'backgroundColor': stt.color }"
+                                                        *ngFor="let stt of listSTT">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border line-tab url" (click)="viewDetail(4)">
+                                            <div class="line-title">
+                                                {{ 'department.chedoxem'|translate}}
+                                            </div>
+                                            <div class="line-value">
+                                                <ng-container *ngFor="let view of listDefaultView">
+
+                                                    <img style="margin: 0 10px;" *ngIf="view.isCheck"
+                                                        src="{{view.icon}}" matTooltip="{{view.view_name}}"
+                                                        matTooltipPosition="above" width="20px" alt="">
+                                                </ng-container>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success btn-next" type="button" (click)="SubmitData()">
+                        {{ (item.id_row > 0 ? 'department.luuthaydoi' : 'department.hoanthanh') |translate}}
+                    </button>
+                </div>
+            </ng-container>
+        </ng-container>
+    </div>
+
+</div>

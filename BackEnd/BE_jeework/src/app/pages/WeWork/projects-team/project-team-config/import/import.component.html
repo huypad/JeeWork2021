@@ -1,0 +1,89 @@
+<div class="import-setting-container">
+    <div class="kt-form">
+        <div class="kt-group kt-form__group--first" style="margin-left:20px;position: relative;">
+
+            <h2 class="kt-portlet__head-text" style="color: #42b814; font-weight: normal; font-size: 24px;">
+                <i class="fas fa-cloud-upload-alt"></i> <span translate="work.nhapcongviectuexcel"></span>
+            </h2>
+            <label style="color: #888;"> <span translate="work.capnhatcongviectuexcel"></span> (<a href="javascript:;" class="-hover" (click)="download()">{{'work.xemfilemau'|translate}}</a>) - {{'work.hotro'|translate}} </label>
+        </div>
+        <div class=" kt-form__group dndList" dndDropzone dndEffectAllowed="copyMove" (dndDrop)="onDrop_Columns($event, listColumn)">
+
+            <div class="row align-items-center">
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <input placeholder="Chọn file" id="imgInpdd1" type="file" name="fileUpload1" (change)="FileSelected($event)">
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="p-max-size">
+                        <input matInput type="text" #tensheet placeholder=" {{'congviec.tensheet'|translate}}" value="Sheet1" class="mat-form-field mat-form-field-fluid">
+                    </mat-form-field>
+                </div>
+
+            </div>
+            <div style="padding-bottom: 10px; align-content: center; text-align: center;" class="row align-items-center">
+                <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <button type="button" [disabled]="showApDung" (click)="Import(true)" mat-raised-button color="accent" *ngIf="showBTCot">
+						<i class="las la-print"></i>&nbsp;<span translate="GeneralKey.xemtruoc"></span>
+					</button>
+                </div>
+            </div>
+        </div>
+        <div class="kt-form__group" *ngIf="dataSource.length>0">
+            <div class="row">
+                <div class="col-md-12">
+                    <table style=" width: 100%;" class="table-bordered">
+                        <tr>
+                            <th style=" width: 30px;"> {{'congviec.stt'|translate}}</th>
+                            <th> {{'congviec.tencongviec'|translate}} </th>
+                            <th> {{'congviec.deadline'|translate}} </th>
+                            <th> {{'congviec.hoanthanhthucte'|translate}}</th>
+                            <th> {{'congviec.ketquacongviec'|translate}} </th>
+                            <th> {{'congviec.motacongviec'|translate}} </th>
+                            <th> {{'congviec.muctieu'|translate}} </th>
+                            <th> {{'congviec.ngaybatdau'|translate}}</th>
+                            <th> {{'congviec.nguoigiao'|translate}}</th>
+                            <th> {{'congviec.nguoitheodoi'|translate}} </th>
+                            <th> {{'congviec._nguoithuchien'|translate}} </th>
+                            <th> {{'congviec.tags'|translate}} </th>
+                            <th> {{'congviec.trangthai'|translate}} </th>
+                            <th> {{'congviec.milestone'|translate}} </th>
+                            <th> {{'congviec.uutien'|translate}} </th>
+                            <th> {{'congviec.loi'|translate}}</th>
+                        </tr>
+                        <ng-container *ngFor="let items of dataSource">
+                            <tr class="row-group">
+                                <td></td>
+                                <td colspan="15">{{items.title}}</td>
+                            </tr>
+                            <tr *ngFor="let element of items.dtW" [ngClass]="{'row-error':element.error}">
+                                <td> {{element['STT']}} </td>
+                                <td> {{element['Tên công việc']}} </td>
+                                <td> {{element['Deadline']}} </td>
+                                <td> {{element['Hoàn thành thực tế']}} </td>
+                                <td> {{element['Kết quả công việc']}} </td>
+                                <td> {{element['Mô tả công việc']}} </td>
+                                <td> {{element['Mục tiêu']}} </td>
+                                <td> {{element['Ngày bắt đầu']}} </td>
+                                <td> {{element['Người giao']}} </td>
+                                <td> {{element['Người theo dõi']}} </td>
+                                <td> {{element['Người thực hiện']}} </td>
+                                <td> {{element['Tags']}} </td>
+                                <td> {{element['Trạng thái']}} </td>
+                                <td> {{element['milestone']}} </td>
+                                <td> {{element['Ưu tiên (urgent)']}} </td>
+                                <td> {{element.error}} </td>
+                            </tr>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <button type="button" [disabled]="showApDung" (click)="Import()" mat-raised-button color="accent" *ngIf="showBTCot">
+						<i class="las la-print"></i>&nbsp;{{'congviec.import'|translate}}
+					</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

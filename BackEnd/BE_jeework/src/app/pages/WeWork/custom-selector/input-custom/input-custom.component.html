@@ -1,0 +1,11 @@
+<mat-form-field class="mat-form-field-fluid ">
+    <input matInput placeholder="{{ 'projects.members' | translate }}" id="InputAssign"
+        type="text" autocomplete="off" value="{{_Assign}}" [popover]="Assign"
+        [popoverOnHover]="false" (input)="onSearchChange_Assign($event)"
+        (click)="click_Assign($event)">
+</mat-form-field>
+<span #hiddenText_Assign style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{_Assign}}</span>
+<popover-content #Assign placement="bottom-left" [closeOnClickOutside]="true">
+    <kt-choose-users [options]="options_assign" (ItemSelected)="ItemSelected_Assign($event)">
+    </kt-choose-users>
+</popover-content>

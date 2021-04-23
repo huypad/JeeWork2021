@@ -1,0 +1,244 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class="kt-portlet__body hide-overflow-x mh-100">
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{tendapb}}" class="require" required formControlName="title" />
+						<img alt="" class="m--img-rounded m--marginless m--img-centered url"
+							style="height: 50px; width: 50px; max-width: inherit !important; border-radius: 50%;"
+							src="{{icon.src?icon.src:icon.base64Str}}" matSuffix (click)="chooseFile()">
+						<input type="file" hidden accept=".png, .jpg, .jpeg" id="inputIcon"
+							(change)="onSelectFile($event)" />
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-12 row kt--margin-bottom-10-mobile">
+					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{ 'projects.admins' | translate }} : </span> 
+					<div class="row" style="flex-grow: 1;">
+						<ng-container *ngFor="let us of this.selected;let index = index">
+							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+								style="justify-content: flex-end;">
+								<ng-container>
+									<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
+									</kt-avatar-user>
+								</ng-container>
+							</div>
+						</ng-container>
+						<ng-container *ngIf="this.selected && this.selected.length > 3">
+
+							<div class="m--img-rounded m--marginless m--img-centered background"
+								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
+								<div class="user w-100 h-100"
+									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+									[ngStyle]="{'font-size.px': 16}">
+									+{{this.selected.length-3}}
+								</div>
+							</div>
+							<mat-menu #menu1="matMenu">
+								<div *ngFor="let user of this.selected;let index = index"
+									style="justify-content: flex-end;">
+									<ng-container *ngIf="index > 2">
+										<div class="position-relative">
+											<i class="fas fa-times scale-hover-01 url"
+												style="position: absolute;top:0;right:0"
+												(click)="ItemSelected(user)"></i>
+											<div class="row">
+												<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+													[showFull]="true" [info]="'@' + user.username">
+												</kt-avatar-user>
+											</div>
+										</div>
+									</ng-container>
+								</div>
+							</mat-menu>
+						</ng-container>
+						<div matTooltip="Chọn người" matTooltipPosition="above" class="url user"
+							[matMenuTriggerFor]="owner"
+							style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;width: 29px;height: 29px; ">
+							<mat-icon style="font-size: 16px!important;">person_add</mat-icon>
+						</div>
+					</div>
+					<mat-menu #owner="matMenu">
+                        <div class="page-work-detail">
+                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                                (ItemSelected)="ItemSelected($event)">
+                            </kt-choose-users>
+                        </div>
+                    </mat-menu>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-12 row kt--margin-bottom-10-mobile">
+					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{ 'projects.members' | translate }} : </span> 
+					<div class="row" style="flex-grow: 1;">
+						<ng-container *ngFor="let us of this.selected_Assign;let index = index">
+							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+								style="justify-content: flex-end;">
+								<ng-container>
+									<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
+									</kt-avatar-user>
+								</ng-container>
+							</div>
+						</ng-container>
+						<ng-container *ngIf="this.selected_Assign && this.selected_Assign.length > 3">
+
+							<div class="m--img-rounded m--marginless m--img-centered background"
+								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
+								<div class="user w-100 h-100"
+									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+									[ngStyle]="{'font-size.px': 16}">
+									+{{this.selected_Assign.length-3}}
+								</div>
+							</div>
+							<mat-menu #menu1="matMenu">
+								<div *ngFor="let user of this.selected_Assign;let index = index"
+									style="justify-content: flex-end;">
+									<ng-container *ngIf="index > 2">
+										<div class="position-relative">
+											<i class="fas fa-times scale-hover-01 url"
+												style="position: absolute;top:0;right:0"
+												(click)="ItemSelected_Assign(user)"></i>
+											<div class="row">
+												<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+													[showFull]="true" [info]="'@' + user.username">
+												</kt-avatar-user>
+											</div>
+										</div>
+									</ng-container>
+								</div>
+							</mat-menu>
+						</ng-container>
+						<div matTooltip="Chọn người" matTooltipPosition="above" class="url user"
+							[matMenuTriggerFor]="member"
+							style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;width: 29px;height: 29px; ">
+							<mat-icon style="font-size: 16px!important;">person_add</mat-icon>
+						</div>
+					</div>
+					<mat-menu #member="matMenu">
+                        <div class="page-work-detail">
+                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                                (ItemSelected)="ItemSelected_Assign($event)">
+                            </kt-choose-users>
+                        </div>
+                    </mat-menu>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="id_project_team" class="require" required
+							placeholder="{{ 'department.department' | translate}}">
+							<mat-option>
+								<ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
+									[noEntriesFoundLabel]="''">
+								</ngx-mat-select-search>
+							</mat-option>
+							<mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
+								<span style="color: black;">{{ user.title }}</span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div *ngIf="IsProject" class="row align-items-center">
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					
+					<label>{{ 'projects.loaiduan' | translate }}</label><br />
+					<mat-radio-group formControlName="loai">
+						<mat-radio-button value="1"><span translate="projects.duannoibo"></span>
+						</mat-radio-button>
+						<br />
+						<mat-radio-button value="2"><span translate="projects.duankhachhang"></span>
+						</mat-radio-button>
+					</mat-radio-group>
+				</div>
+			</div>
+			<mat-accordion multi>
+				<mat-expansion-panel style="box-shadow: none;">
+					<div class="row align-items-center">
+						<div class="col-md-12 m--margin-bottom-10-mobile">
+							<mat-form-field class="mat-form-field-fluid">
+								<mat-select formControlName="status"
+									placeholder="{{ 'projects.trangthaiduan' | translate }}">
+									<mat-option value="1">
+										<span translate="filter.dungtiendo"></span>
+									</mat-option>
+									<mat-option value="2">
+										<span translate="filter.chamtiendo"></span>
+									</mat-option>
+									<mat-option value="3">
+										<span translate="filter.ruirocao"></span>
+									</mat-option>
+								</mat-select>
+							</mat-form-field>
+						</div>
+						<div class="col-md-6 m--margin-bottom-10-mobile">
+							<mat-form-field class="mat-form-field-fluid">
+								<input matInput [matDatepicker]="dp1" [max]="itemForm.value.end_date"
+									placeholder="{{ 'GeneralKey.ngaybatdau' | translate}}" formControlName="start_date">
+								<mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+								<mat-datepicker #dp1></mat-datepicker>
+							</mat-form-field>
+						</div>
+						<div class="col-md-6 m--margin-bottom-10-mobile">
+							<mat-form-field class="mat-form-field-fluid">
+								<input matInput [matDatepicker]="dp2" placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}"
+									[min]="itemForm.value.start_date" formControlName="end_date">
+								<mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+								<mat-datepicker #dp2></mat-datepicker>
+							</mat-form-field>
+						</div>
+						<div class="col-md-12 kt--margin-bottom-10-mobile">
+							<mat-form-field class="mat-form-field-fluid ">
+								<textarea matInput placeholder="{{mota}}" formControlName="description"
+									rows="2"></textarea>
+							</mat-form-field>
+						</div>
+						<div class="col-md-12 m--margin-bottom-10-mobile" *ngIf="IsProject">
+							<label>{{ 'projects.color' | translate }}</label><br />
+							<kt-color-picker [selected]="item.color" (ItemSelected)="Selected_Color($event)">
+							</kt-color-picker>
+						</div>
+					</div>
+				</mat-expansion-panel>
+			</mat-accordion>
+			<div class="text-center form-group">
+				<button class="btn btn-outline-success" (click)="collapse()">
+					<ng-container *ngIf="accordionclose;else dong">
+						+ {{'projects.moreoptions'|translate}}
+					</ng-container>
+					<ng-template #dong>
+						+ {{'projects.lessoptions'|translate}}
+					</ng-template>
+					
+				</button>
+
+			</div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)"
+						[disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luudong' | translate }}">
+						<span translate="GeneralKey.luudong"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,90 @@
+
+<style>
+    .kt-portlet__head-title {
+        font-size: medium;
+        font-family: sans-serif;
+    }
+
+    .mat-icon {
+        background-repeat: no-repeat;
+        display: inline-block;
+        fill: currentColor;
+        /* height: 24px; */
+        width: 24px;
+    }
+
+    .material-icons {
+        font-size: 25px !important;
+    }
+
+    .mat-input-element:disabled,
+    .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
+        color: black;
+    }
+
+    .mat-select-disabled ::ng-deep .mat-select-value {
+        color: black;
+    }
+</style>
+<div class="kt-portlet">
+    <div class="kt-portlet__head kt-portlet__head__custom">
+            <div class="kt-margin-bottom-10-mobile" style="margin-top: 20px;">
+                <!-- <span class="m-portlet__head-icon m--hide">
+                    <i class="las la-gear"></i>
+                </span> -->
+                <h3 class="kt-portlet__head-title"><span translate="GeneralKey.tieudepass"></span></h3>
+            </div>
+    </div>
+    <form class="m-form">
+        <div class="m-portlet__body">
+            <div class="m-portlet__body-progress">
+                <!-- <mat-spinner [diameter]="20"></mat-spinner> -->
+            </div>
+            <div class="form-group  row">
+                <div class="col-lg-12 m--margin-bottom-20-mobile">
+                    <mat-form-field style="width: 100%;">
+                        <input type="password" matInput placeholder="{{ 'GeneralKey.nhapmatkhau' | translate }}"
+                            [ngModelOptions]="{standalone: true}" name="oldPass" [(ngModel)]="data.oldPass">
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- <div class="m-separator m-separator--dashed"></div> -->
+            <div class="form-group  row">
+                <div class="col-lg-12 m--margin-bottom-20-mobile">
+                    <mat-form-field style="width: 100%;">
+                        <input type="password" matInput placeholder="{{ 'GeneralKey.nhapmatkhaumoi' | translate }}"
+                            [ngModelOptions]="{standalone: true}" name="newPass" (input)="checkPass()"
+                            [(ngModel)]="data.newPass">
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- <div class="m-separator m-separator--dashed"></div> -->
+            <div class="form-group  row">
+                <div class="col-lg-12 m--margin-bottom-20-mobile">
+                    <mat-form-field style="width: 100%;">
+                        <input type="password" matInput placeholder="{{ 'GeneralKey.nhaplaimatkhaumoi' | translate }}"
+                            [ngModelOptions]="{standalone: true}" name="confirm" (input)="checkPass()"
+                            [(ngModel)]="data.confirm">
+                        <mat-hint style="color: red;" *ngIf="data.confirm != data.newPass">
+                            <strong><span translate="GeneralKey.matkhaukhongkhop"></span></strong>
+                        </mat-hint>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="form-group  row">
+                <div class="col-lg-12 m--margin-bottom-20-mobile">
+					<label innerHTML="{{yeucaudomanhmatkhau}}"></label>
+				</div>
+            </div>
+        </div>
+    </form>
+    <div class="kt-portlet__foot" style="bottom: 20px;">
+        <div class="row text-right">
+            <div class="col-lg-12">
+                <button mat-raised-button (click)="goBack()"><span translate="GeneralKey.quaylai"></span></button>&nbsp;
+                <button mat-raised-button [disabled]="dis" (click)="DoiMatKhau()" color="accent"><span
+                        translate="GeneralKey.doimatkhau"></span></button>
+            </div>
+        </div>
+    </div>
+</div>

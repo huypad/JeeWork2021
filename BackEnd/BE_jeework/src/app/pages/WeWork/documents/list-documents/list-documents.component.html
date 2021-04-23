@@ -1,0 +1,77 @@
+<kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
+	<kt-portlet-header class="activities" [sticky]="true" style="height: 60px;" [class]="'kt-portlet__head--lg'">
+		<ng-container ktPortletTitle>
+			<div class="kt-form__filtration">
+				<h4>
+					<i class="far fa-file-alt text-dark" style="padding-right: 5px;"></i>
+					<b class="url text-dark">{{ 'projects.tailieu' | translate }}</b>
+				</h4>
+			</div>
+		</ng-container>
+		<ng-container ktPortletTools>
+			<div class="search-box" style="margin-right:20px">
+				<div class="search">
+					<div class="input">
+						<span class="las la-search url"
+							style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
+						<input type="text" (keyup.enter)="applyFilter($event.target.value)"
+							placeholder="{{ 'filter.filtertailieu' | translate }}" style="overflow: hidden;" #keyword>
+					</div>
+				</div>
+			</div>
+            <button class="btn btn-outline-success" style="border-radius: 20px;" (click)="csvInput.click()">Thêm</button>
+            <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body class="bg-hoatdong pd-0" [ngStyle]="{'height': getHeight()}">
+
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+          
+            <ng-container matColumnDef="filename">
+              <th mat-header-cell *matHeaderCellDef> Tên tài liệu </th>
+              <td mat-cell *matCellDef="let file"> 
+				  <img src="{{file.icon}}" alt="{{file.filename}}"> {{file.filename}} 
+			  </td>
+            </ng-container>
+          
+            <ng-container matColumnDef="lichsu">
+              <th mat-header-cell *matHeaderCellDef style="width:300px"> Lịch sử </th>
+              <td mat-cell *matCellDef="let file"> {{file.NguoiTao}} - {{file.CreatedDate}} </td>
+            </ng-container>
+          
+            <ng-container matColumnDef="size">
+              <th mat-header-cell *matHeaderCellDef class="text-center" style="width:150px"> Kích thước </th>
+              <td mat-cell *matCellDef="let file" class="text-center"> {{ (file.size/1024) | number: '1.0-0'}} kb </td>
+            </ng-container>
+          
+            
+            
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef style="width:200px" class="text-right"></th>
+              <td mat-cell *matCellDef="let file;let index = index" class="text-right"> 
+
+                <button mat-icon-button class="text-success" (click)="DownloadFile(file.path)" *ngIf="file.isImage"
+                    type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+                    <mat-icon>remove_red_eye</mat-icon>
+                </button>
+                <button mat-icon-button class="text-success" (click)="preview(file.path)" *ngIf="!file.isImage"
+                    type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+                    <mat-icon>remove_red_eye</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" (click)="DownloadFile(file.path)" *ngIf="!file.isImage"
+                    type="button" matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
+                    <mat-icon>cloud_download</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" type="button" (click)="Delete_File(file.id_row)"
+                    matTooltip="{{ 'topic.xoafile' | translate}}">
+                    <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        
+	</kt-portlet-body>
+</kt-portlet>

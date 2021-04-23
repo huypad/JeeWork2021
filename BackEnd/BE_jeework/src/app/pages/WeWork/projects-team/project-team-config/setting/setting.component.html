@@ -1,0 +1,376 @@
+<style>
+	::ng-deep .color-popover-content .popover-content {
+		max-width: unset;
+	}
+
+	::ng-deep .color-popover-content .popover-content[aria-hidden=false] {
+		left: 10px !important;
+	}
+
+	.line-title {
+		flex-grow: 1;
+	}
+</style>
+<div style="max-width:900px;overflow: hidden;">
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class=" kt-form__group">
+			<div class="row">
+				<div class="col-md-12">
+					<h5>
+						{{'GeneralKey.chinhsua'|translate}}
+						{{ (IsProject?'projects.project':'projects.team') |translate}}
+					</h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{tendapb}}" class="require" required formControlName="title" />
+						<img alt="" class="m--img-rounded m--marginless m--img-centered"
+							style="height: 50px; width: 50px; max-width: inherit !important; border-radius: 50%;"
+							src="{{icon.src?icon.src:icon.base64Str}}" matSuffix (click)="chooseFile()">
+						<input type="file" hidden accept=".png, .jpg, .jpeg" id="inputIcon"
+							(change)="onSelectFile($event)" />
+					</mat-form-field>
+				</div>
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{mota}}" formControlName="description" />
+					</mat-form-field>
+				</div>
+				<div class="col-md-12">
+					<span [translate]="'projects.mieutachung'"></span>
+				</div>
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<editor apiKey="test" formControlName="detail" [init]="tinyMCE" style="margin-bottom: 15px;">
+					</editor>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile" *ngIf="IsProject">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="loai" placeholder="{{ 'projects.loaiduan' | translate }}">
+							<mat-option [value]="1">
+								<span translate="projects.duannoibo"></span>
+							</mat-option>
+							<mat-option [value]="2">
+								<span translate="projects.duankhachhang"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-12">
+					<span [translate]="'projects.tuychon'"></span>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="allow_percent_done">
+							<mat-option [value]="true">
+								<span translate="projects.allow_percent_done"></span>
+							</mat-option>
+							<mat-option [value]="false">
+								<span translate="projects.not_allow_percent_done"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="allow_estimate_time">
+							<mat-option [value]="true">
+								<span translate="projects.allow_estimate_time"></span>
+							</mat-option>
+							<mat-option [value]="false">
+								<span translate="projects.not_allow_estimate_time"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-12">
+					<span [translate]="'projects.trangthaihientai'"></span>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="locked">
+							<mat-option [value]="false">
+								<span translate="projects.dangthuchien"></span>
+							</mat-option>
+							<mat-option [value]="true">
+								<span translate="projects.dong"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="status" placeholder="{{ 'projects.trangthaiduan' | translate }}">
+							<mat-option [value]="1">
+								<span translate="filter.dungtiendo"></span>
+							</mat-option>
+							<mat-option [value]="2">
+								<span translate="filter.chamtiendo"></span>
+							</mat-option>
+							<mat-option [value]="3">
+								<span translate="filter.ruirocao"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="require_evaluate"
+							placeholder="{{ 'projects.require_evaluate'| translate }}">
+							<mat-option [value]="false">
+								<span translate="projects.khongyeucau"></span>
+							</mat-option>
+							<mat-option [value]="true">
+								<span translate="projects.yeucaudanhgia"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-12 m--margin-bottom-10-mobile"
+					[hidden]="!itemForm.controls['require_evaluate'].value">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="evaluate_by_assignner">
+							<mat-option [value]="false">
+								<span translate="projects.evaluate_by_assignner"></span>
+							</mat-option>
+							<mat-option [value]="true">
+								<span translate="projects.not_evaluate_by_assignner"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<button type="button" mat-raised-button class="jee_btn-addcontinue" (click)="onSubmit(1)"
+						[disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luu' | translate }}">
+						<span translate="GeneralKey.luu"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad">
+						</div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	<form class="kt-form" [formGroup]="itemForm2">
+		<div class=" kt-form__group">
+			<div class="row">
+				<div class="col-md-12">
+					<hr />
+					<h5>{{'projects.department'|translate}}</h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="Department" class="require" required
+							placeholder="{{ 'department.department' | translate}}">
+							<mat-option>
+								<ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
+									[noEntriesFoundLabel]="''">
+								</ngx-mat-select-search>
+							</mat-option>
+							<mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
+								<span style="color: black;">{{ user.title }}</span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<button type="button" mat-raised-button class="jee_btn-addcontinue" (click)="onSubmit(2)"
+						[disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luu' | translate }}">
+						<span translate="GeneralKey.luu"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad">
+						</div>
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	<form class="kt-form" [formGroup]="itemForm3">
+		<ng-container *ngIf="IsProject">
+			<div class=" kt-form__group">
+				<div class="row">
+					<div class="col-md-12">
+						<hr />
+						<h5>{{'projects.thoigianthuchien'|translate}}</h5>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6 m--margin-bottom-10-mobile">
+						<mat-form-field class="mat-form-field-fluid">
+							<input matInput [matDatepicker]="dp1" [max]="itemForm3.value.end_date"
+								placeholder="{{ 'GeneralKey.ngaybatdau' | translate}}" formControlName="start_date">
+							<mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+							<mat-datepicker #dp1></mat-datepicker>
+						</mat-form-field>
+					</div>
+					<div class="col-md-6 m--margin-bottom-10-mobile">
+						<mat-form-field class="mat-form-field-fluid">
+							<input matInput [matDatepicker]="dp2"
+								placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}"
+								[min]="itemForm3.value.start_date" formControlName="end_date">
+							<mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+							<mat-datepicker #dp2></mat-datepicker>
+						</mat-form-field>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<button type="button" mat-raised-button class="jee_btn-addcontinue" (click)="onSubmit(3)"
+							[disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luu' | translate }}">
+							<span translate="GeneralKey.luu"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+								class="spinner-button-pad"></div>
+						</button>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+	</form>
+	<ng-container *ngIf="!IsProject">
+		<div class=" kt-form__group">
+			<div class="row">
+				<div class="col-md-12">
+					<hr />
+					<h5>{{'projects.tuychonhienthi'|translate}}</h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select placeholder="{{ 'projects.tonghoptheochuky' | translate }}"
+							(selectionChange)="update_bykey($event,'period_type')">
+							<mat-option [value]="1">
+								<span translate="projects.hangtuan"></span>
+							</mat-option>
+							<mat-option [value]="2">
+								<span translate="projects.hangthang"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+		</div>
+	</ng-container>
+	<div class=" kt-form__group">
+		<div class="row">
+			<div class="col-md-12 kt--margin-bottom-10-mobile">
+				<hr />
+				<h5>{{ 'projects.mausachienthi' | translate }}</h5>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 m--margin-bottom-10-mobile">
+				<kt-color-picker [selected]="item.color" (ItemSelected)="update_bykey($event,'color')">
+				</kt-color-picker>
+			</div>
+		</div>
+	</div>
+	<div class=" kt-form__group">
+		<div class="row">
+			<div class="col-md-12 kt--margin-bottom-10-mobile">
+				<hr />
+				<h5>{{ 'projects.danhsachnhan' | translate }}</h5>
+
+				<div class="color-picker-box">
+					<div class="colors " style="flex-wrap:wrap">
+						<ng-container *ngFor="let tag of this.Tags">
+							<div class="d-flex tag-color {{tag.color}}" [ngStyle]="{'backgroundColor': tag.color}">
+								<div (click)="BindColor(tag)" class="tag">{{tag.title}}</div>
+								<div (click)="deleteTag(tag)" class="close-tag">
+									<i class="fas fa-times"></i>
+								</div>
+							</div>
+						</ng-container>
+					</div>
+				</div>
+			</div>
+			<hr />
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm4">
+		<div class=" kt-form__group">
+			<div class="row">
+				<div class="m--margin-bottom-10-mobile position-relative" style="flex-grow: 1;padding: 0 1rem;">
+					<div class="color-picker-box" [popover]="myPopover" [popoverOnHover]="false"
+						style="position: absolute;top:8px">
+						<div class="colors">
+							<div class="color " [ngStyle]="{'backgroundColor': checkcolor}"></div>
+						</div>
+					</div>
+					<popover-content #myPopover placement="bottom-left" title="Chọn màu" [closeOnClickOutside]="true"
+						class="color-popover-content">
+						<kt-color-picker2 [selected]="checkcolor" (ItemSelected)="checkColor($event)">
+						</kt-color-picker2>
+					</popover-content>
+					<mat-form-field class="mat-form-field-fluid " style=" margin-left: 40px;">
+						<input matInput placeholder="{{ 'projects.themnhanmoi' | translate }}" autocomplete="off"
+							formControlName="_label" />
+					</mat-form-field>
+				</div>
+				<div style="padding: 0 1rem">
+					<button type="button" mat-raised-button class="jee_btn-addcontinue" (click)="onSubmit(4)"
+						[disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luu' | translate }}">
+						<span translate="GeneralKey.luu"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad">
+						</div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button (click)="huyTag()" [disabled]="disabledBtn"
+						matTooltip="{{ 'GeneralKey.huy' | translate }}">
+						<span translate="GeneralKey.huy"></span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+	<hr>
+
+	<div class="kt-form__group">
+
+		<div class="form-group row">
+			<div class="line-title">
+				<h5 class="url" (click)="UpdateTemplate()">{{ 'projects.templatedangsudung' | translate }}:
+					{{TemplateUsed()}}</h5>
+			</div>
+			<div class="line-value">
+				<div class="row h-100">
+					<div class="col-12 row">
+						<div class="box-stt" style="width:20px;height:20px;" matTooltip="{{stt.StatusName}}"
+							matTooltipPosition="above" [ngStyle]="{'backgroundColor': stt.color }"
+							*ngFor="let stt of listSTT">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<div class=" kt-form__group" style="margin-bottom: 50px;">
+		<div class="row">
+			<div class="form-group">
+				<h5>{{'projects.default_view' | translate }}</h5>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 pd-0" *ngFor="let view of listDefaultView">
+				<div class=" card card-view">
+					<div class="card-body row">
+						<div style="flex-grow:1;">
+							<img src="{{view.icon}}" style="margin-right: 5px;" width="20px" alt="">
+							{{view.view_name}}
+						</div>
+						<mat-slide-toggle [disabled]="view.is_default" [(ngModel)]="view.isChecked"
+							(ngModelChange)="dataChanged(view)">
+						</mat-slide-toggle>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

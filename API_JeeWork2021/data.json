@@ -1,0 +1,49 @@
+﻿{
+	"Kafka": {
+		"Module": {
+			"JeeWork": "JeeWork"
+		},
+		"Config": {
+			"BootstrapServers": "jee.vn:9093,jee.vn:9094,jee.vn:9095",
+			"ClientId": "jeework",
+			"SecurityKey": "84uZaLF9xvLtmEPvytRCB52WPTvNKjJJtyXJcsBfwQT2MC8v7E3wRG8JMRtfTy4u"
+		},
+		// gửi đi
+		//"Produce": {
+		//	"Log_JeeWork": {
+		//		"CentralLog": {
+		//			"TopicName": "Log_JeeWork",
+		//			"MessageType": "call.log"
+		//		},
+		//		"Notify_JeeWork": {
+		//			"TopicName": "Notify_JeeWork",
+		//			"MessageType": "call.notify"
+		//		}
+		//		//"UpdateItem": {
+		//		//	"TopicName": "UpdateItem",
+		//		//	"MessageType": "call.updateItem"
+		//		//}
+		//	}
+		//},
+		"Produce": {
+			"TopicName": {
+				"CentralLog": {
+					"TopicName": "Log",
+					"MessageType": "call.log"
+				},
+				"JeeWork_Notification": {
+					"TopicName": "JeeWork_Notify",
+					"MessageType": "call.notify"
+				},
+				"UpdateItem": {
+					"TopicName": "UpdateItem",
+					"MessageType": "call.updateItem"
+				}
+			}
+		},
+		// nhận
+		"Consume": {
+			"TopicName": "Log_JeeWork,Notify_JeeWork,KhongPhuHop_Log,NFC_Notification"
+		}
+	}
+}

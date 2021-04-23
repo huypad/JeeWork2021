@@ -1,0 +1,7 @@
+<div class="color-picker-box">
+	<div class="colors">
+		<ng-container *ngFor="let c of defaultColors">
+			<div class="color {{c}}" [ngClass]="{'active':selected==c}" (click)="select(c)"></div>
+		</ng-container>
+	</div>
+</div>

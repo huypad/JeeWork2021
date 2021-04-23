@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30330.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackEnd", "BackEnd\BackEnd.csproj", "{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API_JeeWork2021", "API_JeeWork2021\API_JeeWork2021.csproj", "{2E44B93D-F213-485B-AC3C-2FE8A41099C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Debug|x64.Build.0 = Debug|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Release|x64.ActiveCfg = Release|Any CPU
+		{3EDA0A4C-C059-41B7-9350-FC2AC60D056D}.Release|x64.Build.0 = Release|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Debug|x64.Build.0 = Debug|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{2E44B93D-F213-485B-AC3C-2FE8A41099C7}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5A1ACA40-A212-4A3A-8950-B239E14A94F1}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://dpscomvn.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = API_JeeWork2021\\API_JeeWork2021.csproj
+		SccProjectName1 = API_JeeWork2021
+		SccLocalPath1 = API_JeeWork2021
+	EndGlobalSection
+EndGlobal

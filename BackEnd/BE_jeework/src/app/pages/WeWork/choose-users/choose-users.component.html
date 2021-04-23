@@ -1,0 +1,44 @@
+<div class="choose-users-box" *ngIf="!isNewView">
+    <mat-form-field class="mat-form-field-fluid " *ngIf="options.showSearch" (click)="stopPropagation($event)">
+        <input matInput [formControl]="userFilterCtrl" placeholder="{{ 'GeneralKey.nhapdetimkiem' | translate}}" autocomplete="off" />
+        <mat-icon matPrefix> search</mat-icon>
+    </mat-form-field>
+    <div class="users-container">
+        <div class="user-item" matTooltip="@{{user.username}}" (click)="select(user)" *ngFor="let user of filteredUsers | async">
+            <div>
+                <ngx-avatar size="26"  src="{{user.image}}" *ngIf="user.image;else bindText"></ngx-avatar>
+                <ng-template #bindText>
+                    <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="26"
+                        bgColor="{{weworkService.getColorNameUser(user.hoten)}}"
+                        [name]="this.weworkService.getName(user.hoten)"></ngx-avatar>
+                </ng-template>
+            </div>
+            <div>
+                <div>{{ user.hoten }}</div>
+                <span>{{ user.tenchucdanh }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="choose-users-box" *ngIf="isNewView">
+    <mat-form-field class="mat-form-field-fluid " *ngIf="options.showSearch" (click)="stopPropagation($event)">
+        <input matInput [formControl]="userFilterCtrl" placeholder="{{ 'GeneralKey.nhapdetimkiem' | translate}}" autocomplete="off" />
+        <mat-icon matPrefix> search</mat-icon>
+    </mat-form-field>
+    <div class="users-container" (click)="stopPropagation($event)">
+        <div class="user-item" matTooltip="@{{user.username}}" (click)="select(user)" *ngFor="let user of filteredUsers | async">
+            <div>
+                <ngx-avatar size="26"  src="{{user.image}}" *ngIf="user.image;else bindText"></ngx-avatar>
+                <ng-template #bindText>
+                    <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="26"
+                        bgColor="{{weworkService.getColorNameUser(user.hoten)}}"
+                        [name]="this.weworkService.getName(user.hoten)"></ngx-avatar>
+                </ng-template>
+            </div>
+            <div>
+                <div>{{ user.hoten }}</div>
+                <span>{{ user.tenchucdanh }}</span>
+            </div>
+        </div>
+    </div>
+</div>

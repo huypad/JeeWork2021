@@ -1,0 +1,228 @@
+
+<div class="my-form-header border-bottom border-top">
+    <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
+        <div class="cu-hidden-print cu-filter-block ng-tns-c31-5 ng-star-inserted">
+            <ng-container>
+                <div class="cu-search-filter cu-search-filter_v5" style="    padding: 0 10px;">
+                    <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
+                        (keyup.enter)="LoadData()" [(ngModel)]="keyword" type="text"
+                        placeholder="Tìm kiếm theo tên công việc">
+                    <div class="cu-search-filter__extra">
+                        <div class="cu-filter-value-list-dropdown ng-star-inserted">
+                            <div class="cu-dropdown_left cu-dropdown">
+                                <i class="fas fa-filter"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div class="cu-filter-right row text-dark">
+            <div class="item-filter url -hover">
+                <div [matMenuTriggerFor]="groupby">
+                    <span class="filter-name" translate="filter.groupby"></span> : {{
+                    'filter.'+filter_groupby.title | translate }}
+                </div>
+                <mat-menu #groupby="matMenu">
+                    <button mat-menu-item *ngFor="let item of listFilter_Groupby" (click)="GroupBy(item)">
+                        {{ 'filter.'+item.title | translate }}</button>
+                </mat-menu>
+            </div>
+            <div class="item-filter url">
+                <div class="cu-filter-assignees_two-rows cu-filter-assignees ng-star-inserted">
+                    <div class="cu-filter-assignees__item cu-filter-assignees__item_me -hover {{isAssignforme?'text-success':''}}"
+                        (click)="isAssignforme=true;LoadData()">
+                        <div class="cu-filter-assignees__icon cu-filter-assignees__icon_me icon">
+                            <i class="fas fa-user {{isAssignforme?'text-success':''}}"></i>
+                        </div>
+                        <div class="cu-filter-assignees__label {{isAssignforme?'text-success':''}}">
+                            Tôi
+                        </div>
+                    </div>
+                    <div *ngIf="CheckRoles(3)"
+                        class="cu-filter-assignees__item cu-filter-assignees__item_everyone cu-filter-assignees__item_selected ng-star-inserted -hover {{isAssignforme?'':'text-success'}}"
+                        (click)="isAssignforme=false;LoadData()">
+                        <div class="cu-filter-assignees__icon cu-filter-assignees__icon_team icon">
+                            <i class="fas fa-user-friends {{isAssignforme?'':'text-success'}}"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item-filter url -hover">
+                <i class="fas fa-ellipsis-h" [matMenuTriggerFor]="viewSetting"></i>
+                <mat-menu #viewSetting="matMenu">
+                    <div (click)="$event.stopPropagation()">
+                        <div class="text-muted" style="padding: 0px 15px 5px 15px; font-size: 500;">
+                            <span translate="viewsetting.title"></span>
+                        </div>
+                        <button mat-menu-item (click)="tasklocation=!tasklocation">
+                            <div class="float-left" style="line-height: 2;margin-right: 10px;"><span
+                                    translate="viewsetting.tasklocation"></span></div>
+                            <mat-slide-toggle [(ngModel)]="tasklocation" class="float-right">
+                            </mat-slide-toggle>
+                        </button>
+                        <button mat-menu-item (click)="showemptystatus=!showemptystatus">
+                            <div class="float-left" style="line-height: 2;margin-right: 10px;"><span
+                                    translate="viewsetting.showemptystatus"></span></div>
+                            <mat-slide-toggle [(ngModel)]="showemptystatus" class="float-right">
+                            </mat-slide-toggle>
+                        </button>
+                    </div>
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-kanban" [ngStyle]="{'height': getHeight()}" (scroll)="onScroll($event)" cdkDropListGroup>
+    <ng-container *ngFor="let th of listStatus;trackBy: trackByFn">
+        <div class="table-kanban-col" [style.height.px]="height"
+            *ngIf=" (th.data && th.data.length > 0) || showemptystatus">
+            <div class="header-sticky css-sticky" [ngStyle]="{'border-color':  th.color }">
+                <div class="row w-100" style="color: black;padding: 10px;">
+                    <div class="col-md-12">
+                        <h5 class="text" style="display: contents;">{{th.statusname?th.statusname:getName()}}</h5>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            <div class="row example-list h-100 w-100" cdkDropList [cdkDropListData]="th.data" #fourdList="cdkDropList"
+                (cdkDropListDropped)="drop($event,th)" [attr.state]="th.id_row">
+
+                <button class="btn btn-outline-success add-work" *ngIf="CheckRoles(1)" type="button"
+                    (click)="addNodeitem=th.id_row"><span translate="projects.themcongviec"></span></button>
+                    
+
+                <kt-add-task [item]="th" [loai]="'task'" [nhom]="getNhom()" *ngIf="addNodeitem==th.id_row"
+                    (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project" type="board"
+                    (dataTask)="CreateTask($event)">
+                </kt-add-task>
+
+                <div class="example-box kaban-item" *ngFor="let _children of th.data;trackBy: trackByFn" cdkDrag
+                    (cdkDragDropped)="updateState($event)">
+
+                    <div class="example-custom-placeholder">
+                        <div class="row " style="padding-top: 5px;">
+                            <p style="font-size: 11px;"
+                                class="mg-0 text-muted col-md-12 pd-0"
+                                *ngIf="tasklocation">
+                                {{this.ProjectTeam.title}}
+                            </p>
+                            <div class="col-md-11" style="padding: 0;">
+
+                                <div class="url title text-task" matTooltip="{{ _children.title }}"
+                                    (click)="ViewDetail(_children)">{{_children.title}}</div>
+                            </div>
+                            <div class="col-md-1 show-icon">
+
+                            </div>
+                        </div>
+                        <div class="row" style="font-size: 9pt;">
+                            <span class="css-content" matTooltip="{{ _children.description }}">
+                                <div [innerHtml]="_children.description" class="clear-margin-p"></div>
+                            </span>
+                        </div>
+                        <div class="row" style="padding: 10px 0 0 0;">
+                            <div class=" row pd-0 url position-relative" style="flex-grow: 1;">
+                                <span class="css-content" matTooltip="{{'filter.ngaytao'|translate}}: {{_children.createddate|date:'dd-MM-yyyy'}}">
+                                    {{_children.createddate|date:'dd/MM/yy'}}</span>
+                                <span class="css-content">&nbsp;-&nbsp;</span>
+                                <ng-container *ngIf="_children.deadline;else setdeadline">
+                                    <span class="css-content" (click)="dt1.open()"
+                                        matTooltip="{{'filter.ngayketthuc'|translate}}: {{_children.deadline|date:'dd-MM-yyyy'}}">{{_children.deadline|date:'dd/MM/yy'}}</span>
+                                </ng-container>
+                                <ng-template #setdeadline>
+                                    <i class="far fa-calendar-alt -hover" (click)="dt1.open()"
+                                        style="font-size: 18px;"></i>
+                                </ng-template>
+                                <input matInput readonly [(ngModel)]="_children.deadline"
+                                    (ngModelChange)="updateDate(_children)" style="opacity: 0;"
+                                    class="date-picker position-picker" [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
+                                <owl-date-time #dt1></owl-date-time>
+                            </div>
+                            <div class=" pd-0" style="min-width: 30px;">
+                                <div class="giaoviec">
+                                    <div class="choose-user url" style="height: 30px;">
+                                        <ng-container *ngFor="let user of _children.User;let index = index">
+                                            <div class="hide-more-text item-field position-relative user"
+                                                *ngIf="index < 2">
+                                                <ng-container *ngIf="CheckRoles(10);else role10">
+                                                    <i class="fas fa-times-circle text-dark close-assign text-dark bg-white "
+                                                        style="top:0;right:0;z-index: 10;border-radius: 50%;"
+                                                        (click)="ItemSelected(user,_children)"></i>
+                                                    <kt-avatar-user [matMenuTriggerFor]="adduser" [image]="user.image"
+                                                        [size]="25" [name]="user.hoten">
+                                                    </kt-avatar-user>
+                                                </ng-container>
+                                                <ng-template #role10>
+                                                    <kt-avatar-user [matMenuTriggerFor]="adduser" [image]="user.image"
+                                                        [size]="25" [name]="user.hoten">
+                                                    </kt-avatar-user>
+                                                </ng-template>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="_children.User && _children.User.length > 2">
+                                            <div class="m--img-rounded m--marginless m--img-centered background user"
+                                                [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
+                                                <div class=" w-100"
+                                                    style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                                    [ngStyle]="{'font-size.px': 15}">
+                                                    +{{_children.User.length-2}}
+                                                </div>
+                                                <mat-menu #menu1="matMenu">
+                                                    <div *ngFor="let us of _children.User;let index = index"
+                                                        style="justify-content: flex-end;">
+                                                        <ng-container *ngIf="index >= 2">
+                                                            <div class="position-relative">
+                                                                <i class="fas fa-times scale-hover-01 url"
+                                                                    style="position: absolute;top:0;right:0"
+                                                                    (click)="ItemSelected(us,_children)"></i>
+                                                                <div class="row" >
+                                                                    <kt-avatar-user [image]="us.image" size="35"
+                                                                        [name]="us.hoten" [showFull]="true"
+                                                                        [info]="'@' + us.username">
+                                                                    </kt-avatar-user>
+                                                                </div>
+                                                            </div>
+                                                        </ng-container>
+                                                    </div>
+                                                </mat-menu>
+                                            </div>
+                                        </ng-container>
+                                        <div *ngIf="CheckRoles(4)" class="select-user pd-0"
+                                            [matMenuTriggerFor]="adduser">
+                                            <i class="fa fa-plus" style="padding: 4px 5px;"></i>
+                                        </div>
+                                    </div>
+                                    <mat-menu #adduser="matMenu">
+                                        <div class="page-work-detail">
+                                            <kt-choose-users [options]="options_assign"
+                                                (ItemSelected)="ItemSelected($event,_children)"
+                                                (IsSearch)="stopPropagation($event)">
+                                            </kt-choose-users>
+                                        </div>
+                                    </mat-menu>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <div class="table-kanban-col" [style.height.px]="height"
+        *ngIf="CheckRoles(1) && this.filter_groupby.value == 'status'">
+        <div class="header-sticky css-sticky" [ngStyle]="{'background-color': '#f8f8f9'}">
+            <div class="row w-100" style="color: black;padding: 10px;">
+                <div class="col-md-12 -hover url" (click)="chinhsuastt({})">
+                    <mat-icon>add</mat-icon>&nbsp;
+                    <h5 class="text" style="display: contents;">
+                        <span translate="projects.themstatusmoi"></span>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

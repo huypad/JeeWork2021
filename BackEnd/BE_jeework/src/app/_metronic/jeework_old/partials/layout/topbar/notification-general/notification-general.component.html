@@ -1,0 +1,167 @@
+<div ngbDropdown placement="{{desktopHeaderDisplay?'bottom-right':'bottom-left'}}" autoClose="outside"
+	class="kt-header__topbar-item">
+	<div ngbDropdownToggle class="kt-header__topbar-wrapper">
+		<span class="kt-header__topbar-icon notification dl-notification"
+			[ngClass]="{'kt-pulse kt-pulse--brand': pulse, 'kt-pulse--light' : pulseLight, 'kt-header__topbar-icon--success' : iconType === 'success'	}"
+			matBadge="{{total + totalRem >0? total + totalRem:''}}" matBadgeColor="warn">
+			<i *ngIf="!useSVG" [ngClass]="icon"></i>
+			<span *ngIf="useSVG" class="kt-svg-icon" [ngClass]="{'kt-svg-icon--success' : iconType === 'success'}"
+				[inlineSVG]="icon"></span>
+			<span class="kt-pulse__ring" [hidden]="!pulse"></span>
+		</span>
+	</div>
+
+	<div ngbDropdownMenu
+		class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround dropdown-menu-lg">
+		<form>
+			<!--begin: Head -->
+			<div class="kt-head kt-head--skin-{{skin}} kt-head--fit-x kt-head--fit-b"
+				style="background: url(assets/app/media/img/misc/notification_bg.jpg); background-size: cover;">
+				<!--style="background: url(assets/app/media/img/misc/bg-1.jpg); background-size: cover;"-->
+				<h3 class="kt-head__title cl-white">
+					Thông báo
+					<span class="btn btn-{{ type }} btn-sm btn-bold btn-font-md btn-danger">{{total + totalRem}} tin
+						nhắn</span>
+				</h3>
+				<ul ktTabClickEvent
+					class="dl-tabs-nav nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-{{ type }} kt-notification-item-padding-x"
+					role="tablist">
+					<li class="nav-item">
+						<a class="nav-link show" data-toggle="tab" href="javascript:;" role="tab"
+							(click)="setActiveTabId('topbar_notifications_notifications')"
+							[ngClass]="getActiveCSSClasses('topbar_notifications_notifications')"
+							aria-selected="true">Thông báo</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-toggle="tab" href="javascript:;" role="tab" aria-selected="false"
+							(click)="setActiveTabId('topbar_notifications_logs')"
+							[ngClass]="getActiveCSSClasses('topbar_notifications_logs')">Nhắc nhở</a>
+					</li>
+				</ul>
+			</div>
+			<!--end: Head -->
+			<!-- <ngb-tabset #tab="ngbTabset">
+				<ngb-tab id="tab-id-1">
+					<ng-template ngbTabContent>
+						<div [perfectScrollbar]="{wheelPropagation: false}"
+							[ngStyle]="{'max-height': '40vh', 'position': 'relative'}"
+							class="kt-notification kt-margin-t-10 kt-margin-b-10">
+							<a href="javascript:;" class="kt-notification__item" (click)="ChangeLink(item)"
+								*ngFor="let item of lstNotification">
+								<div class="kt-notification__item-icon" style="padding-right: 10px;">
+									<img class="m--img-rounded m--marginless m--img-centered"
+										style="width: 40px; height: 40px;border-radius: 50%;" src="{{item.Icon}}" alt="">
+								</div>
+								<div class="kt-notification__item-details">
+									<div class="kt-notification__item-title">
+										{{item.Title}}
+									</div>
+								</div>
+							</a>
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+								<div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+							</div>
+							<div class="ps__rail-y" style="top: 0px; right: 0px;">
+								<div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+							</div>
+						</div>
+					</ng-template>
+				</ngb-tab>
+				<ngb-tab id="tab-id-2">
+					<ng-template ngbTabContent>
+						<div [perfectScrollbar]="{wheelPropagation: false}"
+							[ngStyle]="{'max-height': '40vh', 'position': 'relative'}"
+							class="kt-notification kt-margin-t-10 kt-margin-b-10">
+							<a href="javascript:;" class="kt-notification__item" (click)="ChangeLink(item)"
+								*ngFor="let item of lstReminders">
+								<div class="kt-notification__item-icon">
+									<i [ngClass]="item.Icon"></i>
+								</div>
+								<div class="kt-notification__item-details">
+									<div class="kt-notification__item-title">
+										{{item.Title}}
+									</div>
+								</div>
+							</a>
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+								<div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+							</div>
+							<div class="ps__rail-y" style="top: 0px; right: 0px;">
+								<div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+							</div>
+						</div>
+					</ng-template>
+				</ngb-tab>
+			</ngb-tabset> -->
+
+
+			<!--begin::Content-->
+			<div class="tab-content">
+				<!--begin::Tabpane-->
+				<div class="tab-pane p-8" id="topbar_notifications_notifications" role="tabpanel"
+					[ngClass]="getActiveCSSClasses('topbar_notifications_notifications')">
+					<!--begin::Scroll-->
+					<div [perfectScrollbar]="{wheelPropagation: false}"
+							[ngStyle]="{'max-height': '40vh', 'position': 'relative'}"
+							class="kt-notification kt-margin-t-10 kt-margin-b-10">
+							<div class="d-flex flex-center text-center text-muted min-h-200px" *ngIf="lstNotification && lstNotification.length == 0">
+								Chưa có thông báo mới
+							</div>
+							<a href="javascript:;" class="kt-notification__item" (click)="ChangeLink(item)"
+								*ngFor="let item of lstNotification">
+								<div class="kt-notification__item-icon" style="padding-right: 10px;">
+									<img class="m--img-rounded m--marginless m--img-centered"
+										style="width: 40px; height: 40px;border-radius: 50%;" src="{{item.Icon}}" alt="">
+								</div>
+								<div class="kt-notification__item-details">
+									<div class="kt-notification__item-title">
+										{{item.Title}}
+									</div>
+								</div>
+							</a>
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+								<div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+							</div>
+							<div class="ps__rail-y" style="top: 0px; right: 0px;">
+								<div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+							</div>
+						</div>
+					<!--end::Scroll-->
+				</div>
+				<!--end::Tabpane-->
+
+				<!--begin::Tabpane-->
+				<div class="tab-pane" id="topbar_notifications_logs" role="tabpanel"
+					[ngClass]="getActiveCSSClasses('topbar_notifications_logs')">
+					<!--begin::Nav-->
+					<div [perfectScrollbar]="{wheelPropagation: false}"
+							[ngStyle]="{'max-height': '40vh', 'position': 'relative'}"
+							class="kt-notification kt-margin-t-10 kt-margin-b-10">
+							<div class="d-flex flex-center text-center text-muted min-h-200px" *ngIf="lstReminders && lstReminders.length == 0">
+								Không có nhắc nhở mới.
+							</div>
+							<a href="javascript:;" class="kt-notification__item" (click)="ChangeLink(item)"
+								*ngFor="let item of lstReminders">
+								<div class="kt-notification__item-icon">
+									<i [ngClass]="item.Icon"></i>
+								</div>
+								<div class="kt-notification__item-details">
+									<div class="kt-notification__item-title">
+										{{item.Title}}
+									</div>
+								</div>
+							</a>
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+								<div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+							</div>
+							<div class="ps__rail-y" style="top: 0px; right: 0px;">
+								<div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+							</div>
+						</div>
+					<!--end::Nav-->
+				</div>
+				<!--end::Tabpane-->
+			</div>
+			<!--end::Content-->
+		</form>
+	</div>

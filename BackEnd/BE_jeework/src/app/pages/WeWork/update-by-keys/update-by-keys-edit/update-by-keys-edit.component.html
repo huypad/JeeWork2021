@@ -1,0 +1,187 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class="kt-portlet__body">
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'work.tencongviec' | translate }}" class="require" required
+							disabled='true' formControlName="title" />
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select multiple formControlName="followers" class="require" required
+							placeholder="{{ 'work.nguoitheodoi' | translate}}"
+							(selectionChange)="checkChangeFollower($event.value)">
+							<mat-option>
+								<ngx-mat-select-search [formControl]="bankFilterCtrlTD" [placeholderLabel]="''"
+									[noEntriesFoundLabel]="''">
+								</ngx-mat-select-search>
+							</mat-option>
+							<mat-option value="{{user.id_nv}}" *ngFor="let user of filteredBanksTD | async">
+								<span style="color: black;">{{ user.hoten }}</span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select multiple formControlName="assign" class="require" required
+							placeholder="{{ 'work.thanhvienthuchien' | translate}}"
+							(selectionChange)="Check_Assign($event.value)">
+							<mat-option>
+								<ngx-mat-select-search [formControl]="bankFilterCtrlAD" [placeholderLabel]="''"
+									[noEntriesFoundLabel]="''">
+								</ngx-mat-select-search>
+							</mat-option>
+							<mat-option value="{{user.id_nv}}" *ngFor="let user of filteredBanksAD | async">
+								<span style="color: black;">{{ user.hoten }}</span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-12 kt-margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="id_group" class="require" required
+							placeholder="{{ 'work.thuocnhomcongviec' | translate}}">
+							<mat-option *ngFor="let item of listType" [value]="item.id_row">
+								{{item.title}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center" *ngIf="!isParent">
+				<div class="col-md-6 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select class="require" required (selectionChange)="DeadlineChange($event.value)"
+							placeholder="{{ 'work.cothoihanhaykhong' | translate }}">
+							<mat-option value="0">
+								<span translate="work.khongdatthoihan"></span>
+							</mat-option>
+							<mat-option value="1">
+								<span translate="work.datthoihanchocongviec"></span>
+							</mat-option>
+
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-lg-6 m--margin-bottom-20-mobile" *ngIf="ShowDrop">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-label class="required_input">{{ 'filter.deadline' | translate }}</mat-label>
+						<input [min]="minDate" class="require" required matInput formControlName="deadline"
+							[matDatepicker]="deadline" readonly>
+						<mat-datepicker-toggle matSuffix [for]="deadline"></mat-datepicker-toggle>
+						<mat-datepicker #deadline></mat-datepicker>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center" *ngIf="isParent">
+				<div class="col-md-6 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="id_parent" class="require" required
+							placeholder="{{ 'work.parent' | translate }}">
+							<mat-option value="0">
+								<span translate="GeneralKey.yes"></span>
+							</mat-option>
+							<mat-option value="1">
+								<span translate="work.noduplicate"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="duplicate_child" class="require" required
+							placeholder="{{ 'work.taobansaococongvieckemtheo' | translate }}">
+							<mat-option value="1">
+								<span translate="GeneralKey.yes"></span>
+							</mat-option>
+							<mat-option value="0">
+								<span translate="GeneralKey.no"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-6 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="urgent" class="require" required
+							placeholder="{{ 'work.mucdouutien' | translate }}">
+							<mat-option value="0">
+								<span translate="work.binhthuong"></span>
+							</mat-option>
+							<mat-option value="1">
+								<span translate="work.khancap"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div class="col-md-6 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="required_result" class="require" required
+							placeholder="{{ 'work.yeucauketquacongviec' | translate }}">
+							<mat-option value="0">
+								<span translate="work.khongyeucau"></span>
+							</mat-option>
+							<mat-option value="1">
+								<span translate="work.co"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-6 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<input matInput [matDatepicker]="dp1" class="require" required
+							placeholder="{{ 'work.ngaybatdaucongviec' | translate}}" formControlName="start_date">
+						<mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+						<mat-datepicker #dp1></mat-datepicker>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'work.motathemvecongviec' | translate}}"
+							formControlName="description" />
+					</mat-form-field>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button color="accent" (click)="onSubmit(true)"
+						[disabled]="disabledBtn" matTooltip="{{ 'work.nhanbancongviec' | translate }}">
+						<span translate="work.nhanbancongviec"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>
+					&nbsp;
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

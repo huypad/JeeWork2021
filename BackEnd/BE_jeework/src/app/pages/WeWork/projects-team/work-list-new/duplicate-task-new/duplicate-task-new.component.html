@@ -1,0 +1,76 @@
+<kt-portlet [options]="{hideHeader: true}" class="h-100">
+    <kt-portlet-header [sticky]="true" title="{{ 'work.nhanbancongviec' | translate }}"
+        [class]="'kt-portlet__head--lg'">
+        <ng-container ktPortletTools>
+
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body class="pd-0 h-100 mh-100">
+        <div class="copy-body">
+            <ng-container *ngIf="!getOnlyIDproject">
+                <div class="task-copy__input-block ng-star-inserted">
+                    <div class="task-copy__title"><span translate="work.newtaskname"></span></div>
+                    <input [(ngModel)]="this.ItemDuplicate.title"
+                        class="cu-form__input task-copy__input ng-valid ng-dirty ng-touched"
+                        placeholder="Enter task name" type="text">
+                </div>
+                <div class="task-copy__options-block">
+                    <div class="task-copy__options-column">
+                        <div class="task-copy__options-column-title">
+                             <span translate="work.whatdoyouwantcopy"></span>
+                        </div>
+                        <div class="cu-checkbox">
+                            <mat-checkbox [(ngModel)]="listKeyDuplicate.checked" (ngModelChange)="updateAllComplete()"
+                                [indeterminate]="someComplete()" (change)="setAll($event.checked)">
+                                <span>{{ 'work.'+listKeyDuplicate.name | translate }}</span>&nbsp;
+                            </mat-checkbox>
+                            <label>
+                            </label>
+                        </div>
+                        <div class="cu-checkbox" *ngFor="let item of listKeyDuplicate.subtasks">
+                            <mat-checkbox [(ngModel)]="item.checked" (ngModelChange)="updateAllComplete()">
+                                <span>{{ 'work.'+item.name | translate }}</span>&nbsp;
+                            </mat-checkbox>
+                            <label>
+
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <div class="task-copy__location-block ng-star-inserted" *ngIf="type==2||getOnlyIDproject">
+                <div class="task-copy__title">
+                    <span translate="work.vitri"></span>
+                </div>
+                <div class="task-copy__category-list">
+                    <div class="category-list">
+                        <mat-form-field appearance="fill" class="w-100">
+                            <span translate="projects.danhsachduan"></span>
+                            <mat-select [(ngModel)]="ItemDuplicate.id_project_team">
+                                <mat-option *ngFor="let project of listProject" [value]="project.id_row">
+                                    {{project.title}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </kt-portlet-body>
+    <kt-portlet-footer>
+         <div class="kt-form__actions m-form__actions--solid">
+            <div class="row text-right">
+                <div class="col-lg-12">
+                    <button mat-raised-button class="jee_btn-addcontinue" (click)="DuplicateTask()"
+                        *ngIf="!getOnlyIDproject"><span translate="work.nhanban"></span></button>&nbsp;
+                    <button mat-raised-button class="jee_btn-addcontinue" (click)="DuplicateMoreTask()"
+                        *ngIf="getOnlyIDproject"><span translate="work.nhanbancongvieckhac"></span>
+                    </button>&nbsp;
+                    <button mat-raised-button type="button" (click)="this.dialogRef.close();">
+                        <span translate="GeneralKey.trolai"></span>
+                    </button>
+                </div>
+            </div>
+         </div> 
+    </kt-portlet-footer>
+</kt-portlet>

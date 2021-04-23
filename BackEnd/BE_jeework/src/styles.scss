@@ -1,0 +1,554 @@
+/* You can add global styles to this file, and also import other style files */
+@import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700|Roboto:300,400,500,600,700");
+// Global vendors
+@import "~bootstrap/dist/css/bootstrap.css";
+// => Material
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+@import "~highlight.js/styles/googlecode.css";
+@import "~perfect-scrollbar/css/perfect-scrollbar.css";
+
+// Global fonts
+@import "~socicon/css/socicon.css";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+@import "./assets/plugins/flaticon/flaticon.css";
+@import "./assets/plugins/flaticon2/flaticon.css";
+@import "./assets/plugins/keenthemes-icons/font/ki.css";
+
+// Metronic styles (replace these path when using RTL css below)
+@import "./assets/sass/style.angular.scss";
+
+// For RTL, check this documentation https://keenthemes.com/metronic/?page=docs&section=angular-rtl
+// @import "./assets/sass/style.angular.rtl.css";
+
+// Default Layout themes
+@import "./assets/sass/themes/layout/header/base/light.scss";
+@import "./assets/sass/themes/layout/header/menu/light.scss";
+@import "./assets/sass/themes/layout/brand/dark.scss";
+@import "./assets/sass/themes/layout/aside/dark.scss";
+
+// font awesome line
+@import "./assets/sass/vendors/line-awesome-1.3.0/1.3.0/scss/line-awesome.scss";
+
+// Header themes
+// .header-base-light {
+//     @import "./assets/sass/themes/layout/header/base/light.scss";
+// }
+
+// .header-base-dark {
+//     @import "./assets/sass/themes/layout/header/base/dark.scss";
+// }
+
+// Header Menu themes
+// .header-menu-light {
+//     @import "./assets/sass/themes/layout/header/menu/light.scss";
+// }
+// .header-menu-dark {
+//     @import "./assets/sass/themes/layout/header/menu/dark.scss";
+// }
+
+// Brand themes
+.brand-dark {
+  @import "./assets/sass/themes/layout/brand/dark.scss";
+}
+
+.brand-light {
+  @import "./assets/sass/themes/layout/brand/light.scss";
+}
+
+// Aside themes
+// .aside-dark {
+//   @import "./assets/sass/themes/layout/aside/dark.scss";
+// }
+
+// .aside-light {
+//   @import "./assets/sass/themes/layout/aside/light.scss";
+// }
+
+// hide bootstrap dropdown arrow globally
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.angular-bootstrap-table {
+  overflow-x: auto;
+}
+.angular-bootstrap-table {
+  th {
+    outline: none;
+
+    &.sortable {
+      .svg-icon-sort {
+        opacity: 0;
+      }
+
+      &:hover {
+        cursor: pointer;
+
+        .svg-icon-sort {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .table.table-head-custom thead th.sortable-active {
+    color: $primary !important;
+  }
+}
+
+.cursor-default {
+  cursor: default !important;
+}
+
+.progress-modal {
+  height: 3px;
+  width: 100%;
+}
+
+//================================Layout app=========================================
+app-layout { 
+  overflow-x: hidden; 
+}
+
+
+// aside skins
+.kt-aside-dark {
+	@import "assets/sass/global/layout/aside/skins/dark.scss";
+}
+
+.kt-aside-light {
+	@import "assets/sass/global/layout/aside/skins/light.scss";
+}
+.kt-header__topbar .kt-header__topbar-item .kt-header__topbar-icon i{
+	color: green!important;
+	font-size: 1.5rem;
+}
+.dl-notification.mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content{
+    right: 0;
+    top: -5px;
+}
+body,html{
+    font-family: Roboto, Arial, Helvetica, sans-serif!important;
+}
+.dropdown-toggle::after {
+	display: none !important;
+}
+
+
+.mat-table__wrapper--dashboard .mat-table {
+	min-width: 600px!important;
+	width: 100% !important;
+}
+
+.position-static {
+	position: static;
+}
+
+
+//==============================STYLE SCROLL BAR creator: DuLam=======================  
+/*
+ * Scrollbar rail styles 
+ */
+ .ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto; }
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute; }
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  /* please don't change 'position' */
+  position: absolute; }
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent; }
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6; }
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+  opacity: 0.9; }
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute; }
+
+.ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+  /* please don't change 'position' */
+  position: absolute; }
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+  height: 11px; }
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+  width: 11px; }
+//==============================END SCROLL BAR=======================  
+//=======================================BuildSource body Thien-CSS=================================
+.font-chu{
+font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+.kt-form{
+font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+.mat-table__wrapper .mat-table__message {
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+body .kt-portlet__head-label,
+  .kt-portlet__head-title{
+font-family: Roboto, Arial, Helvetica, sans-serif!important;
+}
+
+
+body .kt-portlet{
+  margin-bottom: 0;
+   height: 100%;
+}
+body .kt-portlet .kt-portlet__body{
+  overflow: auto;
+}
+
+body .mat-select-required .mat-select-value {
+  color: #16A851 !important;
+}
+
+body .mat-form-field {
+  color: black;
+  font-size: 1.1rem;
+}
+
+body .require {
+  color: #16A851;
+}
+
+body .row {
+margin-left: 0;
+}
+
+body .kt-portlet .kt-portlet__foot {
+  padding: 1.1rem 2.2rem !important;
+}
+
+body .m-form__section {
+  color: #f5821f!important;
+}
+
+//==============================Chỉnh css mat-table==========================
+//246 : Không có field
+body .mat-header-row {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  min-height: 50px;
+  border-bottom-style: none;
+}
+
+body .mat-header-cell {
+  font-size: 10pt;
+}
+
+body .mat-row {
+  min-height: 50px;
+}
+
+.mat-header-cell {
+  white-space: nowrap;
+  z-index: 1 !important;
+}
+
+// .mat-cell {
+//     white-space: nowrap;
+// }
+
+.mat-row.hovered {
+  background: #f7f7f7;
+}
+
+.mat-row.highlighted {
+  background: #eee;
+}
+
+.kt-portlet .kt-portlet__body{
+padding: 10px 0px 0px 0px !important;
+}
+//====================================
+
+// Chỉnh border-radius  popup 
+.mat-dialog-container {
+padding: 0 !important;
+  border-radius: 10px !important;
+}
+
+// .mat-dialog-container {
+//     width: 700px !important;
+// }
+//====================================
+//=================Kích thước thanh scroll==============
+@media only screen and (min-width: 1028px) {
+  ::-webkit-scrollbar {
+      width: 5px;
+      opacity: 0;
+      height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+  }
+}
+//===============Kích thước popup Thiên============
+.mat-dialog-container {
+  border-radius: 10px !important;
+}
+
+.kt-mat-dialog-container__wrapper.standard {
+  width: 700px !important;
+}
+
+.m-mat-dialog-container__wrapper.width40{
+  width: 40% !important;
+}
+.m-mat-dialog-container__wrapper.width50{
+  width: 50% !important;
+}
+.m-mat-dialog-container__wrapper.width60{
+  width: 60% !important;
+}
+.m-mat-dialog-container__wrapper.width70{
+  width: 70% !important;
+}
+[mat-dialog-draggable-title] {
+  cursor: move;
+}
+//===========Css màu của mat-tab====================
+.mat-tab-label-active {
+color: #f5821f !important;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar,
+.mat-tab-nav-bar.mat-primary .mat-ink-bar {
+background-color: #f5821f;
+}
+//===========Css mat-menu========================
+.mat-menu-panel{
+  min-height: 0 !important;
+}
+.mat-menu-item{
+  line-height: 10px !important;
+  height: 30px !important;
+}
+.mat-menu-content{
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+//===========================Css tình trạng ===========================
+.color-choxuly{
+  color: #ffb822;
+}
+
+.color-dangxuly{
+  color: #5867dd;
+}
+
+.color-quahan{
+ color: #ff0000; 
+}
+
+.color-hoanthanh{
+  color: #9acd32;
+}
+
+.background-choxuly{
+  background-color: #ffb822;
+}
+
+.background-dangxuly{
+  background-color: #5867dd;
+}
+
+.background-quahan{
+  background-color: #ff0000; 
+}
+
+.background-hoanthanh{
+  background-color: #9acd32;
+}
+//===***Info***/
+$info_BgColor: #4CAF50;
+.mat-button.mat-info,
+.mat-icon-button.mat-info,
+.mat-stroked-button.mat-info {
+  color: $info_BgColor;
+}
+
+.mat-button.mat-info .mat-button-focus-overlay,
+.mat-icon-button.mat-info .mat-button-focus-overlay,
+.mat-stroked-button.mat-info .mat-button-focus-overlay {
+  background-color: $info_BgColor;
+}
+
+.mat-flat-button.mat-info,
+.mat-raised-button.mat-info,
+.mat-fab.mat-info,
+.mat-mini-fab.mat-info {
+  color: white;
+}
+
+.mat-flat-button.mat-info,
+.mat-raised-button.mat-info,
+.mat-fab.mat-info,
+.mat-mini-fab.mat-info {
+  background-color: $info_BgColor;
+}
+.status-1{
+  background-image: url('https://img.icons8.com/color/96/000000/plus.png');
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  left: 0px;
+}
+//*******************MAT CHIP COLOR***********************//
+.mat-chip.mat-standard-chip.mat-primary{
+  background-color: #8150e2;
+  color: #fff;
+}
+.mat-chip.mat-standard-chip.mat-warn{
+  background-color: #eba00b;
+  color: #fff;
+}
+.mat-chip.mat-standard-chip.mat-danger{
+  background-color: #ec1115;
+  color: #fff;
+}
+.mat-chip.mat-standard-chip.mat-info{
+  background-color: #4483e0;
+  color: #fff;
+}
+.mat-chip.mat-standard-chip.mat-accent{
+  background-color: #f59d29;
+  color: #fff;
+}
+.mat-chip.mat-standard-chip.mat-complete{
+  background-color: #05aa0d;
+  color: #fff;
+}
+.mat-chip.mat-standard-chip.mat-purple{
+  background-color: #c82ee7;
+  color: #fff;
+}
+.mat-cell .mat-chip-list-wrapper .mat-chip.mat-standard-chip, td .mat-chip-list-wrapper .mat-chip.mat-standard-chip {
+  transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 16px;
+  align-items: center;
+  cursor: default;
+  min-height: 24px;
+  height: 1px;
+  font-size: 13px;
+  min-width: 95px;
+  justify-content: center;
+}
+//***
+.dl-dat-xe .fc-time-grid-event .fc-time{
+  padding: 3px;
+}
+.dl-dat-xe .fc-time-grid-event.fc-short  .fc-time{
+  display: block;    
+span{
+      display: inline-block;
+     
+}
+&::before,&::after{
+  content:unset
+}
+
+}
+.tr-error{
+  background-color: #edb3b3;
+}
+.kt-portlet{
+  z-index: 1;
+  .kt-portlet__head{
+      z-index: 2;
+  }
+  .kt-portlet__body{
+      z-index: 1;
+  }
+}
+.spinner-button-pad {
+  border: 1px solid #f3f3f3;
+  border-radius: 100%;
+  border-top: 1px solid blue;
+  border-right: 1px solid green;
+  border-bottom: 1px solid red;
+  border-left: 1px solid pink;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  -webkit-animation: spin 2s linear infinite;
+  /* Safari */
+  animation: spin 2s linear infinite;
+}

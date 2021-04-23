@@ -1,0 +1,38 @@
+<div class="choose-users-box mg-0">
+	<div class="border-bottom" style="padding: 10px 0; font-size: 15px;font-weight: 500;color:#42b814;">
+		<span *ngIf="Loai=='Tags';else milestone" translate="work.selectedtag"></span>
+		<ng-template #milestone>
+			<span translate="work.selectedmilestone"></span>
+		</ng-template>
+	</div>
+	<div class="users-container" *ngIf="options">
+		<ng-container  *ngFor="let item of list">
+			
+			<button class="d-block border-bottom" *ngIf="item.id_row" (click)="selected(item)" mat-menu-item type="button" [ngStyle]="{'color': item.color}">
+				<div class="row">
+					<div class="cu-task-row-status1" style="width:20px;padding-right:5px">
+						<div class="point" [ngStyle]="{'backgroundColor': item.color}">
+						</div>
+					</div>
+					{{item.title}} 
+				</div>
+			</button>
+		</ng-container>
+	</div>
+	<button *ngIf="Loai=='id_milestone'" (click)="Update()" style="cursor: pointer;" mat-icon-button
+		matTooltip="{{ 'department.createmilestone' | translate }}" color="primary" type="button">
+		<mat-icon>add</mat-icon><span translate="department.createmilestone"></span>
+	</button>
+	<button *ngIf="Loai=='Tags'" (click)="createTags();stopPropagation($event)" class="btn btn-outline-success w-100 pd-5" style="margin-top: 10px;"
+		matTooltip="{{ 'work.themnhanhnhanmoi' | translate }}" color="primary" type="button">
+		<i class="fas fa-plus"></i> 
+		<span translate="work.themnhanhnhanmoi"></span>
+	</button>
+</div>
+
+<style>
+	.point {
+    width: 10px;
+    height: 10px;
+}
+</style>

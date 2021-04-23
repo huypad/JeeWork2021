@@ -1,0 +1,37 @@
+<div class="card">
+    <div class="card-body">
+        <div class="choose-users-box">
+            <mat-form-field class="mat-form-field-fluid " *ngIf="options.showSearch"  > 
+                <input matInput [formControl]="userFilterCtrl" placeholder="{{ 'GeneralKey.nhapdetimkiem' | translate}}" />
+                <mat-icon matPrefix> search</mat-icon>
+            </mat-form-field>
+            <div class="users-container" style="max-height: 420px;">
+                <div class="user-item" [mat-dialog-close]="user" *ngFor="let user of filteredUsers | async">
+                    
+                    <div>
+                        <ngx-avatar size="35"
+                            matTooltip="{{user.hoten}}"
+                            src="{{user.image}}"
+                            *ngIf="user.image;else bindText">
+                        </ngx-avatar>
+                        <ng-template #bindText>
+                            <ngx-avatar textSizeRatio="2.5"
+                                matTooltip="{{user.hoten}}" 
+                                size="35"
+                                [name]="weworkService.getNameUser(user.hoten)"
+                                bgColor="{{weworkService.getColorNameUser(user.hoten)}}">
+                            </ngx-avatar>
+                        </ng-template>
+                    </div>
+                    <div style="padding-left: 5px;">
+                        <div>{{ user.hoten }}</div>
+                        <span>{{ user.tenchucdanh }}</span>
+                    </div>
+                </div>
+                <div class="border-top url -hover" [mat-dialog-close]="" style="padding:10px;" (click)="themThanhvien()">
+                    Thêm thành viên khác vào dự án
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

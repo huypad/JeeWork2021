@@ -1,0 +1,32 @@
+<div class="kt-portlet">
+	<div class="kt-portlet__head">
+		<div class="kt-portlet__head-progress">
+			<!-- here can place a progress bar-->
+			<mat-progress-bar mode="indeterminate" *ngIf="viewLoading"></mat-progress-bar>
+		</div>
+		<div class="kt-portlet__head-caption">
+			<div class="kt-portlet__head-title">
+				<h3 class="kt-portlet__head-text">
+					{{data.title}}
+				</h3>
+			</div>
+		</div>
+	</div>
+	<div class="kt-form">
+		<div class="kt-portlet__body" style="overflow: hidden;">
+			<div class="form-group kt-form__group row">
+				<div class="col-lg-12" style="overflow: hidden;">
+					{{ viewLoading ? data.waitDesciption : data.description}}
+				</div>
+			</div>
+		</div>
+		<div class="kt-portlet__foot kt-portlet__no-border kt-portlet__foot--fit text-right">
+			<button mat-button (click)="onNoClick()">
+				<span translate="GeneralKey.no"></span>
+			</button>&nbsp;
+			<button mat-button (click)="onYesClick()" color="primary" cdkFocusInitial [disabled]="viewLoading">
+				<span translate="GeneralKey.yes"></span>
+			</button>
+		</div>
+	</div>
+</div>

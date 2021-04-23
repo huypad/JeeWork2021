@@ -1,0 +1,69 @@
+<kt-portlet>
+    <kt-portlet-header [sticky]="true" *ngIf="this.ShowHead" title="{{ 'department.tieude1' | translate }}"
+        [class]="'kt-portlet__head--lg'">
+        <ng-container ktPortletTools *ngIf="this.ShowHead">
+            <mat-form-field class="mat-form-field-fluid"
+                style="margin-right:20px; margin-top: 10px; margin-bottom: 5px; width: 400px !important;">
+                <button style="background: transparent;
+                    border: none;" mat-icon-button-pad type="button" matPrefix>
+                    <mat-icon>search</mat-icon>
+                </button>
+                <input matInput placeholder="{{ 'department.timkiemnhanh' | translate }}" #appcode>
+            </mat-form-field>
+            <button (click)="Add()" class="  jee_btn-addclose" matTooltip="{{ 'GeneralKey.themmoi' | translate }}"
+                type="button">
+                <span translate="department.themmoi"></span>
+            </button>
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body class="pd-0 grid-project"  [ngStyle]="{'height': getHeight()}">
+        <form [formGroup]="itemForm" style="background-color: #eee;" class="kt-form kt-forkt--group-seperator-dashed">
+            <div class="row" style="padding-bottom: 20px !important; ">
+                <div class="colum-in-grid" style="padding: 15px;" *ngFor="let list of listproject">
+                    <div class="kt-portlet kt-portlet--rounded-force kt-portlet--bordered-semi kt-portlet--full-height">
+                        <div class="kt-widget29">
+                            <perfect-scrollbar class="kt-scrollable kt-scroller"
+                                style="padding-left: 25px; padding-right: 25px;">
+                                <div class="row row-class item-header">
+                                    <div class="col-md-12 ngay-css title" style="font-size: 1.125rem"
+                                        [ngStyle]="{'font-weight': buildStyle(thongbao)}">
+                                        <a [routerLink]="['/project', list.id_row]" matTooltip="{{list.description}}">
+                                            {{list.title}}
+                                        </a>
+                                        <div style="font-size: 10pt; color: black; font-style: italic !important;">
+                                            <span>
+                                                {{ 'workprocess.taoboi' | translate}} @{{list.NguoiTao}}
+                                                {{ 'workprocess.luc' | translate}} {{list.CreatedDate}}</span> &nbsp;
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row row-class item-users">
+                                    <div class="col-md-12 show-more-people">
+                                        <kt-avatar-list-users [ListUser]="list.users" MaxSize="3" iconSize="30"></kt-avatar-list-users>
+                                    </div>
+                                </div>
+                                <div class="row item-status" style="font-size: 11px; color: black;">
+                                    <div class="col-md-6">
+                                        <span style="font-weight: bold;">
+                                            {{list.Count.ht}}</span>/<span style="font-weight: bold;">{{list.Count.tong}}</span>&nbsp;
+                                            <span translate="filter.hoanthanh"></span>
+                                    </div>
+                                    <div class="col-md-6" style="text-align: right;">
+                                        <span style="font-weight: bold;">{{list.Count.quahan}} <span
+                                                translate="filter.quahan"></span></span>
+                                    </div>
+                                </div>
+                                <div class="row row-class item-footer">
+                                    <div class="col-md-12">
+                                        <mat-progress-bar mode="determinate" [value]="list.Count.percentage">
+                                        </mat-progress-bar>
+                                    </div>
+                                </div>
+                            </perfect-scrollbar>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </kt-portlet-body>
+</kt-portlet>

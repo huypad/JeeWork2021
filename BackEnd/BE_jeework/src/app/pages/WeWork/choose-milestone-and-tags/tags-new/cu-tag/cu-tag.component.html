@@ -1,0 +1,34 @@
+<div class="cu-tags-badge">
+    <div class="cu-tags-badge__inner position-relative" type="badge">        
+        <div placement="right" container="body" triggers="" class="cu-tags-select__badge list-view ng-star-inserted" 
+        [ngStyle]="{'backgroundColor': Opaciti_color(tag.color)}">
+            <div class="cu-tags-select__click" >
+                <div class="cu-tags-select__name hide-more-text" [ngStyle]="{'color': tag.color}"> {{tag.title}} </div>
+                <div class="cu-tags-select__name-shadow"> {{tag.title}} </div>
+                <div cupreventdefault="" class="cu-tags-select__badge-ellipsis">
+                    <div cudropdown="" class="cu-dropdown menu-options nav-menu">
+                        <div cudropdowntoggle="" class="cu-dropdown__toggle url">
+                            <div icon="ellipsis" class="cu-tags-select__badge-ellipsis-icon icon ng-star-inserted"
+                            [ngStyle]="{'fill': tag.color}">
+                                <i class="fas fa-ellipsis-h" [ngStyle]="{'color': tag.color}" [matMenuTriggerFor]="tags"></i>                              
+                            </div>                            
+                        </div>                        
+                    </div>
+                    <mat-menu #tags="matMenu">
+                        <button mat-menu-item (click)="RemoveTags()"> <i class="far fa-trash-alt text-danger" style="width:20px"></i> Delete </button>
+                        <button mat-menu-item (click)="Rename()" ><i class="far fa-edit text-muted" style="width:20px"></i> Rename </button>
+                        <button mat-menu-item  [matMenuTriggerFor]="setColor"> <i class="fas fa-brush text-muted" style="width:20px"></i> Change color </button>
+                        <mat-menu #setColor="matMenu">
+                            <kt-color-picker2 [selected]="tag.color" (ItemSelected)="ColorPickerStatus($event)">
+                            </kt-color-picker2>
+                        </mat-menu>
+                    </mat-menu>
+                </div>
+                <div icon="close-bold" class="cu-tags-select__badge-icon-close icon ng-star-inserted" [ngStyle]="{'backgroundColor': tag.color}">
+                    <i class="fas fa-times icon-close" (click)="RemoveTags()"></i>                  
+                </div>                
+            </div>
+        </div>    
+    </div>
+    
+</div>

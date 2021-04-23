@@ -1,0 +1,69 @@
+<style>
+
+</style>
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class="kt-portlet__body">
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'projects.duanphongban' | translate }}"
+							class="require" required readonly formControlName="title" />
+					</mat-form-field>
+				</div>
+			</div>
+
+			<div class="row align-items-center">
+				<div class="col-md-12 m--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="status" class="require" required
+							placeholder="{{ 'projects.trangthaiduan' | translate }}">
+							<mat-option value="1">
+								<span translate="filter.dungtiendo"></span>
+							</mat-option>
+							<mat-option value="2">
+								<span translate="filter.chamtiendo"></span>
+							</mat-option>
+							<mat-option value="3">
+								<span translate="filter.ruirocao"></span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<textarea matInput placeholder="{{ 'projects.motathem' | translate }}" rows="2"
+							formControlName="description"></textarea>
+					</mat-form-field>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button color="accent" (click)="onSubmit(true)"
+						matTooltip="{{ 'GeneralKey.capnhat' | translate }}">
+						<span translate="GeneralKey.capnhat"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>
+					&nbsp;
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

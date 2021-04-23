@@ -1,0 +1,172 @@
+// /** No CSS for this example */
+// ::ng-deep .mat-checkbox .mat-checkbox-frame {
+//   border-radius: 50%;
+//   border: 1px solid #6fad15;
+// }
+// ::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+//   border-radius: 50%;
+//   border: 1px solid #6fad15;
+// }
+// .kt-form .kt-form__section:last-child,
+//     .kt-form .kt-form__section.kt-form__section--last {
+//         margin-bottom: 0;
+//         text-align: center;
+//     }
+//     .colauto {
+//         padding-left: 30px;
+//         padding-right: 30px;
+//     }
+//     .tieude {
+//         text-align: left;
+//         padding-left: 15px;
+//         color: darkorange !important;
+//     }
+//     .tieudecongtac {
+//         text-align: left;
+//         padding-left: 20px;
+//         color: green !important;
+//         font-size: 13pt;
+//     }
+//     .img-circle {
+//         height: 180px;
+//         width: 180px;
+//     }
+//     .lylich {
+//         font-weight: bold;
+//     }
+//     :host>>>.mat-expansion-panel-body {
+//         padding: 0 !important;
+//         width: 100%;
+//     }
+//     #rcorners {
+//         border-radius: 50%;
+//         border: 1px solid orange;
+//         padding: 13px;
+//         width: 20px;
+//         height: 20px;
+//         background-color: orange
+//     }
+//     .center {
+//         align-items: center;
+//         justify-content: center;
+//         display: flex;
+//     }
+//     .header-center {
+//         align-items: center;
+//         display: flex;
+//         padding: 0px !important;
+//     }
+//     .row-title-class {
+//         color: darkgreen;
+//         font-weight: bold;
+//     }
+//     .row-hoten-class {
+//         color: black;
+//         font-weight: bold;
+//     }
+//     .row-nhanvien {
+//         color: orange;
+//         font-style: italic;
+//     }
+//     .row-ngaysinh-class {
+//         color: orange
+//     }
+//     .row-class {
+//         padding-bottom: 10px;
+//         padding-top: 10px;
+//         font-size: 11pt;
+//         /* font-weight: bold; */
+//     }
+//     .row-class-nhanvien {
+//         padding-bottom: 10px;
+//         padding-top: 10px;
+//         font-size: 11pt;
+//         /* font-weight: bold; */
+//     }
+//     :host>>>perfect-scrollbar>.ps.ps--active-x>.ps__rail-x {
+//         display: none;
+//     }
+//     .ngay-css {
+//         display: flex;
+//         /* padding: 25px; */
+//     }
+//     .pie {
+//         border-radius: 50%;
+//         width: 30px;
+//         height: 30px;
+//         background: conic-gradien(#1c5bb3 0%, #9a9a9a 0 100%);
+//     }
+//     .side {
+//         position: absolute;
+//         right: 10px;
+//         z-index: 999;
+//     }
+//     .users {
+//         overflow: hidden;
+//         position: relative;
+//         float: left;
+//         height: 30px;
+//         padding-left: 10px;
+//     }
+//     .user {
+//         overflow: hidden;
+//         float: left;
+//         -webkit-box-sizing: border-box;
+//         -moz-box-sizing: border-box;
+//         box-sizing: border-box;
+//         -moz-border-radius: 50%;
+//         -webkit-border-radius: 50%;
+//         border-radius: 50%;
+//         margin-left: -8px;
+//         background: rgba(0, 0, 0, 0.1);
+//         border: 2px solid #f3f3f3;
+//     }
+//     a:hover {
+//         color: #1f73e9;
+//         text-decoration: navy;
+//     }
+//     .a {
+//         color: rgb(8, 0, 0);
+//         /*white*/
+//     }
+//     .mat-tree-custom {
+//       overflow: hidden;
+//   }
+//   .mat-tree-custom mat-tree-node {
+//       overflow: visible !important;
+//   }
+//   .mat-tree-custom .mat-tree-node {
+//       white-space: nowrap;
+//       height: 30px;
+//   }
+//     .mat-tree-custom .mat-tree-node .btn-node {
+//       transition: all .1s;
+//       opacity: 0;
+//       transform: translateX(-10px);
+//   }
+//   .mat-tree-custom .mat-tree-node .hover {
+//       transition-delay: 0s;
+//   }
+//   .mat-tree-custom .mat-tree-node:hover .btn-node {
+//       opacity: 1;
+//       transform: translateX(0px);
+//       border-radius: 100%;
+//   }
+//   .mat-tree-custom .mat-tree-node{
+//     white-space: nowrap;
+//     height: 30px;
+//   }
+//    .placeholder {
+//     width: 6px;
+//     height: 6px;
+//     position: absolute;
+//     left: 11px;
+//     bottom: 11px;
+//     border-radius: 100%;
+//     background: rgba(200,200,200,1);
+//     background: rgba(var(--palette-neutral-20,200, 200, 200),1);
+//     display: block;
+// }
+// .mat-tree-custom .mat-tree-node:hover .placeholder {
+//     display: none;
+// }

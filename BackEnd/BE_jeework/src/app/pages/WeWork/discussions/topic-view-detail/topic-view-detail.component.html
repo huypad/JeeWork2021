@@ -1,0 +1,270 @@
+<kt-portlet class="pd-0" [options]="{headLarge: true}">
+    <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg pd-0'">
+        <ng-container ktPortletTitle>
+            <div class="text-dark">
+                <button class="btn">
+                    <i class="las la-home align-middle" style="font-size: 20px;"></i>
+                    <span class="-hover" (click)="goToProject('project')">
+                        {{item.project_team}}
+                    </span>
+                </button>
+                <i class="fas fa-caret-right align-middle"></i>
+                <button class="btn">
+                    <span class="-hover" (click)="goToProject('discussions')">
+                        <b class="url text-dark"> {{ 'topic.thaoluan' | translate}} </b>
+                    </span>
+                </button>
+            </div>
+        </ng-container>
+        <ng-container ktPortletTools>
+            <div class="filter title ">
+                <button class="btn" [matMenuTriggerFor]="menu">{{ 'topic.tuychinh' | translate}} </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item matTooltip="{{ 'topic.chinhsua' | translate }}" (click)="Update()">
+                        <mat-icon style="color: rgb(50, 50, 240);">create</mat-icon>
+                        &nbsp;{{ 'topic.chinhsua' | translate }}
+                    </button>
+                    <input #csvInput hidden="true" type="file" onclick="this.value=null"
+                        (change)="save_file_Direct($event)" />
+                    <button mat-menu-item matTooltip="{{ 'topic.upload' | translate }}" color="accent"
+                        (click)="csvInput.click()">
+                        <mat-icon style="color: rgb(9, 155, 9)">cloud_upload</mat-icon>
+                        &nbsp;{{ 'topic.upload' | translate }}
+                    </button>
+                    <button mat-menu-item matTooltip="{{ 'topic.xoa' | translate }}" color="warn"
+                        (click)="DeleteTopic()">
+                        <mat-icon style="color: red">clear</mat-icon>&nbsp;{{ 'topic.xoa' | translate }}
+                    </button>
+                </mat-menu>
+            </div>
+            <button mat-icon-button (click)="back()" matTooltip="{{ 'topic.closetopic' | translate}}">
+                <i class="las la-times"></i>
+            </button>
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body class="pd-0">
+        <form class="kt-form kt-forkt--group-seperator-dashed">
+            <div class="forkt-style" style="font-size: 10.5pt; padding: 10px 0px 10px 10px;">
+                <kt-portlet [options]="{headLarge: true}">
+                    <ng-container mPortletBody>
+                        <div class="kt-form__group text-dark"
+                            style="padding: 15px; border: 1px solid rgba(0,0,0,0.15); border-radius: 3px;">
+                            <h2>
+                                {{item.title}}
+                            </h2>
+                            <div>
+                                <span style="font-size:10pt; color: #666;" *ngIf="item.NguoiTao">
+                                    {{ 'workprocess.taoboi' | translate}} {{item.NguoiTao.hoten}} {{ 'workprocess.luc' |
+                                    translate}}
+                                    {{item.CreatedDate}}
+                                </span>
+                            </div>
+                            <div>
+                                <span [innerHtml]="item.description" style="font-size:12pt;"></span>
+                            </div>
+                            <div class="row comment-box" *ngIf="item.Attachment?item.Attachment.length>0:false">
+                                <div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of item.Attachment;">
+                                    <div class="attach-item show-action">
+                                        <div class="attach-item-icon">
+                                            <img src="{{att2.icon}}" />
+                                        </div>
+                                        <div class="attach-item-name">
+                                            <p>{{att2.filename}}</p>
+                                        </div>
+        
+                                        <div class="attach-item-del">
+                                            <button mat-icon-button class="text-success" (click)="blank.click()" type="button"
+                                                matTooltip="{{ 'topic.preview' | translate}}">
+                                                <mat-icon>remove_red_eye</mat-icon>
+                                                <a #blank class="d-none" href="{{att2.path}}" target="_blank"> </a>
+                                            </button>
+                                            <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)"
+                                                type="button" matTooltip="{{ 'topic.download' | translate}}">
+                                                <mat-icon>cloud_download</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="warn" (click)="Delete_File(att2.id_row)"
+                                                type="button" matTooltip="Xóa File">
+                                                <mat-icon>clear</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </kt-portlet>
+            </div>
+            <div class="forkt-style" style="font-size: 10.5pt; padding: 10px 0px 10px 10px; " *ngIf="item.Follower">
+                <kt-portlet [options]="{headLarge: true, hideHeader:true}">
+                    <ng-container mPortletBody>
+                        <div class="kt-form__group"
+                            style="padding: 15px; border: 1px solid rgba(0,0,0,0.15); border-radius: 3px;">
+                            <div class="row">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 70%;">
+                                            <h4>
+                                                <span style="color: black;">{{item.Follower.length}} {{'topic.nguoitheodoi' |
+                                                    translate }} </span>
+                                            </h4>
+                                        </td>
+                                        <td style="width: 25%; text-align: end;">
+                                            <div class="col-md-12 m--margin-bottom-10-mobile">
+                                                <mat-form-field class="mat-form-field-fluid">
+                                                    <mat-select (selectionChange)="Add_Followers($event.value)"
+                                                        placeholder="{{ 'topic.addfollowers' | translate}}">
+                                                        <mat-option>
+                                                            <ngx-mat-select-search [formControl]="bankFilterCtrl"
+                                                                [placeholderLabel]="''" [noEntriesFoundLabel]="''">
+                                                            </ngx-mat-select-search>
+                                                        </mat-option>
+                                                        <mat-option style="border-bottom: 1px solid #ddd; padding:0"
+                                                            value="{{user.id_nv}}" *ngFor="let user of filteredBanks | async">
+                                                            <div class="row">
+                                                                <div style="padding-left: 5px;">
+                                                                    <div class="user url" style="justify-content: flex-end;"
+                                                                        style="justify-content: flex-end; margin-left: 10px;">
+                                                                        <ngx-avatar size="30" matTooltip="{{user.hoten}}"
+                                                                            src="{{user.image}}"
+                                                                            *ngIf="user.image;else bindText">
+                                                                        </ngx-avatar>
+                                                                        <ng-template #bindText>
+                                                                            <ngx-avatar textSizeRatio="2.5"
+                                                                                matTooltip="{{user.hoten}}"
+                                                                                [style]="customStyle" size="30"
+                                                                                [name]="WeWorkService.getNameUser(user.hoten)"
+                                                                                bgColor="{{WeWorkService.getColorNameUser(user.hoten)}}">
+                                                                            </ngx-avatar>
+                                                                        </ng-template>
+                                                                    </div>
+                                                                </div>
+                                                                <div style="flex-grow: 1;">
+                                                                    <span style="color: black;">{{ user.hoten }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </td>
+                                        <td class="url" style="width: 5%; text-align: end;">
+                                            <button [ngStyle]="{'color': item.favourite=='1'?'#FFD000':'#ebedf2'}"
+                                                mat-icon-button (click)="favourite()">
+                                                <mat-icon>star</mat-icon>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <ng-container *ngFor="let topic of item.Follower;let index = index">
+                                    <div class="user url"
+                                        *ngIf="index < MaxSize || (item.Follower.length-MaxSize == 1 && index == MaxSize)"
+                                        style="justify-content: flex-end;">
+                                        <div [matMenuTriggerFor]="menu2">
+                                            <kt-avatar-user *ngIf="index < MaxSize" [image]="topic.image" [size]="40"
+                                                [name]="topic.hoten">
+                                            </kt-avatar-user>
+                                            <kt-avatar-user *ngIf=" item.Follower.length-MaxSize == 1 && index == MaxSize"
+                                                [image]="topic.image" [size]="40" [name]="topic.hoten">
+                                            </kt-avatar-user>
+                                        </div>
+                                        <mat-menu #menu2="matMenu">
+                                            <kt-avatar-user [image]="topic.image" [size]="50" [name]="topic.hoten"
+                                                [showFull]="true" [info]="'@' + topic.username">
+                                            </kt-avatar-user>
+                                            <hr>
+                                            <div class="row url">
+        
+                                                <div class="col-md-12">
+                                                    <mat-icon style="color: rgb(99, 99, 233);">reply</mat-icon><span
+                                                        style="color: #111;"> {{ 'topic.xemthongtin' | translate }} </span>
+                                                </div>
+                                            </div>
+                                            <div class="row url">
+                                                <div class="col-md-12">
+                                                    <mat-icon style="color: green;">forum</mat-icon><span style="color: #111;">
+                                                        {{ 'topic.nhantinvoi' | translate }}
+                                                        {{topic.hoten}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="row url">
+                                                <div class="col-md-12">
+                                                    <mat-icon style="color: red;">block</mat-icon><span
+                                                        (click)="Delete_Followers(topic.id_nv)"
+                                                        style="color: #111; cursor: pointer;">
+                                                        {{ 'topic.xoatheodoi' | translate }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </mat-menu>
+                                    </div>
+                                </ng-container>
+                                <div class="user url" *ngIf="(item.Follower.length - 1) > MaxSize"
+                                    style="justify-content: flex-end;">
+                                    <div class="m--img-rounded m--marginless m--img-centered background"
+                                        [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 40,'height.px':40}">
+                                        <div style="opacity: 1;color:white;padding-top:3px;text-align: center;"
+                                            [ngStyle]="{'font-size.px': 20}">
+                                            +{{item.Follower.length-MaxSize}}
+                                        </div>
+                                    </div>
+                                    <mat-menu #menu1="matMenu">
+                                        <ng-container *ngFor="let topic of item.Follower;let index = index">
+                                            <div [matMenuTriggerFor]="menu2" *ngIf="index > (MaxSize-1)"
+                                                (click)="$event.stopPropagation($event)" style="justify-content: flex-end;">
+                                                <kt-avatar-user [image]="topic.image" size="35" [name]="topic.hoten"
+                                                    [showFull]="true" [info]="'@' + topic.username">
+                                                </kt-avatar-user>
+                                            </div>
+                                            <mat-menu #menu2="matMenu">
+                                                <kt-avatar-user [image]="topic.image" [size]="50" [name]="topic.hoten"
+                                                    [showFull]="true" [info]="'@' + topic.username">
+                                                </kt-avatar-user>
+                                                <hr>
+                                                <div class="row url">
+        
+                                                    <div class="col-md-12">
+                                                        <mat-icon style="color: rgb(99, 99, 233);">reply</mat-icon><span
+                                                            style="color: #111;"> {{ 'topic.xemthongtin' | translate }} </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row url">
+                                                    <div class="col-md-12">
+                                                        <mat-icon style="color: green;">forum</mat-icon><span
+                                                            style="color: #111;">
+                                                            {{ 'topic.nhantinvoi' | translate }}
+                                                            {{topic.hoten}}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="row url">
+                                                    <div class="col-md-12">
+                                                        <mat-icon style="color: red;">block</mat-icon><span
+                                                            (click)="Delete_Followers(topic.id_nv)"
+                                                            style="color: #111; cursor: pointer;">
+                                                            {{ 'topic.xoatheodoi' | translate }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </mat-menu>
+                                        </ng-container>
+                                    </mat-menu>
+                                </div>
+                            </div>
+        
+                        </div>
+                    </ng-container>
+                </kt-portlet>
+            </div>
+            <div style="font-size: 10.5pt; padding: 10px 0px 10px 10px; ">
+                <kt-portlet [options]="{headLarge: true, hideHeader:true}">
+                    <ng-container mPortletBody>
+                        <kt-comment [Id]="ItemData.Id"></kt-comment>
+                    </ng-container>
+                </kt-portlet>
+            </div>
+        </form>
+    </kt-portlet-body>
+</kt-portlet>

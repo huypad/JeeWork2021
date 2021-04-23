@@ -1,0 +1,18 @@
+<kt-portlet class="d-block" [options]="{hideHeader: true}">
+  <!-- end::Header -->
+
+  <kt-portlet-body [ngStyle]="{'height.px': getHeight()}">
+      <!-- start::FILTERS & GROUP ACTIONS -->
+      <div class="kt-form">
+          <div class="kt-form__filtration">
+              <div class="row app-calendar work-calendar">
+                  <div class="col-md-12 title-calendar" [innerHTML]="dateString"></div>
+                  <div class="col-md-12">
+                    <full-calendar class="booking-calendar" #calendar [options]="option"></full-calendar> 
+                  </div>
+              </div>
+          </div>
+      </div>
+  </kt-portlet-body>
+  <!-- end::Body -->
+</kt-portlet>

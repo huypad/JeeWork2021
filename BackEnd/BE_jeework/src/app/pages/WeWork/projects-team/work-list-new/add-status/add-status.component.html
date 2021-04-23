@@ -1,0 +1,203 @@
+<mat-horizontal-stepper #stepper class="h-100 position-relative" [linear]="linear">
+    <mat-step [stepControl]="firstFormGroup" [editable]="false" errorMessage="Name is required.">
+        <div>
+            <ng-template matStepLabel>Tạo mới dự án</ng-template>
+            <ng-container [ngTemplateOutlet]="step1"></ng-container>
+            <button class="d-none" id="btnnextStep" mat-button #nextStep matStepperNext>Tiếp tục</button>
+        </div>
+    </mat-step>
+
+    <mat-step [stepControl]="secondFormGroup" [editable]="false" errorMessage="Address is required.">
+        <div>
+            <ng-template matStepLabel>Tạo trạng thái cho dự án</ng-template>
+
+            <ng-container [ngTemplateOutlet]="step2"></ng-container>
+
+            <div style="position: absolute;bottom: 10px;right: 20px;">
+                
+                <button mat-raised-button color="primary" (click)="close(1)">Đóng và đi tới dự án </button>
+                &nbsp;
+                <button mat-raised-button color="primary" (click)="close(2)">Đóng và tùy chỉnh</button>
+            </div>
+        </div>
+    </mat-step>
+</mat-horizontal-stepper>
+<ng-template #step1>
+    <form class="kt-form position-relative" [formGroup]="itemForm">
+        <div class="kt-portlet__body hide-overflow-x mh-100">
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <input matInput placeholder="{{tendapb}}" class="require" required formControlName="title" />
+                        <img alt="" class="m--img-rounded m--marginless m--img-centered"
+                            style="height: 50px; width: 50px; max-width: inherit !important; border-radius: 50%;"
+                            [src]="getIcon()" matSuffix (click)="chooseFile()">
+                        <input type="file" hidden accept=".png, .jpg, .jpeg" id="inputIcon"
+                            (change)="onSelectFile($event)" />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 kt--margin-bottom-10-mobile" id="inputfollower">
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <input matInput placeholder="{{ 'projects.admins' | translate }}" id="InputUser"
+                            type="text" class="require" required autocomplete="off" value="{{_Follower}}"
+                            [popover]="follower" [popoverOnHover]="false" (input)="onSearchChange($event)"
+                            (click)="click($event)">
+                    </mat-form-field>
+                    <span #hiddenText
+                        style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{ListFollower}}</span>
+                </div>
+                <div class="col-md-6 kt--margin-bottom-10-mobile" id="inputassign">
+
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <input matInput placeholder="{{ 'projects.members' | translate }}" id="InputAssign"
+                            type="text" autocomplete="off" value="{{_Assign}}" [popover]="Assign"
+                            [popoverOnHover]="false" (input)="onSearchChange_Assign($event)"
+                            (click)="click_Assign($event)">
+                    </mat-form-field>
+                    <span #hiddenText_Assign
+                        style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{_Assign}}</span>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="id_project_team" class="require" disabled="true" required
+                            placeholder="{{ 'department.department' | translate}}">
+                            <mat-option>
+                                <ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
+                                    [noEntriesFoundLabel]="''">
+                                </ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
+                                <span style="color: black;">{{ user.title }}</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div *ngIf="IsProject" class="row align-items-center">
+                <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <label>{{ 'projects.loaiduan' | translate }}</label><br />
+                    <mat-radio-group formControlName="loai">
+                        <mat-radio-button value="1"><span translate="projects.duannoibo"></span>
+                        </mat-radio-button>
+                        <br />
+                        <mat-radio-button value="2"><span translate="projects.duankhachhang"></span>
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <textarea matInput placeholder="{{mota}}" formControlName="description" rows="3"></textarea>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput [matDatepicker]="dp1" [max]="itemForm.value.end_date"
+                            placeholder="{{ 'GeneralKey.ngaybatdau' | translate}}" formControlName="start_date">
+                        <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+                        <mat-datepicker #dp1></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput [matDatepicker]="dp2" placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}"
+                            [min]="itemForm.value.start_date" formControlName="end_date">
+                        <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+                        <mat-datepicker #dp2></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="status"
+                            placeholder="{{ 'projects.trangthaiduan' | translate }}">
+                            <mat-option value="1">
+                                <span translate="filter.dungtiendo"></span>
+                            </mat-option>
+                            <mat-option value="2">
+                                <span translate="filter.chamtiendo"></span>
+                            </mat-option>
+                            <mat-option value="3">
+                                <span translate="filter.ruirocao"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile" *ngIf="IsProject">
+                    <label>{{ 'projects.color' | translate }}</label><br />
+                    <kt-color-picker [selected]="item.color" (ItemSelected)="Selected_Color($event)">
+                    </kt-color-picker>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="kt-portlet__foot" *ngIf="!nextStep1">
+        <div class="kt-form__actions kt-form__actions--solid">
+            <div class="row text-right">
+                <div class="col-lg-12">
+                    <button type="button" mat-raised-button color="accent" class="text-center"
+                        (click)="onSubmit(true);" matTooltip="Tạo dự án">
+                        <span translate="GeneralKey.luutieptuc"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #step2>
+    <div class="load-list-status">
+        <div class="list-status">
+            <div class="item-status row form-group" *ngFor="let item of listStatus">
+                <div class="set-color" style="min-width: 50px;">
+                    <div [ngStyle]="{backgroundColor: item.color}" style="width: 25px; height: 25px;" class="box-color">
+                    </div>
+                </div>
+                <div class="name-desc">
+                    <span class="text-uppercase">{{item.statusname}} </span> - {{item.Description}}
+                </div>
+            </div>
+        </div>
+        <div class="tao-status row">
+            <div class="col-4">
+                <input type="text" name="statusname" [(ngModel)]="statusname" class="form-control"
+                    placeholder="{{ 'status.statusname' | translate }}">
+            </div>
+            <div class="col-6">
+                <textarea rows="1" [(ngModel)]="statusdesp" class="form-control"
+                    placeholder="{{ 'GeneralKey.mota' | translate }}"></textarea>
+            </div>
+            <div class="col-2 row">
+                <div matTooltip="Chọn màu" [ngStyle]="{backgroundColor: color_status}" [matMenuTriggerFor]="colorpicker"
+                    class="box-color">
+                </div>
+
+                <mat-menu #colorpicker>
+                    <kt-color-picker2 [selected]="item.color" (ItemSelected)="ColorPickerStatus($event)">
+                    </kt-color-picker2>
+                </mat-menu>
+                <button class="btn btn-outline-success" (click)="AddStatus()"><span
+                        translate="status.themtinhtrang"></span></button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #step3>
+    <p>You are now done.</p>
+</ng-template>
+
+<popover-content #follower placement="bottom-left" [closeOnClickOutside]="true">
+    <kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+</popover-content>
+
+<popover-content #Assign placement="bottom-left" [closeOnClickOutside]="true">
+    <kt-choose-users [options]="options_assign" (ItemSelected)="ItemSelected_Assign($event)">
+    </kt-choose-users>
+</popover-content>

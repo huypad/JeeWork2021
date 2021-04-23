@@ -1,0 +1,117 @@
+<style>
+
+</style>
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class="kt-portlet__body">
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'filter.tenfilter' | translate }}" class="require" required
+							formControlName="title" />
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-12 kt-margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select [(value)]="filter_key" formControlName="loai"
+							(selectionChange)="FilterChange($event.value)" class="require" required
+							placeholder="{{ 'filter.select' | translate}}">
+							<mat-option *ngFor="let item of list_filter_key" [value]="item.id_row">
+								{{item.title}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
+			<div class="row align-items-center" *ngIf="show_operators">
+				<div class="col-md-4 kt-margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select [(value)]="filter_operators" formControlName="operators" class="require" required
+							(selectionChange)="Filter_operators($event.value)"
+							placeholder="{{ 'filter.operators' | translate}}">
+							<mat-option *ngFor="let operator of list_operators" [value]="operator.id">
+								{{operator.title}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div *ngIf="show_option_1" class="col-md-4 kt-margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select [(value)]="filter_options" formControlName="options" class="require" required
+							(selectionChange)="Filter_Options($event.value)"
+							placeholder="{{ 'filter.options' | translate}}">
+							<mat-option *ngFor="let item of list_options" [value]="item.id">
+								{{item.title}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				<div *ngIf="show_option_2" class="col-md-4 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<input matInput (input)="showColumn = false" placeholder="Title" formControlName="title_input" class="require" required>
+					</mat-form-field>
+				</div>
+				<div *ngIf="show_option_3" class="col-md-4 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<input matInput (dateChange)="showColumn = false" readonly [matDatepicker]="dttg" placeholder="Chọn thời gian"
+							formControlName="time" class="require" id="thoigian" required>
+						<mat-datepicker-toggle matSuffix [for]="dttg"></mat-datepicker-toggle>
+						<mat-datepicker #dttg></mat-datepicker>
+					</mat-form-field>
+				</div>
+				<div class="col-md-2 kt--margin-bottom-10-mobile">
+					<button type="button" [disabled]="showColumn" mat-raised-button color="primary" (click)="addcot()">
+						<i style="color: #FFFFFF;" class="fa fa-plus"></i>&nbsp;<span translate="filter.add"></span>
+					</button>
+				</div>
+			</div>
+			<div style="display: flex;" *ngFor="let list of listColumn;  let i = index">
+				<div class="text-center" style="width:50px">
+					<i class="fa fa-plus"></i>&nbsp;
+				</div>
+				<div style="flex-grow: 1;">
+					<input matInput [(ngModel)]="listColumn[i].StrTitle" readonly [ngModelOptions]="{standalone: true}"
+						placeholder="{{ 'filter.select' | translate}}">
+				</div>
+				<div class="text-right" style="width:100px">
+					<button mat-icon-button color="warn" type="button" (click)="remove(i)">
+						<mat-icon style="display: table-caption;">clear</mat-icon>
+					</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)"
+						[disabled]="disabledBtn" matTooltip="{{ 'filter.save' | translate }}">
+						<span translate="filter.save"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>
+					&nbsp;
+					<button type="button" *ngIf="this.item.id_row > 0" mat-raised-button color="warn"
+						(click)="DeleteFilter()" [disabled]="disabledBtn"
+						matTooltip="{{ 'filter.remove' | translate }}">
+						<span translate="filter.remove"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>
+					&nbsp;
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,195 @@
+<div class="member-setting-container" style="max-width: 900px; overflow: hidden;">
+    <div class="kt-form__group">
+        <div class="form-group kt-form__group row">
+            <div class="col-md-10">
+                <span class="sub-title" translate="GeneralKey.quanlyduan"></span>
+            </div>
+            <div class="col-md-2 text-right">
+                <a class="-hover" href="javascript:;" (click)="initAddMembers(true)">
+                    <span translate="work.themnhieu"></span>
+                </a>
+            </div>
+        </div>
+        <div class="form-group kt-form__group row" *ngFor="let user of admins">
+            <div class="col-md-8">
+                <div style="display: flex;" class="ng-star-inserted">
+                    <div>
+                        
+                        <ngx-avatar size="50" matTooltip="{{user.hoten}}" src="{{user.image}}"
+                            *ngIf="user.image;else bindText">
+                        </ngx-avatar>
+                        <ng-template #bindText>
+                            <ngx-avatar textSizeRatio="2.5" matTooltip="{{user.hoten}}" [style]="customStyle" size="30"
+                                [name]="WeWorkService.getNameUser(user.hoten)"
+                                bgColor="{{WeWorkService.getColorNameUser(user.hoten)}}">
+                            </ngx-avatar>
+                        </ng-template>
+                    </div>
+                    <div class="font-chu">
+                        <div class="col-md-12">
+                            <span class="username">{{user.hoten}}</span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="user-info">{{user.tenchucdanh ? user.tenchucdanh : '...'}}</span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="user-info">{{user.email}}</span>&nbsp;&middot;&nbsp;<span
+                                class="user-info">{{user.mobile}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-right">
+                <button mat-icon-button [popover]="myPopover" [popoverOnHover]="false">
+                    <mat-icon class="-hover scale-2">more_horiz</mat-icon>
+                </button>
+
+                <div class="member-setting">
+                    <popover-content #myPopover placement="bottom" [closeOnClickOutside]="true">
+                        <div class="setting-item">
+                            <i class="las la-comments"></i>
+                            <span (click)="chatWith(user.id_nv)"> {{'topic.chatvoi'|translate}}
+                                <b>{{user.hoten}}</b></span>
+                        </div>
+                        <div class="setting-item">
+                            <i class="las la-user"></i>
+                            <span (click)="viewProfile(user.id_nv)">{{'topic.xemprofilecua'|translate}}
+                                <b>{{user.hoten}}</b></span>
+                        </div>
+                        <hr />
+                        <div class="setting-item">
+                            <i class="las la-remove"></i>
+                            <span (click)="updateRule(user.id_row, false)">{{'topic.boquyen'|translate}}
+                                <b>{{'GeneralKey.quanlyduan'|translate}}</b></span>
+                        </div>
+                        <hr />
+                        <div class="setting-item">
+                            <i class="las la-trash-o"></i>
+                            <span (click)="delete(user.id_row)">{{'GeneralKey.xoa'|translate}} <b>{{user.hoten}}</b>
+                                {{'GeneralKey.khoiduan'|translate}}</span>
+                        </div>
+                    </popover-content>
+                </div>
+            </div>
+        </div>
+        <div class="form-group kt-form__group row" *ngIf="false">
+            <div class="col-md-12">
+                <a href="javascript:;" class="-hover" (click)="initAddUser($event,true)"
+                    popoverTitle="{{'GeneralKey.themquanlyduan'|translate}}" [popover]="myPopoverA" [popoverOnHover]="false">
+                    <div style="display: flex;" class="ng-star-inserted">
+                        <div>
+                            <span class="add-icon"><i class="las la-plus"></i></span>
+                        </div>
+                        <div class="font-chu" style="align-self: center;">
+                            <span style="padding-left:10px">
+                                {{'GeneralKey.themquanlyduan'|translate}}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="kt-form__group">
+        <hr />
+        <div class="form-group kt-form__group row">
+            <div class="col-md-10">
+                <span class="sub-title">
+
+                </span>
+            </div>
+            <div class="col-md-2 text-right">
+                <a class="-hover" href="javascript:;" (click)="initAddMembers()">{{'work.themnhieu'|translate}}</a>
+            </div>
+        </div>
+        <div class="form-group kt-form__group row" *ngIf="members.length==0">
+            <div class="col-md-12">
+                <p>{{'notify.chuacothanhviennao'|translate}}</p>
+            </div>
+        </div>
+        <div class="form-group kt-form__group row" *ngFor="let user of members">
+            <div class="col-md-8">
+                <div style="display: flex;" class="ng-star-inserted">
+                    <div>
+                        
+                        <ngx-avatar size="50" matTooltip="{{user.hoten}}" src="{{user.image}}"
+                            *ngIf="user.image;else bindText">
+                        </ngx-avatar>
+                        <ng-template #bindText>
+                            <ngx-avatar textSizeRatio="2.5" size="50" matTooltip="{{user.hoten}}" [style]="customStyle" size="30"
+                                [name]="WeWorkService.getNameUser(user.hoten)"
+                                bgColor="{{WeWorkService.getColorNameUser(user.hoten)}}">
+                            </ngx-avatar>
+                        </ng-template>
+                    </div>
+                    <div class="font-chu">
+                        <div class="col-md-12" style="font-weight: bold;">
+                            <span class="username">{{user.hoten}}</span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="user-info">{{ user.tenchucdanh ? user.tenchucdanh : '...'}}</span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="user-info">{{user.email}}</span>&nbsp;&middot;&nbsp;<span
+                                class="user-info">{{user.mobile}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-right">
+                <button mat-icon-button [popover]="myPopover1" [popoverOnHover]="false">
+                    <mat-icon class="-hover scale-2">more_horiz</mat-icon>
+                </button>
+                <div class="member-setting">
+                    <popover-content #myPopover1 placement="bottom" [closeOnClickOutside]="true">
+                        <div class="setting-item">
+                            <i class="las la-comments"></i>
+                            <span (click)="chatWith(user.id_nv)"> {{'topic.chatvoi'|translate}}
+                                <b>{{user.hoten}}</b></span>
+                        </div>
+                        <div class="setting-item">
+                            <i class="las la-user"></i>
+                            <span (click)="viewProfile(user.id_nv)">{{'topic.xemprofilecua'|translate}}
+                                <b>{{user.hoten}}</b></span>
+                        </div>
+                        <hr />
+                        <div class="setting-item">
+                            <i class="las la-star-o"></i>
+                            <span (click)="updateRule(user.id_row)">{{'GeneralKey.themquyen'|translate}}
+                                <b>{{'GeneralKey.quanlyduan'|translate}}</b></span>
+                        </div>
+                        <hr />
+                        <div class="setting-item">
+                            <i class="las la-trash-o"></i>
+                            <span (click)="delete(user.id_row)">{{'GeneralKey.xoa'|translate}} <b>{{user.hoten}}</b>
+                                {{'GeneralKey.khoiduan'|translate}}</span>
+                        </div>
+
+                    </popover-content>
+                </div>
+            </div>
+        </div>
+        <div class="form-group kt-form__group row" *ngIf="false">
+            <div class="col-md-12">
+                <a href="javascript:;" class="-hover" (click)="initAddUser($event)"
+                    popoverTitle="{{'GeneralKey.themthanhvien'|translate}} " [popover]="myPopoverA" [popoverOnHover]="false">
+                    <div style="display: flex;" class="ng-star-inserted">
+                        <div>
+                            <span class="add-icon"><i class="las la-plus"></i></span>
+                        </div>
+                        <div class="font-chu" style="align-self: center;">
+                            <span style="padding-left:10px">
+                                {{'GeneralKey.themthanhvien'|translate}}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <popover-content #myPopoverA placement="bottom-left" [closeOnClickOutside]="true">
+        <kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+    </popover-content>
+</div>

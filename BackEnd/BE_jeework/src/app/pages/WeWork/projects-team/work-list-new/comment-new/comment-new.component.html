@@ -1,0 +1,127 @@
+<div class="comment-box w-100" [popover]="myPopoverB" [popoverOnHover]="false" (click)="clickonbox($event)">
+    <div>
+        <popover-content #myPopoverB [closeOnMouseOutside]="true" class="user-info-container">
+            <div class="user-info">
+                <div class="kt-user-card__avatar">
+                    <img alt="" src="{{it.Image}}">
+                </div>
+                <div class="kt-user-card__name">
+                    <span class="m-card-user__name">{{it.HoTen}}</span>
+                    <br>
+                    <span class="m-card-user__username">
+						{{it.ChucVu}} &#x2022;
+						@{{it.Username}}
+					</span>
+                </div>
+            </div>
+        </popover-content>
+    </div>
+    <div class="kt-form__group">
+        <div class="form-group kt-form__group row">
+            <div class="col-md-12 kt-margin-bottom-10-mobile">
+                <popover-content #myPopoverChild placement="bottom-left" [closeOnClickOutside]="true">
+                    <kt-choose-users [options]="options" (ItemSelected)="ItemSelectedChild($event)">
+                    </kt-choose-users>
+                </popover-content>
+                <div *ngFor="let quyen of ListYKien" class="comment-container">
+                    <div class="cu-comment cu-comment_mine">
+                        <div class="cu-comment__aside">
+                            <ngx-avatar size="26" src="{{quyen.NguoiTao.image}}" *ngIf="quyen.NguoiTao.image;else bindText">
+                            </ngx-avatar>
+                            <ng-template #bindText>
+                                <ngx-avatar textSizeRatio="2.5"  size="26" [name]="this.weworkService.getName(quyen.NguoiTao.hoten)" 
+                                bgColor="{{weworkService.getColorNameUser(quyen.NguoiTao.hoten)}}">
+                                </ngx-avatar>
+                            </ng-template>
+                        </div>
+                        <div class="cu-comment__body">
+                            <div class="cu-comment__body-container cu-comment__body-container_toolbar">
+                                <div class="cu-comment__header ng-tns-c222-40 ng-star-inserted">
+                                    {{quyen.NguoiTao.hoten}} comment: {{quyen.CreatedDate}}
+                                </div>
+                                <div class="cu-comment__text">
+                                    <span [innerHtml]="parseHtml(quyen.comment)"></span>
+                                </div>
+                                <div class="cu-comment__footer ng-tns-c222-40 ng-star-inserted" *ngIf="quyen.Attachment?quyen.Attachment.length>0:false">
+                                    <div class="row w-100">
+                                        <div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of quyen.Attachment;">
+                                            
+                                            <div class="image-inline url" (dblclick)="DownloadFile(att2.path)" *ngIf="att2.isImage" style="padding-bottom: 10px;">
+                                                <img style="max-width: 250px;" src="{{att2.path}}" />
+                                            </div>
+
+                                            <div class="attach-item show-action">
+                                                <div class="attach-item-icon">
+                                                    <img src="{{att2.icon}}" />
+                                                </div>
+                                                <div class="attach-item-name">
+                                                    <p>{{att2.filename}}</p>
+                                                </div>
+                                                <div class="attach-item-del">
+                                                    <button mat-icon-button class="text-success" (click)="DownloadFile(att2.path)" *ngIf="att2.isImage"
+                                                        type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+                                                        <mat-icon>remove_red_eye</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)" *ngIf="!att2.isImage"
+                                                        type="button" matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
+                                                        <mat-icon>cloud_download</mat-icon>
+                                                    </button> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cu-comment__reply ng-tns-c220-40 ng-star-inserted">
+                                <ng-container *ngIf="isReply">
+                                    <div class="cu-comment-thread ng-tns-c132-42 ng-star-inserted">
+                                        <div class="thread-container">
+                                            <div class="comments-container ps">
+                                                <div class="cu-comment-thread__comment ng-tns-c220-44 ng-trigger ng-trigger-resolving" *ngFor="let child of quyen.Children; let vic=index">
+                                                    <div class="cu-comment cu-comment_mine">
+                                                        <div class="cu-comment__aside">
+                                                             <ngx-avatar size="26" src="{{child.NguoiTao.image}}" *ngIf="child.NguoiTao.image;else bindText"> 
+                                                            </ngx-avatar>
+                                                            <ng-template #bindText>
+                                                                <ngx-avatar textSizeRatio="2.5" size="26" [name]="this.weworkService.getName(child.NguoiTao.hoten)" bgColor="{{weworkService.getColorNameUser(child.NguoiTao.hoten)}}" >
+                                                                </ngx-avatar>
+                                                            </ng-template>
+                                                        </div>
+                                                        <div class="cu-comment__body">
+                                                            <div class="cu-comment__body-container cu-comment__body-container_toolbar">
+                                                                <div class="cu-comment__header ng-tns-c222-40 ng-star-inserted">
+                                                                    {{child.NguoiTao.hoten}} comment: {{child.CreatedDate}}
+                                                                </div>
+                                                                <div class="cu-comment__text">
+                                                                    <span [innerHtml]="parseHtml(child.comment)"></span>
+                                                                </div> 
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ng-tns-c132-41 cu-comment-bar ng-star-inserted position-relavive" id="inputtext{{quyen.id_row}}">
+                                        <div class="comment-bar comment-bar_active pd-0 ">
+                                            <div class="comment-bar__content cu-comment-editor-wrapper">
+                                                <textarea placeholder="{{'work.nhapnoidungdegui'|translate}}" class="form-control" rows="5" id="CommentRep{{quyen.id_row}}" (keydown.enter)="CommentInsert($event.target.value,quyen.id_row,quyen.id_row,2)" type="text" value="" [popover]="myPopoverChild"
+                                                    [popoverOnHover]="false" (input)="onSearchChangeChild($event, quyen.id_row)" (click)="click($event, quyen.id_row)"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <div class="cu-comment__reply-toggle cu-comment__reply-toggle_centered ng-tns-c220-40 ng-star-inserted" (click)="isReply=!isReply">
+                                    <div class="cu-comment__reply-toggle-text cu-comment__reply-toggle-text_collapse">{{isReply?'topic.collapse':'topic.reply ('+quyen.Children.length+')' | translate}} </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <span #hiddenText style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+    <span id="text-position" style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+</div>

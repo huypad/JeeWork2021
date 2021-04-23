@@ -1,0 +1,52 @@
+<div class="card" id="dialog-selectday">
+    <div class="card-header">
+        <span class="text-uppercase" >Thêm cột</span>
+    </div>
+    <div class="card-body overflow-auto" style="min-height:150px;max-height: 600px;">
+        <div class="row">
+            <div class="col-7">
+                <mat-form-field class="example-full-width">
+                    <mat-label>{{getTitle()}}</mat-label>
+                    <input matInput autocomplete="off" (keyup.enter)="Submit()" [(ngModel)]="data.title" placeholder="Nhập tên cột dữ liệu" value="">
+                </mat-form-field>
+            </div>
+            <div class="col-5">
+                <mat-form-field class="example-full-width" >
+                    <mat-label>Loại dữ liệu</mat-label>
+                    <mat-select [disabled]="this.data.id_row>0" [(ngModel)]="data.columnname" (ngModelChange)="selectedCol(data)">
+                      <mat-option *ngFor="let item of listField" [value]="item.fieldname">
+                        {{item.title}}
+                      </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="w-100" *ngIf="data.columnname =='dropdown' || data.columnname == 'labels' ">
+            
+            <div class="form-group" *ngFor="let ops of listOptions;let index = index">
+                <div class="form-control row" style="display: flex !important;">
+                    <div [ngStyle]="{'backgroundColor': ops.Color}" style="width:10px;margin-right: 10px;"></div>
+                    <div class="input-ops" style="flex-grow: 1;">
+                        <input autocomplete="off" [(ngModel)]="ops.Value" placeholder="Nhập tùy chọn dữ liệu">
+                    </div>
+                    <span class="-hover url" style="padding: 0 5px;" [matMenuTriggerFor]="menuField"> Chọn màu </span>
+                    <mat-menu #menuField="matMenu">
+                        <div class="row" style="width:200px;">
+                            <div class="color-picker" [ngStyle]="{'backgroundColor': color}" *ngFor="let color of defaultColors" (click)="ops.Color = color">
+                            </div>
+                        </div>
+                    </mat-menu>
+                    <i class="far fa-trash-alt -hover-remove url" *ngIf="!(ops.rowid>0)" (click)="listOptions.splice(index,1)" style="padding-left: 10px; font-size: 20px;"></i>
+                </div>
+            </div>
+            <div class="btn btn-default" (click)="addRow()"><i class="fas fa-plus" ></i> Thêm dòng dữ liệu mới</div>
+        </div>
+    </div>
+    <div class="card-footer text-right">
+        <button mat-button (click)="onNoClick()">
+            <span translate="work.nothanks"></span></button>
+        <button mat-button (click)="Submit()" class="jee_btn-addclose" cdkFocusInitial> 
+            <span> {{'GeneralKey.luudong'|translate }}</span>
+        </button>
+    </div>
+</div>

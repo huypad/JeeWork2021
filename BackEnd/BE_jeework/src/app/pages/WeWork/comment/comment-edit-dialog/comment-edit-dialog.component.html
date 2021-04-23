@@ -1,0 +1,26 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="col-md-12 kt-margin-bottom-10-mobile" style="margin-top: 20px;">
+			<h3 class="kt-portlet__head-title"><span translate="topic.chinhsuabinhluan"></span></h3>
+		</div>
+
+	</div>
+	<div class="kt-portlet__body">
+		<div class="form-group kt-form__group row">
+			<div class="col-md-12 kt--margin-bottom-10-mobile">
+				<mat-form-field class="mat-form-field-fluid ">
+					<textarea matInput placeholder="{{ 'topic.suabinhluan' | translate }}" class="require" required
+						[(ngModel)]="comment.comment"></textarea>
+				</mat-form-field>
+			</div>
+		</div>
+		<div class="form-group kt-form__group row">
+			<div class="col-md-12 kt--margin-bottom-10-mobile text-center">
+				<button mat-raised-button (click)="close()"><span
+						translate="GeneralKey.cancel"></span>&nbsp;</button>&nbsp;
+				<button mat-raised-button class="jee_btn-addclose" (click)="onSubmit()"><span
+						translate="GeneralKey.luudong"></span></button>
+			</div>
+		</div>
+	</div>
+</div>

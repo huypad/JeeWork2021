@@ -1,0 +1,81 @@
+<div class="kt-form__filtration projects-team-tablist">
+    <div class="row align-items-center" style="padding-left:25px">
+        <div class="action-left row">
+            <div class="col-search m--margin-bottom-10-mobile">
+                <div class="search-box float-right" style="margin-right:20px">
+                    <div class="search">
+                        <div class="input">
+                            <span class="las la-search url"
+                                style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
+                            <input type="text" [(ngModel)]="keyword" (keyup.enter)="loadDataList()"
+                                placeholder="{{ 'GeneralKey.filterproject' | translate }}" #appcode style="overflow: hidden;width:200px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-selected m--margin-bottom-10-mobile">
+                <mat-form-field class="mat-form-field-fluid ">
+                    <mat-select [(value)]="filterstage" class="mat-form-field mat-form-field-fluid"
+                        placeholder="{{ 'GeneralKey.stage' | translate }}" (selectionChange)="loadDataList()">
+                        <mat-option value="">
+                            <span translate="GeneralKey.tatca"></span>
+                        </mat-option>
+                        <mat-option value="1">
+                            <span translate="filter.dungtiendo"></span>
+                        </mat-option>
+                        <mat-option value="2">
+                            <span translate="filter.chamtiendo"></span>
+                        </mat-option>
+                        <mat-option value="3">
+                            <span translate="filter.ruirocao"></span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-selected m--margin-bottom-10-mobile">
+                <mat-form-field class="mat-form-field-fluid ">
+                    <mat-select [(value)]="filterTinhTrang" class="mat-form-field mat-form-field-fluid"
+                        placeholder="{{ 'GeneralKey.display' | translate }}" (selectionChange)="loadDataList()">
+                        <mat-option value="0">
+                            <span translate="filter.active"></span>
+                        </mat-option>
+                        <mat-option value="1">
+                            <span translate="filter.dadong"></span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="action-right row">
+            <div class="col-button m--margin-bottom-10-mobile" style="text-align: right;" *ngIf="commonService.CheckRole_WeWork(3402).length>0"> 
+                <button (click)="AddProject(true)" class="btn btn-outline-success"
+                    style="border-radius:20px; margin-right: 15px;"
+                    matTooltip="{{ 'projects.themmoiproject' | translate }}" type="button">
+                    <span translate="projects.themmoiproject"></span>
+                </button>
+                <!-- <button (click)="AddProject(false)" class="btn btn-outline-success"
+                    style="border-radius:0px;border-top-right-radius:20px;border-bottom-right-radius:20px"
+                    matTooltip="{{ 'projects.themmoiteam' | translate }}" type="button">
+                    <span translate="projects.themmoiteam"></span>
+                </button>&nbsp; -->
+                <button (click)="Add()" class="btn btn-outline-primary" style="border-radius:20px"
+                    matTooltip="{{ 'projects.themmoidepartment' | translate }}" type="button">
+                    <span translate="projects.themmoidepartment"></span>
+                </button>
+    
+            </div>
+            <div class="col-change-view m--margin-bottom-10-mobile itabs" style="text-align: right;">
+                <div class="icon {{ is_gird?'text-primary':'text-muted' }}" matTooltip="{{ 'GeneralKey.xemdanggird' | translate }}"
+                    (click)="view('gird')">
+                    <mat-icon>view_module</mat-icon>
+                </div>
+                <div class="icon {{ is_list?'text-primary':'text-muted' }}" matTooltip="{{ 'GeneralKey.xemdanglist' | translate }}"
+                    (click)="view('list')">
+                    <mat-icon>view_list</mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<kt-department-project-tab *ngIf="is_list" [Values]="filter"></kt-department-project-tab>
+<kt-department-project-gird [ShowHead]="ShowHead" *ngIf="is_gird"></kt-department-project-gird>

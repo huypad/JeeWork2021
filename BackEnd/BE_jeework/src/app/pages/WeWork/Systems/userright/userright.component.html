@@ -1,0 +1,39 @@
+<style>
+    :host>>>.mat-tab-body-content {
+        height: auto;
+    }
+    
+    :host>>>.kt-portlet.kt-portlet--rounded-force {
+        overflow: visible !important;
+    }
+
+    :host>>>.mat-tab-body.mat-tab-body-active {
+        overflow: visible !important;
+    }
+
+    :host>>>.mat-tab-body-wrapper {
+        overflow: visible !important;
+    }
+</style>
+<kt-portlet >
+    <ng-container mPortletBody>
+
+        <mat-tab-group>
+
+            <mat-tab label="{{'phanquyen.nhomnguoidung' | translate}}">
+                <ng-template matTabContent>
+                    <kt-groupname-list></kt-groupname-list>
+                </ng-template>
+            </mat-tab>
+
+            <mat-tab label="{{'phanquyen.nguoidung' | translate}}">
+                <ng-template matTabContent>
+                    <kt-users-list></kt-users-list>
+                </ng-template>
+            </mat-tab>
+
+        </mat-tab-group>
+
+    </ng-container>
+
+</kt-portlet>

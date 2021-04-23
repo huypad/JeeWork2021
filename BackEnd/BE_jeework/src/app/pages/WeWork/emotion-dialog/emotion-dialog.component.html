@@ -1,0 +1,28 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">
+				<span translate="work.click_seclect_emotion"></span>
+			</h5>
+		</div>
+	</div>
+	<form class="kt-form">
+		<div class="kt-portlet__body">
+			<div style="display:flex; flex-wrap:wrap">
+				<ng-container *ngFor="let group of ListEmotion">
+					<div style="flex-grow:1;padding: 6px;
+    width: 36px;
+    height: 36px;
+    margin: 5px;
+    text-align: center;
+    border-radius: 4px;
+    background-color: #f9f9f9;" *ngFor="let emo of group.icons">
+						<a href="javascript:;" (click)="select(emo.key)">
+							<img src="{{emo.path}}" title="{{emo.key}}" />
+						</a>
+					</div>
+				</ng-container>
+			</div>
+		</div>
+	</form>
+</div>

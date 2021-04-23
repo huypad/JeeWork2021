@@ -1,0 +1,121 @@
+<style>
+	.header {
+		height: 60px;
+		border-bottom: 1px solid #ebedf2;
+		padding-top: 20px;
+		padding-left: 20px
+	}
+
+	.h5 {
+		font-size: 1.3rem;
+		font-weight: 500;
+		font-family: Roboto
+	}
+
+	.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+		padding-bottom: 1.25em;
+		padding-top: 10px
+	}
+
+	.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+		padding-bottom: 1.25em;
+		padding-top: 10px
+	}
+
+	.kt-buttons--list {
+		text-align: center;
+		width: 100px;
+		height: 40px;
+		margin-top: 10px;
+	}
+
+	:host>>>.inp-error {
+		color: red;
+	}
+
+	.mat-table__wrapper .mat-table {
+		min-width: 100%;
+	}
+
+	:host>>>.kt-portlet__body {
+		max-height: initial !important;
+	}
+</style>
+<kt-portlet [options]="{headLarge: true, enableSticky: true}">
+	<kt-portlet-header [sticky]="true" [title]="getComponentTitle()" [class]="'kt-portlet__head--lg'">
+		<ng-container ktPortletTools>
+			<button (click)="goBack()" mat-raised-button matTooltip="{{'GeneralKey.dong'|translate}}" type="button">
+				<span translate="GeneralKey.dong"></span>
+			</button>&nbsp;&nbsp;
+			<button type="button" mat-raised-button  class="jee_btn-addcontinue" (click)="AddUsers()" [disabled]="disabledBtn">
+				&nbsp;&nbsp;<span translate="GeneralKey.themmoi"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+					class="spinner-button-pad"></div>
+			</button>
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<div class="mat-table__wrapper">
+			<table mat-table class="lmat-elevation-z8" [dataSource]="dataSource1" matSort matSortActive="id"
+				style="width: 100%" matSortDirection="asc" matSortDisableClear>
+				<ng-container matColumnDef="Username">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="phanquyen.tendangnhap"></span>
+						&nbsp;
+                        <app-sort-icon column="Username" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                            (sort)="sortField($event)"></app-sort-icon>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">@{{item.Username}}</td>
+				</ng-container>
+				<ng-container matColumnDef="HoTen">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="phanquyen.hoten"></span>
+						&nbsp;
+                        <app-sort-icon column="HoTen" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                            (sort)="sortField($event)"></app-sort-icon>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.HoTen}}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="ChucVu">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="GeneralKey.chucvu"></span>
+						&nbsp;
+                        <app-sort-icon column="ChucVu" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                            (sort)="sortField($event)"></app-sort-icon>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.ChucVu}}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="ChucDanh">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="GeneralKey.chucdanh"></span>
+						&nbsp;
+                        <app-sort-icon column="ChucDanh" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                            (sort)="sortField($event)"></app-sort-icon>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.ChucDanh}}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef style="justify-content: center">
+						<span translate="GeneralKey.tacvu"></span>
+					</th>
+					<td mat-cell *matCellDef="let item" style="justify-content: center">
+						<button mat-icon-button color="warn" type="button" (click)="Delete(item)"
+							matTooltip="{{ 'GeneralKey.xoa' | translate }}">
+							<mat-icon>delete</mat-icon>
+						</button>&nbsp;
+					</td>
+				</ng-container>
+
+				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+			</table>
+		</div>
+		<!-- <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;" [paginator]="paginatorNew"
+        [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)"></app-paginator> -->
+	</kt-portlet-body>
+</kt-portlet>

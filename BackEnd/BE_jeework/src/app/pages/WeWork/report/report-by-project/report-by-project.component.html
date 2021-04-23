@@ -1,0 +1,490 @@
+<kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}">
+    <kt-portlet-body class=" pd-0" [ngStyle]="{'height.px': getHeight()}">
+        <div id="page-report" style="min-height: auto;">
+            <div class="rp-wrapper">
+                <div class="hd-report">
+                    <div class="filters">
+                        <div class="filter " (click)="openDialog()">{{'filter.tu'|translate}}:
+                            <em>{{  selectedDate.startDate | date:'dd/MM'}} -
+                                {{ selectedDate.endDate | date:'dd/MM/yyyy'}}</em>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+        
+                        <div class="filter -menu-op cot-20" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+                            <em>{{column_sort.title}}</em>
+                            <i class="fas fa-chevron-down"></i>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item *ngFor="let item of sortField"
+                                [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                                (click)="SelectedField(item)">{{item.title}}</button>
+                            </mat-menu>
+                        </div>
+        
+                        <div class="filter -menu-op cot-20 url-disabled">
+                            <em> {{ ProjectTeam.title  }}</em>
+                                <i class="fas fa-lock"></i>
+                        </div>
+                        
+        
+                        <div class="filter -menu-op cot-20" [matMenuTriggerFor]="project">
+                            <em> {{filterCVC.title}} </em>
+                            <i class="fas fa-chevron-down"></i>
+                            <mat-menu #project="matMenu">
+                                <button (click)="Filter(item)"
+                                    [ngStyle]="{'font-weight': filterCVC.value==item.value?'bold':''}"
+                                    mat-menu-item *ngFor="let item of _filterCV"> {{item.title}}</button>
+                            </mat-menu>
+                        </div>
+        
+        
+                        <div class="filter -menu-op cot-20" [matMenuTriggerFor]="status">
+                            <em>{{trangthai.statusname}}</em>
+                            <i class="fas fa-chevron-down"></i>
+                            <mat-menu #status="matMenu">
+                                <button (click)="this.trangthai = item;this.LoadData();" 
+                                    [ngStyle]="{'font-weight': trangthai.id_row==item.id_row?'bold':''}"
+                                    mat-menu-item *ngFor="let item of status_dynamic">
+                                    {{item.statusname}}</button>
+                            </mat-menu>
+                        </div>
+        
+                    </div>
+                </div>
+        
+                <div class="colum-items">
+                    <div class="row">
+                        <ng-container *ngFor="let item of ListOverview">
+                            <div class="col-4 box" *ngIf="item.isShow" >
+                                <kt-item-group [value]="item"></kt-item-group>
+                            </div>    
+                        </ng-container>
+                        
+                    </div>
+                </div>
+        
+                <div class="rp-title">
+                    <span class="text-uppercase" translate="report.baocaocongviec"></span>
+                </div>
+        
+                <div class="info-rp db-grid">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <b translate="report.baocaotrangthaicongviec">
+                                    </b>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chart-pie" style="display: block;">
+                                        <canvas baseChart [data]="pieChartData" [legend]="pieChartLegend"
+                                            [labels]="pieChartLabel" [chartType]="pieChartType" [options]="pieChartOptions"
+                                            [colors]="pieChartColor">
+                                        </canvas>
+                                        <div class="text-in-chart">
+                                            <div style="font-size:24px;font-weight: 500;color:black">{{Tongcongviec}}</div>
+                                            <span translate="report.congviec"></span>
+                                        </div>
+                                    </div>
+        
+                                    <div class="row">
+                                        <div class="col-6 row" *ngFor="let item of Trangthai">
+                                            <div class="circle" [ngStyle]="{'background': item.color}">
+                                            </div>
+                                            <div class="hide-text" matTooltip={{item.trangthai}} style="padding-left:10px">
+                                                {{item.trangthai}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <b translate="report.thanhvienxuatsac"></b>
+                                </div>
+                                <div class="card-body pd-0 overflow-auto" style="padding:10px">
+                                    <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffExcellent">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [info]=getInfoCVHT(item.hoanthanh,item.num_work)>
+                                        </kt-custom-user>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <b translate="report.congvieckhongdunghan"></b>
+                                </div>
+                                <div class="card-body">
+                                    <div class="congviec" *ngFor="let item of dataKhongdunghan;let i = index">
+                                        <div class="chart">
+                                            <canvas height="50" width="200" style="margin-left: -40%;" baseChart
+                                                [data]="[item[1].value,item[0].value==0?1:(item[0].value - item[1].value)]"
+                                                [legend]="pieKhongdunghan.legend" [labels]="pieKhongdunghan.labels"
+                                                [chartType]="'pie'" [options]="pieKhongdunghan.options" [colors]="item[2]">
+                                            </canvas>
+                                            <span class="center"> {{ item[1].value / item[0].value | percent}} </span>
+                                        </div>
+                                        <div class="thongtin text-muted">
+                                            <div class="hide-text">
+                                                <span style="font-size: 24px;font-weight: 600;"
+                                                    [ngStyle]="{'color': listpieColor[i]}"> {{ item[1].value }} </span>
+                                                <span> {{item[1].trangthai}} </span>
+        
+                                            </div>
+                                            <div class="hide-more-text">
+                                                <span>{{'filter.tren'|translate}} <b class="text-dark">{{ item[0].value }}</b>
+                                                    {{item[0].trangthai}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="fas fa-exclamation-circle"></i> {{tasknodeadline}} <span
+                                            translate="report.congviecduoctaokhongcothoihan"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="in-col col-3">
+                            <div class="h-50">
+                                <div class="card" style="min-height: 200px;">
+                                    <div class="card-header bg-white">
+                                        <b translate="report.matraneisenhower"></b>
+                                    </div>
+                                    <div class="card-body pd-0">
+                                        <div class="position-absolute" style="top:50%;right:0;z-index: 1;">
+                                            <span translate="filter.khancap"></span>
+                                        </div>
+                                        <div class="position-absolute"
+                                            style="top:35%;left:35%;transform: rotate(90deg);z-index: 1;">
+                                            <span translate="filter.quantrong"></span>
+                                        </div>
+                                        <div class="w-100 h-100 position-relative" *ngIf="Eisenhower.data">
+                                            <div class="x"></div>
+                                            <div class="y"></div>
+                                            <div class="area x00">
+                                                <div class="txt"> {{Eisenhower.data.quantrong_khongkhancap}} </div>
+                                            </div>
+        
+                                            <div class="area x01">
+                                                <div class="txt"> {{Eisenhower.data.khancap_quantrong}} </div>
+                                            </div>
+                                            <div class="area x10">
+                                                <div class="txt"> {{Eisenhower.data.khongkhancap_khongquantrong}} </div>
+                                            </div>
+                                            <div class="area x11">
+                                                <div class="txt"> {{Eisenhower.data.khancap_khongquantrong}} </div>
+                                            </div>
+        
+                                        </div>
+                                    </div>
+        
+                                </div>
+                            </div>
+                            <div class="h-50">
+                                <div class="card danh-gia" style="min-height: 200px;">
+                                    <div class="card-header bg-white">
+                                        <b translate="report.congviecdangdanhgia"></b>
+                                    </div>
+                                    <div class="card-body">
+                                        <ng-container *ngIf="Eisenhower.projectteam">
+                                            <div class="row border-bottom h-50">
+                                                <div class="col-6">
+                                                    <div class="congviec-danhgia">
+                                                        {{ Eisenhower.data.dangdanhgia }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="title-danhgia">
+                                                        <span translate="report.dangdanhgia"></span>
+                                                    </div>
+                                                    <div class="noidung-danhgia">
+                                                        <div class="square"></div>
+                                                        <span> {{ Eisenhower.data.late }} / {{ Eisenhower.data.dangdanhgia }}
+                                                              <span translate="report.danhgia"></span></span>
+        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="h-50" style="text-align: center;
+                                            padding-top: 10px;">
+                                                {{ Eisenhower.projectteam.evaluate }} / {{ Eisenhower.projectteam.total }}
+                                                {{'report.phongbanvaduan_reviewcv'|translate}}
+                                            </div>
+                                        </ng-container>
+        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card ">
+                                <div class="card-header bg-white position-relative">
+                                    <b translate="report.quatrinhhoanthanhtheongay"></b>
+                                    <div class="row position-absolute"
+                                        style="top: 0;right: 0;bottom: 0;padding: 10px 0;width: 50%;">
+                                        <div class="row col-4" *ngFor="let item of ListLabel;let i = index">
+                                            <span class="circle" [ngStyle]="{'background': listColor2[i]}">
+                                            </span>
+                                            <span class="hide-text" matTooltip={{item}} style="padding-left:10px">
+                                                {{item}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body position-relative" style="height: 400px;">
+                                    <div
+                                        style="position: absolute; top: 50%; left: -70px; transform: rotate(-90deg); font-size: 24px;">
+                                        <span translate="report.soluongcongviec"></span></div>
+                                    <div *ngIf="chart2Ready" style="display: block;margin-left: 30px;">
+                                        <canvas baseChart [chartType]="chartType2" [datasets]="chartData2"
+                                            [labels]="chartLabel2" [options]="chartOptions2" [legend]="chartLegend2"
+                                            [colors]="chartColor2">
+                                        </canvas>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card ">
+                                <div class="card-header bg-white">
+                                    <b translate="report.tonghoptheotuan"></b>
+                                </div>
+                                <div class="card-body position-relative" style="height: 400px;">
+                                    <div style="position: absolute; top: 50%; left: -65px; transform: rotate(-90deg); font-size: 20px;">
+                                        <span translate="report.soluongcongviec"></span>
+                                    </div>
+                                    <div class="d-block" *ngIf="chartData3Ready" style="position: absolute; top: 20px;left: 25px;right: 0;bottom: 60px;">
+                                        <canvas style=" float: right;" baseChart [chartType]="'bar'" height="325px"
+                                            width="363px" [datasets]="chartData3" [labels]="chartLabel3"
+                                            [options]="chartOptions3" [legend]='false' [colors]="chartColor3">
+                                        </canvas>
+                                    </div>
+                                    <div class="row" style="position: absolute; bottom: 10px;">
+                                        <div class="col-6 row" *ngFor="let item of titleChart3">
+                                            <div class="circle" [ngStyle]="{'background': item.mau}">
+                                            </div>
+                                            <div class="hide-text" matTooltip={{item.ten}} style="padding-left:10px">
+                                                {{item.ten}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card line-3">
+                                <div class="card-header bg-white">
+                                    <b translate="report.baocaochitiettheothanhvien"></b>
+                                    <span (click)="ExportExcel('member')" *ngIf="Staff.length != 0"
+                                        class="url -hover float-right export-excel"><i class="fas fa-download"></i> 
+                                        <span translate="report.xuatbaocaoexcel"></span>
+                                    </span>
+                                </div>
+                                <div class="card-body pd-0 overflow-auto" style="height: 500px;">
+                                    <div class="list-thanhvien">
+                                        <div class="list-header">
+                                            <div class="float-left">
+                                                <span translate="report.thanhvien"></span>
+                                            </div>
+                                            <div class="item float-right">
+        
+                                                <div class="it item-text"> <span translate="filter.hoanthanh" matTooltip="{{ 'filter.hoanthanh' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.hoanthanhmuon" matTooltip="{{ 'filter.hoanthanhmuon' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.quahan" matTooltip="{{ 'filter.quahan' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.dangthuchien" matTooltip="{{ 'filter.dangthuchien' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.dangdanhgia" matTooltip="{{ 'filter.dangdanhgia' | translate}}"></span> </div>
+                                            </div>
+                                        </div>
+                                        <div class="list-body">
+                                            <div class="item" *ngFor="let item of Staff">
+                                                <div>
+                                                    <div class="url">
+                                                        
+                                                        <kt-avatar-user [image]="item.image" [size]="35" [name]="item.hoten" >
+                                                        </kt-avatar-user>
+                                                    </div>
+                                                </div>
+                                                <div class="name">
+                                                    <span class="url -hover">{{item.hoten}}</span>
+                                                </div>
+                                                <div class="info">
+                                                    <span style="color: black;">{{item.tenchucdanh}}</span>
+                                                </div>
+                                                <div class="side">
+                                                    
+                                                    <kt-crossbar-chart [data]="item.datasets" [color]="colorCrossbar">
+                                                    </kt-crossbar-chart>
+                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
+                                                        {{item.hoanthanh}} </div>
+                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[1]}">
+                                                        {{item.ht_quahan}} </div>
+                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[2]}">
+                                                        {{item.quahan}} </div>
+                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[3]}">
+                                                        {{item.danglam}} </div>
+                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[4]}">
+                                                        {{item.dangdanhgia}} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <b translate="report.congviecnhieunhat"></b>
+                                </div>
+                                <div class="card-body pd-0 overflow-auto" style="height: 500px;padding:10px">
+                                    <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffMostTask">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [info]=getInfoCVDTH(item.danglam,item.num_work)>
+                                        </kt-custom-user>
+                                    </div>
+        
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <b translate="report.lammuonnhieunhat"></b>
+                                </div>
+                                <div class="card-body pd-0 overflow-auto" style="height: 500px;padding:10px">
+                                    <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffMostLate">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [info]=getInfoquahan(item.quahan,item.ht_quahan) [textcolor]="'red'">
+                                        </kt-custom-user>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="rp-title">
+                    <span class="text-uppercase" translate="report.baocaotheodanhsachmuctieu">
+                    </span>
+                </div>
+        
+                <div class="info-rp">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card ">
+                                <div class="card-header bg-white">
+                                    <b translate="report.danhsachmuctieu"></b>
+                                </div>
+                                <div class="card-body pd-0" style="height: 300px;overflow-y: auto;">
+                                    <div class="row" style="border-bottom: 1px solid #eee;padding: 10px 0px; background: #eee;">
+                                        <div class="col-5" translate="filter.muctieu"></div>
+                                        <div class="col-3" translate="filter.phutrach"></div>
+                                        <div class="col-2" translate="filter.hoanthanh"></div>
+                                        <div class="col-2" translate="filter.thoihan"></div>
+                                    </div>
+                                    <div class="row row-report" style="min-height: 60px; padding: 5px 0 10px 0;"
+                                        *ngFor="let item of Milestone">
+                                        <div class="col-5 milestome">
+                                            <div class="chart">
+        
+                                                <div class="textinner">
+                                                    {{item.Count.percentage/100 | percent:'1.0-1' }}
+                                                </div>
+        
+                                                <canvas height="40px" width="40px" baseChart
+                                                    [data]="getPercentage(item.Count.percentage)"
+                                                    [legend]="pieKhongdunghan.legend" [labels]="pieKhongdunghan.labels"
+                                                    [chartType]="'pie'" [options]="pieKhongdunghan.options"
+                                                    [colors]="setPieColor('red')"></canvas>
+                                            </div>
+                                            <div class="title-milestone"> {{item.title}} </div>
+                                            <div class="decripstion-milestone"> {{item.description}} </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <kt-custom-user [image]="item.person_in_charge.image"
+                                                [name]="item.person_in_charge.hoten" [info]="item.person_in_charge.mobile">
+                                            </kt-custom-user>
+                                        </div>
+                                        <div class="col-2">{{item.Count.ht}}/{{item.Count.tong}}</div>
+                                        <div class="col-2"> {{item.deadline_day}} </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+        
+                <div class="rp-title">
+                    <span class="text-uppercase" translate="report.cacbaocaochuyensaukhac"></span>
+                </div>
+        
+                <div class="info-rp">
+                    <div class="row">
+                        <div class="col-7">
+                            <div class="card ">
+                                <div class="card-header bg-white">
+                                    <b translate="report.tagclounds">
+                                    </b>
+                                </div>
+                                <div class="card-body pd-0" style="height:350px">
+                                    <div id="container" class="h-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="card tag-con-so-thong-ke">
+                                <div class="card-header bg-white">
+                                    <b translate="report.cacconsothongke">
+                                    </b>
+                                </div>
+                                <div class="card-body" style="height:350px">
+                                    <div class="position-relative w-100 h-100">
+                                        <div class="grid-stats">
+                                            <div class="note-thong-ke">
+                                               <span translate="report.chitinhcaccongviecbaocaotrongthoigianluachon"></span>
+                                            </div>
+                                            <div class="stat">
+                                                <div class="v">
+                                                    {{CacConSoThongKe.week=='NaN'?'0':CacConSoThongKe.week}}
+                                                </div>
+                                                <span class="sub" translate="report.socongviectrungbinh"></span>
+                                                <span translate="report.trenmottuan"></span>
+                                            </div>
+                                            <div class="stat">
+                                                <div class="v">
+                                                    {{CacConSoThongKe.member=='NaN'?'0':CacConSoThongKe.member}}
+                                                </div>
+                                                <span class="sub" translate="report.socongviectrungbinhhangtuan"></span>
+                                                <span translate="report.trenmotnguoi"></span>
+                                            </div>
+                                            <div class="stat">
+                                                <div class="v">
+                                                    {{CacConSoThongKe.project=='NaN'?'0':CacConSoThongKe.project}}
+                                                </div>
+                                                <span class="sub" translate="report.socongviectrungbinh1"></span>
+                                                <span translate="report.trenmotduan"></span>
+                                            </div>
+                                            <div class="stat">
+                                                <div class="v">
+                                                    {{CacConSoThongKe.numcomment=='NaN'?'0':CacConSoThongKe.numcomment}}
+                                                </div>
+                                                <span class="sub" translate="report.tongsoluong"></span>
+                                                <span class="text-lowercase" translate="report.binhluan"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+        
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </kt-portlet-body>
+</kt-portlet>

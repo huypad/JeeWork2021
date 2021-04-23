@@ -1,0 +1,11 @@
+<input class="w-100 {{isbd?'bd-bottom':''}}"
+  #innerInput 
+  [ngStyle]="{'border-color': error?'red':''}"
+  type="{{type}}"
+  (focus)="innerInputFocussed()"  
+  (keyup.enter)="FocusOut()"
+  (focusout)="FocusOut()"  
+  (blur)="innerInputBlurred()"  
+  (change)="handler()"
+  placeholder="{{placeholder}}"
+>

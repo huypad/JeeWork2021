@@ -1,0 +1,121 @@
+<!-- <kt-portlet [options]="{hideHeader: true}">
+    <kt-portlet-body class="pd-0">
+        <div class="kt-form__filtration">
+            <div class="my-form-header" *ngIf="!selectedItem">
+                <div class="form-subheader">
+                    <div class="task-user-add -compact">
+                        <div class="avatar">
+                            <i class="las la-close icon"></i>
+                        </div>
+                        <div class="txt" mat-icon-button>
+                            <span (click)="Add()" class="action"
+                                matTooltip="{{ 'projects.taocongviec' | translate }}"
+                                translate="projects.taocongviec"></span> hoặc
+                            <span (click)="AddWorkGroup()" class="action"
+                                matTooltip="{{ 'projects.taonhomcongviec' | translate }}"
+                                translate="projects.taonhomcongviec"></span>
+
+                        </div>
+                    </div>
+                    <div class="side">
+                        <div class="dd ">
+                            <div class="search" id="js-side-search">
+                                <div class="input">
+                                    <span class="las la-search"
+                                        style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
+                                    <input type="text" (keyup.enter)="loadData()" [(ngModel)]="keyword"
+                                        placeholder="{{ 'projects.timnhanhcongviec' | translate }}"
+                                        autocomplete="off" style="overflow: hidden;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dd hide-more-text" style="max-width:200px">
+                            <div [matMenuTriggerFor]="menu2"> <em>Filter: {{filterStage.title}}<i
+                                        class="fas fa-sort-down"
+                                        style="vertical-align: text-top; padding-left:5px"></i></em>
+                                <mat-menu #menu2="matMenu">
+                                    <button mat-menu-item (click)="FilterTT(item)" *ngFor="let item of filterTrangthai">
+                                        <span [ngStyle]="{'font-weight': filterStage==item?'bold':''}">{{item.title}}
+                                        </span>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </div>
+                        <div class="dd hide-more-text" style="max-width:200px">
+                            <div [matMenuTriggerFor]="menu3">
+                                <em>Tùy chọn hiển thị <i class="fas fa-sort-down"
+                                        style="vertical-align: text-top; padding-left:5px"></i></em>
+                                <mat-menu #menu3="matMenu">
+                                    <div class="form-group" (click)="$event.stopPropagation()">
+                                        <mat-form-field class="mat-form-field-fluid">
+                                            <mat-select [(value)]="filterCVC"
+                                                class="mat-form-field mat-form-field-fluid"
+                                                placeholder="{{ 'filter.congvieccon' | translate }}"
+                                                (selectionChange)="loadData()">
+                                                <mat-option value="1"><span translate="filter.motcapcongvieccon"></span>
+                                                </mat-option>
+                                                <mat-option value="2"><span
+                                                        translate="filter.nhieucapcongvieccon"></span>
+                                                </mat-option>
+                                                <mat-option value="3"><span translate="filter.khonghienthi"></span>
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="mat-form-field-fluid">
+                                            <mat-select [(value)]="filterSX" class="mat-form-field mat-form-field-fluid"
+                                                placeholder="{{ 'filter.sapxep' | translate }}"
+                                                (selectionChange)="loadData()">
+                                                <mat-option value="prioritize"><span translate="filter.thutuuutien"></span>
+                                                </mat-option>
+                                                <mat-option value="deadlinedesc"><span translate="filter.thoihangiamdan"></span>
+                                                </mat-option>
+                                                <mat-option value="deadline"><span translate="filter.thoihantangdan"></span>
+                                                </mat-option>
+                                                <mat-option value="UpdatedDate"><span translate="filter.thoigiancapnhat"></span>
+                                                </mat-option>
+                                                <mat-option value="timecomplete"><span translate="filter.thoigianhoanthanh"></span>
+                                                </mat-option>
+                                                <mat-option value="title"><span translate="filter.theobanchucai"></span>
+                                                </mat-option>
+                                                <mat-option value="urgent"><span translate="filter.vieckhancap"></span>
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="mat-form-field-fluid">
+                                            <mat-select [(value)]="filternhom"
+                                                class="mat-form-field mat-form-field-fluid"
+                                                placeholder="{{ 'filter.nhomboi' | translate }}"
+                                                (selectionChange)="loadData()">
+                                                <mat-option value="1"><span translate="filter.nhomcongviec"></span>
+                                                </mat-option>
+                                                <mat-option value="2"><span translate="filter.muctieu"></span>
+                                                </mat-option>
+                                                <mat-option value="3"><span translate="filter.thanhvien"></span>
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-checkbox>
+                                            <span translate="filter.nhomcongviechoanthanh"></span>
+                                        </mat-checkbox>
+                                    </div>
+                                </mat-menu>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group kt-form__group row mg-0">
+            <div class=" kt--margin-bottom-10-mobile {{selectedItem==undefined? 'col-md-12':'col-md-4'}}">
+                <kt-list-view [data]="data" [selectedItem]="selectedItem" (Reload)="ReloadData($event)"
+                    (ItemSelected)="selected($event)" [listUser]="listUser">
+                </kt-list-view>
+            </div>
+            <div class="col-md-8 kt--margin-bottom-10-mobile" *ngIf="selectedItem!=undefined">
+                <lib-dynamic-component [childComponentType]="childComponentType" [data]="childComponentData"
+                    (getInstance)="getInstance($event)" (closeDetail)="closeDetail($event)"></lib-dynamic-component>
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </kt-portlet-body>
+</kt-portlet> -->

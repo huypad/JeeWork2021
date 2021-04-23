@@ -1,0 +1,88 @@
+<style>
+	.link-class {
+		border: 1px solid white;
+		color: white;
+		display: grid;
+		height: 120px;
+		font-weight: bold;
+	}
+
+	.link-class:hover {
+		background-color: rgb(241 243 240);
+		cursor: pointer;
+		border-radius: 5px;
+	}
+
+	.class-padding {
+		padding: 10px;
+	}
+</style>
+
+<!-- <div ngbDropdown placement="bottom-right" *ngIf="user2" class="kt-header__topbar-item kt-header__topbar-item--user">
+	<div ngbDropdownToggle class="kt-header__topbar-wrapper">
+		<div class="kt-header__topbar-user" [ngClass]="{'kt-header__topbar-icon': icon}">
+			<span style="color: #fd397a" (click)="logout()" class="kt-header__topbar-welcome kt-hidden-mobile" *ngIf="greeting">SIGN OUT</span>
+			<span class="kt-header__topbar-username kt-hidden-mobile" *ngIf="greeting">{{user2.fullname}}</span>
+		</div>
+	</div>
+</div> -->
+<!-- <a href="#" class="m-nav__link kt-dropdown__toggle" id="profile" style="padding: 0px;">
+	<span class="m-topbar__userpic">
+		<img #avatar1 class="m--img-rounded m--marginless m--img-centered" alt="" style="height: 50px;
+		width: 50px; max-width: inherit !important; border-radius: 50%;" />
+	</span>
+</a> -->
+<div ngbDropdown placement="{{desktopHeaderDisplay?'bottom-right':'bottom-left'}}"
+	class="kt-header__topbar-item kt-header__topbar-item--user">
+	<div ngbDropdownToggle class="kt-header__topbar-wrapper">
+		<img #avatar1 class="m--img-rounded m--marginless m--img-centered" alt="" style="height: 50px;
+		width: 50px; max-width: inherit !important; border-radius: 50%;" />
+		<div *ngIf="!desktopHeaderDisplay" style="margin-left: 10px; margin-top: 5px; white-space: nowrap; 
+		width: 120px; 
+		overflow: hidden;
+		text-overflow: ellipsis;">
+			<div style="color: white;">{{Ten}}</div>
+			<span>{{ChucVu}}</span>
+		</div>
+	</div>
+	<div ngbDropdownMenu
+		class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround dropdown-menu-xl">
+		<div class="kt-user-card kt-user-card--skin-dark kt-notification-item-padding-x">
+			<div class="kt-user-card__avatar">
+				<img #avatar2 class="m--img-rounded m--marginless" alt=""
+					style="width: 70px; height: 70px; border-radius: 50%;" />
+			</div>
+			<div class="kt-user-card__name">
+				<span class="m-card-user__name m--font-weight-500 font-chu"
+					style="border: 0px; font-weight: bold; color: black; cursor: auto;">
+					{{Ten}}
+				</span><br />
+				<span class="m-card-user__name m--font-weight-500 font-chu"
+					style="border: 0px; color: black; cursor: auto">
+					{{ChucVu}}
+				</span>
+			</div>
+		</div>
+		<div *ngIf="!desktopHeaderDisplay" style=" padding: 10px;">
+			<div class="row m-nav-grid__row">
+				<div class="col-md-6 class-padding" *ngFor="let d of listModule">
+					<a class="kt-nav__link link-class">
+						<span style="text-align: center; color: black;">
+							<i class="kt-nav__link-icon" [ngStyle]="{'color': getRandomColor()}"
+								style="font-size: xxx-large" [ngClass]="d.Icons"></i>
+						</span>
+						<span style="text-align: center; font-size: 10pt; color: #666666; padding-top: 10px;
+						font-weight: bold;">{{d.Title}}</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div style="padding: 0 1rem 1rem 1rem;">
+			<button mat-stroked-button (click)="logoutJWT()">
+				<span style="color: deepskyblue" translate="GeneralKey.dangxuat"></span>
+			</button>&nbsp;
+			<button mat-stroked-button (click)="openDialog()"><span style="color: deepskyblue"
+				translate="GeneralKey.doimatkhau"></span></button>
+		</div>
+	</div>
+</div>

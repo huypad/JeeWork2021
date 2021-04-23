@@ -1,0 +1,64 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+    <div class="kt-portlet__head kt-portlet__head__custom">
+        <div class="kt-portlet__head-label">
+            <h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+        </div>
+    </div>
+    <form class="kt-form" [formGroup]="itemForm">
+        <div class="kt-form__group">
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <input matInput placeholder="{{ 'department.ten' | translate }}" formControlName="title"
+                            class="require" required #focusInput />
+                    </mat-form-field>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <section class="example-section">
+                        <mat-checkbox class="example-margin" [(ngModel)]="IsDataStaff_HR"  [ngModelOptions]="{standalone: true}">Lấy dữ liệu từ phần mềm nhân sự</mat-checkbox>
+                      </section>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <m-dropdown-tree [data]="datatree" [DropdownTitle]="title" (SelectedItemTree)="GetValueNode($event)"
+                        formControlName="dept_name">
+                    </m-dropdown-tree>
+                </div>
+            </div> -->
+            <!-- #@name -->
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <input matInput placeholder="{{ 'department.chusohuu' | translate }}" id="InputUser" autocomplete="off"
+                    type="text" value="{{CommentTemp}}" [popover]="myPopoverC" [popoverOnHover]="false"
+                        (input)="onSearchChange($event)" (click)="click($event)">
+                    <span #hiddenText
+                        style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+                    <popover-content #myPopoverC placement="bottom-left" [closeOnClickOutside]="true">
+                        <kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+                    </popover-content>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="kt-portlet__foot">
+        <div class="kt-form__actions kt-form__actions--solid">
+            <div class="row text-right">
+                <div class="col-lg-12">
+                    <button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+                        cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+                        <span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+                            class="spinner-button-pad"></div>
+                    </button>&nbsp;
+                    <button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)" *ngIf="IsEdit"
+                        [disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luudong' | translate }}">
+                        <span translate="GeneralKey.luudong"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+                            class="spinner-button-pad"></div>
+                    </button> &nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

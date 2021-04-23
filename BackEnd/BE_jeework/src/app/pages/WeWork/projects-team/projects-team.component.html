@@ -1,0 +1,773 @@
+<style>
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 5px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .show-option {
+        margin-left: 5px;
+        display: none;
+    }
+
+    .hover-viewoption:hover .show-option {
+        display: inline-block;
+    }
+</style>
+<kt-portlet [options]="{hideHeader: true}" class="project-team">
+    <kt-portlet-body class="pd-0 report-container">
+        <div [ngClass]="{'row': ShowFull}" style="justify-content: flex-start !important">
+            <div [ngClass]="ShowFull ? 'col-md-12': 'tab-left'" class="pd-0"
+                style="justify-content: flex-start !important">
+                <div class="row" style="padding-top: 5px;overflow: auto;">
+                    <div class="col-md-12" *ngIf="item" style="display:flex">
+                        <ngx-avatar size="40" src="{{item.icon}}" *ngIf="ShowImage"></ngx-avatar>
+                        <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="40" [name]="item.title.substr(0,1)"
+                            *ngIf="!ShowImage" bgColor="{{colorName}}"></ngx-avatar>
+                        <div style="margin-left: 10px;">
+
+                            <nav mat-tab-nav-bar>
+                                <a mat-tab-link [matMenuTriggerFor]="menuProject"
+                                    *ngIf="commonService.CheckRole_WeWork(3501).length>0" #trigger="matMenuTrigger"
+                                    href="javascript:;" [active]="activeLink == 'project'">
+                                    <h5 style="padding-top: 5px; color: #48465b; color: green; font-weight: bold;">
+                                        {{item.title}}
+                                    </h5>
+                                    <mat-icon style="height: 20px;" color="warn" *ngIf="item.locked">lock</mat-icon>
+                                </a>
+                                <a mat-tab-link *ngIf="!(commonService.CheckRole_WeWork(3501).length>0)"
+                                    href="javascript:;" [active]="activeLink == 'project'">
+                                    <h5 style="padding-top: 5px; color: #48465b; color: green; font-weight: bold;">
+                                        {{item.title}}
+                                    </h5>
+                                    <mat-icon style="height: 20px;" color="warn" *ngIf="item.locked">lock</mat-icon>
+                                </a>
+                                <mat-menu style="justify-content: flex-start !important" #menuProject="matMenu">
+                                    <button mat-menu-item [matMenuTriggerFor]="recent1" color="accent">
+                                        <mat-icon style="color:rgb(235, 166, 19);">create</mat-icon>
+                                        <span><span style="color:rgb(235, 166, 19);font-size: 9pt"
+                                                translate="GeneralKey.chinhsua"></span></span>
+                                    </button>
+
+                                    <ng-container *ngIf="item">
+                                        <button mat-menu-item (click)="ClosedProject()" *ngIf="!item.locked">
+                                            <mat-icon style="color:rgb(89, 94, 92)">lock</mat-icon>
+                                            <span>
+                                                <span style="color:rgb(89, 94, 92);font-size: 9pt"
+                                                    translate="GeneralKey.dongteam"></span>
+                                            </span>
+                                        </button>
+                                        <button mat-menu-item (click)="ClosedProject()" *ngIf="item.locked">
+                                            <mat-icon style="color:rgb(8, 122, 52)">lock_open</mat-icon>
+                                            <span>
+                                                <span style="color:rgb(8, 122, 52);font-size: 9pt"
+                                                    translate="GeneralKey.moteam"></span>
+                                            </span>
+                                        </button>
+                                    </ng-container>
+                                    <button mat-menu-item (click)="Deleted()">
+                                        <mat-icon style="color:rgb(236, 49, 74)">clear</mat-icon>
+                                        <span>
+                                            <span style="color:rgb(236, 49, 74);font-size: 9pt"
+                                                translate="GeneralKey.xoateam"></span>
+                                        </span>
+                                    </button>
+                                    <button mat-menu-item [matMenuTriggerFor]="nhanbanteam1" color="accent">
+                                        <mat-icon style="color:rgb(219, 69, 9)">settings</mat-icon><span
+                                            style="color:rgb(219, 69, 9);font-size: 9pt"
+                                            translate="GeneralKey.cactuychonkhac"></span>
+                                    </button>
+                                </mat-menu>
+                                <mat-menu #recent1="matMenu">
+                                    <button type="button" (click)="AddProject(true)" mat-menu-item>
+                                        <mat-icon style="color:rgb(13, 92, 240)">create</mat-icon><span
+                                            style="color:rgb(13, 92, 240);font-size: 9pt"
+                                            translate="GeneralKey.chinhsuanhanh"></span>
+                                    </button>
+                                    <button mat-menu-item (click)="updateStage(item)">
+                                        <mat-icon style="color:rgb(5, 116, 29)">update</mat-icon>
+                                        <span>
+                                            <span style="color:rgb(5, 116, 29);font-size: 9pt"
+                                                translate="GeneralKey.capnhattrangthai"></span>
+                                        </span>
+                                    </button>
+                                </mat-menu>
+                                <mat-menu #nhanbanteam1="matMenu">
+                                    <button type="button" (click)="DuplicateProject()" mat-menu-item>
+                                        <mat-icon style="color:rgb(123, 15, 173);">filter_none</mat-icon><span
+                                            style="color:rgb(123, 15, 173);font-size: 9pt"
+                                            translate="GeneralKey.nhanbanteam"></span>
+                                    </button>
+                                    <button mat-menu-item (click)="Change()">
+                                        <mat-icon style="color:rgb(5, 111, 231)">swap_horiz</mat-icon>
+                                        <span>
+                                            <span style="color:rgb(5, 111, 231);font-size: 9pt"
+                                                translate="GeneralKey.changetype"></span>
+                                        </span>
+                                    </button>
+                                </mat-menu>
+
+                                <ng-container *ngFor="let view of listDefaultView">
+                                    <a mat-tab-link class="hover-viewoption d-flex"
+                                        *ngIf="ID_Project==view.id_project_team" [active]="activeLink == view.link">
+                                        <div (click)="click(view.link);linkTo(view.link)">
+                                            <i class="fas fa-thumbtack text-success" style="margin-right: 5px;transform: translateY(6px);font-size: 20px;" *ngIf="view.pin_view"></i>
+                                            <img src="{{view.icon}}" style="margin-right: 5px;" width="20px" alt="">
+                                            {{ view.view_name_new}}
+                                        </div>
+                                        <i style="z-index: 1000;" *ngIf="CheckRoles(19) && activeLink == view.link"
+                                            class="fas fa-ellipsis-h show-option" [matMenuTriggerFor]="viewoption"
+                                            #trigger="matMenuTrigger"></i>
+                                        <mat-menu style="justify-content: flex-start !important" xPosition="before"
+                                            #viewoption="matMenu">
+                                            <div  (click)="$event.stopPropagation()">
+                                                <button mat-menu-item>
+                                                    <mat-slide-toggle (ngModelChange)="modelChangeFn(view)"
+                                                        [(ngModel)]="view.default_everyone">Mặc định cho tất cả mọi người
+                                                    </mat-slide-toggle>
+                                                </button>
+                                                <button mat-menu-item>
+                                                    <mat-slide-toggle (ngModelChange)="modelChangeFn(view)"
+                                                        [(ngModel)]="view.default_for_me">Mặc định cho tôi
+                                                    </mat-slide-toggle>
+                                                </button>
+                                                <button mat-menu-item>
+                                                    <mat-slide-toggle (ngModelChange)="modelChangeFn(view)"
+                                                        [(ngModel)]="view.pin_view">Pin view!</mat-slide-toggle>
+                                                </button>
+                                                <button mat-menu-item>
+                                                    <mat-slide-toggle (ngModelChange)="modelChangeFn(view)"
+                                                        [(ngModel)]="view.personal_view">Chế độ xem cá nhân
+                                                    </mat-slide-toggle>
+                                                </button>
+                                                <button mat-menu-item (click)="view.favourite=!view.favourite;modelChangeFn(view)">
+                                                    <i class="far fa-star text-warning" style="font-size: 20px;padding: 0 10px;" *ngIf="!view.favourite"></i>
+                                                    <i class="fas fa-star text-warning" style="font-size: 20px;padding: 0 10px;" *ngIf="view.favourite"></i>
+                                                    Yêu thích
+                                                </button>
+                                                <hr>
+                                                <button mat-menu-item (click)="deleteView(view)">
+                                                    <i class="fas fa-trash text-danger" style="font-size: 20px;padding: 0 10px;"></i>
+                                                    Xóa view
+                                                </button>
+                                            </div>
+                                        </mat-menu>
+                                    </a>
+                                </ng-container>
+                                <a mat-tab-link [matMenuTriggerFor]="menuV" #trigger="matMenuTrigger"
+                                    href="javascript:;" *ngIf="isShowaddview && CheckRoles(19)">
+                                    <i class="fas fa-plus text-success"></i>&nbsp;
+                                    <span class="text-muted" style="color: #65cfdd !important"
+                                        translate="projects.themview">Thêm</span>
+                                </a>
+                                <mat-menu style="justify-content: flex-start !important" #menuV="matMenu">
+                                    <div class="row" style="min-width: 500px; min-height: 300px;">
+                                        <div class="col-4 border-right" (click)="$event.stopPropagation()">
+                                            <div class="form-group">
+                                                <input type="text" [(ngModel)]="nameNewView" class="form-control">
+                                            </div>
+                                            <ng-container *ngFor="let view of listDefaultView">
+                                                <button mat-menu-item
+                                                    (click)="selectedNewView(view.view_name_new,view.image,view.viewid)"
+                                                    *ngIf="ID_Project != view.id_project_team">
+                                                    <img src="{{view.icon}}" style="margin-right: 5px;" width="20px"
+                                                        alt="">
+                                                    {{ view.view_name_new}}
+                                                </button>
+                                            </ng-container>
+                                        </div>
+                                        <div class="col-8">
+                                            <img class="d-block" (click)="$event.stopPropagation()"
+                                                style="width:275px;margin: auto;margin-top: 50px;"
+                                                src="{{imageNewView}}" alt="">
+                                            <button class="btn btn-success float-right" (click)="addView()"
+                                                style="margin:30px 20px;min-width: 100px;">
+                                                Chọn
+                                            </button>
+                                        </div>
+                                    </div>
+                                </mat-menu>
+
+                                <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3502).length>0"
+                                    [routerLink]="['./documents']" (click)="click('documents')"
+                                    [active]="activeLink == 'documents'">{{'projects.documents' |
+                                    translate}}&nbsp;({{listDocument.length}})</a>
+                                <a mat-tab-link *ngIf="CheckRoles(18)"
+                                    [routerLink]="['./activities']" (click)="click('activities')"
+                                    [active]="activeLink == 'activities'">{{'projects.hoatdong' |
+                                    translate}}</a>
+                                <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3610).length>0"
+                                    [routerLink]="['./discussions']" (click)="click('discussions')"
+                                    [active]="activeLink == 'discussions'">{{'projects.discuss' |
+                                    translate}}</a>
+                                <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3403).length>0"
+                                    (click)="click('report');ViewReport()"
+                                    [active]="activeLink == 'report'">{{'projects.report' |
+                                    translate}}</a>
+                                <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3501).length>0"
+                                    [routerLink]="['./settings']" (click)="click('settings')"
+                                    [active]="activeLink == 'settings'">{{'projects.tuychinh' |
+                                    translate}}</a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <router-outlet></router-outlet>
+            </div>
+            <div class="tab-right" *ngIf="!ShowFull">
+                <div id="project-side">
+                    <div class="section">
+                        <kt-portlet>
+                            <kt-portlet-body *ngIf="item">
+                                <div class="row font-chu">
+                                    <div class="col-md-12 ">
+                                        <h4><span style="color: black; font-weight: bold;">{{item.title}}</span></h4>
+                                    </div>
+                                </div>
+                                <div class="row font-chu">
+                                    <div class="col-md-12">
+                                        <span style="font-weight: bold; color: black;">
+                                            {{item.Count.ht}}
+                                        </span>/<span
+                                            style="font-weight: bold; color: black;">{{item.Count.tong}}</span> {{
+                                        'workprocess.hoanthanh' | translate }}
+                                        <mat-progress-bar mode="determinate" [value]="item.Count.percentage">
+                                        </mat-progress-bar>
+                                    </div>
+                                </div>
+                                <div class="row font-chu pt-5">
+                                    <div class="col-md-12" style="display: flex;">
+                                        <div>
+                                            <mat-icon style="color: black;">label_important</mat-icon>&nbsp;
+                                        </div>
+                                        <div>
+                                            <span *ngIf="item.start_date" style="color: black;">
+                                                {{item.start_date.substr(0,10) | date:'dd/MM/yyyy'}} -
+                                                {{ !item.end_date?'...':item.end_date | date:'dd/MM/yyyy'}}
+                                            </span>
+                                            <span *ngIf="!item.start_date" style="color: black;">
+                                                {{'filter.ngaybatdau' | translate}} -
+                                                {{'filter.ngayketthuc' | translate}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <div class="row font-chu">
+                                    <div class="col-md-6" style="display: flex;">
+                                        <mat-icon style="color: black;">folder</mat-icon>&nbsp;
+                                        <span translate="GeneralKey.phongban"></span>
+                                    </div>
+                                    <div class="col-md-6 text-dark" style="text-align: right;">
+                                        <a [routerLink]="['/depts',item.id_department,'projects']"
+                                            class="-hover url text-title-14px">{{item.department}}</a>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row font-chu">
+                                    <div class="col-md-12" style="display: contents;">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel style="width: 100%;border-radius: 0;">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;height: 40px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-12 d-flex">
+                                                            <div>
+                                                                <mat-icon style="color: black;">menu</mat-icon>&nbsp;
+                                                            </div>
+                                                            <div>
+                                                                <span style="color: black;">{{item.Users.length}}
+                                                                    {{'GeneralKey.thanhvien' | translate}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller"
+                                                    style="padding: 0 10px;">
+                                                    <div class="row" *ngFor="let us of item.Users"
+                                                        style="justify-content: center;padding-bottom: 10px;">
+                                                        <div class="avt user mg-0">
+                                                            <ngx-avatar size="40" matTooltip="{{us.hoten}}"
+                                                                src="{{us.image}}" *ngIf="us.image;else bindText">
+                                                            </ngx-avatar>
+                                                            <ng-template #bindText>
+                                                                <ngx-avatar textSizeRatio="2.5"
+                                                                    matTooltip="{{us.hoten}}" [style]="customStyle"
+                                                                    size="40"
+                                                                    [name]="WeWorkService.getNameUser(us.hoten)"
+                                                                    bgColor="{{WeWorkService.getColorNameUser(us.hoten)}}">
+                                                                </ngx-avatar>
+                                                            </ng-template>
+                                                        </div>
+                                                        <div style="flex-grow: 1; padding: 0 5px">
+                                                            <span class="d-block">{{ us.hoten }}</span>
+                                                            <span>@{{ us.username }}</span>
+                                                        </div>
+                                                    </div>
+
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                </div>
+                                <div class="row font-chu">
+                                    <div class="col-md-12" style="display: contents;">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel style="width: 100%;border-radius: 0;">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div
+                                                            class="col-md-12 kt--margin-bottom-10-mobile header-center">
+                                                            <span class="fa fa-filter"></span>&nbsp;&nbsp;
+                                                            <span style="font-size: 14px; color:#888"
+                                                                translate="GeneralKey.hoatdongganday"></span>&nbsp;&nbsp;
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller"
+                                                    style="max-height:400px;padding: 0 10px;">
+
+                                                    <div class="row font-chu flex-nowrap" *ngFor="let log of item.Log">
+                                                        <mat-accordion style="display: contents;">
+                                                            <mat-expansion-panel style="width: 100%;border-radius: 0;">
+                                                                <mat-expansion-panel-header style="padding: 10px;">
+                                                                    <mat-panel-title>
+                                                                        <div class="icon" style="padding-right: 5px;">
+                                                                            <img width="30px" height="30px"
+                                                                                style="padding: 2px;"
+                                                                                src="https://cdn.onlinewebfonts.com/svg/img_367612.png" />
+                                                                        </div>
+                                                                        <div style="flex-grow: 1;">
+                                                                            <span class="text-2-line"
+                                                                                style="font-size: 16px; font-weight: bold;"
+                                                                                matTooltip={{log.title}}>{{log.Activities.length}}
+                                                                                - {{log.title}}</span>
+                                                                        </div>
+                                                                    </mat-panel-title>
+                                                                </mat-expansion-panel-header>
+                                                                <perfect-scrollbar class="m-scrollable m-scroller">
+
+                                                                    <div class="row font-chu flex-nowrap"
+                                                                        *ngFor="let act of log.Activities"
+                                                                        style="padding-bottom: 10px;">
+                                                                        <i class="far fa-check-circle"
+                                                                            style="padding-right: 5px;padding-top: 2px;"></i>
+                                                                        {{ act.NguoiTao.hoten }} {{
+                                                                        getActionActivities(act) }} {{ act.CreatedDate
+                                                                        }}
+                                                                    </div>
+                                                                </perfect-scrollbar>
+                                                            </mat-expansion-panel>
+                                                        </mat-accordion>
+                                                    </div>
+
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                </div>
+                                <div class="row font-chu">
+                                    <div class="col-md-12" style="display: contents;">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel style="width: 100%;border-radius: 0;">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-7 kt--margin-bottom-10-mobile header-center">
+                                                            <span class="fa fa-bookmark"></span>&nbsp;&nbsp;
+                                                            <span style="font-size: 14px; color:#888"
+                                                                translate="filter.trangthai"></span>&nbsp;&nbsp;
+                                                        </div>
+                                                        <div class="col-md-5 kt--margin-bottom-10-mobile text-right"
+                                                            style="padding: 5px 0">
+                                                            <span style="font-size: 9px;"
+                                                                class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByLocked(item.status)}} kt-badge--wide">{{
+                                                                getItemLockedString(item.status) }}</span>&nbsp;
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+
+                                                <perfect-scrollbar class="m-scrollable m-scroller lichsutrangthai">
+
+                                                    <div class="items">
+                                                        <div class="itemtrangthai"
+                                                            *ngFor="let stage of item.Stages;let i = index">
+                                                            <div class="dot"
+                                                                [ngStyle]="{'background': getColorStatus(stage.stage)}">
+                                                            </div>
+                                                            <div *ngIf="i!=(item.Stages.length -1)" class="line"
+                                                                [ngStyle]="{'background': getColorStatus(stage.stage)}">
+                                                            </div>
+                                                            <div class="header">
+                                                                <div class="stage"
+                                                                    [ngStyle]="{'color': getColorStatus(stage.stage)}">
+                                                                    {{getItemLockedString(stage.stage)}}</div>
+                                                                <div class="date">{{stage.CreatedDate.substr(0,10)}}
+                                                                </div>
+                                                                <div class="info">
+                                                                    <span class="image">
+                                                                        <ngx-avatar size="35"
+                                                                            matTooltip="{{stage.CreatedBy.hoten}}"
+                                                                            src="{{stage.CreatedBy.image}}"
+                                                                            *ngIf="stage.CreatedBy.image;else bindText1">
+                                                                        </ngx-avatar>
+                                                                        <ng-template #bindText1>
+                                                                            <ngx-avatar textSizeRatio="2.5"
+                                                                                matTooltip="{{stage.CreatedBy.hoten}}"
+                                                                                [style]="customStyle" size="35"
+                                                                                [name]="WeWorkService.getNameUser(stage.CreatedBy.hoten)"
+                                                                                bgColor="{{WeWorkService.getColorNameUser(stage.CreatedBy.hoten)}}">
+                                                                            </ngx-avatar>
+                                                                        </ng-template>
+                                                                    </span>
+                                                                    <span class="url username">
+                                                                        {{stage.CreatedBy.hoten}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content"
+                                                                *ngIf="!stringIsNull(stage.description)">
+                                                                {{stage.description}} </div>
+                                                        </div>
+                                                    </div>
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                </div>
+                            </kt-portlet-body>
+                        </kt-portlet>
+                    </div>
+                    <div class="section">
+                        <kt-portlet>
+                            <kt-portlet-body *ngIf="item" style="overflow:hidden">
+                                <div class="row font-chu">
+                                    <div class="col-md-10">
+                                        <h4>
+                                            <span style="color: black;" translate="projects.muctieu"></span>&nbsp;&nbsp;
+                                        </h4>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <mat-icon class="url" (click)="AddMileston()"
+                                            matTooltip="{{ 'GeneralKey.themmoi' | translate }}" color="primary">add
+                                        </mat-icon>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12" style="min-height: 30px;" *ngIf="item.milestone.length > 0">
+                                        <div class="row" style="height: 50px;" *ngFor="let child of item.milestone">
+                                            <div style="padding-bottom: 6px;">
+                                                <div class="ms-time mg-0">
+                                                    <em>{{child.deadline_weekday}}</em>
+                                                    <span>{{child.deadline_day}}</span>
+                                                </div>
+                                            </div>
+                                            <div style="padding: 0 5px; width: 180px;">
+                                                <div>
+                                                    <a class="hide-more-text text-title-14px -hover "
+                                                        [routerLink]="['/depts',item.id_department,'milestones',child.id_row]"
+                                                        routerLinkActive="router-link-active">{{child.title}}</a>
+                                                </div>
+                                                <div *ngIf="child.person_in_charge" [matMenuTriggerFor]="viewuser">
+                                                    <span class="url"> @{{ child.person_in_charge.username }} </span>
+                                                    <span class="float-right">
+                                                        {{ child.Count.ht }}/{{ child.Count.tong }}
+                                                    </span>
+                                                </div>
+                                                <mat-menu #viewuser="matMenu">
+                                                    <div class="row">
+                                                        <div class="avt">
+                                                            <ngx-avatar size="40"
+                                                                matTooltip="{{child.person_in_charge.hoten}}"
+                                                                src="{{child.person_in_charge.image}}"
+                                                                *ngIf="child.person_in_charge.image;else bindText2">
+                                                            </ngx-avatar>
+                                                            <ng-template #bindText2>
+                                                                <ngx-avatar textSizeRatio="2.5"
+                                                                    matTooltip="{{child.person_in_charge.hoten}}"
+                                                                    [style]="customStyle" size="40"
+                                                                    [name]="WeWorkService.getNameUser(child.person_in_charge.hoten)"
+                                                                    bgColor="{{WeWorkService.getColorNameUser(child.person_in_charge.hoten)}}">
+                                                                </ngx-avatar>
+                                                            </ng-template>
+                                                        </div>
+                                                        <div style="flex-grow: 1; padding: 0 5px">
+                                                            <span class="d-block">{{ child.person_in_charge.hoten
+                                                                }}</span>
+                                                            <span>@{{ child.person_in_charge.username }}</span>
+                                                        </div>
+                                                    </div>
+                                                </mat-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </kt-portlet-body>
+                        </kt-portlet>
+                    </div>
+                    <div class="section">
+                        <kt-portlet>
+                            <kt-portlet-body *ngIf="mywork">
+                                <div class="row font-chu">
+                                    <div class="col-md-12">
+                                        <h4>
+                                            <span style="color: black;"
+                                                translate="projects.congvieccuatoi"></span>&nbsp;&nbsp;
+                                        </h4>
+                                    </div>
+                                    <div class="col-md-12" style="justify-content: center; text-align: center;">
+                                        <div class="row font-chu" style="justify-content: center; text-align: center">
+                                            <div class="col-md-4">
+                                                <h4><span
+                                                        style="color: red; font-weight: bold">{{mywork.Count.phailam}}</span>
+                                                </h4>
+                                                <span style="color: black; font-size: 10px">{{'filter.phailam' |
+                                                    translate}}</span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h4><span
+                                                        style="color: orange; font-weight: bold">{{mywork.Count.danglam}}</span>
+                                                </h4>
+                                                <span style="color: black; font-size: 10px">{{'filter.danglam' |
+                                                    translate}}</span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h4><span
+                                                        style="color: green; font-weight: bold;">{{mywork.Count.ht}}</span>
+                                                </h4>
+                                                <span style="color: black; font-size: 10px;">{{'filter.hoanthanh' |
+                                                    translate}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 pd-0">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel class="panel-custom">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-12 kt--margin-bottom-10-mobile header-center"
+                                                            style="font-size: 16px; font-weight: 500; color:red">
+                                                            <span class="las la-thumb-tack"
+                                                                style="font-size: 20px; font-weight: 900;"></span>&nbsp;&nbsp;
+                                                            <span translate="projects.canluuy"></span>
+                                                            <span class="float-right"
+                                                                style="font-size: 16px;font-weight:400;color:#888">{{mywork.LuuY.length}}</span>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller">
+                                                    <div class="row font-chu w-100" style="line-height: 30px;"
+                                                        *ngFor="let my of mywork.LuuY">
+                                                        <div class="{{my.is_quahan == 1?'col-md-8':'col-md-12'}}">
+                                                            <mat-icon style="color:red;" *ngIf="my.urgent">flag
+                                                            </mat-icon>
+                                                            <span class="url hover-text-underline"
+                                                                style="color: black;">{{my.title}} </span>
+                                                        </div>
+                                                        <div class=" {{my.is_quahan == 1?'col-md-4':'d-none'}} text-right"
+                                                            style="padding: 5px">
+                                                            <span
+                                                                class="kt-badge kt-badge--inline kt-badge--pill kt-badge--wide -red-bg">
+                                                                {{'filter.quahan'|translate}}
+                                                            </span>&nbsp;
+                                                        </div>
+                                                    </div>
+
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                    <div class="col-md-12 pd-0">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel class="panel-custom">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-12 kt--margin-bottom-10-mobile header-center"
+                                                            style="font-size: 14px; color:#888">
+                                                            <span class="fa fa-inbox "></span>&nbsp;&nbsp;
+                                                            <span translate="projects.moiduocgiao"></span>&nbsp;&nbsp;
+                                                            <span
+                                                                class="float-right">{{mywork.MoiDuocGiao.length}}</span>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller">
+                                                    <div class="row" *ngFor="let my of mywork.MoiDuocGiao">
+                                                        <div class="col-md-12">
+                                                            <span style="color: black;">{{my.title}} </span>
+                                                        </div>
+                                                    </div>
+
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                    <div class="col-md-12 pd-0">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel class="panel-custom">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-12 kt--margin-bottom-10-mobile header-center"
+                                                            style="font-size: 14px; color:#888">
+                                                            <span class="fa fa-inbox"></span>&nbsp;&nbsp;
+                                                            <span translate="projects.giaodi"></span>&nbsp;&nbsp;
+                                                            <span
+                                                                class="float-right">{{mywork.GiaoQuaHan.length}}</span>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller">
+                                                    <div class="row" *ngFor="let my of mywork.GiaoQuaHan"
+                                                        style="line-height: 30px;">
+                                                        <div class="col-md-12">
+                                                            <mat-icon style="color:red;" *ngIf="my.urgent">flag
+                                                            </mat-icon>
+                                                            <span class="url hover-text-underline"
+                                                                style="color: black;">{{my.title}} </span>
+                                                        </div>
+                                                    </div>
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                </div>
+                            </kt-portlet-body>
+                        </kt-portlet>
+                    </div>
+                    <div class="section" *ngIf="overview">
+                        <kt-portlet>
+                            <kt-portlet-body class="hide-overflow">
+                                <div class="row font-chu">
+                                    <div class="col-md-12">
+                                        <h4>
+                                            <span style="color: black;"
+                                                translate="projects.thongtinchung"></span>&nbsp;&nbsp;
+                                        </h4>
+                                    </div>
+                                    <div class="col-md-12 " style="display: flex;">
+                                        <div class="row flex-nowrap">
+                                            <div class="chart" style="width: 150px;">
+                                                <div *ngIf="overview.Count" class="d-block">
+                                                    <canvas baseChart width="150px" height="120px"
+                                                        [options]=" { cutoutPercentage: 70 }"
+                                                        [data]="[overview.Count.htdunghan,overview.Count.htquahan,overview.Count.quahan,overview.Count.danglam,overview.Count.cho]"
+                                                        [labels]="labelChart"
+                                                        [colors]="[{backgroundColor: ['#40FF00', 'yellow', '#FE2E2E', 'rgb(21, 75, 253)', 'gray']}]"
+                                                        [chartType]="'pie'" [legend]="false">
+                                                    </canvas>
+                                                </div>
+                                            </div>
+                                            <div class="hide-more-text text-lowercase" style="flex-grow: 1;">
+                                                <div class="d-flex">
+                                                    <div
+                                                        style="background-color: #40FF00;margin:5px; width: 10px; height: 10px; border-radius:50% ;">
+                                                    </div>
+                                                    <span>{{overview.Count.htdunghan}} </span> &nbsp;
+                                                    {{'filter.htdunghan' | translate}}
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div
+                                                        style="background-color: yellow;margin:5px; width: 10px; height: 10px; border-radius:50% ;">
+                                                    </div>
+                                                    <span>{{overview.Count.htquahan}} </span> &nbsp; {{'filter.htquahan'
+                                                    | translate}}
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div
+                                                        style="background-color:#FE2E2E;margin:5px; width: 10px; height: 10px; border-radius:50% ;">
+                                                    </div>
+                                                    <span>{{overview.Count.quahan}} </span> &nbsp; {{'filter.quahan' |
+                                                    translate}}
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div
+                                                        style="background-color: rgb(21, 75, 253);margin:5px; width: 10px; height: 10px; border-radius:50% ;">
+                                                    </div>
+                                                    <span>{{overview.Count.danglam}} </span> &nbsp; {{'filter.danglam' |
+                                                    translate}}
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div
+                                                        style="background-color: gray;margin:5px; width: 10px; height: 10px; border-radius:50% ;">
+                                                    </div>
+                                                    <span>{{overview.Count.cho}} </span> &nbsp; {{'filter.dangcho' |
+                                                    translate}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 pd-0">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel class="panel-custom">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-12 kt--margin-bottom-10-mobile header-center"
+                                                            style="font-size: 16px; font-weight: 500; color:red">
+                                                            <span translate="projects.quahanganday"></span>
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller">
+                                                    <div class="row" style="padding: 5px 0;"
+                                                        *ngFor="let ov of overview.DueToday">
+                                                        <div class="col-md-7 text-2-line">
+                                                            <span style="color: black;">{{ov.title}} </span>
+                                                        </div>
+                                                        <div class="col-md-5 pd-0 text-right">
+                                                            <span
+                                                                class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getStatusLuuY(ov.status)}} kt-badge--wide">{{
+                                                                getItemLuuY(ov.status) }}</span>&nbsp;
+                                                        </div>
+                                                    </div>
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                    <div class="col-md-12 pd-0">
+                                        <mat-accordion style="display: contents;">
+                                            <mat-expansion-panel class="panel-custom">
+                                                <mat-expansion-panel-header style="padding: 0 15px 0 5px;">
+                                                    <mat-panel-title>
+                                                        <div class="col-md-12 kt--margin-bottom-10-mobile header-center"
+                                                            style="font-size: 16px; font-weight: 500; color:red">
+                                                            <span translate="projects.chuabatdau"></span>&nbsp;&nbsp;
+                                                        </div>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <perfect-scrollbar class="m-scrollable m-scroller">
+                                                    <div class="row" style="padding: 5px 0;"
+                                                        *ngFor="let ov of overview.NotStarted">
+                                                        <div class="col-md-7 text-2-line">
+                                                            <span style="color: black;">{{ov.title}} </span>
+                                                        </div>
+                                                        <div class="col-md-5 pd-0 text-right">
+                                                            <span
+                                                                class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getStatusLuuY(ov.status)}} kt-badge--wide">{{
+                                                                getItemLuuY(ov.status) }}</span>&nbsp;
+                                                        </div>
+                                                    </div>
+                                                </perfect-scrollbar>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                                </div>
+                            </kt-portlet-body>
+                        </kt-portlet>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </kt-portlet-body>
+</kt-portlet>

@@ -1,0 +1,239 @@
+.drop-above {
+	border: 1px dashed #000;
+	border-top: 10px solid transparent;
+	margin-top: -10px
+}
+
+.drop-below {
+	border-bottom: 10px solid transparent;
+	margin-bottom: -10px
+}
+
+.btn.btn-outline-primary.dl-drop-tree-custom-css {
+	color: #5867dd;
+	padding-left: 0;
+	margin-right: 12px;
+	border: unset;
+	border-radius: 0;
+	text-align: left;
+	text-overflow: ellipsis;
+	overflow: hidden
+}
+
+.btn-outline-primary.dl-drop-tree-custom-css:not(:disabled):not(.disabled).active, .btn-outline-primary.dl-drop-tree-custom-css:not(:disabled):not(.disabled):active, .btn.btn-outline-primary.dl-drop-tree-custom-css.active, .btn.btn-outline-primary.dl-drop-tree-custom-css.focus, .btn.btn-outline-primary.dl-drop-tree-custom-css:focus, .btn.btn-outline-primary.dl-drop-tree-custom-css:hover:not(:disabled), .show > .btn-outline-primary.dl-drop-tree-custom-css.dropdown-toggle {
+	color: #5867dd !important;
+	background-color: #fff
+}
+
+.btn.dl-drop-tree-custom-css.dropdown-toggle::after {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid;
+	margin: -2.5px 4px 0;
+	content: ""
+}
+
+.example-tree-invisible {
+	display: none
+}
+
+.example-tree li, .example-tree ul {
+	margin-top: 0;
+	margin-bottom: 0;
+	list-style-type: none
+}
+
+.example-tree-node {
+	display: block;
+	white-space: nowrap
+}
+
+.example-tree-node .example-tree-node {
+	padding-left: 40px
+}
+
+.example-tree-node .example-tree-node .dl-out-let {
+	background: url(/assets/images/dot.gif) 9px repeat-y
+}
+
+.dl-tree-dropdown .dl-out-let .example-tree-node:last-child .mat-icon-button {
+	background-repeat: no-repeat
+}
+
+html .m-body .m-content {
+	min-height: 100%
+}
+
+.dl-drop-menu-tree.dropdown-menu {
+	padding: 0
+}
+
+.dl-tree-dropdown .example-tree-node[aria-expanded=true] .dl-leaf-node {
+	background-position: -34px -4px
+}
+
+.dl-tree-dropdown .dl-out-let .example-tree-node[aria-expanded=true] .dl-leaf-node {
+	background-position: -31px -4px
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .mat-icon-button {
+	width: auto;
+	height: auto;
+	line-height: 30px;
+	border-radius: unset
+}
+
+.dl-tree-dropdown .example-tree-node[aria-expanded=false] .dl-leaf-node {
+	background-position: -99px -4px
+}
+
+.dl-tree-dropdown .dl-out-let .example-tree-node .mat-icon-button {
+	width: auto;
+	height: auto
+}
+
+.dl-tree-dropdown .example-tree-node .dl-leaf-icon {
+	background-position: -67px -4px;
+	vertical-align: middle
+}
+
+.dl-tree-dropdown .example-tree-node .icon-check {
+	color: #0ebb0e
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node {
+	color: rgba(0,0,0,.87);
+	text-decoration: none;
+	padding-left: 15px;
+	width: 100%;
+	background: url(/assets/images/dot.gif) center repeat-x;
+	margin-left: 10px !important;
+	display: -webkit-box;
+	display: flex;
+	position: relative
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt {
+	background: #fff;
+	width: 100%;
+	padding-right: 15px;
+	display: -webkit-box;
+	display: flex
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt .cover-drag-item.dl-drag.dl-drag-over {
+	color: rgba(0,0,0,.87)
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt .cover-drag-item {
+	padding-right: 10px
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt:hover .cover-drag-item.dl-drag-over {
+	background-color: #f5821f
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt .cover-drag-item.dl-drag-over {
+	position: relative
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt .cover-drag-item.dl-drag-over > span:before {
+	content: "\25B6";
+	font-style: normal;
+	font-weight: 400;
+	text-decoration: inherit;
+	color: #000;
+	font-size: 12px;
+	padding-right: .5em;
+	position: absolute;
+	left: -8px
+}
+
+.drop-above:before {
+	top: -15px
+}
+
+.drop-below:before {
+	top: 10px
+}
+
+.dl-tree-dropdown .example-tree-node .dl-name-node .name-txt .dl-drag-over {
+	width: max-content;
+	width: -moz-max-content;
+	width: -webkit-max-content;
+	width: -o-max-content;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: move
+}
+
+.dl-tree-dropdown .example-tree-node .dl-cover-tree-node {
+	background: url(/assets/images/dot.gif) 9px repeat-y;
+	display: -webkit-box;
+	display: flex;
+	line-height: 30px;
+	cursor: pointer
+}
+
+.dl-tree-dropdown .dl-out-let .example-tree-node:last-child > .dl-cover-tree-node {
+	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(50%,#fff),color-stop(50%,#000));
+	background-image: linear-gradient(to top,#fff 50%,#000 50%);
+	background-size: 1px 100%
+}
+
+.dl-tree-dropdown .dl-out-let .example-tree-node:last-child > .dl-cover-tree-node ~ .dl-out-let {
+	background: 0 0
+}
+
+.dl-tree-dropdown .example-tree-node .dl-cover-tree-node.active .dl-name-node .name-txt {
+	background-color: #f5f5f5
+}
+
+.dl-tree-dropdown .example-tree-node .dl-cover-tree-node.active .dl-name-node {
+	color: #5867dd
+}
+
+.dl-tree-dropdown .example-tree-node .dl-cover-tree-node:hover .dl-name-node .name-txt, .dl-tree-dropdown .example-tree-node .dl-cover-tree-node:hover .dl-name-node .name-txt .cover-drag-item {
+	background-color: #f5f5f5
+}
+
+.cdk-tree > cdk-nested-tree-node.example-tree-node.cdk-tree-node.cdk-nested-tree-node > .dl-out-let {
+	background: url(/assets/images/dot.gif) 9px repeat-y
+}
+
+.cdk-tree > cdk-nested-tree-node.example-tree-node.cdk-tree-node.cdk-nested-tree-node:last-child > .dl-out-let {
+	background: 0 0
+}
+
+.cdk-tree > cdk-nested-tree-node.example-tree-node.cdk-tree-node.cdk-nested-tree-node:last-child > .dl-cover-tree-node {
+	background-image: -webkit-gradient(linear,left bottom,left top,color-stop(50%,#fff),color-stop(50%,#000));
+	background-image: linear-gradient(to top,#fff 50%,#000 50%);
+	background-size: 1px 100%
+}
+
+.cdk-drag-placeholder {
+	opacity: 0
+}
+
+.cdk-drag-animating {
+	-webkit-transition: -webkit-transform 250ms cubic-bezier(0,0,.2,1);
+	transition: transform 250ms cubic-bezier(0,0,.2,1);
+	transition: transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)
+}
+
+.example-box:last-child {
+	border: none
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+	-webkit-transition: -webkit-transform 250ms cubic-bezier(0,0,.2,1);
+	transition: transform 250ms cubic-bezier(0,0,.2,1);
+	transition: transform 250ms cubic-bezier(0,0,.2,1),-webkit-transform 250ms cubic-bezier(0,0,.2,1)
+}

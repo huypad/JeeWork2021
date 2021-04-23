@@ -1,0 +1,53 @@
+<kt-portlet class="pd-0 d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
+    <kt-portlet-body class="pd-0" [ngStyle]="{'height': getHeight()}">
+        <div [ngClass]="{'wework-form': !(selectedId>0), 'wework-form-thugon': (selectedId>0)}">
+            <div class="hoatdong-body-1" [ngStyle]="{background: selectedId==item.id_row?'#ffffee':''}"
+                *ngFor="let item of data">
+                <div class="row">
+                    <div class="hoatdong-header avartar m--margin-bottom-10-mobile" style="margin-top:10px">
+                        
+                        <ngx-avatar size="{{selectedId > 0?28:48}}" matTooltip="{{item.NguoiTao.hoten}}"
+                            src="{{item.NguoiTao.image}}" *ngIf="item.NguoiTao.image;else bindText">
+                        </ngx-avatar>
+                        <ng-template #bindText>
+                            <ngx-avatar textSizeRatio="2.5" matTooltip="{{item.NguoiTao.hoten}}" 
+                                size="{{selectedId > 0?28:48}}" [name]="WeWorkService.getNameUser(item.NguoiTao.hoten)"
+                                bgColor="{{WeWorkService.getColorNameUser(item.NguoiTao.hoten)}}">
+                            </ngx-avatar>
+                        </ng-template>
+                    </div>
+                    <div class="hoatdong-header col-md-12 m--margin-bottom-10-mobile pbt-5">
+                        <div class="url" (click)="selected(item)">
+                            <span class="title">{{item.title}}</span>
+                        </div>
+                        
+                        <div [innerHtml]="item.description" class="clear-margin-p text-2-line"
+                            style="font-size:10pt; color: #666;"></div>
+                    </div>
+                    <div *ngIf="!(selectedId > 0)" class="user-seen m--margin-bottom-10-mobile">
+                        <kt-avatar-list-users [ListUser]="item.Follower" MaxSize="3" iconSize="35">
+                        </kt-avatar-list-users>
+
+                    </div>
+                    <div class="m--margin-bottom-10-mobile">
+                        <span style="font-size: 11px; color: #aaa;"></span>
+                        <span
+                            class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCss()}} kt-badge--wide">{{item.project_team}}</span>
+                        <span style="font-size: 11px; color: #dbaa07"> | {{item.NguoiTao.hoten}}</span><span style="color: #aaa; font-family: inherit;
+							font-size: inherit;"> | {{ 'filter.datao' | translate }}
+                            {{item.CreatedDate}}</span><span *ngIf="item.UpdatedDate" style="color: #aaa; font-family: inherit;
+							font-size: inherit;"> | {{ 'filter.capnhatcuoi' | translate }}
+                            {{item.UpdatedDate}}</span>
+                    </div>
+                    <div *ngIf="!(selectedId > 0)" class="position-star m--margin-bottom-10-mobile">
+                        <button [ngStyle]="{'color': item.favourite=='1'?'#FFD000':'#ebedf2'}" mat-icon-button
+                            (click)="favourite(item)">
+                            <mat-icon>star</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </kt-portlet-body>
+</kt-portlet>

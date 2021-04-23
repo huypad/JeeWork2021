@@ -1,0 +1,191 @@
+// @import "@fullcalendar/core/main.css"; 
+
+$success_BgColor: #6EAA17;
+$accent_BgColor: #4a90f1;
+$warn_BgColor: #AF3C3C;
+$default_BgColor: #dddddd;
+
+.work-calendar {
+    .booking-calendar .fc-time-grid .fc-slats td {
+        height: 3em;
+    }
+
+    .booking-calendar .fc-time-grid .fc-event,
+    .booking-calendar .fc-time-grid .fc-bgevent {
+        background-color: $default_BgColor;
+        border-color: $default_BgColor;
+        // margin: -2px -6px 10px -6px;
+    }
+
+    .booking-calendar .fc-body .fc-mirror {
+        background-color: $warn_BgColor !important;
+        border-color: $warn_BgColor !important;
+    }
+
+    .mat-mini-fab.btn-calendar {
+        background-color: transparent;
+        color: #646c9a;
+        box-shadow: none;
+        margin: 0 5px;
+    }
+
+    .mat-mini-fab.btn-calendar:hover {
+        background-color: rgb(228, 228, 228);
+    }
+
+    .booking-calendar .fc-center>div {
+        display: flex;
+    }
+
+    .booking-calendar .fc-center>div h2 {
+        padding: 0 20px;
+    }
+
+    // .booking-calendar .fc-toolbar .fc-button {
+    //     border: none;
+    //     &:hover {
+    //         border: none;
+    //     }
+    // }
+    // .booking-calendar .fc-toolbar .fc-button .fc-icon-chevron-left:before {
+    //     content: "\f101";
+    // }
+    // .booking-calendar .fc-toolbar .fc-button .fc-icon-chevron-right:before {
+    //     content: "\000BB";
+    //     font-size: 4em;
+    // }
+    .fc-button.fc-button-primary {
+        background-color: #fff;
+        border: 1px solid #8aafce;
+        color: #6688a6 !important;
+
+        &.fc-dayGridMonth-button {
+            color: #c6699f !important;
+        }
+
+        &.fc-timeGridWeek-button {
+            color: #69aa46 !important;
+        }
+
+        &.fc-button-active,
+        &:not(:disabled):active,
+        &:not(:disabled).fc-button-active {
+            background-color: #fff;
+            border: 1px solid #8aafce;
+        }
+
+        &:not(:disabled):active:focus,
+        &:not(:disabled).fc-button-active:focus {
+            box-shadow: none;
+            background-color: #eaf2f8 !important;
+        }
+
+        &:hover {
+            background-color: #eaf2f8 !important;
+        }
+    }
+
+    .title-calendar {
+        font-size: 20px;
+        font-weight: 500;
+        color: #0F3B82;
+        text-align: center;
+
+        .red-text {
+            color: red;
+            font-weight: bold;
+        }
+    }
+
+    .fc-content {
+        font-size: 13px;
+
+        .title-header {
+            background-color: #FE9EA0;
+            color: #fff;
+            font-weight: 500;
+            line-height: 20px;
+        }
+
+        .title-time {
+            color: red;
+
+            .content-time {
+                font-weight: bold;
+            }
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+    }
+
+    //ẩn calendar
+    .fc-view.fc-timeGridWeek-view.fc-timeGrid-view {
+        display: none;
+    }
+
+    .table-custom-calendar {
+        font-size: 14px;
+    }
+
+    .table-custom-calendar .header-table {
+        background-color: #eee;
+        color: #333;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border-color: #ddd;
+    }
+
+    // #region custom css
+    .fc-unthemed .fc-event .fc-content,
+    .fc-unthemed .fc-event-dot .fc-content {
+        padding: 0.2rem 0.2rem 0.2rem 2rem;
+    }
+
+    .fc-unthemed .fc-event .fc-content:before,
+    .fc-unthemed .fc-event-dot .fc-content:before {
+        display: none;
+    }
+
+    .fc-unthemed .fc-event.fc-start .fc-content,
+    .fc-unthemed .fc-event-dot.fc-start .fc-content {
+        .fc-image {
+            width: 15px;
+            height: 15px;
+            top: 0.25rem;
+            left: 0.5rem;
+            display: block;
+            content: " ";
+            position: absolute;
+            border-radius: 50%;
+        }
+    }
+
+    .fc-event.success {
+        background-color: $success_BgColor;
+
+        .fc-title {
+            color: white;
+            text-decoration: line-through;
+        }
+    }
+
+    .fc-event.overdue {
+        background-color: $warn_BgColor;
+
+        .fc-title {
+            color: white;
+        }
+    }
+
+    .fc--button{
+        display: none!important;
+    }
+
+    // #endregion
+}

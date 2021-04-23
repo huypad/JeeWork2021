@@ -1,0 +1,184 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+    <div class="kt-portlet__head kt-portlet__head__custom">
+        <div class="kt-portlet__head-label">
+            <h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+        </div>
+    </div>
+    <form class="kt-form" [formGroup]="itemForm">
+        <div class="kt-portlet__body">
+            <div class="row">
+                <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid ">
+                        <input matInput placeholder="{{ 'projects.duanphongban' | translate }}"
+                            class="require" required [disabled]="ShowDrop" disabled='true' formControlName="title" />
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="type"
+                            placeholder="{{ 'projects.nhanbancongviec' | translate }}">
+                            <mat-option [value]="0">
+                                <span translate="projects.khongnhanban"></span>
+                            </mat-option>
+                            <mat-option [value]="1">
+                                <span translate="projects.nhanbannhom"></span>
+                            </mat-option>
+                            <mat-option [value]="2">
+                                <span translate="projects.nhanbanall"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="keep_creater"
+                            placeholder="{{ 'projects.giulaithongtinnguoigiao' | translate }}">
+                            <mat-option [value]="true">
+                                <span translate="projects.giuthongtinnguoigiao"></span>
+                            </mat-option>
+                            <mat-option [value]="false">
+                                <span translate="projects.khonggiuthongtinnguoigiao"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="keep_checker"
+                            placeholder="{{ 'projects.giulaithongtinnguoinhan' | translate }}">
+                            <mat-option [value]="true">
+                                <span translate="projects.giuthongtinnguoinhan"></span>
+                            </mat-option>
+                            <mat-option [value]="false">
+                                <span translate="projects.khonggiuthongtinnguoinhan"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="keep_follower"
+                            placeholder="{{ 'projects.giulaithongtinnguoitheodoi' | translate }}">
+                            <mat-option [value]="true">
+                                <span translate="projects.giuthongtinnguoitheodoi"></span>
+                            </mat-option>
+                            <mat-option [value]="false">
+                                <span translate="projects.khonggiuthongtinnguoitheodoi"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-8 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="keep_deadline"
+                            (selectionChange)="Keep_deadlineChange($event.value)"
+                            placeholder="{{ 'projects.giulaithongtinhanhoanthanh' | translate }}">
+                            <mat-option [value]="0">
+                                <span translate="projects.giuthongtinhanhoanthanh"></span>
+                            </mat-option>
+                            <mat-option [value]="1">
+                                <span translate="projects.khongthietlaphanhoanthanh"></span>
+                            </mat-option>
+                            <mat-option [value]="2">
+                                <span translate="projects.covagiulaihanhoanthanh"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 m--margin-bottom-20-mobile" *ngIf="ShowDrop">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <input matInput type="number" pattern="(^[1-9][0-9]*$)" class="require" required
+                            placeholder="{{ 'projects.dieuchinhhanhoanthanh' | translate }}"
+                            formControlName="hour_adjusted" (keypress)="text($event)" />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="keep_checklist"
+                            placeholder="{{ 'projects.giulaichecklists' | translate }}">
+                            <mat-option [value]="true">
+                                <span translate="projects.cocheckists"></span>
+                            </mat-option>
+                            <mat-option [value]="false">
+                                <span translate="projects.khongchecklist"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-form-field class="mat-form-field-fluid">
+                        <mat-select formControlName="keep_child"
+                            placeholder="{{ 'projects.giulaicongvieccon' | translate }}">
+                            <mat-option [value]="true">
+                                <span translate="projects.cocongvieccon"></span>
+                            </mat-option>
+                            <mat-option [value]="false">
+                                <span translate="projects.khongcongvieccon"></span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <span translate="projects.baogom">
+                    </span>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-checkbox formControlName="keep_admin"><span
+                            translate="projects.nguoiquantri"></span>
+                    </mat-checkbox>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-checkbox formControlName="keep_member"><span
+                            translate="projects.thanhvienduan"></span>
+                    </mat-checkbox>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-checkbox formControlName="keep_tag"><span translate="projects.tags"></span>
+                    </mat-checkbox>
+                </div>
+                <div class="col-md-6 m--margin-bottom-10-mobile">
+                    <mat-checkbox formControlName="keep_role"><span
+                            translate="projects.phanquyensudung"></span>
+                    </mat-checkbox>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="kt-portlet__foot">
+        <div class="kt-form__actions kt-form__actions--solid">
+            <div class="row text-right">
+                <div class="col-lg-12">
+                    <button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+                        cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+                        <span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+                            class="spinner-button-pad"></div>
+                    </button>&nbsp;
+                    <button type="button" mat-raised-button color="accent" (click)="onSubmit(true)"
+                        [disabled]="disabledBtn" matTooltip="{{ 'projects.nhanbanduan' | translate }}">
+                        <span translate="projects.nhanbanduan"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+                            class="spinner-button-pad"></div>
+                    </button> &nbsp;
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

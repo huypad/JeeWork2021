@@ -1,0 +1,22 @@
+:host {
+	::ng-deep {
+		ngb-tabset > .nav-tabs {
+			display: none;
+		}
+		
+	}
+}
+.kt-head.kt-head--skin-light .kt-head__title.cl-white{
+	color: #fff;
+}
+.dl-tabs-nav{
+	background-color: rgba(0,0,0, 0.2) 
+	
+}
+.dl-tabs-nav.nav-tabs.nav-tabs-line.nav.nav-tabs .nav-link:hover, 
+.dl-tabs-nav.nav-tabs.nav-tabs-line.nav.nav-tabs .nav-link.active, 
+.dl-tabs-nav.nav-tabs.nav-tabs-line a.nav-link:hover, 
+.dl-tabs-nav.nav-tabs.nav-tabs-line a.nav-link.active{	
+	color:#fff; 
+}
+

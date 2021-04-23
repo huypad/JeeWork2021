@@ -1,0 +1,62 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+    <div class="kt-portlet__head kt-portlet__head__custom" style="background: #f2f5f8;
+	text-transform: uppercase;">
+        <div class="col-md-12 kt-margin-bottom-10-mobile" style="margin-top: 20px;">
+            <h3 class="kt-portlet__head-title">{{'projects.trichxuatcongviec'|translate}}</h3>
+        </div>
+    </div>
+    <div class="kt-portlet__body" style="max-height: 100%;">
+        <div class="form-group kt-form__group ">
+            <div class="col-md-12 kt--margin-bottom-10-mobile">
+                <mat-form-field class="mat-form-field-fluid ">
+                    <input [(ngModel)]="filter.TuNgay" matInput placeholder="{{'wuser.tunngay'|translate}}" [matDatepicker]="picker1" />
+                    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                    <mat-hint>{{'day.dinhdang' | translate}} DD/MM/YYYY</mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group kt-form__group ">
+            <div class="col-md-12 kt--margin-bottom-10-mobile">
+                <mat-form-field class="mat-form-field-fluid ">
+                    <input [(ngModel)]="filter.DenNgay" matInput placeholder="{{'wuser.denngay'|translate}}" [matDatepicker]="picker2" />
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                    <mat-hint>{{'day.dinhdang' | translate}} DD/MM/YYYY</mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="form-group kt-form__group ">
+            <div class="col-md-12 kt--margin-bottom-10-mobile">
+                <mat-label>{{'projects.trichxuatcongvieccon'|translate}}</mat-label>
+                <mat-radio-group [(ngModel)]="filter.displayChild">
+                    <p>
+                        <mat-radio-button [value]="1">{{'GeneralKey.yes'|translate}}</mat-radio-button>
+                    </p>
+                    <p>
+                        <mat-radio-button [value]="0">{{'GeneralKey.no'|translate}}</mat-radio-button>
+                    </p>
+                </mat-radio-group>
+            </div>
+        </div>
+        <div class="form-group kt-form__group ">
+            <div class="col-md-12 kt--margin-bottom-10-mobile">
+                <mat-label>{{'projects.cancutheo'|translate}}</mat-label>
+                <mat-radio-group [(ngModel)]="sortField">
+                    <p>
+                        <mat-radio-button [value]="'created_date'">{{'projects.ngaytao'|translate}}</mat-radio-button>
+                    </p>
+                    <p>
+                        <mat-radio-button [value]="'deadline'">{{'projects.deadline'|translate}}</mat-radio-button>
+                    </p>
+                </mat-radio-group>
+            </div>
+        </div>
+        <div class="form-group kt-form__group ">
+            <div class="col-md-12 kt--margin-bottom-10-mobile text-center">
+                <button mat-raised-button (click)="close()">{{'GeneralKey.trolai' | translate}}</button>&nbsp;
+                <button mat-raised-button class="jee_btn-addclose" color="primary" (click)="onSubmit()">{{'GeneralKey.taixuong' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

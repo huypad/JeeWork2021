@@ -1,0 +1,116 @@
+<style>
+	.header {
+		height: 60px;
+		border-bottom: 1px solid #ebedf2;
+		padding-top: 20px;
+		padding-left: 20px
+	}
+
+	.h5 {
+		font-size: 1.3rem;
+		font-weight: 500;
+		font-family: Roboto
+	}
+
+	.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+		padding-bottom: 1.25em;
+		padding-top: 10px
+	}
+
+	.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+		padding-bottom: 1.25em;
+		padding-top: 10px
+	}
+
+	.kt-buttons--list {
+		text-align: center;
+		width: 100px;
+		height: 40px;
+		margin-top: 10px;
+	}
+
+	:host>>>.inp-error {
+		color: red;
+	}
+
+	.mat-table__wrapper .mat-table {
+		min-width: 100%;
+	}
+</style>
+<kt-portlet>
+	<kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'" [viewLoading$]="dataSource.loading$">
+		<ng-container ktPortletTitle>
+			<div class="kt-form__filtration">
+				<div class="row align-items-center">
+					{{ 'phanquyen.phanquyennhomnguoidung' |translate}}<span style="color: red;"></span>
+				</div>
+			</div>
+		</ng-container>
+		<ng-container ktPortletTools>
+			<button type="button" mat-raised-button class="jee_btn-addcontinue"
+				matTooltip="{{ 'GeneralKey.themmoi' | translate }}" *ngIf="permitService.VisibleNND"
+				(click)="ThemNhom()">
+				<span>{{'GeneralKey.themmoi'|translate}}</span>
+			</button>&nbsp;&nbsp;
+			<span hidden>Test</span>
+
+		</ng-container>
+	</kt-portlet-header>
+	<kt-portlet-body>
+		<div class="example-container mat-table__wrapper">
+			<table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" matSort matSortActive="id"
+				style="width: 100%" matSortDirection="asc" matSortDisableClear>
+				<ng-container matColumnDef="ID_Nhom">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="phanquyen.id_nhom" class="text-uppercase"></span>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.ID_Nhom}}
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="TenNhom">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode"
+						style="width: 80%;">
+						<span translate="phanquyen.tennhom" class="text-uppercase"></span> &nbsp;
+						<app-sort-icon column="TenNhom" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
+                            (sort)="sortField($event)"></app-sort-icon>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode" style="width: 80%;">
+						{{item.TenNhom}}
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef style="justify-content: center; width: 20%;">
+						<span translate="GeneralKey.tacvu" class="text-uppercase"></span>
+					</th>
+					<td mat-cell *matCellDef="let item" style="justify-content: center; width: 20%;">
+						<button mat-icon-button color="primary" type="button" (click)="PhanQuyen(item)"
+							matTooltip="{{ 'phanquyen.phanquyen' | translate }}">
+							<mat-icon>enhanced_encryption</mat-icon>
+						</button>&nbsp;
+						<button mat-icon-button color="accent" type="button" *ngIf="permitService.VisibleNND"
+							(click)="DanhSachNguoiDung(item)"
+							matTooltip="{{ 'phanquyen.danhsachnguoidung' | translate }}">
+							<mat-icon>person_pin</mat-icon>
+						</button>&nbsp;
+						<button mat-icon-button color="warn" type="button"
+							*ngIf="!item.IsAdmin && permitService.VisibleNND" (click)="deleteItem(item)"
+							matTooltip="{{ 'GeneralKey.xoa' | translate }}">
+							<mat-icon>delete</mat-icon>
+						</button>&nbsp;
+					</td>
+				</ng-container>
+				<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="row.highlighted = !row.highlighted"
+					[ngClass]="{hovered: row.hovered, highlighted: row.highlighted}" (mouseover)="row.hovered = true"
+					(mouseout)="row.hovered = false"></tr>
+			</table>
+			<div class="mat-table__message" *ngIf="!dataSource.hasItems"><span
+					translate="GeneralKey.khongcodulieu"></span>
+			</div>
+		</div>
+		<app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;"
+			[paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)">
+		</app-paginator>
+	</kt-portlet-body>
+</kt-portlet>

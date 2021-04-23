@@ -1,0 +1,28 @@
+<kt-portlet class="d-block" [options]="{hideHeader: true}">
+    <ng-container mPortletBody>
+        <ng-container *ngIf="Show_1">
+            <kt-department-work-list [ID_Project]="ID_Project">
+            </kt-department-work-list>
+        </ng-container>
+        <ng-container *ngIf="Show_2">
+            <kt-work-kanban [ID_Project]="ID_Project">
+            </kt-work-kanban>
+        </ng-container>
+        <ng-container *ngIf="Show_3">
+            <kt-work-stream [ID_Project]="ID_Project">
+            </kt-work-stream>
+        </ng-container>
+        <ng-container *ngIf="Show_4">
+            <kt-gantt-chart-2 [ID_Project]="ID_Project">
+            </kt-gantt-chart-2>
+        </ng-container>
+        <ng-container *ngIf="Show_6">
+            <kt-work-period [ID_Project]="ID_Project">
+            </kt-work-period>
+        </ng-container>
+        <ng-container *ngIf="Show_10">
+            <kt-work-list-new [ID_Project]="ID_Project">
+            </kt-work-list-new>
+        </ng-container>
+    </ng-container>
+</kt-portlet>

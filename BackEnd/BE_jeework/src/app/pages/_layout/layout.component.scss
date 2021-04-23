@@ -1,0 +1,218 @@
+app-layout {
+  opacity: 0;
+  height: 100%;
+
+  .grid-root {
+    height: 100%;
+  }
+}
+
+.page-loaded {
+  app-layout {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+  }
+}
+
+
+
+.kt-base {
+	opacity: 0;
+	height: 100%;
+
+	.kt-grid--root {
+		height: 100%;
+	}
+}
+
+.kt-page--loaded {
+	kt-base {
+		opacity: 1;
+		transition: opacity 1s ease-in-out;
+	}
+}
+
+.mat-table__wrapper .mat-table .mat-header-cell {
+	padding-right: 10px;
+	border-top: 0.5px solid rgb(222, 222, 222) !important;
+	padding-left: 10px !important;
+	font-size: 14px;
+	color: rgb(22, 168, 80);
+	font-weight: 500;
+}
+
+.mat-table__wrapper .mat-table .mat-cell {
+	padding-right: 10px;
+	padding-left: 10px !important;
+	color: rgb(50, 50, 50);
+	font-size: 14px;
+}
+
+.row {
+	margin-right: 0px !important;
+}
+
+/*--- Dùng để show hide waiting div*/
+
+.nemo-process-waiting {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: grey;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	cursor: wait;
+	opacity: 0.3;
+}
+
+.nemo-process-waiting-loader {
+	position: fixed;
+	top: 45%;
+	left: 50%;
+	z-index: 10000;
+	cursor: wait;
+}
+
+.nemo-show-wait {
+	display: block;
+}
+
+.nemo-hide-wait {
+	display: none;
+}
+
+.pulse-loader:not(:required) {
+	width: 50px;
+	height: 50px;
+	-moz-animation: pulse-loader 0.7s linear infinite alternate;
+	-webkit-animation: pulse-loader 0.7s linear infinite alternate;
+	animation: pulse-loader 0.7s linear infinite alternate;
+	border: 0px solid #ae35e6ec;
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	border-radius: 50%;
+	overflow: hidden;
+	text-indent: 50px;
+}
+
+/*Kết thúc waiting*/
+
+@-moz-keyframes pulse-loader {
+	0% {
+		-moz-box-shadow: #ae35e6ec 0 0 0px 20px;
+		box-shadow: #ae35e6ec 0 0 0px 20px;
+	}
+
+	40% {
+		-moz-box-shadow: none;
+		box-shadow: none;
+	}
+
+	100% {
+		-moz-box-shadow: #ae35e6ec 0 0 0px 25px inset;
+		box-shadow: #ae35e6ec 0 0 0px 25px inset;
+	}
+}
+
+@-webkit-keyframes pulse-loader {
+	0% {
+		-webkit-box-shadow: #ae35e6ec 0 0 0px 20px;
+		box-shadow: #ae35e6ec 0 0 0px 20px;
+	}
+
+	40% {
+		-webkit-box-shadow: none;
+		box-shadow: none;
+	}
+
+	100% {
+		-webkit-box-shadow: #ae35e6ec 0 0 0px 25px inset;
+		box-shadow: #ae35e6ec 0 0 0px 25px inset;
+	}
+}
+
+@keyframes pulse-loader {
+	0% {
+		-moz-box-shadow: #ae35e6ec 0 0 0px 20px;
+		-webkit-box-shadow: #ae35e6ec 0 0 0px 20px;
+		box-shadow: #ae35e6ec 0 0 0px 20px;
+	}
+
+	40% {
+		-moz-box-shadow: none;
+		-webkit-box-shadow: none;
+		box-shadow: none;
+	}
+
+	100% {
+		-moz-box-shadow: #ae35e6ec 0 0 0px 25px inset;
+		-webkit-box-shadow: #ae35e6ec 0 0 0px 25px inset;
+		box-shadow: #ae35e6ec 0 0 0px 25px inset;
+	}
+}
+
+/*--- Dùng để show hide waiting flowchart*/
+
+.flow-process-waiting {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: grey;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	cursor: wait;
+	opacity: 0.3;
+}
+
+.flow-process-waiting-loader {
+	position: fixed;
+	top: 45%;
+	left: 50%;
+	z-index: 10000;
+	cursor: wait;
+}
+
+.flow-show-wait {
+	display: block;
+}
+
+.flow-hide-wait {
+	display: none;
+}
+
+//===================text-align: center
+.mat-column-actions {
+	text-align: center !important;
+}
+
+.mat-column-STT {
+	text-align: center !important;
+}
+
+.mat-column-select {
+	text-align: center !important;
+}
+
+//=================CSS các thông tin phép=================
+.form-header {
+	font-size: 18pt;
+	text-align: center;
+	font-weight: bold;
+	padding: 20px;
+}
+
+.sau {
+	border-bottom: 1px dotted gray;
+	line-height: 40px;
+	min-width: 200px;
+	font-weight: bold;
+	font-size: 11pt;
+}
+
+.truoc {
+	padding-top: 10px;
+	font-size: 11pt;
+	border-bottom: 1px dotted white;
+}

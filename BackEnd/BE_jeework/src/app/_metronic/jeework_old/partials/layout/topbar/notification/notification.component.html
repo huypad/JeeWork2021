@@ -1,0 +1,44 @@
+<div ngbDropdown placement="{{desktopHeaderDisplay?'bottom-right':'bottom-left'}}" autoClose="outside" class="kt-header__topbar-item">
+	<div ngbDropdownToggle class="kt-header__topbar-wrapper">
+		<span class="kt-header__topbar-icon notification dl-notification"
+			[ngClass]="{'kt-pulse kt-pulse--brand': pulse, 'kt-pulse--light' : pulseLight, 'kt-header__topbar-icon--success' : iconType === 'success'	}"
+			matBadge="{{total>0?total:''}}" matBadgeColor="warn">
+	<i *ngIf="!useSVG" [ngClass]="icon"></i>
+	<span *ngIf="useSVG" class="kt-svg-icon" [ngClass]="{'kt-svg-icon--success' : iconType === 'success'}"
+		  [inlineSVG]="icon"></span>
+	<span class="kt-pulse__ring" [hidden]="!pulse"></span>
+	</span>
+	<!-- <span  matBadge="30" matBadgeColor="warn" class="kt-header__topbar-icon" [ngClass]="{'kt-pulse kt-pulse--brand': pulse, 'kt-pulse--light' : pulseLight, 'kt-header__topbar-icon--success' : iconType === 'success'	}">
+		<i *ngIf="!useSVG" [ngClass]="icon"></i>
+		<span *ngIf="useSVG" class="kt-svg-icon" [ngClass]="{'kt-svg-icon--success' : iconType === 'success'}" [inlineSVG]="icon"></span>
+		<span class="kt-pulse__ring" [hidden]="!pulse"></span>
+	</span> -->
+	<!-- <span class="kt-badge kt-badge--dot kt-badge--notify kt-badge--sm kt-badge--brand" [hidden]="!dot"></span> -->
+</div>
+
+<div ngbDropdownMenu class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround dropdown-menu-lg">
+	<form>
+		<!--begin: Head -->
+		<div class="kt-head kt-head--skin-{{skin}} kt-head--fit-x kt-head--fit-b" style="background: url(assets/app/media/img/misc/notification_bg.jpg); background-size: cover;">
+			<!--style="background: url(assets/app/media/img/misc/bg-1.jpg); background-size: cover;"-->
+			<h3 class="kt-head__title cl-white">
+				Thông báo
+				<span class="btn btn-{{ type }} btn-sm btn-bold btn-font-md btn-danger">{{total}} tin nhắn</span>
+			</h3>
+			<ul ktTabClickEvent class="dl-tabs-nav nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-{{ type }} kt-notification-item-padding-x" role="tablist">
+				<!-- <li class="nav-item">
+					<a (click)="tab.select('tab-id-1')" class="nav-link active show" data-toggle="tab" href="javascript:;" role="tab" aria-selected="true">Thông báo</a>
+				</li>
+				<li class="nav-item">
+					<a (click)="tab.select('tab-id-2')" class="nav-link" data-toggle="tab" href="javascript:;" role="tab" aria-selected="false">Events</a>
+				</li>
+				<li class="nav-item">
+					<a (click)="tab.select('tab-id-3')" class="nav-link" data-toggle="tab" href="javascript:;" role="tab" aria-selected="false">Logs</a>
+				</li> -->
+			</ul>
+		</div>
+		<!--end: Head -->
+		
+	</form>
+</div>
+</div>

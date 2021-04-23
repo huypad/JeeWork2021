@@ -1,0 +1,69 @@
+<div class="comment-box">
+	<div class="kt-form__group">
+		<div class="form-group kt-form__group row mg-0">
+			<div class="col-md-12 kt-margin-bottom-10-mobile comment-input">
+				<div class="user-info-container">
+					<div class="user-info">
+						<div class="kt-user-card__avatar">
+							<img alt="" src="{{UserData.Image}}">
+						</div>
+						<div class="kt-user-card__name">
+							<span class="m-card-user__name">{{UserData.HoTen}}</span>
+							<br>
+							<span class="m-card-user__username">
+								{{UserData.ChucVu}} &#x2022;
+								@{{UserData.Username}}
+							</span>
+						</div>
+					</div>
+					<div class="attachment">
+						<button mat-icon-button type="button" (click)="selectFile_PDF(-1)" matTooltip="Upload File">
+							<mat-icon>attach_file</mat-icon>
+						</button>&nbsp;
+						<input type='file' id="PDFInpdd" (change)="onSelectFile_PDF($event,-1)" style="display: none;">
+					</div>
+				</div>
+				<br />
+				<mat-form-field class="mat-form-field-fluid">
+					<textarea #matInput matInput placeholder="{{'work.nhapnoidungdegui'|translate}}"
+						[(ngModel)]="Comment" (keydown.enter)="CommentInsert($event.target.value,0,0,1)" rows="2"
+						[popover]="myPopoverC" [popoverOnHover]="false" (input)="onSearchChange($event)"
+						(click)="click($event)">
+						</textarea>
+					<popover-content #myPopoverC placement="bottom-left" [closeOnClickOutside]="true">
+						<kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+					</popover-content>
+				</mat-form-field>
+				
+			</div>
+			<div class="col-md-12 kt-margin-bottom-10-mobile" *ngIf="AttachFileComment.length>0">
+				<p style="font-weight:bold">{{AttachFileComment.length}} {{ 'GeneralKey.tepdinhkem' | translate }}</p>
+				<div class="row"  *ngFor="let att of AttachFileComment;let ind2 = index">
+					<div class="attach-item">
+                        <div class="attach-item-icon">
+                            <img src="{{att.icon}}" />
+                        </div>
+                        <div class="attach-item-name">
+                            <p>{{att.filename}}</p>
+                            <span>
+                                <a href="javascript:;">{{ 'GeneralKey.xemtruoc' | translate }}</a>&nbsp;&middot;&nbsp;<a
+                                    href="javascript:;">{{ 'GeneralKey.taixuong' | translate }}</a>
+                            </span>
+                        </div>
+                        <div class="attach-item-del">
+                            <button mat-icon-button color="warn" type="button" (click)="DeleteFile_PDF(-1,ind2)"
+                                matTooltip="{{ 'GeneralKey.xoafile' | translate }}">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<span #hiddenText
+		style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+	<span id="text-position"
+		style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
+</div> 

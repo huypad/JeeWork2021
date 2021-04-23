@@ -1,0 +1,212 @@
+<kt-portlet class="milestone-detail">
+
+    <kt-portlet-body class="hide-overflow ">
+        <div class="header-content">
+            <div class="chart">
+                <div class="d-block">
+                    <canvas width="150" *ngIf="(htdunghan + htquahan + quahan + danglam) != 0;else chartnull"
+                        height="100" baseChart [data]="[htdunghan,htquahan,quahan,danglam]" [legend]="false"
+                        [labels]="['ontime','late','overdue','in progress']" [chartType]="'pie'"
+                        [options]="{cutoutPercentage: 80}" [colors]="[{
+						backgroundColor: ['#40FF00', '#F7FE2E','#FE2E2E', '#0040FF']
+					 }]">
+                    </canvas>
+                    <ng-template #chartnull>
+                        <canvas width="150" height="100" baseChart [data]="[1]" [legend]="false" [labels]="['']"
+                            [chartType]="'pie'" [options]="options" [colors]="[{
+                            backgroundColor: ['#eee']
+                         }]">
+                        </canvas>
+                    </ng-template>
+
+                </div>
+                <div class="text-in-chart text-dark">
+                    <span class="d-block" style="font-weight: bold;font-size: 32px;">{{tong}}</span> {{'wuser.congviec'|
+                    translate}}
+                </div>
+            </div>
+            <div class="content">
+                <div class="content-1">
+                    <div class="action">
+                        <button (click)="Add()" mat-raised-button matTooltip="{{ 'GeneralKey.capnhat' | translate }}"
+                            color="accent" type="button">
+                            <span translate="department.chinhsuamuctieu"></span>
+                        </button>
+                        <div class="ms-time">
+                            <em>{{item.deadline_weekday}}</em>
+                            <span>{{item.deadline_day}}</span>
+                        </div>
+                    </div>
+                    <div class="title">
+                        {{item.title}}
+                    </div>
+                    <div>
+                        <span style="color: #999;">{{'workprocess.taoboi'|translate}}</span>&nbsp;<span
+                            style="font-weight: bold;">{{item.NguoiTao}}</span>&nbsp;<span
+                            style="color: #999;">{{'workprocess.luc'|translate}}</span>&nbsp;<span>{{item.CreatedDate}}</span>
+                    </div>
+                    <div>
+                        <span style="color: #999;">{{'workprocess.thoigian'|translate}}</span>&nbsp;<span
+                            style="font-weight: bold;">{{item.deadline | date: 'dd/MM/yyyy'}}</span>
+                        <br>
+                        <span style="color: #999;" translate="work.linkto"></span>&nbsp;<span
+                            style="font-weight: bold;">{{item.project_team}}</span>
+                    </div>
+                    <div class="row font-chu">
+                        <div class="col-md-10 pd-0 text-lowercase">
+                            <span style="font-weight: bold;">{{tong}}</span>&nbsp;<span style="color: #999;"
+                                translate="wuser.congviec"> </span>&nbsp;
+                            <span>{{htdunghan}}</span>&nbsp;<span style="color: #999;" translate="filter.htdunghan">
+                            </span>&nbsp;
+                            <span>{{htquahan}}</span>&nbsp;<span style="color: #999;" translate="filter.htquahan">
+                            </span>&nbsp;
+                            <span>{{quahan}}</span>&nbsp;<span style="color: #999;" translate="filter.quahan">
+                            </span>&nbsp;
+                            <span>{{danglam}}</span>&nbsp;<span style="color: #999;"
+                                translate="projects.dangthuchien"></span>&nbsp;
+                        </div>
+                        <div class="col-md-2" style="display: flex; text-align: right !important;">
+                            <span style="font-weight: bold; color: royalblue;">
+                                {{percentage}}%</span>
+                        </div>
+                    </div>
+                    <div class="progressbar">
+                        <ngb-progressbar height="6px" type="success" [value]="percentage"></ngb-progressbar>
+                    </div>
+                    <div style="padding-top: 5px;">
+                        <span class="d-block text-uppercase" style="color: #999;"
+                            translate="work.thongkemuctieu"></span>
+
+                        <span style="font-weight: bold;">{{tong_mt}}</span>&nbsp;<span style="color: #999;"
+                            translate="wuser.congviec"></span>&nbsp;<span>{{CountByMucTieu.htdunghan}}</span>&nbsp;
+                        <span style="color: #999;"
+                            translate="filter.htdunghan"></span>&nbsp;<span>{{htquahan_mt}}</span>&nbsp;
+                        <span style="color: #999;"
+                            translate="filter.htquahan"></span>&nbsp;<span>{{quahan_mt}}</span>&nbsp;
+                        <span style="color: #999;"
+                            translate="filter.quahan"></span>&nbsp;<span>{{danglam_mt}}</span>&nbsp;
+                        <span style="color: #999;" translate="projects.dangthuchien"></span>&nbsp;
+                    </div>
+                    <div class="row font-chu">
+                        <div class="col-md-9 pd-0" style="display: flex;">
+                            <span style="font-weight: bold;" class="text-uppercase"
+                                translate="work.personalincharge"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row float-right" style="padding-right: 25px;">
+
+                                <kt-avatar-user [image]="image" size="35" [name]="hoten" [matMenuTriggerFor]="menu"
+                                    [showFull]="true" [info]="'@' + username">
+                                </kt-avatar-user>
+                                <mat-menu #menu="matMenu">
+                                    <kt-avatar-user [image]="image" size="50" [name]="hoten"
+                                        [showFull]="true" [info]="'@' + username">
+                                    </kt-avatar-user>
+                                    <hr>
+                                    <div class="row text-dark">
+                                        <div class="col-md-2" style="font-weight: bold;">
+                                            <mat-icon>account_circle</mat-icon>
+                                        </div>
+                                        <div class="col-md-10 url -hover"><span translate="work.xemthongtin"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row text-dark">
+                                        <div class="col-md-2" style="font-weight: bold;">
+                                            <mat-icon>chat_bubble</mat-icon>
+                                        </div>
+                                        <div class="col-md-10 url -hover"><span translate="work.nhantinvoi"></span>
+                                            {{hoten}} </div>
+                                    </div>
+                                </mat-menu>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <span style="color: #999;" translate="work.motamuctieu"></span>
+                        <br>
+                        <span style="font-weight: bold;" [innerHtml]="item.description"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="header-list">
+            <div class="title text-uppercase">
+                <span translate="work.listoftask"></span>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-2" style="display: flex;">
+                    <mat-checkbox (change)="CheckedAll()" [checked]="chk_all" [disabled]="chk_all">
+                        <span translate="GeneralKey.tatca"></span>
+                    </mat-checkbox>
+                </div>
+                <div class="col-lg-2 m--margin-bottom-20-mobile" *ngFor="let loai of listStatus">
+                    <mat-checkbox [checked]="loai.Checked" [disabled]="!Disabled_Item"
+                        (change)="Checked(loai.ID, $event.checked)" value="{{loai.ID}}">
+                        {{loai.Title}}</mat-checkbox>
+                </div>
+            </div>
+        </div>
+
+        <div class="noidung-hoatdong">
+            <table class="table w-100 table-bordered table-hover table-hoatdong">
+                
+                <tbody>
+                    <tr *ngFor="let child of item.List">
+                        <td style="width: 200px;transform: translateY(10px);" class="text-center">
+                            <div class="time">
+                                <span>{{item.deadline_weekday}}</span><br>
+                                <span>{{item.deadline_day}}</span>
+                            </div>
+                            <div class="icon">
+                                <mat-icon [ngStyle]="{'color': buildColor(child)}">
+                                    {{getMatIcon(child)}}
+                                </mat-icon>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row font-chu" style="min-height: 50px;">
+                                <div class="col-md-10">
+                                    <div class="hide-text -hover url">
+                                        <span style="cursor: pointer; font-weight: bold;">{{child.title}}</span>
+                                    </div>
+                                    <div class="hide-text">
+                                        <span style="text-align: justify !important;"
+                                            [innerHtml]="child.description"></span>
+                                    </div>
+                                    <span *ngIf="child.important"
+                                        class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByLocked(child.important)}} kt-badge--wide"
+                                        style="margin-right: 5px;">{{ getItemLockedString(child.important) }}</span>
+                                    <span *ngIf="child.is_quahan"
+                                        class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByOverdue(child.is_quahan)}} kt-badge--wide"
+                                        style="margin-right: 5px;">{{ getItemOverdue(child.is_quahan) }}</span>
+                                    <span *ngIf="child.urgent"
+                                        class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByurgent(child.urgent)}} kt-badge--wide"
+                                        style="margin-right: 5px;">{{ getItemurgent(child.urgent) }}</span>
+                                    <span *ngIf="child.start_date != null"
+                                        style="font-weight: bold;">{{'filter.ngaybatdau'|translate}}: {{child.start_date
+                                        | date: 'dd/MM/yyyy'}}</span>
+                                </div>
+                                <div class="users url col-md-2 text-right">
+                                    <ngx-avatar size="30" matTooltip="{{child.user.hoten}}" src="{{child.user.image}}"
+                                        *ngIf="child.user.image;else bindText2">
+                                    </ngx-avatar>
+                                    <ng-template #bindText2>
+                                        <ngx-avatar textSizeRatio="2.5" matTooltip="{{child.user.hoten}}" size="30"
+                                            [name]="WeWorkService.getNameUser(child.user.hoten)"
+                                            bgColor="{{WeWorkService.getColorNameUser(child.user.hoten)}}">
+                                        </ngx-avatar>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </kt-portlet-body>
+</kt-portlet>

@@ -1,0 +1,26 @@
+<div class="card" id="dialog-selectday">
+    <div class="card-header">
+        <span class="text-uppercase" translate="day.chonngay"></span>
+    </div>
+    <div class="card-body" style="min-height:150px">
+        <mat-form-field class="w-100 bg-white" appearance="fill">
+            <mat-label>{{'GeneralKey.ngaybatdau'|translate}}</mat-label>
+            <input matInput [(ngModel)]="data.startDate" [matDatepicker]="picker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="w-100 bg-white" appearance="fill">
+            <mat-label>{{'GeneralKey.ngayketthuc'|translate}}</mat-label>
+            <input matInput [(ngModel)]="data.endDate" [matDatepicker]="picker1">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div class="card-footer text-right">
+        <button mat-button (click)="onNoClick()">
+            <span translate="work.nothanks"></span></button>
+        <button mat-button [mat-dialog-close]="data" cdkFocusInitial>
+            <span translate="work.ok"></span>
+        </button>
+    </div>
+</div>

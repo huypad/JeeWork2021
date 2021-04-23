@@ -1,0 +1,10 @@
+input:focus{
+    outline: none;
+    // border: none;
+}
+
+input:focus.bd-bottom{
+    outline: none;
+    border: none;
+    border-bottom: 1px solid green;
+}

@@ -1,0 +1,13 @@
+<div class="report-container">
+    <kt-portlet>
+        <kt-portlet-body class="pd-0">
+            <nav mat-tab-nav-bar>
+                <!-- <a mat-tab-link *ngFor="let item of Danhmuc" [routerLink]="item.url" routerLinkActive="router-link-active"> {{item.ten}}</a> -->
+                <a mat-tab-link  [routerLink]="'/reports'" routerLinkActive="router-link-active"> Dashboard </a>
+            </nav>
+        </kt-portlet-body>
+    </kt-portlet>
+    <div >
+        <router-outlet></router-outlet>
+    </div>
+</div>
