@@ -291,14 +291,7 @@ export class MenuConfigService {
 		return config;
 	}
 	async GetWMSRolesToLocalStorage() {
-		let res = await this.menuPhanQuyenServices.WMSRoles().toPromise().then();
-		/* Check Role */
-		if (res.length == 0) {
-			alert('Bạn chưa có quyền trong hệ thống !');
-			window.location.href = environment.RootWeb;
-		}
-		/*------------*/
-		localStorage.setItem('WMS_Roles', JSON.stringify(res));
+		
 	}
 
 	/**

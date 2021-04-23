@@ -32,13 +32,5 @@ export class MenuPhanQuyenServices {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(environment.ApiRoots + `api/ww_userrights/GetRolesForUser_WeWork?username=${username}`, { headers: httpHeaders });
 	}
-	layMenuChucNangWMS(): Observable<any> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.post<any>(environment.WMSApiRoot + "/nguoi-dung/LayMenuChucNang", "", { headers: httpHeaders });
-	}
-	WMSRoles(): Observable<any> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.post<any>(environment.WMSApiRoot + "/nguoi-dung/GetAllRoleForUser", "", { headers: httpHeaders });
-	}
 
 }

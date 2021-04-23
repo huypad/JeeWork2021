@@ -984,15 +984,15 @@ where w.disabled=0  " + strW;
 
                         }
                     }
-                    for (int i = dt.Rows.Count - 1; i >= 0; i--)
-                    {
-                        DataRow dr = dt.Rows[i];
-                        total = int.Parse(dr["tong"].ToString());
-                        if ((total) <= 0)
-                        {
-                            dr.Delete();
-                        }
-                    }
+                    //for (int i = dt.Rows.Count - 1; i >= 0; i--)
+                    //{
+                    //    DataRow dr = dt.Rows[i];
+                    //    total = int.Parse(dr["tong"].ToString());
+                    //    if ((total) <= 0)
+                    //    {
+                    //        dr.Delete();
+                    //    }
+                    //}
                     dt.AcceptChanges();
                     //Xuất dữ liệu
                     string title = "BÁO CÁO CHI TIẾT THEO THÀNH VIÊN";
@@ -1112,7 +1112,7 @@ where w.disabled=0  " + strW;
 
                     string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia
                     from  we_project_team_user u
-                    left join we_project_team p on u.id_project_team=p.id_row where id_project_team = " + query.filter["id_projectteam"];
+                    left join we_project_team p on u.id_project_team=p.id_row where u.id_user in (" + listID + ") and id_project_team = " + query.filter["id_projectteam"];
 
                     DataTable dt = cnn.CreateDataTable(queryuser);
 
@@ -1124,7 +1124,7 @@ where w.disabled=0  " + strW;
 
                     foreach (DataRow item in dt.Rows)
                     {
-                        var info = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
 
                         if (info != null)
                         {
@@ -1163,7 +1163,6 @@ where w.disabled=0  " + strW;
                     else
                         top = 10;
 
-                    // #update cập nhật status động
                     foreach (DataRow dr in dt.Rows)
                     {
                         if (dtW.Rows.Count > 0)
@@ -1180,19 +1179,19 @@ where w.disabled=0  " + strW;
                             }
                         }
                     }
-                    for (int i = dt.Rows.Count - 1; i >= 0; i--)
-                    {
-                        DataRow dr = dt.Rows[i];
-                        total = int.Parse(dr["tong"].ToString());
-                        if ((total) <= 0)
-                        {
-                            dr.Delete();
-                        }
-                    }
+                    //for (int i = dt.Rows.Count - 1; i >= 0; i--)
+                    //{
+                    //    DataRow dr = dt.Rows[i];
+                    //    total = int.Parse(dr["tong"].ToString());
+                    //    if ((total) <= 0)
+                    //    {
+                    //        dr.Delete();
+                    //    }
+                    //}
                     dt.AcceptChanges();
                     var data = (from r in dt.AsEnumerable()
                                .Take(top)
-                                where total > 0
+                                //where total > 0
                                 select new
                                 {
                                     id_nv = r["id_nv"],
