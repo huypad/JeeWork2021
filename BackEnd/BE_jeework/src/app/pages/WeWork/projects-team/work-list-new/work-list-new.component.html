@@ -96,7 +96,7 @@
                     <button mat-menu-item *ngFor="let item of listFilter_Groupby" (click)="GroupBy(item)">
                         {{ 'filter.'+item.title | translate }}</button>
                 </mat-menu>
-            </div>
+            </div> 
             <div class="item-filter url -hover">
                 <div [matMenuTriggerFor]="filterSubtask">
                     <span class="filter-name" translate="work.subtask"></span> : {{

@@ -966,10 +966,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       title: 'Assignee',
       value: 'assignee'
     },
-    // {
-    //   title: 'Priority',
-    //   value: 'priority'
-    // },
+    {
+      title: 'groupwork',
+      value: 'group'
+    },
   ];
   GroupBy(item) {
     this.filter_groupby = item;
