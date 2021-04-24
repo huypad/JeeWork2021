@@ -22,6 +22,12 @@ namespace JeeWork_Core2021.Controllers.Wework
     {
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+            _config = config.Value;
+        }
         //private JeeWorkConfig _config;
         // Đang sửa
         /// <summary>
