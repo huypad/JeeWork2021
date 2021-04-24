@@ -24,9 +24,6 @@ import { ChartsModule } from "ng2-charts";
 import { TranslateModule } from "@ngx-translate/core";
 import { ReportTabDashboardComponent } from "./report-tab-dashboard/report-tab-dashboard.component";
 import { ReportTabMemberComponent } from "./report-tab-member/report-tab-member.component";
-import { ItemGroupComponent } from "./item-group/item-group.component";
-import { ChartModule } from "angular-highcharts";
-import { CrossbarChartComponent } from "./crossbar-chart/crossbar-chart.component";
 const routes: Routes = [
   {
     path: "",
@@ -66,7 +63,6 @@ const routes: Routes = [
     DynamicComponentModule,
     ChartsModule,
     MatDialogModule,
-    ChartModule,
     AvatarModule,
   ],
   providers: [ReportService],

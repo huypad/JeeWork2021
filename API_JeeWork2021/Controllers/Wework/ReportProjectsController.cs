@@ -1205,7 +1205,7 @@ where w.disabled=0  " + strW;
                                     dangdanhgia = r["dangdanhgia"],
                                     ht_quahan = r["ht_quahan"],
                                     quahan = r["quahan"],
-                                    percentage = total == 0 ? 0 : (int.Parse(r["ht"].ToString()) * 100 / int.Parse(r["tong"].ToString()))
+                                    percentage = (total == 0 || int.Parse(r["tong"].ToString()) == 0) ? 0 : (int.Parse(r["ht"].ToString()) * 100 / int.Parse(r["tong"].ToString()))
                                 });
                     if ("excellent".Equals(query.filter["type"]))
                         data = data.OrderByDescending(x => x.hoanthanh);

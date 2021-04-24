@@ -15,7 +15,8 @@ export const environment = {
 	USERDATA_KEY: "authf649fc9a5f55",
 	apiUrl: "api",
 	ApiIdentity: 'https://identityserver.jee.vn',
-	redirectUrl:'https://portal.jee.vn/?redirectUrl='
+	redirectUrl:'https://portal.jee.vn/?redirectUrl=',
+	
 };
 
 /*

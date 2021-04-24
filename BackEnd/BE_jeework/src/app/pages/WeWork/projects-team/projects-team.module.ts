@@ -20,10 +20,10 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { WorkKanBanComponent } from "./work-kanban/work-kanban.component";
 import { WorkStreamComponent } from "./work-stream/work-stream.component";
-import {
-  AngularGanttScheduleTimelineCalendarModule,
-  GSTCComponent,
-} from "angular-gantt-schedule-timeline-calendar";
+// import {
+//   AngularGanttScheduleTimelineCalendarModule,
+//   GSTCComponent,
+// } from "angular-gantt-schedule-timeline-calendar";
 import { GanttChart2Component } from "./gantt-chart-2/gantt-chart-2.component";
 import { DynamicComponentModule } from "dps-lib";
 import { ListDepartmentService } from "../List-department/Services/List-department.service";
@@ -57,7 +57,7 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     EditorModule,
 	  MatMenuModule,
     ProjectTeamRoutingModule,
-    AngularGanttScheduleTimelineCalendarModule,
+    // AngularGanttScheduleTimelineCalendarModule,
     ChartsModule,
     AvatarModule,
     PopoverModule,

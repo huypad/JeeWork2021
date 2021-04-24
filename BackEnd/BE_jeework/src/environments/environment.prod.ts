@@ -3,8 +3,8 @@ export const environment = {
   production: true,
   isMockEnabled: false, // You have to switch this, when your real back-end is done
   authTokenKey: "authce9d77b308c149d5992a80073637e4d5",
-  RootCookie: "vts-demo.com",
   RootWeb: "https://hr.vts-demo.com/", //'http://localhost:4200/',
+	ApiRootsLanding: "https://api-proxy.vts-demo.com/apild",
   ApiRoots: "https://localhost:44366/",
   logoLink: "",
   Module: "wework",
@@ -13,6 +13,5 @@ export const environment = {
   appVersion: "v717demo1",
   USERDATA_KEY: "authf649fc9a5f55",
   apiUrl: "api",
-
  
 };
