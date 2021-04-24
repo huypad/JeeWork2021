@@ -930,6 +930,7 @@ export const locale = {
 			filtertailieu: 'Tìm kiếm tài liệu',
 			gansao: 'Đánh dấu sao',
 			giaoboitoi: 'Giao bởi tôi',
+			groupwork: 'Nhóm công việc',
 			giaochotoi: 'Giao cho tôi',
 			giaovaduocgiao: 'Giao và được giao',
 			hienthisubtask: 'Hiển thị công việc con',

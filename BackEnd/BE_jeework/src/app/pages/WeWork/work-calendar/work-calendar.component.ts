@@ -439,9 +439,19 @@ export class WorkCalendarComponent implements OnInit {
     this.currentEvents = events;
   }
 
+  // getHeight() {
+  //   let tmp_height = 0;
+  //   tmp_height = window.innerHeight - 60 - this.tokenStorage.getHeightHeader();
+  //   var link = this.router.url.split('/').find(x => x == 'tasks');
+  //   if (link) {
+  //     tmp_height += 45;
+  //   }
+    
+  //   return tmp_height;
+  // }
   getHeight() {
     let tmp_height = 0;
-    tmp_height = window.innerHeight - 60 - this.tokenStorage.getHeightHeader();
+    tmp_height = window.innerHeight - 90 - this.tokenStorage.getHeightHeader();
     var link = this.router.url.split('/').find(x => x == 'tasks');
     if (link) {
       tmp_height += 45;
