@@ -14,12 +14,12 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ChangeDetect
 import { TokenStorage } from 'src/app/_metronic/jeework_old/core/auth/_services';
 
 @Component({
-	selector: 'kt-comment-new',
-	templateUrl: './comment-new.component.html',
-	styleUrls: ['./comment-new.component.scss']
+  selector: 'kt-comment-new',
+  templateUrl: './comment-new.component.html',
+  styleUrls: ['./comment-new.component.scss']
 })
 export class CommentNewComponent implements OnInit {
-	@Output() ListResult: EventEmitter<any> = new EventEmitter<any>();//event for component
+  @Output() ListResult: EventEmitter<any> = new EventEmitter<any>();//event for component
 	@Input() Id?: number = 0;//Id của đối tượng
 	@Input() View?: boolean = false;//view cho xem hay ko
 	//@Input() ListChecked?: any[] = [];//tên node roof có chứa các con của node, default = children
@@ -144,7 +144,7 @@ export class CommentNewComponent implements OnInit {
 	getDSYKien() {
 		this.service.getDSYKien(this.Id, this.Loai).subscribe(res => {
 			if (res && res.status == 1) {
-				this.ListYKien = res.data.filter(x => x.id_row == this.id_comment);
+				this.ListYKien = res.data.filter(x=>x.id_row == this.id_comment);
 				this.createForm();
 				this.changeDetectorRefs.detectChanges();
 			}
@@ -303,7 +303,7 @@ export class CommentNewComponent implements OnInit {
 	}
 
 	ShowOrHideComment(ind: number) {
-
+    
 		var x = document.getElementById("ykchild" + ind);
 		//var a = document.getElementById("btnHideyk" + ind);
 		//var b = document.getElementById("btnShowyk" + ind);
@@ -328,11 +328,11 @@ export class CommentNewComponent implements OnInit {
 		objSave.object_id = this.Id;
 		if (type == 1) {
 			objSave.Attachments = this.AttachFileComment;
-			objSave.Users = this.getListTagUser(e, this.selected);
+			objSave.Users = this.getListTagUser(e,this.selected);
 		}
 		else {
 			objSave.Attachments = this.ListAttachFile[ind];
-			objSave.Users = this.getListTagUser(e, this.selectedChild);
+			objSave.Users = this.getListTagUser(e,this.selectedChild);
 		}
 		this.service.getDSYKienInsert(objSave).subscribe(res => {
 			if (type == 1) { this.Comment = ''; this.AttachFileComment = []; }
@@ -445,8 +445,8 @@ export class CommentNewComponent implements OnInit {
 
 	DownloadFile(link) {
 	}
-
-	DownloadFile1(link, filename) {
+	
+	DownloadFile1(link,filename) {
 		var element = document.createElement('a');
 		element.setAttribute('href', link);
 		element.setAttribute('download', filename);
@@ -572,7 +572,7 @@ export class CommentNewComponent implements OnInit {
 			let temp = this.CommentTemp.slice(i);
 			if (temp.includes(' '))
 				return '';
-			return this.CommentTemp.slice(i).replace('@', '');
+			return this.CommentTemp.slice(i).replace('@','');
 		}
 		return '';
 	}
@@ -591,7 +591,7 @@ export class CommentNewComponent implements OnInit {
 
 	isReply = false;
 
-	ItemSelectedChild(data, vi = -1) {
+	ItemSelectedChild(data, vi = -1) { 
 		this.selectedChild.push(data);
 		let i = this.CommentTemp.lastIndexOf('@');
 		this.CommentTemp = this.CommentTemp.substr(0, i) + '@' + data.hoten + '  ';
@@ -624,7 +624,7 @@ export class CommentNewComponent implements OnInit {
 			var match = this.CommentTemp.match(reg);
 			if (match != null && match.length > 0) {
 				let arr = match.map(x => x);
-				this.selected = this.selected.filter(x => this.checkUser(this.CommentTemp, x) >= 0);
+				this.selected = this.selected.filter(x => this.checkUser(this.CommentTemp ,x) >= 0 );
 			} else {
 				this.selected = [];
 			}
@@ -641,12 +641,12 @@ export class CommentNewComponent implements OnInit {
 			//this.myPopover.top = rect.y + h;
 			//this.myPopover.left = w ;
 			this.changeDetectorRefs.detectChanges();
-		} else {
+		}else{
 			this.myPopover.hide();
 		}
 	}
-	checkUser(text, value) {
-		return text.search('@' + value.hoten);
+	checkUser(text,value){
+		return text.search('@'+value.hoten);
 	}
 	onSearchChangeChild($event, vi = -1) {
 		if (vi >= 0)
@@ -659,7 +659,7 @@ export class CommentNewComponent implements OnInit {
 			var match = this.CommentTemp.match(reg);
 			if (match != null && match.length > 0) {
 				let arr = match.map(x => x);
-				this.selectedChild = this.selectedChild.filter(x => this.checkUser(this.CommentTemp, x) >= 0);
+				this.selectedChild = this.selectedChild.filter(x => this.checkUser(this.CommentTemp ,x) >= 0 );
 			} else {
 				this.selectedChild = [];
 			}
@@ -676,7 +676,7 @@ export class CommentNewComponent implements OnInit {
 			this.myPopoverChild.top = el.offsetTop + h;
 			this.myPopoverChild.left = el.offsetLeft + w;
 			this.changeDetectorRefs.detectChanges();
-		} else {
+		}else{
 			this.myPopoverChild.hide();
 		}
 	}
