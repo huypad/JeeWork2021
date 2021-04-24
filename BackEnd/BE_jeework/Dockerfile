@@ -1,6 +1,7 @@
 FROM node:14.15.5-slim As builder
 WORKDIR /app
 COPY BackEnd/BE_jeework/package.json ./
+COPY BackEnd/BE_jeework/yarn.lock ./
 COPY BackEnd/BE_jeework/dps-lib-3.1.11.tgz ./
 RUN yarn install
 COPY BackEnd/BE_jeework /app/
