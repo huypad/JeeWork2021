@@ -61,12 +61,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                 #endregion
 
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error);
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
@@ -173,12 +173,12 @@ where 1=1" + dieukien_where + " order by " + dieukienSort;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -319,12 +319,12 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion

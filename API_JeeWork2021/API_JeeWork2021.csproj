@@ -55,8 +55,6 @@
     <Content Include="bin\Debug\net5.0\API_JeeWork2021.deps.json" />
     <Content Include="bin\Debug\net5.0\API_JeeWork2021.runtimeconfig.dev.json" />
     <Content Include="bin\Debug\net5.0\API_JeeWork2021.runtimeconfig.json" />
-    <Content Include="bin\Debug\net5.0\appsettings.Development.json" />
-    <Content Include="bin\Debug\net5.0\appsettings.json" />
     <Content Include="bin\Debug\net5.0\data.json" />
     <Content Include="dulieu\FileTemplate\project_import_work.xlsx" />
     <Content Include="dulieu\Images\Noimage.jpg" />

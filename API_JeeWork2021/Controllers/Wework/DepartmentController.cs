@@ -49,11 +49,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                 bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400");
                 Visible = true;
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error);
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
@@ -183,12 +183,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -410,7 +410,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         if (data.IsDataStaff_HR)
                         {
-                            DataTable dt_Staff_HR = WeworkLiteController.List_Account_HR(data.id_cocau, HttpContext.Request.Headers);
+                            DataTable dt_Staff_HR = WeworkLiteController.List_Account_HR(data.id_cocau, HttpContext.Request.Headers, _config);
                             if (dt_Staff_HR.Rows.Count > 0)
                             {
                                 foreach (DataRow users in dt_Staff_HR.Rows)
@@ -560,7 +560,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         if (data.IsDataStaff_HR) // Lấy dữ liệu nhân viên
                         {
-                            DataTable dt_Staff_HR = WeworkLiteController.List_Account_HR(data.id_cocau, HttpContext.Request.Headers);
+                            DataTable dt_Staff_HR = WeworkLiteController.List_Account_HR(data.id_cocau, HttpContext.Request.Headers, _config);
                             if (dt_Staff_HR.Rows.Count > 0)
                             {
                                 foreach (DataRow users in dt_Staff_HR.Rows)

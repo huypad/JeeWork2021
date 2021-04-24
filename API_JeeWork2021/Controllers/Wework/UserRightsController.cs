@@ -173,7 +173,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dt == null | cnn.LastError != null)
                         return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
                     #region Lấy danh sách nhân viên từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                     DataRow row;
@@ -285,7 +285,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     danhsach.Add(dr["username"].ToString());
                 }
                 #region Lấy danh sách nhân viên từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                 DataRow row;
@@ -595,7 +595,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     #region Lấy danh sách nhân viên từ JeeAccount
                     DataAccount = new List<AccUsernameModel>();
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                     DataRow row;

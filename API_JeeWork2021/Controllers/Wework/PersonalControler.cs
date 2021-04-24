@@ -122,14 +122,14 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
                     // #update status động
 
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion

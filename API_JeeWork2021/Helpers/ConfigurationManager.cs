@@ -24,7 +24,7 @@ namespace JeeWork_Core2021.Helpers
 
             AppSettings = ConfigAppSetting.GetSection("AppSettings").Get<AppSettings>();
             ConnDps = ConfigAppSetting.GetSection("ConnectionStrings").Get<ConnectionStrings>();
-        }        
+        }
 
     }
 

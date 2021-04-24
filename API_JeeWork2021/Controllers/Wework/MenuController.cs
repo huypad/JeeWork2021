@@ -20,7 +20,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     [EnableCors("JeeWorkPolicy")]
     public class MenuController : ControllerBase
     {
-
+        private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         //private JeeWorkConfig _config;
         // Đang sửa
@@ -49,12 +49,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                     using (DpsConnection Conn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
                     {
                         #region Lấy dữ liệu account từ JeeAccount
-                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
+                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                         string err = "";
-                        string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err);
+                        string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _config);
                         if (err != "")
                             return JsonResultCommon.Custom(err);
                         #endregion
