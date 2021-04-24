@@ -32,7 +32,8 @@
               "highcharts/highstock",
               "highcharts/highmaps",
               "chart.js",
-              "dayjs/locale/vi"
+              "dayjs/locale/vi",
+              "highcharts"
             ],
             "index": "src/index.html",
             "main": "src/main.ts",

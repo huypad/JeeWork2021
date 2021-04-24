@@ -790,53 +790,68 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (query == null)
                     query = new QueryParams();
 
-                Dictionary<string, string> collect = new Dictionary<string, string>
-                        {
-                            { "CreatedDate", "CreatedDate"},
-                            { "Deadline", "Deadline"},
-                            { "StartDate", "StartDate"}
-                        };
-                string collect_by = "CreatedDate";
-                if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-                    collect_by = collect[query.filter["collect_by"]];
-                SqlConditions cond = new SqlConditions();
-                string strW = "";
-                string strD = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
-                if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                if (!from1)
-                    return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
-                bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                if (!to1)
-                    return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
-                if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                {
-                    strW += " and id_department=@id_department";
-                    strD += " and id_row=@id_department";
-                    cond.Add("id_department", query.filter["id_department"]);
-                }
-                if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
-                }
-                string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                    displayChild = query.filter["displayChild"];
-
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers);
+                    Dictionary<string, string> collect = new Dictionary<string, string>
+                            {
+                                { "CreatedDate", "CreatedDate"},
+                                { "Deadline", "Deadline"},
+                                { "StartDate", "StartDate"}
+                            };
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+                    SqlConditions cond = new SqlConditions();
+                    string strW = "";
+                    string strD = "";
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    if (!from1)
+                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    strW += " and w." + collect_by + ">=@from";
+                    cond.Add("from", from);
+                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    if (!to1)
+                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    strW += " and w." + collect_by + "<@to";
+                    cond.Add("to", to);
+                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
+                    {
+                        listDept = query.filter["id_department"];
+                        //strW += " and id_department=@id_department";
+                        //strD += " and id_row=@id_department";
+                        //cond.Add("id_department", query.filter["id_department"]);
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        strW += " and status=@status";
+                        cond.Add("status", query.filter["status"]);
+                    }
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    if (listDept != "")
+                    {
+                        strW += " and id_department in (" + listDept + ") ";
+                    }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    string list_Todo = "";
+                    list_Todo = GetListStatusTodo(listDept, cnn);
+                    #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
-                    sqlq += @";select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-                                iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,id_department 
+                    sqlq += @";select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
                                 from v_wework_new w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -853,9 +868,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                                        data = new
                                        {
                                            tatca = dtW.AsEnumerable().Where(rr => rr["id_department"].Equals(r["id_row"])).Count(),
-                                           dangthuchien = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and status=1 "),
-                                           dangdanhgia = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and status=3 "),
-                                           hoanthanh = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and status=2 "),
+                                           dangthuchien = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and dangthuchien=1  "),
+                                           dangdanhgia = 0,
+                                           //dangdanhgia = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and status=3 "),
+                                           hoanthanh = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and (is_ht=1 or is_htquahan=1)"),
                                            quahan = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and is_quahan=1 ")
                                        }
                                    };
@@ -1103,6 +1119,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom(error);
                     #endregion
 
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1130,8 +1147,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        strW += " and id_department=@id_department";
-                        cond.Add("id_department", query.filter["id_department"]);
+                        listDept = query.filter["id_department"];
+                        //strW += " and id_department=@id_department";
+                        //cond.Add("id_department", query.filter["id_department"]);
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1151,6 +1169,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     dt.Columns.Add("Username");
                     dt.Columns.Add("Email");
                     dt.Columns.Add("Tenchucdanh");
+                    dt.Columns.Add("image");
                     dt.Columns.Add("tong");
                     dt.Columns.Add("ht");
                     dt.Columns.Add("ht_quahan");
@@ -1159,20 +1178,34 @@ namespace JeeWork_Core2021.Controllers.Wework
                     dt.Columns.Add("dangdanhgia");
                     foreach (var item in DataAccount)
                     {
-                        dt.Rows.Add(item.UserId, item.FullName, item.PhoneNumber, item.Username, item.Email, item.Jobtitle, 0, 0, 0, 0, 0, 0);
+                        dt.Rows.Add(item.UserId, item.FullName, item.PhoneNumber, item.Username, item.Email, item.Jobtitle, item.AvartarImgURL, 0, 0, 0, 0, 0, 0);
                     }
                     List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                     if (nvs.Count == 0)
                         return JsonResultCommon.ThanhCong(nvs);
                     string ids = string.Join(",", nvs);
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    if (listDept != "")
+                    {
+                        strW += " and id_department in (" + listDept + ") ";
+                    }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    string list_Todo = "";
+                    list_Todo = GetListStatusTodo(listDept, cnn);
+                    #endregion
                     string sqlq = @"select count(distinct p.id_row) as dem,id_user from we_project_team p 
                                     join we_project_team_user u 
                                     on p.id_row=u.id_project_team 
                                     where p.disabled=0 and u.disabled=0 
                                     and u.id_user in (" + ids + ") " +
                                     "group by u.id_user";
-                    sqlq += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan 
+                    sqlq += @";select id_row, id_nv, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                     from v_wework_new w 
                                     where id_nv in (" + ids + ") " + strW + " (parent)";
                     if (displayChild == "0")
@@ -1197,11 +1230,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                             if (row.Length > 0)
                             {
                                 dr["tong"] = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + dr["id_nv"].ToString()) : 0);
-                                dr["ht"] = success = (hasValue ? (int)dtW.Compute("count(id_nv)", " status=2 and id_nv=" + dr["id_nv"].ToString()) : 0);
+                                dr["ht"] = success = (hasValue ? (int)dtW.Compute("count(id_nv)", "is_ht=1 and id_nv=" + dr["id_nv"].ToString()) : 0);
                                 dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                                 dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
-                                dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " status=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
-                                dr["dangdanhgia"] = hasValue ? dtW.Compute("count(id_nv)", " status=3 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                dr["dangdanhgia"] = 0;
+                                //dr["dangdanhgia"] = hasValue ? dtW.Compute("count(id_nv)", " status=3 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             }
                         }
                     }
@@ -1223,7 +1257,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     id_nv = r["id_nv"],
                                     hoten = r["hoten"],
                                     tenchucdanh = r["tenchucdanh"],
-                                    image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
+                                    image = r["image"],
+                                    //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
                                     num_project = asP.Where(x => x["id_user"].Equals(r["id_nv"])).Select(x => x["dem"]).DefaultIfEmpty(0).First(),
                                     num_work = total,
                                     danglam = r["danglam"],
@@ -1386,6 +1421,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers);
                     if (DataAccount == null)
@@ -1426,9 +1462,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        strW += " and id_department=@id_department";
-                        strW1 += " and id_department=@id_department";
-                        cond.Add("id_department", query.filter["id_department"]);
+                        listDept = query.filter["id_department"];
+                        //strW += " and id_department=@id_department";
+                        //strW1 += " and id_department=@id_department";
+                        //cond.Add("id_department", query.filter["id_department"]);
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1439,12 +1476,26 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    // #update status động
+
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    if (listDept != "")
+                    {
+                        strW += " and id_department in (" + listDept + ") ";
+                        strW1 += " and id_department in (" + listDept + ") ";
+                    }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    string list_Todo = "";
+                    list_Todo = GetListStatusTodo(listDept, cnn);
+                    #endregion
+
                     DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                                                         m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
                                                         join we_project_team p on m.id_project_team=p.id_row
-                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
+                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
                                                         $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW1 + " order by title", cond);
                     #region Map info account từ JeeAccount
@@ -1550,6 +1601,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers);
 
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
@@ -1578,8 +1630,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        strW += " and id_department=@id_department";
-                        cond.Add("id_department", query.filter["id_department"]);
+                        listDept = query.filter["id_department"];
+                        //strW += " and id_department=@id_department";
+                        //cond.Add("id_department", query.filter["id_department"]);
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1589,14 +1642,25 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    // #update status động
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    if (listDept != "")
+                    {
+                        strW += " and id_department in (" + listDept + ") ";
+                    }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    string list_Todo = "";
+                    list_Todo = GetListStatusTodo(listDept, cnn);
+                    #endregion
                     DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                                                         m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
                                                         join we_project_team p on m.id_project_team=p.id_row
-                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
+                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                                                        "where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
+                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
                     //DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                     //                                    m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                     //                                    from we_milestone m 

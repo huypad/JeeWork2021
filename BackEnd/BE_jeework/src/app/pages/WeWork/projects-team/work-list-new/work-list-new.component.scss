@@ -1080,7 +1080,7 @@ div.cu-avatar {
 .check-list{
     position: absolute;
     top: 50%;
-    transform: translate(-175%, -50%);
+    transform: translate(-100%, -50%);
     opacity: 0;
 }
 
@@ -1192,7 +1192,7 @@ div.cu-avatar {
     width: 100px;
     margin: auto;
     text-align: center;
-    border: 2px solid #eee;
+    border: 2px solid #eee; 
     padding: 2px;
     border-radius: 25px;
     transform: translateY(-10px);

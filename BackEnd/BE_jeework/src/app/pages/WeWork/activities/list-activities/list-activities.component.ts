@@ -70,7 +70,10 @@ export class ListActivitiesComponent {
 		else
 			text = value.action_en;
 		// language=='vi'?act.action:act.
-		return text.replace("{0}","");
+		if(text){
+			return text.replace("{0}","");
+		}
+		return '';
 	}
 
 	ngOnInit() {

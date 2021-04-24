@@ -293,7 +293,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
                                     ,w.id_project_team from we_work w where w.Disabled=0 group by w.id_project_team) w 
                                     on p.id_row=w.id_project_team 
-                                    where p.Disabled=0 and de.Disabled = 0 and id_department in ({listDept}) 
+                                    where p.Disabled=0 and p.CreatedBy in ({listID}) and  de.Disabled = 0 and id_department in ({listDept}) 
                                     " + dieukien_where + "  order by " + dieukienSort;
                     //if (!Visible)
                     //{

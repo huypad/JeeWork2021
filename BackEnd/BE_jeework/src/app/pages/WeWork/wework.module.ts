@@ -94,7 +94,7 @@ import { workAddFollowersComponent } from './work/work-add-followers/work-add-fo
 import { CustomUserComponent } from './report/custom-user/custom-user.component';
 
 import { PeriodViewComponent } from './work/period-view/period-view.component';
-import { AngularGanttScheduleTimelineCalendarModule } from 'angular-gantt-schedule-timeline-calendar';
+// import { AngularGanttScheduleTimelineCalendarModule } from 'angular-gantt-schedule-timeline-calendar';
 import { WorkGroupEditComponent } from './work/work-group-edit/work-group-edit.component';
 import { AuthorizeEditComponent } from './user/authorize-edit/authorize-edit.component';
 import { DialogSelectdayComponent } from './report/dialog-selectday/dialog-selectday.component';
@@ -104,7 +104,6 @@ import { ProjectsTeamService } from './projects-team/Services/department-and-pro
 import { ReportTabDashboardComponent } from './report/report-tab-dashboard/report-tab-dashboard.component';
 import { ItemGroupComponent } from './report/item-group/item-group.component';
 import { CrossbarChartComponent } from './report/crossbar-chart/crossbar-chart.component';
-import { ChartModule } from 'angular-highcharts';
 import { ChartsModule } from 'ng2-charts';
 import { AttachmentService } from './services/attachment.service';
 import { AvatarModule } from "ngx-avatar";
@@ -233,7 +232,6 @@ import { MatDividerModule } from '@angular/material/divider';
 		PopoverModule,
 		MatChipsModule,
 		ChartsModule,
-		ChartModule,
 		MatToolbarModule,
 		AvatarModule,
 		FullCalendarModule,
@@ -273,7 +271,7 @@ import { MatDividerModule } from '@angular/material/divider';
 		UpdateByKeyService,
 		filterService,
 		TagsService,
-		AngularGanttScheduleTimelineCalendarModule,
+		// AngularGanttScheduleTimelineCalendarModule,
 		CommonService,
 		AuthService,
 		TokenStorage,

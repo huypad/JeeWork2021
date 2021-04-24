@@ -120,7 +120,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                 ", email_assign_work, email_update_work, email_update_status, email_delete_work" +
                                 ", email_update_team, email_delete_team, email_upload_file, default_view " +
                                 "from we_project_team " +
-                                "where Disabled = 0";
+                                $"where Disabled = 0 and CreatedBy in ({listID})";
                         }
                         dt_space = Conn.CreateDataTable(sql_space);
                         dt_project = Conn.CreateDataTable(sql_project);
