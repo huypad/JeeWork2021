@@ -1,0 +1,77 @@
+version: '3.9'
+
+networks:
+  vault_vault_network:
+    external: true
+  traefik_traefik-network:
+    external: true
+  kafka-network:
+    external: true
+
+services:
+  api:
+    image: registry.jee.vn/hoaaq/jeework-api:latest
+    networks:
+      - vault_vault_network
+      - traefik_traefik-network
+      - kafka-network
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      KafkaConfig__Brokers: ${KAFKA_BROKER}
+      KafkaConfig__ProjectName: jee-work
+      VaultConfig__Endpoint: ${VAULT_ENDPOINT}
+      VaultConfig__Token: ${VAULT_TOKEN}
+      Error__mailto: huytv@dps.com.vn
+      Error__cc: huypaddaica@gmail.com
+      JeeWorkConfig__SysName: JeeWork
+      JeeWorkConfig__LinkAPI: ${PUBLIC_LINK_API}
+      JeeWorkConfig__ConnectionString: ${CONNECTION_STRING}
+      JeeWorkConfig__LinkBackend: ${BACKEND_URL}
+      JeeWorkConfig__API_Account: ${JEEACCOUNT_API}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        order: start-first
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik_traefik-network
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.jeeworkapi-http.rule=Host(`jeework-api.${DOMAIN}`)
+        - traefik.http.routers.jeeworkapi-http.entrypoints=http
+        - traefik.http.routers.jeeworkapi-http.middlewares=https-redirect
+        - traefik.http.routers.jeeworkapi-https.rule=Host(`jeework-api.${DOMAIN}`)
+        - traefik.http.routers.jeeworkapi-https.entrypoints=https
+        - traefik.http.routers.jeeworkapi-https.tls=true
+        - traefik.http.routers.jeeworkapi-https.tls.certresolver=le
+        - traefik.http.services.jeeworkapi.loadbalancer.server.port=80
+
+  backend:
+    image: registry.jee.vn/hoaaq/jeework-backend:latest
+    networks:
+      - traefik_traefik-network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        order: start-first
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik_traefik-network
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.jeeworkbackend-http.rule=Host(`jeework.${DOMAIN}`)
+        - traefik.http.routers.jeeworkbackend-http.entrypoints=http
+        - traefik.http.routers.jeeworkbackend-http.middlewares=https-redirect
+        - traefik.http.routers.jeeworkbackend-https.rule=Host(`jeework.${DOMAIN}`)
+        - traefik.http.routers.jeeworkbackend-https.entrypoints=https
+        - traefik.http.routers.jeeworkbackend-https.tls=true
+        - traefik.http.routers.jeeworkbackend-https.tls.certresolver=le
+        - traefik.http.services.jeeworkbackend.loadbalancer.server.port=80
