@@ -52,7 +52,7 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
                     DataSet ds = cnn.CreateDataSet(sqlq, new SqlConditions() { { "userID", loginData.UserID } });
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -101,7 +101,7 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -141,7 +141,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
  where m.person_in_charge=@iduser and m.person_in_charge in ({listID}) and disabled=0";
                     DataTable dt = cnn.CreateDataTable(sqlq, new SqlConditions() { { "iduser", loginData.UserID } });
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
 
@@ -193,7 +193,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("favourite-work")]
@@ -214,7 +214,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_work_favourite where CreatedBy=" + loginData.UserID + " and id_work=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     bool value = true;
                     int re = 0;
                     Hashtable val = new Hashtable();
@@ -234,13 +234,13 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_work_favourite");
                     }
                     if (re <= 0)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     return JsonResultCommon.ThanhCong(value);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -262,7 +262,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_project_team_user where disabled=0 and id_user=" + loginData.UserID + " and id_project_team=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     cnn.BeginTransaction();
                     bool value = true;
                     int re = 0;
@@ -281,12 +281,12 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (!WeworkLiteController.log(cnn, 39, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -294,7 +294,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -316,7 +316,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_topic_user where disabled=0 and id_user=" + loginData.UserID + " and id_topic=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     cnn.BeginTransaction();
                     bool value = true;
                     int re = 0;
@@ -337,12 +337,12 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (!WeworkLiteController.log(cnn, 29, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -350,7 +350,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -372,7 +372,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_topic_user where id_user=" + loginData.UserID + " and id_topic=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     bool value = true;
                     int re = 0;
                     cnn.BeginTransaction();
@@ -395,13 +395,13 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
 
                     if (!WeworkLiteController.log(cnn, value ? 28 : 27, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -409,7 +409,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -442,7 +442,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -563,7 +563,7 @@ iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan from v_wework w 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
     }

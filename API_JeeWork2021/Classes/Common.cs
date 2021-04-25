@@ -163,11 +163,11 @@ namespace JeeWork_Core2021.Classes
                 return roles;
             }
         }
-        public static string[] GetRolesForUser_WeWork(string username)
+        public static string[] GetRolesForUser_WeWork(string username, JeeWorkConfig config)
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("Username", username);
-            using (DpsConnection Conn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection Conn = new DpsConnection(config.ConnectionString))
             {
                 DataTable quyennhom = Conn.CreateDataTable("select Id_permit from tbl_group_permit gp " +
                     "inner join tbl_group_account gu on gp.id_group=gu.id_group where Username=@Username", Conds);

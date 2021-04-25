@@ -95,7 +95,7 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
  where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
 
@@ -178,7 +178,7 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -237,7 +237,7 @@ where w.disabled=0 and id_milestone = " + id;
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -386,7 +386,7 @@ where w.disabled=0 and id_milestone = " + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -438,7 +438,7 @@ where w.disabled=0 and id_milestone = " + id;
                     if (cnn.Insert(val, "we_milestone") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu milestone: title=" + data.title + ", id_project_team=" + data.id_project_team + ", description=" + data.description + ", deadline=" + data.deadline + ",person_in_charge=" + data.person_in_charge;
@@ -451,7 +451,7 @@ where w.disabled=0 and id_milestone = " + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -509,7 +509,7 @@ where w.disabled=0 and id_milestone = " + id;
                     if (cnn.Update(val, sqlcond, "we_milestone") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -526,7 +526,7 @@ where w.disabled=0 and id_milestone = " + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -558,7 +558,7 @@ where w.disabled=0 and id_milestone = " + id;
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu milestone (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -568,7 +568,7 @@ where w.disabled=0 and id_milestone = " + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
     }

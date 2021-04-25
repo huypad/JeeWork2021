@@ -102,7 +102,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
 
                     DataSet ds = cnn.CreateDataSet(sqlq + dieukien_where, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -162,7 +162,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -224,14 +224,14 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
                         if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_attachment')").ToString());
                     if (!WeworkLiteController.log(cnn, 21, idc, iduser, data.item.filename))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     //data.id_row = idc;
                     //cnn.EndTransaction();
@@ -244,7 +244,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
     }

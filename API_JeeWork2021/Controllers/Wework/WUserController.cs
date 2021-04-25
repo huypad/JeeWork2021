@@ -85,18 +85,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
-                    
-                    string sql = @$"select acc.* from {_config.HRCatalog}.dbo.v_account  acc
-where 1=1" + dieukien_where + " order by " + dieukienSort;
-                    sql += $";select id_row, Id_parent from {_config.HRCatalog}.dbo.tbl_chucdanh where disable=0";
-                    DataSet ds = cnn.CreateDataSet(sql);
-                    DataTable dt = ds.Tables[0].Copy();
-                    if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("UserId");
+                    dt.Columns.Add("FullName");
+                    dt.Columns.Add("Username");
+                    dt.Columns.Add("PhoneNumber");
+                    dt.Columns.Add("Email");
+                    dt.Columns.Add("Jobtitle");
+                    dt.Columns.Add("AvartarImgURL");
                     int total = DataAccount.Count;
                     if (total == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
-
+                    foreach (AccUsernameModel acc in DataAccount)
+                        dt.Rows.Add(acc.UserId, acc.FullName, acc.Username, acc.PhoneNumber, acc.Email, acc.Jobtitle, acc.AvartarImgURL);
+                    total = dt.Rows.Count;
                     var temp = dt.AsEnumerable();
                     pageModel.TotalCount = total;
                     pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
@@ -109,19 +111,20 @@ where 1=1" + dieukien_where + " order by " + dieukienSort;
                     }
                     // Phân trang
                     dt = temp.Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
-                    var data = (from r in DataAccount
-                                where r.FullName.ToLower().Contains(keywork.ToLower()) || r.Username.ToLower().Contains(keywork.ToLower())
+                    var data = (from r in dt.AsEnumerable()
+                                where r["FullName"].ToString().ToLower().Contains(keywork.ToLower()) || r["Username"].ToString().ToLower().Contains(keywork.ToLower())
                                 select new
                                 {
-                                    id_nv = r.UserId,
-                                    hoten = r.FullName,
-                                    username = r.Username,
-                                    mobile = r.PhoneNumber,
-                                    email = r.Email,
-                                    tenchucdanh = r.Jobtitle,
-                                    image = r.AvartarImgURL,
+                                    id_nv = r["UserId"],
+                                    hoten = r["FullName"],
+                                    username = r["Username"],
+                                    mobile = r["PhoneNumber"],
+                                    email = r["Email"],
+                                    tenchucdanh = r["Jobtitle"],
+                                    image = r["AvartarImgURL"],
                                     //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
-                                    manangers = getMananger(r.Jobtitle, ds, domain, loginData.CustomerID)
+                                    //manangers = getMananger(r.Jobtitle, ds, domain, loginData.CustomerID),
+                                    manangers = ""
                                 });
                     var list = data.Skip((query.page - 1) * query.record).Take(query.record).ToList();
                     return JsonResultCommon.ThanhCong(list, pageModel);
@@ -129,7 +132,7 @@ where 1=1" + dieukien_where + " order by " + dieukienSort;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -195,7 +198,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (infoAccount == null)
                         return JsonResultCommon.KhongTonTai();
@@ -299,7 +302,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("ListAuthorize")]
@@ -350,7 +353,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
 "order by " + dieukienSort;
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     #region Map info account từ JeeAccount
@@ -405,7 +408,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("Authorize")]
@@ -439,7 +442,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
                     if (cnn.Insert(val, "we_authorize") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu authorize: User được ủy quyền=" + data.id_user + ", Người ủy quyền=" + data.CreatedBy;
@@ -452,7 +455,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
     }

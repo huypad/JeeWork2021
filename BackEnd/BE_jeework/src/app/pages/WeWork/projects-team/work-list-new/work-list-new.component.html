@@ -229,16 +229,16 @@
                                                             </span>
                                                             <div class="cu-action-header d-none" *ngIf="CheckRoles(15)">
                                                                 <i class="fas fa-pencil-alt" matTooltipPosition="above"
-                                                                    *ngIf="this.filter_groupby.value == 'status'"
-                                                                    (click)="chinhsuastt(status)"
+                                                                    *ngIf="isUpdateStatusname(status.id_row)"
+                                                                    (click)="chinhsuanoidung(status)"
                                                                     matTooltip="{{ 'work.chinhsuatrangthai' | translate }}"></i>
                                                                 <i *ngIf="status.data.length > 0"
                                                                     class="fas fa-check-double"
                                                                     (click)="Chontatca(status)"
                                                                     matTooltipPosition="above"
                                                                     matTooltip="{{ 'work.selectedall' | translate }}"></i>
-                                                                <i class="fas fa-plus" (click)="chinhsuastt({})"
-                                                                    *ngIf="this.filter_groupby.value == 'status'"
+                                                                <i class="fas fa-plus" (click)="chinhsuanoidung({})"
+                                                                    *ngIf="isUpdateStatusname()"
                                                                     matTooltipPosition="above"
                                                                     matTooltip="{{ 'work.themtrangthai' | translate }}"></i>
                                                                 <!-- <i class="fas fa-ellipsis-h"
@@ -449,7 +449,7 @@
                                                                         <p style="font-size: 11px;"
                                                                             class="mg-0 text-muted"
                                                                             *ngIf="tasklocation">
-                                                                            {{this.ProjectTeam.title}}</p>
+                                                                            {{this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}</p>
                                                                         <span
                                                                             class=" cu-task-row-main__link-text-inner -hover position-relative hover-show-action">
                                                                             <span

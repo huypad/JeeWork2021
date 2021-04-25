@@ -72,7 +72,6 @@ export class AuthGuard implements CanActivate {
             .subscribe(
               (resData: any) => {
                 if (resData && resData.access_token) {
-                  debugger
                   localStorage.setItem(this.authService.authLocalStorageToken, JSON.stringify(resData));
                   if(resData.user.customData["jee-account"].userID){
                     this.TokenStorage.setIDUser(resData.user.customData["jee-account"].userID);

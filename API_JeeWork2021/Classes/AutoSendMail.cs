@@ -2,6 +2,8 @@
 using DpsLibs.Data;
 using JeeWork_Core2021.Controllers.Wework;
 using JeeWork_Core2021.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +16,9 @@ namespace JeeWork_Core2021.Classes
 {
     public class AutoSendMail
     {
-        public AutoSendMail()
+        private JeeWorkConfig _config;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public AutoSendMail(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
         {
             //
             // TODO: Add constructor logic here
@@ -31,6 +35,7 @@ namespace JeeWork_Core2021.Classes
             //60p chạy 1 lần
             TimerAutoUpdate = new System.Timers.Timer(3600000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
+            _config = config.Value;
         }
         public string MsgError;
         private string _basePath;
@@ -93,7 +98,7 @@ namespace JeeWork_Core2021.Classes
             try
             {
                 string HRConnectionString = JeeWorkConstant.getHRCnn();
-                using (DpsConnection cnn = new DpsConnection(HRConnectionString))
+                using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
                 {
                     DataTable tmp = cnn.CreateDataTable("select ngay,custemerid from tbl_ngaythongbao_custemer where id_row=4");
                     DataTable dt = cnn.CreateDataTable("select rowid from tbl_custemers");
@@ -101,9 +106,8 @@ namespace JeeWork_Core2021.Classes
                     {
                         string CustemerID = dt.Rows[i]["rowid"].ToString();
                         //MailInfo MInfo = new MailInfo(CustemerID, cnn);
-                        ConfigNotify config = new ConfigNotify(CustemerID, cnn);
                         //generate task from repeated
-                        using (DpsConnection cnnWW = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+                        using (DpsConnection cnnWW = new DpsConnection(_config.ConnectionString))
                         {
                             Insert_Template(cnnWW, CustemerID);
                             EveryDayForceRun(cnnWW, CustemerID);
@@ -209,7 +213,7 @@ namespace JeeWork_Core2021.Classes
                                     loginData.CustomerID = int.Parse(CustemerID);
                                     loginData.LastName = "Hệ thống";
                                     loginData.UserID = 0;
-                                    WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData);
+                                    WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, _config);
                                     #region Notify thêm mới công việc
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -359,7 +363,7 @@ and deadline< (GETDATE() +CONVERT(INT, (select Giatri from Temp_Thamso where id_
             foreach (DataRow dr in dt.Rows)
             {
                 //users.Add(long.Parse(dr["Id_NV"].ToString()));
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, _config);//thiết lập vai trò admin
             }
             //var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
             //List<long> listUser = users.Select(x => x.Id_NV).ToList();
@@ -387,7 +391,7 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
             foreach (DataRow dr in dt.Rows)
             {
                 //users.Add(long.Parse(dr["Id_NV"].ToString()));
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, _config);//thiết lập vai trò admin
             }
             //var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
             //List<long> listUser = users.Select(x => x.Id_NV).ToList();
@@ -397,23 +401,21 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
 
 
         }
-        public static void SendErrorReport(string custemerid, string errormsg)
+        public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config)
         {
             try
             {
-                var config = JeeWorkConstant.getConfig();
-                string mailto = config["Error:mailto"];
-                string mcc = config["Error:cc"];
+                string mailto = config.Error_MailTo;
+                string mcc = config.Error_MailCC;
                 if (!string.IsNullOrEmpty(mailto))
                 {
-                    string HRConnectionString = JeeWorkConstant.getHRCnn();
-                    using (DpsConnection cnn = new DpsConnection(HRConnectionString))
+                    using (DpsConnection cnn = new DpsConnection(config.HRConnectionString))
                     {
                         MailInfo MInfo = new MailInfo(custemerid, cnn);
                         MailAddressCollection cc = new MailAddressCollection();
                         if (!string.IsNullOrEmpty(mcc))
                             cc.Add(mcc);
-                        SendMail.Send(mailto, "Lỗi JeeWork", cc, "Nội dung lỗi: " + errormsg, custemerid, "", false, out errormsg, MInfo);
+                        SendMail.Send(mailto, "Lỗi JeeWork", cc, "Nội dung lỗi: " + errormsg, custemerid, "", false, out errormsg, MInfo, config);
                     }
                 }
             }

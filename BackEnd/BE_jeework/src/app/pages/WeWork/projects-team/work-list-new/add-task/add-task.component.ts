@@ -33,6 +33,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
   id_parent = 0;
   priority = 0
   id_nv_selected = 0
+  id_group = 0;
   Tags: any = [];
   list_priority: any = [];
   isError = false;
@@ -86,7 +87,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
         this.status = this.item.id_row;
       }
     }
-    else {
+    else if (this.nhom == 'assignee'){
       if (this.loai == 'task') {
         this.id_nv_selected = this.item.id_row;
       }
@@ -94,6 +95,14 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
         this.id_nv_selected = this.item.id_nv;
       }
 
+    }
+    else if (this.nhom == 'groupwork'){
+      if (this.loai == 'task') {
+        this.id_group = this.item.id_row;
+      }
+      else {
+        this.id_group = this.item.id_group;
+      }
     }
     this.LoadListAccount();
   }
@@ -227,6 +236,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
     task.id_parent = this.id_parent;
     task.urgent = this.priority;
     task.Users = [];
+    task.id_group = this.id_group;
     this.Assign.forEach(element => {
       var assign = this.AssignInsert(element);
       task.Users.push(assign);

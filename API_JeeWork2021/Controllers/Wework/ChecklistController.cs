@@ -90,7 +90,7 @@ where Disabled=0 and l.CreatedBy in ({listID}) " + dieukien_where + "  order by 
 from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.Disabled=0 and i.disabled=0 " + dieukien_where;
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     if (ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel);
 
@@ -180,7 +180,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -225,14 +225,14 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.Insert(val, "we_checklist") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_checklist')").ToString());
                     bool re = WeworkLiteController.log(cnn, 5, data.id_work, iduser, data.title, null, idc);
                     if (!re)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
@@ -241,7 +241,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -289,7 +289,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.Update(val, sqlcond, "we_checklist") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     cnn.EndTransaction();
@@ -298,7 +298,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -333,7 +333,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -341,7 +341,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -395,7 +395,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.Insert(val, "we_checklist_item") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_checklist_item')").ToString());
 
@@ -403,7 +403,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (!re)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
@@ -412,7 +412,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -460,7 +460,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.Update(val, sqlcond, "we_checklist_item") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     cnn.EndTransaction();
@@ -469,7 +469,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -504,7 +504,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -512,7 +512,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -550,7 +550,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     if (cnn.Update(val, sqlcond, "we_checklist_item") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     cnn.EndTransaction();
@@ -559,7 +559,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         #endregion

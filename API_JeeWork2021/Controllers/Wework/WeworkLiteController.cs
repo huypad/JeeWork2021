@@ -56,7 +56,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sql = "select id_row, title from we_department where Disabled=0 and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -68,7 +68,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -93,7 +93,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
  where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0 order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -106,7 +106,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -161,7 +161,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
 
                     DataTable dt = cnn.CreateDataTable(sqlq, conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     #region Map info account từ JeeAccount
 
                     foreach (DataRow item in dt.Rows)
@@ -192,7 +192,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -216,7 +216,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
                     string sql = "select id_row, title,deadline from we_milestone where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -229,7 +229,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -253,7 +253,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
                     string sql = "select id_row, title, color from we_tag where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -266,7 +266,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -291,7 +291,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
                     string sql = "select id_row, title from we_group where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -303,7 +303,7 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -356,7 +356,7 @@ where u.id_user in ({listID})";
                     {
                         dt = cnn.CreateDataTable(sql);
                         if (cnn.LastError != null || dt == null)
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
 
                         List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                         List<AccUsernameModel> listTemp = new List<AccUsernameModel>();
@@ -403,14 +403,14 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         public static DataTable List_Account_HR(long CocauID, IHeaderDictionary pHeader, JeeWorkConfig config)
         {
             List<AccUsernameModel> DataAccount;
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 #region Lấy dữ liệu account từ JeeAccount
                 DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, config);
@@ -468,7 +468,7 @@ where u.id_user in ({listID})";
                     sql += ";select * from we_like_icon where disabled=0";
                     DataSet ds = cnn.CreateDataSet(sql);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var emotions = new List<object>();
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
@@ -505,7 +505,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("lite_emotion")]
@@ -525,7 +525,7 @@ where u.id_user in ({listID})";
                         sql += " where id_row=" + id;
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     string domain = _config.LinkAPI;
                     var data = new List<object>();
                     foreach (DataRow r in dt.Rows)
@@ -552,7 +552,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -586,7 +586,7 @@ where u.id_user in ({listID})";
                                     where (where)";
                     DataTable dt = cnn.CreateDataTable(sql, "(where)", cond);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -599,7 +599,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -715,7 +715,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -738,9 +738,9 @@ where u.id_user in ({listID})";
                 //    return new List<string>();
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
-                    DataTable dt = GetListField(id_project_team);
+                    DataTable dt = GetListField(id_project_team, _config);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
 
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -761,7 +761,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -783,7 +783,7 @@ where u.id_user in ({listID})";
                     string sql = "select * from we_fields where isnewfield = 1";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -800,7 +800,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -821,7 +821,7 @@ where u.id_user in ({listID})";
                         "where Disabled = 0 " +
                         "order by priority");
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -836,7 +836,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -868,7 +868,7 @@ where u.id_user in ({listID})";
                         return JsonResultCommon.Custom(error);
                     #endregion
 
-                    DataTable dt = StatusDynamic(id_project_team, DataAccount);
+                    DataTable dt = StatusDynamic(id_project_team, DataAccount, _config);
                     DataTable dt_work = cnn.CreateDataTable("select id_row, title, status " +
                         "from we_work " +
                         "where disabled = 0 and id_project_team = " + id_project_team + "");
@@ -891,7 +891,7 @@ where u.id_user in ({listID})";
                     }
                     dt.AcceptChanges();
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
 
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -915,7 +915,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -942,7 +942,7 @@ where u.id_user in ({listID})";
                     DataSet ds = cnn.CreateDataSet(query);
                     DataTable dt = ds.Tables[0];
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -972,7 +972,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1005,7 +1005,7 @@ where u.id_user in ({listID})";
                             where (where)";
                     DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conditions);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -1025,7 +1025,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1085,7 +1085,7 @@ where u.id_user in ({listID})";
                     }
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var temp = dt.AsEnumerable();
                     var data = (from r in temp
                                 select new
@@ -1104,7 +1104,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1131,7 +1131,7 @@ where u.id_user in ({listID})";
                         "where (where) order by Title";
                     DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
                     if (cnn.LastError != null || dt_template == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     string sql_status = "";
                     sql_status = "select Id_row, StatusID, TemplateID, StatusName, description, CreatedDate, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
                         "from we_Template_Status where Disabled = 0 and TemplateID in (select id_row from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID + ")";
@@ -1169,7 +1169,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1206,7 +1206,7 @@ where u.id_user in ({listID})";
                     }
                     dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
 
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -1231,7 +1231,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1322,7 +1322,7 @@ where u.id_user in ({listID})";
                                             where u.disabled=0 and u.Id_user in (" + listID + " )";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -1403,7 +1403,7 @@ where u.id_user in ({listID})";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1500,9 +1500,9 @@ where u.id_user in ({listID})";
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, JeeWorkConfig config, DataTable dtOld = null)
         {
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 //get template
                 string sql = "select * from we_template where id_row=" + id_template;
@@ -1594,7 +1594,7 @@ where u.id_user in ({listID})";
                                 continue;
                             string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
                             string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo);
+                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, config);
                         }
                     }
                 }
@@ -1647,11 +1647,11 @@ where u.id_user in ({listID})";
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, DataTable dtOld = null)
+        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, JeeWorkConfig config, DataTable dtOld = null)
         {
             if (users == null || users.Count == 0)
                 return;
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
                 DataTable dtUser = new DataTable();
@@ -1667,7 +1667,7 @@ where u.id_user in ({listID})";
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, config, dtOld);
             }
         }
         /// <summary>
@@ -1745,9 +1745,9 @@ where u.id_user in ({listID})";
         /// </summary>
         /// <param name="id_project_team"></param>
         /// <returns></returns>
-        public static DataTable GetListField(long id_project_team)
+        public static DataTable GetListField(long id_project_team, JeeWorkConfig config)
         {
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
                 cond.Add("1", 1);
@@ -1784,7 +1784,7 @@ where u.id_user in ({listID})";
                 return dt;
             }
         }
-        public static bool CheckRole(long role, string user, long id_project)
+        public static bool CheckRole(long role, string user, long id_project, JeeWorkConfig config)
         {
             BaseModel<object> model = new BaseModel<object>();
             PageModel pageModel = new PageModel();
@@ -1795,7 +1795,7 @@ where u.id_user in ({listID})";
             SqlConditions cond = new SqlConditions();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+                using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
                 {
                     cond.Add("id_project_team", id_project);
                     cond.Add("id_user", user);
@@ -1839,14 +1839,14 @@ where u.id_user in ({listID})";
                 return false;
             }
         }
-        public static bool CheckNotify_ByConditions(long id_project, string key, bool IsProject)
+        public static bool CheckNotify_ByConditions(long id_project, string key, bool IsProject, JeeWorkConfig config)
         {
             DataTable dt_Key = new DataTable();
             string sqlq = "";
             SqlConditions cond = new SqlConditions();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+                using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
                 {
                     cond.Add("id_project_team", id_project);
                     cond.Add("disabled", 0);
@@ -1877,10 +1877,10 @@ where u.id_user in ({listID})";
                 return false;
             }
         }
-        public static DataTable StatusDynamic(long id_project, List<AccUsernameModel> DataAccount)
+        public static DataTable StatusDynamic(long id_project, List<AccUsernameModel> DataAccount, JeeWorkConfig config)
         {
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 string query = "";
                 query = $@"select id_row, StatusName, description, id_project_team,IsToDo
@@ -1908,11 +1908,11 @@ where Disabled = 0";
             #endregion
             return dt;
         }
-        public static bool Init_RoleDefault(long projectid, List<long> list_roles)
+        public static bool Init_RoleDefault(long projectid, List<long> list_roles, JeeWorkConfig config)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 string role = "";
                 for (int i = 0; i < list_roles.Count; i++)
@@ -2120,11 +2120,11 @@ where Disabled = 0";
         /// <param name="WorkID"></param>
         /// <param name="statusID"></param>
         /// <returns></returns>
-        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data)
+        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
             {
                 string sqlq = "";
                 cond.Add("WorkID", WorkID);
@@ -2152,7 +2152,7 @@ where Disabled = 0";
                             return false;
                         }
                         var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                        mailthongbao(WorkID, users, 10, data);
+                        mailthongbao(WorkID, users, 10, data, config);
                         return true;
                     }
                     return true;

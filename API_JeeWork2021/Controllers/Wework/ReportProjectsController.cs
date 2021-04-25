@@ -151,7 +151,7 @@ where w.disabled=0  " + strW;
                     
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = new
                     {
                         DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
@@ -191,7 +191,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -257,7 +257,7 @@ where w.disabled=0  " + strW;
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     List<string> label = new List<string>() { "Đúng tiến độ", "Chậm tiến độ", "Có rủi to cao", "Dự án hoàn thành", "Dự án bị hủy" };
@@ -273,7 +273,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -345,7 +345,7 @@ where w.disabled=0  " + strW;
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     //var data = from r in dtW
@@ -365,7 +365,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -451,7 +451,7 @@ where w.disabled=0  " + strW;
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -503,7 +503,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -587,7 +587,7 @@ where w.disabled=0  " + strW;
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -624,7 +624,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -709,7 +709,7 @@ where w.disabled=0  " + strW;
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -734,7 +734,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -809,7 +809,7 @@ where w.disabled=0  " + strW;
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     // #update status động
                     DataTable dtW = ds.Tables[1];
@@ -832,7 +832,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1028,7 +1028,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1219,7 +1219,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1323,7 +1323,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1484,7 +1484,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1634,7 +1634,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1787,7 +1787,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1939,7 +1939,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2049,7 +2049,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2156,7 +2156,7 @@ where w.disabled=0  " + strW;
                     else
                         comment = 0;
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var
                                        data = new
                                        {
@@ -2171,7 +2171,7 @@ where w.disabled=0  " + strW;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("TagCloud")]
@@ -2260,7 +2260,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>

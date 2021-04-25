@@ -105,7 +105,7 @@ task.UserID as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' a
                         where task.Disabled=0";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -219,7 +219,7 @@ task.UserID as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' a
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -265,7 +265,7 @@ from we_repeated_Task task where task.Disabled=0";
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -352,7 +352,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -413,7 +413,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.Insert(val, "we_repeated") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_repeated')").ToString());
                     if (data.Users != null)
@@ -429,7 +429,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val1, "we_repeated_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -449,7 +449,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val2, "we_repeated_Task") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -463,7 +463,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -536,7 +536,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.Update(val, sqlcond, "we_repeated") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     if (data.Users.Count > 0) //
                     {
@@ -547,7 +547,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                         Hashtable val1 = new Hashtable();
@@ -563,7 +563,7 @@ from we_repeated_Task task where task.Disabled=0";
                                 if (cnn.Insert(val1, "we_repeated_user") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                 }
                             }
                         }
@@ -574,7 +574,7 @@ from we_repeated_Task task where task.Disabled=0";
                         if (cnn.ExecuteNonQuery(deleteuser) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     string idtask = string.Join(",", data.Tasks.Where(x => x.id_row > 0).Select(x => x.id_row));
@@ -585,7 +585,7 @@ from we_repeated_Task task where task.Disabled=0";
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     if (data.Tasks != null)
@@ -604,7 +604,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val2, "we_repeated_Task") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -623,7 +623,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -658,7 +658,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu repeated (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -668,7 +668,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -708,7 +708,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.Update(val, sqlcond, "we_repeated") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -726,7 +726,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -758,14 +758,14 @@ from we_repeated_Task task where task.Disabled=0";
                     val["UpdatedBy"] = iduser;
                     if (cnn.Update(val, new SqlConditions() { { "id_row", id } }, "we_repeated") != 1)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -796,14 +796,14 @@ from we_repeated_Task task where task.Disabled=0";
                     val["UpdatedBy"] = iduser;
                     if (cnn.Update(val, new SqlConditions() { { "id_row", id } }, "we_repeated") != 1)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -908,7 +908,7 @@ from we_repeated_Task task where task.Disabled=0";
                                             foreach (DataRow row in dt_New_Data.Rows)
                                             {
                                                 var users = new List<long> { long.Parse(row["id_user"].ToString()) };
-                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData);
+                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, _config);
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
                                                 for (int i = 0; i < users.Count; i++)
@@ -964,7 +964,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         public static bool WeWork_CreateTaskAuto(DataTable dt, DpsConnection cnn, string runby, DateTime ngaybatdau)

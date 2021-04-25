@@ -52,7 +52,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (loginData != null)
                 {
-                    using (DpsConnection Conn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+                    using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
                     {
                         #region Lấy dữ liệu account từ JeeAccount
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -68,7 +68,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         SqlConditions cond = new SqlConditions();
                         cond.Add("CustemerID", loginData.CustomerID);
                         cond.Add("HienThi", 1);
-                        string[] listrole = Common.GetRolesForUser_WeWork(loginData.Username);
+                        string[] listrole = Common.GetRolesForUser_WeWork(loginData.Username, _config);
                         for (int i = 0; i < listrole.Length; i++)
                         {
                             sql_listRole += ",@IDRole" + i;
@@ -248,7 +248,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -258,7 +258,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
         {
             try
             {
-                using (DpsConnection Conn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+                using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
                 {
                     string sqlq = "";
                     sqlq = "select * from we_project_team " +
@@ -272,7 +272,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     DataSet ds = Conn.CreateDataSet(sqlq);
                     DataTable dt_Project = Conn.CreateDataTable(sqlq);
                     if (Conn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(Conn.LastError, int.Parse(id_nv), ControllerContext);
+                        return JsonResultCommon.Exception(Conn.LastError,_config, int.Parse(id_nv), ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
@@ -301,7 +301,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, int.Parse(id_nv));
+                return JsonResultCommon.Exception(ex, _config, int.Parse(id_nv));
             }
         }
         //public static bool ListRole(long id_project)

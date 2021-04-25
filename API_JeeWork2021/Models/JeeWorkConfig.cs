@@ -12,6 +12,8 @@ namespace JeeWork_Core2021.Models
         public string ConnectionString { get; set; }
         public string HRCatalog { get; set; }
         public string API_Account { get; set; }
+        public string Error_MailTo { get; set; }
+        public string Error_MailCC { get; set; }
         public string HRConnectionString
         {
             get

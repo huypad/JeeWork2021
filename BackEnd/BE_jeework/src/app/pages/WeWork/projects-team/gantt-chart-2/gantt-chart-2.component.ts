@@ -10,7 +10,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { Moment } from 'moment';
 import 'dayjs/locale/vi' // load on demand
 import ItemMovement from "gantt-schedule-timeline-calendar/dist/ItemMovement.plugin.js";
 import Selection from "gantt-schedule-timeline-calendar/dist/Selection.plugin.js";

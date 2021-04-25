@@ -1,3 +1,4 @@
+import { WorkGroupEditComponent } from './../../work/work-group-edit/work-group-edit.component';
 import { LayoutUtilsService, MessageType} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { SubheaderService } from './../../../../_metronic/partials/layout/subheader/_services/subheader.service';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
@@ -12,7 +13,7 @@ import { WorkService } from './../../work/work.service';
 import { DuplicateTaskNewComponent } from './duplicate-task-new/duplicate-task-new.component';
 import { WorkListNewDetailComponent } from './work-list-new-detail/work-list-new-detail.component';
 import { DialogSelectdayComponent } from './../../report/dialog-selectday/dialog-selectday.component';
-import { WorkModel, UpdateWorkModel, UserInfoModel, WorkDuplicateModel } from './../../work/work.model';
+import { WorkModel, UpdateWorkModel, UserInfoModel, WorkDuplicateModel, WorkGroupModel } from './../../work/work.model';
 import { ColumnWorkModel, DrapDropItem } from './drap-drop-item.model';
 import { filter } from 'rxjs/operators';
 import { element } from 'protractor';
@@ -114,7 +115,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     private _attservice: AttachmentService,
   ) {
     this.taskinsert.clear();
-    this.filter_groupby = this.listFilter_Groupby[0];
+    this.filter_groupby = this.listFilter_Groupby[2];
     this.filter_subtask = this.listFilter_Subtask[0];
     this.list_priority = this.WeWorkService.list_priority;
     this.UserID = +localStorage.getItem("idUser");
@@ -225,6 +226,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
     //get data work binding data
     this._service.GetDataWorkCU(queryParams).subscribe(res => {
+      console.log('data-work',res)
       this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status === 1) {
         this.data = res.data;
@@ -357,7 +359,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     })
 
     this.ListTasks.forEach(element => {
-      element.isExpanded = (this.filter_subtask.value == 'show') ? true : false;
+      element.isExpanded = (this.filter_subtask.value == 'show' || this.addNodeitem == element.id_row) ? true : false;
       this.listFilter.forEach(val => {
         if (this.isAssignforme) {
           if ( this.filter_groupby.value =='status' && ( (+val.id_row == +element.status && element.User.find(x => x.id_user == this.UserID)) )) {
@@ -368,6 +370,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
               val.data.push(element);
             }
           }
+          else if(this.filter_groupby.value =='groupwork' && ( element.id_group == val.id_row && element.User.find(x => x.id_user == this.UserID) )){
+            val.data.push(element);
+          }
         }
         else {
           if ( this.filter_groupby.value =='status' &&  +val.id_row == +element.status) {
@@ -377,6 +382,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             if (element.User.length == 1 || (element.User.length == 0 && val.id_row == "") || (element.User.length > 1 && val.id_row == "0")) {
               val.data.push(element);
             }
+          }
+          else if(this.filter_groupby.value =='groupwork' && element.id_group == val.id_row ){
+            val.data.push(element);
           }
         }
       });
@@ -968,10 +976,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     },
     {
       title: 'groupwork',
-      value: 'group'
+      value: 'groupwork'
     },
   ];
   GroupBy(item) {
+    if(item == this.filter_groupby){
+      return;
+    }
     this.filter_groupby = item;
     this.LoadData();
   }
@@ -1410,6 +1421,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     });
   }
+  chinhsuanoidung(item){
+    if(this.filter_groupby.value == 'status'){
+      this.chinhsuastt(item);
+    }
+    if(this.filter_groupby.value == 'groupwork' ){
+      this.chinhsuaNhomCV(item);
+    }
+    
+  }
   chinhsuastt(item) {
 
     item.id_project_team = this.ID_Project;
@@ -1420,12 +1440,34 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     });
   }
+  chinhsuaNhomCV(item) {
+    console.log(item);
+    let saveMessageTranslateParam = '';
+		var _item = new WorkGroupModel();
+    _item.clear();
+    _item.id_project_team = ''+this.ID_Project;
+    if(item && item.id_row){
+      _item.id_row = item.id_row;
+      _item.title = item.statusname;
+      _item.description = item.description; 
+    }		
+		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
+		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
+		const dialogRef = this.dialog.open(WorkGroupEditComponent, { data: { _item } });
+		dialogRef.afterClosed().subscribe(res => {
+			if (!res) {
+				return;
+			}
+			else {
+				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+        this.LoadData();
+			}
+		});
+  }
 
   getNhom() {
-    if (this.filter_groupby.value == 'assignee') {
-      return 'assignee';
-    }
-    return 'status';
+    return this.filter_groupby.value;
   }
 
   getDeadline(fieldname, date) {
@@ -1528,6 +1570,22 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.layoutUtilsService.showError(res.error.message)
       }
     })
+  }
+
+  isUpdateStatusname(id = 1){
+    if(!(id>0))
+      return false;
+    if(this.filter_groupby.value == 'status' || this.filter_groupby.value == 'groupwork' ){
+      return true;
+    }
+    return false;
+  }
+
+  getNhomCV(node){
+    if(node.id_group > 0){
+      return '- '+node.work_group;
+    }
+    return '';
   }
 
   HasColunmHidden(list){

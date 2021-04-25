@@ -158,7 +158,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var data = new
                     {
                         DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
@@ -198,7 +198,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -264,7 +264,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     List<string> label = new List<string>() { "Đúng tiến độ", "Chậm tiến độ", "Có rủi to cao", "Dự án hoàn thành", "Dự án bị hủy" };
@@ -280,7 +280,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -367,7 +367,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     //var data = from r in dtW
@@ -387,7 +387,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -477,7 +477,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -529,7 +529,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -616,7 +616,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -653,7 +653,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -743,7 +743,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -768,7 +768,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -858,7 +858,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[1];
                     var Children = from r in ds.Tables[0].AsEnumerable()
@@ -881,7 +881,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1082,7 +1082,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1280,7 +1280,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1398,7 +1398,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1566,7 +1566,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1737,7 +1737,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1906,7 +1906,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2074,7 +2074,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2200,7 +2200,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2317,7 +2317,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     else
                         comment = 0;
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var
                                        data = new
                                        {
@@ -2332,7 +2332,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("TagCloud")]
@@ -2422,7 +2422,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>

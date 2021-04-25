@@ -82,7 +82,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     DataSet ds = getWork(cnn, query, loginData.UserID, strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -118,7 +118,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 
                 
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -165,11 +165,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         displayChild = query.filter["displayChild"];
                     string ids = string.Join(",", dt.AsEnumerable().Select(x => x["id_nv"].ToString()));
                     if (ids == "")
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     string strW = " and w.id_nv in (" + ids + ")";
                     DataSet ds = getWork(cnn, query, loginData.UserID, strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -203,7 +203,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -277,7 +277,7 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
 
@@ -321,7 +321,7 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -374,7 +374,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
 
@@ -418,7 +418,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
        
@@ -504,7 +504,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return BadRequest(JsonResultCommon.Exception(ex, loginData.CustomerID));
+                return BadRequest(JsonResultCommon.Exception(ex, _config, loginData.CustomerID));
             }
         }
         [Route("list-by-filter")]
@@ -554,7 +554,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     //    return JsonResultCommon.KhongTonTai("Filter");
                     DataSet ds = getWork(cnn, query, loginData.UserID, dieukien_where);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -587,7 +587,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("period-view")]
@@ -660,7 +660,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
 
@@ -704,7 +704,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("stream-view")]
@@ -748,7 +748,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                         displayChild = query.filter["displayChild"];
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -782,7 +782,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -830,7 +830,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     DataTable dtG = cnn.CreateDataTable(strG);
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -929,7 +929,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -975,7 +975,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                         return JsonResultCommon.ThanhCong(new List<string>());
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     //var ss = (from f in dtF.AsEnumerable()
                     //          join w in ds.Tables[0].AsEnumerable() on f["id_work"].equals(w["id_row"])
                     //                || f["id_work"].equals(w["id_parent"])// Your join
@@ -1017,7 +1017,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1066,7 +1066,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -1260,7 +1260,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             {
                 
                 
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1314,7 +1314,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (cnn.Insert(val, "we_work") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
                     if (data.Users != null)
@@ -1330,7 +1330,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             if (cnn.Insert(val1, "we_work_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                             }
                         }
                     }
@@ -1346,7 +1346,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             if (cnn.Insert(val2, "we_work_tag") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                             }
                         }
                     }
@@ -1364,7 +1364,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                             }
                         }
                     }
@@ -1374,11 +1374,11 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (!WeworkLiteController.log(cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData);
+                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, _config);
                     #region Notify thêm mới công việc
                     Hashtable has_replace = new Hashtable();
                     for (int i = 0; i < data.Users.Count; i++)
@@ -1411,7 +1411,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1459,7 +1459,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (cnn.Update(val, sqlcond, "we_work") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     #region Chỉnh sửa (Không cho sửa User)
                     //string ids = string.Join(",", data.Users.Where(x => x.loai == 1 && x.id_row > 0).Select(x => x.id_row));
@@ -1469,7 +1469,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //    if (cnn.ExecuteNonQuery(strDel) < 0)
                     //    {
                     //        cnn.RollbackTransaction();
-                    //        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                    //        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     //    }
                     //}
                     //foreach (var user in data.Users)
@@ -1485,7 +1485,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //        if (cnn.Insert(val1, "we_work_user") != 1)
                     //        {
                     //            cnn.RollbackTransaction();
-                    //            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                    //            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     //        }
                     //    }
                     //}
@@ -1507,7 +1507,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         if (!WeworkLiteController.log(cnn, 17, data.id_row, iduser, "", old.Rows[0]["title"], data.title))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
                     if (vals[1])
@@ -1515,7 +1515,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         if (!WeworkLiteController.log(cnn, 16, data.id_row, iduser, "", old.Rows[0]["description"], data.description))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
                     if (vals[2])
@@ -1523,10 +1523,10 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         if (!WeworkLiteController.log(cnn, 12, data.id_row, iduser, "", old.Rows[0]["id_group"], data.id_group))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData);
+                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, _config);
                     cnn.EndTransaction();
                     #region Notify chỉnh sửa công việc
                     Hashtable has_replace = new Hashtable();
@@ -1560,7 +1560,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1604,7 +1604,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         if (cnn.Update(val, sqlcond, "we_work") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                         if (data.key == "title")
                         {
@@ -1613,7 +1613,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, old);
+                                WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, _config, old);
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
                                 for (int i = 0; i < users.Count; i++)
@@ -1650,7 +1650,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, old);
+                                WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, _config, old);
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
                                 for (int i = 0; i < users.Count; i++)
@@ -1689,7 +1689,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 cnn.EndTransaction();
                                 if (int.Parse(data.value.ToString()) == 2)
                                 {
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, _config);
                                     #region Notify cập nhật trạng thái công việc hoàn thành
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -1720,7 +1720,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 }
                                 if (int.Parse(data.value.ToString()) == 1)
                                 {
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, _config);
                                     #region Notify cập nhật trạng thái công việc đang làm
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -1760,7 +1760,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                             }
                             if (data.value != null)
                             {
@@ -1773,11 +1773,11 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 if (cnn.Insert(val1, "we_work_user") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                                 }
                             }
                             var users = new List<long> { long.Parse(data.value.ToString()) };
-                            WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData);
+                            WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, _config);
                             #region Notify assign
                             Hashtable has_replace = new Hashtable();
                             for (int i = 0; i < users.Count; i++)
@@ -1822,7 +1822,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 if (cnn.Update(val2, cond, "we_work_tag") <= 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                                 }
                             }
                             else
@@ -1835,7 +1835,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 if (cnn.Insert(val2, "we_work_tag") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                                 }
                             }
                             //return JsonResultCommon.Custom("Tag đang được sử dụng cho công việc này");
@@ -1861,7 +1861,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                     if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
                                     {
                                         cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                                     }
                                 }
                             }
@@ -1892,7 +1892,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         if (!re)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
                     cnn.EndTransaction();
@@ -1901,7 +1901,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1939,20 +1939,20 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu work (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
                     if (!WeworkLiteController.log(cnn, 18, id, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     if (dt_user.Rows.Count > 0)
                     {
                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                        WeworkLiteController.mailthongbao(id, users, 15, loginData);
+                        WeworkLiteController.mailthongbao(id, users, 15, loginData, _config);
                         object workname = cnn.ExecuteScalar("select title from we_work where Disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
                         if (workname != null)
                             workname = workname.ToString();
@@ -1989,7 +1989,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -2023,19 +2023,19 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (cnn.Insert(val, "we_work_user") <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_user')").ToString());
                     string strU = "update we_work_user set disabled=1, updateddate=getdate(), updatedby=" + id_user + ", id_child=" + idc + " where id_row=" + dt.Rows[0]["id_row"].ToString();
                     if (cnn.ExecuteNonQuery(strU) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (!WeworkLiteController.log(cnn, 15, id, id_user))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -2043,7 +2043,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -2114,7 +2114,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (cnn.Insert(val, "we_work_duplicate") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_duplicate')").ToString());
 
@@ -2123,7 +2123,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu work_duplicate: title=" + data.title + ", id=" + data.id + ", type=" + data.type;
@@ -2133,7 +2133,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //if (!WeworkLiteController.log(cnn, 1, idw, iduser))
                     //{
                     //    cnn.RollbackTransaction();
-                    //    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                    //    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     //}
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(dt.AsEnumerable().FirstOrDefault());
@@ -2141,7 +2141,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -2175,7 +2175,7 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
                     {
                         DataTable temp = cnn.CreateDataTable(dt.Rows[0]["sql"].ToString(), new SqlConditions() { { "old", dt.Rows[0]["oldvalue"] }, { "new", dt.Rows[0]["newvalue"] } });
                         if (temp == null)
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         dt.Rows[0]["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == dt.Rows[0]["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         dt.Rows[0]["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == dt.Rows[0]["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                     }
@@ -2213,7 +2213,7 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -2301,7 +2301,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return BadRequest(JsonResultCommon.Exception(ex, loginData.CustomerID));
+                return BadRequest(JsonResultCommon.Exception(ex, _config, loginData.CustomerID));
             }
         }
 
@@ -2376,7 +2376,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return BadRequest(JsonResultCommon.Exception(ex, loginData.CustomerID));
+                return BadRequest(JsonResultCommon.Exception(ex, _config, loginData.CustomerID));
             }
         }
 
@@ -2738,7 +2738,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                         if (cnn.Insert(vl, dr["table"].ToString()) <= 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                         dr["id_row"] = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('" + dr["table"].ToString() + "') ").ToString());
                     }
@@ -2786,7 +2786,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                             if (cnn.Insert(valW, "we_work") < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                             }
                             long idW = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work') ").ToString());
                             dr["id_row"] = idW;
@@ -2802,7 +2802,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                                 if (cnn.Insert(val, "we_work_user") < 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                                 }
                             }
                             filter = data_import.dtTag.AsEnumerable().Where(x => int.Parse(x["id_work"].ToString()) == i + 1);
@@ -2822,7 +2822,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                                 if (cnn.Insert(val, "we_work_tag") < 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                                 }
                             }
                             dem++;
@@ -2840,7 +2840,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         #endregion
@@ -2891,14 +2891,14 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     if (re != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -2927,7 +2927,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     s += ";select * from we_work_user where loai=2 and disabled=0 and id_work=" + data.id_row;
                     DataSet ds = cnn.CreateDataSet(s, "(where)", sqlcond);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     DataTable old = ds.Tables[0];
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
@@ -2948,7 +2948,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                         if (cnn.Insert(val1, "we_work_user") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
                     cnn.EndTransaction();
@@ -2957,7 +2957,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         #endregion
@@ -3002,7 +3002,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                         displayChild = query.filter["displayChild"];
                     DataSet ds = getWork(cnn, query, loginData.UserID, " and w.id_nv=@iduser");
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -3036,7 +3036,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -3081,7 +3081,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                         displayChild = query.filter["displayChild"];
                     DataSet ds = getWork(cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -3115,7 +3115,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         #endregion

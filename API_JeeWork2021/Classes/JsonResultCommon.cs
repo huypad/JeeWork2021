@@ -83,7 +83,7 @@ namespace JeeWork_Core2021.Classes
                 },
             };
         }
-        public static BaseModel<object> Exception(Exception last_error, long custemerid = 0, ControllerContext ControllerContext = null)
+        public static BaseModel<object> Exception(Exception last_error, JeeWorkConfig config, long custemerid = 0, ControllerContext ControllerContext = null)
         {
             string noidung = last_error != null ? last_error.Message : "";
             if (last_error != null && last_error.Data != null)
@@ -94,7 +94,7 @@ namespace JeeWork_Core2021.Classes
                 if (last_error != null)
                     noidungmail += "<br>Chi tiết:<br>" + last_error.StackTrace;
                 if (custemerid > 0)
-                    AutoSendMail.SendErrorReport(custemerid.ToString(), noidungmail);
+                    AutoSendMail.SendErrorReport(custemerid.ToString(), noidungmail, config);
             }
             return new BaseModel<object>()
             {

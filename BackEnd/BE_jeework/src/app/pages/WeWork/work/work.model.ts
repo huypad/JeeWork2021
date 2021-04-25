@@ -129,7 +129,7 @@ export class WorkModel {
 	description: string;
 	id_project_team: number;
 	id_milestone: number;
-	id_group: string;
+	id_group: number;
 	prioritize: boolean;
 	urgent: number;
 	id_parent: number = 0;
@@ -144,7 +144,7 @@ export class WorkModel {
 		this.id_row = 0;
 		this.title = '';
 		this.deadline = '';
-		this.id_group = '';
+		this.id_group = 0;
 		this.start_date = '';
 		this.end_date = '';
 		this.description = '';

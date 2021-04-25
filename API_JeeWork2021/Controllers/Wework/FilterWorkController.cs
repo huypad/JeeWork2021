@@ -61,7 +61,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -84,7 +84,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sql = "select id_row, title, loai,sql from we_filter_key where disabled=0";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     cnn.Disconnect();
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -100,7 +100,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -127,7 +127,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -152,7 +152,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -200,7 +200,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.Insert(val, "we_filter") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_filter')").ToString();
                     Hashtable val1 = new Hashtable();
@@ -218,7 +218,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (cnn.Insert(val1, "we_filter_detail") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
                     //string LogContent = "", LogEditContent = "";
@@ -231,7 +231,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -268,7 +268,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string s = "select * from we_filter where createdby=@CreatedBy and disabled=0 and id_row=@id_row";
                     DataTable old = cnn.CreateDataTable(s, sqlcond);
                     if (cnn.LastError != null || old == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     if (old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Filter");
                     Hashtable val = new Hashtable();
@@ -288,7 +288,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.Update(val, sqlcond, "we_filter") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     string ids = string.Join(",", data.details.Where(x => x.id_row > 0).Select(x => x.id_row));
                     if (ids != "")//xóa
@@ -297,7 +297,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                         }
                     }
                     Hashtable val1 = new Hashtable();
@@ -317,7 +317,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             if (cnn.Insert(val1, "we_filter_detail") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                             }
                         }
                     }
@@ -336,7 +336,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -371,7 +371,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu filter (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -381,7 +381,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 

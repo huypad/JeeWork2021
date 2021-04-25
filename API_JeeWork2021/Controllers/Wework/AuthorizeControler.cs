@@ -64,7 +64,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         if (cnn.LastError != null)
                             cnn.LastError.Data.Add("customerid", loginData.CustomerID);
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_authorize')").ToString();
                     cnn.EndTransaction();
@@ -81,7 +81,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -123,7 +123,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         if (cnn.LastError != null)
                             cnn.LastError.Data.Add("customerid", loginData.CustomerID);
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     cnn.EndTransaction();
@@ -132,7 +132,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -164,7 +164,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     }
                     string LogContent = "Xóa dữ liệu authorize (" + id + ")";
                     cnn.EndTransaction();
@@ -173,7 +173,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
     }

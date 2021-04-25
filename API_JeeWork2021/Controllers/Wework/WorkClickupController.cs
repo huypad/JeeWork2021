@@ -103,7 +103,7 @@ namespace API.Controllers.Wework
                     }
                     #endregion
                     string strW = "";
-                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]));
+                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), _config);
                     dt_new_fields = cnn.CreateDataTable(data_newfield);
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
@@ -137,6 +137,17 @@ namespace API.Controllers.Wework
                                     "where disabled = 0 and id_project_team  = " + int.Parse(query.filter["id_project_team"]) + "";
                                 dt_filter_tmp = cnn.CreateDataTable(querySQL);
                             }
+                            if ("groupwork".Equals(groupby))
+                            {
+                                tableName = "we_group";
+                                querySQL = "select  id_row, title,'' as color, '' as Follower, '' as Description  from " + tableName + " " +
+                                    "where disabled = 0 and id_project_team  = " + int.Parse(query.filter["id_project_team"]) + "";
+                                dt_filter_tmp = cnn.CreateDataTable(querySQL);
+                                DataRow newRow = dt_filter_tmp.NewRow();
+                                newRow[0] = 0;
+                                newRow[1] = "Chưa phân loại";
+                                dt_filter_tmp.Rows.InsertAt(newRow, 0);
+                            }
                             if ("assignee".Equals(groupby))
                             {
                                 tableName = "v_wework_clickup_new";
@@ -163,7 +174,6 @@ namespace API.Controllers.Wework
                                     }
                                 }
                                 #endregion
-
                                 DataRow newRow = dt_filter_tmp.NewRow();
                                 newRow[0] = "0";
                                 newRow[1] = "Công việc nhiều người làm";
@@ -241,7 +251,7 @@ namespace API.Controllers.Wework
                     }
                     if (!FieldsSelected.Equals(""))
                         FieldsSelected = FieldsSelected.Substring(1);
-                    string sql = "Select  " + FieldsSelected;
+                    string sql = "Select  iIf(id_group is null,0,id_group) as id_group ,work_group, " + FieldsSelected;
                     sql += $@" from v_wework_clickup_new w where w.Disabled = 0 " + strW;
                     DataTable result = new DataTable();
                     result = cnn.CreateDataTable(sql);
@@ -292,7 +302,7 @@ namespace API.Controllers.Wework
                         }
                         DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, strW);
                         if (cnn.LastError != null || ds == null)
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         dt_data = ds.Tables[0];
                         var tags = ds.Tables[1].AsEnumerable();
                     }
@@ -311,7 +321,7 @@ namespace API.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -380,7 +390,7 @@ namespace API.Controllers.Wework
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork(cnn, query, loginData.UserID,DataAccount);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
 
@@ -424,7 +434,7 @@ namespace API.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("my-list-wiget")]
@@ -490,7 +500,7 @@ namespace API.Controllers.Wework
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount,strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -519,7 +529,7 @@ namespace API.Controllers.Wework
             {
 
 
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         [Route("my-list")]
@@ -583,7 +593,7 @@ namespace API.Controllers.Wework
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork(cnn, query, long.Parse(loginData.UserID.ToString()),DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -620,7 +630,7 @@ namespace API.Controllers.Wework
             {
 
 
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -689,7 +699,7 @@ namespace API.Controllers.Wework
 
                     DataSet ds = getWork(cnn, query, long.Parse(query.filter["id_nv"]), DataAccount,strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -724,7 +734,7 @@ namespace API.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -823,7 +833,7 @@ namespace API.Controllers.Wework
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     DataSet ds = getWork_IDNV(cnn, query, loginData.UserID,DataAccount);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
 
@@ -857,7 +867,7 @@ namespace API.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -918,7 +928,7 @@ where act.object_type = 1 and view_detail=1 and l.CreatedBy in ({listID}) and l.
                     {
                         DataTable temp = cnn.CreateDataTable(dt.Rows[0]["sql"].ToString(), new SqlConditions() { { "old", dt.Rows[0]["oldvalue"] }, { "new", dt.Rows[0]["newvalue"] } });
                         if (temp == null)
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         dt.Rows[0]["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == dt.Rows[0]["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         dt.Rows[0]["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == dt.Rows[0]["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                     }
@@ -957,7 +967,7 @@ where act.object_type = 1 and view_detail=1 and l.CreatedBy in ({listID}) and l.
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -1253,7 +1263,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             }
                             else
                             {
-                                DataTable table = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>());
+                                DataTable table = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), _config);
                                 if (dt.Rows.Count > 0)
                                 {
                                     DataRow[] RowStatus = table.Select("IsDefault = 1 and IsFinal = 0");
@@ -1365,7 +1375,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         if (cnn.Insert(vl, dr["table"].ToString()) <= 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                         dr["id_row"] = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('" + dr["table"].ToString() + "') ").ToString());
                     }
@@ -1413,7 +1423,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             if (cnn.Insert(valW, "we_work") < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                             long idW = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work') ").ToString());
                             dr["id_row"] = idW;
@@ -1429,7 +1439,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 if (cnn.Insert(val, "we_work_user") < 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                 }
                             }
                             filter = data_import.dtTag.AsEnumerable().Where(x => int.Parse(x["id_work"].ToString()) == i + 1);
@@ -1449,7 +1459,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 if (cnn.Insert(val, "we_work_tag") < 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                 }
                             }
                             dem++;
@@ -1467,7 +1477,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1530,7 +1540,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         if (cnn.Insert(has, "we_newfileds_values") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     else
@@ -1538,7 +1548,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         if (cnn.Update(has, sqlcond, "we_newfileds_values") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
 
@@ -1547,7 +1557,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                     if (!re)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1555,7 +1565,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1618,7 +1628,7 @@ where act.object_type = 1 and view_detail=1  and l.CreatedBy in ({listID}) l.obj
                         {
                             DataTable temp = cnn.CreateDataTable(item["sql"].ToString(), new SqlConditions() { { "old", item["oldvalue"] }, { "new", item["newvalue"] } });
                             if (temp == null)
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             if (int.Parse(item["id_action"].ToString()) == 44) // Đối với status trả về thêm Color
                             {
                                 item["ColorStatus_Old"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
@@ -1665,7 +1675,7 @@ where act.object_type = 1 and view_detail=1  and l.CreatedBy in ({listID}) l.obj
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1764,7 +1774,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return BadRequest(JsonResultCommon.Exception(ex, loginData.CustomerID));
+                return BadRequest(JsonResultCommon.Exception(ex, _config, loginData.CustomerID));
             }
         }
         /// <summary>
@@ -1802,7 +1812,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     cnn.EndTransaction();
 
@@ -1811,7 +1821,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -1876,7 +1886,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -2168,7 +2178,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2212,7 +2222,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         val.Add("status", data.status);
                     else // Trường hợp người dùng không chọn status thì lấy status mặc định của ProjectTeam
                     {
-                        DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>());
+                        DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), _config);
                         if (dt.Rows.Count > 0)
                         {
                             DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
@@ -2252,11 +2262,11 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (cnn.Insert(val, "we_work") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
                     // Insert người follow cho từng tình trạng của công việc
-                    dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>());
+                    dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), _config);
                     if (dt_status.Rows.Count > 0)
                     {
                         foreach (DataRow item in dt_status.Rows)
@@ -2274,7 +2284,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                             if (cnn.Insert(val, "We_Work_Process") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -2291,7 +2301,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                             if (cnn.Insert(val1, "we_work_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -2307,7 +2317,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                             if (cnn.Insert(val2, "we_work_tag") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -2325,7 +2335,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                             if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }
@@ -2335,11 +2345,11 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (!WeworkLiteController.log(cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData);
+                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, _config);
                     #region Notify thêm mới công việc
                     Hashtable has_replace = new Hashtable();
                     for (int i = 0; i < data.Users.Count; i++)
@@ -2372,7 +2382,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
 
@@ -2421,7 +2431,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (cnn.Update(val, sqlcond, "we_work") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     #region Chỉnh sửa (Không cho sửa User)
                     //string ids = string.Join(",", data.Users.Where(x => x.loai == 1 && x.id_row > 0).Select(x => x.id_row));
@@ -2431,7 +2441,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     //    if (cnn.ExecuteNonQuery(strDel) < 0)
                     //    {
                     //        cnn.RollbackTransaction();
-                    //        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                    //        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     //    }
                     //}
                     //foreach (var user in data.Users)
@@ -2447,7 +2457,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     //        if (cnn.Insert(val1, "we_work_user") != 1)
                     //        {
                     //            cnn.RollbackTransaction();
-                    //            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID,ControllerContext);
+                    //            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
                     //        }
                     //    }
                     //}
@@ -2469,7 +2479,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (!WeworkLiteController.log(cnn, 17, data.id_row, iduser, "", old.Rows[0]["title"], data.title))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     if (vals[1])
@@ -2477,7 +2487,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (!WeworkLiteController.log(cnn, 16, data.id_row, iduser, "", old.Rows[0]["description"], data.description))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     if (vals[2])
@@ -2485,10 +2495,10 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (!WeworkLiteController.log(cnn, 12, data.id_row, iduser, "", old.Rows[0]["id_group"], data.id_group))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData);
+                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, _config);
                     cnn.EndTransaction();
                     #region Notify chỉnh sửa công việc
                     Hashtable has_replace = new Hashtable();
@@ -2522,7 +2532,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2581,7 +2591,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (cnn.Insert(val, "we_fields_project_team") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                         long FieldID = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_fields_project_team')").ToString());
                         if (data.isnewfield)
@@ -2601,7 +2611,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                 if (cnn.Insert(val, "we_newfields_options") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                 }
                             }
                         }
@@ -2617,7 +2627,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2646,7 +2656,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -2676,7 +2686,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -2756,7 +2766,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                         sql_position += " and id_parent is null";
                                     DataTable dt_ = cnn.CreateDataTable(sql_position);
                                     if (cnn.LastError != null)
-                                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                     if (dt_.Rows.Count > 0) priority_from = priority_to + 1;
                                     if (id_parent > 0)
                                         val.Add("id_parent", id_parent);
@@ -2842,7 +2852,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (cnn.Update(val, sqlcond, tablename) != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     cnn.EndTransaction();
@@ -2866,7 +2876,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -3044,12 +3054,12 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (cnn.Update(val, sqlcond, "we_work") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                         if (data.key == "title")
                         {
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false))
+                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, _config))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
@@ -3058,7 +3068,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     {
                                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, old);
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, _config, old);
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
                                         for (int i = 0; i < users.Count; i++)
@@ -3094,7 +3104,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (data.key == "deadline")
                         {
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false))
+                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, _config))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
@@ -3103,7 +3113,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     {
                                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, old);
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, _config, old);
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
                                         for (int i = 0; i < users.Count; i++)
@@ -3139,19 +3149,19 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (data.key == "status")
                         {
                             cnn.EndTransaction();
-                            WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData);
+                            WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config);
                             DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
                             if (dt_user.Rows.Count > 0)
                             {
                                 #region Check dự án đó có gửi gửi mail khi cập nhật tình trạng hay không
-                                if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_status", false))
+                                if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_status", false, _config))
                                 {
                                     if (data.IsStaff)
                                     {
                                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         if (int.Parse(data.value.ToString()) == 2)
                                         {
-                                            WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData);
+                                            WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, _config);
                                             #region Notify cập nhật trạng thái công việc hoàn thành
                                             Hashtable has_replace = new Hashtable();
                                             for (int i = 0; i < users.Count; i++)
@@ -3182,7 +3192,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                         }
                                         if (int.Parse(data.value.ToString()) == 1)
                                         {
-                                            WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData);
+                                            WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, _config);
                                             #region Notify cập nhật trạng thái công việc đang làm
                                             Hashtable has_replace = new Hashtable();
                                             for (int i = 0; i < users.Count; i++)
@@ -3225,7 +3235,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                             //if (cnn.ExecuteNonQuery(strDel) < 0)
                             //{
                             //    cnn.RollbackTransaction();
-                            //    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            //    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             //}
                             if (data.value != null)
                             {
@@ -3249,7 +3259,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     if (cnn.Delete(sqlcond123, "we_work_user") != 1)
                                     {
                                         cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                     }
                                 }
                                 else
@@ -3257,18 +3267,18 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     if (cnn.Insert(val1, "we_work_user") != 1)
                                     {
                                         cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                     }
                                 }
 
                             }
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false))
+                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, _config))
                             {
                                 if (data.IsStaff) // Trường hợp Case update về giá trị NULL thì không gửi email (Người nhận = null nên gửi không được)
                                 {
                                     var users = new List<long> { long.Parse(data.value.ToString()) };
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, _config);
                                     #region Notify assign
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -3316,7 +3326,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                 if (cnn.Update(val2, cond, "we_work_tag") <= 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                 }
                             }
                             else
@@ -3329,7 +3339,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                 if (cnn.Insert(val2, "we_work_tag") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                 }
                             }
                         }
@@ -3352,7 +3362,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
                                     {
                                         cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                                     }
                                 }
                             }
@@ -3375,7 +3385,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (!re)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
                     cnn.EndTransaction();
@@ -3384,7 +3394,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -3457,7 +3467,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (cnn.Insert(val, "we_work_duplicate") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_duplicate')").ToString());
                     string sql = "exec DuplicateWork " + idc;
@@ -3466,7 +3476,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     // update lại tình trạng cho công việc mới khởi tạo
                     long workID_New = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_work where disabled = 0").ToString());
@@ -3480,7 +3490,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (cnn.Update(val, cond, "we_work") <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(dt.AsEnumerable().FirstOrDefault());
@@ -3488,7 +3498,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         /// <summary>
@@ -3524,21 +3534,21 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     if (!WeworkLiteController.log(cnn, 18, id, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     cnn.EndTransaction();
                     #region Check dự án đó có gửi gửi mail khi xóa không
-                    if (WeworkLiteController.CheckNotify_ByConditions(id, "email_delete_work", false))
+                    if (WeworkLiteController.CheckNotify_ByConditions(id, "email_delete_work", false, _config))
                     {
                         if (dt_user.Rows.Count > 0)
                         {
                             var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                            WeworkLiteController.mailthongbao(id, users, 15, loginData);
+                            WeworkLiteController.mailthongbao(id, users, 15, loginData, _config);
                             object workname = cnn.ExecuteScalar("select title from we_work where Disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
                             if (workname != null)
                                 workname = workname.ToString();
@@ -3577,7 +3587,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, loginData.CustomerID);
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
         private void genDr(DataTable dtW, EnumerableRowCollection<DataRow> followers, EnumerableRowCollection<DataRow> tags, object id_parent, string level, ref DataTable dt)
