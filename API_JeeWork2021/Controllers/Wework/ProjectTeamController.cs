@@ -1076,7 +1076,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     // insert thành viên
                     string sql_insert = "";
                     sql_insert = $@"insert into we_project_team_user (id_project_team, id_user, admin, favourite, CreatedDate, CreatedBy, Disabled)
-                        select " + idc + ",id_user,0,0,getdate(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + "";
+                        select " + idc + ",id_user,0,0,getdate(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + $" and id_user != {iduser}";
                     cnn.ExecuteNonQuery(sql_insert);
                     if (cnn.LastError != null)
                     {

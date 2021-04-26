@@ -1,0 +1,17 @@
+<div class="card-body">
+    <button mat-menu-item (click)="selectSTT(status)"
+        *ngFor="let status of data"
+        [ngStyle]="{color: status.color}">
+        <div class="row">
+            <div class="cu-task-row-status1"
+                style="width:20px;padding-right:5px">
+                <div class="point" 
+                    [ngStyle]="{'backgroundColor': status.color}">
+                </div>
+            </div>
+            <div class="d-flex" style="align-items: center;">
+                {{status.statusname}}
+            </div>
+        </div>
+    </button>
+</div>
