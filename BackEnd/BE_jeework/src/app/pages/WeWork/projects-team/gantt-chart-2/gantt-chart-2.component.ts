@@ -1,5 +1,8 @@
+import { WeWorkService } from './../../services/wework.services';
+import { QuickStatusComponent } from './quick-status/quick-status.component';
+import { DialogData } from './../../report/report-tab-dashboard/report-tab-dashboard.component';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WorkService } from './../../work/work.service';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router, NavigationStart, NavigationEnd } from '@angular/router';
@@ -15,6 +18,7 @@ import ItemMovement from "gantt-schedule-timeline-calendar/dist/ItemMovement.plu
 import Selection from "gantt-schedule-timeline-calendar/dist/Selection.plugin.js";
 import { ProjectsTeamService } from '../Services/department-and-project.service';
 import { UpdateWorkModel } from '../../work/work.model';
+import { stringify } from 'node:querystring';
 
 // import inforModal from "./inforModal"
 @Component({
@@ -34,7 +38,8 @@ export class GanttChart2Component implements OnInit {
 	view = 'gantt';
 	fromDate =  (new Date()).getFullYear()+ '/05/01';
 	toDate = (new Date()).getFullYear() + 1 + '/04/30';
-	inforModal
+	inforModal;
+	status_dynamic : any = [];
 	// LEFT SIDE LIST COLUMNS
 	columns: any = {
 		percent: 100,
@@ -50,12 +55,19 @@ export class GanttChart2Component implements OnInit {
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return "";
-					// let that = this;
-					if(item.status == "DONE"){
-						return `<input class='gantt-checkbox-column' type='checkbox'  checked value='1'>`;//name='test' id='test'
-					}else{
-						return `<input class='gantt-checkbox-column' type='checkbox' value='1'>`;//name='test' id='test' 
+					// let that = this; 
+					if(item.status){
+						return ` <div onclick="Window.myComponent.onClick123('${item.id}')" class="url" style="background:${item.color}; width: 20px;
+						height: 20px;
+						display: flex;
+						margin: 5px auto;"> </div>`;//name='test' id='test'
+						// return item.status;
+						// <span class="btn-sm text-white url " id="my-button-${item.id}" onclick="Window.myComponent.onClick123('${item.id}')" style="background:${item.color}">${item.status}</span>
+						
 					}
+					// else{
+					// 	return `<input class='gantt-checkbox-column' type='checkbox' value='1'>`;//name='test' id='test' 
+					// }
 				},
 				isHTML: true,
 				width: 80,
@@ -80,14 +92,18 @@ export class GanttChart2Component implements OnInit {
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return "";
-					if (item.status == "DOING")//dang
-						return `<span class="btn-sm btn-primary">${item.status}</span>`;
-					if (item.status == "DONE")//hoan thanh
-						return `<span class="btn-sm btn-success">${item.status}</span>`;
-					if (item.status == "TODO")//todo
-						return `<span class="btn-sm btn-secondary">${item.status}</span>`;
-					if (item.status == "REVIEW")//review
-						return `<span class="btn-sm btn-warning">${item.status}</span>`;
+					// if (item.status == "DOING")//dang
+					// 	return `<span class="btn-sm btn-primary">${item.status}</span>`;
+					// if (item.status == "DONE")//hoan thanh
+					// 	return `<span class="btn-sm btn-success">${item.status}</span>`;
+					// if (item.status == "TODO")//todo
+					// 	return `<span class="btn-sm btn-secondary">${item.status}</span>`;
+					// if (item.status == "REVIEW")//review
+					// 	return `<span class="btn-sm btn-warning">${item.status}</span>`;
+					if(item.status){
+						return `<span class="btn-sm text-white" style="background:${item.color}">${item.status}</span>`;
+						return item.status;
+					}
 				},
 				// data: function (item) {
 				// 	if (item.id[0] == "G")//group
@@ -157,12 +173,14 @@ export class GanttChart2Component implements OnInit {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
 		private _workservice: WorkService,
+		private WeWorkService:WeWorkService
 	) {
 		if((new Date()).getMonth() < 5)
 		{
 			this.fromDate =  ((new Date()).getFullYear() -1)+ '/05/01';
 			this.toDate = (new Date()).getFullYear() + '/04/30';
-		}
+		};
+		Window["myComponent"] = this;
 	}
 	ngOnInit() {
 		// let now = new Date();
@@ -330,6 +348,7 @@ export class GanttChart2Component implements OnInit {
 		let items: any = {};
 		var query = new QueryParamsModelNew({ "id_project_team": this.ID_Project });
 		this._service.findGantt(query).subscribe(res => {
+			console.log(res);
 			if (res && res.status == 1) {
 				rows = res.data.rows.reduce(function (result, row, index, array) {
 					result[row.id] = row; //a, b, c
@@ -371,6 +390,13 @@ export class GanttChart2Component implements OnInit {
 
 			this.changeDetectorRefs.detectChanges();
 		})
+
+		this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe(res => {
+			if (res && res.status === 1) {
+			  this.status_dynamic = res.data;
+			  console.log(this.status_dynamic);
+			};
+		  })
 	}
 	changeChinhSua() {
 
@@ -457,11 +483,38 @@ export class GanttChart2Component implements OnInit {
 		// this.changeDetectorRefs.detectChanges();
 	}
 
+	onClick123(val = ''){
 
+		const dialogRef = this.dialog.open(QuickStatusComponent, {
+			width: '300px',
+			data: this.status_dynamic,
+		  });
+	  
+		  dialogRef.afterClosed().subscribe(result => {
+			if(result){
+				const item = new UpdateWorkModel();
+				item.id_row = +val.replace("W","");
+				item.key = 'status';
+				item.value = result.id_row;
+				// if (task.id_nv > 0) {
+				// 	item.IsStaff = true;
+				// }
+				this._service._UpdateByKey(item).subscribe(res => {
+				if (res && res.status == 1) {
+					this.ngOnInit();
+				}
+				else {
+					this.ngOnInit();
+					this.layoutUtilsService.showError(res.error.message);
+				}
+				})
+			}
+		  });
+	}
 
-
-
-
+	  test(){
+		console.log("testing");
+	  }
 
 	updateView(value){
 		this.view = value;
