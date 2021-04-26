@@ -94,7 +94,7 @@ import { workAddFollowersComponent } from './work/work-add-followers/work-add-fo
 import { CustomUserComponent } from './report/custom-user/custom-user.component';
 
 import { PeriodViewComponent } from './work/period-view/period-view.component';
-// import { AngularGanttScheduleTimelineCalendarModule } from 'angular-gantt-schedule-timeline-calendar';
+import { AngularGanttScheduleTimelineCalendarModule } from 'angular-gantt-schedule-timeline-calendar';
 import { WorkGroupEditComponent } from './work/work-group-edit/work-group-edit.component';
 import { AuthorizeEditComponent } from './user/authorize-edit/authorize-edit.component';
 import { DialogSelectdayComponent } from './report/dialog-selectday/dialog-selectday.component';
@@ -271,7 +271,7 @@ import { MatDividerModule } from '@angular/material/divider';
 		UpdateByKeyService,
 		filterService,
 		TagsService,
-		// AngularGanttScheduleTimelineCalendarModule,
+		AngularGanttScheduleTimelineCalendarModule,
 		CommonService,
 		AuthService,
 		TokenStorage,

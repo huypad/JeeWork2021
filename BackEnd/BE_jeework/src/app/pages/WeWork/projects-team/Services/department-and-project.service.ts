@@ -98,7 +98,7 @@ export class ProjectsTeamService {
 
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
-		const url = API_work + '/gantt-view';
+		const url = API_work_CU + '/gantt-view';
 		return this.http.get<any>(url, {
 			headers: httpHeaders,
 			params: httpParams
