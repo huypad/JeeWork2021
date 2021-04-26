@@ -2181,6 +2181,200 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                 return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
+
+        /// <summary>
+        /// Gantt view
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("gantt-view")]
+        [HttpGet]
+        public object Ganttview([FromQuery] QueryParams query)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                string domain = _config.LinkAPI;
+                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+                    if (string.IsNullOrEmpty(query.filter["id_project_team"]))
+                        return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
+
+                    #region filter thời gian , keyword
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        if (!from1)
+                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        if (!to1)
+                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    }
+                    #endregion
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    string strG = @"select 0 as id_row, N'Chưa phân loại' as title union
+select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
+                    DataTable dtG = cnn.CreateDataTable(strG);
+                    DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID,DataAccount);
+                    DataTable dt_stt = cnn.CreateDataTable($"select * from we_status where id_project_team=" + query.filter["id_project_team"]);
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                    var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
+                    var tags = ds.Tables[1].AsEnumerable();
+                    
+                    // Phân trang
+                    int total = temp.Count();
+                    if (total == 0)
+                        return JsonResultCommon.ThanhCong(new
+                        {
+                            rows = new List<string>(),
+                            items = new List<string>()
+
+                        });
+                    if (query.more)
+                    {
+                        query.page = 1;
+                        query.record = total;
+                    }
+
+                    pageModel.TotalCount = total;
+                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    pageModel.Size = query.record;
+                    pageModel.Page = query.page;
+                    var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
+                    var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
+                    var rows = (from rr in dtG.AsEnumerable()
+                                select new
+                                {
+                                    id = "G" + rr["id_row"],
+                                    label = rr["title"],
+                                    expanded = true,
+                                    parentId = "",
+                                    start_date = "",
+                                    end_date = "",
+                                    deadline = "",
+                                    status = "",
+                                    color = "",
+                                }).AsEnumerable();
+                    rows = rows.Concat(from rr in dtNew.AsEnumerable()
+                                       select new
+                                       {
+                                           id = "W" + rr["id_row"],
+                                           label = rr["title"],
+                                           expanded = true,
+                                           parentId = rr["id_group"] == DBNull.Value ? "G0" : ("G" + rr["id_group"]),
+                                           start_date = rr["start_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["start_date"]),
+                                           end_date = rr["end_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["end_date"]),
+                                           deadline = rr["deadline"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["deadline"]),
+                                           status = rr["status"] == DBNull.Value ? "DOING" : (dt_stt.AsEnumerable().Where(x => rr["status"].ToString().Contains(x["id_row"].ToString())).FirstOrDefault())["StatusName"].ToString(),
+                                           color = rr["status"] == DBNull.Value ? "DOING" : (dt_stt.AsEnumerable().Where(x => rr["status"].ToString().Contains(x["id_row"].ToString())).FirstOrDefault())["color"].ToString(),
+                                       });
+                    rows = rows.Concat(from rr in dtChild
+                                       select new
+                                       {
+                                           id = "W" + rr["id_row"],
+                                           label = rr["title"],
+                                           expanded = true,
+                                           parentId = "W" + rr["id_parent"],
+                                           start_date = rr["start_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["start_date"]),
+                                           end_date = rr["end_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["end_date"]),
+                                           deadline = rr["deadline"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["deadline"]),
+                                           status = rr["status"] == DBNull.Value ? "DOING" : (dt_stt.AsEnumerable().Where(x => rr["status"].ToString().Contains(x["id_row"].ToString())).FirstOrDefault())["StatusName"].ToString(),
+                                           color = rr["status"] == DBNull.Value ? "DOING" : (dt_stt.AsEnumerable().Where(x => rr["status"].ToString().Contains(x["id_row"].ToString())).FirstOrDefault())["color"].ToString(),
+                                       });
+                    double ms = 0;
+                    var items = (from rr in dtNew.AsEnumerable()
+                                 select new
+                                 {
+                                     id = rr["id_row"],
+                                     rowId = "W" + rr["id_row"],
+                                     label = rr["title"],
+                                     style =  getStyle(rr["status"].ToString(), dt_stt),
+                                     time = new
+                                     {
+                                         end = ms = getMs(rr["deadline"]),
+                                         start = rr["start_date"] == DBNull.Value ? ms : getMs(rr["start_date"]),
+                                     }
+                                 }).AsEnumerable();
+                    items = items.Concat(from rr in dtChild
+                                         select new
+                                         {
+                                             id = rr["id_row"],
+                                             rowId = "W" + rr["id_row"],
+                                             label = rr["title"],
+                                             style =  getStyle(rr["status"].ToString(), dt_stt),
+                                             time = new
+                                             {
+
+                                                 end = ms = getMs(rr["deadline"]),
+                                                 start = rr["start_date"] == DBNull.Value ? ms : getMs(rr["start_date"]),
+                                             }
+                                         });
+                    var data = new
+                    {
+                        rows = rows,
+                        items = items
+
+                    };
+                    return JsonResultCommon.ThanhCong(data, pageModel, Visible);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+            }
+        }
+
+        /// <summary>
+        /// Get Style
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        private object getStyle(string id, DataTable dt)
+        {
+            string b = "#4298F4";
+            if(dt.Rows.Count > 0)
+            {
+                var stt = dt.AsEnumerable().Where(x => id.ToString().Contains(x["id_row"].ToString())).FirstOrDefault();
+                b = stt["color"].ToString();
+            }
+            return new { background = b };
+        }
+
+        private double getMs(object obj)
+        {
+            if (obj == DBNull.Value)
+                return 0;
+            DateTime dateTime = (DateTime)(obj);
+            var ttt = dateTime.ToUniversalTime().Subtract(
+new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+).TotalMilliseconds;// / TimeSpan.TicksPerMillisecond;
+            return Math.Round(ttt);
+        }
         /// <summary>
         /// Thêm mới công việc
         /// </summary>

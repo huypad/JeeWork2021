@@ -1,3 +1,4 @@
+import { QuickStatusComponent } from './gantt-chart-2/quick-status/quick-status.component';
 import { SubheaderService } from './../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { OwlDateTimeModule } from "ng-pick-datetime";
@@ -12,6 +13,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 import { TranslateModule } from "@ngx-translate/core";
 import { WeWorkModule } from "../wework.module";
+// import { TagInputModule } from 'ngx-chips';
 import { AngularMultiSelectModule } from "angular2-multiselect-dropdown";
 
 import { MatToolbarModule } from "@angular/material/toolbar";
@@ -19,6 +21,10 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { WorkKanBanComponent } from "./work-kanban/work-kanban.component";
 import { WorkStreamComponent } from "./work-stream/work-stream.component";
+import {
+  AngularGanttScheduleTimelineCalendarModule,
+  GSTCComponent,
+} from "angular-gantt-schedule-timeline-calendar";
 import { GanttChart2Component } from "./gantt-chart-2/gantt-chart-2.component";
 import { DynamicComponentModule } from "dps-lib";
 import { ListDepartmentService } from "../List-department/Services/List-department.service";
@@ -52,7 +58,7 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     EditorModule,
 	  MatMenuModule,
     ProjectTeamRoutingModule,
-    // AngularGanttScheduleTimelineCalendarModule,
+    AngularGanttScheduleTimelineCalendarModule,
     ChartsModule,
     AvatarModule,
     PopoverModule,
@@ -71,6 +77,7 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     SubheaderService
   ],
   entryComponents: [
+    QuickStatusComponent
   ],
   declarations: [
     ProjectsTeamComponent,
@@ -78,8 +85,10 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     WorkKanBanComponent,
     WorkStreamComponent,
     GanttChart2Component,
+    // GSTCComponent,
     WorkPeriodComponent,
     ClickOutsideDirective,
+    QuickStatusComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,

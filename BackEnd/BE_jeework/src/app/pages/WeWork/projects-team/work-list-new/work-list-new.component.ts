@@ -115,7 +115,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     private _attservice: AttachmentService,
   ) {
     this.taskinsert.clear();
-    this.filter_groupby = this.listFilter_Groupby[2];
+    this.filter_groupby = this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
     this.list_priority = this.WeWorkService.list_priority;
     this.UserID = +localStorage.getItem("idUser");
