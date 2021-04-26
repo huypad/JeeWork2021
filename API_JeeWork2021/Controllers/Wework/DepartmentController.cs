@@ -46,8 +46,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400");
-                Visible = true;
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400", _config);
                 #region Lấy dữ liệu account từ JeeAccount
                 DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                 if (DataAccount == null)
@@ -177,7 +176,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                bool Visible = Common.CheckRoleByToken(Token, "3403");
+                bool Visible = Common.CheckRoleByToken(Token, "3403", _config);
                 PageModel pageModel = new PageModel();
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))

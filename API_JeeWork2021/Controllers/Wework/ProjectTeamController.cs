@@ -2468,9 +2468,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502");
-                //fake user Visible
-                Visible = false;
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", _config);
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {

@@ -2203,7 +2203,7 @@ where Disabled = 0";
         /// <returns></returns>
         public static string getListDepartment_GetData(UserJWT info, DpsConnection cnn, IHeaderDictionary pHeader, JeeWorkConfig config)
         {
-            bool Visible = Common.CheckRoleByToken(info.Token, "3400");
+            bool Visible = Common.CheckRoleByToken(info.Token, "3400", config);
             SqlConditions conds = new SqlConditions();
             conds.Add("id_user", info.UserID);
 

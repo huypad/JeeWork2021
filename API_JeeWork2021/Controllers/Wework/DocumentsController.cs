@@ -50,7 +50,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610");
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", _config);
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {

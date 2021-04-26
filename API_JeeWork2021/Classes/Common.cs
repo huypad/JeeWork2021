@@ -208,7 +208,7 @@ namespace JeeWork_Core2021.Classes
         /// <param name="token">token</param>
         /// <param name="role">role</param>
         /// <returns></returns>
-        public static bool CheckRoleByToken(string userID, string role)
+        public static bool CheckRoleByToken(string userID, string role, JeeWorkConfig config)
         {
             if (string.IsNullOrEmpty(userID))
                 return false;
@@ -218,7 +218,7 @@ namespace JeeWork_Core2021.Classes
                 string select = "select username from Tbl_Account where id_nv=@userID";
                 SqlConditions Conds = new SqlConditions();
                 Conds.Add("userID", userID);
-                using (DpsConnection ConnWW = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+                using (DpsConnection ConnWW = new DpsConnection(config.ConnectionString))
                 {
                     DataTable dt = ConnWW.CreateDataTable(select, Conds);
                     if (dt.Rows.Count <= 0) return false;

@@ -6,9 +6,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { element } from 'protractor';
 // Angular
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, Output, Input, EventEmitter, SimpleChange, AfterViewInit, ElementRef, ViewChild, Pipe } from '@angular/core';
-import { FormBuilder, FormGroup , FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 // Material
-import {MatDialog } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 // RxJS
 import { Observable, BehaviorSubject, Subscription, Subject, interval } from 'rxjs';
 // NGRX
@@ -36,7 +36,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 	// nếu không cả Mã và Tên đều Emty thì nút xuất file word sẽ không xuất hiện
 
 	listResult = new Subject();
-	customStyle:any = {}
+	customStyle: any = {}
 	// Public properties
 	ItemData: any = {};
 	FormControls: FormGroup;
@@ -116,7 +116,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	async ngOnInit() {
-
+		debugger
 		this.emotions = GlobalVariable.emotions;
 		this.accounts = GlobalVariable.accounts;
 		this.icons = GlobalVariable.icons;
@@ -173,12 +173,12 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 
 				for (var j = 0; j < data.length; j++) {
 					let check: boolean = false;
-					
+
 					for (var i = 0; i < this.ListYKien.length; i++) {
 						if (data[j].IdRow == this.ListYKien[i].IdRow) {
 							check = true;
 							this.ListYKien[i].CreatedDate = data[j].CreatedDate;
-							
+
 							this.ListYKien[i].comment = data[j].comment;
 							this.ListYKien[i].NguoiTao.hoten = data[j].NguoiTao.hoten;
 							this.ListYKien[i].NguoiTao.image = data[j].NguoiTao.image;
@@ -335,7 +335,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	//type=1: comment, type=2: reply
 	CommentInsert(e: any, Parent: number, ind: number, type: number) {
-		
+
 		var objSave: any = {};
 		objSave.comment = e;
 		objSave.id_parent = Parent;
@@ -575,7 +575,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 			let temp = this.CommentTemp.slice(i);
 			if (temp.includes('  '))
 				return '';
-			return this.CommentTemp.slice(i).replace('@','');
+			return this.CommentTemp.slice(i).replace('@', '');
 		}
 		return '';
 	}
@@ -626,7 +626,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 			var match = this.CommentTemp.match(reg);
 			if (match != null && match.length > 0) {
 				let arr = match.map(x => x);
-				this.selected = this.selected.filter(x => this.checkUser(this.CommentTemp ,x) >= 0 );
+				this.selected = this.selected.filter(x => this.checkUser(this.CommentTemp, x) >= 0);
 			} else {
 				this.selected = [];
 			}
@@ -643,14 +643,14 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 			//this.myPopover.top = rect.y + h;
 			//this.myPopover.left = w ;
 		} else {
-			if(this.myPopover)
+			if (this.myPopover)
 				this.myPopover.hide();
 		}
 		this.changeDetectorRefs.detectChanges();
 	}
 
-	checkUser(text,value){
-		return text.search('@'+value.hoten);
+	checkUser(text, value) {
+		return text.search('@' + value.hoten);
 	}
 	onSearchChangeChild($event, vi = -1) {
 		if (vi >= 0)
@@ -663,7 +663,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 			var match = this.CommentTemp.match(reg);
 			if (match != null && match.length > 0) {
 				let arr = match.map(x => x);
-				this.selectedChild = this.selectedChild.filter(x => this.checkUser(this.CommentTemp ,x) >= 0 );
+				this.selectedChild = this.selectedChild.filter(x => this.checkUser(this.CommentTemp, x) >= 0);
 			} else {
 				this.selectedChild = [];
 			}
@@ -681,7 +681,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.myPopoverChild.left = el.offsetLeft + w;
 			this.changeDetectorRefs.detectChanges();
 		} else {
-			if(this.myPopoverChild)
+			if (this.myPopoverChild)
 				this.myPopoverChild.hide();
 		}
 	}

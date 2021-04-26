@@ -54,7 +54,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             string sqlq = "";
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "GroupName asc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900");
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config);
             DataTable dt = new DataTable();
             try
             {
@@ -569,7 +569,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             dt_staff.Columns.Add("CustomerID", typeof(int));
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "Username asc", whereStr = "nv.thoiviec = 0  and nv.disable=0 and CustemerID=@CustemerID";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900");
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config);
             DataTable dt = new DataTable();
             try
             {
