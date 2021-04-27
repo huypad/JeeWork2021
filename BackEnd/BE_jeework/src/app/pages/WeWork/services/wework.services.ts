@@ -111,7 +111,7 @@ export class WeWorkService {
 		return this.http.get<any>(API_Lite + `/lite_project_team_byuser?keyword=${keyword}`, { headers: httpHeaders });
 	}
 	lite_emotion(id: number = 0): Observable<any> {
-		debugger
+		
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/lite_emotion?id=${id}`, { headers: httpHeaders });
 	}

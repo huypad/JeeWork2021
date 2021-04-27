@@ -1,4 +1,4 @@
-import { GlobalVariable } from './../../global';
+import { GlobalVariable } from './../../../pages/global';
 import { TokenStorage } from './../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { LayoutUtilsService } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
 
@@ -21,6 +21,7 @@ import { CommentEditDialogComponent } from './comment-edit-dialog/comment-edit-d
 import { PopoverContentComponent } from 'ngx-smart-popover';
 import { WeWorkService } from '../services/wework.services';
 import { DomSanitizer } from '@angular/platform-browser';
+import { UserProfileService } from 'src/app/_metronic/jeework_old/core/auth/_services';
 
 @Component({
 	selector: 'kt-comment',
@@ -100,6 +101,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 		private translate: TranslateService,
 		public weworkService: WeWorkService,
 		private elementRef: ElementRef,
+		private userProfileService: UserProfileService,
 		private sanitized: DomSanitizer) { }
 	transform(value) {
 		return this.sanitized.bypassSecurityTrustHtml(value);
@@ -116,31 +118,37 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	async ngOnInit() {
-		debugger
-		this.emotions = GlobalVariable.emotions;
-		this.accounts = GlobalVariable.accounts;
-		this.icons = GlobalVariable.icons;
-		this.options = this.getOptions();
-		this.weworkService.list_account({}).subscribe(res => {
-			// this.changeDetectorRefs.detectChanges();
-			if (res && res.status === 1) {
-				this.listUser = res.data;
+		this.userProfileService.getDictionary().subscribe((res) => {
+			if (res && res.status == 1) {
+				res.data.emotions.map((x) => {
+					GlobalVariable.emotions[x.key] = x.value;
+				});
+				res.data.accounts.map((x) => {
+					GlobalVariable.accounts[x.key] = x.value;
+				});
+				GlobalVariable.icons = res.data.icons;
+				this.emotions = GlobalVariable.emotions;
+				this.accounts = GlobalVariable.accounts;
+				this.icons = GlobalVariable.icons;
+				this.options = this.getOptions();
+				this.weworkService.list_account({}).subscribe(res => {
+					// this.changeDetectorRefs.detectChanges();
+					if (res && res.status === 1) {
+						this.listUser = res.data;
+					}
+					this.options = this.getOptions();
+					// this.changeDetectorRefs.detectChanges();
+				});
+				this.tokenStorage.getUserData().subscribe(res => {
+					this.UserData = res;
+				})
+				this.AcceptInterval = true;
+				this.viewLoading = true;
+				if (this.Id > 0) {
+					this.getDSYKien();
+				}
 			}
-			this.options = this.getOptions();
-			// this.changeDetectorRefs.detectChanges();
 		});
-		this.tokenStorage.getUserData().subscribe(res => {
-			this.UserData = res;
-		})
-		this.AcceptInterval = true;
-		this.viewLoading = true;
-		if (this.Id > 0) {
-			this.getDSYKien();
-			//setInterval(() => {
-			//	if (this.AcceptInterval)
-			//		this.getDSYKien_Interval();
-			//}, 500);
-		}
 	}
 	ngAfterViewInit() {
 		this.anchors = this.elementRef.nativeElement.querySelectorAll('.inline-tag');

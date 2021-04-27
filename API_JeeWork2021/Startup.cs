@@ -42,16 +42,17 @@ namespace JeeWork_Core2021
         {
             // add Vault and get Vault for secret in another services
             var vaultClient = ConfigVault(services);
-                Secret<SecretData> kafkaSecret = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "jwt", mountPoint: "kv").Result;
-            IDictionary<string, object> kafkaDataSecret = kafkaSecret.Data.Data;
-            string access_secret = kafkaDataSecret["access_secret"].ToString();
-            /////// kafka
-            Secret<SecretData> kafka = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "kafka", mountPoint: "kv").Result;
-            IDictionary<string, object> kafkaData = kafka.Data.Data;
-            string KafkaUser = kafkaData["username"].ToString();
-            string KafkaPassword = kafkaData["password"].ToString();
-            Configuration["KafkaConfig:username"] = KafkaUser;
-            Configuration["KafkaConfig:password"] = KafkaPassword;
+            //    Secret<SecretData> kafkaSecret = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "jwt", mountPoint: "kv").Result;
+            //IDictionary<string, object> kafkaDataSecret = kafkaSecret.Data.Data;
+            //string access_secret = kafkaDataSecret["access_secret"].ToString();
+            ///////// kafka
+            //Secret<SecretData> kafka = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "kafka", mountPoint: "kv").Result;
+            //IDictionary<string, object> kafkaData = kafka.Data.Data;
+            //string KafkaUser = kafkaData["username"].ToString();
+            //string KafkaPassword = kafkaData["password"].ToString();
+
+            //Configuration["KafkaConfig:username"] = KafkaUser;
+            //Configuration["KafkaConfig:password"] = KafkaPassword;
             // add Kafka
             services.addKafkaService();
 
@@ -80,7 +81,7 @@ namespace JeeWork_Core2021
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(access_secret.ToString())),
+                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(access_secret.ToString())),
                 };
             });
             //Swagger
@@ -135,6 +136,18 @@ namespace JeeWork_Core2021
             {
                 endpoints.MapControllers();
             });
+
+
+            app.UseExceptionHandler("/error");
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                   Path.Combine(Directory.GetCurrentDirectory(), "dulieu")),
+                RequestPath = "/dulieu"
+            });
+
+            app.UseHttpsRedirection();
         }
         private VaultClient ConfigVault(IServiceCollection services)
         {

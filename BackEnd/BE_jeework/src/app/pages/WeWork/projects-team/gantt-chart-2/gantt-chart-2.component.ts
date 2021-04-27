@@ -1,3 +1,4 @@
+import { WorkListNewDetailComponent } from './../work-list-new/work-list-new-detail/work-list-new-detail.component';
 import { WeWorkService } from './../../services/wework.services';
 import { QuickStatusComponent } from './quick-status/quick-status.component';
 import { DialogData } from './../../report/report-tab-dashboard/report-tab-dashboard.component';
@@ -55,19 +56,12 @@ export class GanttChart2Component implements OnInit {
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return "";
-					// let that = this; 
 					if(item.status){
 						return ` <div onclick="Window.myComponent.onClick123('${item.id}')" class="url" style="background:${item.color}; width: 20px;
 						height: 20px;
 						display: flex;
-						margin: 5px auto;"> </div>`;//name='test' id='test'
-						// return item.status;
-						// <span class="btn-sm text-white url " id="my-button-${item.id}" onclick="Window.myComponent.onClick123('${item.id}')" style="background:${item.color}">${item.status}</span>
-						
+						margin: 5px auto;"> </div>`;
 					}
-					// else{
-					// 	return `<input class='gantt-checkbox-column' type='checkbox' value='1'>`;//name='test' id='test' 
-					// }
 				},
 				isHTML: true,
 				width: 80,
@@ -76,7 +70,14 @@ export class GanttChart2Component implements OnInit {
 
 			label: {
 				id: "label",
-				data: "label",
+				data: function (item) {
+					if (item.id[0] == "G")//group
+						return `${item.label}`;
+					if(item.status){
+						return ` <span onclick="Window.myComponent.Viewdetail('${item.id}')" class="url"> ${item.label} </span>`;	
+					}
+				},
+				isHTML: true,
 				expander: true,
 				width: 230,
 				minWidth: 100,
@@ -92,33 +93,12 @@ export class GanttChart2Component implements OnInit {
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return "";
-					// if (item.status == "DOING")//dang
-					// 	return `<span class="btn-sm btn-primary">${item.status}</span>`;
-					// if (item.status == "DONE")//hoan thanh
-					// 	return `<span class="btn-sm btn-success">${item.status}</span>`;
-					// if (item.status == "TODO")//todo
-					// 	return `<span class="btn-sm btn-secondary">${item.status}</span>`;
-					// if (item.status == "REVIEW")//review
-					// 	return `<span class="btn-sm btn-warning">${item.status}</span>`;
 					if(item.status){
 						return `<span class="btn-sm text-white" style="background:${item.color}">${item.status}</span>`;
-						return item.status;
 					}
 				},
-				// data: function (item) {
-				// 	if (item.id[0] == "G")//group
-				// 		return "";
-				// 	if (item.status == "DOING")//dang
-				// 		return `<span style="color:white; background-color:#589FC9;padding: 3px;">${item.status}</span>`;
-				// 	if (item.status == "DONE")//hoan thanh
-				// 		return `<span style="color:white; background-color:#6EAA17;padding: 3px;">${item.status}</span>`;
-				// 	if (item.status == "TODO")//todo
-				// 		return `<span style="color:white; background-color:#B2B2B2;padding: 3px;">${item.status}</span>`;
-				// 	if (item.status == "REVIEW")//review
-				// 		return `<span style="color:white; background-color:#FFC107;padding: 3px;">${item.status}</span>`;
-				// },
 				isHTML: true,
-				width: 80,
+				width: 100,
 				header: { content: "Status" }
 			},
 		}
@@ -347,6 +327,7 @@ export class GanttChart2Component implements OnInit {
 		let rows: any = {};
 		let items: any = {};
 		var query = new QueryParamsModelNew({ "id_project_team": this.ID_Project });
+		query.more = true;
 		this._service.findGantt(query).subscribe(res => {
 			console.log(res);
 			if (res && res.status == 1) {
@@ -355,38 +336,19 @@ export class GanttChart2Component implements OnInit {
 					return result;
 				}, {});
 				items = res.data.items.reduce(function (result, item, index, array) {
-					result[item.id] = item; //a, b, c
-					// result[item.id]["time"] = {
-					// 	// "start": new Date('2020-08-03').getTime(), //
-					// 	// "end": new Date('2020-08-06').getTime()
-					// 	"start": 1596560864256,
-					// 	"end": 1596954281971
-					// }
+					result[item.id] = item; 
 					return result;
 				}, {});
 
 			}
 			this.gstcState.data.config.list.rows = rows;
 			this.gstcState.data.config.chart.items = items;
-			// this.gstcState.data.config.chart.scroll = items;
-			// this.gstcState.data.config.chart.time. = res.data.time;
 
 			this.gstcState.data.config.locale = this.locale;
 			this.gstcState.update('config', config => {
 				return config;
 			});
-			// this.gstcState.attachEvent("onTaskClick", function (id, e) {
-			// 	
-
-			// 	var checkbox = this.gstcState.utils.dom.closest(e.target, ".gantt-checkbox-column");
-			// 	if (checkbox) {
-			// 		checkbox.checked = !!checkbox.checked;
-			// 		this.gstcState.getTask(id).checked = checkbox.checked;
-			// 		return false;
-			// 	} else {
-			// 		return true;
-			// 	}
-			// });
+			console.log(this.gstcState);
 
 			this.changeDetectorRefs.detectChanges();
 		})
@@ -509,6 +471,24 @@ export class GanttChart2Component implements OnInit {
 				}
 				})
 			}
+		  });
+	}
+
+	Viewdetail(value){
+		console.log(value)
+		var item :any = {};
+		item.id_row = value.replace("W","");
+		item.id_project_team = this.ID_Project;
+		// this.DataID = this.data.id_row;
+		// this.Id_project_team = this.data.id_project_team;
+		const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+			width: '90vw',
+			height: '90vh',
+			data: item
+		  });
+	  
+		  dialogRef.afterClosed().subscribe(result => {
+			this.ngOnInit();
 		  });
 	}
 

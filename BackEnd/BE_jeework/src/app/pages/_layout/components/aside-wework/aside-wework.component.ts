@@ -189,6 +189,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 
 	Create(_item: ProjectTeamModel) {
 		this._Services.InsertFasttProjectTeam(_item).subscribe(res => {
+			console.log(res);
 			if (res && res.status == 1) {
 				location.reload();
 			}

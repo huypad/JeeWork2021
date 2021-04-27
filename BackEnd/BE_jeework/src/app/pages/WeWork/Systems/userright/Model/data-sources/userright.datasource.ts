@@ -24,7 +24,6 @@ export class UserRightDataSource extends BaseDataSource {
 				finalize(() => this.loadingSubject.next(false))
 			).subscribe(
 				res => {
-					debugger
 					this.permitService.VisibleNND = res.Visible;
 				}
 			);

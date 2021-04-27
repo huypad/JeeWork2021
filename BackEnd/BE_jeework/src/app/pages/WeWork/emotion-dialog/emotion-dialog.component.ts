@@ -26,10 +26,11 @@ export class EmotionDialogComponent implements OnInit {
 		private service: WeWorkService) { }
 	/** LOAD DATA */
 	ngOnInit() {
-		debugger
 		this.service.lite_emotion().subscribe(res => {
 			if(res && res.data)
+			{
 				this.ListEmotion = res.data;
+			}
 		})
 	}
 	close() {
