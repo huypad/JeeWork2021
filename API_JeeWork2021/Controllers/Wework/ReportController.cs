@@ -467,7 +467,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     list_Todo = GetListStatusTodo(listDept, cnn);
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    string sqlq = @"select id_row, id_nv, status,
+                                    iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
                                     iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
                                     iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
                                     iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, deadline 

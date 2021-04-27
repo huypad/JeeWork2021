@@ -119,7 +119,15 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
 
-                    // #update status động
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string list_Complete = "";
+                    list_Complete = ReportController.GetListStatusComplete(listDept, cnn);
+                    string list_Deadline = "";
+                    list_Deadline = ReportController.GetListStatusDeadline(listDept, cnn);
+                    string list_Todo = "";
+                    list_Todo = ReportController.GetListStatusTodo(listDept, cnn);
+                    #endregion
 
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -137,7 +145,7 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"  select m.*, m.person_in_charge as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh,
 coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m 
- left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_milestone from v_wework w group by w.id_milestone) w on m.id_row=w.id_milestone
+ left join (select count(*) as tong, COUNT(CASE WHEN w.status in ({list_Complete}) THEN 1 END) as ht,w.id_milestone from v_wework w group by w.id_milestone) w on m.id_row=w.id_milestone
  where m.person_in_charge=@iduser and m.person_in_charge in ({listID}) and disabled=0";
                     DataTable dt = cnn.CreateDataTable(sqlq, new SqlConditions() { { "iduser", loginData.UserID } });
                     if (cnn.LastError != null || dt == null)

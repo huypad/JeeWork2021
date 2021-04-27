@@ -60,6 +60,7 @@ namespace API.Controllers.Wework
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -300,7 +301,7 @@ namespace API.Controllers.Wework
                         {
                             item["DataChildren"] = dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"],DataAccount);
                         }
-                        DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, strW);
+                        DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount,listDept, strW);
                         if (cnn.LastError != null || ds == null)
                             return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         dt_data = ds.Tables[0];
@@ -2204,6 +2205,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -2239,7 +2241,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     string strG = @"select 0 as id_row, N'Chưa phân loại' as title union
 select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
                     DataTable dtG = cnn.CreateDataTable(strG);
-                    DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID,DataAccount);
+                    DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID,DataAccount, listDept);
                     DataTable dt_stt = cnn.CreateDataTable($"select * from we_status where id_project_team=" + query.filter["id_project_team"]);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
@@ -3979,7 +3981,7 @@ where w_user.Disabled = 0  and we_work.id_project_team = " + id_project_team + "
             }
             return result;
         }
-        private DataSet GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
+        private DataSet GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount,string listDept, string dieukien_where = "")
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             string ListID = string.Join(",", nvs);
@@ -3997,6 +3999,15 @@ where w_user.Disabled = 0  and we_work.id_project_team = " + id_project_team + "
                 dieukien_where += " and w.id_nv=@id_nv";
                 Conds.Add("id_nv", query.filter["id_nv"]);
             }
+
+            #region danh sách department, list status hoàn thành, trễ,đang làm
+            string list_Complete = "";
+            list_Complete = ReportController.GetListStatusComplete(listDept, cnn);
+            string list_Deadline = "";
+            list_Deadline = ReportController.GetListStatusDeadline(listDept, cnn);
+            string list_Todo = "";
+            list_Todo = ReportController.GetListStatusTodo(listDept, cnn);
+            #endregion
 
             #region filter thời gian , keyword
             DateTime from = DateTime.Now;
@@ -4037,14 +4048,13 @@ where w_user.Disabled = 0  and we_work.id_project_team = " + id_project_team + "
             if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Trả dữ liệu về backend để hiển thị lên giao diện
-            // #update status động
             string sqlq = @$"select Distinct w.*, '' as hoten_nguoigiao
 , Iif(fa.id_row is null ,0,1) as favourite 
 ,coalesce( f.count,0) as num_file,coalesce( com.count,0) as num_com,
-iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
-iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
+iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
+iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as is_danglam, 
+iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
 iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao, '' as NguoiSua from v_wework_clickup_new w 

@@ -41,9 +41,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { MatMomentDateModule, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
-// import { MY_FORMATS_EDIT } from '../datepicker';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { DiagramModule } from '@syncfusion/ej2-angular-diagrams';
+// import { DiagramModule } from '@syncfusion/ej2-angular-diagrams';
 import { DndModule } from 'ngx-drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OwlNativeDateTimeModule, OwlDateTimeModule } from 'ng-pick-datetime';
@@ -51,7 +50,6 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgbModule, NgbProgressbarModule } from '@ng-bootstrap/ng-bootstrap';
 import { DropdownTreeModule, DynamicComponentModule, ImageControlModule } from 'dps-lib';
 import { WeWorkService } from './services/wework.services';
-// import { TagInputModule } from 'ngx-chips';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
 import { DepartmentEditComponent } from './List-department/List-department-edit/List-department-edit.component';
@@ -204,17 +202,14 @@ import { MatDividerModule } from '@angular/material/divider';
 		MatMomentDateModule,
 		NgxMatSelectSearchModule,
 		MatSidenavModule,
-		DiagramModule,
+		// DiagramModule,
 		MatSlideToggleModule,
 		MatSidenavModule,
 		DndModule,
-		// DynamicSearchFormModule,
-		// CommentFormModule,
 		MatSliderModule,
 		OwlDateTimeModule,
 		OwlNativeDateTimeModule,
 		DragDropModule,
-		// DynamicFormModule,
 		NgbModule,
 		NgbProgressbarModule,
 		MatProgressBarModule,
@@ -236,16 +231,10 @@ import { MatDividerModule } from '@angular/material/divider';
 		AvatarModule,
 		FullCalendarModule,
 		CRUDTableModule,
-		// NgxDocViewerModule 
-		// TagCloudModule
 	],
-	// { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-	// 	{ provide: MAT_DATE_FORMATS, useValue: MY_FORMATS_EDIT },
 	providers: [
 		{ provide: MAT_DATE_LOCALE, useValue: 'vi' },
 		{ provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-		// { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS_EDIT },
-		// { provide: MatPaginatorIntl, useValue: CustomPaginator() },
 		{
 			provide: MAT_DIALOG_DEFAULT_OPTIONS,
 			useValue: {
@@ -279,9 +268,6 @@ import { MatDividerModule } from '@angular/material/divider';
 		DynamicFormService
 	],
 	entryComponents: [
-		// DeleteEntityDialogComponent,
-		// FetchEntityDialogComponent,
-		// UpdateStatusDialogComponent,
 		DepartmentEditComponent,
 		DepartmentEditNewComponent,
 		ProjectTeamEditComponent,
@@ -402,7 +388,6 @@ import { MatDividerModule } from '@angular/material/divider';
 		AddNewFieldsComponent,
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
-		// ChangeReivewerComponent
 
 	],
 	exports: [
@@ -430,24 +415,20 @@ import { MatDividerModule } from '@angular/material/divider';
 		MatTooltipModule,
 		MatMomentDateModule,
 		NgxMatSelectSearchModule,
-		DiagramModule,
+		// DiagramModule,
 		MatSlideToggleModule,
 		MatSidenavModule,
 		DndModule,
-		// DynamicSearchFormModule,
-		// CommentFormModule,
 		MatSliderModule,
 		OwlDateTimeModule,
 		OwlNativeDateTimeModule,
 		DragDropModule,
-		// DynamicFormModule,
 		NgbModule,
 		NgbProgressbarModule,
 		MatProgressBarModule,
 		DropdownTreeModule,
 		MatTreeModule,
 		PerfectScrollbarModule,
-		// TagInputModule,
 		AngularMultiSelectModule,
 		MatExpansionModule,
 		ImageControlModule,
@@ -504,7 +485,6 @@ import { MatDividerModule } from '@angular/material/divider';
 		AvatarListUsersComponent,
 		ListTaskCUComponent,
 		StatusDynamicDialogComponent,
-		// ChangeReivewerComponent
 		CheckListEditComponent,
 		ChangeReivewerComponent,
 		CuTagComponent,
