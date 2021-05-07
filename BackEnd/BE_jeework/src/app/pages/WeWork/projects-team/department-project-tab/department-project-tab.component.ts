@@ -27,7 +27,7 @@ import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 // RXJS
 import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
-import { fromEvent, merge } from "rxjs";
+import { BehaviorSubject, fromEvent, merge } from "rxjs";
 import { TranslateService } from "@ngx-translate/core";
 // Models
 import { DepartmentModel } from "../../List-department/Model/List-department.model";
@@ -96,42 +96,22 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     this.tokenStorage.getPageSize().subscribe((res) => {
       this.pageSize = +res;
     });
-    // If the user changes the sort order, reset back to the first page.
-    // this.sort.sortChange.subscribe(() => (this.paginatorNew.page = 1));
-
-    /* Data load will be triggered in two cases:
-		- when a pagination event occurs => this.paginator.page
-		- when a sort event occurs => this.sort.sortChange
-		**/
-    // merge(this.sort.sortChange)
-    //   .pipe(
-    //     tap(() => {
-    //       this.loadDataList();
-    //     })
-    //   )
-    //   .subscribe();
-    // Init DataSource
     this.dataSource = new DepartmentProjectDataSource(this.deptService);
 
     this.dataSource.entitySubject.subscribe(
       (res) => (this.productsResult = res)
     );
-    // this.layoutUtilsService2.setUpPaginationLabels(this.paginator);
-    // this.loadDataList();
 
     this.dataSource.paginatorTotal$.subscribe(
       (res) => (this.paginatorNew.total = res)
     );
     this.route.params.subscribe((params) => {
-      // this.ID_Department = +params.id;
-      // this._deptServices.DeptDetail(this.ID_Department).subscribe(res => {
-      // 	if (res && res.status == 1) {
-      // 		this.item = res.data;
-      // 		this.Department = res.data.title;
-      // 	}
-      // })
       this.loadDataList();
     });
+
+    setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
   }
 
   ngOnChanges() {

@@ -1094,7 +1094,8 @@ export const locale = {
 			chinhsuabinhluan: 'Chỉnh sửa bình luận',
 			traloi: 'Trả lời',
 			preview: 'Xem trước',
-			download: 'Tải xuống'
+			download: 'Tải xuống',
+			collapse:'Đóng lại '
 		},
 		setting:
 		{

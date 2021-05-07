@@ -1094,10 +1094,11 @@ div.cu-avatar {
 
 /// action in line
 .action-inline{
+	margin-left: 5px;
     display: none;
     i{
-        padding: 5px;
         font-size: 8pt;
+        padding: 5px;
     }
     
 }

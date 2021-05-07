@@ -356,7 +356,6 @@ export class GanttChart2Component implements OnInit {
 		this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe(res => {
 			if (res && res.status === 1) {
 			  this.status_dynamic = res.data;
-			  console.log(this.status_dynamic);
 			};
 		  })
 	}

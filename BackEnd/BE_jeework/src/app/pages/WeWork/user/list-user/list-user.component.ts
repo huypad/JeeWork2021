@@ -11,7 +11,7 @@ import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
-import { fromEvent, merge } from 'rxjs';
+import { BehaviorSubject, fromEvent, merge } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services
 import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
@@ -65,6 +65,9 @@ export class ListUserComponent implements OnInit, OnChanges {
 		// this.layoutUtilsService.setUpPaginationLabels(this.paginator);
 		this.dataSource.paginatorTotal$.subscribe(res => this.paginatorNew.total = res)
 		this.loadDataList();
+		setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
 	}
 
 	ngOnChanges() {

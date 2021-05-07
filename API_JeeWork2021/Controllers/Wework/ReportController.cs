@@ -126,11 +126,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
 
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
                     #endregion
                     if (displayChild == "0")
                         strW += " and id_parent is null";
@@ -350,11 +350,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select d.id_row, d.title, coalesce(value,0) as value from  we_department d
@@ -443,8 +443,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         listDept = query.filter["id_department"];
-                        //strW += " and id_department=@id_department";
-                        //cond.Add("id_department", query.filter["id_department"]);
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -460,11 +458,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status,
@@ -600,11 +598,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
@@ -727,11 +725,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline ,
@@ -841,11 +839,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -954,11 +952,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
 
                     #region Lấy dữ liệu account từ JeeAccount
@@ -1191,11 +1189,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     string sqlq = @"select count(distinct p.id_row) as dem,id_user from we_project_team p 
                                     join we_project_team_user u 
@@ -1359,11 +1357,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         //strD += " and id_row=@id_department";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
                                     ,iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan
@@ -1485,11 +1483,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         strW1 += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
 
                     DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
@@ -1649,11 +1647,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                                                         m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
@@ -1809,11 +1807,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     strW += " and id_department in (" + listDept + ") ";
                 }
                 string list_Complete = "";
-                list_Complete = GetListStatusComplete(listDept, cnn);
+                list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                 string list_Deadline = "";
-                list_Deadline = GetListStatusDeadline(listDept, cnn);
+                list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                 string list_Todo = "";
-                list_Todo = GetListStatusTodo(listDept, cnn);
+               list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                 #endregion
                     string sql_query = "";
                     if (string.IsNullOrEmpty(query.filter["key"]))
@@ -1978,11 +1976,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     string sql_query = "";
                     if (string.IsNullOrEmpty(query.filter["key"]))
@@ -2158,11 +2156,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                         sql_query += " and id_row in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     DataTable dt = cnn.CreateDataTable(sql_query, conds);
                     if (dt.Rows.Count == 0)
@@ -2270,14 +2268,14 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     if (listDept != "")
                     {
                         strW += " and id_department in (" + listDept + ") ";
-                        strD += " and id_department in (" + listDept + ") ";
+                        strD += " and id_row in (" + listDept + ") ";
                     }
                     string list_Complete = "";
-                    list_Complete = GetListStatusComplete(listDept, cnn);
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                    list_Deadline = GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                    list_Todo = GetListStatusTodo(listDept, cnn);
+                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -2319,8 +2317,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         comment = 0;
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
-                    var
-                                       data = new
+                    var  data = new
                                        {
                                            week = string.Format("{0:###,##0.00}", work_of_week),
                                            member = string.Format("{0:###,##0.00}", work_of_member),
@@ -2416,7 +2413,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                                {
                                    id_row = r["id_row"],
                                    name = r["title"],
-                                   weight = dt_detail.Compute("count(id_work)", "id_work= " + r["id_row"])
+                                   weight = dt_detail.Compute("count(id_work)", "id_tag= " + r["id_row"])
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -2457,42 +2454,15 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             this.Response.Headers.Add("Access-Control-Expose-Headers", "X-Filename");
             return new FileContentResult(bytearr, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
-        public static string GetListStatusTodo(string lst_dept, DpsConnection cnn)
+
+        public static string GetListStatusDynamic(string lst_dept, DpsConnection cnn, string fieldname)
         {
             string strW = "";
             if (lst_dept != "")
             {
                 strW += "and id_department in (" + lst_dept + ") ";
             };
-            string sql = @"select distinct * from we_status where Disabled = 0 and IsTodo = 1 and id_project_team 
-        in (select p.id_row from we_project_team p where Disabled = 0 " + strW + " )";
-            DataTable dt = cnn.CreateDataTable(sql);
-            List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-            string ids = string.Join(",", nvs);
-            return ids;
-        }
-        public static string GetListStatusComplete(string lst_dept, DpsConnection cnn)
-        {
-            string strW = "";
-            if (lst_dept != "")
-            {
-                strW += "and id_department in (" + lst_dept + ") ";
-            };
-            string sql = @"select distinct * from we_status where Disabled = 0 and IsFinal = 1 and id_project_team 
-    in (select p.id_row from we_project_team p where Disabled = 0 " + strW + " )";
-            DataTable dt = cnn.CreateDataTable(sql);
-            List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-            string ids = string.Join(",", nvs);
-            return ids;
-        }
-        public static string GetListStatusDeadline(string lst_dept, DpsConnection cnn)
-        {
-            string strW = "";
-            if (lst_dept != "")
-            {
-                strW += "and id_department in (" + lst_dept + ") ";
-            };
-            string sql = @"select distinct * from we_status where Disabled = 0 and IsDeadline = 1 and id_project_team 
+            string sql = @$"select distinct * from we_status where Disabled = 0 and {fieldname} = 1 and id_project_team 
         in ( select p.id_row from we_project_team p where Disabled = 0 " + strW + " )";
             DataTable dt = cnn.CreateDataTable(sql);
             List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
@@ -2500,7 +2470,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             return ids;
         }
 
-        
+
         public static void GetWeekInMonth(DateTime from, DateTime to, out double daynum, out double weekNum)
         {
             weekNum = 0;

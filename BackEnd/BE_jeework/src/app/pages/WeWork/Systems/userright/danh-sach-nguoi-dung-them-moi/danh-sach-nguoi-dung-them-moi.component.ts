@@ -89,6 +89,10 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 		this.dataSource.entitySubject.subscribe(res => this.productsResult = res);
 		this.getTreeValue();
 		this.loadDataList();
+
+		setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
 	}
 
 	getTreeValue() {

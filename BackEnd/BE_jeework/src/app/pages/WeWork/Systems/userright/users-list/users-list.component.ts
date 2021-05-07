@@ -103,6 +103,10 @@ export class UsersListComponent implements OnInit {
 		this.dataSource.paginatorTotal$.subscribe(res => this.paginatorNew.total = res)
 		this.dataSource.entitySubject.subscribe(res => this.productsResult = res);
 		this.loadDataList();
+
+		setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
 	}
 	getTreeValue() {
 		this.danhMucChungService.Get_CoCauToChuc().subscribe(res => {

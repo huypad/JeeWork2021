@@ -12,11 +12,11 @@ import { QueryResultsModel } from '../models/query-models/query-results.model';
 import { QueryParamsModel } from '../models/query-models/query-params.model';
 
 const API_USERS_URL = 'api/users';//'api/users'
-const API_USERS = environment.ApiRoot +'/user';
+const API_USERS = environment.ApiRoots +'/user';
 const API_PERMISSION_URL = 'api/permissions';
 const API_ROLES_URL = 'api/roles';
-const API_LOGIN_URL = environment.ApiRoot + '/user/Login';
-const API_LOGOUT_URL = environment.ApiRoot + '/user/Logout';
+const API_LOGIN_URL = environment.ApiRoots + '/user/Login';
+const API_LOGOUT_URL = environment.ApiRoots + '/user/Logout';
 
 @Injectable()
 export class AuthService {
@@ -202,7 +202,7 @@ export class AuthService {
 			'Authorization': 'Bearer ' + userToken,
 		});
 		httpHeaders.append("Content-Type", "application/json");
-		return this.http.post<any>(environment.ApiRoot + '/user/ResetSession', null, { headers: httpHeaders })
+		return this.http.post<any>(environment.ApiRoots + '/user/ResetSession', null, { headers: httpHeaders })
 			.pipe(
 				map((res: any) => {
 					return res;
@@ -245,7 +245,7 @@ export class AuthService {
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});
-		return this.http.get<any>(environment.ApiRoot + `/fcm/CreateFCM`, { headers: httpHeaders });
+		return this.http.get<any>(environment.ApiRoots + `/fcm/CreateFCM`, { headers: httpHeaders });
 	}
 	DeleteFCM(data): Observable<any> {
 		const userToken = localStorage.getItem(environment.authTokenKey);
@@ -253,7 +253,7 @@ export class AuthService {
 			'Authorization': 'Bearer ' + userToken,
 		});
 		httpHeaders.append("Content-Type", "application/json");
-		return this.http.post<any>(environment.ApiRoot + `/fcm/DeleteFCM`, data, { headers: httpHeaders });
+		return this.http.post<any>(environment.ApiRoots + `/fcm/DeleteFCM`, data, { headers: httpHeaders });
 	}
 	//#endregion
 
@@ -264,7 +264,7 @@ export class AuthService {
 			'Authorization': 'Bearer ' + userToken,
 		});
 		httpHeaders.append("Content-Type", "application/json");
-		return this.http.get<any>(environment.ApiRoot + '/user/ds-vai-tro', { headers: httpHeaders });
+		return this.http.get<any>(environment.ApiRoots + '/user/ds-vai-tro', { headers: httpHeaders });
 	}
 
 	doiVaiTro(id): Observable<any> {
@@ -273,7 +273,7 @@ export class AuthService {
 			'Authorization': 'Bearer ' + userToken,
 		});
 		httpHeaders.append("Content-Type", "application/json");
-		return this.http.get<any>(environment.ApiRoot + '/user/doi-vai-tro?VaiTro=' + id, { headers: httpHeaders });
+		return this.http.get<any>(environment.ApiRoots + '/user/doi-vai-tro?VaiTro=' + id, { headers: httpHeaders });
 	}
 	//#endregion
 }

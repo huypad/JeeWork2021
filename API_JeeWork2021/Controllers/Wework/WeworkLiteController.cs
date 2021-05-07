@@ -88,9 +88,10 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
-                    string sql = @"select distinct p.id_row, title, is_project from we_project_team p
+                    string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
+join we_department d on d.id_row = p.id_department
 join we_project_team_user u on u.id_project_team = p.id_row
- where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0 order by title";
+ where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);

@@ -540,20 +540,23 @@ from we_repeated_Task task where task.Disabled=0";
                     }
                     if (data.Users.Count > 0) //
                     {
-                        string ids = string.Join(",", data.Users.Where(x => x.id_row > 0).Select(x => x.id_row));
+                        string ids = string.Join(",", data.Users.Select(x => x.id_user));
                         if (ids != "")//xóa follower
                         {
-                            string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row + " and id_row not in (" + ids + ")";
+                            string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row + " and id_user not in (" + ids + ")";
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
+                        DataTable dt_user = cnn.CreateDataTable($"select id_user from we_repeated_user where  Disabled=0 and  id_repeated={data.id_row}");
+                        var listU = dt_user.AsEnumerable().Select(x => x["id_user"]).ToList();
                         Hashtable val1 = new Hashtable();
                         val1["id_repeated"] = data.id_row;
                         val1["CreatedDate"] = DateTime.Now;
                         val1["CreatedBy"] = iduser;
+                        //data.Users = data.Users.Where(x => listU.Where(y=>y==x));
                         foreach (var user in data.Users)
                         {
                             if (user.id_row == 0)

@@ -92,6 +92,10 @@ export class GroupNameListComponent implements OnInit {
     );
     this.Visable = this.permitService.VisibleNND;
     this.changeDetectorRefs.detectChanges();
+
+    setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
   }
 
   getTitle(): string {

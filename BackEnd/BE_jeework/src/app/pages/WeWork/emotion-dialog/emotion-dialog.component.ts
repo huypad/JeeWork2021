@@ -18,11 +18,6 @@ export class EmotionDialogComponent implements OnInit {
 	constructor(public dialogRef: MatDialogRef<EmotionDialogComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		public dialog: MatDialog,
-		private fb: FormBuilder,
-		private changeDetectorRefs: ChangeDetectorRef,
-		private layoutUtilsService: LayoutUtilsService,
-		private translate: TranslateService,
-		private router: Router,
 		private service: WeWorkService) { }
 	/** LOAD DATA */
 	ngOnInit() {

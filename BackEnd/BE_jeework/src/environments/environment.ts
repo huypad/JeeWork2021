@@ -14,9 +14,13 @@ export const environment = {
 	appVersion: "v717demo1",
 	USERDATA_KEY: "authf649fc9a5f55",
 	apiUrl: "api",
-	ApiIdentity: 'https://identityserver.jee.vn',
-	redirectUrl:'https://portal.jee.vn/?redirectUrl=',
 	
+	ApiIdentity: 'https://identityserver.jee.vn',
+	ApiIdentity_Logout: 'https://identityserver.jee.vn/user/logout',
+	ApiIdentity_GetUser: 'https://identityserver.jee.vn/user/me',
+	ApiIdentity_Refresh: 'https://identityserver.jee.vn/user/refresh',
+	redirectUrl: 'https://portal.jee.vn/?redirectUrl=',
+	sso: 'sso_token',
 };
 
 /*

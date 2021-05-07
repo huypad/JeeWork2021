@@ -13,7 +13,7 @@ import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
-import { fromEvent, merge } from 'rxjs';
+import { merge, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services
 import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
@@ -73,6 +73,9 @@ export class TabMucTieuComponent implements OnInit{
 				this.ID_QuyTrinh = +arr[2];
 		}
 		this.Load();
+		setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
 	}
 	/** LOAD DATA */
 	Load() {

@@ -122,11 +122,11 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
                     string list_Complete = "";
-                    list_Complete = ReportController.GetListStatusComplete(listDept, cnn);
+                    list_Complete = ReportController.GetListStatusDynamic(listDept, cnn,"IsFinal");
                     string list_Deadline = "";
-                    list_Deadline = ReportController.GetListStatusDeadline(listDept, cnn);
+                    list_Deadline = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline");
                     string list_Todo = "";
-                    list_Todo = ReportController.GetListStatusTodo(listDept, cnn);
+                    list_Todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo");
                     #endregion
 
                     #region Lấy dữ liệu account từ JeeAccount

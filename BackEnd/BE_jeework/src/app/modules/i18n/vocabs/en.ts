@@ -1071,6 +1071,7 @@ export const locale = {
 			cvlaplai: 'Repeat task',
 			dangtheodoi: 'Following',
 			danhsachcacngay: 'List of date, separated by commas',//Danh sách ngày, cách nhau bằng dấu phẩy
+			chonduantruockhigiaoviec: 'Select project before assign',//Chọn dự án trước khi giao việc
 			danhsachcankiemtra: 'List to ckech',
 			danhsachnhan: 'List tags',
 			datthoihanchocongviec: 'Set deadline for work',
@@ -1229,7 +1230,9 @@ export const locale = {
 			thangnay: 'This month',
 			homnay: 'To day',
 			xemtuantruoc: '<< View last week',
+			xemthangtruoc: '<< View last month',
 			xemtuansau: 'View next week >>',
+			xemthangsau: 'View next month >>',
 			thu: "Thứ",
 			mathangkhac: "other items",
 			dinhdang: 'Format',

@@ -198,10 +198,12 @@ export class WorkListNewDetailComponent implements OnInit {
 
 		//get LogDetailCU
 		this.ProjectsTeamService.LogDetailCU(this.DataID).subscribe(res => {
+			console.log(res);
 			if (res && res.status === 1) {
 				this.LogDetail = res.data;
 				this.changeDetectorRefs.detectChanges();
 			} else {
+				this.layoutUtilsService.showError(res.error.message)
 			}
 		})
 

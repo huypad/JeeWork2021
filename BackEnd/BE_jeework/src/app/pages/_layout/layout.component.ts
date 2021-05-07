@@ -1,3 +1,4 @@
+import { environment } from 'src/environments/environment';
 import {
   Component,
   OnInit,
@@ -7,6 +8,7 @@ import {
 } from '@angular/core';
 import { LayoutService, LayoutInitService } from '../../_metronic/core';
 import KTLayoutContent from '../../../assets/js/layout/base/content';
+const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
 
 @Component({
   selector: 'app-layout',
@@ -50,6 +52,8 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+
+    this.layout.setConfig(this.layout.getConfig());
     // build view by layout config settings
     this.selfLayout = this.layout.getProp('self.layout');
     this.asideSelfDisplay = this.layout.getProp('aside.self.display');

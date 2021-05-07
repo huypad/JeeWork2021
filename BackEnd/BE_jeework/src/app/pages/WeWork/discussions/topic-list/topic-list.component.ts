@@ -85,9 +85,22 @@ export class TopicListComponent {
     });
 
     var arr = this.router.url.split("/");
-    console.log(arr);
-    if (arr[1] == "project") this.selectedItem = arr[4];
-    if (arr[1] == "wework") this.selectedItem = arr[3];
+    if (arr[1] == "project")
+    {
+      this._services.TopicDetail(arr[4]).subscribe(res => {
+				if (res && res.status == 1) {
+					this.selectedItem = arr[4];
+				}
+			});
+    } 
+    if (arr[1] == "wework")
+    {
+      this._services.TopicDetail(arr[3]).subscribe(res => {
+				if (res && res.status == 1) {
+					this.selectedItem = arr[3];
+				}
+			});
+    }
     this.loadDataList();
   }
 

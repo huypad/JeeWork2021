@@ -114,6 +114,9 @@ export class ChucNangUserListComponent implements OnInit {
       (res) => (this.paginatorNew.total = res)
     );
     this.loadDataList();
+    setTimeout(() => {
+			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+		}, 10000);
   }
   onLinkClick() {}
   /** FILTRATION */

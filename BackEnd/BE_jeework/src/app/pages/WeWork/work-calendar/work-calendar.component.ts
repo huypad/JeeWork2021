@@ -142,8 +142,8 @@ export class WorkCalendarComponent implements OnInit {
         month: this.translate.instant("day.thangnay"),
         week: this.translate.instant("day.tuannay"),
         day: this.translate.instant("day.homnay"),
-        prev: this.translate.instant("day.xemtuantruoc"),
-        next: this.translate.instant("day.xemtuansau"),
+        prev: this.translate.instant("day.xemthangtruoc"),
+        next: this.translate.instant("day.xemthangsau"),
       },
       editable: true,
       selectable: true,
@@ -207,10 +207,11 @@ export class WorkCalendarComponent implements OnInit {
               this.WorkCalendarService.getEvents(queryParams).subscribe(
                 (res) => {
                   this.lstEvent = [];
+                  console.log(res)
                   if (res.data && res.status == 1) {
                     this.lstEvent = res.data;
+                    successCallback(res.data);
                   }
-                  successCallback(res.data);
                 }
               );
             }
@@ -306,12 +307,6 @@ export class WorkCalendarComponent implements OnInit {
     this.calendar.getApi().refetchEvents();
   }
 
-  NextWeek(event) {
-    this.calendar.getApi().next();
-  }
-  PrevWeek(event) {
-    this.calendar.getApi().prev();
-  }
   getStrDate(date: Date) {
     return moment(date).format("DD/MM/YYYY");
   }
@@ -347,7 +342,7 @@ export class WorkCalendarComponent implements OnInit {
   //==================================================================================================
   //==================================================================================================
   //==================================================================================================
-
+  // Thắng comment checkin file
   calendarVisible = true;
   calendarOptions: CalendarOptions = {
     headerToolbar: {
@@ -355,11 +350,6 @@ export class WorkCalendarComponent implements OnInit {
       center: "prev, today ,next",
       right: "",
     },
-    // headerToolbar: {
-    //   left: 'prev,next today',
-    //   center: 'title',
-    //   right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-    // },
     views: {
       dayGridMonth: {
         firstDay: 0,
@@ -390,11 +380,6 @@ export class WorkCalendarComponent implements OnInit {
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
-    /* you can update a remote database when these fire:
-    eventAdd:
-    eventChange:
-    eventRemove:
-    */
   };
 
   currentEvents: EventApi[] = [];

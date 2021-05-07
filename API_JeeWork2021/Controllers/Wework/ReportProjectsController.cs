@@ -701,6 +701,7 @@ where w.disabled=0  " + strW;
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
+                                     iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
                                     iIf(w.Status = @quahan, 1, 0) as is_quahan 
                                     from v_wework_clickup_new w where 1=1 " + strW;
 
@@ -724,7 +725,7 @@ where w.disabled=0  " + strW;
                                        //end = WorkController.FirstDateOfWeek(2020, g.Key).AddDays(6),
                                        tencot = WorkController.FirstDateOfWeek(year, g.Key).Day + " - " + WorkController.FirstDateOfWeek(year, g.Key).AddDays(6).ToString("dd/MM"),
                                        tatca = g.Count(),
-                                       dangthuchien = (int)g.CopyToDataTable().Compute("count(id_row)", " status = "+todo),
+                                       dangthuchien = (int)g.CopyToDataTable().Compute("count(id_row)", " dangthuchien = 1"),
                                        hoanthanh = (int)g.CopyToDataTable().Compute("count(id_row)", " status = "+hoanthanh),
                                        quahan = (int)g.CopyToDataTable().Compute("count(id_row)", " is_quahan=1 ")
                                    };

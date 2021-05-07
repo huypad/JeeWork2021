@@ -110,7 +110,6 @@ export class UserProfileComponent implements OnInit {
     this.GetAllRoles();
       this.userProfileService.getDictionary().subscribe((res) => {
         if (res && res.status == 1) {
-          debugger
           res.data.emotions.map((x) => {
             GlobalVariable.emotions[x.key] = x.value;
           });

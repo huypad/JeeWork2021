@@ -182,7 +182,7 @@ export class TokenStorage {
       try {
 		var height = 0;
         var config = JSON.parse(configFromLocalStorage);
-        return (config.header.self.display ? 65 : 0) + (config.subheader.display ? 104 : 0);
+        return (config.header.self.display ? 65 : 0) + (config.subheader.display ? 54 : 0);
       } catch (error) {
         console.error("config parse from local storage", error);
         return 0;

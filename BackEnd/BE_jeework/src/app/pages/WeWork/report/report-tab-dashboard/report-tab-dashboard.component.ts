@@ -301,7 +301,7 @@ export class ReportTabDashboardComponent implements OnInit {
     this.translate.instant('filter.hoanthanh'),
     this.translate.instant('filter.hoanthanhmuon'),
     this.translate.instant('filter.dangthuchien'),
-    this.translate.instant('filter.quhan'),
+    this.translate.instant('filter.quahan'),
     this.translate.instant('filter.chuacocongviec'),
   ];
   public pieChartOptions = { cutoutPercentage: 80 };
@@ -383,11 +383,11 @@ export class ReportTabDashboardComponent implements OnInit {
         this.DataChart2 = data.data;
         this.chartLabel2 = this.ElementObjectToArr(this.DataChart2, 'tencot');
         this.chartData2.push(
-          { "data": this.ElementObjectToArr(this.DataChart2, 'tatca'), "label": this.translate.instant('filter.tatca'), "type": 'line' },
-          { "data": this.ElementObjectToArr(this.DataChart2, 'quahan'), "label": this.translate.instant('filter.quahan'), "stack": 'a' },
-          { "data": this.ElementObjectToArr(this.DataChart2, 'hoanthanh'), "label": this.translate.instant('filter.hoanthanh'), "stack": 'a' }
+          { "data": this.ElementObjectToArr(this.DataChart2, 'tatca'), "label": this.translate.instant('filter.tatca'), "type": 'line', backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
+          { "data": this.ElementObjectToArr(this.DataChart2, 'quahan'), "label": this.translate.instant('filter.quahan'), "stack": 'a', backgroundColor: this.listColor2[1]},
+          { "data": this.ElementObjectToArr(this.DataChart2, 'hoanthanh'), "label": this.translate.instant('filter.hoanthanh'), "stack": 'a', backgroundColor: this.listColor2[2]}
         );
-        this.chart2Ready = true
+        this.chart2Ready = true;
       }
       this.detectChange.detectChanges();
     });
@@ -427,7 +427,17 @@ export class ReportTabDashboardComponent implements OnInit {
   public chartData3 = [];
   public chartData3Ready = false;
   public chartLabel3: string[] = [];
-  public chartOptions3 = { responsive: true };
+  public chartOptions3 = { 
+    responsive: true,
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true,
+          min: 0,
+        }
+      }]
+    }
+   };
   public chartLegend3 = false;
   public chartColor3 = [
     { backgroundColor: this.titleChart3[0].mau },
@@ -451,10 +461,10 @@ export class ReportTabDashboardComponent implements OnInit {
         this.Data3 = data.data;
         this.chartLabel3 = this.ElementObjectToArr(this.Data3, 'tencot');
         this.chartData3.push(
-          { data: this.ElementObjectToArr(this.Data3, 'tatca'), label: this.titleChart3[0].ten },
-          { data: this.ElementObjectToArr(this.Data3, 'quahan'), label: this.titleChart3[1].ten },
-          { data: this.ElementObjectToArr(this.Data3, 'hoanthanh'), label: this.titleChart3[2].ten },
-          { data: this.ElementObjectToArr(this.Data3, 'hoanthanh'), label: this.titleChart3[3].ten },
+          { data: this.ElementObjectToArr(this.Data3, 'tatca'), label: this.titleChart3[0].ten ,backgroundColor: this.titleChart3[0].mau },
+          { data: this.ElementObjectToArr(this.Data3, 'dangthuchien'), label: this.titleChart3[1].ten, backgroundColor: this.titleChart3[1].mau  },
+          { data: this.ElementObjectToArr(this.Data3, 'hoanthanh'), label: this.titleChart3[2].ten, backgroundColor: this.titleChart3[2].mau },
+          { data: this.ElementObjectToArr(this.Data3, 'quahan'), label: this.titleChart3[3].ten, backgroundColor: this.titleChart3[3].mau },
         );
         this.chartData3Ready = true;
       }

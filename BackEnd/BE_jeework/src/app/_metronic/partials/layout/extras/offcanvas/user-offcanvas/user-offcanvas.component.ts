@@ -1,4 +1,3 @@
-import { AuthenticationService } from './../../../../../jeework_old/core/auth/_services/auth.service';
 import { TokenStorage } from './../../../../../jeework_old/core/auth/_services/token-storage.service';
 import { Component, OnInit } from '@angular/core';
 import { LayoutService } from '../../../../../core';
@@ -18,7 +17,6 @@ export class UserOffcanvasComponent implements OnInit {
   constructor(
     private layout: LayoutService, 
     private tokenStorage: TokenStorage, 
-    private authService: AuthenticationService, 
     private auth: AuthService) {}
 
   ngOnInit(): void {
@@ -38,9 +36,10 @@ export class UserOffcanvasComponent implements OnInit {
   }
 
   logout() {
-    // this.auth.logout();
-    // document.location.reload();
-    this.authService.logout();
+    this.auth.logoutToSSO().subscribe((res) => {
+      localStorage.removeItem(this.auth.authLocalStorageToken);  
+      this.auth.logout();
+    });
   }
 }
 
