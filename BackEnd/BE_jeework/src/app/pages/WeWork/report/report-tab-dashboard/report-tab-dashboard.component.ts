@@ -86,7 +86,7 @@ export class ReportTabDashboardComponent implements OnInit {
     this.LoadData();
   }
 
-  SelectedField(item){
+  SelectedField(item) {
     this.column_sort = item;
     this.LoadData();
   }
@@ -119,7 +119,7 @@ export class ReportTabDashboardComponent implements OnInit {
     },
     {
       title: this.translate.instant('filter.congviecvacongvieccon'),
-      value: '1', 
+      value: '1',
       loai: 'displayChild'
     },
   ]
@@ -166,7 +166,7 @@ export class ReportTabDashboardComponent implements OnInit {
 
   NameDept = (id) => {
     var title = this.translate.instant('filter.tatcaphongban');
-    if(this.list_department){
+    if (this.list_department) {
       this.list_department.forEach(res => {
         if (res.id_row == id) {
           title = res.title
@@ -251,7 +251,7 @@ export class ReportTabDashboardComponent implements OnInit {
           title: this.translate.instant('report.congviec'),
           tong: 0,
           text1: this.translate.instant('report.hoanthanh'),
-          text2: this.translate.instant('report.dangthuchien'), 
+          text2: this.translate.instant('report.dangthuchien'),
         },
         {
           title: this.translate.instant('report.muctieu'),
@@ -270,24 +270,24 @@ export class ReportTabDashboardComponent implements OnInit {
         let arrdata = (data.data);
         //Dự án
         this.ListOverview[0].tong = arrdata['DuAn'].Tong;
-        this.ListOverview[0].text1 = arrdata['DuAn'].DuAnNoiBo +' '+ this.ListOverview[0].text1;
-        this.ListOverview[0].text2 = arrdata['DuAn'].DuAnKH +' '+ this.ListOverview[0].text2;
+        this.ListOverview[0].text1 = arrdata['DuAn'].DuAnNoiBo + ' ' + this.ListOverview[0].text1;
+        this.ListOverview[0].text2 = arrdata['DuAn'].DuAnKH + ' ' + this.ListOverview[0].text2;
         //phòng ban
         this.ListOverview[1].tong = arrdata['PhongBan'].Tong;
-        this.ListOverview[1].text1 = arrdata['PhongBan'].DuAnNoiBo +' '+ this.ListOverview[1].text1;
-        this.ListOverview[1].text2 = arrdata['PhongBan'].DuAnKH +' '+ this.ListOverview[1].text2;
+        this.ListOverview[1].text1 = arrdata['PhongBan'].DuAnNoiBo + ' ' + this.ListOverview[1].text1;
+        this.ListOverview[1].text2 = arrdata['PhongBan'].DuAnKH + ' ' + this.ListOverview[1].text2;
         //Công việc
         this.ListOverview[2].tong = arrdata['CongViec'].Tong;
-        this.ListOverview[2].text1 = arrdata['CongViec'].HoanThanh +' '+ this.ListOverview[2].text1;
-        this.ListOverview[2].text2 = arrdata['CongViec'].DangThucHien +' '+ this.ListOverview[2].text2;
+        this.ListOverview[2].text1 = arrdata['CongViec'].HoanThanh + ' ' + this.ListOverview[2].text1;
+        this.ListOverview[2].text2 = arrdata['CongViec'].DangThucHien + ' ' + this.ListOverview[2].text2;
         //Mục tiêu
         this.ListOverview[3].tong = arrdata['MucTieu'].Tong;
-        this.ListOverview[3].text1 = arrdata['MucTieu'].HoanThanh +' '+ this.ListOverview[3].text1;
-        this.ListOverview[3].text2 = arrdata['MucTieu'].DangThucHien +' '+ this.ListOverview[3].text2;
+        this.ListOverview[3].text1 = arrdata['MucTieu'].HoanThanh + ' ' + this.ListOverview[3].text1;
+        this.ListOverview[3].text2 = arrdata['MucTieu'].DangThucHien + ' ' + this.ListOverview[3].text2;
         //Thành viên
         this.ListOverview[4].tong = arrdata['ThanhVien'].Tong;
-        this.ListOverview[4].text1 = arrdata['ThanhVien'].NhanVien +' '+ this.ListOverview[4].text1;
-        this.ListOverview[4].text2 = arrdata['ThanhVien'].Khach +' '+ this.ListOverview[4].text2;
+        this.ListOverview[4].text1 = arrdata['ThanhVien'].NhanVien + ' ' + this.ListOverview[4].text1;
+        this.ListOverview[4].text2 = arrdata['ThanhVien'].Khach + ' ' + this.ListOverview[4].text2;
       }
 
 
@@ -384,8 +384,8 @@ export class ReportTabDashboardComponent implements OnInit {
         this.chartLabel2 = this.ElementObjectToArr(this.DataChart2, 'tencot');
         this.chartData2.push(
           { "data": this.ElementObjectToArr(this.DataChart2, 'tatca'), "label": this.translate.instant('filter.tatca'), "type": 'line', backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
-          { "data": this.ElementObjectToArr(this.DataChart2, 'quahan'), "label": this.translate.instant('filter.quahan'), "stack": 'a', backgroundColor: this.listColor2[1]},
-          { "data": this.ElementObjectToArr(this.DataChart2, 'hoanthanh'), "label": this.translate.instant('filter.hoanthanh'), "stack": 'a', backgroundColor: this.listColor2[2]}
+          { "data": this.ElementObjectToArr(this.DataChart2, 'quahan'), "label": this.translate.instant('filter.quahan'), "stack": 'a', backgroundColor: this.listColor2[1] },
+          { "data": this.ElementObjectToArr(this.DataChart2, 'hoanthanh'), "label": this.translate.instant('filter.hoanthanh'), "stack": 'a', backgroundColor: this.listColor2[2] }
         );
         this.chart2Ready = true;
       }
@@ -427,7 +427,7 @@ export class ReportTabDashboardComponent implements OnInit {
   public chartData3 = [];
   public chartData3Ready = false;
   public chartLabel3: string[] = [];
-  public chartOptions3 = { 
+  public chartOptions3 = {
     responsive: true,
     scales: {
       yAxes: [{
@@ -437,7 +437,7 @@ export class ReportTabDashboardComponent implements OnInit {
         }
       }]
     }
-   };
+  };
   public chartLegend3 = false;
   public chartColor3 = [
     { backgroundColor: this.titleChart3[0].mau },
@@ -461,8 +461,8 @@ export class ReportTabDashboardComponent implements OnInit {
         this.Data3 = data.data;
         this.chartLabel3 = this.ElementObjectToArr(this.Data3, 'tencot');
         this.chartData3.push(
-          { data: this.ElementObjectToArr(this.Data3, 'tatca'), label: this.titleChart3[0].ten ,backgroundColor: this.titleChart3[0].mau },
-          { data: this.ElementObjectToArr(this.Data3, 'dangthuchien'), label: this.titleChart3[1].ten, backgroundColor: this.titleChart3[1].mau  },
+          { data: this.ElementObjectToArr(this.Data3, 'tatca'), label: this.titleChart3[0].ten, backgroundColor: this.titleChart3[0].mau },
+          { data: this.ElementObjectToArr(this.Data3, 'dangthuchien'), label: this.titleChart3[1].ten, backgroundColor: this.titleChart3[1].mau },
           { data: this.ElementObjectToArr(this.Data3, 'hoanthanh'), label: this.titleChart3[2].ten, backgroundColor: this.titleChart3[2].mau },
           { data: this.ElementObjectToArr(this.Data3, 'quahan'), label: this.titleChart3[3].ten, backgroundColor: this.titleChart3[3].mau },
         );

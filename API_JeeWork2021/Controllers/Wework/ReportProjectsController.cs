@@ -2301,7 +2301,11 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             SqlConditions cond = new SqlConditions();
             cond.Add("id_projectteam", id_projectteam);
             string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsTodo = 1";
-            long danglam = long.Parse(cnn.ExecuteScalar(sql, cond).ToString());
+            long danglam = 0;
+            if (cnn.ExecuteScalar(sql, cond) != null && cnn.LastError is null)
+            {
+                danglam = long.Parse(cnn.ExecuteScalar(sql, cond).ToString());
+            }
             return danglam;
         }
         public static long GetStatusComplete(int id_projectteam, DpsConnection cnn)
@@ -2309,7 +2313,11 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             SqlConditions cond = new SqlConditions();
             cond.Add("id_projectteam", id_projectteam);
             string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1";
-            long hoanthanh = long.Parse(cnn.ExecuteScalar(sql, cond).ToString());
+            long hoanthanh = 0;
+            if (cnn.ExecuteScalar(sql, cond) != null && cnn.LastError is null)
+            {
+                hoanthanh = long.Parse(cnn.ExecuteScalar(sql, cond).ToString());
+            }
             return hoanthanh;
         }
         public static long GetStatusDeadline(int id_projectteam, DpsConnection cnn)
@@ -2317,7 +2325,11 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             SqlConditions cond = new SqlConditions();
             cond.Add("id_projectteam", id_projectteam);
             string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsDeadline = 1";
-            long deadline = long.Parse(cnn.ExecuteScalar(sql, cond).ToString());
+            long deadline = 0;
+            if (cnn.ExecuteScalar(sql, cond) != null && cnn.LastError is null)
+            {
+                deadline = long.Parse(cnn.ExecuteScalar(sql, cond).ToString());
+            }
             return deadline;
         }
 

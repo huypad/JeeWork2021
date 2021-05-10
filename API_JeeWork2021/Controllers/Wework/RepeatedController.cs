@@ -540,7 +540,7 @@ from we_repeated_Task task where task.Disabled=0";
                     }
                     if (data.Users.Count > 0) //
                     {
-                        string ids = string.Join(",", data.Users.Select(x => x.id_user));
+                        string ids = string.Join(",", data.Users.Where(x => x.id_row > 0).Select(x => x.id_user));
                         if (ids != "")//xóa follower
                         {
                             string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row + " and id_user not in (" + ids + ")";

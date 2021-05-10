@@ -2235,7 +2235,7 @@ where Disabled = 0";
                 sqlq = sqlq.Replace("(admin)", " where de.Disabled = 0  ");
             #endregion
             DataTable dt = cnn.CreateDataTable(sqlq, conds);
-            List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+            List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).Distinct().ToList();
             if (nvs.Count == 0)
                 return "";
             string ids = string.Join(",", nvs);

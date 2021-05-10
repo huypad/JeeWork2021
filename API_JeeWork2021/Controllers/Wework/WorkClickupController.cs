@@ -14,9 +14,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text;
-using JeeWork_Core2021.Controllers.Wework;
 
-namespace API.Controllers.Wework
+namespace JeeWork_Core2021.Controllers.Wework
 {
     [ApiController]
     [Route("api/work-click-up")]
@@ -435,101 +434,6 @@ namespace API.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
-            }
-        }
-        [Route("my-list-wiget")]
-        [HttpGet]
-        public object MyListWiget([FromQuery] QueryParams query)
-        {
-            string Token = Common.GetHeader(Request);
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            if (query == null)
-                query = new QueryParams();
-            bool Visible = true;
-            PageModel pageModel = new PageModel();
-            try
-            {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
-                {
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
-
-                    #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
-                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
-                    {
-                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                        if (!from1)
-                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                    }
-                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    {
-                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                        if (!to1)
-                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                    }
-                    #endregion
-                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                        displayChild = query.filter["displayChild"];
-                    string columnName = "id_project_team";
-                    string strW = " and (w.id_nv=@iduser or (w.nguoigiao=@iduser or w.createdby=@iduser) and (w.id_nv is null  or w.id_parent > 0 ))";
-                    #region group
-                    string strG = @"select distinct p.id_row, p.title from we_project_team_user u
-                                    join we_project_team p on p.id_row=u.id_project_team 
-                                    where u.disabled=0 and p.Disabled=0 ";
-                    if (!string.IsNullOrEmpty(loginData.UserID.ToString()))
-                    {
-                        strG += "and id_user=" + loginData.UserID.ToString();
-                    }
-                    #endregion
-                    DataTable dtG = cnn.CreateDataTable(strG);
-                    if (dtG.Rows.Count == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount,strW);
-                    if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
-                    var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
-                    var tags = ds.Tables[1].AsEnumerable();
-                    // Phân trang
-                    int total = temp.Count();
-                    if (total == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
-                    if (query.more)
-                    {
-                        query.page = 1;
-                        query.record = total;
-                    }
-
-                    pageModel.TotalCount = total;
-                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
-                    pageModel.Size = query.record;
-                    pageModel.Page = query.page;
-                    var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
-                    var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
-                    dtNew = dtNew.Concat(dtChild);
-                    Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount);
-                    return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
-                }
-            }
-            catch (Exception ex)
-            {
-
-
                 return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
@@ -4290,7 +4194,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        private DataSet getWork(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
+        public static  DataSet getWork(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             string ListID = string.Join(",", nvs);
@@ -4525,7 +4429,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        private object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, object parent = null)
+        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, object parent = null)
         {
             object a = "";
             if (parent == null)
@@ -4538,6 +4442,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             DataTable User = new DataTable();
             DataTable User2 = new DataTable();
             var getValue = false;
+            JeeWorkConfig _config = new JeeWorkConfig();
             using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
             {
 
@@ -4650,7 +4555,7 @@ from we_work_user w_user join we_work on we_work.id_row = w_user.id_work where (
                      };
             return re.Distinct().ToList();
         }
-        private EnumerableRowCollection<DataRow> filterWork(EnumerableRowCollection<DataRow> enumerableRowCollections, FilterModel filter)
+        public static EnumerableRowCollection<DataRow> filterWork(EnumerableRowCollection<DataRow> enumerableRowCollections, FilterModel filter)
         {
             var temp = enumerableRowCollections;
             #region filter
