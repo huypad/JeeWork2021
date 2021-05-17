@@ -427,7 +427,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                            ht = ht = (int)temp.Count(r => r[columnName].Equals(rr["id_row"]) && r["status"].ToString() == "2"),
                                            percentage = tong == 0 ? 0 : (ht * 100 / tong)
                                        },
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,_config)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -524,7 +524,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, _config)
                                        //data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags)
 
                                    };
@@ -630,7 +630,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, _config)
                                        //data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags)
 
                                    };
@@ -765,7 +765,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, _config)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -4231,7 +4231,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
-                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%' or tao.Username like N'%@keyword%' or sua.Username like N'%@keyword%')";
+                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
                 dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
             }
             #endregion
@@ -4429,7 +4429,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, object parent = null)
+        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, JeeWorkConfig _config, object parent = null)
         {
             object a = "";
             if (parent == null)
@@ -4442,7 +4442,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             DataTable User = new DataTable();
             DataTable User2 = new DataTable();
             var getValue = false;
-            JeeWorkConfig _config = new JeeWorkConfig();
             using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
             {
 
@@ -4486,7 +4485,7 @@ from we_work_user w_user join we_work on we_work.id_row = w_user.id_work where (
             }
             //columnName="" : không group
             var re = from r in temp
-                     where r["id_parent"].Equals(parent) && (columnName == "" || (columnName != "" && r[columnName].Equals(id))) //(parent == null &&  r[columnName].Equals(id)) || (r["id_parent"].Equals(parent) && parent != null)
+                     where r["id_parent"].Equals(parent) //&& (columnName == "" || (columnName != "" && r[columnName].Equals(id))) //(parent == null &&  r[columnName].Equals(id)) || (r["id_parent"].Equals(parent) && parent != null)
                      select new
                      {
                          id_parent = r["id_parent"],
@@ -4551,7 +4550,7 @@ from we_work_user w_user join we_work on we_work.id_row = w_user.id_work where (
                                     title = t["title"],
                                     color = t["color"]
                                 },
-                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, r["id_row"])
+                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, _config, r["id_row"])
                      };
             return re.Distinct().ToList();
         }

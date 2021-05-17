@@ -652,7 +652,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,_config);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -686,6 +686,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -716,19 +717,42 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
+
                     string columnName = "id_project_team";
-                    string strW = " and (w.id_nv=@iduser or (w.nguoigiao=@iduser or w.createdby=@iduser) and (w.id_nv is null  or w.id_parent > 0 ))";
+                    string strW = $"  and w.id_department in ({listDept}) ";
                     if (!string.IsNullOrEmpty(query.filter["loaicongviec"]))
                     {
                         if (int.Parse(query.filter["loaicongviec"].ToString()) == 1) // công việc tôi được giao
                         {
-                            strW = " and (w.id_nv=@iduser or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0))";
+                            strW += " and (w.id_nv=@iduser or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0))";
                         }
                         else if (int.Parse(query.filter["loaicongviec"].ToString()) == 2) // công việc tôi tạo
                         {
-                            strW = " and ( w.createdby=@iduser and (w.id_nv is null  or w.id_parent > 0 ))";
+                            strW += " and ( w.createdby=@iduser and (w.id_nv is null  or w.id_parent > 0 ))";
                         }
                     }
+                    if (!string.IsNullOrEmpty(query.filter["timedeadline"]))
+                        strW += $"and (w.deadline is not null and deadline >= GETDATE() and deadline =< '{query.filter["timedeadline"]}')";
+                    if (!string.IsNullOrEmpty(query.filter["tinhtrang"]))
+                    {
+                        string tinhtrang = query.filter["tinhtrang"];
+                        string hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
+                        string quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
+                        string todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
+                        if (tinhtrang == "todo")
+                        {
+                            strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                        }
+                        else if(tinhtrang == "deadline")
+                        {
+                            strW += $" and w.status in ({quahan}) ";
+                        }
+                        else {
+                            strW += $" and w.status in ({hoanthanh}) ";
+                        };
+
+                    }
+                        
                     #region group
                     string strG = @"select distinct p.id_row, p.title from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 
@@ -764,7 +788,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "Id_NV", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,_config);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }

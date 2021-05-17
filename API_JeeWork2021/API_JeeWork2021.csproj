@@ -18,6 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="dulieu_new\**" />
+    <Content Remove="dulieu_new\**" />
+    <EmbeddedResource Remove="dulieu_new\**" />
+    <None Remove="dulieu_new\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\AttachmentController.cs" />
     <Compile Remove="Controllers\AuthorizeControler.cs" />
     <Compile Remove="Controllers\ChecklistController.cs" />
