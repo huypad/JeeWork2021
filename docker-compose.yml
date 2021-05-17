@@ -3,16 +3,12 @@ version: '3.3'
 services:
   api:
     image: registry.jee.vn/hoaaq/jeework-api:latest
-    ports:
-      - 8888:80
     build:
       context: ./
       dockerfile: API_JeeWork2021/Dockerfile
 
   backend:
     image: registry.jee.vn/hoaaq/jeework-backend:latest
-    ports:
-      - 9999:80
     build:
       context: ./
       dockerfile: BackEnd/BE_jeework/Dockerfile
