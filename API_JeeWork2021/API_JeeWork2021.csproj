@@ -106,6 +106,9 @@
     <Folder Include="HTML\" />
     <Folder Include="Models\AuthorizeConnect\" />
     <Folder Include="Services\" />
+     <Content Include="dulieu\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
