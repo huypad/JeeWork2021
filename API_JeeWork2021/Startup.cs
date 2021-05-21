@@ -26,6 +26,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DPSinfra.Logger;
 using DPSinfra.Notifier;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021
 {
@@ -46,7 +47,7 @@ namespace JeeWork_Core2021
             Secret<SecretData> kafkaSecret = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "jwt", mountPoint: "kv").Result;
             IDictionary<string, object> kafkaDataSecret = kafkaSecret.Data.Data;
             string access_secret = kafkaDataSecret["access_secret"].ToString();
-            Configuration["Jwt:access_secret"] = access_secret; 
+            Configuration["Jwt:access_secret"] = access_secret;
             ///////// kafka
             Secret<SecretData> kafka = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "kafka", mountPoint: "kv").Result;
             IDictionary<string, object> kafkaData = kafka.Data.Data;
@@ -117,9 +118,18 @@ namespace JeeWork_Core2021
             //Config appsetting
             services.Configure<JeeWorkConfig>(options => Configuration.GetSection("JeeWorkConfig").Bind(options));
             //kafka
-            services.AddLogging(builder => {
+            services.AddLogging(builder =>
+            {
                 builder.addAsyncLogger<AsyncLoggerProvider>(p => new AsyncLoggerProvider(p.GetService<IProducer>()));
             });
+            services.AddHttpClient();
+            // add Kafka
+            services.addKafkaService();
+            // add notify sv
+            services.addNotificationService();
+            // add consumer
+            services.AddMemoryCache();
+            services.addConnectionCacheService();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -127,8 +137,12 @@ namespace JeeWork_Core2021
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JeeWork v1"));
+                //app.UseSwagger();
+                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JeeWork v1"));
+            }
+            else
+            {
+                app.UseHsts();
             }
             //app.UseHttpsRedirection();
             app.UseRouting();
@@ -139,8 +153,6 @@ namespace JeeWork_Core2021
             {
                 endpoints.MapControllers();
             });
-
-
             app.UseExceptionHandler("/error");
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
@@ -149,7 +161,11 @@ namespace JeeWork_Core2021
                    Path.Combine(Directory.GetCurrentDirectory(), "dulieu")),
                 RequestPath = "/dulieu"
             });
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "JeeWork 2021");
+            });
             app.UseHttpsRedirection();
         }
         private VaultClient ConfigVault(IServiceCollection services)
