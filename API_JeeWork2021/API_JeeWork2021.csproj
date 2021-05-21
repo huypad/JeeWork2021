@@ -54,11 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="dulieu\FileTemplate\project_import_work.xlsx" />
-    <None Remove="dulieu\Images\Noimage.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="bin\Debug\net5.0\API_JeeWork2021.deps.json" />
     <Content Include="bin\Debug\net5.0\API_JeeWork2021.runtimeconfig.dev.json" />
     <Content Include="bin\Debug\net5.0\API_JeeWork2021.runtimeconfig.json" />
