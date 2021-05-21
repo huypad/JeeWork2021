@@ -123,7 +123,7 @@
 								<ng-container *ngIf="quyen.AllowEdit">
 									<button mat-icon-button (click)="initUpdate(quyen, vi)"
 										matTooltip="{{ 'topic.suabinhluan' | translate}}">
-										<mat-icon style="color: rgb(11, 26, 167);" class="action">create</mat-icon>
+										<mat-icon style="color: rgb(11, 26, 167);" class="action">create</mat-icon> 
 									</button>
 									<button mat-icon-button (click)="remove(quyen, vi)"
 										matTooltip="{{ 'topic.xoabinhluan' | translate}}">
@@ -166,7 +166,7 @@
 						<div class="row">
 							<div class="col-md-12 comment-like">
 								<a href="javascript:void(0)" (click)="ShowOrHideComment(vi)" class="kt-font-bolder">
-									<span translate="topic.traloi"></span>
+									<span translate="topic.traloi"></span>&nbsp;
 									<span class="comment-num">{{quyen.Children?quyen.Children.length:0}}</span>
 								</a> &nbsp;&middot;&nbsp;
 								<span [popover]="myPopover" [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true">

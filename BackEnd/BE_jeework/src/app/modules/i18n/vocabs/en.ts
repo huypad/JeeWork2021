@@ -987,6 +987,7 @@ export const locale = {
 			trangtruoc:'Previous page',//previous page
 		},
 		topic: {
+			addfollower:'Add followers',
 			timkiemthaoluan: 'Search discusion',//Tìm kiếm thảo luận
 			themmoithaoluan: 'Create discusion',//Thêm mới thảo luận
 			chinhsua: 'Edit topic',

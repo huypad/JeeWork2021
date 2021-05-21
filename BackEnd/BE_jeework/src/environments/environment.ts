@@ -21,6 +21,15 @@ export const environment = {
 	ApiIdentity_Refresh: 'https://identityserver.jee.vn/user/refresh',
 	redirectUrl: 'https://portal.jee.vn/?redirectUrl=',
 	sso: 'sso_token',
+
+	//notification
+	webSocket: 'wss://socket.jee.vn',
+	apiNotification: 'https://notification.jee.vn/notification',
+	//các link tùy chỉnh
+	linkREQ: "https://jeerequest.jee.vn/",
+	linkAccount: "http://jeeaccount.jee.vn/",
+	//jee-account
+	JeeAccountApi: 'https://jeeaccount-api.jee.vn/api'
 };
 
 /*

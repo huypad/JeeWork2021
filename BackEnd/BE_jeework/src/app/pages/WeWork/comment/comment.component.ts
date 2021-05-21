@@ -3,7 +3,6 @@ import { TokenStorage } from './../../../_metronic/jeework_old/core/auth/_servic
 import { LayoutUtilsService } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
 
 import { TranslateService } from '@ngx-translate/core';
-import { element } from 'protractor';
 // Angular
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, Output, Input, EventEmitter, SimpleChange, AfterViewInit, ElementRef, ViewChild, Pipe } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
@@ -132,12 +131,10 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.icons = GlobalVariable.icons;
 				this.options = this.getOptions();
 				this.weworkService.list_account({}).subscribe(res => {
-					// this.changeDetectorRefs.detectChanges();
 					if (res && res.status === 1) {
 						this.listUser = res.data;
 					}
 					this.options = this.getOptions();
-					// this.changeDetectorRefs.detectChanges();
 				});
 				this.tokenStorage.getUserData().subscribe(res => {
 					this.UserData = res;
@@ -161,11 +158,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.service.getDSYKien(this.Id, this.Loai).subscribe(res => {
 			if (res && res.status == 1) {
 				this.ListYKien = res.data;
-				//for (var i = 0; i < this.ListYKien.length; i++) {
-				//	for (var a = 0; a < this.ListYKien[i].NguoiNhans.length; a++) {
-				//		this.NguoiNhan += this.ListYKien[i].NguoiNhans[a].FullName + '\n';
-				//	}
-				//}
 				this.createForm();
 				this.changeDetectorRefs.detectChanges();
 			}
@@ -173,7 +165,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	getDSYKien_Interval() {
-		//this.NguoiNhan='';
 		var NguoiNhan_Tam = '';
 		this.service.getDSYKien(this.Id, this.Loai).subscribe(res => {
 			if (res && res.status == 1) {
@@ -263,11 +254,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 		if (this.componentSubscriptions) {
 			this.componentSubscriptions.unsubscribe();
 		}
-
-		// if (this.interval) {
-		// 	clearInterval(this.interval);
-		// }
-
 		this.AcceptInterval = false;
 	}
 
@@ -327,16 +313,10 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	ShowOrHideComment(ind: number) {
 		var x = document.getElementById("ykchild" + ind);
-		//var a = document.getElementById("btnHideyk" + ind);
-		//var b = document.getElementById("btnShowyk" + ind);
 		if (!x.style.display || x.style.display === "none") {
 			x.style.display = "block";
-			//a.style.display = "block";
-			//b.style.display = "none";
 		} else {
 			x.style.display = "none";
-			//a.style.display = "none";
-			//b.style.display = "block";
 		}
 	}
 
@@ -364,12 +344,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.ListAttachFile[ind] = [];
 			}
 			this.ngOnInit();
-			// if (Parent == 0) {
-			// 	this.ListYKien.unshift(res.data);
-			// } else {
-			// 	this.ListYKien[ind].Children.unshift(res.data);
-			// }
-			// this.changeDetectorRefs.detectChanges();
 		});
 	}
 
@@ -440,7 +414,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 				var metaIdx = base64Str.indexOf(';base64,');
 				base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
 
-				//this.FileAttachStrBase64 = base64Str;
 				if (ind == -1) {
 					this.AttachFileComment.push({ filename: filesAmount.name, strBase64: base64Str });
 					this.changeDetectorRefs.detectChanges();
@@ -456,7 +429,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 		}
 	}
 	DeleteFile_PDF(ind, ind1) {
-		//this.ListAttachFile[ind].push({filename:filesAmount.name,StrBase64:base64Str});
 		if (ind == -1) {
 			this.AttachFileComment.splice(ind1, 1);
 		}
@@ -490,7 +462,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 		});
 	}
 	clickOnUser = (event) => {
-		// Prevent opening anchors the default way
 		event.preventDefault();
 		event.stopPropagation();
 		const anchor = event.target as HTMLAnchorElement;
@@ -498,9 +469,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.it = this.listUser.find(x => x.username == anchor.getAttribute('data-username'));
 		this.changeDetectorRefs.detectChanges();
 		this.myPopoverU.show();
-		//let el = event.parentElement;
-		//this.myPopoverU.top = el.offsetTop;
-		//this.myPopoverU.left = el.offsetLeft;
 	}
 	clickonbox($event) {
 		this.myPopoverU.hide();
@@ -648,8 +616,6 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.myPopover.show();
 			this.myPopover.top = el.offsetTop + h;
 			this.myPopover.left = el.offsetLeft + w;
-			//this.myPopover.top = rect.y + h;
-			//this.myPopover.left = w ;
 		} else {
 			if (this.myPopover)
 				this.myPopover.hide();

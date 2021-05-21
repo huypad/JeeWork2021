@@ -103,6 +103,8 @@ namespace JeeWork_Core2021.Controllers.Wework
 task.UserID as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh 
                         from we_repeated_Task task
                         where task.Disabled=0";
+                    DataTable dt_user = cnn.CreateDataTable(@$"select *,id_user as id_nv,'' as hoten,'' as username,'' as mobile,'' as image 
+from we_repeated_user u where u.Disabled = 0");
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
@@ -147,6 +149,18 @@ task.UserID as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' a
                             item["mobile"] = info.PhoneNumber;
                             item["image"] = info.AvartarImgURL;
                             item["email"] = info.Email;
+                        };
+                    }
+                    foreach (DataRow item in dt_user.Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["username"] = info.Username;
+                            item["mobile"] = info.PhoneNumber;
+                            item["image"] = info.AvartarImgURL;
                         };
                     }
                     #endregion
@@ -194,6 +208,17 @@ task.UserID as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' a
                                        mobile = r["mobile"],
                                        image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                    },
+                                   Users = from u in dt_user.AsEnumerable()
+                                           where u["id_repeated"].Equals(r["id_row"])
+                                           select new
+                                           {
+
+                                               id_nv = u["id_nv"],
+                                               hoten = u["hoten"],
+                                               username = u["username"],
+                                               mobile = u["mobile"],
+                                               image = u["image"],
+                                           },
                                    Tasks = from dr in ds.Tables[1].AsEnumerable()
                                            where dr["id_repeated"].Equals(r["id_row"])
                                            select new
@@ -540,10 +565,10 @@ from we_repeated_Task task where task.Disabled=0";
                     }
                     if (data.Users.Count > 0) //
                     {
-                        string ids = string.Join(",", data.Users.Where(x => x.id_row > 0).Select(x => x.id_user));
+                        string ids = string.Join(",", data.Users.Select(x => x.id_user));
                         if (ids != "")//xóa follower
                         {
-                            string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row + " and id_user not in (" + ids + ")";
+                            string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row ;
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
@@ -559,15 +584,12 @@ from we_repeated_Task task where task.Disabled=0";
                         //data.Users = data.Users.Where(x => listU.Where(y=>y==x));
                         foreach (var user in data.Users)
                         {
-                            if (user.id_row == 0)
+                            val1["id_user"] = user.id_user;
+                            val1["loai"] = user.loai;
+                            if (cnn.Insert(val1, "we_repeated_user") != 1)
                             {
-                                val1["id_user"] = user.id_user;
-                                val1["loai"] = user.loai;
-                                if (cnn.Insert(val1, "we_repeated_user") != 1)
-                                {
-                                    cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
-                                }
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                             }
                         }
                     }

@@ -23,32 +23,12 @@ export const environment = {
 	redirectUrl: 'https://portal.jee.vn/?redirectUrl=',
 	sso: 'sso_token',
 
-	// ApiRoot: 'http://apicustomer.jeehr.com/api',
-	// ApiRoot:'http://localhost:65042/api',
-	// ApiRoot: 'https://api-hrm.vts-demo.com/API',//
-	// RootWeb: "https://jeework.jee.vn/",//'http://localhost:4200/',
-	//Module: 'LandingPage',
-	// ApiRootsLanding: "https://api-proxy.vts-demo.com/apild",
-	//***Root BTSC******
-	// ApiRoots: "https://localhost:44366/",//"https://localhost:44336/",//root chung
-	// HRMSurfix: "apihrm",//surfix HRM
-	// BTSCSurfix: "apiscbt",//surfix BTSC
-	// WMSSurfix: "apiwms",// surfix WMS
-	// HostSCBTSurfix: "scbt",// Link root cannot api
-	//Module: 'QLBTSC',//module BTSC
-	//**************/
-	// ApiRootBTSC: "https://api-proxy.vts-demo.com/apiscbt",//'https://localhost:44336/apiscbt',
-	// RootBTSC: 'https://localhost:44349',
-	// Module: 'Workflow',
-	// logoLink: '',
-	// Module: 'wework',
-	// WMSApiRoot: "https://api-proxy.vts-demo.com/apiwms",//'https://localhost:44398/API',
-	// ApiRootAcount: 'https://wms-apisys.bookve.com.vn/api',
-	// Module: 'WMS',
-	// ApiIdentity: 'https://identityserver.jee.vn',
-	// redirectUrl:'https://portal.jee.vn/?redirectUrl=',
-	// appVersion: 'v717demo1',
-	// USERDATA_KEY: 'authf649fc9a5f55',
-	// apiUrl: 'api'
-	// apiUrl: 'mysite.com/api'
+	//notification
+	webSocket: 'wss://socket.jee.vn',
+	apiNotification: 'https://notification.jee.vn/notification',
+	//các link tùy chỉnh
+	linkREQ: "https://jeerequest.jee.vn/",
+	linkAccount: "http://jeeaccount.jee.vn/",
+	//jee-account
+	JeeAccountApi: 'https://jeeaccount-api.jee.vn/api'
 };

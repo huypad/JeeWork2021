@@ -8,7 +8,7 @@
 		<div class="kt-portlet__body">
 			<div *ngIf="item.id_row==0" class="col-md-12 kt--margin-bottom-10-mobile">
 				<mat-form-field class="mat-form-field-fluid">
-					<mat-select style="width: 100%;" placeholder="{{ 'filter.chonduan' | translate }}" class="require"
+					<mat-select style="width: 100%;" placeholder="{{ 'filter.chonduan' | translate }}" class="require" [disabled]="!isChangeTeam" 
 						required #focusInput formControlName="id_project_team">
 						<mat-option value="{{item.id_row}}" *ngFor="let item of listProject"
 							(click)="ChangeProject(item.id_row)">
@@ -32,7 +32,7 @@
 						<mat-datepicker #dp1></mat-datepicker>
 					</mat-form-field>
 				</div>
-				<div class="col-md-12 kt--margin-bottom-10-mobile">
+				<div class="col-md-12 kt--margin-bottom-10-mobile" *ngIf="this.listUser && this.listUser.length > 0">
 					<mat-form-field class="mat-form-field-fluid">
 						<mat-select style="width: 100%;" formControlName="pic"
 							placeholder="{{ 'department.nguoithuchienmuctieu' | translate}}" class="require" required>

@@ -143,7 +143,7 @@ export class DepartmentTabComponent implements OnInit {
 		const _project = new ProjectTeamModel();
 		_project.clear(); // Set all defaults fields
 		_project.is_project = is_project;
-		_project.id_project_team = this.ID_Department.toString();
+		_project.id_department = this.ID_Department.toString();
 
 		this.UpdateNewProject(_project);
 	}

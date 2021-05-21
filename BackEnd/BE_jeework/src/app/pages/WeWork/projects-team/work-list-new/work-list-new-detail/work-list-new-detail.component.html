@@ -183,7 +183,21 @@
                             </button>
                         </mat-menu>
                     </div>
-
+                    <!-- set muc tiêu -->
+                    <div class="cu-task-row-assignee">
+                        <i *ngIf="CheckRoles(18)" class="fas fa-cog url -hover"  [ngStyle]="{'color': item.id_milestone > 0?'#0d6efd':'#6c757d'}" style="font-size: 18px;" [matMenuTriggerFor]="tag"></i> &nbsp;
+						{{item.milestone}}
+							<mat-menu #tag="matMenu">
+								<kt-choose-milestone-and-tags
+									[options]="list_milestone"
+									[project_team]="project_team"
+									[id_project_Team]="Id_project_team"
+									[Id]="item.id_row" [Id_key]="9"
+									[Loai]="'id_milestone'"
+									(ItemSelected)="ReloadData($event)">
+								</kt-choose-milestone-and-tags>
+							</mat-menu>
+                    </div>
                     <!-- hiển thị người đang theo dõi -->
                     <div class="cu-task-row-assignee">
                         <ng-container *ngFor="let status of this.item.Process">

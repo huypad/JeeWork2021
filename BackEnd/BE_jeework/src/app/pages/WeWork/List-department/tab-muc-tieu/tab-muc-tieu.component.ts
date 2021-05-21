@@ -330,7 +330,7 @@ export class TabMucTieuComponent implements OnInit{
 		let saveMessageTranslateParam = '';
 		var _item = new MilestoneModel;
 		_item.clear(); 
-		_item.id_project_team = this.ID_QuyTrinh;
+		_item.id_department = this.ID_QuyTrinh;
 		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;

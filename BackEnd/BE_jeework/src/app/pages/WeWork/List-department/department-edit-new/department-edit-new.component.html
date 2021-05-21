@@ -227,7 +227,7 @@
                                     {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
                                 </div>
                                 <i class="fas fa-plus url text-success " (click)="addTemplate()"
-                                    style="font-size: 20px;" matTooltipPosition="above" matTooltip="Thêm mẫu mới"></i>
+                                    style="font-size: 20px;" matTooltipPosition="above" matTooltip="{{ 'department.themmaumoi'|translate}}"></i>
                             </div>
                             <div class="row">
                                 <div class="col-12 item-template"
@@ -282,7 +282,7 @@
                                         </mat-menu>
                                         <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                             [matMenuTriggerFor]="color"></button>
-                                        <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                        <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
 
                                         </div>
                                         <div class="input">
@@ -344,7 +344,7 @@
                                         </mat-menu>
                                         <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                             [matMenuTriggerFor]="color"></button>
-                                        <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                        <div class="box-color"  (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
 
                                         </div>
                                         <div class="input">
@@ -387,7 +387,7 @@
                                         </mat-menu>
                                         <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                             [matMenuTriggerFor]="color"></button>
-                                        <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                        <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
 
                                         </div>
                                         <div class="input">

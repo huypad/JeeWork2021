@@ -1,48 +1,44 @@
-.scale-2 {
+.scale-2{
     transform: scale(2);
 }
-
-.cu-view-space {
+.cu-view-space{
     position: relative;
     width: 100%;
     min-height: 400px;
 
-    .close-dialog {
+    .close-dialog{
         min-height: 25px;
     }
 
-    .nguoithamgia {
+    .nguoithamgia{
         margin-top: 25px;
         min-height: 100px;
 
     }
 
-    .view-template {
+    .view-template{
         margin-top: 25px;
-        min-height: 600px;
+        min-height: 500px;
         padding-bottom: 75px;
 
         // css con view template
-        .edit-template {
+        .edit-template{
             display: none;
-
-            i {
+            i{
                 padding: 0 5px;
             }
         }
-
-        .item-template {
+        .item-template{
             display: flex;
-            font-size: 20px;
+            font-size: 15px;
             line-height: 2;
             font-weight: 500;
-
-            .title-template {
+            .title-template{
                 flex-grow: 1;
             }
 
-            &:hover {
-                .edit-template {
+            &:hover{
+                .edit-template{
                     min-width: 55px;
                     text-align: right;
                     display: block;
@@ -51,29 +47,25 @@
 
         }
 
-        .header-view {
+        .header-view{
             display: flex;
-
-            &-title {
+            &-title{
                 flex-grow: 1;
-                font-size: 17px;
+                font-size: 15px;
                 font-weight: 500;
                 color: gray;
-            }
+            };
 
-            ;
-
-            i {
+            i{
                 padding: 0 5px;
             }
         }
 
-        .add-new-template {
-            input {
+        .add-new-template{
+            input{
                 border: none;
-
                 &:focus,
-                &:active {
+                &:active{
                     outline: none;
                     border: none;
                     border-bottom: 1px solid green;
@@ -81,12 +73,10 @@
             }
         }
 
-        .status-input {
-            display: flex; 
-            flex-wrap: wrap;
+        .status-input{
+            display: flex;
             margin: 3px 0 5px 0;
-
-            .box-color {
+            .box-color{
                 width: 15px;
                 height: 15px;
                 background-color: red;
@@ -94,29 +84,25 @@
                 margin-right: 5px;
                 cursor: pointer;
             }
-
-            .input {
+            .input{
                 flex-grow: 1;
-
-                input {
+                input{
                     width: 100%;
-                    border: none;
-
-                    &:focus {
-                        border: none;
+                    border:none;
+                    &:focus{
+                        border:none;
                         outline: none;
                         border-bottom: 1px solid gray;
                     }
                 }
             }
-
-            .action-input {
+            .action-input{
                 min-width: 20px;
             }
 
         }
 
-        .box-stt {
+        .box-stt{
             width: 15px;
             height: 15px;
             margin: auto 10px;
@@ -131,25 +117,23 @@
 
     }
 
-    .line-tab {
+    .line-tab{
         padding: 15px;
         font-size: 18px;
         display: flex;
-
-        .line-title {
+        .line-title{
             flex-grow: 1;
         }
     }
 
-    .card-view {
+    .card-view{
         margin: 15px 15px 0 0;
     }
-
-    .card-active {
+    .card-active{
         border: 2px solid #21d121;
     }
 
-    .template-selected {
+    .template-selected{
         background-color: #1DB954;
         color: white;
         font-size: 14px;
@@ -161,7 +145,7 @@
     }
 }
 
-.btn-next {
+.btn-next{
     width: 100%;
     height: 50px;
     position: absolute;
@@ -169,14 +153,13 @@
     font-size: 20px;
 }
 
-.color-picker {
-    width: 20px;
+.color-picker{
+    width: 20px ;
     height: 20px;
     margin: 4px;
     border-radius: 50%;
     cursor: pointer;
-
-    &:hover {
+    &:hover{
         transform: scale(1.2);
     }
 }

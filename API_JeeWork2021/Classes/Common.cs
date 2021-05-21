@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Specialized;
 using System.Data.OleDb;
+using System.Collections.Generic;
+using Microsoft.Net.Http.Headers;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -201,6 +203,15 @@ namespace JeeWork_Core2021.Classes
             }
 
         }
+        
+        public static string GetToken(IHeaderDictionary pHeader)
+        {
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+
+            IHeaderDictionary _d = pHeader;
+            return  _d[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+        }
 
         /// <summary>
         /// Kiểm tra quyền bằng UserID
@@ -208,23 +219,25 @@ namespace JeeWork_Core2021.Classes
         /// <param name="token">token</param>
         /// <param name="role">role</param>
         /// <returns></returns>
-        public static bool CheckRoleByToken(string userID, string role, JeeWorkConfig config)
+        public static bool CheckRoleByToken(string userID, string role, JeeWorkConfig config, List<AccUsernameModel> DataAccount)
         {
             if (string.IsNullOrEmpty(userID))
                 return false;
             try
             {
                 //Lấy username
-                string select = "select username from Tbl_Account where id_nv=@userID";
+                //string select = "select username from Tbl_Account where id_nv=@userID";
+                var info = DataAccount.Where(x => userID.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 SqlConditions Conds = new SqlConditions();
                 Conds.Add("userID", userID);
                 using (DpsConnection ConnWW = new DpsConnection(config.ConnectionString))
                 {
-                    DataTable dt = ConnWW.CreateDataTable(select, Conds);
-                    if (dt.Rows.Count <= 0) return false;
+                    //DataTable dt = ConnWW.CreateDataTable(select, Conds);
+                   // if (dt.Rows.Count <= 0) return false;
                     Conds = new SqlConditions();
                     Conds.Add("Id_permit", role);
-                    string username = dt.Rows[0][0].ToString();
+                    //string username = dt.Rows[0][0].ToString();
+                    string username = info.Username;
                     Conds.Add("Username", username);
                     DataTable Tb = ConnWW.CreateDataTable("select * from Tbl_Account_Permit where (where)", "(where)", Conds);
                     if (Tb.Rows.Count > 0)

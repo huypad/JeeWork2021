@@ -180,9 +180,12 @@ export class ListDepartmentListComponent implements OnInit {
 
 		return tmp_height - this.tokenStorage.getHeightHeader() + 'px';
 	}
-	Add() {
+	Add(ID_Department = 0) {
 		const ObjectModels = new DepartmentModel();
 		ObjectModels.clear(); // Set all defaults fields
+		if(ID_Department > 0){
+			ObjectModels.RowID = ID_Department;
+		}
 		this.Update(ObjectModels);
 	}
 	applyFilter(text: string) {
@@ -203,7 +206,7 @@ export class ListDepartmentListComponent implements OnInit {
 
 		this.dataSource.loadList(queryParams);
 		this.dataSource.entitySubject.subscribe(res => {
-			if (res && res.length > 0) {
+			if (res) {
 				this.listDept = res;
 				this.changeDetectorRefs.detectChanges();
 			}
@@ -227,6 +230,31 @@ export class ListDepartmentListComponent implements OnInit {
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				this.changeDetectorRefs.detectChanges();
 			}
+		});
+	}
+	Delete(ID_Department) {
+		var ObjectModels = new DepartmentModel();
+		ObjectModels.clear();
+		const _title = this.translate.instant('GeneralKey.xoa');
+		const _description = this.translate.instant('department.confirmxoa');
+		const _waitDesciption = this.translate.instant('GeneralKey.dulieudangduocxoa');
+		const _deleteMessage = this.translate.instant('GeneralKey.xoathanhcong');
+		const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
+		dialogRef.afterClosed().subscribe(res => {
+			if (!res) {
+				return;
+			}
+			this.thongTinCaNhanService.Delete_Dept(ID_Department).subscribe(res => {
+				if (res && res.status === 1) {
+					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
+					this.ngOnInit();
+				}
+				else {
+					this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+					this.ngOnInit();
+				}
+
+			});
 		});
 	}
 }

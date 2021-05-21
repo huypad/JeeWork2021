@@ -51,22 +51,21 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(Token, "3610", _config);
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                string error = "";
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                if (error != "")
+                    return JsonResultCommon.Custom(error);
+                #endregion
+
+                bool Visible = Common.CheckRoleByToken(Token, "3610", _config,DataAccount);
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-                    //string ids = string.Join(",", nvs);
-                    string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
 
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
@@ -77,7 +76,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
-                        dieukien_where += " and (t.title like N'%@keyword%' or tao.Username like '%@keyword%' or sua.Username like '%@keyword%')";
+                        dieukien_where += " and (t.title like N'%@keyword%' )";
                         dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
                     }
                     #region Sort data theo các dữ liệu bên dưới
@@ -95,8 +94,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select distinct t.*, p.title as project_team, t.CreatedBy as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua,c.tong, coalesce (u.favourite,0) as favourite from we_topic t
                                 join we_project_team p on t.id_project_team=p.id_row
+                                join we_department d on d.id_row=p.id_department
                                 left join ( select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row
-                                left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=" + loginData.UserID + $" where t.Disabled=0  and t.CreatedBy in ({listID}) "
+                                join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=" + loginData.UserID + $" where t.Disabled=0 and d.Disabled = 0 and t.CreatedBy in ({listID}) "
                                 + dieukien_where + "  order by " + dieukienSort;
                                                     sqlq += $" select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, id_topic from we_topic_user u where u.Disabled=0 and u.id_user in ({listID})";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);

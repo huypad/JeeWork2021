@@ -9,12 +9,13 @@
 		<ng-container  *ngFor="let item of list">
 			
 			<button class="d-block border-bottom" *ngIf="item.id_row" (click)="selected(item)" mat-menu-item type="button" [ngStyle]="{'color': item.color}">
+				<!-- <mat-icon *ngIf="item.checked" class="text-success mg-0">check</mat-icon> -->
 				<div class="row">
-					<div class="cu-task-row-status1" style="width:20px;padding-right:5px">
+					<div class="cu-task-row-status1" *ngIf="Loai=='Tags'" style="width:20px;padding-right:5px">
 						<div class="point" [ngStyle]="{'backgroundColor': item.color}">
 						</div>
 					</div>
-					{{item.title}} 
+					<span>{{item.title}}</span>
 				</div>
 			</button>
 		</ng-container>

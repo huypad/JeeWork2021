@@ -50,23 +50,20 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", _config);
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                string error = "";
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                if (error != "")
+                    return JsonResultCommon.Custom(error);
+                #endregion
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", _config, DataAccount);
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-                    //string ids = string.Join(",", nvs);
-                    string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
-
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
                     if (!string.IsNullOrEmpty(query.filter["id_project_team"]))

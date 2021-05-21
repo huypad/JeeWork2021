@@ -62,13 +62,14 @@ namespace JeeWork_Core2021.Classes
         }
         public static string getHRCnn()
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-            var root = builder.Build();
-            string ConnectionString = root["JeeWorkConfig:ConnectionString"];
-            string HRCatalog = root["JeeWorkConfig:HRCatalog"];
-            string HRConnectionString = ConnectionString.Replace("jeework", HRCatalog);
-            return HRConnectionString;
+            //IConfigurationBuilder builder = new ConfigurationBuilder();
+            //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+            //var root = builder.Build();
+            //string ConnectionString = root["JeeWorkConfig:ConnectionString"];
+            //string HRCatalog = root["JeeWorkConfig:HRCatalog"];
+            //string HRConnectionString = ConnectionString.Replace("jeework", HRCatalog);
+            //return HRConnectionString;
+            return "";
         }
     }
     public enum StateCode

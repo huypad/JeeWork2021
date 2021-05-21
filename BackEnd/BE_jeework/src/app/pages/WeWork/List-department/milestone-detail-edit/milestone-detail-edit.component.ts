@@ -36,6 +36,7 @@ export class milestoneDetailEditComponent implements OnInit {
 	stateCtrl: FormControl;
 	id_project_team: string = '';
 	listProject: any;
+	isChangeTeam = true;
 	constructor(public dialogRef: MatDialogRef<milestoneDetailEditComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		private fb: FormBuilder,
@@ -50,7 +51,7 @@ export class milestoneDetailEditComponent implements OnInit {
 	/** LOAD DATA */
 	ngOnInit() {
 		this.item = this.data._item;
-
+		console.log(this.item);
 		if (this.data._item) {
 			if (this.item.id_row > 0) {
 				this.viewLoading = true;
@@ -60,12 +61,25 @@ export class milestoneDetailEditComponent implements OnInit {
 			}
 			if (this.data._item.id_project_team > 0) {
 				this.ChangeProject(this.data._item.id_project_team);
+				this.isChangeTeam = false;
 			}
-			this.weworkService.lite_project_team_byuser("").subscribe(res => {
-				if (res && res.status === 1) {
-					this.listProject = res.data;
-				};
-			});
+			else{
+				this.isChangeTeam = true;
+			}
+			if(this.item.id_department>0){
+				this.weworkService.lite_project_team_bydepartment(this.item.id_department).subscribe(res => {
+					if (res && res.status === 1) {
+						this.listProject = res.data;
+					};
+				});
+				
+			}else{
+				this.weworkService.lite_project_team_byuser("").subscribe(res => {
+					if (res && res.status === 1) {
+						this.listProject = res.data;
+					};
+				});
+			}
 			this.createForm();
 		}
 	}
@@ -104,7 +118,7 @@ export class milestoneDetailEditComponent implements OnInit {
 		this.itemForm = this.fb.group({
 			title: ['' + this.item.title, Validators.required],
 			milestonedate: ['' + this.item.deadline, Validators.required],
-			id_project_team: [''],
+			id_project_team: [''+this.item.id_project_team],
 			description: [this.item.description],
 			pic: [this.item.person_in_charge.id_nv, Validators.required],
 		});

@@ -278,10 +278,10 @@
 				<div class="color-picker-box">
 					<div class="colors " style="flex-wrap:wrap">
 						<ng-container *ngFor="let tag of this.Tags">
-							<div class="d-flex tag-color {{tag.color}}" [ngStyle]="{'backgroundColor': tag.color}">
+							<div class="d-flex tag-color " [ngStyle]="{'backgroundColor': tag.color}">
 								<div (click)="BindColor(tag)" class="tag">{{tag.title}}</div>
 								<div (click)="deleteTag(tag)" class="close-tag">
-									<i class="fas fa-times"></i>
+									<i class="fas fa-times text-white"></i>
 								</div>
 							</div>
 						</ng-container>

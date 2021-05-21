@@ -560,16 +560,33 @@ input[type=text] {
         // cu-task-list__rows => .cu-task-row 
     }
     .cu-task-row-subtasks-count {
-        display: inline-flex;
-        margin-right: 8px;
-        flex-wrap: wrap;
-    }
-    .cu-task-row-subtasks-count__item {
-        display: inline-flex;
-        align-items: flex-start;
-        position: relative;
-        margin: 1px 5px 1px 0;
-    }
+		display: inline-flex;
+		margin-left: 8px;
+		flex-wrap: wrap;
+		height: 100%;
+		font: 11px/11px Gotham Pro, Proxima Nova, arial, serif;
+		padding: 2px;
+		align-items: center;
+		margin-right: 5px;
+		border-radius: 4px;
+		transform: translateY(2px);
+		background: #fff;
+		border: 1px solid #e9ebf0;
+		fill: #7c828d;
+	}
+
+	.add-new-task {
+		font-size: 10px;
+		border-left: 1px #1db954 solid;
+		padding: 0 5px 0 7px;
+	}
+
+	.cu-task-row-subtasks-count__item {
+		display: inline-flex;
+		align-items: flex-start;
+		position: relative;
+		margin: 1px 5px 1px 0;
+	}
     // add new task
     .cu-task-row-new {
         display: block;
@@ -1248,4 +1265,38 @@ textarea:focus{
     &:hover{
         background: #0080002e;
     }
+}
+.margin-button-bottom {
+	button {
+		margin-bottom: 2px;
+	}
+}
+
+.padding-new-field {
+	padding: 2px;
+	padding-top: 8px !important;
+}
+
+
+.mat-checkbox .mat-checkbox-frame {
+	border-radius: 50%;
+	border: 1px solid #3699FF;
+}
+
+.mat-checkbox-checked .mat-checkbox-background { 
+	border-radius: 50%;
+	border: 1px solid #3699FF;
+	background-color: #3699FF;
+}
+
+.checkbox-circle{
+	::ng-deep .mat-checkbox .mat-checkbox-frame {
+		border-radius: 50%;
+		border: 1px solid #3699FF;
+	}
+
+	::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+		border-radius: 50%;
+		border: 1px solid #3699FF;
+	}
 }

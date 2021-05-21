@@ -1,5 +1,4 @@
 <kt-portlet class="milestone-detail">
-
     <kt-portlet-body class="hide-overflow ">
         <div class="header-content">
             <div class="chart">
@@ -20,7 +19,7 @@
                     </ng-template>
 
                 </div>
-                <div class="text-in-chart text-dark">
+                <div class="text-in-chart text-dark" style="top:20%;">
                     <span class="d-block" style="font-weight: bold;font-size: 32px;">{{tong}}</span> {{'wuser.congviec'|
                     translate}}
                 </div>
@@ -94,12 +93,11 @@
                         </div>
                         <div class="col-md-3">
                             <div class="row float-right" style="padding-right: 25px;">
-
                                 <kt-avatar-user [image]="image" size="35" [name]="hoten" [matMenuTriggerFor]="menu"
                                     [showFull]="true" [info]="'@' + username">
                                 </kt-avatar-user>
                                 <mat-menu #menu="matMenu">
-                                    <kt-avatar-user [image]="image" size="50" [name]="hoten"
+                                    <kt-avatar-user [image]="image" size="50" [name]="hoten" [matMenuTriggerFor]="menu"
                                         [showFull]="true" [info]="'@' + username">
                                     </kt-avatar-user>
                                     <hr>
@@ -153,7 +151,11 @@
 
         <div class="noidung-hoatdong">
             <table class="table w-100 table-bordered table-hover table-hoatdong">
-                
+                <!-- <thead>
+					<tr>
+						<th colspan="2"> search here</th>
+					</tr>
+				</thead> -->
                 <tbody>
                     <tr *ngFor="let child of item.List">
                         <td style="width: 200px;transform: translateY(10px);" class="text-center">
@@ -170,36 +172,29 @@
                         <td>
                             <div class="row font-chu" style="min-height: 50px;">
                                 <div class="col-md-10">
-                                    <div class="hide-text -hover url">
-                                        <span style="cursor: pointer; font-weight: bold;">{{child.title}}</span>
+                                    <div class="hide-text">
+                                        <span class="-hover url" style="font-weight: bold;" (click)="ViewDetail(child.id_row)">{{child.title}}</span>
                                     </div>
                                     <div class="hide-text">
                                         <span style="text-align: justify !important;"
                                             [innerHtml]="child.description"></span>
                                     </div>
-                                    <span *ngIf="child.important"
-                                        class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByLocked(child.important)}} kt-badge--wide"
-                                        style="margin-right: 5px;">{{ getItemLockedString(child.important) }}</span>
-                                    <span *ngIf="child.is_quahan"
-                                        class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByOverdue(child.is_quahan)}} kt-badge--wide"
-                                        style="margin-right: 5px;">{{ getItemOverdue(child.is_quahan) }}</span>
-                                    <span *ngIf="child.urgent"
-                                        class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByurgent(child.urgent)}} kt-badge--wide"
-                                        style="margin-right: 5px;">{{ getItemurgent(child.urgent) }}</span>
-                                    <span *ngIf="child.start_date != null"
-                                        style="font-weight: bold;">{{'filter.ngaybatdau'|translate}}: {{child.start_date
-                                        | date: 'dd/MM/yyyy'}}</span>
+                                    <ng-container *ngIf="child.clickup_prioritize">
+										<span *ngIf="getItemLockedString(child.clickup_prioritize)"
+											class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByLocked(child.clickup_prioritize)}} kt-badge--wide"
+											style="margin-right: 5px;">{{ getItemLockedString(child.clickup_prioritize) }}</span>
+										<span *ngIf="getItemurgent(child.clickup_prioritize)"
+											class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByurgent(child.clickup_prioritize)}} kt-badge--wide"
+											style="margin-right: 5px;">{{ getItemurgent(child.clickup_prioritize) }}</span>
+									</ng-container>
+									<span *ngIf="child.is_quahan" class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCssClassByOverdue(child.is_quahan)}} kt-badge--wide"
+										style="margin-right: 5px;">{{ getItemOverdue(child.is_quahan) }}</span>
+									<span *ngIf="child.start_date != null"
+										style="font-weight: bold;">{{'filter.ngaybatdau'|translate}}: {{child.start_date | date: 'dd/MM/yyyy'}}</span>
                                 </div>
                                 <div class="users url col-md-2 text-right">
-                                    <ngx-avatar size="30" matTooltip="{{child.user.hoten}}" src="{{child.user.image}}"
-                                        *ngIf="child.user.image;else bindText2">
-                                    </ngx-avatar>
-                                    <ng-template #bindText2>
-                                        <ngx-avatar textSizeRatio="2.5" matTooltip="{{child.user.hoten}}" size="30"
-                                            [name]="WeWorkService.getNameUser(child.user.hoten)"
-                                            bgColor="{{WeWorkService.getColorNameUser(child.user.hoten)}}">
-                                        </ngx-avatar>
-                                    </ng-template>
+									<kt-avatar-list-users [ListUser]="child.user" MaxSize="3" iconSize="30">
+									</kt-avatar-list-users>
                                 </div>
                             </div>
                         </td>
@@ -207,6 +202,5 @@
                 </tbody>
             </table>
         </div>
-
     </kt-portlet-body>
 </kt-portlet>

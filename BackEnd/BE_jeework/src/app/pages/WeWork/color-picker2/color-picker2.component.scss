@@ -1,0 +1,20 @@
+.color-picker{
+    width: 20px ;
+    height: 20px;
+    margin: 4px;
+    border-radius: 50%;
+    cursor: pointer;
+	position: relative;
+    &:hover{
+        transform: scale(1.2);
+    }
+	&.active:before {
+        color:white;
+		font-family: ap;
+		content: "\2713";
+		display: block;
+		position: absolute;
+		font-size: 14px;
+		left: 6px;
+	}
+}

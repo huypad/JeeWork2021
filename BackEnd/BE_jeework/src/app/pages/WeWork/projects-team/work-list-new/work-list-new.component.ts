@@ -73,6 +73,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   options_assign: any = {};
   filter_groupby: any = [];
   filter_subtask: any = [];
+	list_milestone: any = [];
   Assign_me = -1;
   keyword: string = '';
   // view setting
@@ -94,6 +95,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   listNewField: any = [];
   DataNewField: any = [];
   textArea: string = "";
+	Emtytask = false;
   constructor(
     @Inject(DOCUMENT) private document: Document,// multi level
     private _service: ProjectsTeamService,
@@ -136,6 +138,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.LoadListAccount();
     this.LoadDetailProject();
     // this.changeDetectorRefs.detectChanges();
+
+    this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
+			this.changeDetectorRefs.detectChanges();
+			if (res && res.status === 1) {
+				this.list_milestone = res.data;
+				this.changeDetectorRefs.detectChanges();
+			}
+		});
   }
 
   ngOnChanges() {
@@ -244,6 +254,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.ListColumns.sort((a, b) => (a.id_project_team > b.id_project_team) ? -1 : ((b.id_project_team > a.id_project_team) ? 1 : 0)); // nào chọn xếp trước
         this.ListColumns.sort((a, b) => (a.isbatbuoc > b.isbatbuoc) ? -1 : ((b.isbatbuoc > a.isbatbuoc) ? 1 : 0)); // nào bắt buộc xếp trước
         this.ListTasks = (this.data.datawork);
+        if ( this.filter_groupby.value == "status" && this.ListTasks.length == 0 ) {
+					this.newtask = this.listFilter[0].id_row;
+					this.Emtytask = true;
+				}else{
+					this.Emtytask = false;
+				}
         this.prepareDragDrop(this.ListTasks);
         this.ListTags = this.data.Tag;
         this.ListUsers = this.data.User;
@@ -268,7 +284,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   StatusTodo() {
-    var x = this.status_dynamic.find(x => x.IsToDo = true);
+    var x = this.status_dynamic.find(x => x.IsToDo == true);
     if (x) {
       return x.id_row
     }
@@ -1038,9 +1054,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   CreateTask(val) {
+		var x = this.newtask;
+		this.CloseAddnewTask(true);
+		setTimeout(() => {
+			this.newtask = x;
+		}, 3000);
     this._service.InsertTask(val).subscribe(res => {
       if (res && res.status == 1) {
-        // this.CloseAddnewTask(true);
         this.LoadData();
       }
     })

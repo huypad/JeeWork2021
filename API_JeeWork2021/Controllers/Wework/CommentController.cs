@@ -410,6 +410,13 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                             }
                             catch
                             { }
+
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            }
+
                         }
 
                     }
@@ -442,6 +449,13 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                             }
                             catch
                             { }
+
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            }
+
                         }
                     }
                     #endregion
@@ -491,6 +505,11 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
 
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     SqlConditions sqlcond = new SqlConditions();
@@ -554,6 +573,12 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                             }
                             catch
                             { }
+
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            }
                         }
                     }
                     #endregion

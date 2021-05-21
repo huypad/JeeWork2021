@@ -659,6 +659,7 @@ export const locale = {
 			timkiemnhanh: 'Lọc nhanh phòng ban',
 			themmoi: 'Tạo mới phòng ban',
 			taomoi: 'Thêm mới phòng ban',
+			xoa: 'Xóa phòng ban',
 			chinhsua: 'Chỉnh sửa phòng ban',
 			ten: 'Tên phòng ban',
 			chusohuu: 'Người quản trị',
@@ -1059,6 +1060,7 @@ export const locale = {
 			showemptystatus: 'Hiển thị trạng thái rỗng'
 		},
 		topic: {
+			addfollower:'Thêm người theo dõi dự án',
 			timkiemthaoluan: 'Tìm kiếm thảo luận',
 			themmoithaoluan: 'Thêm mới thảo luận',
 			chinhsua: 'Chỉnh sửa topic',

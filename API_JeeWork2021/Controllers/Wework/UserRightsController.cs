@@ -44,6 +44,12 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Get_DSNhom([FromQuery] QueryParams query)
         {
+            #region Lấy dữ liệu account từ JeeAccount
+            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+            if (DataAccount == null)
+                return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+            #endregion
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -54,7 +60,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             string sqlq = "";
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "GroupName asc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config);
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config,DataAccount);
             DataTable dt = new DataTable();
             try
             {
@@ -409,34 +415,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                     Conds = new SqlConditions();
                     Conds.Add("username", data.UserName);
 
-                    string sqlq_account = "select * from tbl_account where (where)";
-                    DataTable dt_account = cnn.CreateDataTable(sqlq_account, "(where)", Conds);
-                    if (dt_account.Rows.Count <= 0)
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    var info = DataAccount.Where(x => data.UserName.ToString().Contains(x.Username.ToString())).FirstOrDefault();
+                    
+                    if (info is null)
                     {
-                        sqlq_account = $@"select * from {_config.HRCatalog}.dbo.tbl_account where (where)";
-                        dt_account = cnn.CreateDataTable(sqlq_account, "(where)", Conds);
-                        if (dt_account.Rows.Count <= 0)
-                            return JsonResultCommon.Custom("Không tìm thấy thông tin tài khoản trong databases HR");
-                        sqlq_account = $@"select * from Tbl_Group_Account where (where)";
-                        Conds.Add("id_group", data.ID_Nhom);
-                        dt_account = cnn.CreateDataTable(sqlq_account, "(where)", Conds);
-                        string sql_insert = "";
-                        if (dt_account.Rows.Count <= 0)
-                        {
-                            sql_insert = $@"insert into tbl_account (Username, Id_nv, Password, Lock, Disable, LastLogin, d_password, CreatedDate, LastPassChg, LastSend, Token, FailLogin, Solop, Validatecode, ExpireValidate, Loaitaikhoan, ExpPassword, AuthenType, 
-                         IsCreateLDAPAccount, IsAdmin, DefaultModule)
-                        select Username, Id_nv, Password, Lock, Disable, LastLogin, d_password, CreatedDate, LastPassChg, LastSend, Token, FailLogin, Solop, Validatecode, ExpireValidate, Loaitaikhoan, ExpPassword, AuthenType, 
-                         IsCreateLDAPAccount, IsAdmin, DefaultModule
-                        from {_config.HRCatalog}.dbo.tbl_account acc where acc.username = '{data.UserName}'";
-                            var rs = cnn.ExecuteScalar(sql_insert);
-                        }
+                        return JsonResultCommon.Custom("Không tìm thấy thông tin tài khoản trong hệ thống JeeAccount");
                     }
                     if (cnn.Insert(val, "tbl_group_account") == -1)
                     {
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
-                    //string LogContent = "Thêm tài khoản người dùng username=" + data.UserName + " vào nhóm id=" + data.ID_Nhom;
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserID.ToString());
                 }
 
                 return JsonResultCommon.ThanhCong(data);
@@ -470,13 +463,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                 Conds.Add("id_group", data.ID_Nhom);
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    var info = DataAccount.Where(x => data.UserName.ToString().Contains(x.Username.ToString())).FirstOrDefault(); 
                     //Kiểm tra nhóm và tài khoản có phải làm admin hay không
                     string select = $@"select isadmin from tbl_group where id_group=@id_group";
                     DataTable dt = cnn.CreateDataTable(select, Conds);
                     if ((dt.Rows.Count > 0) && (bool.TrueString.Equals(dt.Rows[0][0].ToString())))
                     {
-                        DataTable nguoidung = cnn.CreateDataTable($@"select IsAdmin from Tbl_Account where Username=@Username", Conds);
-                        if ((nguoidung.Rows.Count > 0) && (bool.TrueString.Equals(nguoidung.Rows[0][0].ToString())))
+                        if (info is not null && info.isAdmin)
                         {
                             return JsonResultCommon.Custom("Không cho phép bỏ tài khoản admin ra khỏi nhóm admin");
                         }
@@ -549,6 +547,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Get_DSNguoiDung([FromQuery] QueryParams query)
         {
+            #region Lấy dữ liệu account từ JeeAccount
+            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+            if (DataAccount == null)
+                return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+            #endregion
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -569,7 +574,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             dt_staff.Columns.Add("CustomerID", typeof(int));
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "Username asc", whereStr = "nv.thoiviec = 0  and nv.disable=0 and CustemerID=@CustemerID";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config);
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config,DataAccount);
             DataTable dt = new DataTable();
             try
             {

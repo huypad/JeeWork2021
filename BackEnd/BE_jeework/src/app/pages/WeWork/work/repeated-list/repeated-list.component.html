@@ -77,7 +77,7 @@
                                     <button class="btn btn-sm btn-outline-success text-center" style="min-width: 100px;"
                                         (click)="AddRepeated(1)"
                                         matTooltip="{{ 'projects.themcongviec' | translate }}">
-
+                                        <!-- <mat-icon style="color: darkgreen;">add</mat-icon> -->
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                         <span style="font-size: 9pt;"
                                             translate="projects.themcongviec"></span>
@@ -89,7 +89,7 @@
                             <div class="row align-items-center row-phep" *ngFor="let item of listData_week"
                                 style="border-bottom: 0.5px solid rgb(222, 222, 222);">
                                 <td class="crepeated-active" style="width: 3%;">
-                                    <i class="fas fa-circle text-{{item.Locked?'muted':'success'}} text-success" style="font-size: 30px;"></i>
+                                    <i class="fas fa-circle text-{{item.Locked?'muted':'success'}} text-success"></i>
                                 </td>
                                 <td style="width: 32%;">
                                     <div [ngStyle]="{'width': getWidth()}" style="padding: 10px;">
@@ -119,18 +119,42 @@
                                 <td style="width: 10%;">
                                     <a>{{item.UpdatedDate}}</a>
                                 </td>
-                                <td style="width: 15%;">
-                                    <mat-form-field style="width: 80%;" class="mat-form-field-fluid">
-                                        <mat-select style="width: 100%;" class="require" required
-                                            [value]="''+item.Assign.id_nv"
-                                            (selectionChange)="Assign($event.value,item)">
-                                            
-                                            <mat-option value="{{user.id_nv}}"
-                                                *ngFor="let user of filteredBanks | async">
-                                                <span style="color: black;">{{ user.hoten }}</span>
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                <td style="width: 15%;padding-left: 10px;">
+                                    <div class="row" style="flex-grow: 1;">
+										<ng-container *ngFor="let us of item.Users;let index = index">
+											<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+												style="justify-content: flex-end;">
+												<ng-container>
+													<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
+													</kt-avatar-user>
+												</ng-container>
+											</div>
+										</ng-container>
+										<ng-container *ngIf="item.Users && item.Users.length > 3">
+											<div class="m--img-rounded m--marginless m--img-centered background url"
+												[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
+												<div class="user w-100 h-100"
+													style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+													[ngStyle]="{'font-size.px': 16}">
+													+{{item.Users.length-3}}
+												</div>
+											</div>
+											<mat-menu #menu1="matMenu">
+												<div *ngFor="let user of item.Users;let index = index"
+													style="justify-content: flex-end;">
+													<ng-container *ngIf="index > 2">
+														<div class="position-relative">
+															<div class="row">
+																<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+																	[showFull]="true" [info]="'@' + user.username">
+																</kt-avatar-user>
+															</div>
+														</div>
+													</ng-container>
+												</div>
+											</mat-menu>
+										</ng-container>
+									</div>
                                 </td>
                                 <td style="width: 15%;">
                                     <mat-form-field style="width: 80%;" class="mat-form-field-fluid">
@@ -158,7 +182,7 @@
                                     <button mat-icon-button [matMenuTriggerFor]="menu">
                                         <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
                                     </button>
-                                    <mat-menu #menu="matMenu">
+                                    <mat-menu #menu="matMenu">kt-list-department-list
                                         <button mat-menu-item (click)="UpdateRepeated(item,false)">
                                             <mat-icon style="color: #df8a0a;">create</mat-icon>
                                             <span>
@@ -214,7 +238,7 @@
                                     <button class="btn btn-sm btn-outline-success text-center" style="min-width: 100px;"
                                         (click)="AddRepeated(2)"
                                         matTooltip="{{ 'projects.themcongviec' | translate }}">
-
+                                        <!-- <mat-icon style="color: darkgreen;">add</mat-icon> -->
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                         <span style="font-size: 9pt;"
                                             translate="projects.themcongviec"></span>
@@ -226,7 +250,7 @@
                             <div class="row align-items-center row-phep" *ngFor="let item of listData_month"
                                 style="border-bottom: 0.5px solid rgb(222, 222, 222);">
                                 <td class="crepeated-active" style="width: 3%;">
-                                    <i class="fas fa-circle text-{{item.Locked?'muted':'success'}} text-success" style="font-size: 30px;"></i>
+                                    <i class="fas fa-circle text-{{item.Locked?'muted':'success'}} text-success"></i>
                                 </td>
                                 <td style="width: 32%;">
                                     <div [ngStyle]="{'width': getWidth()}" style="padding: 10px;">
@@ -255,18 +279,42 @@
                                 <td style="width: 10%;">
                                     <a>{{item.UpdatedDate}}</a>
                                 </td>
-                                <td style="width: 15%;">
-                                    <mat-form-field style="width: 80%;" class="mat-form-field-fluid">
-                                        <mat-select style="width: 100%;" class="require" required
-                                            [value]="''+item.Assign.id_nv"
-                                            (selectionChange)="Assign($event.value,item)">
-                                            
-                                            <mat-option value="{{user.id_nv}}"
-                                                *ngFor="let user of filteredBanks | async">
-                                                <span style="color: black;">{{ user.hoten }}</span>
-                                            </mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
+                                <td style="width: 15%;padding-left: 10px;">
+                                    <div class="row" style="flex-grow: 1;">
+										<ng-container *ngFor="let us of item.Users;let index = index">
+											<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+												style="justify-content: flex-end;">
+												<ng-container>
+													<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
+													</kt-avatar-user>
+												</ng-container>
+											</div>
+										</ng-container>
+										<ng-container *ngIf="item.Users && item.Users.length > 3">
+											<div class="m--img-rounded m--marginless m--img-centered background url"
+												[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
+												<div class="user w-100 h-100"
+													style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+													[ngStyle]="{'font-size.px': 16}">
+													+{{item.Users.length-3}}
+												</div>
+											</div>
+											<mat-menu #menu1="matMenu">
+												<div *ngFor="let user of item.Users;let index = index"
+													style="justify-content: flex-end;">
+													<ng-container *ngIf="index > 2">
+														<div class="position-relative">
+															<div class="row">
+																<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+																	[showFull]="true" [info]="'@' + user.username">
+																</kt-avatar-user>
+															</div>
+														</div>
+													</ng-container>
+												</div>
+											</mat-menu>
+										</ng-container>
+									</div>
                                 </td>
                                 <td style="width: 15%;">
                                     <mat-form-field style="width: 80%;" class="mat-form-field-fluid">

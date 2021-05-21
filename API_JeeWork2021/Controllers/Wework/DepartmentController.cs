@@ -46,7 +46,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400", _config);
                 #region Lấy dữ liệu account từ JeeAccount
                 DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                 if (DataAccount == null)
@@ -56,13 +55,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400", _config,DataAccount);
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " de.Disabled=0 and (IdKH = @CustemerID)";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
-                        dieukien_where += " and (title like '%@keyword%') ";
+                        dieukien_where += " and (title like N'%@keyword%') ";
                         dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
                     }
                     #region Sort data theo các dữ liệu bên dưới
@@ -176,11 +176,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                bool Visible = Common.CheckRoleByToken(Token, "3403", _config);
-                PageModel pageModel = new PageModel();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
-                {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -191,6 +186,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
+                bool Visible = Common.CheckRoleByToken(Token, "3403", _config,DataAccount);
+                PageModel pageModel = new PageModel();
+                string domain = _config.LinkAPI;
+                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                {
                     // update later
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     // left join {_config.HRCatalog}.dbo.Tbl_Cocautochuc cc on cc.RowID=we_department.id_cocau

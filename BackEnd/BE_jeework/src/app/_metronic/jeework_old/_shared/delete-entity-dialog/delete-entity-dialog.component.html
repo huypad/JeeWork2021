@@ -6,7 +6,7 @@
 		</div>
 		<div class="kt-portlet__head-caption">
 			<div class="kt-portlet__head-title">
-				<h3 class="kt-portlet__head-text">
+				<h3 class="kt-portlet__head-text text-success">
 					{{data.title}}
 				</h3>
 			</div>
@@ -21,10 +21,10 @@
 			</div>
 		</div>
 		<div class="kt-portlet__foot kt-portlet__no-border kt-portlet__foot--fit text-right">
-			<button mat-button (click)="onNoClick()">
+			<button mat-button (click)="onNoClick()" class="jee_btn-duyet" >
 				<span translate="GeneralKey.no"></span>
 			</button>&nbsp;
-			<button mat-button (click)="onYesClick()" color="primary" cdkFocusInitial [disabled]="viewLoading">
+			<button mat-button (click)="onYesClick()" color="primary" class="text-dark border" cdkFocusInitial [disabled]="viewLoading">
 				<span translate="GeneralKey.yes"></span>
 			</button>
 		</div>

@@ -208,7 +208,10 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
+                    int id_project = int.Parse(cnn.ExecuteScalar("select id_project_team from we_milestone where id_row =" + id).ToString());
+                    long hoanthanh = ReportByProjectController.GetStatusComplete(id_project, cnn);
+                    long quahan = ReportByProjectController.GetStatusDeadline(id_project, cnn);
+                    long todo = ReportByProjectController.GetStatusTodo(id_project, cnn);
                     // #cần update trạng thái công việc
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select m.*, p.title as project_team, p.id_department, d.title as department, 
@@ -216,12 +219,12 @@ m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Emai
 join we_project_team p on m.id_project_team=p.id_row
 join we_department d on d.id_row=p.id_department
  where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID})  and m.id_row=" + id;
-                    sqlq += @";select w.*, 
-iIf(w.Status=2 and w.end_date<=w.deadline,1,0) as is_htquahan,
-iIf(w.Status = 2 and w.end_date > w.deadline, 1, 0) as is_htdunghan ,
-iIf(w.Status = 1 and (getdate() <= w.deadline or w.deadline is null), 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan
-from v_wework_new w
+                    sqlq += @$";select w.*, 
+iIf(w.Status={hoanthanh} and w.end_date>w.deadline,1,0) as is_htquahan,
+iIf(w.Status={hoanthanh} and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
+iIf(w.Status not in ({hoanthanh},{quahan}),1,0) as is_danglam,
+iIf(w.Status = {quahan}, 1, 0) as is_quahan
+from v_wework_clickup w
 where w.disabled=0 and id_milestone = " + id;
                     //                    sqlq += @"; select count(CASE WHEN w.Status=2 and w.end_date<=w.deadline THEN 1 END) as htquahan ,
                     //count(CASE WHEN w.Status=2 and w.end_date>w.deadline THEN 1 END) as htdunghan ,
@@ -234,6 +237,13 @@ where w.disabled=0 and id_milestone = " + id;
                     //count(CASE WHEN w.Status=1 and getdate()>m.deadline then 1 end) as  quahan, count(*) as tong
                     //from v_wework w join we_milestone m on w.id_milestone=m.id_row
                     // where w.disabled=0 and id_milestone=" + id;
+                    SqlConditions conds1 = new SqlConditions();
+                    conds1 = new SqlConditions();
+                    conds1.Add("w_user.Disabled", 0);
+                    string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as Username,'' as Mobile,'' as image, id_work
+                                                    from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
+                                                    where (where)";
+                    DataTable User = cnn.CreateDataTable(select_user, "(where)", conds1);
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
@@ -283,6 +293,20 @@ where w.disabled=0 and id_milestone = " + id;
                         }
 
                     }
+                    //User
+                    foreach (DataRow item in User.Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["Mobile"] = info.PhoneNumber;
+                            item["Username"] = info.Username;
+                            item["image"] = info.AvartarImgURL;
+                        }
+
+                    }
                     #endregion
                     var htdunghan = ds.Tables[1].AsEnumerable().Count(w => w["is_htdunghan"].ToString() == "1");
                     var htquahan = ds.Tables[1].AsEnumerable().Count(w => w["is_htquahan"].ToString() == "1");
@@ -328,20 +352,22 @@ where w.disabled=0 and id_milestone = " + id;
                                                important = w["important"],
                                                prioritize = w["prioritize"],
                                                urgent = w["urgent"],
+                                               clickup_prioritize = w["clickup_prioritize"],
                                                start_date = w["start_date"],
                                                end_date = w["end_date"],
                                                deadline = w["deadline"],
                                                deadline_weekday = w["deadline"].Equals(DBNull.Value) ? "" : Common.GetFormatDate(Convert.ToDateTime(w["deadline"]), "77622"),
                                                deadline_day = w["deadline"].Equals(DBNull.Value) ? "" : Common.GetFormatDate(Convert.ToDateTime(w["deadline"]), "dd/MM"),
-                                               user = new
-                                               {
-                                                   id_nv = w["id_nv"],
-                                                   hoten = w["hoten"],
-                                                   username = w["username"],
-                                                   mobile = w["mobile"],
-                                                   image = w["image"],
-                                                   //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, w["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
-                                               },
+                                               user = (from us in User.AsEnumerable()
+                                                      where w["id_row"].Equals(us["id_work"])
+                                                      select new
+                                                      {
+                                                          id_nv = us["id_user"],
+                                                          hoten = us["hoten"],
+                                                          username = us["username"],
+                                                          mobile = us["mobile"],
+                                                          image = us["image"]
+                                                      }).ToList(),
                                            },
                                     Count = new
                                     {

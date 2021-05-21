@@ -194,5 +194,6 @@ namespace JeeWork_Core2021.Models
         public string PhoneNumber { get; set; }
         public long CustomerID { get; set; }
         public string Email { get; set; }
+        public bool isAdmin { get; set; }
     }
 }

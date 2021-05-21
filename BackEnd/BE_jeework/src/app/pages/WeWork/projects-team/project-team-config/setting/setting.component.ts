@@ -118,6 +118,7 @@ export class SettingComponent {
 		this._service.DeptDetail(this.id_project_team).subscribe((res) => {
 			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status == 1) {
+				console.log('dept detail:',res.data)
 				this.item = res.data;
 				this.TempSelected = res.data.id_template;
 				this.IsProject = res.data.is_project;
@@ -165,6 +166,7 @@ export class SettingComponent {
 		this.weworkService.ListTemplateByCustomer().subscribe((res) => {
 			if (res && res.status === 1) {
 				this.litsTemplateDemo = res.data;
+				console.log(this.litsTemplateDemo);
 				setTimeout(() => {
 					if (this.TempSelected == 0)
 						this.TempSelected = this.litsTemplateDemo[0].id_row;

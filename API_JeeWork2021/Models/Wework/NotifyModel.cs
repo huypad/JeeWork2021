@@ -18,4 +18,14 @@ namespace JeeWork_Core2021.Models
         public string ComponentName { get; set; }
         public string Component { get; set; }
     }
+
+    public class NotificationMess
+    {
+        public string Content { get; set; }
+        public string Img { get; set; }  //kèm avatar người gửi
+        public string Icon { get; set; } //kèm icon thông báo
+        public string AppCode { get; set; } //gửi từ app nào
+        public string Link { get; set; } //link chuyển nếu có
+        public int Loai { get; set; }
+    }
 }

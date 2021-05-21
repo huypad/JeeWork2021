@@ -191,7 +191,7 @@
                 <div style="padding: 25px;flex-grow: 1;">
                     <ng-container *ngFor="let status of listStatus">
                         <div class="cu-list-group"
-                            *ngIf="(status.data.length > 0 && LoadClosedTask(status.id_row)) || (status.data.length == 0 && showemptystatus) || (status.data.length == 0 && status.id_row == StatusTodo() ) ">
+                            *ngIf="(status.data.length > 0 && LoadClosedTask(status.id_row)) || (status.data.length == 0 && showemptystatus) || ( Emtytask && status.id_row == StatusTodo() ) ">
                             <div class="task-list">
                                 <div class="task-list-header text-dark">
                                     <div class="task-list-header__actions d-none">
@@ -389,7 +389,7 @@
                                             </div>
 
                                             <div class="cu-task-row__container row">
-                                                <div class="cu-dropdown check-list"
+                                                <div class="cu-dropdown check-list checkbox-circle"
                                                     [ngStyle]="{'opacity': getViewCheck(node.id_row)}"
                                                     *ngIf="CheckRoles(15)">
                                                     <mat-checkbox class="example-margin "
@@ -436,7 +436,7 @@
                                                         </mat-menu>
                                                     </div>
                                                     <div class="cu-task-row-main">
-                                                        <a class="cu-task-row-main__link">
+                                                        <a class="cu-task-row-main__link hover-show-action">
                                                             <div class="cu-task-row-main__link-container row">
                                                                 <div class="cu-task-row-main__link-text">
                                                                     <input id="task{{node.id_row}}" type="text"
@@ -450,60 +450,54 @@
                                                                             class="mg-0 text-muted"
                                                                             *ngIf="tasklocation">
                                                                             {{this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}</p>
-                                                                        <span
-                                                                            class=" cu-task-row-main__link-text-inner -hover position-relative hover-show-action">
-                                                                            <span
-                                                                                (click)="ViewDetai(node)">{{node.title}}</span>
-                                                                            <span class="action-inline text-muted"
-                                                                                *ngIf="CheckRoles(15)">
-                                                                                <i class="fas fa-pencil-alt"
-                                                                                    (click)="editTitle(node.id_row)"
-                                                                                    matTooltip="{{ 'work.chinhsuatencongviec' | translate }}"></i>
-                                                                                <i class="fas fa-tasks"
-                                                                                    (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i>
-                                                                                <i class="fas fa-tags"
-                                                                                    matTooltip="{{ 'work.chinhsuatag' | translate }}"
-                                                                                    [matMenuTriggerFor]="tag"></i>
-                                                                                <mat-menu #tag="matMenu">
-                                                                                    <kt-choose-milestone-and-tags
-                                                                                        [options]="list_Tag"
-                                                                                        [project_team]="project_team"
-                                                                                        [id_project_Team]="ID_Project"
-                                                                                        [Id]="node.id_row" [Id_key]="9"
-                                                                                        [Loai]="'Tags'"
-                                                                                        (ItemSelected)="ReloadData($event)">
-                                                                                    </kt-choose-milestone-and-tags>
-                                                                                </mat-menu>
-                                                                            </span>
-                                                                        </span>
-                                                                        <ng-container
-                                                                            *ngIf="node.DataChildren.length > 0">
-                                                                            <div class="cu-task-row-subtasks-count ng-star-inserted"
-                                                                                style="font-size: 13px;"
-                                                                                (click)="ExpandNode(node)">
-                                                                                <div
-                                                                                    class="cu-task-row-subtasks-count__item ng-star-inserted">
-                                                                                    <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open text-center text-white bg-success"
-                                                                                        style="min-width:20px;padding:0 5px;">
-                                                                                        {{node.DataChildren.length}}
+                                                                            <span class=" cu-task-row-main__link-text-inner position-relative">
+                                                                                <span class=" -hover"
+                                                                                    (click)="ViewDetai(node)">{{node.title}}</span>
+    
+                                                                                <ng-container
+                                                                                    *ngIf="node.DataChildren.length > 0">
+                                                                                    <div class="cu-task-row-subtasks-count url ng-star-inserted"
+                                                                                        style="font-size: 15px;">
+                                                                                        <div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
+                                                                                            (click)="ExpandNode(node)">
+                                                                                            <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
+                                                                                                style="min-width:20px;padding:0 5px;    display: flex;
+                                                                                                align-items: center;">
+                                                                                                <img style="height: 15px;"
+                                                                                                    src="https://img.icons8.com/ios/50/000000/parallel-tasks.png" />
+                                                                                                &nbsp;
+                                                                                                <span>{{node.DataChildren.length}}</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="add-new-task -hover" *ngIf="CheckRoles(15)" (click)="AddnewTask(node.id_row);node.isExpanded=true"
+                                                                                        matTooltip="{{ 'work.addsubtask' | translate }}">
+                                                                                            <i class="fas fa-plus"></i>
+                                                                                        </div>
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </ng-container>
-
-                                                                        <!-- <mat-chip-list
-                                                                            style="display: inline-block; margin-right: 5px;"
-                                                                            *ngFor="let tag of node.Tags"
-                                                                            class="mh-20px" aria-label="Fish selection">
-                                                                            <mat-chip
-                                                                                [ngStyle]="{'backgroundColor': tag.color}">
-                                                                                <span
-                                                                                    class="tags-icon text-white">{{tag.title}}
-                                                                                    <i class="fas fa-times url"
-                                                                                        (click)="RemoveTag(tag,node)"></i></span>
-                                                                            </mat-chip>
-                                                                        </mat-chip-list> -->
+                                                                                </ng-container>
+                                                                                <span class="action-inline text-muted" >
+                                                                                    <i class="fas fa-tags"
+                                                                                        matTooltip="{{ 'work.chinhsuatag' | translate }}"
+                                                                                        [matMenuTriggerFor]="tag"></i>
+                                                                                    <i class="fas fa-pencil-alt"
+                                                                                        (click)="editTitle(node.id_row)"
+                                                                                        matTooltip="{{ 'work.chinhsuatencongviec' | translate }}"></i>
+                                                                                    <!-- <i class="fas fa-tasks"
+                                                                                        *ngIf="!(node.id_parent>0)"
+                                                                                        (click)="AddnewTask(node.id_row);node.isExpanded=true"
+                                                                                        matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
+                                                                                    <mat-menu #tag="matMenu">
+                                                                                        <kt-choose-milestone-and-tags
+                                                                                            [options]="list_Tag"
+                                                                                            [project_team]="project_team"
+                                                                                            [id_project_Team]="ID_Project"
+                                                                                            [Id]="node.id_row" [Id_key]="9"
+                                                                                            [Loai]="'Tags'"
+                                                                                            (ItemSelected)="ReloadData($event)">
+                                                                                        </kt-choose-milestone-and-tags>
+                                                                                    </mat-menu>
+                                                                                </span>
+                                                                            </span>
 
                                                                         <ng-container *ngFor="let tag of node.Tags">
                                                                             <kt-cu-tag [node]="node" [tag]="tag"
@@ -803,16 +797,35 @@
                                                                                             </div>
                                                                                         </mat-menu>
                                                                                     </ng-template>
-                                                                                    <ng-container
-                                                                                        *ngIf="item.fieldname != 'comments';else comments">
-                                                                                        <ng-container
-                                                                                            *ngIf="item.fieldname=='createdby'">
-                                                                                            <kt-avatar-user
-                                                                                                [image]="Nguoitaocv(node[item.fieldname]).image"
-                                                                                                size="27"
-                                                                                                [name]="Nguoitaocv(node[item.fieldname]).hoten">
-                                                                                            </kt-avatar-user>
-                                                                                        </ng-container>
+                                                                                    <ng-container *ngIf="item.fieldname != 'comments';else comments">
+																						<ng-container
+																							*ngIf="item.fieldname=='createdby'">
+																							<kt-avatar-user
+																								[image]="Nguoitaocv(node[item.fieldname]).image"
+																								size="25"
+																								[name]="Nguoitaocv(node[item.fieldname]).hoten">
+																							</kt-avatar-user>
+																						</ng-container>
+																						<ng-container *ngIf="item.fieldname=='milestone' && CheckRoles(18)">
+																							<div class="item-field">
+																								&nbsp;<i
+																									class="fas fa-cog -hover"
+																									style="font-size: 18px;"
+																									[matMenuTriggerFor]="milestone"></i>&nbsp;
+																								<mat-menu
+																									#milestone="matMenu">
+																									<kt-choose-milestone-and-tags
+																										[options]="list_milestone"
+																										[project_team]="project_team"
+																										[id_project_Team]="ID_Project"
+																										[Id]="node.id_row"
+																										[Id_key]="9"
+																										[Loai]="'id_milestone'"
+																										(ItemSelected)="ReloadData($event)">
+																									</kt-choose-milestone-and-tags>
+																								</mat-menu>
+																							</div>
+																						</ng-container>
                                                                                         <ng-container
                                                                                             *ngIf="item.fieldname!='createdby'">
                                                                                             <div class="item-field">
@@ -820,7 +833,7 @@
                                                                                                     class="hide-more-text">{{node[item.fieldname]}}</span>
                                                                                             </div>
                                                                                         </ng-container>
-                                                                                    </ng-container>
+																					</ng-container>
                                                                                 </ng-container>
                                                                             </ng-container>
                                                                         </ng-container>
@@ -841,7 +854,7 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'date'">
                                                                         <div
-                                                                            class="w-100 h-100  border-hover padding-new-field  item-field">
+                                                                            class="w-100 h-100  border-hover padding-new-field item-field"> 
                                                                             <div class="url hide-more-text "
                                                                                 (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)"
                                                                                 *ngIf="editmail != (node.id_row+item.id_row.toString())">

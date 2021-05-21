@@ -2300,7 +2300,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
         {
             SqlConditions cond = new SqlConditions();
             cond.Add("id_projectteam", id_projectteam);
-            string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsTodo = 1";
+            string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsTodo = 1  and Disabled = 0";
             long danglam = 0;
             if (cnn.ExecuteScalar(sql, cond) != null && cnn.LastError is null)
             {
@@ -2312,7 +2312,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
         {
             SqlConditions cond = new SqlConditions();
             cond.Add("id_projectteam", id_projectteam);
-            string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1";
+            string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1  and Disabled = 0";
             long hoanthanh = 0;
             if (cnn.ExecuteScalar(sql, cond) != null && cnn.LastError is null)
             {
@@ -2324,7 +2324,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
         {
             SqlConditions cond = new SqlConditions();
             cond.Add("id_projectteam", id_projectteam);
-            string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsDeadline = 1";
+            string sql = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsDeadline = 1  and Disabled = 0";
             long deadline = 0;
             if (cnn.ExecuteScalar(sql, cond) != null && cnn.LastError is null)
             {

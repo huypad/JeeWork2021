@@ -482,10 +482,14 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 			this._Services.DeleteProject(_item.RowID).subscribe(res => {
 				if (res && res.status === 1) {
 					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
-					// this.ngOnInit();
-					location.reload();
-					// let _backUrl = `wework/projects`;
-					// this.router.navigateByUrl(_backUrl);
+					if(ID_Project==this.router.url.split('/')[2]){
+						this.router.navigate(['/wework/projects']).then( () => {
+							window.location.reload();
+						})
+					}
+					else{
+						location.reload();
+					}
 				}
 				else {
 					this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
@@ -560,13 +564,10 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 			this._deptServices.Delete_Dept(item.id).subscribe(res => {
 				if (res && res.status === 1) {
 					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
-					// let _backUrl = `depts`;
-					// this.router.navigateByUrl(_backUrl);
-					this.ngOnInit();
+					location.reload();
 				}
 				else {
 					this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
-					// this.ngOnInit();
 				}
 
 			});

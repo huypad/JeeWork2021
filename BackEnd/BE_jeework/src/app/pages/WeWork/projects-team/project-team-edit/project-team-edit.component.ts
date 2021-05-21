@@ -53,6 +53,7 @@ export class ProjectTeamEditComponent implements OnInit {
 	_Follower: string = '';
 	_Assign: string = '';
 	accordionclose: boolean = true;
+	isChangeDept = true;
 	@ViewChild(MatAccordion, { static: true }) accordion: MatAccordion;
 	//icon
 	icon: any = {};
@@ -80,6 +81,11 @@ export class ProjectTeamEditComponent implements OnInit {
 		else {
 			this.tendapb = this.translate.instant("projects.phongban") + '';
 			this.mota = this.translate.instant("projects.motangangonvephongban") + '';
+		}
+		if(+this.item.id_department > 0){
+			this.isChangeDept = false;
+		}else{
+			this.isChangeDept = true;
 		}
 		const filter: any = {};
 		// filter.key = 'cocauid';

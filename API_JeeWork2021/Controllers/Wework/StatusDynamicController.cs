@@ -254,6 +254,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     //DataTable dt_status_old = cnn.CreateDataTable("select * from we_status where Disabled = 1 and id_project_team =" + data.id_project_team + "");
                     #endregion
+                    #region update lại template mới
+                    string sql_update_template = $@"update we_project_team set id_template = {data.TemplateID_New} , UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + data.id_project_team;
+                    if (cnn.ExecuteNonQuery(sql_update_template) < 0)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                    }
+                    #endregion
                     #region Insert những status của template mới
                     sqlq_insert = $@"insert into we_status (StatusName, description, Disabled, id_project_team, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference, CreatedBy, CreatedDate)
                         select StatusName, description, Disabled, " + data.id_project_team + ", Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsTodo, Id_row," + loginData.UserID + ", getdate() from we_template_status where Disabled = 0 and TemplateID = " + data.TemplateID_New + "";
@@ -269,8 +277,10 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     if (data.IsMapAll)
                     {
+                        string sql_fl = "select iIf(Follower is not null,Follower,0) from we_status where Disabled = 0 and IsToDo = 1 and id_project_team = " + data.id_project_team;
+                        int fl = int.Parse(cnn.ExecuteScalar(sql_fl).ToString());
                         // map người follow công việc tương ứng
-                        sqlq_insert = "update we_status set Follower = (select Follower from we_status where Disabled = 1 and IsToDo = 1 and id_project_team = " + data.id_project_team + ") " +
+                        sqlq_insert = $"update we_status set Follower = {(fl > 0 ? fl.ToString() : " null ")} " +
                             "where id_project_team = " + data.id_project_team + " and disabled = 0";
                         sqlq_insert += ";update we_work set status = " + status_todo + " where id_project_team = " + data.id_project_team;
                         rs = cnn.ExecuteNonQuery(sqlq_insert);

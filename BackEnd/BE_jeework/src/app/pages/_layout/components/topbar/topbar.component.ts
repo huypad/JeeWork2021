@@ -1,6 +1,6 @@
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { LayoutConfigService } from './../../../../_metronic/jeework_old/core/_base/layout/services/layout-config.service';
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LayoutService } from '../../../../_metronic/core';
 import { AuthService } from '../../../../modules/auth/_services/auth.service';
@@ -14,6 +14,7 @@ import KTLayoutQuickUser from '../../../../../assets/js/layout/extended/quick-us
 import KTLayoutHeaderTopbar from '../../../../../assets/js/layout/base/header-topbar';
 import { KTUtil } from '../../../../../assets/js/components/util';
 import objectPath from 'object-path';
+import { SocketioService } from 'src/app/modules/auth/_services/socketio.service';
 
 @Component({
   selector: 'app-topbar',
@@ -35,13 +36,15 @@ export class TopbarComponent implements OnInit, AfterViewInit {
   extrasLanguagesDisplay: boolean;
   extrasUserDisplay: boolean;
   extrasUserLayout: 'offcanvas' | 'dropdown';
-
+  numberInfo: number;
   desktopHeaderDisplay: boolean;
 
   constructor(
     private layout: LayoutService, private auth: AuthService,
     private layoutConfigService: LayoutConfigService,
     private tokenStorage: TokenStorage,
+    private changeDetectorRefs: ChangeDetectorRef,
+    private socketService: SocketioService,
     ) {
     this.user$ = this.auth.currentUserSubject.asObservable();
   }
@@ -88,7 +91,20 @@ export class TopbarComponent implements OnInit, AfterViewInit {
 			this.UserData = res;
 		})
   }
+  updateNumberNoti(value) {
+    if(value == true) {
+      this.getNotiUnread() 
+    }
+  }
 
+getNotiUnread() {
+	   this.socketService.getNotificationList('unread').subscribe( res => {
+      let dem = 0;
+      res.forEach(x => dem++);
+      this.numberInfo = dem;
+      this.changeDetectorRefs.detectChanges();
+    })
+  }
   ngAfterViewInit(): void {
     KTUtil.ready(() => {
       // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.

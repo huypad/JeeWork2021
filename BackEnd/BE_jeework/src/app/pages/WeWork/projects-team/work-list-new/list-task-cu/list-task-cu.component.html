@@ -206,35 +206,43 @@
                                                                             {{getTasklocation(node.id_project_team)}}
                                                                         </p>
                                                                         <span
-                                                                            class=" cu-task-row-main__link-text-inner -hover position-relative hover-show-action">
-                                                                            <span
+                                                                            class=" cu-task-row-main__link-text-inner position-relative hover-show-action url">
+                                                                            <span class="-hover"
                                                                                 (click)="ViewDetai(node)">{{node.title}}</span>
-                                                                            <span class="action-inline text-muted" 
+
+																				<ng-container *ngIf="node.Childs.length > 0">
+																					<div class="cu-task-row-subtasks-count url"
+																						style="font-size: 13px;">
+																						<div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
+																							(click)="ExpandNode(node)">
+																							<div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
+																								style="min-width:20px;padding:0 5px;    display: flex;
+																								align-items: center;">
+																								<img style="height: 15px;"
+																								src="https://img.icons8.com/ios/50/000000/parallel-tasks.png" />
+																								&nbsp;
+																								<span>{{node.Childs.length}}</span>
+																							</div>
+																						</div>
+																						<div class="add-new-task -hover" *ngIf="CheckRoles(15,node.id_project_team)" (click)="AddnewTask(node.id_row);node.isExpanded=true"
+																						matTooltip="{{ 'work.addsubtask' | translate }}">
+																							<i class="fas fa-plus"></i>
+																						</div>
+																					</div>
+																				</ng-container>
+                                                                            <span class="action-inline text-muted"
                                                                                 *ngIf="CheckRoles(15,node.id_project_team)">
                                                                                 <i class="fas fa-pencil-alt"
                                                                                     (click)="editTitle(node.id_row)"
                                                                                     matTooltip="{{ 'work.renametask' | translate }}"></i>
-                                                                                <i class="fas fa-tasks"
+                                                                                <!-- <i class="fas fa-tasks"
                                                                                     (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i>
+                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
                                                                                 <i class="fas fa-tags"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
                                                                                     [matMenuTriggerFor]="selecedtag"></i>
                                                                             </span>
                                                                         </span>
-                                                                        <ng-container *ngIf="node.Childs.length > 0">
-                                                                            <div class="cu-task-row-subtasks-count ng-star-inserted"
-                                                                                style="font-size: 13px;"
-                                                                                (click)="ExpandNode(node)">
-                                                                                <div
-                                                                                    class="cu-task-row-subtasks-count__item ng-star-inserted">
-                                                                                    <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open text-center text-white bg-success"
-                                                                                        style="min-width:20px;padding:0 5px;">
-                                                                                        {{node.Childs.length}}
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </ng-container> 
 
                                                                         <ng-container *ngFor="let tag of node.Tags">
                                                                             <kt-cu-tag [node]="node" [tag]="tag"
@@ -303,12 +311,10 @@
                                                         <ng-template #status>
                                                             <ng-container
                                                                 *ngIf="item.type == 'datetime';else nosetdatetime">
-                                                                <ng-container *ngIf="item.fieldname == 'createddate'">
-                                                                    <div class="item-field">
-                                                                        <span class="hide-more-text" matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}" > {{node[item.fieldname] | date:'dd/MM/yyyy'}} </span>
-                                                                    </div>
+                                                                <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
+                                                                    <span class="hide-more-text item-field" matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}" > {{node[item.fieldname] | date:'dd/MM/yyyy'}} </span>
                                                                 </ng-container>
-                                                                <ng-container *ngIf="item.fieldname != 'createddate'">
+                                                                <ng-template #selectedDate>
                                                                     <div (click)="dt1.open()" class="item-field"
                                                                         *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team)">
                                                                         <span
@@ -321,7 +327,7 @@
                                                                                 style="font-size: 18px;"></i>
                                                                         </ng-template>
                                                                     </div>
-                                                                    <div class="item-field url-disabled"
+                                                                    <div class="item-field"
                                                                         *ngIf="!CheckRoleskeypermit(item.fieldname,node.id_project_team)">
                                                                         <span
                                                                             class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text" matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
@@ -340,7 +346,7 @@
                                                                         class="date-picker position-picker"
                                                                         [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
                                                                     <owl-date-time #dt1></owl-date-time>
-                                                                </ng-container>
+																</ng-template>
                                                             </ng-container>
                                                             <ng-template #nosetdatetime>
                                                                 <div class="item-field">

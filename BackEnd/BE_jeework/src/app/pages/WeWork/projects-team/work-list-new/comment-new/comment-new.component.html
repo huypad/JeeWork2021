@@ -112,7 +112,8 @@
                                     </div>
                                 </ng-container>
                                 <div class="cu-comment__reply-toggle cu-comment__reply-toggle_centered ng-tns-c220-40 ng-star-inserted" (click)="isReply=!isReply">
-                                    <div class="cu-comment__reply-toggle-text cu-comment__reply-toggle-text_collapse">{{isReply?'topic.collapse':'topic.reply ('+quyen.Children.length+')' | translate}} </div>
+                                    <div class="cu-comment__reply-toggle-text cu-comment__reply-toggle-text_collapse" *ngIf="isReply">{{'topic.collapse' | translate}} </div>
+                                    <div class="cu-comment__reply-toggle-text cu-comment__reply-toggle-text_collapse" *ngIf="!isReply">{{'topic.reply' | translate}} {{ quyen.Children.length>0?('('+quyen.Children.length+')'):'' }}</div>
                                 </div>
                             </div>
                         </div>

@@ -13,8 +13,8 @@
                                 <h5 class="mg-0 url -hover" style="padding-top: 5px; color: #48465b;"
                                     [matMenuTriggerFor]="menu">{{Department}}</h5>
                                 <mat-menu #menu="matMenu">
-                                    <button (click)="Add()" mat-menu-item>Chỉnh sửa</button>
-                                    <button (click)="Delete()" mat-menu-item>Xóa</button>
+                                    <button (click)="Add()" mat-menu-item>{{'department.chinhsua' | translate}}</button>
+                                    <button (click)="Delete()" mat-menu-item>{{'department.xoa' | translate}}</button>
                                 </mat-menu>
                             </ng-container>
                             <ng-container ktPortletTools>
@@ -30,7 +30,7 @@
                                     [routerLink]="['./report/', this.ID_Department]" (click)="click('report')"
                                     [active]="activeLink == 'report'">{{'GeneralKey.report' | translate}}</a>
                             </nav>
-                            <button *ngIf="activeLink == 'projects'" (click)="AddNewProject()"
+                            <!-- <button *ngIf="activeLink == 'projects'" (click)="AddNewProject()"
                                 class="btn btn-outline-success"
                                 style="border-radius:0px;border-top-left-radius:20px;border-bottom-left-radius:20px;position: absolute;top: 65px;right: 10px;z-index: 10;"
                                 matTooltip="{{ 'projects.themmoiproject' | translate }}" type="button">
@@ -41,7 +41,7 @@
                                 style="border-radius:0px;border-top-left-radius:20px;border-bottom-left-radius:20px;position: absolute;top: 65px;right: 10px;z-index: 10;"
                                 matTooltip="{{ ' department.createmilestone' | translate }}" type="button">
                                 <span translate="department.createmilestone"></span>
-                            </button>
+                            </button> -->
                             <router-outlet></router-outlet>
                         </ng-container>
                     </kt-portlet>

@@ -27,12 +27,26 @@
                             <perfect-scrollbar class="kt-scrollable kt-scroller"
                                 style="height: 150px; padding-left: 25px; padding-right: 25px;">
                                 <div class="row row-class">
-                                    <div class="col-md-12 ngay-css" [ngStyle]="{'font-weight': buildStyle('')}">
-                                        <a [routerLink]="['./', list.id_row,'milestones']" mat-icon-button color="primary"
+                                    <div class="col-md-12 ngay-css text-2-line" style="padding-right: 40px;padding-top: 7px;
+										padding-bottom: 7px;">
+                                        <a [routerLink]="['./', list.id_row]" color="primary" matTooltipPosition="above"
                                             matTooltip="{{ 'department.xemchitietduan' | translate }}">
-                                            <span class="title">{{list.title}}</span>
-                                        </a>&nbsp;
+                                            <span class="title-department">{{list.title}}</span>
+                                        </a>
                                     </div>
+									<ng-container *ngIf="commonService.CheckRole_WeWork(3402).length>0">
+										<button [matMenuTriggerFor]="menu" class="action-dept" mat-icon-button>
+											<mat-icon>more_vert</mat-icon>
+										</button>
+										<mat-menu #menu="matMenu">
+											<button (click)="Add(list.id_row)" mat-menu-item>
+												<span translate="department.chinhsua"></span>
+											</button>
+											<button (click)="Delete(list.id_row)" mat-menu-item>
+												<span translate="department.xoa"></span>
+											</button>
+										</mat-menu>
+									</ng-container>
                                     <div class="col-md-12">
                                         <div style="font-size: 10pt; color: black; font-style: italic;"><span>
                                                 {{'workprocess.taoboi'|translate}} @{{list.NguoiTao}} {{'workprocess.luc'|translate}} {{list.CreatedDate}}</span> &nbsp;

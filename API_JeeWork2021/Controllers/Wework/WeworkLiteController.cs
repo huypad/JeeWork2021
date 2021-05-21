@@ -17,6 +17,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using RestSharp;
 using Newtonsoft.Json;
+using API_JeeWork2021.Classes;
+using Microsoft.Extensions.Configuration;
+using DPSinfra.Kafka;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -28,14 +32,22 @@ namespace JeeWork_Core2021.Controllers.Wework
     /// </summary>
     public class WeworkLiteController : ControllerBase
     {
+        private static Notification notify;
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConfiguration _iconfig;
+        private INotifier _notifier;
+        private IProducer _producer;
 
-        public WeworkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public WeworkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration)
         {
+            notify = new Notification(notifier);
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            _producer = producer;
+            _iconfig = Configuration;
+
         }
         /// <summary>
         /// DS department theo customerID
@@ -92,6 +104,45 @@ namespace JeeWork_Core2021.Controllers.Wework
 join we_department d on d.id_row = p.id_department
 join we_project_team_user u on u.id_project_team = p.id_row
  where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " order by title";
+                    DataTable dt = cnn.CreateDataTable(sql);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   isproject = r["is_project"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+            }
+        }
+
+        /// <summary>
+        /// DS dự án theo user tham gia (quản lý hoặc thành viên)
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_project_team_bydepartment")]
+        [HttpGet]
+        public object Lite_Project_Team_ByDepartment(string id = "")
+        {
+            
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                {
+                    string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
+join we_department d on d.id_row = p.id_department
+join we_project_team_user u on u.id_project_team = p.id_row
+ where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and d.id_row= "+id+" and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
@@ -1130,6 +1181,29 @@ where u.id_user in ({listID})";
                     sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
                         "from we_template_customer " +
                         "where (where) order by Title";
+                    //Check CustommerID có template chưa nếu chưa thì thêm vào
+                    #region
+                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID).ToString());
+                    if (soluong == 0)
+                    {
+                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list");
+                        Hashtable val = new Hashtable();
+                        foreach (DataRow item in dt_listSTT.Rows)
+                        {
+                            val["Title"] = item["Title"];
+                            val["Description"] = item["Description"];
+                            val["TemplateID"] = item["id_row"];
+                            val["CustomerID"] = loginData.CustomerID;
+                            val["CreatedDate"] = DateTime.Now;
+                            val["CreatedBy"] = loginData.UserID;
+                            if (cnn.Insert(val, "we_template_customer") != 1)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                            }
+                        }
+                    }
+                    #endregion
                     DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
                     if (cnn.LastError != null || dt_template == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
@@ -1493,6 +1567,44 @@ where u.id_user in ({listID})";
                 val["newvalue"] = _new;
             return cnn.Insert(val, "we_log") == 1;
         }
+        /// <summary>
+        /// test kafka
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("testkafka")]
+        public string testkafka()
+        {
+            string topic = _iconfig.GetValue<string>("AsyncService:topicProduceByAccount");
+            _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
+            return "Oke";
+        }
+        /// <summary>
+        /// tesst notify
+        /// </summary>
+        /// <returns></returns>
+        //[HttpGet]
+        //[Route("testNotify")]
+        //public string testNotify(string title)
+        //{
+        //    notify.notification("huypad", title);
+        //    return "Oke";
+        //}
+
+        public static bool SendNotify(string sender, string receivers,NotifyModel notify_model)
+        {
+            NotificationMess noti_mess = new NotificationMess();
+            noti_mess.AppCode = notify_model.AppCode;
+            noti_mess.Content = notify_model.TitleLanguageKey;
+            noti_mess.Icon = "";
+            noti_mess.Img= "";
+            noti_mess.Link = notify_model.To_Link_WebApp;
+            string html = "<h1>Gửi nội dung thông báo</h1>";
+            notify.notification(sender, receivers, notify_model.TitleLanguageKey,html, noti_mess);
+            return true;
+        }
+
+
         /// <summary>
         /// Notify mail
         /// </summary>
@@ -2204,10 +2316,6 @@ where Disabled = 0";
         /// <returns></returns>
         public static string getListDepartment_GetData(UserJWT info, DpsConnection cnn, IHeaderDictionary pHeader, JeeWorkConfig config)
         {
-            bool Visible = Common.CheckRoleByToken(info.Token, "3400", config);
-            SqlConditions conds = new SqlConditions();
-            conds.Add("id_user", info.UserID);
-
             #region Lấy dữ liệu account từ JeeAccount
             List<AccUsernameModel> DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, config);
             if (DataAccount == null)
@@ -2220,6 +2328,11 @@ where Disabled = 0";
             if (error != "")
                 return "";
             #endregion
+
+            bool Visible = Common.CheckRoleByToken(info.Token, "3400", config,DataAccount);
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_user", info.UserID);
+
 
             #region Trả dữ liệu về backend để hiển thị lên giao diện
             string sqlq = @$"select de.*, '' as NguoiTao,'' as TenNguoiTao, '' as NguoiSua,'' as TenNguoiSua 

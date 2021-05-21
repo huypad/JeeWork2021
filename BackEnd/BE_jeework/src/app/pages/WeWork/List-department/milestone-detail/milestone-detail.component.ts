@@ -1,3 +1,5 @@
+import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
+import { WorkListNewDetailComponent } from './../../projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
 import { DynamicFormService } from './../../../dynamic-form/dynamic-form.service';
 import { WeWorkService } from './../../services/wework.services';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
@@ -69,8 +71,8 @@ export class MilestoneDetailComponent {
 	];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	constructor(public _deptServices: ListDepartmentService,
-		private danhMucService: DanhMucChungService,
-		public WeWorkService: WeWorkService,
+		private ProjectsTeamService: ProjectsTeamService,
+		private WeWorkService: WeWorkService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
 		private layoutUtilsService: LayoutUtilsService,
@@ -87,7 +89,6 @@ export class MilestoneDetailComponent {
 			this.ID_milestone = +params.id;
 		});
 		this.LoadMilestone_Detail();
-		this.loadData();
 	}
 	getColorProgressbar(status: number = 0): string {
 		if (status < 50)
@@ -103,7 +104,8 @@ export class MilestoneDetailComponent {
 	person_in_charge: any = {};
 	LoadMilestone_Detail() {
 		this._deptServices.Get_MilestoneDetail(this.ID_milestone).subscribe(res => {
-			if (res.status == 1) {
+			if (res && res.status == 1) {
+				console.log(res.data)
 				this.item = res.data;
 				this.CountByMucTieu = this.item.CountByMucTieu;
 				this.Count = this.item.Count;
@@ -133,10 +135,6 @@ export class MilestoneDetailComponent {
 			}
 		})
 	}
-
-	loadData(){
-
-	};
 
 	loadDataList(page: boolean = false) {
 		const queryParams = new QueryParamsModelNew(
@@ -228,6 +226,24 @@ export class MilestoneDetailComponent {
 		chuoicheck = chuoicheck.substring(1);
 		return chuoicheck;
 	}
+
+	ViewDetail(id_row){
+		this.ProjectsTeamService.WorkDetail(id_row).subscribe(res => {
+			if (res && res.status == 1) {
+				const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+					width: '90vw',
+					height: '90vh',
+					data: res.data,
+				  });
+
+				  dialogRef.afterClosed().subscribe(result => {
+					  this.ngOnInit();
+				  });
+			}
+			else this.layoutUtilsService.showError(res.error.message)
+		});
+	}
+
 	CheckedAll() {
 		this.listStatus = [
 			{ ID: 'is_danglam', Title: this.translate.instant('projects.dangthuchien'), Checked: false },
@@ -241,16 +257,15 @@ export class MilestoneDetailComponent {
 	goBack() {
 		window.history.back();
 	}
-	getItemCssClassByLocked(status: boolean): string {
-		switch (status) {
-			case true:
-				return 'success';
+	// get quan trọng khẩn cấp: 1:quan trọng khẩn cấp,2:quan trọng,3 khẩn cấp, 4 bình thường
+	getItemCssClassByLocked(status: number): string {
+		if(status < 2 && status > 0){
+			return 'success';
 		}
 	}
-	getItemLockedString(condition: boolean): string {
-		switch (condition) {
-			case true:
-				return this.translate.instant('filter.quantrong');
+	getItemLockedString(condition: number): string {
+		if(condition < 2 && condition > 0){
+			return this.translate.instant('filter.quantrong');
 		}
 	}
 	getItemCssClassByOverdue(status: number = 0): string {
@@ -267,16 +282,21 @@ export class MilestoneDetailComponent {
 		}
 	}
 
-	getItemCssClassByurgent(status: boolean): string {
+
+	getItemCssClassByurgent(status: number): string {
 
 		switch (status) {
-			case true:
+			case 3:
+				return 'brand';
+			case 1:
 				return 'brand';
 		}
 	}
-	getItemurgent(condition: boolean): string {
+	getItemurgent(condition: number): string {
 		switch (condition) {
-			case true:
+			case 3:
+				return this.translate.instant('filter.khancap');
+			case 1:
 				return this.translate.instant('filter.khancap');
 		}
 	}
@@ -297,7 +317,7 @@ export class MilestoneDetailComponent {
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
 		const dialogRef = this.dialog.open(milestoneDetailEditComponent, { data: { _item } });
-		
+
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
 				return;
@@ -310,7 +330,7 @@ export class MilestoneDetailComponent {
 		});
 	}
 
-	public options :any  = {
+	options = {
 		cutoutPercentage: 80,
 		tooltips: { enabled: false },
 		hover: { mode: null },

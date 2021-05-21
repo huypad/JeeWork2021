@@ -23,6 +23,7 @@ namespace JeeWork_Core2021.Models
         }
         public string LinkBackend { get; set; }
         public string SecretKey { get; set; }
+
     }
 
     public class TimerAutoRunConfig

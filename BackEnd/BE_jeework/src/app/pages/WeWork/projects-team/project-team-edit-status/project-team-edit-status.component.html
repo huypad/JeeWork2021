@@ -87,7 +87,7 @@
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                                 [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                            <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
     
                                             </div>
                                             <div class="input">
@@ -149,7 +149,7 @@
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                                 [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                            <div class="box-color"(click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
     
                                             </div>
                                             <div class="input">
@@ -192,7 +192,7 @@
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                                 [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                            <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
     
                                             </div>
                                             <div class="input">

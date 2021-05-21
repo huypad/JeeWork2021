@@ -6,12 +6,31 @@
 </ng-container> -->
 
 
+<ng-container *ngIf="extrasNotificationsDisplay">
+	<ng-container *ngIf="extrasNotificationsLayout === 'dropdown'">
+	  <!--begin::Notifications-->
+	  <div class="dropdown" ngbDropdown placement="bottom">
+		<div class="topbar-item" data-toggle="dropdown" data-offset="10px,0px" ngbDropdownToggle>
+		  <div class="btn btn-icon btn-clean btn-dropdown btn-lg mr-1 pulse pulse-primary">
+			<i class="flaticon2-bell-2" style="color: #3699ff;"></i>
+			<span class="badge">{{numberInfo}}</span>
+			<span class="pulse-ring"></span>
+  
+		  </div>
+		</div>
+		<div ngbDropdownMenu class="dropdown-menu p-0 m-0 dropdown-menu-anim-up dropdown-menu-lg width">
+		  <form>
+			<app-notifications-dropdown-inner (loadUnreadList)="updateNumberNoti($event)"></app-notifications-dropdown-inner>
+		  </form>
+		</div>
+	  </div>
+	  <!--end::Notifications-->
+	</ng-container>
+  </ng-container>
 
 
 <div class="kt-header__topbar" style="padding-top: 5px;">
-	<kt-notification-general style="margin-top: 10px;" [type]="'brand'"  [dot]="true" [pulse]="true" [iconType]="'success'" [skin]="'light'" [icon]="'flaticon-alert'" [useSVG]="false"></kt-notification-general>
-	&nbsp;
-	<!-- <kt-user-profile></kt-user-profile> -->
+
 	<ng-container *ngIf="extrasUserDisplay">
 		<ng-container *ngIf="extrasUserLayout === 'offcanvas'">
 			<ng-container>

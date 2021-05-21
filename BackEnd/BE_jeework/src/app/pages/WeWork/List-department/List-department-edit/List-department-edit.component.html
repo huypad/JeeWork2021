@@ -14,33 +14,62 @@
                     </mat-form-field>
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                    <section class="example-section">
-                        <mat-checkbox class="example-margin" [(ngModel)]="IsDataStaff_HR"  [ngModelOptions]="{standalone: true}">Lấy dữ liệu từ phần mềm nhân sự</mat-checkbox>
-                      </section>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                    <m-dropdown-tree [data]="datatree" [DropdownTitle]="title" (SelectedItemTree)="GetValueNode($event)"
-                        formControlName="dept_name">
-                    </m-dropdown-tree>
-                </div>
-            </div> -->
-            <!-- #@name -->
-            <div class="row">
-                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                    <input matInput placeholder="{{ 'department.chusohuu' | translate }}" id="InputUser" autocomplete="off"
-                    type="text" value="{{CommentTemp}}" [popover]="myPopoverC" [popoverOnHover]="false"
-                        (input)="onSearchChange($event)" (click)="click($event)">
-                    <span #hiddenText
-                        style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{CommentTemp}}</span>
-                    <popover-content #myPopoverC placement="bottom-left" [closeOnClickOutside]="true">
-                        <kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
-                    </popover-content>
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-md-12 row kt--margin-bottom-10-mobile">
+					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{ 'projects.members' | translate }} : </span>
+					<div class="row" style="flex-grow: 1;">
+						<ng-container *ngFor="let us of this.selectedUser;let index = index">
+							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+								style="justify-content: flex-end;">
+								<ng-container>
+									<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
+									</kt-avatar-user>
+								</ng-container>
+							</div>
+						</ng-container>
+						<ng-container *ngIf="this.selectedUser && this.selectedUser.length > 3">
+
+							<div class="m--img-rounded m--marginless m--img-centered background"
+								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
+								<div class="user w-100 h-100"
+									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+									[ngStyle]="{'font-size.px': 16}">
+									+{{this.selectedUser.length-3}}
+								</div>
+							</div>
+							<mat-menu #menu1="matMenu">
+								<div *ngFor="let user of this.selectedUser;let index = index"
+									style="justify-content: flex-end;">
+									<ng-container *ngIf="index > 2">
+										<div class="position-relative">
+											<i class="fas fa-times scale-hover-01 url"
+												style="position: absolute;top:0;right:0"
+												(click)="ItemselectedUser(user)"></i>
+											<div class="row">
+												<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+													[showFull]="true" [info]="'@' + user.username">
+												</kt-avatar-user>
+											</div>
+										</div>
+									</ng-container>
+								</div>
+							</mat-menu>
+						</ng-container>
+						<div matTooltip="Chọn người" matTooltipPosition="above" class="url user"
+							[matMenuTriggerFor]="member"
+							style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;width: 29px;height: 29px; ">
+							<mat-icon style="font-size: 16px!important;">person_add</mat-icon>
+						</div>
+					</div>
+					<mat-menu #member="matMenu">
+                        <div class="page-work-detail">
+                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                                (ItemSelected)="ItemselectedUser($event)">
+                            </kt-choose-users>
+                        </div>
+                    </mat-menu>
+				</div>
+			</div>
         </div>
     </form>
     <div class="kt-portlet__foot">

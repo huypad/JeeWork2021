@@ -1,3 +1,4 @@
+import { SubheaderService } from './../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { DynamicFormService } from './../../../dynamic-form/dynamic-form.service';
 import { PartialsModule } from './../../../../_metronic/jeework_old/partials/partials.module';
 import { AvatarModule } from 'ngx-avatar';
@@ -63,7 +64,8 @@ const routes: Routes = [
 	providers: [
 		ListDepartmentService,
 		ReportService,
-		DynamicFormService 
+		DynamicFormService,
+		SubheaderService
 	],
 	entryComponents: [
 		DepartmentTabComponent,

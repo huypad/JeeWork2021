@@ -144,8 +144,8 @@ export class FunctionsGroupListComponent implements OnInit {
 		this.dataSource.LoadListFunctions(queryParams);
 		this.dataSource.entitySubject.subscribe(res => {
 			if (res.length > 0) {
+				this.productsResult = res;
 				this.disthEdit = this.disthRead = false;
-
 				res.map((item, index) => {
 					if (item.IsEdit_Enable) {
 						this.disthEdit = true;
@@ -197,6 +197,7 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle(val: any) {
+		
 		if (val.checked) {
 			this.productsResult.forEach(row => {
 				if (row.IsRead_Enable == true && row.IsReadPermit == true) {
@@ -224,6 +225,7 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle1(val: any) {
+		
 		if (val.checked) {
 			this.productsResult.forEach(row => {
 				if (row.IsEdit_Enable == true) {
@@ -259,6 +261,7 @@ export class FunctionsGroupListComponent implements OnInit {
 	}
 	//=================================================================================================
 	changeChinhSua(val: any, row: any) {
+		
 		this.productsResult.map((item, index) => {
 			if (item.Id_Quyen == row.Id_Quyen) {
 				item.IsEdit = val.checked;
@@ -266,6 +269,7 @@ export class FunctionsGroupListComponent implements OnInit {
 		});
 	}
 	changeChiXem(val: any, row: any) {
+		
 		this.productsResult.map((item, index) => {
 			if (item.Id_Quyen == row.Id_Quyen) {
 				item.IsRead = val.checked;
@@ -273,6 +277,7 @@ export class FunctionsGroupListComponent implements OnInit {
 		});
 	}
 	luuQuyen(withBack: boolean = true) {
+		
 		this.listQuyen = [];
 		this.productsResult.forEach(row => {
 			const q = new QuyenAddData();

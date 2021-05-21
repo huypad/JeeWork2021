@@ -92,6 +92,7 @@ export class WorkListNewDetailComponent implements OnInit {
 	valueFocus = "";
 	customStyle = [];
 	UserID = 0;
+	list_milestone :any = [];
 	showChucnang = false;
 	constructor(private _service: WorkService,
 		private el: ElementRef,
@@ -212,6 +213,14 @@ export class WorkListNewDetailComponent implements OnInit {
 			if (res)
 				this.list_role = res.data;
 
+		});
+
+		this.weworkService.lite_milestone(this.Id_project_team).subscribe(res => {
+			this.changeDetectorRefs.detectChanges();
+			if (res && res.status === 1) {
+				this.list_milestone = res.data;
+				this.changeDetectorRefs.detectChanges();
+			};
 		});
 	}
 

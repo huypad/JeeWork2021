@@ -22,6 +22,7 @@ import { CoreModule } from '../../../core';
 import { ScrollTopComponent } from './scroll-top/scroll-top.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { AvatarModule } from 'ngx-avatar';
+import { SocketioService } from 'src/app/modules/auth/_services/socketio.service';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -50,6 +51,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
     },
+    SocketioService
   ],
   exports: [
     SearchDropdownInnerComponent,

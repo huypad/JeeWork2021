@@ -79,12 +79,12 @@
         data-placement="right">
 
         <!-- if menu item hasn't submenu -->
-        <a *ngIf="!item.submenu" class="kt-menu__link kt-menu__toggle menu-link">
+        <a *ngIf="!item.submenu" class="kt-menu__link kt-menu__toggle menu-link hover-action">
             <ng-container [ngTemplateOutlet]="menuItemTextTemplate"
                 [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
         </a>
         <!-- if menu item has sumnenu child  white-space: break-spaces;-->
-        <a *ngIf="item.submenu" class="kt-menu__link kt-menu__toggle menu-link  menu-toggle">
+        <a *ngIf="item.submenu" class="kt-menu__link kt-menu__toggle menu-link  menu-toggle hover-action">
             <ng-container [ngTemplateOutlet]="menuItemTextTemplate"
                 [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
         </a>
@@ -110,6 +110,9 @@
             <input type="text" class="form-control" placeholder="{{'projects.nhaptenduan'  | translate}}"
                 (keyup.enter)="focusOutProject($event.target.value,item)"
                 (focusout)="focusOutProject($event.target.value,item)">
+            <!-- <button mat-icon-button>
+                <mat-icon>close</mat-icon>
+            </button> -->
         </div>
     </ng-container>
 
@@ -152,7 +155,7 @@
     </span>
 
     <!-- Tạo mới space -->
-    <div *ngIf="item.id_phanloai == 0 && commonService.CheckRole_WeWork(3501).length>0" style="text-align:right">
+    <div *ngIf="item.id_phanloai == 0 && commonService.CheckRole_WeWork(3501).length>0" class="hover-to-show" style="text-align:right">
         <button mat-icon-button [matMenuTriggerFor]="menu" class="bolder">
             <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
         </button>
@@ -230,7 +233,7 @@
     </div>
 
     <ng-container  *ngIf="item.id_phanloai > 0 && commonService.CheckRole_WeWork(3402).length>0">
-        <div style="text-align:right">
+        <div style="text-align:right" class="hover-to-show">
             <button mat-icon-button [matMenuTriggerFor]="belowMenu" class="bolder">
                 <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
             </button>
@@ -247,13 +250,13 @@
                 <a [routerLink]="['/depts',item.id,'report',item.id]"><button mat-menu-item>
                         <span translate="work.xemchitietbaocao"></span>
                     </button></a>
-                <button (click)="AddDept(item,item.id)" mat-menu-item>Chỉnh sửa</button>
-                <button (click)="DeleteDept(item)" mat-menu-item>Xóa</button>
+                <button (click)="AddDept(item,item.id)" mat-menu-item><span translate="department.chinhsua"></span></button>
+                <button (click)="DeleteDept(item)" mat-menu-item><span translate="department.xoa"></span></button>
             </mat-menu>
     
         </div>
         <i matTooltip="{{'projects.themnhanhduan' | translate}}" matTooltipPosition="above"
-            class="align-items-center d-flex las la-plus-circle" style="font-size: 15px;" (click)="QuickInsert = item.id"></i>
+            class="align-items-center d-flex las la-plus-circle hover-to-show" style="font-size: 15px;" (click)="QuickInsert = item.id"></i>
     </ng-container>
     
     <!-- if menu item has submenu child then put arrow icon -->

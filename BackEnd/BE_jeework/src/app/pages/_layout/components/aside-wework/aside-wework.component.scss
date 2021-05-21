@@ -10,4 +10,14 @@
       white-space: nowrap;
     }
   }
+  .hover-to-show{
+    opacity: 0;
+  }
+  .hover-action{
+    &:hover{
+      .hover-to-show{
+        opacity: 1;
+      }
+    }
+  }
   
