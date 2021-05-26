@@ -196,4 +196,10 @@ namespace JeeWork_Core2021.Models
         public string Email { get; set; }
         public bool isAdmin { get; set; }
     }
+    public class ObjCustomData
+    {
+        public string userId { get; set; }
+        public string updateField { get; set; }
+        public object fieldValue { get; set; }
+    }
 }

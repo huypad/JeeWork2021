@@ -118,5 +118,30 @@ namespace JeeWork_Core2021.Models
                 return null;
             }
         }
+       
+    }
+    public class UpdateMessage
+    {
+        public long userID { get; set; }
+        public string updateField { get; set; }
+        public JeeWork fieldValue { get; set; }
+    }
+    public class InitMessage
+    {
+        public long CustomerID { get; set; }
+        public List<string> AppCode { get; set; }
+        public long UserID { get; set; }
+        public string Username { get; set; }
+        public bool IsInitial { get; set; }
+        public bool IsAdmin { get; set; }
+    }
+
+    public class UpdateAdminMessage
+    {
+        public long CustomerID { get; set; }
+        public string AppCode { get; set; }
+        public long UserID { get; set; }
+        public string Username { get; set; }
+        public string Action { get; set; }
     }
 }

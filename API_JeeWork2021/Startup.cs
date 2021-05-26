@@ -27,6 +27,9 @@ using System.Text;
 using DPSinfra.Logger;
 using DPSinfra.Notifier;
 using DPSinfra.ConnectionCache;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using JeeWork_Core2021.ConsumerServices;
 
 namespace JeeWork_Core2021
 {
@@ -56,6 +59,22 @@ namespace JeeWork_Core2021
 
             Configuration["KafkaConfig:username"] = KafkaUser;
             Configuration["KafkaConfig:password"] = KafkaPassword;
+            Secret<SecretData> minioSecret = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "minio", mountPoint: "kv").Result;
+            IDictionary<string, object> minioData = minioSecret.Data.Data;
+            Configuration["MinioService:MinioAccessKey"] = minioData["access_key"].ToString();
+            Configuration["MinioService:MinioSecretKey"] = minioData["secret_key"].ToString();
+            CultureInfo[] supportedCultures = new[] { new CultureInfo("vi"), new CultureInfo("en") };
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture("vi");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+                options.RequestCultureProviders = new List<IRequestCultureProvider>
+                    {
+                        new QueryStringRequestCultureProvider(),
+                        new CookieRequestCultureProvider()
+                    };
+            });
             // add Kafka
             services.addKafkaService();
             services.AddHttpClient();
@@ -127,7 +146,7 @@ namespace JeeWork_Core2021
             services.addKafkaService();
             // add notify sv
             services.addNotificationService();
-            // add consumer
+            services.AddSingleton<IHostedService, Kafka>(); 
             services.AddMemoryCache();
             services.addConnectionCacheService();
         }

@@ -197,10 +197,15 @@ export class AuthService implements OnDestroy {
   logoutToSSO(): Observable<any> {
     const url = API_IDENTITY_LOGOUT;
     const accessToken = this.accessToken$.getValue();
-    const httpHeader = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    });
+    const auth = this.getAuthFromLocalStorage();
+		const httpHeader = new HttpHeaders({
+			'Content-Type': 'application/json', 
+			'Authorization': `Bearer ${auth!=null?auth.access_token:''}`,
+		});
+    // const httpHeader = new HttpHeaders({
+    //   'Content-Type': 'application/json',
+    //   Authorization: `Bearer ${accessToken}`,
+    // });
     return this.http.post<any>(url, null, { headers: httpHeader });
   }
 
