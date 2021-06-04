@@ -4524,6 +4524,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             // get user Id 
             DataTable User = new DataTable();
             DataTable User2 = new DataTable();
+            DataTable dt_status = new DataTable();
             var getValue = false;
             using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
             {
@@ -4532,8 +4533,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 conds1 = new SqlConditions();
                 conds1.Add("w_user.Disabled", 0);
                 string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as image, id_work
-from we_work_user w_user join we_work on we_work.id_row = w_user.id_work where (where)";
-
+                                        from we_work_user w_user 
+                                        join we_work on we_work.id_row = w_user.id_work where (where)";
+                dt_status = WeworkLiteController.StatusDynamic(long.Parse(id.ToString()), DataAccount, _config);
                 User = cnn.CreateDataTable(select_user, "(where)", conds1);
                 #region Map info account từ JeeAccount
                 foreach (DataRow item in User.Rows)
@@ -4634,6 +4636,21 @@ from we_work_user w_user join we_work on we_work.id_row = w_user.id_work where (
                                     id_row = t["id_tag"],
                                     title = t["title"],
                                     color = t["color"]
+                                },
+                         Status = from s in dt_status.AsEnumerable()
+                                select new
+                                {
+                                    id_row = s["id_row"],
+                                    statusname = s["StatusName"],
+                                    description = s["description"],
+                                    id_project_team = s["id_project_team"],
+                                    typeid = s["Type"],
+                                    color = s["color"],
+                                    position = s["Position"],
+                                    IsFinal = s["IsFinal"],
+                                    IsDeadline = s["IsDeadline"],
+                                    IsDefault = s["IsDefault"],
+                                    IsToDo = s["IsToDo"]
                                 },
                          Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, _config, r["id_row"])
                      };
