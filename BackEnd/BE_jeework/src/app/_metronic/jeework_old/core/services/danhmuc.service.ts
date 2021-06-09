@@ -7,8 +7,8 @@ import { QueryParamsModel } from '../models/query-models/query-params.model';
 import { QueryResultsModel } from '../models/query-models/query-results.model';
 import { environment } from 'src/environments/environment';
 
-const API_URL = environment.ApiRoots;
-const API_URL_Landingpage = environment.ApiRootsLanding;
+const API_URL = environment.APIROOTS;
+const API_URL_Landingpage = environment.APIROOTSLANDING;
 
 @Injectable()
 export class DanhMucChungService {

@@ -921,7 +921,7 @@ export const locale = {
 			dadong: 'Đã đóng',
 			dangdanhgia: 'Đang đánh giá',
 			danglam: 'Đang làm',
-			dangthuchien: 'Đang thực hiện (Phải làm và đang làm)',
+			dangthuchien: 'Đang thực hiện ',
 			daxong: 'Đã xong',
 			daduyet: 'Đã duyệt',
 			deadline: 'Hạn chót',

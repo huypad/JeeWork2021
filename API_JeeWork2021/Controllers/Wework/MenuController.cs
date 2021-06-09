@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using System.Collections.Specialized;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -22,9 +23,11 @@ namespace JeeWork_Core2021.Controllers.Wework
     {
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
+            ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
         }
@@ -52,7 +55,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (loginData != null)
                 {
-                    using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+                    using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                     {
                         #region Lấy dữ liệu account từ JeeAccount
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);

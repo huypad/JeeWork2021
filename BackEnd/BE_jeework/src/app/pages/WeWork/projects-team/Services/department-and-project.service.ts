@@ -8,13 +8,13 @@ import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-const API_Project_Team = environment.ApiRoots + 'api/project-team';
-const API_My_Work = environment.ApiRoots + 'api/personal';
-const API_work = environment.ApiRoots + 'api/work';
-const API_topic = environment.ApiRoots + 'api/topic';
-const API_tag = environment.ApiRoots + 'api/tag';
-const API_work_CU = environment.ApiRoots + 'api/work-click-up';
-const API_Status = environment.ApiRoots + 'api/status-dynamic';
+const API_Project_Team = environment.APIROOTS + 'api/project-team';
+const API_My_Work = environment.APIROOTS + 'api/personal';
+const API_work = environment.APIROOTS + 'api/work';
+const API_topic = environment.APIROOTS + 'api/topic';
+const API_tag = environment.APIROOTS + 'api/tag';
+const API_work_CU = environment.APIROOTS + 'api/work-click-up';
+const API_Status = environment.APIROOTS + 'api/status-dynamic';
 
 
 

@@ -378,15 +378,20 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       element.isExpanded = (this.filter_subtask.value == 'show' || this.addNodeitem == element.id_row) ? true : false;
       this.listFilter.forEach(val => {
         if (this.isAssignforme) {
-          if ( this.filter_groupby.value =='status' && ( (+val.id_row == +element.status && element.User.find(x => x.id_user == this.UserID)) )) {
+          if ( this.filter_groupby.value =='status' && ( (+val.id_row == +element.status && (element.User.find(x => x.id_user == this.UserID) || element.createdby == this.UserID ) ))) {
             val.data.push(element);
           }
-          else if ( this.filter_groupby.value =='assignee' && ( element.User.find(x => x.id_user == val.id_row) && element.User.find(x => x.id_user == this.UserID) ) ) {
-            if (element.User.length == 1) {
+          else if ( this.filter_groupby.value =='assignee' && ( (element.User.find(x => x.id_user == val.id_row) && (element.User.find(x => x.id_user == this.UserID) )|| (element.createdby == this.UserID && element.User.length == 0)  )) ) {
+            if (val.id_row == this.UserID ) { // || (element.User.length == 0 && val.id_row == "") || (element.User.length > 1 && val.id_row == "0")
               val.data.push(element);
             }
           }
-          else if(this.filter_groupby.value =='groupwork' && ( element.id_group == val.id_row && element.User.find(x => x.id_user == this.UserID) )){
+          // else if ( this.filter_groupby.value =='assignee' && ( element.User.find(x => x.id_user == val.id_row) && (element.User.find(x => x.id_user == this.UserID) || (element.createdby == this.UserID && element.User.length == 0 ) )) ) {
+          //   if (val.id_row == this.UserID || +val.id_row == 0 || val.id_row == "") {
+          //     val.data.push(element);
+          //   }
+          // }
+          else if(this.filter_groupby.value =='groupwork' && ( element.id_group == val.id_row && (element.User.find(x => x.id_user == this.UserID) || element.createdby == this.UserID  ))){
             val.data.push(element);
           }
         }

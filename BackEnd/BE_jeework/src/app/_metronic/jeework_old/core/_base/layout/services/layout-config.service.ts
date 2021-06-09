@@ -13,8 +13,8 @@ import { TokenStorage } from '../../../../core/auth/_services/token-storage.serv
 import { HttpClient } from '@angular/common/http';
 import { HttpUtilsService } from '../../crud/utils/http-utils.service';
 
-const API_PRODUCTS_URL1 = environment.ApiRoots + '/password';
-const API_PRODUCTS_URL2 = environment.ApiRoots + '/SendAccount';
+const API_PRODUCTS_URL1 = environment.APIROOTS + '/password';
+const API_PRODUCTS_URL2 = environment.APIROOTS + '/SendAccount';
 
 @Injectable()
 export class LayoutConfigService {

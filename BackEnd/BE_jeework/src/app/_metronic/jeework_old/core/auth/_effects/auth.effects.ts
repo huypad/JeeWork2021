@@ -17,7 +17,7 @@ export class AuthEffects {
     //     ofType<Login>(AuthActionTypes.Login),
     //     tap(action => {
     //         ;
-    //         localStorage.setItem(environment.authTokenKey, action.payload.authToken);
+    //         localStorage.setItem(environment.AUTHTOKENKEY, action.payload.authToken);
     //         this.store.dispatch(new UserRequested());
     //     }),
     // );
@@ -26,7 +26,7 @@ export class AuthEffects {
     // logout$ = this.actions$.pipe(
     //     ofType<Logout>(AuthActionTypes.Logout),
     //     tap(() => {
-    //         localStorage.removeItem(environment.authTokenKey);
+    //         localStorage.removeItem(environment.AUTHTOKENKEY);
 	// 		this.router.navigate(['/auth/login'], {queryParams: {returnUrl: this.returnUrl}});
     //     })
     // );
@@ -35,7 +35,7 @@ export class AuthEffects {
     // register$ = this.actions$.pipe(
     //     ofType<Register>(AuthActionTypes.Register),
     //     tap(action => {
-    //         localStorage.setItem(environment.authTokenKey, action.payload.authToken);
+    //         localStorage.setItem(environment.AUTHTOKENKEY, action.payload.authToken);
     //     })
     // );
 
@@ -57,7 +57,7 @@ export class AuthEffects {
 
     // @Effect()
     // init$: Observable<Action> = defer(() => {
-    //     const userToken = localStorage.getItem(environment.authTokenKey);
+    //     const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
     //     let observableResult = of({type: 'NO_ACTION'});
     //     if (userToken) {
     //         observableResult = of(new Login({  authToken: userToken }));

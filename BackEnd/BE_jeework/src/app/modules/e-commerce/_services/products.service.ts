@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ProductsService extends TableService<Product> {
-  API_URL = `${environment.apiUrl}/products`;
+  API_URL = `${environment.APIURL}/products`;
   constructor(@Inject(HttpClient) http) {
     super(http);
   }

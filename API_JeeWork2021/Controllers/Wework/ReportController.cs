@@ -109,11 +109,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //cond.Add("id_department", query.filter["id_department"]);
                         listDept = query.filter["id_department"].ToString();
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and w.status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -131,6 +126,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
+
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #endregion
                     if (displayChild == "0")
                         strW += " and id_parent is null";
@@ -219,44 +227,58 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (query == null)
                     query = new QueryParams();
-
-                Dictionary<string, string> collect = new Dictionary<string, string>
-                        {
-                            { "CreatedDate", "CreatedDate"},
-                            { "Deadline", "end_date"},
-                            { "StartDate", "StartDate"}
-                        };
-                string collect_by = "CreatedDate";
-                if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-                    collect_by = collect[query.filter["collect_by"]];
-                SqlConditions cond = new SqlConditions();
-                string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
-                if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                if (!from1)
-                    return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                strW += " and p." + collect_by + ">=@from";
-                cond.Add("from", from);
-                bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                if (!to1)
-                    return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                strW += " and p." + collect_by + "<@to";
-                cond.Add("to", to);
-                if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                {
-                    strW += " and id_department=@id_department";
-                    cond.Add("id_department", query.filter["id_department"]);
-                }
-                if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
-                }
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
+                    string  listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string list_Complete = "";
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
+                    string list_Todo = "";
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
+                    Dictionary<string, string> collect = new Dictionary<string, string>
+                            {
+                                { "CreatedDate", "CreatedDate"},
+                                { "Deadline", "end_date"},
+                                { "StartDate", "StartDate"}
+                            };
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+                    SqlConditions cond = new SqlConditions();
+                    string strW = "";
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    if (!from1)
+                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    strW += " and p." + collect_by + ">=@from";
+                    cond.Add("from", from);
+                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    if (!to1)
+                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    strW += " and p." + collect_by + "<@to";
+                    cond.Add("to", to);
+                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
+                    {
+                        strW += " and id_department=@id_department";
+                        cond.Add("id_department", query.filter["id_department"]);
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
+                
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select status, count(*) as value 
                                     from we_project_team p
@@ -339,11 +361,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //strW1 += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
-                }
+
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     if (listDept != "")
                     {
@@ -355,6 +373,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select d.id_row, d.title, coalesce(value,0) as value from  we_department d
@@ -444,11 +475,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         listDept = query.filter["id_department"];
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -463,6 +489,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status,
@@ -584,11 +623,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //strW += " and id_department=@id_department";
                         cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -604,6 +639,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
                                     iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan ,
@@ -708,11 +755,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //strW += " and id_department=@id_department";
                         cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -731,6 +774,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline ,
                                     iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
@@ -825,11 +880,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //strD += " and id_row=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -845,9 +896,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
-                    sqlq += @";select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    sqlq += @";select distinct id_row , status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
 iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
@@ -867,11 +930,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                                        data = new
                                        {
                                            tatca = dtW.AsEnumerable().Where(rr => rr["id_department"].Equals(r["id_row"])).Count(),
-                                           dangthuchien = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and dangthuchien=1  "),
+                                           dangthuchien = (int)dtW.Compute("count( id_row)", " id_department=" + r["id_row"] + " and dangthuchien=1  "),
                                            dangdanhgia = 0,
                                            //dangdanhgia = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and status=3 "),
-                                           hoanthanh = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and (is_ht=1 or is_htquahan=1)"),
-                                           quahan = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and is_quahan=1 ")
+                                           hoanthanh = (int)dtW.Compute("count( id_row)", " id_department=" + r["id_row"] + " and (is_ht=1 or is_htquahan=1)"),
+                                           quahan = (int)dtW.Compute("count( id_row)", " id_department=" + r["id_row"] + " and is_quahan=1 ")
                                        }
                                    };
                     return JsonResultCommon.ThanhCong(Children);
@@ -936,11 +999,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiện (đang làm & phải làm)||2: đã xong
-                {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
-                }
+
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
@@ -958,7 +1017,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
 
+                    }
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -1150,11 +1220,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -1195,6 +1261,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     string sqlq = @"select count(distinct p.id_row) as dem,id_user from we_project_team p 
                                     join we_project_team_user u 
                                     on p.id_row=u.id_project_team 
@@ -1337,11 +1415,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     {
                         listDept = query.filter["id_department"];
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
 
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -1363,6 +1437,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
                                     ,iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan
                                     from v_wework_clickup_new  w 
@@ -1466,12 +1552,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         //strW1 += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        strW1 += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -1489,7 +1570,20 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                            strW1 += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                            strW1 += $" and w.status in ({list_Complete})";
+                        }
 
+                    }
                     DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                                                         m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
@@ -1633,11 +1727,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -1653,6 +1743,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                                                         m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
@@ -1792,11 +1894,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
-                }
+
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
@@ -1812,7 +1910,19 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                 list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                 string list_Todo = "";
                list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
-                #endregion
+                    #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     string sql_query = "";
                     if (string.IsNullOrEmpty(query.filter["key"]))
                         return JsonResultCommon.Custom("Key không hợp lệ");
@@ -1961,11 +2071,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                             //strW += " and id_department=@id_department";
                             //cond.Add("id_department", query.filter["id_department"]);
                         }
-                        if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -1982,6 +2088,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     string sql_query = "";
                     if (string.IsNullOrEmpty(query.filter["key"]))
                         return JsonResultCommon.Custom("Key không hợp lệ");
@@ -2129,11 +2247,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -2162,6 +2276,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     DataTable dt = cnn.CreateDataTable(sql_query, conds);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.Custom("Không có dữ liệu");
@@ -2256,11 +2382,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                         //strD += " and id_row=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiện (đang làm & phải làm)||2: đã xong
-                    {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
-                    }
+
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -2277,6 +2399,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Todo = "";
                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
                     sqlq += @";select id_row, id_nv, status, CreatedDate
@@ -2381,10 +2515,23 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         //strW1 += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
+                    string list_Todo = "";
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))

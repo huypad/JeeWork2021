@@ -14,6 +14,6 @@ export class UserProfileService {
 		private httpUtils: HttpUtilsService) { }
 	getDictionary(): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.get<any>(environment.ApiRoots + `api/wework-lite/get-dicionary`, { headers: httpHeaders });
+		return this.http.get<any>(environment.APIROOTS + `api/wework-lite/get-dicionary`, { headers: httpHeaders });
 	}
 }

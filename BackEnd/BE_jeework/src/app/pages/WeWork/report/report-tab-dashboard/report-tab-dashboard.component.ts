@@ -156,12 +156,12 @@ export class ReportTabDashboardComponent implements OnInit {
       id_row: '2',
       loai: 'trangthai'
     },
-    {
-      title: this.translate.instant('filter.congviecquahan'),
-      value: 'status',
-      id_row: '3',
-      loai: 'trangthai'
-    },
+    // {
+    //   title: this.translate.instant('filter.congviecquahan'),
+    //   value: 'status',
+    //   id_row: '3',
+    //   loai: 'trangthai'
+    // },
   ]
 
   NameDept = (id) => {
@@ -617,7 +617,7 @@ export class ReportTabDashboardComponent implements OnInit {
         }
         for (let index of this.keyObject) {
           this.chartPhanbocongviecDepartment.datasets.push(
-            { data: dt1[index], label: this.getTitle(index), }
+            { data: dt1[index], label: this.getTitle(index),backgroundColor: this.getColor(index) }
           )
           this.chartPhanbocongviecDepartment.color.push(
             { backgroundColor: this.getColor(index) }
@@ -804,7 +804,7 @@ export class ReportTabDashboardComponent implements OnInit {
     })
   }
   ExportExcel(filename: string) {
-    var linkdownload = environment.ApiRoots + `/wework/report/ExportExcel?FileName=` + filename;
+    var linkdownload = environment.APIROOTS + `/wework/report/ExportExcel?FileName=` + filename;
     window.open(linkdownload);
   }
 

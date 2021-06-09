@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { LayoutService, LayoutInitService } from '../../_metronic/core';
 import KTLayoutContent from '../../../assets/js/layout/base/content';
-const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
+const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.APPVERSION}-layoutConfig`;
 
 @Component({
   selector: 'app-layout',

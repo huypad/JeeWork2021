@@ -149,7 +149,6 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     }, 500);
   }
   sortField(column: string) {
-	console.log(column);
     const sorting = this.sorting;
     const isActiveColumn = sorting.column === column;
     if (!isActiveColumn) {

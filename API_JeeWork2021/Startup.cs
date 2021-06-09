@@ -47,11 +47,13 @@ namespace JeeWork_Core2021
         {
             // add Vault and get Vault for secret in another services
             var vaultClient = ConfigVault(services);
+            //
             Secret<SecretData> kafkaSecret = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "jwt", mountPoint: "kv").Result;
             IDictionary<string, object> kafkaDataSecret = kafkaSecret.Data.Data;
             string access_secret = kafkaDataSecret["access_secret"].ToString();
             Configuration["Jwt:access_secret"] = access_secret;
-            ///////// kafka
+            Configuration["Jwt:internal_secret"] = kafkaDataSecret["internal_secret"].ToString();
+            /////// kafka
             Secret<SecretData> kafka = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "kafka", mountPoint: "kv").Result;
             IDictionary<string, object> kafkaData = kafka.Data.Data;
             string KafkaUser = kafkaData["username"].ToString();
@@ -59,10 +61,12 @@ namespace JeeWork_Core2021
 
             Configuration["KafkaConfig:username"] = KafkaUser;
             Configuration["KafkaConfig:password"] = KafkaPassword;
+
             Secret<SecretData> minioSecret = vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: "minio", mountPoint: "kv").Result;
             IDictionary<string, object> minioData = minioSecret.Data.Data;
-            Configuration["MinioService:MinioAccessKey"] = minioData["access_key"].ToString();
-            Configuration["MinioService:MinioSecretKey"] = minioData["secret_key"].ToString();
+            Configuration["MinioConfig:MinioAccessKey"] = minioData["access_key"].ToString();
+            Configuration["MinioConfig:MinioSecretKey"] = minioData["secret_key"].ToString();
+
             CultureInfo[] supportedCultures = new[] { new CultureInfo("vi"), new CultureInfo("en") };
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -77,6 +81,8 @@ namespace JeeWork_Core2021
             });
             // add Kafka
             services.addKafkaService();
+            services.AddHttpContextAccessor();
+            services.AddSignalR();
             services.AddHttpClient();
             services.addNotificationService();
 
@@ -135,20 +141,19 @@ namespace JeeWork_Core2021
             });
             services.AddOptions();
             //Config appsetting
-            services.Configure<JeeWorkConfig>(options => Configuration.GetSection("JeeWorkConfig").Bind(options));
+            services.Configure<JeeWorkConfig>(options => Configuration.GetSection("AppConfig").Bind(options));
             //kafka
+            services.AddHttpClient();
+            // add notify sv
+            services.addNotificationService();
+            services.AddSingleton<IHostedService, JeeInit_Kafka>(); 
+            services.AddMemoryCache();
+            services.addConnectionCacheService();
+
             services.AddLogging(builder =>
             {
                 builder.addAsyncLogger<AsyncLoggerProvider>(p => new AsyncLoggerProvider(p.GetService<IProducer>()));
             });
-            services.AddHttpClient();
-            // add Kafka
-            services.addKafkaService();
-            // add notify sv
-            services.addNotificationService();
-            services.AddSingleton<IHostedService, Kafka>(); 
-            services.AddMemoryCache();
-            services.addConnectionCacheService();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

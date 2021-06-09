@@ -65,7 +65,7 @@ namespace JeeWork_Core2021.Controllers.Users
         {
             string json = JsonConvert.SerializeObject(userInfo);
             LoginData account = JsonConvert.DeserializeObject<LoginData>(json);
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:access_secret"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>();

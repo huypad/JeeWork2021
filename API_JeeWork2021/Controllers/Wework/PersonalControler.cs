@@ -48,7 +48,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select w.*, IIF(w.Status = 1 and getdate() > w.deadline,1,0) as is_quahan,
 IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETDATE(),103),1,0) as is_moigiao
-from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID ) ";
+from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID ) ";
                     DataSet ds = cnn.CreateDataSet(sqlq, new SqlConditions() { { "userID", loginData.UserID } });
                     if (cnn.LastError != null || ds == null)
                     {
@@ -145,7 +145,7 @@ from v_wework w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID )
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"  select m.*, m.person_in_charge as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh,
 coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m 
- left join (select count(*) as tong, COUNT(CASE WHEN w.status in ({list_Complete}) THEN 1 END) as ht,w.id_milestone from v_wework w group by w.id_milestone) w on m.id_row=w.id_milestone
+ left join (select count(*) as tong, COUNT(CASE WHEN w.status in ({list_Complete}) THEN 1 END) as ht,w.id_milestone from v_wework_new w group by w.id_milestone) w on m.id_row=w.id_milestone
  where m.person_in_charge=@iduser and m.person_in_charge in ({listID}) and disabled=0";
                     DataTable dt = cnn.CreateDataTable(sqlq, new SqlConditions() { { "iduser", loginData.UserID } });
                     if (cnn.LastError != null || dt == null)
@@ -531,6 +531,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                             { "percentage", "percentage"}
                         };
                     #endregion
+                    // #mapacc 
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         sortField = sortableFields[query.sortField];
                     string ids = string.Join(",", nvs);
@@ -538,7 +539,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
 join we_project_team_user u on p.id_row=u.id_project_team 
 where p.disabled=0 and u.disabled=0 and u.id_user in (" + ids + ")" + strWP + " group by u.id_user";
                     sql += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan from v_wework w where id_nv in (" + ids + ")" + strW;
+iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan from v_wework_new w where id_nv in (" + ids + ")" + strW;
                     DataSet ds = cnn.CreateDataSet(sql, cond);
                     var asP = ds.Tables[0].AsEnumerable();
                     DataTable dtW = ds.Tables[1];

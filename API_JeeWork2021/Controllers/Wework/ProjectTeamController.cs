@@ -20,6 +20,7 @@ using JeeWork_Core2021.Classes;
 using JeeWork_Core2021.Controllers.Users;
 using DPSinfra.Notifier;
 using Microsoft.AspNetCore.Http;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -39,8 +40,11 @@ namespace JeeWork_Core2021.Controllers.Wework
         private INotifier _notifier;
         LoginController lc;
         public List<AccUsernameModel> DataAccount;
-        public ProjectTeamController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier)
+        private IConnectionCache ConnectionCache;
+
+        public ProjectTeamController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache)
         {
+            ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             _notifier = notifier;
@@ -68,7 +72,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -121,7 +125,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     join we_department de on de.id_row=p.id_department
                                     left join (select count(*) as tong,COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
-                                    ,w.id_project_team from v_wework w group by w.id_project_team) w on p.id_row=w.id_project_team
+                                    ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
                                     where p.Disabled=0 and de.Disabled = 0 and p.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
                     sqlq += @$";select u.*,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 
                                 join we_project_team p on p.id_row=u.id_project_team 
@@ -239,7 +243,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -437,7 +441,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -458,7 +462,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 left join we_department de on de.id_row=p.id_department
                                 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                                 , COUNT(CASE WHEN w.status=1 and getdate()>w.deadline THEN 1 END) as quahan
-                                ,w.id_project_team from v_wework w group by w.id_project_team) w on p.id_row=w.id_project_team
+                                ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
                                 where p.Disabled=0 and p.CreatedBy in ({listID}) and p.id_row=" + id;
                     sqlq += @$";select u.*,  '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image, admin from we_project_team_user u 
                                 join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + $" where u.disabled=0 and u.Id_user in ( {listID} )";
@@ -467,7 +471,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     sqlq += ";select * from we_group where disabled=0 and  id_project_team=" + id;
                     sqlq += @$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht, '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image  from we_milestone m 
                                 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_milestone 
-                                from v_wework w group by w.id_milestone) w on m.id_row=w.id_milestone
+                                from v_wework_new w group by w.id_milestone) w on m.id_row=w.id_milestone
                                 where m.Disabled=0 and m.person_in_charge in ({listID}) and id_project_team=" + id;
 
                     DataSet ds = cnn.CreateDataSet(sqlq);
@@ -715,7 +719,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = @"select id_department from we_project_team where id_row =" + id;
                     string data = cnn.ExecuteScalar(sqlq).ToString();
@@ -738,7 +742,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -872,7 +876,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
 
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1067,7 +1071,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     strRe += (strRe == "" ? "" : ",") + "tên dự án/phòng ban";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1282,7 +1286,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 {
                     return JsonResultCommon.BatBuoc(strRe);
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1551,7 +1555,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 {
                     return JsonResultCommon.BatBuoc(strRe);
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -1633,7 +1637,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     "email_assign_work", "email_update_work", "email_update_status", "email_delete_work", "email_update_team", "email_delete_team", "email_upload_file" };
                 if (string.IsNullOrEmpty(key) || !keys.Contains(key))
                     return JsonResultCommon.Custom("Thông ton cập nhật không được hổ trợ");
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
@@ -1696,7 +1700,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -1756,7 +1760,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -1816,7 +1820,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select id_row,email_delete_team  from we_project_team where Disabled=0 and  id_row = " + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
@@ -1874,7 +1878,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select is_project from we_project_team where Disabled=0 and  id_row = " + id;
                     var temp = cnn.ExecuteScalar(sqlq);
@@ -1932,7 +1936,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
 
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -2007,7 +2011,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             {
                 bool Visible = true;
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -2096,7 +2100,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select * from we_project_team where Disabled=0 and  id_row = " + data.id_row;
                     DataTable dtF = cnn.CreateDataTable(sqlq);
@@ -2254,7 +2258,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select id_project_team from we_project_team_user where disabled=0 and id_row = " + id + "";
                     var temp = cnn.ExecuteScalar(sqlq);
@@ -2300,7 +2304,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -2403,7 +2407,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select * from we_project_team where disabled=0 and id_row = " + id + "";
                     DataTable dt = cnn.CreateDataTable(sqlq);
@@ -2450,7 +2454,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
 
                 if (id_project_team <= 0)
                     return new List<string>();
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sql = "select * from we_role r left join we_project_role role on r.id_row=role.id_role and id_project_team=" + id_project_team + " where r.disabled = 0 order by stt";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -2498,7 +2502,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select role.id_row," + key + " from we_role r left join we_project_role role on r.id_row=role.id_role and id_project_team = " + id + " and id_role=" + role + " order by id_row desc";
                     DataTable dt = cnn.CreateDataTable(sqlq);
@@ -2568,7 +2572,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             {
                 bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", _config,DataAccount);
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -2746,7 +2750,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select * from we_project_team where Disabled=0 and id_row = " + data.id_project_team;
                     DataTable dtF = cnn.CreateDataTable(sqlq);
@@ -2819,7 +2823,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select * from we_project_team where Disabled=0 and id_row = " + data.id_project_team;
                     DataTable dtF = cnn.CreateDataTable(sqlq);
@@ -2891,7 +2895,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select * from we_projects_view where Disabled=0 and id_row = " + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);

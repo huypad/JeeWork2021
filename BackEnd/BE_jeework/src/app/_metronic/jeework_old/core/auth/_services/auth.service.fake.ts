@@ -91,7 +91,7 @@ export class AuthService {
     }
 
     // getUserByToken(): Observable<User> {
-    //     const userToken = localStorage.getItem(environment.authTokenKey);
+    //     const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
     //     if (!userToken) {
     //         return of(null);
     //     }

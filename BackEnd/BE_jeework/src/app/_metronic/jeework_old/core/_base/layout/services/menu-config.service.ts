@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { MenuPhanQuyenServices } from './menu-phan-quyen.service';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from 'src/environments/environment';
-const Module = '' + environment.Module;
+const Module = '' + environment.MODULE;
 
 @Injectable()
 export class MenuConfigService {
@@ -70,7 +70,7 @@ export class MenuConfigService {
 					if (!item.IsShowAdd && +item.GroupName > 0 && item.Child.length == 0) return;
 					let src = "";
 					if (item.Title != "" && item.Title != null) {//menu gốc
-						if (environment.Module == "QLBTSC") {//Quản lý SCBT k có đa ngôn ngữ
+						if (environment.MODULE == "QLBTSC") {//Quản lý SCBT k có đa ngôn ngữ
 							src = item.Summary;//hiện tại lấy summary để lấy tên hiển thị
 						} else {
 							src = this.translate.instant('MainMenu.' + '' + item.Title);
@@ -242,7 +242,7 @@ export class MenuConfigService {
 					if (!item.IsShowAdd && +item.GroupName > 0 && item.Child.length == 0) return;
 					let src = "";
 					if (item.Title != "" && item.Title != null) {//menu gốc
-						if (environment.Module == "QLBTSC") {//Quản lý SCBT k có đa ngôn ngữ
+						if (environment.MODULE == "QLBTSC") {//Quản lý SCBT k có đa ngôn ngữ
 							src = item.Summary;//hiện tại lấy summary để lấy tên hiển thị
 						} else {
 							src = this.translate.instant('MainMenu.' + '' + item.Title);

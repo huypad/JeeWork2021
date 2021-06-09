@@ -835,7 +835,7 @@ export class ReportByProjectComponent implements OnInit {
     })
   }
   ExportExcel(filename: string) {
-    var linkdownload = environment.ApiRoots + `/wework/report/ExportExcel?FileName=` + filename;
+    var linkdownload = environment.APIROOTS + `/wework/report/ExportExcel?FileName=` + filename;
     window.open(linkdownload);
   }
 

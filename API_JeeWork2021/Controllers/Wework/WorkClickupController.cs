@@ -1403,7 +1403,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.WorkID);
                     sqlcond.Add("disabled", 0);
-                    string s = "select title as tencongviec_old, * from v_wework where (where)";
+                    string s = "select title as tencongviec_old, * from v_wework_new where (where)";
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
@@ -1767,7 +1767,7 @@ iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
 iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
 iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
-'' as NguoiTao,'' as NguoiSua from v_wework w 
+'' as NguoiTao,'' as NguoiSua from v_wework_new w 
 left join we_work_favourite fa on fa.id_work=w.id_row and fa.createdby=6 and fa.disabled=0
 where w.CreatedBy in ({listID}) and w.id_row= " + id + " or id_parent=" + id;
                     //tag
@@ -3025,7 +3025,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
                     sqlcond.Add("disabled", 0);
-                    string s = "select title as tencongviec_old, * from v_wework where (where)";
+                    string s = "select title as tencongviec_old, * from v_wework_new where (where)";
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
@@ -3203,7 +3203,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, _config))
                             {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
+                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
                                 {
                                     if (data.IsStaff)
@@ -3254,7 +3254,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, _config))
                             {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
+                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
                                 {
                                     if (data.IsStaff)
@@ -3304,7 +3304,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         {
                             cnn.EndTransaction();
                             WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config);
-                            DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
+                            DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                             if (dt_user.Rows.Count > 0)
                             {
                                 #region Check dự án đó có gửi gửi mail khi cập nhật tình trạng hay không
@@ -3706,7 +3706,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
-                    DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework where (where)", "(where)", sqlcond);
+                    DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {

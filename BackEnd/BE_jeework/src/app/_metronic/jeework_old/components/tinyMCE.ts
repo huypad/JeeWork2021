@@ -11,7 +11,7 @@ const tinyMCE = {
 	// language_url : './assets/js/global/components/base/vi.js',
 	language_url : './assets/tinymce/langs/vi.js',
 	font_formats: 'Helvetica=Helvetica;UTM Avo=UTMAvo;',
-	images_upload_url: environment.ApiRoots + '/Tool/upload-img?filename=' + 'GuideLine',
+	images_upload_url: environment.APIROOTS + '/Tool/upload-img?filename=' + 'GuideLine',
 	automatic_uploads: true,
 	images_upload_base_path: '/images',
 	images_upload_credentials: true,
@@ -52,7 +52,7 @@ const tinyMCE = {
 
 		xhr = new XMLHttpRequest();
 		xhr.withCredentials = false;
-		xhr.open('POST', environment.ApiRoots + '/Tool/upload-img?filename=' + 'GuideLine');
+		xhr.open('POST', environment.APIROOTS + '/Tool/upload-img?filename=' + 'GuideLine');
 
 		xhr.onload = function () {
 			var json;

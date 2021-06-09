@@ -1,3 +1,4 @@
+import { AuthService } from "./../../../../../../modules/auth/_services/auth.service";
 import { LayoutService } from "./../../../../../core/services/layout.service";
 import { TokenStorage } from "./../../../../core/auth/_services/token-storage.service";
 import { UserProfileService } from "./../../../../core/auth/_services/user-profile.service";
@@ -39,7 +40,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from "@angular/material/dialog";
-const Module = "" + environment.Module;
+const Module = "" + environment.MODULE;
 var swRegistration: any = null;
 
 @Component({
@@ -79,14 +80,14 @@ export class UserProfileComponent implements OnInit {
     private layout: LayoutService,
     private tokenStore: TokenStorage,
     private authService: AuthenticationService,
+    private auth: AuthService,
     private userProfileService: UserProfileService,
     @Inject(DOCUMENT) private document: Document,
     private changeDetectorRefs: ChangeDetectorRef,
     public dialog: MatDialog,
     private cookieService: CookieService,
-    private menuConfigService: MenuConfigService
-  ) // private dungchungservice: DungChungServices,
-  { }
+    private menuConfigService: MenuConfigService // private dungchungservice: DungChungServices,
+  ) {}
 
   /**
    * @ Lifecycle sequences => https://angular.io/guide/lifecycle-hooks
@@ -102,28 +103,30 @@ export class UserProfileComponent implements OnInit {
       "header.self.fixed.desktop"
     );
     if (!this.desktopHeaderDisplay) {
-
     }
     this.permissionNof();
     this.checkSession();
     this.loadLoGoKhachHang();
     this.GetAllRoles();
-      this.userProfileService.getDictionary().subscribe((res) => {
-        if (res && res.status == 1) {
-          res.data.emotions.map((x) => {
-            GlobalVariable.emotions[x.key] = x.value;
-          });
-          res.data.accounts.map((x) => {
-            GlobalVariable.accounts[x.key] = x.value;
-          });
-          GlobalVariable.icons = res.data.icons;
-        }
-      });
+    this.userProfileService.getDictionary().subscribe((res) => {
+      if (res && res.status == 1) {
+        res.data.emotions.map((x) => {
+          GlobalVariable.emotions[x.key] = x.value;
+        });
+        res.data.accounts.map((x) => {
+          GlobalVariable.accounts[x.key] = x.value;
+        });
+        GlobalVariable.icons = res.data.icons;
+      }
+    });
   }
 
   GetAllRoles() {
     this.menuConfigService.GetRole_WeWork(localStorage.getItem("Username"));
-  console.log("Username", this.menuConfigService.GetRole_WeWork(localStorage.getItem("Username")));
+    console.log(
+      "Username",
+      this.menuConfigService.GetRole_WeWork(localStorage.getItem("Username"))
+    );
   }
   checkSession() {
     try {
@@ -147,9 +150,7 @@ export class UserProfileComponent implements OnInit {
   //   this.authService.logout(true, url);
   // }
 
-  loadLoGoKhachHang() {
-  
-  }
+  loadLoGoKhachHang() {}
 
   item: any;
   @Input() avatarr: string = "./assets/app/media/img/users/user4.jpg";
@@ -161,11 +162,13 @@ export class UserProfileComponent implements OnInit {
     let id: any;
     this.tokenStore.getIDUser().subscribe((res) => {
       id = +res;
-    })
+    });
   }
   logoutJWT() {
-    this.authService.logout();
-
+    this.auth.logoutToSSO().subscribe((res) => {
+      localStorage.clear();
+      this.auth.logout();
+    });
   }
   permissionNof() {
     if (Notification && Notification.permission !== "granted") {
@@ -241,7 +244,7 @@ export class DialogOverviewExampleDialog {
     private changeDetectorRefs: ChangeDetectorRef,
     private tokenStore: TokenStorage,
     private layoutUtilsService: LayoutUtilsService
-  ) { }
+  ) {}
   ngOnInit(): void {
     this.checkPass();
     this.tokenStore.getIDUser().subscribe((res) => {

@@ -173,9 +173,9 @@ export class ListDepartmentListComponent implements OnInit {
 		let obj = window.location.href.split("/").find(x => x == "tabs-references");
 			let tmp_height = 0;
 		if (obj) {
-			tmp_height = window.innerHeight - 354;
+			tmp_height = window.innerHeight - 214;
 		} else {
-			tmp_height = window.innerHeight - 200;
+			tmp_height = window.innerHeight - 60;
 		}
 
 		return tmp_height - this.tokenStorage.getHeightHeader() + 'px';

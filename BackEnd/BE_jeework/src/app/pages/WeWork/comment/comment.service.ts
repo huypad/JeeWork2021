@@ -6,7 +6,7 @@ import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-const API = environment.ApiRoots + 'api/comment';
+const API = environment.APIROOTS + 'api/comment';
 
 
 @Injectable()

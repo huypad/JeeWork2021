@@ -91,13 +91,13 @@ export class NotificationGeneralComponent implements OnInit {
 		  );
 	}
 	loadNotification() {
-		if (environment.Module == 'wework') {
+		if (environment.MODULE == 'wework') {
 			this.AppCode = 'WW';
-		} else if (environment.Module == 'QLBTSC') {
+		} else if (environment.MODULE == 'QLBTSC') {
 			this.AppCode = 'AMS';
-		} else if (environment.Module == 'WMS') {
+		} else if (environment.MODULE == 'WMS') {
 			this.AppCode = 'WMS';
-		} else if (environment.Module == 'Workflow') {
+		} else if (environment.MODULE == 'Workflow') {
 			this.AppCode = 'WF';
 		} else {
 			this.AppCode = 'Land';

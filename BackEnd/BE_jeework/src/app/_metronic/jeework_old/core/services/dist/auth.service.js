@@ -45,7 +45,7 @@ var AuthService = /** @class */ (function () {
         }
     };
     AuthService.prototype.getUserByToken = function () {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders();
         httpHeaders.set('Authorization', 'Bearer ' + userToken);
         return this.http.get(API_USERS_URL, { headers: httpHeaders });
@@ -159,7 +159,7 @@ var AuthService = /** @class */ (function () {
         };
     };
     AuthService.prototype.resetSession = function () {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders({
             'Authorization': 'Bearer ' + userToken
         });
@@ -181,7 +181,7 @@ var AuthService = /** @class */ (function () {
         });
     };
     AuthService.prototype.logout_new = function () {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders({
             'Authorization': 'Bearer ' + userToken
         });
@@ -195,14 +195,14 @@ var AuthService = /** @class */ (function () {
     };
     //#region service worker
     AuthService.prototype.CreateFCM = function () {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders({
             'Authorization': 'Bearer ' + userToken
         });
         return this.http.get(environment_1.environment.ApiRoot + "/fcm/CreateFCM", { headers: httpHeaders });
     };
     AuthService.prototype.DeleteFCM = function (data) {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders({
             'Authorization': 'Bearer ' + userToken
         });
@@ -212,7 +212,7 @@ var AuthService = /** @class */ (function () {
     //#endregion
     //#region vai trò
     AuthService.prototype.getVaiTro = function () {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders({
             'Authorization': 'Bearer ' + userToken
         });
@@ -220,7 +220,7 @@ var AuthService = /** @class */ (function () {
         return this.http.get(environment_1.environment.ApiRoot + '/user/ds-vai-tro', { headers: httpHeaders });
     };
     AuthService.prototype.doiVaiTro = function (id) {
-        var userToken = localStorage.getItem(environment_1.environment.authTokenKey);
+        var userToken = localStorage.getItem(environment_1.environment.AUTHTOKENKEY);
         var httpHeaders = new http_1.HttpHeaders({
             'Authorization': 'Bearer ' + userToken
         });

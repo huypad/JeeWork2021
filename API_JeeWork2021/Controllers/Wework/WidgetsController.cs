@@ -2128,7 +2128,7 @@ where Disabled = 0";
             IHeaderDictionary _d = pHeader;
             string _bearer_token;
             _bearer_token = _d[HeaderNames.Authorization].ToString();
-            string API_Account = config.API_Account;
+            string API_Account = config.API_Account +"/";
             string link_api = API_Account + "api/accountmanagement/usernamesByCustermerID";
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);

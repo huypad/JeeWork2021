@@ -55,7 +55,7 @@ export class LayoutConfig {
 			'self': {
 				'skin': 'light',
 				'fixed': {
-					'desktop': environment.Module!='wework',
+					'desktop': environment.MODULE!='wework',
 					'mobile': false
 				},
 				'width': 'fluid'				

@@ -7,7 +7,7 @@ import { QueryParamsModel } from '../../crud/models/query-models/query-params.mo
 import { QueryResultsModel } from '../../crud/models/query-models/query-results.model';
 import { getElSeg } from '@fullcalendar/core';
 
-const API_ROOT_URL = environment.ApiRoots + 'api/menu';
+const API_ROOT_URL = environment.APIROOTS + 'api/menu';
 // const API_ROOT_URL = 'https://api-jeework.vts-demo.com/api/menu';
 
 // const API_ROOT_URL = 'https://api-jeework.vts-demo.com/api/menu';
@@ -30,7 +30,7 @@ export class MenuPhanQuyenServices {
 	// Get quyền cấp 1 (Menu) - WeWork
 	WW_Roles(username): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.get<any>(environment.ApiRoots + `api/ww_userrights/GetRolesForUser_WeWork?username=${username}`, { headers: httpHeaders });
+		return this.http.get<any>(environment.APIROOTS + `api/ww_userrights/GetRolesForUser_WeWork?username=${username}`, { headers: httpHeaders });
 	}
 
 }

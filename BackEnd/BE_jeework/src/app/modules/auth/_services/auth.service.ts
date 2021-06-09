@@ -9,18 +9,18 @@ import { environment } from "src/environments/environment";
 import { Router } from "@angular/router";
 import jwt_decode from 'jwt-decode';
 
-const redirectUrl = environment.redirectUrl;
-const API_IDENTITY = `${environment.ApiIdentity}`;
-const API_IDENTITY_LOGOUT = `${environment.ApiIdentity_Logout}`;
-const API_IDENTITY_USER = `${environment.ApiIdentity_GetUser}`;
-const API_IDENTITY_REFESHTOKEN = `${environment.ApiIdentity_Refresh}`;
+const redirectUrl = environment.REDIRECTURL;
+const API_IDENTITY = `${environment.APIIDENTITY}`;
+const API_IDENTITY_LOGOUT = `${environment.APIIDENTITY_LOGOUT}`;
+const API_IDENTITY_USER = `${environment.APIIDENTITY_GETUSER}`;
+const API_IDENTITY_REFESHTOKEN = `${environment.APIIDENTITY_REFRESH}`;
 @Injectable({
   providedIn: "root",
 })
 export class AuthService implements OnDestroy {
   // private fields
   private unsubscribe: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
-  authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
+  authLocalStorageToken = `${environment.APPVERSION}-${environment.USERDATA_KEY}`;
 
   // public fields
   currentUser$: Observable<UserModel>;
@@ -177,10 +177,11 @@ export class AuthService implements OnDestroy {
   // call api identity server
   getUserMeFromSSO(): Observable<any> {
     const accessToken = this.accessToken$.getValue();
+    const auth = this.getAuthFromLocalStorage();
     const url = API_IDENTITY_USER;
     const httpHeader = new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken!=null?accessToken:(auth!=null?auth.access_token:'')}`,
     });
     return this.http.get<any>(url, { headers: httpHeader });
   }

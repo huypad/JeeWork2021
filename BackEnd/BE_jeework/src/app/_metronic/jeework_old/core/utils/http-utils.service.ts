@@ -8,7 +8,7 @@ import { AuthService } from 'src/app/modules/auth';
 
 @Injectable()
 export class HttpUtilsService {
-	public authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
+	public authLocalStorageToken = `${environment.APPVERSION}-${environment.USERDATA_KEY}`;
 	fake_token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDZkMTI2OWI0MzA0NjAwMWRlODJmNmUiLCJ1c2VybmFtZSI6Imh1eXBhZCIsImN1c3RvbWRhdGEiOnsicGVyc29uYWxJbmZvIjp7IkF2YXRhciI6IiIsIkZpcnN0bmFtZSI6IiIsIkxhc3RuYW1lIjoiIiwiSm9idGl0bGUiOiIiLCJEZXBhcnRtZW50IjoiIiwiQmlydGhkYXkiOiIiLCJQaG9uZW51bWJlciI6IiJ9LCJqZWUtcmVxdWVzdCI6eyJyb2xlIjoiMSwyLDMifSwiamVlLXdvcmsiOnsicm9sZSI6IjEsMiwzIn19LCJpYXQiOjE2MTgyMDgzOTcsImV4cCI6MTYxODIxMTk5N30.seJpb-i852EuKgVu9e7sZSSM6eUICLhe7lzPXnIE5wM`;
 	constructor(private tokenStorage: TokenStorage,private auth: AuthService) {
 	}

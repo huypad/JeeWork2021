@@ -28,11 +28,11 @@ export class TokenStorage {
 	 */
 	public getAccessToken(): Observable<string> {
 
-		const token: string = <string>localStorage.getItem(environment.authTokenKey);
+		const token: string = <string>localStorage.getItem(environment.AUTHTOKENKEY);
 		return of(token);
 	}
 	public getAccessTokenString(): string {
-		const token: string = <string>localStorage.getItem(environment.authTokenKey);
+		const token: string = <string>localStorage.getItem(environment.AUTHTOKENKEY);
 		return token;
 	}
 	/**
@@ -68,7 +68,7 @@ export class TokenStorage {
 	 * @returns {TokenStorage}
 	 */
 	public setAccessToken(token: string): TokenStorage {
-		localStorage.setItem(environment.authTokenKey, token);
+		localStorage.setItem(environment.AUTHTOKENKEY, token);
 		return this;
 	}
 
@@ -90,7 +90,7 @@ export class TokenStorage {
 	 */
 	public clear() {
 		localStorage.removeItem('UserInfo');
-		localStorage.removeItem(environment.authTokenKey);
+		localStorage.removeItem(environment.AUTHTOKENKEY);
 	}
 
 	public clearItem(item) {

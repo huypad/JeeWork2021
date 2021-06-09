@@ -1575,7 +1575,7 @@ where u.id_user in ({listID})";
         [Route("testkafka")]
         public string testkafka()
         {
-            string topic = _iconfig.GetValue<string>("AsyncService:topicProduceByAccount");
+            string topic = _iconfig.GetValue<string>("KafkaConfig:topicProduceByAccount");
             _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
             return "Oke";
         }
@@ -2362,7 +2362,7 @@ where Disabled = 0";
             string _bearer_token;
             _bearer_token = _d[HeaderNames.Authorization].ToString();
             string API_Account = config.API_Account;
-            string link_api = API_Account + "api/accountmanagement/usernamesByCustermerID";
+            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID";
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", _bearer_token);

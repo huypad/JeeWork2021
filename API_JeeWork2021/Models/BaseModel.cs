@@ -124,7 +124,8 @@ namespace JeeWork_Core2021.Models
     {
         public long userID { get; set; }
         public string updateField { get; set; }
-        public JeeWork fieldValue { get; set; }
+        public object fieldValue { get; set; }
+        //public JeeWork fieldValue { get; set; }
     }
     public class InitMessage
     {
