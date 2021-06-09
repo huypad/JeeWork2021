@@ -55,7 +55,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (loginData != null)
                 {
-                    using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                    string ConnectionString = ConnectionCache.GetConnectionString(loginData.CustomerID);
+                    using (DpsConnection Conn = new DpsConnection(ConnectionString))
                     {
                         #region Lấy dữ liệu account từ JeeAccount
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -71,7 +72,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         SqlConditions cond = new SqlConditions();
                         cond.Add("CustemerID", loginData.CustomerID);
                         cond.Add("HienThi", 1);
-                        string[] listrole = Common.GetRolesForUser_WeWork(loginData.Username, _config);
+                        string[] listrole = Common.GetRolesForUser_WeWork(loginData.Username, Conn);
                         for (int i = 0; i < listrole.Length; i++)
                         {
                             sql_listRole += ",@IDRole" + i;
@@ -257,11 +258,17 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
 
         [HttpGet]
         [Route("GetRoleWeWork")]
-        public object GetRoleWeWork(string id_nv)
+        public object GetRoleWeWork(string id_nv,long CustomerID)
         {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if(loginData != null)
+            {
+                CustomerID = loginData.CustomerID;
+            }
             try
             {
-                using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+                //ConnectionCache.GetConnectionString(CustomerID)
+                using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "";
                     sqlq = "select * from we_project_team " +

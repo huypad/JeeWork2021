@@ -38,13 +38,13 @@
         
         
                         <div class="filter -menu-op cot-20" [matMenuTriggerFor]="status">
-                            <em>{{trangthai.statusname}}</em>
+                            <em>{{trangthai.title}}</em>
                             <i class="fas fa-chevron-down"></i>
                             <mat-menu #status="matMenu">
-                                <button (click)="this.trangthai = item;this.LoadData();" 
+                                <button (click)="Filter(item)" 
                                     [ngStyle]="{'font-weight': trangthai.id_row==item.id_row?'bold':''}"
-                                    mat-menu-item *ngFor="let item of status_dynamic">
-                                    {{item.statusname}}</button>
+                                    mat-menu-item *ngFor="let item of _filterTT">
+                                    {{item.title}}</button>
                             </mat-menu>
                         </div>
         

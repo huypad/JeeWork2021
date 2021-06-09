@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -27,11 +28,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
 
-        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
         APIModel.Models.Notify Knoti;
         /// <summary>
@@ -54,7 +57,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -264,7 +267,7 @@ from we_repeated_user u where u.Disabled = 0");
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -406,7 +409,7 @@ from we_repeated_Task task where task.Disabled=0";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -514,7 +517,7 @@ from we_repeated_Task task where task.Disabled=0";
                     strRe += (strRe == "" ? "" : ",") + "các ngày lặp lại";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -669,7 +672,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -712,7 +715,7 @@ from we_repeated_Task task where task.Disabled=0";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
@@ -772,7 +775,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -810,7 +813,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -848,7 +851,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id_repeated + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)

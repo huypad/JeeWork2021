@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using JeeWork_Core2021.Models;
 using APIModel.APIModelFolder;
 using UserManager = JeeWork_Core2021.Classes.UserManager;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Users
 {
@@ -28,23 +29,25 @@ namespace JeeWork_Core2021.Controllers.Users
         LoginController lc;
         private IConfiguration _config;
         private UserManager CustomUserManager { get; set; }
+        private IConnectionCache ConnectionCache;
 
         public LoginController()
         {
             // hàm khởi tạo không tham số
         }
-        public LoginController(IOptions<JeeWorkConfig> config, IConfiguration configLogin)
+        public LoginController(IOptions<JeeWorkConfig> config, IConfiguration configLogin, IConnectionCache _cache)
         {
+            ConnectionCache = _cache;
             // hàm khởi tạo có tham số
-            CustomUserManager = new UserManager(config);
+            CustomUserManager = new UserManager(config,_cache);
             _config = configLogin;
         }
         // trả về thông tin user
-        public LoginData AuthenticateUser(string username, string password, long cur_Vaitro = 0)
+        public LoginData AuthenticateUser(string username, string password,long CustomerID, long cur_Vaitro = 0)
         {
             try
             {
-                var account = CustomUserManager.FindAsync(username, password, cur_Vaitro);
+                var account = CustomUserManager.FindAsync(username, password, CustomerID, cur_Vaitro);
                 if (account != null)
                 {
                     //account.Rules = CustomUserManager.GetRules(username);

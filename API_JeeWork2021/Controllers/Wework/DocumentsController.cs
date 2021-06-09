@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -26,9 +27,10 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
-
-        public DocumentsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        private IConnectionCache ConnectionCache;
+        public DocumentsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
+            ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
         }
@@ -60,9 +62,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", _config, DataAccount);
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
@@ -178,7 +180,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
             try
             {
                 string sqlq = "a";
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;

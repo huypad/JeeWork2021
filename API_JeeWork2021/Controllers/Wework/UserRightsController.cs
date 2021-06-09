@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -26,10 +27,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
-        public WW_UserRightsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        private IConnectionCache ConnectionCache;
+
+        public WW_UserRightsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
         /// <summary>
         /// Nhóm người dùng ---
@@ -60,7 +64,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             string sqlq = "";
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "GroupName asc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config,DataAccount);
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
             DataTable dt = new DataTable();
             try
             {
@@ -74,7 +78,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     sqlq = $@"select Id_group, GroupName, isadmin 
                             from Tbl_Group
@@ -171,7 +175,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     sqlq = $@"select * from Tbl_Group_Account
                         where { whereStr } order by { orderByStr}";
@@ -280,7 +284,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     sqlq = $@"select username from tbl_group_account where id_group=@ID_Nhom";
                     dt = cnn.CreateDataTable(sqlq, Conds);
@@ -369,7 +373,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 val.Add("LastModified", DateTime.Now);
                 val.Add("CustemerID", loginData.CustomerID);
                 val.Add("Module", data.Module);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = $@"select ISNULL((select count(*) from tbl_group 
                                 where groupname = N'" + data.TenNhom + "'),0)";
@@ -407,7 +411,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             Hashtable val = new Hashtable();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     val.Add("username", data.UserName);
                     val.Add("id_group", data.ID_Nhom);
@@ -461,7 +465,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 Conds.Add("username", data.UserName);
                 Conds.Add("id_group", data.ID_Nhom);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -511,7 +515,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 Conds.Add("id_group", id);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = $@"select ISNULL((select count(*) 
                                     from {_config.HRCatalog}.dbo.Tbl_Group_Account 
@@ -574,7 +578,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             dt_staff.Columns.Add("CustomerID", typeof(int));
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "Username asc", whereStr = "nv.thoiviec = 0  and nv.disable=0 and CustemerID=@CustemerID";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", _config,DataAccount);
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
             DataTable dt = new DataTable();
             try
             {
@@ -596,7 +600,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy danh sách nhân viên từ JeeAccount
                     DataAccount = new List<AccUsernameModel>();
@@ -671,7 +675,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             Hashtable val = new Hashtable();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     foreach (NguoiDungAddData data in arr_data)
                     {
@@ -737,7 +741,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     sqlq = $@"select Id_permit, Tenquyen, Id_group, LangKey, IsReadPermit 
                         from Tbl_Permision 
@@ -855,7 +859,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             StringCollection ReadOnlyPermit = new StringCollection();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     Conds = new SqlConditions();
                     string tableName = "tbl_group_permit";
@@ -953,7 +957,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             StringCollection ReadOnlyPermit = new StringCollection();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     Conds = new SqlConditions();
                     Conds.Add("username", arr_data[0].ID);
@@ -1015,11 +1019,16 @@ namespace JeeWork_Core2021.Controllers.Wework
         }
         [HttpGet]
         [Route("GetRolesForUser_WeWork")]
-        public object GetRolesForUser_WeWork(string username)
+        public object GetRolesForUser_WeWork(string username,long CustomerID)
         {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData != null)
+                CustomerID = loginData.CustomerID;
             try
             {
-                string[] listrole = Common.GetRolesForUser_WeWork(username, _config);
+                string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
+                DpsConnection Conn = new DpsConnection(ConnectionString);
+                string[] listrole = Common.GetRolesForUser_WeWork(username, Conn);
                 return listrole;
             }
             catch (Exception e)

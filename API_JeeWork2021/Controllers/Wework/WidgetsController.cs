@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using RestSharp;
 using Newtonsoft.Json;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -31,11 +32,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
 
-        public WidgetsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public WidgetsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache
+)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
         [Route("my-projects")]
         [HttpGet]
@@ -52,7 +56,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -227,9 +231,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (query == null)
                     query = new QueryParams();
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
                     string domain = _config.LinkAPI;
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
@@ -457,7 +461,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string hoanthanh = "";
                     string quahan = "";
@@ -470,7 +474,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     else
                     {
-                        string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                        string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
                         hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                         quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
                         todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
@@ -583,7 +587,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -652,7 +656,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,_config);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionCache);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -684,9 +688,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -788,7 +792,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "Id_NV", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,_config);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "Id_NV", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionCache);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -868,9 +872,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, JeeWorkConfig config, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, DataTable dtOld = null)
         {
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 //get template
                 string sql = "select * from we_template where id_row=" + id_template;
@@ -947,6 +951,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     template = template.Replace(key, val);
                 }
 
+                // #update guimail
                 string HRConnectionString = JeeWorkConstant.getHRCnn();
                 DpsConnection cnnHR = new DpsConnection(HRConnectionString);
                 MailInfo MInfo = new MailInfo(nguoigui.CustomerID.ToString(), cnnHR);
@@ -962,7 +967,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 continue;
                             string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
                             string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, config);
+                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString);
                         }
                     }
                 }
@@ -989,9 +994,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
                     if (DataAccount == null)
@@ -1025,7 +1030,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     string strW = "";
-                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), _config);
+                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), ConnectionCache.GetConnectionString(loginData.CustomerID));
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         strW = " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
@@ -1282,9 +1287,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", _config,DataAccount);
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
 join we_department d on d.id_row = p.id_department
@@ -1528,11 +1533,11 @@ join we_project_team_user u on u.id_project_team = p.id_row
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, JeeWorkConfig config, DataTable dtOld = null)
+        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, DataTable dtOld = null)
         {
             if (users == null || users.Count == 0)
                 return;
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
                 DataTable dtUser = new DataTable();
@@ -1548,7 +1553,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, config, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, dtOld);
             }
         }
         /// <summary>
@@ -1626,9 +1631,9 @@ join we_project_team_user u on u.id_project_team = p.id_row
         /// </summary>
         /// <param name="id_project_team"></param>
         /// <returns></returns>
-        public static DataTable GetListField(long id_project_team, JeeWorkConfig config)
+        public static DataTable GetListField(long id_project_team, string ConnectionString)
         {
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
                 cond.Add("1", 1);
@@ -1665,7 +1670,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
                 return dt;
             }
         }
-        public static bool CheckRole(long role, string user, long id_project, JeeWorkConfig config)
+        public static bool CheckRole(long role, string user, long id_project, string ConnectionString)
         {
             BaseModel<object> model = new BaseModel<object>();
             PageModel pageModel = new PageModel();
@@ -1676,7 +1681,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
             SqlConditions cond = new SqlConditions();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     cond.Add("id_project_team", id_project);
                     cond.Add("id_user", user);
@@ -1720,14 +1725,14 @@ join we_project_team_user u on u.id_project_team = p.id_row
                 return false;
             }
         }
-        public static bool CheckNotify_ByConditions(long id_project, string key, bool IsProject, JeeWorkConfig config)
+        public static bool CheckNotify_ByConditions(long id_project, string key, bool IsProject, string ConnectionString)
         {
             DataTable dt_Key = new DataTable();
             string sqlq = "";
             SqlConditions cond = new SqlConditions();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     cond.Add("id_project_team", id_project);
                     cond.Add("disabled", 0);
@@ -1758,10 +1763,10 @@ join we_project_team_user u on u.id_project_team = p.id_row
                 return false;
             }
         }
-        public static DataTable StatusDynamic(long id_project, List<AccUsernameModel> DataAccount, JeeWorkConfig config)
+        public static DataTable StatusDynamic(long id_project, List<AccUsernameModel> DataAccount, string ConnectionString)
         {
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 string query = "";
                 query = $@"select id_row, StatusName, description, id_project_team,IsToDo
@@ -1789,11 +1794,11 @@ where Disabled = 0";
             #endregion
             return dt;
         }
-        public static bool Init_RoleDefault(long projectid, List<long> list_roles, JeeWorkConfig config)
+        public static bool Init_RoleDefault(long projectid, List<long> list_roles, string ConnectionString)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 string role = "";
                 for (int i = 0; i < list_roles.Count; i++)
@@ -2001,11 +2006,11 @@ where Disabled = 0";
         /// <param name="WorkID"></param>
         /// <param name="statusID"></param>
         /// <returns></returns>
-        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config)
+        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, string ConnectionString)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 string sqlq = "";
                 cond.Add("WorkID", WorkID);
@@ -2033,7 +2038,7 @@ where Disabled = 0";
                             return false;
                         }
                         var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                        mailthongbao(WorkID, users, 10, data, config);
+                        mailthongbao(WorkID, users, 10, data, ConnectionString);
                         return true;
                     }
                     return true;
@@ -2082,7 +2087,7 @@ where Disabled = 0";
         /// <param name="cnn"></param>
         /// <param name="pHeader"></param>
         /// <returns></returns>
-        public static string getListDepartment_GetData(UserJWT info, DpsConnection cnn, IHeaderDictionary pHeader, JeeWorkConfig config)
+        public static string getListDepartment_GetData(UserJWT info, DpsConnection cnn, IHeaderDictionary pHeader, JeeWorkConfig config, IConnectionCache ConnectionCache)
         {
             #region Lấy dữ liệu account từ JeeAccount
             List<AccUsernameModel> DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, config);
@@ -2096,7 +2101,7 @@ where Disabled = 0";
             if (error != "")
                 return "";
             #endregion
-            bool Visible = Common.CheckRoleByToken(info.Token, "3400", config,DataAccount);
+            bool Visible = Common.CheckRoleByToken(info.Token, "3400", ConnectionCache.GetConnectionString(info.CustomerID), DataAccount);
             SqlConditions conds = new SqlConditions();
             conds.Add("id_user", info.UserID);
 

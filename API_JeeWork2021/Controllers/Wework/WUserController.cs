@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -26,11 +27,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
 
-        public WUserController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public WUserController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
         /// <summary>
         /// DS account
@@ -83,7 +86,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                 }
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     DataTable dt = new DataTable();
                     dt.Columns.Add("UserId");
@@ -173,7 +176,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     dtStaff = Common.GetListByManager(id.ToString(), cnn);//id_nv, hoten...
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -319,7 +322,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             PageModel pageModel = new PageModel();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -427,7 +430,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;

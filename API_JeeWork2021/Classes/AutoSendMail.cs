@@ -401,7 +401,7 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
 
 
         }
-        public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config)
+        public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config,string ConnectionString)
         {
             try
             {
@@ -409,13 +409,14 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
                 string mcc = config.Error_MailCC;
                 if (!string.IsNullOrEmpty(mailto))
                 {
-                    using (DpsConnection cnn = new DpsConnection(config.HRConnectionString))
+                    // #update #mail
+                    using (DpsConnection cnn = new DpsConnection(ConnectionString))
                     {
                         MailInfo MInfo = new MailInfo(custemerid, cnn);
                         MailAddressCollection cc = new MailAddressCollection();
                         if (!string.IsNullOrEmpty(mcc))
                             cc.Add(mcc);
-                        SendMail.Send(mailto, "Lỗi JeeWork", cc, "Nội dung lỗi: " + errormsg, custemerid, "", false, out errormsg, MInfo, config);
+                        SendMail.Send(mailto, "Lỗi JeeWork", cc, "Nội dung lỗi: " + errormsg, custemerid, "", false, out errormsg, MInfo, ConnectionString);
                     }
                 }
             }

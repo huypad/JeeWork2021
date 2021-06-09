@@ -152,7 +152,7 @@ export class ReportByProjectComponent implements OnInit {
       title: this.translate.instant('day.theongaybatdau'),
       value: 'StartDate',
     },
-  ]
+  ] 
   _filterTT = [
     {
       title: this.translate.instant('filter.tatcatrangthai'),

@@ -5,7 +5,10 @@
 				<div class="user-info-container">
 					<div class="user-info">
 						<div class="kt-user-card__avatar">
-							<img alt="" src="{{UserData.Image}}">
+							<!-- <img alt="" src="{{UserData.Image}}"> -->
+							<kt-avatar-user [image]="UserData.Image" size="40" [name]="UserData.HoTen"
+								[info]="'@' + UserData.username">
+							</kt-avatar-user>
 						</div>
 						<div class="kt-user-card__name">
 							<span class="m-card-user__name">{{UserData.HoTen}}</span>

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using System.Globalization;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -27,11 +28,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
 
-        public PersonalController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public PersonalController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
         [Route("my-work")]
         [HttpGet]
@@ -43,7 +46,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select w.*, IIF(w.Status = 1 and getdate() > w.deadline,1,0) as is_quahan,
@@ -116,11 +119,11 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
 
                     #region danh sách department, list status hoàn thành, trễ,đang làm
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
                     string list_Complete = "";
                     list_Complete = ReportController.GetListStatusDynamic(listDept, cnn,"IsFinal");
                     string list_Deadline = "";
@@ -214,7 +217,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_work where id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -262,7 +265,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_project_team where id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -316,7 +319,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -372,7 +375,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -472,7 +475,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 {
                     dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten,tenchucdanh...
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
 
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))

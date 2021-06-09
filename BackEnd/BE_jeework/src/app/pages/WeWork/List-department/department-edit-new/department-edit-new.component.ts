@@ -1,3 +1,4 @@
+import { values } from 'lodash';
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
@@ -81,6 +82,8 @@ export class DepartmentEditNewComponent implements OnInit {
 	listSTT :any = [];
 	listDefaultView :any = [];
 	IsUpdate :any;
+
+	formData:any;
 	public defaultColors: string[] = [
 		'rgb(187, 181, 181)',
 		'rgb(29, 126, 236)',
@@ -194,7 +197,9 @@ export class DepartmentEditNewComponent implements OnInit {
 
 	LoadDetail(item){
 		this.TempSelected = item.Template[0].TemplateID;
-
+		setTimeout(() => {
+			this.LoadListSTT();
+		}, 1000);
 		this.listDefaultView.forEach(x=>{
 			var isCheck = item.DefaultView.find(view => view.viewid == x.id_row);
 			if(isCheck || x.is_default){
@@ -272,6 +277,10 @@ export class DepartmentEditNewComponent implements OnInit {
 	}
 	createForm() {
 		this.itemFormGroup = this.fb.group({
+			title: [this.item.title, Validators.required],
+			dept_name: [this.item.id_cocau],
+		});
+		this.formData = this.fb.group({
 			title: [this.item.title, Validators.required],
 			dept_name: [this.item.id_cocau],
 		});
@@ -426,7 +435,25 @@ export class DepartmentEditNewComponent implements OnInit {
 		this.hasFormErrors = false;
 	}
 	close() {
-		this.dialogRef.close();
+		const _title = this.translate.instant('GeneralKey.xacnhanthoat');
+		const _description = this.translate.instant('GeneralKey.bancomuonthoat');
+		const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
+		const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
+		if(this.isChangeData()){
+			const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
+			dialogRef.afterClosed().subscribe(res => {
+				if (!res) {
+					return;
+				}
+				this.dialogRef.close();
+			});
+		} else this.dialogRef.close();
+	}
+	isChangeData(){
+		const val1 = this.prepare();
+		if(val1.title != this.item.title) return true;
+		if(this.item.RowID > 0 && val1.Owners != this.item.Owners) return true;
+		return false;
 	}
 	reset() {
 		this.item = Object.assign({}, this.item);

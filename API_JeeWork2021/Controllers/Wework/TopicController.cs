@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -27,9 +28,10 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
-
-        public TopicController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        private IConnectionCache ConnectionCache;
+        public TopicController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
+            ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
         }
@@ -62,9 +64,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom(error);
                 #endregion
 
-                bool Visible = Common.CheckRoleByToken(Token, "3610", _config,DataAccount);
+                bool Visible = Common.CheckRoleByToken(Token, "3610", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
 
                     SqlConditions Conds = new SqlConditions();
@@ -215,7 +217,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -375,7 +377,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -477,7 +479,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     strRe += (strRe == "" ? "" : ",") + "nội dung topic";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -594,7 +596,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -645,7 +647,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + topic + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -712,12 +714,12 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + topic + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Topic");
-                    sqlq = "select * from we_topic_user where id_topic = " + topic + " and id_user=" + user;
+                    sqlq = "select * from we_topic_user where id_topic = " + topic + " and id_user=" + user + " and Disabled = 0";
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (dt.Rows.Count > 0)
                     {

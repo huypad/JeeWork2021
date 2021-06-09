@@ -12,7 +12,7 @@ export class LayoutConfig {
 			},
 			'logo': {
 				'dark': './assets/media/logos/logo-light.png',
-				'light': 'https://share-devgcs.basecdn.net/apps/wework.png',
+				'light': './assets/images/Jee_Work.png',
 				'brand': './assets/media/logos/logo-light.png',
 				'green': './assets/media/logos/logo-light.png',
 			}

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -26,11 +27,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
 
-        public MilestoneController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public MilestoneController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
         [Route("List")]
         [HttpGet]
@@ -47,7 +50,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -194,7 +197,7 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
             try
             {
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -224,7 +227,7 @@ iIf(w.Status={hoanthanh} and w.end_date>w.deadline,1,0) as is_htquahan,
 iIf(w.Status={hoanthanh} and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
 iIf(w.Status not in ({hoanthanh},{quahan}),1,0) as is_danglam,
 iIf(w.Status = {quahan}, 1, 0) as is_quahan
-from v_wework_clickup w
+from v_wework_clickup_new w
 where w.disabled=0 and id_milestone = " + id;
                     //                    sqlq += @"; select count(CASE WHEN w.Status=2 and w.end_date<=w.deadline THEN 1 END) as htquahan ,
                     //count(CASE WHEN w.Status=2 and w.end_date>w.deadline THEN 1 END) as htdunghan ,
@@ -440,7 +443,7 @@ where w.disabled=0 and id_milestone = " + id;
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -504,7 +507,7 @@ where w.disabled=0 and id_milestone = " + id;
                     strRe += (strRe == "" ? "" : ",") + "người phụ trách";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -570,7 +573,7 @@ where w.disabled=0 and id_milestone = " + id;
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_milestone where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)

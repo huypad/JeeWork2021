@@ -54,6 +54,7 @@ export class ProjectTeamEditComponent implements OnInit {
 	_Assign: string = '';
 	accordionclose: boolean = true;
 	isChangeDept = true;
+	IsChangeUser = false;
 	@ViewChild(MatAccordion, { static: true }) accordion: MatAccordion;
 	//icon
 	icon: any = {};
@@ -209,7 +210,7 @@ export class ProjectTeamEditComponent implements OnInit {
 		this.myPopover.hide();
 	}
 	ItemSelected(data) {
-
+		this.IsChangeUser = true;
 		if (data.id_nv == this.UserId && !(this.item.id_row > 0)) {
 			return;
 		}
@@ -254,6 +255,7 @@ export class ProjectTeamEditComponent implements OnInit {
 	}
 	
 	ItemSelected_Assign(data) {
+		this.IsChangeUser = true;
 		
 		if (data.id_nv == this.UserId && !(this.item.id_row > 0)) {
 			return;
@@ -437,7 +439,30 @@ export class ProjectTeamEditComponent implements OnInit {
 		this.hasFormErrors = false;
 	}
 	close() {
-		this.dialogRef.close();
+		const _title = this.translate.instant('GeneralKey.xacnhanthoat');
+		const _description = this.translate.instant('GeneralKey.bancomuonthoat');
+		const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
+		const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
+		if(this.isChangeData()){
+			const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
+			dialogRef.afterClosed().subscribe(res => {
+				if (!res) {
+					return;
+				}
+				this.dialogRef.close();
+			});
+		} else this.dialogRef.close();
+	}
+
+	isChangeData(){
+		const val1 = this.prepare();
+		if(val1.title != this.item.title) return true;
+		if(val1.color != this.item.color) return true;
+		if(val1.id_department != this.item.id_department) return true;
+		if(val1.description != this.item.description) return true;
+		if(val1.loai != this.item.loai) return true;
+		if(this.IsChangeUser) return true;
+		return false;
 	}
 	reset() {
 		this.item = Object.assign({}, this.item);

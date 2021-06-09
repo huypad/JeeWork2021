@@ -165,12 +165,11 @@ namespace JeeWork_Core2021.Classes
                 return roles;
             }
         }
-        public static string[] GetRolesForUser_WeWork(string username, JeeWorkConfig config)
+        public static string[] GetRolesForUser_WeWork(string username, DpsConnection Conn)
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("Username", username);
-            using (DpsConnection Conn = new DpsConnection(config.ConnectionString))
-            {
+
                 DataTable quyennhom = Conn.CreateDataTable("select Id_permit from tbl_group_permit gp " +
                     "inner join tbl_group_account gu on gp.id_group=gu.id_group where Username=@Username", Conds);
                 StringCollection colroles = new StringCollection();
@@ -185,7 +184,7 @@ namespace JeeWork_Core2021.Classes
                     roles[i] = colroles[i];
                 }
                 return roles;
-            }
+
 
         }
         public static string GetHeader(HttpRequest request)
@@ -219,7 +218,7 @@ namespace JeeWork_Core2021.Classes
         /// <param name="token">token</param>
         /// <param name="role">role</param>
         /// <returns></returns>
-        public static bool CheckRoleByToken(string userID, string role, JeeWorkConfig config, List<AccUsernameModel> DataAccount)
+        public static bool CheckRoleByToken(string userID, string role, string ConnectionString, List<AccUsernameModel> DataAccount)
         {
             if (string.IsNullOrEmpty(userID))
                 return false;
@@ -230,7 +229,7 @@ namespace JeeWork_Core2021.Classes
                 var info = DataAccount.Where(x => userID.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 SqlConditions Conds = new SqlConditions();
                 Conds.Add("userID", userID);
-                using (DpsConnection ConnWW = new DpsConnection(config.ConnectionString))
+                using (DpsConnection ConnWW = new DpsConnection(ConnectionString))
                 {
                     //DataTable dt = ConnWW.CreateDataTable(select, Conds);
                    // if (dt.Rows.Count <= 0) return false;

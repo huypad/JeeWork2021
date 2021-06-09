@@ -362,8 +362,28 @@ export class TopicEditComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close();
+    const _title = this.translate.instant('GeneralKey.xacnhanthoat');
+		const _description = this.translate.instant('GeneralKey.bancomuonthoat');
+		const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
+		const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
+		if(this.isChangeData()){
+			const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
+			dialogRef.afterClosed().subscribe(res => {
+				if (!res) {
+					return;
+				}
+				this.dialogRef.close();
+			});
+		} else this.dialogRef.close();
   }
+  isChangeData(){
+		const val1 = this.prepare();
+		if(val1.title != this.item.title) return true;
+		if(val1.email != this.item.email+"") return true;
+		if(val1.id_project_team != this.item.id_project_team) return true;
+		if(val1.description != this.item.description) return true;
+		return false;
+	}
   reset() {
     this.item = Object.assign({}, this.item);
     this.createForm();

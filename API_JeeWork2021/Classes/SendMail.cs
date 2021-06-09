@@ -29,7 +29,7 @@ namespace JeeWork_Core2021.Classes
             // TODO: Add constructor logic here
             //
         }
-        public static bool Send(string templatefile, Hashtable Replace, string mailTo, string title, MailAddressCollection cc, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, JeeWorkConfig config)
+        public static bool Send(string templatefile, Hashtable Replace, string mailTo, string title, MailAddressCollection cc, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, string ConnectionString)
         {
             if ((mailTo == null) || ("".Equals(mailTo.Trim())))
             {
@@ -50,9 +50,9 @@ namespace JeeWork_Core2021.Classes
             {
                 contents = contents.Replace(Ent.Key.ToString(), Ent.Value.ToString());
             }
-            return Send(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, config);
+            return Send(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, ConnectionString);
         }
-        public static bool Send(string templatefile, Hashtable Replace, string mailTo, string title, MailAddressCollection cc, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, JeeWorkConfig config)
+        public static bool Send(string templatefile, Hashtable Replace, string mailTo, string title, MailAddressCollection cc, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
             if ((mailTo == null) || ("".Equals(mailTo.Trim())))
             {
@@ -76,9 +76,9 @@ namespace JeeWork_Core2021.Classes
             MailAddress email = new MailAddress(mailTo);
             MailAddressCollection To = new MailAddressCollection();
             To.Add(email);
-            return Send(To, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, MInfo, config);
+            return Send(To, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, MInfo, ConnectionString);
         }
-        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, JeeWorkConfig config)
+        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, string ConnectionString)
         {
             if (mailTo.Count <= 0)
             {
@@ -86,7 +86,7 @@ namespace JeeWork_Core2021.Classes
                 return true;
             }
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
                 cond.Add("RowID", CustemerID);
@@ -95,7 +95,7 @@ namespace JeeWork_Core2021.Classes
             if (dt.Rows.Count <= 0)
             {
                 if (SaveCannotSend)
-                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, config);
+                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, ConnectionString);
                 ErrorMessage = "Không tìm thấy cấu hình mailserver";
                 return false;
             }
@@ -105,7 +105,7 @@ namespace JeeWork_Core2021.Classes
                 if (!int.TryParse(dt.Rows[0]["Port"].ToString(), out port))
                 {
                     if (SaveCannotSend)
-                        SaveMailCannotSend(title, mailTo, contents, "Chưa cấu hình email", cc, CustemerID, config);
+                        SaveMailCannotSend(title, mailTo, contents, "Chưa cấu hình email", cc, CustemerID, ConnectionString);
                     ErrorMessage = "Thông tin port trong cấu hình mail server không hợp lệ";
                     return false;
                 }
@@ -150,7 +150,7 @@ namespace JeeWork_Core2021.Classes
                 m.Subject = title;
                 m.Body = contents;
                 if (!"".Equals(guiden)) guiden = guiden.Substring(1);
-                DpsConnection cnn1 = new DpsConnection(config.ConnectionString);
+                DpsConnection cnn1 = new DpsConnection(ConnectionString);
                 try
                 {
                     s.Send(m);
@@ -193,7 +193,7 @@ namespace JeeWork_Core2021.Classes
             ErrorMessage = "";
             return true;
         }
-        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string TempateFile, Hashtable Replace, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, JeeWorkConfig config)
+        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string TempateFile, Hashtable Replace, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, string ConnectionString)
         {
             string contents = "";
             try
@@ -209,16 +209,16 @@ namespace JeeWork_Core2021.Classes
             {
                 contents = contents.Replace(Ent.Key.ToString(), Ent.Value.ToString());
             }
-            return Send(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, config);
+            return Send(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, ConnectionString);
         }
-        public static bool Send(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, JeeWorkConfig config)
+        public static bool Send(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, string ConnectionString)
         {
             MailAddress email = new MailAddress(mailTo);
             MailAddressCollection to = new MailAddressCollection();
             to.Add(email);
-            return Send(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, config);
+            return Send(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, ConnectionString);
         }
-        public static bool SendWithConnection(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, JeeWorkConfig config)
+        public static bool SendWithConnection(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, string ConnectionString)
         {
             if (mailTo.Count <= 0)
             {
@@ -232,7 +232,7 @@ namespace JeeWork_Core2021.Classes
             if (dt.Rows.Count <= 0)
             {
                 if (SaveCannotSend)
-                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, config);
+                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, ConnectionString);
                 ErrorMessage = "Không tìm thấy cấu hình mailserver";
                 return false;
             }
@@ -242,7 +242,7 @@ namespace JeeWork_Core2021.Classes
                 if (!int.TryParse(dt.Rows[0]["Port"].ToString(), out port))
                 {
                     if (SaveCannotSend)
-                        SaveMailCannotSend(title, mailTo, contents, "Chưa cấu hình email", cc, CustemerID, config);
+                        SaveMailCannotSend(title, mailTo, contents, "Chưa cấu hình email", cc, CustemerID, ConnectionString);
                     ErrorMessage = "Thông tin port trong cấu hình mail server không hợp lệ";
                     return false;
                 }
@@ -327,7 +327,7 @@ namespace JeeWork_Core2021.Classes
             ErrorMessage = "";
             return true;
         }
-        public static bool SendWithConnection(MailAddressCollection mailTo, string title, MailAddressCollection cc, string TempateFile, Hashtable Replace, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, JeeWorkConfig config)
+        public static bool SendWithConnection(MailAddressCollection mailTo, string title, MailAddressCollection cc, string TempateFile, Hashtable Replace, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, string ConnectionString)
         {
             string contents = "";
             try
@@ -343,16 +343,16 @@ namespace JeeWork_Core2021.Classes
             {
                 contents = contents.Replace(Ent.Key.ToString(), Ent.Value.ToString());
             }
-            return SendWithConnection(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, cnn, config);
+            return SendWithConnection(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, cnn, ConnectionString);
         }
-        public static bool SendWithConnection(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, JeeWorkConfig config)
+        public static bool SendWithConnection(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, string ConnectionString)
         {
             MailAddress email = new MailAddress(mailTo);
             MailAddressCollection to = new MailAddressCollection();
             to.Add(email);
-            return SendWithConnection(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, cnn, config);
+            return SendWithConnection(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, cnn, ConnectionString);
         }
-        public static bool SendWithConnection(string templatefile, Hashtable Replace, string mailTo, string title, MailAddressCollection cc, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, JeeWorkConfig config)
+        public static bool SendWithConnection(string templatefile, Hashtable Replace, string mailTo, string title, MailAddressCollection cc, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, string ConnectionString)
         {
             if ((mailTo == null) || ("".Equals(mailTo.Trim())))
             {
@@ -373,9 +373,9 @@ namespace JeeWork_Core2021.Classes
             {
                 contents = contents.Replace(Ent.Key.ToString(), Ent.Value.ToString());
             }
-            return SendWithConnection(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, cnn, config);
+            return SendWithConnection(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, cnn, ConnectionString);
         }
-        private static void SaveMailCannotSend(string title, MailAddressCollection mailTo, string contents, string error, MailAddressCollection cc, string CustemerID, JeeWorkConfig config)
+        private static void SaveMailCannotSend(string title, MailAddressCollection mailTo, string contents, string error, MailAddressCollection cc, string CustemerID, string ConnectionString)
         {
             Hashtable val = new Hashtable();
             val.Add("Title", title);
@@ -392,12 +392,12 @@ namespace JeeWork_Core2021.Classes
             }
             if (!"".Equals(guikem)) guikem = guikem.Substring(1);
             val.Add("cc", guikem);
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 cnn.Insert(val, "Tbl_emailchuaguiduoc");
             }
         }
-        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string TempateFile, Hashtable Replace, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, JeeWorkConfig config)
+        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string TempateFile, Hashtable Replace, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
             string contents = "";
             try
@@ -413,9 +413,9 @@ namespace JeeWork_Core2021.Classes
             {
                 contents = contents.Replace(Ent.Key.ToString(), Ent.Value.ToString());
             }
-            return Send(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, MInfo, config);
+            return Send(mailTo, title, cc, contents, CustemerID, "", SaveCannotSend, out ErrorMessage, MInfo, ConnectionString);
         }
-        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, JeeWorkConfig config)
+        public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
             if (mailTo.Count <= 0)
             {
@@ -425,7 +425,7 @@ namespace JeeWork_Core2021.Classes
             if (string.IsNullOrEmpty(MInfo.Email))
             {
                 if (SaveCannotSend)
-                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, config);
+                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, ConnectionString);
                 ErrorMessage = "Không tìm thấy cấu hình mailserver";
                 return false;
             }
@@ -471,7 +471,7 @@ namespace JeeWork_Core2021.Classes
                     m.Subject = title;
                     m.Body = contents;
                     if (!"".Equals(guiden)) guiden = guiden.Substring(1);
-                    DpsConnection cnn1 = new DpsConnection(config.ConnectionString);
+                    DpsConnection cnn1 = new DpsConnection(ConnectionString);
                     try
                     {
                         s.Send(m);
@@ -512,21 +512,21 @@ namespace JeeWork_Core2021.Classes
             ErrorMessage = "";
             return true;
         }
-        public static bool Send(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, JeeWorkConfig config)
+        public static bool Send(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
             MailAddress email = new MailAddress(mailTo);
             MailAddressCollection to = new MailAddressCollection();
             to.Add(email);
-            return Send(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, config);
+            return Send(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, ConnectionString);
         }
-        public static bool Send_Synchronized(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, JeeWorkConfig config)
+        public static bool Send_Synchronized(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
             MailAddress email = new MailAddress(mailTo);
             MailAddressCollection to = new MailAddressCollection();
             to.Add(email);
-            return Send_Synchronized(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, config);
+            return Send_Synchronized(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, ConnectionString);
         }
-        public static bool Send_Synchronized(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, JeeWorkConfig config)
+        public static bool Send_Synchronized(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
             if (mailTo.Count <= 0)
             {
@@ -536,7 +536,7 @@ namespace JeeWork_Core2021.Classes
             if ("".Equals(MInfo.Email))
             {
                 if (SaveCannotSend)
-                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, config);
+                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, ConnectionString);
                 ErrorMessage = "Không tìm thấy cấu hình mailserver";
                 return false;
             }
@@ -580,7 +580,7 @@ namespace JeeWork_Core2021.Classes
                 m.Subject = title;
                 m.Body = contents;
                 if (!"".Equals(guiden)) guiden = guiden.Substring(1);
-                    DpsConnection cnn1 = new DpsConnection(config.ConnectionString);
+                    DpsConnection cnn1 = new DpsConnection(ConnectionString);
                 try
                 {
                     s.Send(m);

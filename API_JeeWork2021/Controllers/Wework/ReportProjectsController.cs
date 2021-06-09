@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text;
 using static JeeWork_Core2021.Controllers.Wework.ReportController.Simulate;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -33,11 +34,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         public static string excel_project;
         public static string excel_department;
         public List<AccUsernameModel> DataAccount;
+        private IConnectionCache ConnectionCache;
 
-        public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            ConnectionCache = _cache;
         }
 
         /// <summary>
@@ -93,8 +96,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and w.status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -106,7 +115,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                 }    
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -245,10 +254,16 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select status, count(*) as value 
@@ -332,7 +347,7 @@ where w.disabled=0  " + strW;
                     cond.Add("status", query.filter["status"]);
                 }
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select d.id_row, d.title, coalesce(value,0) as value from  we_department d
@@ -426,14 +441,20 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -562,14 +583,20 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
 
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -683,14 +710,20 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -798,7 +831,7 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -895,7 +928,7 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1053,7 +1086,7 @@ where w.disabled=0  " + strW;
                 if (query == null)
                     query = new QueryParams();
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1097,8 +1130,14 @@ where w.disabled=0  " + strW;
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        }
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -1275,14 +1314,20 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
 
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -1345,7 +1390,7 @@ where w.disabled=0  " + strW;
                 if (query == null)
                     query = new QueryParams();
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1400,9 +1445,14 @@ where w.disabled=0  " + strW;
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
-                        strW += " and status=@status";
-                        //strW1 += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        }
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -1506,7 +1556,7 @@ where w.disabled=0  " + strW;
                 if (query == null)
                     query = new QueryParams();
                 string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
@@ -1553,8 +1603,14 @@ where w.disabled=0  " + strW;
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
-                        strW += " and status=@status";
-                        cond.Add("status", query.filter["status"]);
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        }
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -1695,7 +1751,7 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
 
                     string sql_query = "";
@@ -1848,7 +1904,7 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
 
                     string sql_query = "";
@@ -2000,7 +2056,7 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sql_query = "";
                     sql_query = "select title " +
@@ -2118,7 +2174,7 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -2227,13 +2283,19 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {
                     string sqlq = @"select tag.id_row,tag.title from we_tag tag 
 join we_project_team p on tag.id_project_team=p.id_row

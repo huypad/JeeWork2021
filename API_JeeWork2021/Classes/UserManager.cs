@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Collections.Specialized;
 using JeeWork_Core2021.Models;
 using JeeWork_Core2021.Classes;
+using DPSinfra.ConnectionCache;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -26,14 +27,17 @@ namespace JeeWork_Core2021.Classes
     {
         private JeeWorkConfig _config;
         private const string PASSWORD_ED = "rpNuGJebgtBEp0eQL1xKnqQG";
+        private IConnectionCache ConnectionCache;
         //private IOptions<JRConfig> MailConfig;
         //private readonly IHostingEnvironment _hostingEnvironment;
-        public UserManager()
+        public UserManager( IConnectionCache _cache)
         {
+            ConnectionCache = _cache;
         }
-        public UserManager(IOptions<JeeWorkConfig> configLogin)
+        public UserManager(IOptions<JeeWorkConfig> configLogin, IConnectionCache _cache)
         {
             _config = configLogin.Value;
+            ConnectionCache = _cache;
         }
         //public UserManager(IOptions<JRConfig> configLogin, IHostingEnvironment hostingEnvironment)
         //{
@@ -48,10 +52,10 @@ namespace JeeWork_Core2021.Classes
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public LoginData FindAsync(string userName, string password, long cur_Vaitro = 0)
+        public LoginData FindAsync(string userName, string password,long CustomerID, long cur_Vaitro = 0)
         {
             DataTable Tb = null;
-            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
             {
                 //                string sqlq = @"select u.*, dm.title as DonVi,dm.Code as MaDinhDanh, dm.Capcocau, dm.ID_Goc,cc1.ID_Goc as Id_Goc_Cha from Dps_User u 
                 //join Tbl_Cocautochuc dm on u.IdDonVi=dm.RowID
@@ -134,13 +138,13 @@ namespace JeeWork_Core2021.Classes
         /// </summary>
         /// <param name="IdUser"></param>
         /// <returns></returns>
-        public string GetRules(string username)
+        public string GetRules(string username,long CustomerID)
         {
             string list = "", sql_listRole = "";
             DataTable Tb = null;
             SqlConditions cond = new SqlConditions();
-            string[] listrole = GetRolesForUser(username.ToString());
-            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+            string[] listrole = GetRolesForUser(username.ToString(), CustomerID);
+            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
             {
 
                 for (int i = 0; i < listrole.Length; i++)
@@ -171,11 +175,11 @@ namespace JeeWork_Core2021.Classes
         }
 
 
-        public string[] GetRolesForUser(string username)
+        public string[] GetRolesForUser(string username, long CustomerID)
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("Username", username);
-            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
             {
                 DataTable Tb = Conn.CreateDataTable("select * from Tbl_Account_Permit where (where)", "(where)", Conds);
                 DataTable quyennhom = Conn.CreateDataTable("select Id_permit from Tbl_group_permit gp inner join Tbl_group_account gu on gp.id_group=gu.id_group where (where)", "(where)", Conds);
@@ -242,9 +246,9 @@ namespace JeeWork_Core2021.Classes
         //        /// </summary>
         //        /// <param name="role"></param>
         //        /// <returns></returns>
-        //        public List<long> GetUserByRole(long role)
+        //        public List<long> GetUserByRole(long role, long CustomerID)
         //        {
-        //            using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+        //            using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
         //            {
 
         //                string sqlQ = @"select distinct u.UserID from Dps_User u
@@ -265,10 +269,10 @@ namespace JeeWork_Core2021.Classes
         //        /// </summary>
         //        /// <param name="IdUser"></param>
         //        /// <returns></returns>
-        //        public List<int> GetUserGroup(string IdUser)
+        //        public List<int> GetUserGroup(string IdUser, long CustomerID)
         //        {
         //            DataTable Tb = null;
-        //            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString)) //db QLPA
+        //            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID))) //db QLPA
         //            {
         //                string sqlq = @"select distinct a.IdUser,b.IdGroup,b.GroupName
         //                                    from Tbl_User_GroupUser a
@@ -293,10 +297,10 @@ namespace JeeWork_Core2021.Classes
         //        /// </summary>
         //        /// <param name="group"></param>
         //        /// <returns></returns>
-        //        public Dictionary<int, List<int>> GetGroupRole_Roles(List<int> group)
+        //        public Dictionary<int, List<int>> GetGroupRole_Roles(List<int> group, long CustomerID)
         //        {
         //            Dictionary<int, List<int>> dic = new Dictionary<int, List<int>>();
-        //            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString)) //db QLPA
+        //            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID))) //db QLPA
         //            {
         //                for (int i = 0; i < group.Count; i++)
         //                {
@@ -326,11 +330,11 @@ namespace JeeWork_Core2021.Classes
         /// <param name="oldpassword">mật khẩu cũ</param>
         /// <param name="password">mật khẩu mới</param>
         /// <returns></returns>
-        public BaseModel<object> ChangePass(string iduser, string oldpassword, string password)
+        public BaseModel<object> ChangePass(string iduser, string oldpassword, string password,long CustomerID)
         {
             if (string.IsNullOrEmpty(password) || password.Length < 6)
                 return JsonResultCommon.Custom("Mật khẩu mới quá ngắn");
-            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
             {
                 var Tb = Conn.CreateDataTable("select PasswordHash from Dps_User where UserID = @Id", new SqlConditions() { { "Id", iduser } });
                 if (Tb == null || Tb.Rows.Count != 1)
@@ -355,9 +359,9 @@ namespace JeeWork_Core2021.Classes
         ///// <param name="iduser"></param>
         ///// <param name="password"></param>
         ///// <returns></returns>
-        //public string ResetPass(string iduser, string password)
+        //public string ResetPass(string iduser, string password, long CustomerID)
         //{
-        //    using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+        //    using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
         //    {
         //        var Tb = Conn.CreateDataSet(@"select * from Dps_User where UserID = @Id 
         //                                        select * from Sys_Config where Code='SEND_MAIL_RESET_PASS'", new SqlConditions() { { "Id", iduser } });
@@ -433,10 +437,10 @@ namespace JeeWork_Core2021.Classes
         /// <param name="UserNameorID">id người dùng hoặc tên đăng nhập</param>
         /// <param name="loai">0: kiểm tra bằng ID, 1: username</param>
         /// <returns></returns>
-        public bool CheckNguoiDung(string UserNameorID, int loai)
+        public bool CheckNguoiDung(string UserNameorID, int loai, long CustomerID)
         {
             DataTable Tb = null;
-            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
             {
                 SqlConditions sqlcond = new SqlConditions();
 
@@ -466,10 +470,10 @@ namespace JeeWork_Core2021.Classes
         /// <param name="email">email</param>
         /// <param name="UserId">0: khi insert, 1: khi update</param>
         /// <returns></returns>
-        public bool CheckEmail(string email, long UserId)
+        public bool CheckEmail(string email, long UserId,long CustomerID)
         {
             DataTable Tb = null;
-            using (DpsConnection Conn = new DpsConnection(_config.ConnectionString))
+            using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
             {
                 SqlConditions sqlcond = new SqlConditions();
 

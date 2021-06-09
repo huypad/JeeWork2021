@@ -166,11 +166,12 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   }
 
   private getLogo() {
-    if (this.brandSkin === 'light') {
-      return 'https://share-devgcs.basecdn.net/apps/wework.png';
-    } else {
-      return 'https://share-devgcs.basecdn.net/apps/wework.png';
-    }
+    // if (this.brandSkin === 'light') {
+    //   return 'https://share-devgcs.basecdn.net/apps/wework.png';
+    // } else {
+    //   return 'https://share-devgcs.basecdn.net/apps/wework.png';
+    // }
+	return './../../../../../assets/images/jeework_logo.png'
   }
 //   https://share-devgcs.basecdn.net/apps/wiki.png
   focusOutProject(value, item) {
@@ -333,6 +334,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 				this.UpdateProject(_project);
 				this.changeDetectorRefs.detectChanges();
 			}
+			else{
+				this.layoutUtilsService.showError(res.error.message);
+			}
 		});
 	}
 
@@ -341,6 +345,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 			if (res && res.status == 1) {
 				// return res.data.locked;
 				// return res.data;
+			}
+			else{
+				this.layoutUtilsService.showError(res.error.message);
 			}
 		});
 	}
@@ -363,6 +370,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 				model = res.data;
 				this.Update_ClosedProject(model);
 				this.changeDetectorRefs.detectChanges();
+			}
+			else{
+				this.layoutUtilsService.showError(res.error.message);
 			}
 		});
 	}
@@ -413,6 +423,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 					}
 				});
 			}
+			else{
+				this.layoutUtilsService.showError(res.error.message);
+			}
 		});
 
 	}
@@ -459,6 +472,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 						// this.changeDetectorRefs.detectChanges();
 					}
 				});
+			}
+			else{
+				this.layoutUtilsService.showError(res.error.message);
 			}
 		});
 
@@ -534,6 +550,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 						this.changeDetectorRefs.detectChanges();
 					}
 				});
+			}
+			else{
+				this.layoutUtilsService.showError(res.error.message);
 			}
 		})
 	}

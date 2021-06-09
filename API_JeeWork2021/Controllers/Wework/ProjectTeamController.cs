@@ -257,7 +257,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config);
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "tong desc", dieukien_where = " ";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
@@ -1129,7 +1129,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     var list_roles = new List<long> { 1 };
-                    if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, _config))
+                    if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, ConnectionCache.GetConnectionString(loginData.CustomerID)))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
@@ -2570,7 +2570,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             PageModel pageModel = new PageModel();
             try
             {
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", _config,DataAccount);
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
                 string domain = _config.LinkAPI;
                 using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
                 {

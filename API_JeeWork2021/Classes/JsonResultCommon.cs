@@ -94,7 +94,7 @@ namespace JeeWork_Core2021.Classes
                 if (last_error != null)
                     noidungmail += "<br>Chi tiết:<br>" + last_error.StackTrace;
                 if (custemerid > 0)
-                    AutoSendMail.SendErrorReport(custemerid.ToString(), noidungmail, config);
+                    AutoSendMail.SendErrorReport(custemerid.ToString(), noidungmail, config,"");
             }
             return new BaseModel<object>()
             {

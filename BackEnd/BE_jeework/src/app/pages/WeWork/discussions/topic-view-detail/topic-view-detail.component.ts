@@ -189,8 +189,8 @@ export class ViewTopicDetailComponent implements OnInit {
 		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
 		const dialogRef = this.dialog.open(TopicEditComponent, { data: { _item } });
 		dialogRef.afterClosed().subscribe(res => {
+			this.ngOnInit();
 			if (res) {
-				this.ngOnInit();
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				this.changeDetectorRefs.detectChanges();
 			}
