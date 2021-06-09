@@ -131,6 +131,7 @@ namespace JeeWork_Core2021.Models
 
         [System.Text.Json.Serialization.JsonIgnore]
         public List<RefreshToken> RefreshTokens { get; set; }
+
         public CustomData customdata { get; set; }
         public object appCode { get; set; }
     }
