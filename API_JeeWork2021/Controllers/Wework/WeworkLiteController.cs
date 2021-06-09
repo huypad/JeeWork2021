@@ -100,10 +100,12 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
                 {
-                    string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
-join we_department d on d.id_row = p.id_department
-join we_project_team_user u on u.id_project_team = p.id_row
- where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " order by title";
+                    string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, Locked 
+                                    from we_project_team p
+                                    join we_department d on d.id_row = p.id_department
+                                    join we_project_team_user u on u.id_project_team = p.id_row
+                                     where u.Disabled = 0 and id_user = " + loginData.UserID + " " +
+                                     "and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
@@ -113,6 +115,11 @@ join we_project_team_user u on u.id_project_team = p.id_row
                                    id_row = r["id_row"],
                                    title = r["title"],
                                    isproject = r["is_project"],
+                                   start_date = r["start_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["start_date"]),
+                                   end_date = r["end_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["end_date"]),
+                                   color = r["color"],
+                                   status = r["status"],
+                                   locked = r["locked"],
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
