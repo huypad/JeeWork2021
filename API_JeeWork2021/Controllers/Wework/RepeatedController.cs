@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -31,13 +32,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private INotifier _notifier;
 
-        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _notifier = notifier;
         }
         APIModel.Models.Notify Knoti;
         /// <summary>
@@ -948,7 +951,7 @@ from we_repeated_Task task where task.Disabled=0";
                                             foreach (DataRow row in dt_New_Data.Rows)
                                             {
                                                 var users = new List<long> { long.Parse(row["id_user"].ToString()) };
-                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, _config);
+                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier);
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
                                                 for (int i = 0; i < users.Count; i++)

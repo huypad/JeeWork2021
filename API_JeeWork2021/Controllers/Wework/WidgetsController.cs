@@ -19,6 +19,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -879,7 +880,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier notifier, DataTable dtOld = null)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
@@ -974,7 +975,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 continue;
                             string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
                             string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString);
+                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, notifier);
                         }
                     }
                 }
@@ -1542,7 +1543,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, DataTable dtOld = null)
+        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier notifier, DataTable dtOld = null)
         {
             if (users == null || users.Count == 0)
                 return;
@@ -1562,7 +1563,7 @@ join we_project_team_user u on u.id_project_team = p.id_row
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString,notifier, dtOld);
             }
         }
         /// <summary>
@@ -2015,7 +2016,7 @@ where Disabled = 0";
         /// <param name="WorkID"></param>
         /// <param name="statusID"></param>
         /// <returns></returns>
-        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, string ConnectionString)
+        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, string ConnectionString, INotifier notifier)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
@@ -2047,7 +2048,7 @@ where Disabled = 0";
                             return false;
                         }
                         var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                        mailthongbao(WorkID, users, 10, data, ConnectionString);
+                        mailthongbao(WorkID, users, 10, data, ConnectionString,notifier);
                         return true;
                     }
                     return true;

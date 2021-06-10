@@ -1644,7 +1644,7 @@ where u.id_user in ({listID})";
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, DataTable dtOld = null)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
@@ -1738,7 +1738,7 @@ where u.id_user in ({listID})";
                                 continue;
                             string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
                             string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString);
+                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString,_notifier);
                         }
                     }
                 }
@@ -1791,11 +1791,11 @@ where u.id_user in ({listID})";
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, JeeWorkConfig config, DataTable dtOld = null)
+        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, DataTable dtOld = null)
         {
             if (users == null || users.Count == 0)
                 return;
-            using (DpsConnection cnn = new DpsConnection(config.ConnectionString))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
                 DataTable dtUser = new DataTable();
@@ -1811,7 +1811,7 @@ where u.id_user in ({listID})";
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, config.ConnectionString, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString,_notifier, dtOld);
             }
         }
         /// <summary>
@@ -2264,7 +2264,7 @@ where Disabled = 0";
         /// <param name="WorkID"></param>
         /// <param name="statusID"></param>
         /// <returns></returns>
-        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config,string ConnectionString)
+        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config,string ConnectionString, INotifier _notifier)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
@@ -2296,7 +2296,7 @@ where Disabled = 0";
                             return false;
                         }
                         var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                        mailthongbao(WorkID, users, 10, data, config);
+                        mailthongbao(WorkID, users, 10, data, ConnectionString,_notifier);
                         return true;
                     }
                     return true;

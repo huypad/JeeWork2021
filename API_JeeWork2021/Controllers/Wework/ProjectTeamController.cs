@@ -980,7 +980,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
                     List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
-                    WeworkLiteController.mailthongbao(idc, data.Users.Where(x => x.admin).Select(x => x.id_user).ToList(), 6, loginData, _config);//thiết lập vai trò admin
+                    WeworkLiteController.mailthongbao(idc, data.Users.Where(x => x.admin).Select(x => x.id_user).ToList(), 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
                     #region Notify thiết lập vai trò admin
                     for (int i = 0; i < users_admin.Count; i++)
                     {
@@ -1013,7 +1013,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         
                     }
                     #endregion
-                    WeworkLiteController.mailthongbao(idc, data.Users.Where(x => !x.admin).Select(x => x.id_user).ToList(), 5, loginData, _config);//thêm vào dự án
+                    WeworkLiteController.mailthongbao(idc, data.Users.Where(x => !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier);//thêm vào dự án
                     #region Notify thiết lập vai trò member
                     for (int i = 0; i < users_member.Count; i++)
                     {
@@ -1182,7 +1182,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     data.id_row = idc;
                     Hashtable has_replace = new Hashtable();
                     var users_admin = new List<long> { iduser };
-                    WeworkLiteController.mailthongbao(idc, users_admin, 6, loginData, _config);//thiết lập vai trò admin
+                    WeworkLiteController.mailthongbao(idc, users_admin, 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
                     #region Notify thiết lập vai trò admin
                     for (int i = 0; i < users_admin.Count; i++)
                     {
@@ -1218,7 +1218,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     foreach (DataRow item in dt_member.Rows)
                     {
                         var users_member = new List<long> { long.Parse(item["id_user"].ToString()) };
-                        WeworkLiteController.mailthongbao(idc, users_member, 5, loginData, _config);//thêm vào dự án
+                        WeworkLiteController.mailthongbao(idc, users_member, 5, loginData, ConnectionString, _notifier);//thêm vào dự án
                         #region Notify thiết lập vai trò member
                         for (int i = 0; i < users_member.Count; i++)
                         {
@@ -1412,7 +1412,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     }
                     cnn.EndTransaction();
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList(), 6, loginData, _config);//thiết lập vai trò admin
+                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList(), 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
                     List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
@@ -1448,7 +1448,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     #endregion
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList(), 5, loginData, _config);//thêm vào dự án
+                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier);//thêm vào dự án
                     #region Notify thiết lập vai trò member
                     for (int i = 0; i < users_member.Count; i++)
                     {
@@ -1497,7 +1497,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                         if (id_template > 0)
                         {
-                            WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row > 0).Select(x => x.id_user).ToList(), id_template, loginData, _config, old);
+                            WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row > 0).Select(x => x.id_user).ToList(), id_template, loginData, ConnectionString, _notifier, old);
                             #region Notify thiết lập vai trò member
                             for (int i = 0; i < users_member.Count; i++)
                             {
@@ -2185,7 +2185,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     #region Notify thiết lập vai trò admin
                     if (users_admin.Count > 0)
                     {
-                        WeworkLiteController.mailthongbao(data.id_row, users_admin, 6, loginData, _config);//thiết lập vai trò admin
+                        WeworkLiteController.mailthongbao(data.id_row, users_admin, 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
                         for (int i = 0; i < users_admin.Count; i++)
                         {
                             NotifyModel notify_model = new NotifyModel();
@@ -2221,7 +2221,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     #region Notify thiết lập vai trò member
                     if (users_member.Count > 0)
                     {
-                        WeworkLiteController.mailthongbao(data.id_row, users_member, 5, loginData, _config);//thêm vào dự án
+                        WeworkLiteController.mailthongbao(data.id_row, users_member, 5, loginData, ConnectionString, _notifier);//thêm vào dự án
                         for (int i = 0; i < users_member.Count; i++)
                         {
                             NotifyModel notify_model = new NotifyModel();
@@ -2364,7 +2364,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         id_template = 6;//thiết lập vai trò admin
                     else
                         id_template = 7;//Thay đổi vai trò từ admin thành member
-                    WeworkLiteController.mailthongbao(id_project_team, users, id_template, loginData, _config);
+                    WeworkLiteController.mailthongbao(id_project_team, users, id_template, loginData, ConnectionString, _notifier);
                     #region Notify thiết lập vai trò member
                     object projectname = cnn.ExecuteScalar("select title from we_project_team where Disabled = 0 and id_row = @id_row", new SqlConditions() { { "id_row", id_project_team } });
                     if (projectname != null)

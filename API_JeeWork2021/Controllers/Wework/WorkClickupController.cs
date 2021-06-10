@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Text;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -35,13 +36,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private INotifier _notifier;
 
-        public WorkClickupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration )
+        public WorkClickupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _notifier = notifier;
 
         }
         APIModel.Models.Notify Knoti;
@@ -2474,7 +2477,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, _config);
+                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString,_notifier);
                     #region Notify thêm mới công việc
                     Hashtable has_replace = new Hashtable();
                     for (int i = 0; i < data.Users.Count; i++)
@@ -2635,7 +2638,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                         }
                     }
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, _config);
+                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier);
                     cnn.EndTransaction();
                     #region Notify chỉnh sửa công việc
                     Hashtable has_replace = new Hashtable();
@@ -3237,7 +3240,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     {
                                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, _config, old);
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, old);
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
                                         for (int i = 0; i < users.Count; i++)
@@ -3288,7 +3291,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     {
                                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, _config, old);
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, ConnectionString, _notifier, old);
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
                                         for (int i = 0; i < users.Count; i++)
@@ -3330,7 +3333,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         if (data.key == "status")
                         {
                             cnn.EndTransaction();
-                            WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config, ConnectionString);
+                            WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config, ConnectionString, _notifier);
                             DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                             if (dt_user.Rows.Count > 0)
                             {
@@ -3342,7 +3345,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         if (int.Parse(data.value.ToString()) == 2)
                                         {
-                                            WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, _config);
+                                            WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, ConnectionString, _notifier);
                                             #region Notify cập nhật trạng thái công việc hoàn thành
                                             Hashtable has_replace = new Hashtable();
                                             for (int i = 0; i < users.Count; i++)
@@ -3379,7 +3382,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         }
                                         if (int.Parse(data.value.ToString()) == 1)
                                         {
-                                            WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, _config);
+                                            WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, ConnectionString, _notifier);
                                             #region Notify cập nhật trạng thái công việc đang làm
                                             Hashtable has_replace = new Hashtable();
                                             for (int i = 0; i < users.Count; i++)
@@ -3471,7 +3474,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 if (data.IsStaff) // Trường hợp Case update về giá trị NULL thì không gửi email (Người nhận = null nên gửi không được)
                                 {
                                     var users = new List<long> { long.Parse(data.value.ToString()) };
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, _config);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier);
                                     #region Notify assign
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -3754,7 +3757,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         if (dt_user.Rows.Count > 0)
                         {
                             var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                            WeworkLiteController.mailthongbao(id, users, 15, loginData, _config);
+                            WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier);
                             object workname = cnn.ExecuteScalar("select title from we_work where Disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
                             if (workname != null)
                                 workname = workname.ToString();

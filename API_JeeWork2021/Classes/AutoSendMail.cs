@@ -1,8 +1,11 @@
 ﻿using APIModel.DTO;
+using DPSinfra.ConnectionCache;
+using DPSinfra.Notifier;
 using DpsLibs.Data;
 using JeeWork_Core2021.Controllers.Wework;
 using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections;
@@ -18,7 +21,11 @@ namespace JeeWork_Core2021.Classes
     {
         private JeeWorkConfig _config;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public AutoSendMail(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment)
+        private IConfiguration _configuration;
+        private IConnectionCache ConnectionCache;
+        private string ConnectionString;
+        private INotifier _notifier;
+        public AutoSendMail(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
         {
             //
             // TODO: Add constructor logic here
@@ -30,12 +37,16 @@ namespace JeeWork_Core2021.Classes
             Timer5Minute = new System.Timers.Timer(300000);
             Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
             //10p chạy 1 lần
-            TimerSendNotify = new System.Timers.Timer(60000);
+            TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendNotify_Elapsed);
             //60p chạy 1 lần
             TimerAutoUpdate = new System.Timers.Timer(3600000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
             _config = config.Value;
+            _configuration = configuration;
+            ConnectionCache = _cache;
+            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache,1119,_configuration);
+            _notifier = notifier;
         }
         public string MsgError;
         private string _basePath;
@@ -107,14 +118,13 @@ namespace JeeWork_Core2021.Classes
                         string CustemerID = dt.Rows[i]["rowid"].ToString();
                         //MailInfo MInfo = new MailInfo(CustemerID, cnn);
                         //generate task from repeated
-                        using (DpsConnection cnnWW = new DpsConnection(_config.ConnectionString))
+                        using (DpsConnection cnnWW = new DpsConnection(ConnectionString))
                         {
                             Insert_Template(cnnWW, CustemerID);
                             EveryDayForceRun(cnnWW, CustemerID);
                             EveryDay_UpdateLate(cnnWW, CustemerID);
                             ThongBaoSapHetHan(cnnWW, CustemerID);
                             ThongBaoHetHan(cnnWW, CustemerID);
-
                         }
                     }
                 }
@@ -213,7 +223,7 @@ namespace JeeWork_Core2021.Classes
                                     loginData.CustomerID = int.Parse(CustemerID);
                                     loginData.LastName = "Hệ thống";
                                     loginData.UserID = 0;
-                                    WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, _config);
+                                    WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier);
                                     #region Notify thêm mới công việc
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -363,7 +373,7 @@ and deadline< (GETDATE() +CONVERT(INT, (select Giatri from Temp_Thamso where id_
             foreach (DataRow dr in dt.Rows)
             {
                 //users.Add(long.Parse(dr["Id_NV"].ToString()));
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, _config);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
             }
             //var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
             //List<long> listUser = users.Select(x => x.Id_NV).ToList();
@@ -391,7 +401,7 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
             foreach (DataRow dr in dt.Rows)
             {
                 //users.Add(long.Parse(dr["Id_NV"].ToString()));
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, _config);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
             }
             //var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
             //List<long> listUser = users.Select(x => x.Id_NV).ToList();

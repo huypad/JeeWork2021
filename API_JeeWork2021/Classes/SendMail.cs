@@ -12,6 +12,7 @@ using JeeWork_Core2021.Classes;
 using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -519,14 +520,14 @@ namespace JeeWork_Core2021.Classes
             to.Add(email);
             return Send(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, ConnectionString);
         }
-        public static bool Send_Synchronized(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
+        public static bool Send_Synchronized(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString, INotifier _notifier)
         {
             MailAddress email = new MailAddress(mailTo);
             MailAddressCollection to = new MailAddressCollection();
             to.Add(email);
-            return Send_Synchronized(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, ConnectionString);
+            return Send_Synchronized(to, title, cc, contents, CustemerID, AttacheFile, SaveCannotSend, out ErrorMessage, MInfo, ConnectionString, _notifier);
         }
-        public static bool Send_Synchronized(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
+        public static bool Send_Synchronized(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString, INotifier _notifier)
         {
             if (mailTo.Count <= 0)
             {
@@ -583,7 +584,17 @@ namespace JeeWork_Core2021.Classes
                     DpsConnection cnn1 = new DpsConnection(ConnectionString);
                 try
                 {
-                    s.Send(m);
+                    //s.Send(m);
+                    emailMessage asyncnotice = new emailMessage()
+                    {
+                        CustomerID = long.Parse(CustemerID),
+                        //from = "derhades1998@gmail.com",
+                        //to = "thanhthang1798@gmail.com", //
+                        to = guiden, //
+                        subject = title,
+                        html = contents //nội dung html
+                    };
+                     _notifier.sendEmail(asyncnotice);
                     //Lưu lại email đã gửi
                     Hashtable val = new Hashtable();
                     val.Add("MailTo", guiden);
@@ -629,9 +640,9 @@ namespace JeeWork_Core2021.Classes
         {
             InitialData(CustemerID, cnn);
         }
-        public MailInfo(string CustemerID)
+        public MailInfo(string CustemerID,string ConnectionString)
         {
-            using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 InitialData(CustemerID, cnn);
             }

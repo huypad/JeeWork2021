@@ -40,5 +40,18 @@ namespace API_JeeWork2021.Classes
             };
             await _notifier.sendEmail(asyncnotice);
         }
+        //  public static bool Send(string mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
+        public async void notificationemaiByCustomerIDl(long CustomerID,string mailTo,string title)
+        {
+            emailMessage asyncnotice = new emailMessage()
+            {
+                CustomerID = CustomerID,
+                from = "derhades1998@gmail.com",
+                to = "derhades1998@gmail.com",
+                subject = "Mail test",
+                html = "<h1>Hello World</h1>" //nội dung html
+            };
+            await _notifier.sendEmail(asyncnotice);
+        }
     }
 }

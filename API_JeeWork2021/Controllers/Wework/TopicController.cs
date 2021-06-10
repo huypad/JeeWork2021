@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -31,12 +32,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        public TopicController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        private INotifier _notifier;
+        public TopicController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
         {
             ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             _configuration = configuration;
+            _notifier = notifier;
         }
         /// <summary>
         /// 
@@ -452,7 +455,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     cnn.EndTransaction();
 
                     if (data.email)
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, _config);
+                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier);
                     data.id_row = idc;
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -576,7 +579,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     cnn.EndTransaction();
                     if (data.email)
-                        WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, _config);
+                        WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
