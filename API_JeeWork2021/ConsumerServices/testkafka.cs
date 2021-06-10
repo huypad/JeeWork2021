@@ -18,13 +18,13 @@ namespace JeeWork_Core2021.ConsumerServices
             _config = config;
 
             //get group 
-            var groupid = _config.GetValue<string>("KafkaConfig:groupTestJA");
+            var groupid = _config.GetValue<string>("KafkaConfig:Consumer:JeeWorkGroupInit");
             testkafkaConsumer = new Consumer(_config, groupid);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var topicProduceByJA = _config.GetValue<string>("KafkaConfig:topicProduceByJA");
+            var topicProduceByJA = _config.GetValue<string>("KafkaConfig:Consumer:JeeWorkGroupInit");
             _ = Task.Run(() =>
             {
                 testkafkaConsumer.SubscribeAsync(topicProduceByJA, Console.WriteLine);

@@ -13,6 +13,7 @@ using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using System.Collections.Specialized;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -24,12 +25,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            _configuration = configuration;
         }
         //private JeeWorkConfig _config;
         // Đang sửa
@@ -55,16 +58,16 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (loginData != null)
                 {
-                    string ConnectionString = ConnectionCache.GetConnectionString(loginData.CustomerID);
+                    string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                     using (DpsConnection Conn = new DpsConnection(ConnectionString))
                     {
                         #region Lấy dữ liệu account từ JeeAccount
-                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                         string err = "";
-                        string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _config);
+                        string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
                         if (err != "")
                             return JsonResultCommon.Custom(err);
                         #endregion
@@ -268,7 +271,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             try
             {
                 //ConnectionCache.GetConnectionString(CustomerID)
-                using (DpsConnection Conn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection Conn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";
                     sqlq = "select * from we_project_team " +

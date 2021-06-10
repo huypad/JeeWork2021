@@ -19,7 +19,7 @@
         </ng-container>
     </kt-portlet-header>
     <kt-portlet-body class="pd-0">
-        <form [formGroup]="itemForm" style="background-color: #eee;" [ngStyle]="{'height': getHeight()}" class="kt-form kt-forkt--group-seperator-dashed">
+        <form [formGroup]="itemForm" style="background-color: #eee;overflow: auto;" [ngStyle]="{'height': getHeight()}" class="kt-form kt-forkt--group-seperator-dashed">
             <div class="row" style="padding-bottom: 20px !important; padding-right: 25px;">
                 <div class="col-xl-3" style="padding: 25px 0 0 25px;" *ngFor="let list of listDept">
                     <div class="kt-portlet kt-card">

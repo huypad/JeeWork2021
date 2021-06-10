@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Specialized;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -29,12 +30,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public WorkGroupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public WorkGroupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
 
         [Route("List")]
@@ -51,7 +54,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
@@ -126,7 +130,8 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select * from we_group where disabled=0 and id_row=" + id;
@@ -176,7 +181,8 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -234,7 +240,8 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     strRe += (strRe == "" ? "" : ",") + "tên nhóm làm việc";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -301,7 +308,9 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+
                 {
                     string sqlq = "select ISNULL((select count(*) from we_group where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -341,7 +350,9 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);

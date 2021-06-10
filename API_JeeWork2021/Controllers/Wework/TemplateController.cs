@@ -13,6 +13,7 @@ using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -28,12 +29,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public TemplateController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public TemplateController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -56,7 +59,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strRe += (strRe == "" ? "" : ",") + "tên mẫu";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -146,7 +150,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strRe += (strRe == "" ? "" : ",") + "tên mẫu";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -254,7 +259,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";
                     string errors = "";
@@ -354,7 +360,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strCheck += " and statusname=@name";
                     sqlcond.Remove(sqlcond["customerid"]);
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (data.columname.Equals("title"))
                     {

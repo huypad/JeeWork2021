@@ -7,7 +7,7 @@ import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core'; 
 
-const API_Lite = environment.APIROOTS + 'api/wework-lite';
+const API_Lite = environment.APIROOTS + '/api/wework-lite';
 
 
 @Injectable()

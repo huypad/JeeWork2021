@@ -8,8 +8,8 @@ import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-const API_Project_Team = environment.APIROOTS + 'api/project-team';
-const API_work = environment.APIROOTS + 'api/work';
+const API_Project_Team = environment.APIROOTS + '/api/project-team';
+const API_work = environment.APIROOTS + '/api/work';
 
 
 @Injectable()

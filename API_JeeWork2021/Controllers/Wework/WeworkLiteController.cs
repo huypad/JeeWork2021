@@ -41,8 +41,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         private INotifier _notifier;
         private IProducer _producer;
         private IConnectionCache ConnectionCache;
-
-        public WeworkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache)
+        private IConfiguration _configuration;
+        public WeworkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration)
         {
             notify = new Notification(notifier);
             _hostingEnvironment = hostingEnvironment;
@@ -50,6 +50,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             _producer = producer;
             _iconfig = Configuration;
             ConnectionCache = _cache;
+            _configuration = configuration;
 
         }
         /// <summary>
@@ -66,7 +67,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select id_row, title from we_department where Disabled=0 and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -101,7 +103,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, Locked 
                                     from we_project_team p
@@ -147,7 +150,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
 join we_department d on d.id_row = p.id_department
@@ -188,17 +192,18 @@ join we_project_team_user u on u.id_project_team = p.id_row
             {
                 //bool Visible = Common.CheckRoleByToken(HttpContext.Request.Headers, "3400");
                 bool Visible = true;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -273,7 +278,8 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             {
                 if (id_project_team <= 0)
                     return new List<string>();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select id_row, title,deadline from we_milestone where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -310,7 +316,8 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             {
                 if (id_project_team <= 0)
                     return new List<string>();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select id_row, title, color from we_tag where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -348,7 +355,8 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
             {
                 if (id_project_team <= 0)
                     return new List<string>();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select id_row, title from we_group where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -383,18 +391,19 @@ from we_department de  (admin) and de.CreatedBy in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -468,13 +477,13 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
             }
         }
-        public static DataTable List_Account_HR(long CocauID, IHeaderDictionary pHeader, JeeWorkConfig config)
+        public static DataTable List_Account_HR(long CocauID, IHeaderDictionary pHeader, IConfiguration _configuration)
         {
             List<AccUsernameModel> DataAccount;
             DataTable dt = new DataTable();
 
             #region Lấy dữ liệu account từ JeeAccount
-            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, config);
+            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, _configuration);
             if (DataAccount == null)
                 return new DataTable();
             #endregion
@@ -509,18 +518,19 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -579,7 +589,8 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select * from we_emotion";
                     if (id > 0)
@@ -587,7 +598,7 @@ where u.id_user in ({listID})";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
-                    string domain = _config.LinkAPI;
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                     var data = new List<object>();
                     foreach (DataRow r in dt.Rows)
                     {
@@ -632,7 +643,8 @@ where u.id_user in ({listID})";
             {
                 if (id_work <= 0)
                     return new List<string>();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions cond = new SqlConditions();
                     cond.Add("tag.Disabled", 0);
@@ -797,9 +809,10 @@ where u.id_user in ({listID})";
             {
                 //if (id_project_team <= 0)
                 //    return new List<string>();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    DataTable dt = GetListField(id_project_team,ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    DataTable dt = GetListField(id_project_team,ConnectionString);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
 
@@ -839,7 +852,8 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select * from we_fields where isnewfield = 1";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -875,7 +889,8 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     DataTable dt = cnn.CreateDataTable("select id_row, title, ColumnName, description, priority, Disabled " +
                         "from we_list_processing " +
@@ -916,20 +931,21 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
 
-                    DataTable dt = StatusDynamic(id_project_team, DataAccount, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    DataTable dt = StatusDynamic(id_project_team, DataAccount, ConnectionString);
                     DataTable dt_work = cnn.CreateDataTable("select id_row, title, status " +
                         "from we_work " +
                         "where disabled = 0 and id_project_team = " + id_project_team + "");
@@ -998,7 +1014,8 @@ where u.id_user in ({listID})";
                 query = "select id_row, title, color, locked from we_project_team where Disabled = 0;" +
                     "select id_row, StatusName, description, id_project_team, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo " +
                     "from we_status where Disabled = 0";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     DataSet ds = cnn.CreateDataSet(query);
                     DataTable dt = ds.Tables[0];
@@ -1053,7 +1070,8 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";
                     SqlConditions conditions = new SqlConditions();
@@ -1104,8 +1122,9 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = ""; string getValue = ""; string sql_cmd = "";
                     string column_name = ", '' as DefaultView, '' as ObjectID, '' as view_id";
@@ -1182,7 +1201,8 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions conds = new SqlConditions(); string sql = "";
                     conds.Add("Disabled", 0);
@@ -1271,7 +1291,8 @@ where u.id_user in ({listID})";
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";
                     //SqlConditions conds = new SqlConditions();
@@ -1333,15 +1354,16 @@ where u.id_user in ({listID})";
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -2300,11 +2322,11 @@ where Disabled = 0";
             //WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 18, loginData);
             return true;
         }
-        public static string ListAccount(IHeaderDictionary pHeader, out string error, JeeWorkConfig config)
+        public static string ListAccount(IHeaderDictionary pHeader, out string error, IConfiguration _configuration)
         {
             error = "";
             List<AccUsernameModel> DataAccount;
-            DataAccount = GetAccountFromJeeAccount(pHeader, config);
+            DataAccount = GetAccountFromJeeAccount(pHeader, _configuration);
             if (DataAccount == null)
             {
                 error += "Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản";
@@ -2323,17 +2345,17 @@ where Disabled = 0";
         /// <param name="cnn"></param>
         /// <param name="pHeader"></param>
         /// <returns></returns>
-        public static string getListDepartment_GetData(UserJWT info, DpsConnection cnn, IHeaderDictionary pHeader, JeeWorkConfig config,string ConnectionString)
+        public static string getListDepartment_GetData(UserJWT info, DpsConnection cnn, IHeaderDictionary pHeader, IConfiguration _configuration, string ConnectionString)
         {
             #region Lấy dữ liệu account từ JeeAccount
-            List<AccUsernameModel> DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, config);
+            List<AccUsernameModel> DataAccount = WeworkLiteController.GetAccountFromJeeAccount(pHeader, _configuration);
             if (DataAccount == null)
                 return "";
 
             //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             //string ids = string.Join(",", nvs);
             string error = "";
-            string listID = WeworkLiteController.ListAccount(pHeader, out error, config);
+            string listID = WeworkLiteController.ListAccount(pHeader, out error, _configuration);
             if (error != "")
                 return "";
             #endregion
@@ -2363,14 +2385,14 @@ where Disabled = 0";
             string ids = string.Join(",", nvs);
             return ids;
         }
-        public static List<AccUsernameModel> GetAccountFromJeeAccount(IHeaderDictionary pHeader, JeeWorkConfig config)
+        public static List<AccUsernameModel> GetAccountFromJeeAccount(IHeaderDictionary pHeader, IConfiguration _configuration)
         {
             if (pHeader == null) return null;
             if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
             IHeaderDictionary _d = pHeader;
             string _bearer_token;
             _bearer_token = _d[HeaderNames.Authorization].ToString();
-            string API_Account = config.API_Account;
+            string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
             string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID";
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
@@ -2383,6 +2405,22 @@ where Disabled = 0";
             }
             else
                 return null;
+        }
+        /// <summary>
+        /// getConnectionString
+        /// </summary>
+        /// <param name="pHeader"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static string getConnectionString(IConnectionCache ConnectionCache, long CustomerID, IConfiguration _configuration )
+        {
+            var x = _configuration.GetValue<string>("AppConfig:IsOnlineDB");
+            string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
+            if(string.IsNullOrEmpty(x))
+            {
+                ConnectionString = _configuration.GetValue<string>("AppConfig:ConnectionString");
+            }
+            return ConnectionString;
         }
     }
 }

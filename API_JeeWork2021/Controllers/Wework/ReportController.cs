@@ -17,6 +17,7 @@ using System.Text;
 using static JeeWork_Core2021.Controllers.Wework.ReportController.Simulate;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -36,12 +37,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         public static string excel_department;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+
+        public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -62,22 +66,23 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (query == null)
                     query = new QueryParams();
                 string listDept = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
 
-                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -230,9 +235,10 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (query == null)
                     query = new QueryParams();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string  listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string  listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                     string list_Deadline = "";
@@ -327,10 +333,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (query == null)
                     query = new QueryParams();
 
-
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -446,9 +452,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     query = new QueryParams();
 
                 string listDept = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -592,9 +599,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (query == null)
                     query = new QueryParams();
                 string listDept = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -724,9 +732,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (query == null)
                     query = new QueryParams();
                 string listDept = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -847,9 +856,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (query == null)
                     query = new QueryParams();
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                             {
                                 { "CreatedDate", "CreatedDate"},
@@ -967,10 +977,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             {
                 if (query == null)
                     query = new QueryParams();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
-                    string domain = _config.LinkAPI;
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1033,12 +1044,12 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
 
                     }
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1177,21 +1188,22 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
 
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1382,10 +1394,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     query = new QueryParams();
 
                 string listDept = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
-                    string domain = _config.LinkAPI;
+                    listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1506,19 +1519,20 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1682,22 +1696,23 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
 
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
@@ -1862,10 +1877,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                 if (query == null)
                     query = new QueryParams();
                 string key = "";
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -2034,15 +2050,16 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
-            string domain = _config.LinkAPI;
+            string domain = _configuration.GetValue<string>("Host:JeeWork_API");
             try
             {
                 if (query == null)
                     query = new QueryParams();
                 string key = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -2214,11 +2231,12 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             {
                 if (query == null)
                     query = new QueryParams();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string key = "";
-                    string domain = _config.LinkAPI;
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                             {
                                 { "CreatedDate", "CreatedDate"},
@@ -2349,9 +2367,10 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                 if (query == null)
                     query = new QueryParams();
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                             {
                                 { "CreatedDate", "CreatedDate"},
@@ -2482,10 +2501,11 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             {
                 if (query == null)
                     query = new QueryParams();
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _config, ConnectionCache.GetConnectionString(loginData.CustomerID));
-                    string domain = _config.LinkAPI;
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                     Dictionary<string, string> collect = new Dictionary<string, string>
                             {
                                 { "CreatedDate", "CreatedDate"},

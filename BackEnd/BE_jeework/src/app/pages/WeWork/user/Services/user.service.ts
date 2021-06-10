@@ -9,9 +9,9 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AuthorizeModel } from '../Model/user.model';
 
-const API = environment.APIROOTS + 'api/wuser';
-const API_authorize = environment.APIROOTS + 'api/authorizecontroler';
-const API_Work=environment.APIROOTS + 'api/work';
+const API = environment.APIROOTS + '/api/wuser';
+const API_authorize = environment.APIROOTS + '/api/authorizecontroler';
+const API_Work=environment.APIROOTS + '/api/work';
 
 @Injectable()
 export class UserService {

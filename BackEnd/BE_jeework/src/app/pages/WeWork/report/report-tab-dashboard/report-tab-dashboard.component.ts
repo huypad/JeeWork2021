@@ -804,7 +804,7 @@ export class ReportTabDashboardComponent implements OnInit {
     })
   }
   ExportExcel(filename: string) {
-    var linkdownload = environment.APIROOTS + `/wework/report/ExportExcel?FileName=` + filename;
+    var linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
     window.open(linkdownload);
   }
 

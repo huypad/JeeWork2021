@@ -37,7 +37,7 @@ export class SocketioService {
       Authorization: `${auth!=null ? auth.access_token : ''}`,
     });
     const httpParam = new HttpParams().set('status', isRead)
-    return this.http.get<any>(environment.APINOTIFICATION+'/pull', {
+    return this.http.get<any>(environment.APINOTIFICATION+'/notification/pull', {
       headers: httpHeader,
       params: httpParam
     });
@@ -49,7 +49,7 @@ export class SocketioService {
       Authorization: `${auth!=null ? auth.access_token : ''}`,
     });
     let item = {"id":  id}
-    return this.http.post<any>(environment.APINOTIFICATION+'/read', item, { headers: httpHeader });
+    return this.http.post<any>(environment.APINOTIFICATION+'/notification/read', item, { headers: httpHeader });
   }
 
   getListApp(): Observable<any> {
@@ -59,7 +59,7 @@ export class SocketioService {
     });
     var UserID = localStorage.getItem("idUser");
     const httpParam = new HttpParams().set('userID', UserID)
-    return this.http.get<any>(environment.JEEACCOUNTAPI+'/accountmanagement/GetListAppByUserID', {
+    return this.http.get<any>(environment.JEEACCOUNTAPI+'/api/accountmanagement/GetListAppByUserID', {
         headers: httpHeader,
         params: httpParam
       });

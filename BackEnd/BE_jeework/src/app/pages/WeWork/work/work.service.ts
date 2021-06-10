@@ -7,14 +7,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-const API_work = environment.APIROOTS + 'api/work';
-const API_My_Work = environment.APIROOTS + 'api/personal';
-const API_filter = environment.APIROOTS + 'api/filter';
-const API_checklist = environment.APIROOTS + 'api/checklist';
-const API_repeated = environment.APIROOTS + 'api/repeated';
-const API_personal = environment.APIROOTS + 'api/personal';
-const API_work_group = environment.APIROOTS + 'api/work-group';
-const API_work_CU = environment.APIROOTS + 'api/work-click-up';
+const API_work = environment.APIROOTS + '/api/work';
+const API_My_Work = environment.APIROOTS + '/api/personal';
+const API_filter = environment.APIROOTS + '/api/filter';
+const API_checklist = environment.APIROOTS + '/api/checklist';
+const API_repeated = environment.APIROOTS + '/api/repeated';
+const API_personal = environment.APIROOTS + '/api/personal';
+const API_work_group = environment.APIROOTS + '/api/work-group';
+const API_work_CU = environment.APIROOTS + '/api/work-click-up';
 
 
 @Injectable()
@@ -94,7 +94,7 @@ export class WorkService {
 	// }
 	list_tag(id_project_team: number): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.get<any>(environment.APIROOTS + `/wework/wework-lite/lite_tag?id_project_team=${id_project_team}`, { headers: httpHeaders });
+		return this.http.get<any>(environment.APIROOTS + `/api/wework-lite/lite_tag?id_project_team=${id_project_team}`, { headers: httpHeaders });
 	}
 	InsertWork(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();

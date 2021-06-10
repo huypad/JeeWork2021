@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Text;
 using static JeeWork_Core2021.Controllers.Wework.ReportController.Simulate;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -35,12 +36,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         public static string excel_department;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -113,19 +116,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         strW += " and id_parent is null ";
                     }
-                }    
+                }
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -263,7 +267,8 @@ where w.disabled=0  " + strW;
                         strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
                     }
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select status, count(*) as value 
@@ -347,7 +352,8 @@ where w.disabled=0  " + strW;
                     cond.Add("status", query.filter["status"]);
                 }
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select d.id_row, d.title, coalesce(value,0) as value from  we_department d
@@ -454,7 +460,8 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -596,7 +603,8 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
 
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -723,7 +731,8 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -831,7 +840,8 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -889,7 +899,7 @@ where w.disabled=0  " + strW;
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -928,15 +938,16 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1085,16 +1096,17 @@ where w.disabled=0  " + strW;
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1279,7 +1291,7 @@ where w.disabled=0  " + strW;
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1327,7 +1339,8 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -1389,18 +1402,19 @@ where w.disabled=0  " + strW;
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1555,18 +1569,19 @@ where w.disabled=0  " + strW;
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1712,7 +1727,7 @@ where w.disabled=0  " + strW;
                 if (query == null)
                     query = new QueryParams();
                 string key = "";
-                string domain = _config.LinkAPI;
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1751,7 +1766,8 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
 
                     string sql_query = "";
@@ -1860,7 +1876,7 @@ where w.disabled=0  " + strW;
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
-            string domain = _config.LinkAPI;
+            string domain = _configuration.GetValue<string>("Host:JeeWork_API");
             try
             {
                 if (query == null)
@@ -1904,7 +1920,8 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
 
                     string sql_query = "";
@@ -2017,7 +2034,7 @@ where w.disabled=0  " + strW;
                 if (query == null)
                     query = new QueryParams();
                 string key = "";
-                string domain = _config.LinkAPI;
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -2056,7 +2073,8 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql_query = "";
                     sql_query = "select title " +
@@ -2174,7 +2192,8 @@ where w.disabled=0  " + strW;
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -2243,7 +2262,7 @@ where w.disabled=0  " + strW;
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _config.LinkAPI;
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -2295,7 +2314,8 @@ where w.disabled=0  " + strW;
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = @"select tag.id_row,tag.title from we_tag tag 
 join we_project_team p on tag.id_project_team=p.id_row

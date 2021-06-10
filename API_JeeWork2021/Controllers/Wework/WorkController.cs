@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -30,12 +31,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public WorkController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public WorkController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
         APIModel.Models.Notify Knoti;
         [Route("my-list")]
@@ -52,8 +55,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
                     DateTime from = DateTime.Now;
@@ -139,13 +143,14 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
                 DataTable dt = null;
                 using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
                 {
                     dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten...
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
                     DateTime from = DateTime.Now;
@@ -224,8 +229,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
@@ -342,8 +348,9 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_nv"]))
                         return JsonResultCommon.Custom("Thành viên");
@@ -465,7 +472,8 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                 temp.Add(new DataColumn() { ColumnName = "merge_title" });
                 DataColumn[] cols = temp.ToArray();
                 dt.Columns.AddRange(cols);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strG = @"select p.id_row, p.title from we_project_team_user u
 join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Disabled=0 and id_user=" + query.filter["id_nv"];
@@ -524,8 +532,9 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_filter"]))
                         return JsonResultCommon.Custom("Filter bắt buộc nhập");
@@ -607,8 +616,9 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
@@ -724,8 +734,9 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
@@ -803,8 +814,9 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
@@ -950,8 +962,9 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
                     DateTime from = DateTime.Now;
@@ -1034,8 +1047,9 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select w.*, nv.holot+' '+nv.ten as hoten_nguoigiao, Iif(fa.id_row is null ,0,1) as favourite,
@@ -1287,7 +1301,8 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -1432,7 +1447,8 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -1580,7 +1596,8 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             try
             {
                 string log_content = "";
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -1924,7 +1941,8 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_work where disabled=0 and id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -2010,7 +2028,8 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select * from we_work_user where disabled=0 and id_work=" + id + " and id_user=" + id_user;
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -2083,7 +2102,8 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 {
                     return JsonResultCommon.BatBuoc(strRe);
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -2163,8 +2183,9 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = @$"select l.*, act.action, act.action_en, act.format, act.sql,w.title,acc.* from we_log l 
 join we_log_action act on l.id_action = act.id_row
@@ -2262,7 +2283,8 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
                 temp.Add(new DataColumn() { ColumnName = "merge_title" });
                 DataColumn[] cols = temp.ToArray();
                 dt.Columns.AddRange(cols);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strG = @"select null as id_row, N'Chưa phân loại' as title union
 select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
@@ -2399,6 +2421,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                 return JsonResultCommon.DangNhap();
             try
             {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 if (data.id_project_team <= 0)
                     return JsonResultCommon.BatBuoc("Dự án/phòng ban");
                 if (data.Review || (!data.Review && data_import.dtW == null))
@@ -2420,7 +2443,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     if (!dt.Columns.Contains("STT"))
                         return JsonResultCommon.Custom("Dữ liệu không đúng định dạng");
                     DataSet ds;
-                    using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                    using (DpsConnection cnn = new DpsConnection(ConnectionString))
                     {
                         string sql = "select id_row, title from we_group where disabled=0 and id_project_team=@id";
                         sql += @$";select id_user, acc.hoten, acc.Username from we_project_team_user u
@@ -2714,7 +2737,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     }
                 }
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     int dem = 0;
                     int total = data_import.dtW.Rows.Count;
@@ -2865,7 +2888,8 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             try
             {
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strF = "select id_row from we_work_user where Disabled=0 and id_work=" + id + " and id_user=" + id_user;
                     var temp = cnn.ExecuteScalar(strF);
@@ -2921,7 +2945,8 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             {
                 if (data.Users == null || data.Users.Count == 0)
                     return JsonResultCommon.BatBuoc("người theo dõi");
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -2980,8 +3005,9 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
                     DateTime from = DateTime.Now;
@@ -3057,8 +3083,9 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");

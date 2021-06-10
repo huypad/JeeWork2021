@@ -13,6 +13,7 @@ using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -29,11 +30,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
-        public TopicController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        private IConfiguration _configuration;
+        public TopicController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
+            _configuration = configuration;
         }
         /// <summary>
         /// 
@@ -54,19 +57,20 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
 
-                bool Visible = Common.CheckRoleByToken(Token, "3610", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                bool Visible = Common.CheckRoleByToken(Token, "3610", ConnectionString, DataAccount);
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
 
                     SqlConditions Conds = new SqlConditions();
@@ -216,18 +220,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _config.LinkAPI;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _config);
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -377,7 +382,8 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -479,7 +485,8 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     strRe += (strRe == "" ? "" : ",") + "nội dung topic";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
@@ -596,7 +603,8 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -647,7 +655,8 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + topic + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -714,7 +723,8 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + topic + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)

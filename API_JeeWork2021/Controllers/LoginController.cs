@@ -39,7 +39,7 @@ namespace JeeWork_Core2021.Controllers.Users
         {
             ConnectionCache = _cache;
             // hàm khởi tạo có tham số
-            CustomUserManager = new UserManager(config,_cache);
+            CustomUserManager = new UserManager(config,_cache,configLogin);
             _config = configLogin;
         }
         // trả về thông tin user

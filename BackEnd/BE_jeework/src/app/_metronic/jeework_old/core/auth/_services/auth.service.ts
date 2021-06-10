@@ -10,7 +10,7 @@ import { TokenStorage } from './token-storage.service';
 import { AccessData } from '../../_base/crud/models/interfaces/access-data';
 import { DOCUMENT } from '@angular/common';
 import { BaseModel } from 'src/app/_metronic/shared/crud-table';
-const redirectUrl = environment.REDIRECTURL;
+const redirectUrl = environment.REDIRECTURL +'/?redirectUrl=';
 @Injectable()
 export class AuthenticationService {
     API_IDENTITY = `${environment.APIIDENTITY}`;

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -28,12 +29,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public WW_UserRightsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public WW_UserRightsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
         /// <summary>
         /// Nhóm người dùng ---
@@ -49,7 +52,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         public object Get_DSNhom([FromQuery] QueryParams query)
         {
             #region Lấy dữ liệu account từ JeeAccount
-            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
             if (DataAccount == null)
                 return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
@@ -64,7 +67,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             string sqlq = "";
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "GroupName asc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
+            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", ConnectionString, DataAccount);
             DataTable dt = new DataTable();
             try
             {
@@ -78,7 +82,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select Id_group, GroupName, isadmin 
                             from Tbl_Group
@@ -175,7 +179,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select * from Tbl_Group_Account
                         where { whereStr } order by { orderByStr}";
@@ -183,7 +188,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dt == null | cnn.LastError != null)
                         return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     #region Lấy danh sách nhân viên từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                     DataRow row;
@@ -284,7 +289,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select username from tbl_group_account where id_group=@ID_Nhom";
                     dt = cnn.CreateDataTable(sqlq, Conds);
@@ -295,7 +301,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     danhsach.Add(dr["username"].ToString());
                 }
                 #region Lấy danh sách nhân viên từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                 DataRow row;
@@ -372,8 +378,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                 val.Add("DateCreated", DateTime.Now);
                 val.Add("LastModified", DateTime.Now);
                 val.Add("CustemerID", loginData.CustomerID);
-                val.Add("Module", data.Module);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                val.Add("Module", data.Module); 
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = $@"select ISNULL((select count(*) from tbl_group 
                                 where groupname = N'" + data.TenNhom + "'),0)";
@@ -411,7 +418,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             Hashtable val = new Hashtable();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     val.Add("username", data.UserName);
                     val.Add("id_group", data.ID_Nhom);
@@ -420,7 +428,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     Conds.Add("username", data.UserName);
 
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -465,10 +473,11 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 Conds.Add("username", data.UserName);
                 Conds.Add("id_group", data.ID_Nhom);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -515,7 +524,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 Conds.Add("id_group", id);
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = $@"select ISNULL((select count(*) 
                                     from {_config.HRCatalog}.dbo.Tbl_Group_Account 
@@ -552,7 +562,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         public object Get_DSNguoiDung([FromQuery] QueryParams query)
         {
             #region Lấy dữ liệu account từ JeeAccount
-            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
             if (DataAccount == null)
                 return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
@@ -578,7 +588,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             dt_staff.Columns.Add("CustomerID", typeof(int));
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "Username asc", whereStr = "nv.thoiviec = 0  and nv.disable=0 and CustemerID=@CustemerID";
-            bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", ConnectionCache.GetConnectionString(loginData.CustomerID), DataAccount);
             DataTable dt = new DataTable();
             try
             {
@@ -600,11 +609,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3900", ConnectionString, DataAccount);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy danh sách nhân viên từ JeeAccount
                     DataAccount = new List<AccUsernameModel>();
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _config);
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                     DataRow row;
@@ -675,7 +686,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             Hashtable val = new Hashtable();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     foreach (NguoiDungAddData data in arr_data)
                     {
@@ -741,7 +753,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select Id_permit, Tenquyen, Id_group, LangKey, IsReadPermit 
                         from Tbl_Permision 
@@ -859,7 +872,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             StringCollection ReadOnlyPermit = new StringCollection();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     Conds = new SqlConditions();
                     string tableName = "tbl_group_permit";
@@ -957,7 +971,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             StringCollection ReadOnlyPermit = new StringCollection();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     Conds = new SqlConditions();
                     Conds.Add("username", arr_data[0].ID);
@@ -1026,7 +1041,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 CustomerID = loginData.CustomerID;
             try
             {
-                string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
                 DpsConnection Conn = new DpsConnection(ConnectionString);
                 string[] listrole = Common.GetRolesForUser_WeWork(username, Conn);
                 return listrole;

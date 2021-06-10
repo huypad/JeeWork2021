@@ -8,11 +8,11 @@ import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core'; 
 
-const API_department = environment.APIROOTS + 'api/department';
-const API_Project_Team = environment.APIROOTS + 'api/project-team';
-const API_milestone = environment.APIROOTS + 'api/milestone';
-const API_Process = environment.APIROOTS + 'api/workprocess';
-const API_Template = environment.APIROOTS + 'api/template';
+const API_department = environment.APIROOTS + '/api/department';
+const API_Project_Team = environment.APIROOTS + '/api/project-team';
+const API_milestone = environment.APIROOTS + '/api/milestone';
+const API_Process = environment.APIROOTS + '/api/workprocess';
+const API_Template = environment.APIROOTS + '/api/template';
 
 
 @Injectable()

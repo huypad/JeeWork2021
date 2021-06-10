@@ -9,11 +9,11 @@ import { environment } from "src/environments/environment";
 import { Router } from "@angular/router";
 import jwt_decode from 'jwt-decode';
 
-const redirectUrl = environment.REDIRECTURL;
+const redirectUrl = environment.REDIRECTURL + '/?redirectUrl=';
 const API_IDENTITY = `${environment.APIIDENTITY}`;
-const API_IDENTITY_LOGOUT = `${environment.APIIDENTITY_LOGOUT}`;
-const API_IDENTITY_USER = `${environment.APIIDENTITY_GETUSER}`;
-const API_IDENTITY_REFESHTOKEN = `${environment.APIIDENTITY_REFRESH}`;
+const API_IDENTITY_LOGOUT = `${API_IDENTITY}/user/logout`;
+const API_IDENTITY_USER = `${API_IDENTITY}/user/me`;
+const API_IDENTITY_REFESHTOKEN = `${API_IDENTITY}/user/refresh`;
 @Injectable({
   providedIn: "root",
 })

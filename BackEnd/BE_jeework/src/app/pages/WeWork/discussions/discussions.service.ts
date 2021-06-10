@@ -8,8 +8,8 @@ import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-const API_topic = environment.APIROOTS + 'api/topic';
-const API_My_Work = environment.APIROOTS + 'api/personal';
+const API_topic = environment.APIROOTS + '/api/topic';
+const API_My_Work = environment.APIROOTS + '/api/personal';
 
 @Injectable()
 export class DiscussionsService {

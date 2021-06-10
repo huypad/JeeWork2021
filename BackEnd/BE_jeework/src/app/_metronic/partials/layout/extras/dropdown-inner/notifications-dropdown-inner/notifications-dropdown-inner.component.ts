@@ -85,7 +85,7 @@ export class NotificationsDropdownInnerComponent implements OnInit {
           //   domain = environment.linkREQ
           // }
           if(noti.message_json.AppCode == "ACC") {
-            domain = environment.LINKACCOUNT
+            domain = environment.LINKACCOUNT+'/'
           }
           window.open(domain + noti.message_json.Link, '_blank');
         }

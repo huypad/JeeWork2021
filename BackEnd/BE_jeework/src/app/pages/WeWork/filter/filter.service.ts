@@ -3,7 +3,7 @@ import { HttpUtilsService } from './../../../_metronic/jeework_old/core/_base/cr
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-const API_filter = environment.APIROOTS + 'api/filter';
+const API_filter = environment.APIROOTS + '/api/filter';
 
 @Injectable()
 export class filterService {

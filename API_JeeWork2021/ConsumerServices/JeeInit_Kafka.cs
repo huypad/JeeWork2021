@@ -23,10 +23,10 @@ namespace JeeWork_Core2021.ConsumerServices
         {
             _config = config;
             _producer = producer;
-            var groupid1 = _config.GetValue<string>("KafkaConfig:groupInit");
+            var groupid1 = _config.GetValue<string>("KafkaConfig:Consumer:JeeWorkGroupInit");
             initJeeAdminConsumer = new Consumer(_config, groupid1);
 
-            var groupid2 = _config.GetValue<string>("KafkaConfig:groupUpdate");
+            var groupid2 = _config.GetValue<string>("KafkaConfig:Consumer:JeeWorkGroupUpdateAdmin");
             updateAdminCosumer = new Consumer(_config, groupid2);
 
             _cache = connectionCache;
@@ -34,8 +34,8 @@ namespace JeeWork_Core2021.ConsumerServices
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var topicProduceByAccount1 = _config.GetValue<string>("KafkaConfig:topicProduceByAccount");
-            var topicProduceByAccount2 = _config.GetValue<string>("KafkaConfig:topicUpdateAdmin");
+            var topicProduceByAccount1 = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
+            var topicProduceByAccount2 = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
             _ = Task.Run(() =>
             {
                 //ko có thì khi topic có mess, consumer sẽ ko thể lấy được mess
@@ -71,7 +71,7 @@ namespace JeeWork_Core2021.ConsumerServices
             {
                 mess = message; //test để biết có nhận message từ topic ko
                 var kq = JsonConvert.DeserializeObject<InitMessage>(message);
-                var topic = _config.GetValue<string>("KafkaConfig:topicUpdateAccount");
+                var topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
 
                 string roles = "";
 
@@ -140,7 +140,7 @@ namespace JeeWork_Core2021.ConsumerServices
             try
             {
                 var kq = JsonConvert.DeserializeObject<UpdateAdminMessage>(message);
-                var topic = _config.GetValue<string>("KafkaConfig:topicUpdateAccount");
+                var topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
                 string roles = "";
 
                 if (kq.AppCode == "WW")

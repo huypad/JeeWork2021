@@ -4,8 +4,8 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable,  BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-const API_ROOT_URL = environment.APIROOTS + 'api/work';
-const API_ROOT_URL_CU= environment.APIROOTS + 'api/work-click-up';
+const API_ROOT_URL = environment.APIROOTS + '/api/work';
+const API_ROOT_URL_CU= environment.APIROOTS + '/api/work-click-up';
 
 @Injectable()
 export class WorkCalendarService {	

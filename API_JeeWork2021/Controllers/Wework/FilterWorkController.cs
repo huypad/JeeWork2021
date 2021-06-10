@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using DPSinfra.ConnectionCache;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -27,12 +28,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
+        private IConfiguration _configuration;
 
-        public FilterWorkController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache)
+        public FilterWorkController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
+            _configuration = configuration;
         }
         /// <summary>
         /// list custom filter of current user
@@ -48,7 +51,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = @"select * from we_filter where disabled=0 and createdby=" + loginData.UserID;
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -82,7 +86,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select id_row, title, loai,sql from we_filter_key where disabled=0";
                     DataTable dt = cnn.CreateDataTable(sql);
@@ -122,7 +127,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select * from we_filter where disabled=0 and createdby=" + loginData.UserID + " and id_row=" + id;
@@ -182,7 +188,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -261,7 +268,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -360,7 +368,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(loginData.CustomerID)))
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_filter where disabled=0 and createdby=" + iduser + " and id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -450,7 +459,8 @@ where wt.disabled = 0 and t.disabled = 0 and id_user = @iduser and t.title like 
         {
             if (string.IsNullOrEmpty(v))
                 return null;
-            using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
+            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 DataTable dt = cnn.CreateDataTable(v);
                 if (cnn.LastError != null || dt == null)

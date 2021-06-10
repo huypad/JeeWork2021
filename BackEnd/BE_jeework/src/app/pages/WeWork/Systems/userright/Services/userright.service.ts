@@ -8,7 +8,7 @@ import { GroupNameModel, UserModel } from '../Model/userright.model';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { _ParseAST } from '@angular/compiler';
-const API_PRODUCTS_URL = environment.APIROOTS + 'api/ww_userrights';
+const API_PRODUCTS_URL = environment.APIROOTS + '/api/ww_userrights';
 
 @Injectable()
 export class PermissionService {

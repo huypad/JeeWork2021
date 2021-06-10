@@ -16,7 +16,7 @@ export class ReportService {
 		public httpUtils: HttpUtilsService
 	) { }
 
-	RootURL = environment.APIROOTS + 'api/report/';
+	RootURL = environment.APIROOTS + '/api/report/';
 
 	GetTrangthai(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();

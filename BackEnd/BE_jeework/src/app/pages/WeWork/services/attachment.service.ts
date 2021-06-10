@@ -6,7 +6,7 @@ import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
-const API_attachment = environment.APIROOTS + 'api/attachment';
+const API_attachment = environment.APIROOTS + '/api/attachment';
 @Injectable()
 export class AttachmentService {
 	lastFilter$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));
