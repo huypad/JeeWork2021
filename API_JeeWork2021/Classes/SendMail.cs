@@ -588,6 +588,7 @@ namespace JeeWork_Core2021.Classes
                     emailMessage asyncnotice = new emailMessage()
                     {
                         CustomerID = long.Parse(CustemerID),
+                        access_token = "",
                         //from = "derhades1998@gmail.com",
                         //to = "thanhthang1798@gmail.com", //
                         to = guiden, //
