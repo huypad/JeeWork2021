@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -30,12 +31,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        public DocumentsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        private readonly ILogger<DocumentsController> _logger;
+        public DocumentsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<DocumentsController> logger)
         {
             ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             _configuration = configuration;
+            _logger = logger;
         }
         /// <summary>
         /// 
@@ -65,7 +68,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", ConnectionString, DataAccount);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -105,7 +108,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
 
                     DataSet ds = cnn.CreateDataSet(sqlq + dieukien_where, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -149,7 +152,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
                                select new
                                {
                                    id_row = dr["id_row"],
-                                   path = WeworkLiteController.genLinkAttachment(domain, dr["path"]),
+                                   path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                    filename = dr["filename"],
                                    type = dr["type"],
                                    isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -165,7 +168,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -225,17 +228,17 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
                                 default: break;
                             }
                         }
-                        if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
+                        if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath, _configuration))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                         }
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_attachment')").ToString());
-                    if (!WeworkLiteController.log(cnn, 21, idc, iduser, data.item.filename))
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 21, idc, iduser, data.item.filename))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     //data.id_row = idc;
                     //cnn.EndTransaction();
@@ -248,7 +251,7 @@ where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
     }

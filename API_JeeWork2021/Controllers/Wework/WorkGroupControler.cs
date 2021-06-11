@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Specialized;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -31,13 +32,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private readonly ILogger<WorkGroupController> _logger;
 
-        public WorkGroupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        public WorkGroupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WorkGroupController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [Route("List")]
@@ -79,7 +82,7 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
 where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     var temp = dt.AsEnumerable();
@@ -115,7 +118,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -137,7 +140,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     string sqlq = @"select * from we_group where disabled=0 and id_row=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
                     var data = (from r in dt.AsEnumerable()
@@ -157,7 +160,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             {
                 
                 
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -206,7 +209,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     if (cnn.Insert(val, "we_group") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu work group: title=" + data.title + ", id_project_team=" + data.id_project_team + ", description=" + data.description;
@@ -219,7 +222,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -273,7 +276,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     if (cnn.Update(val, sqlcond, "we_group") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -290,7 +293,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -324,7 +327,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu work group (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -334,7 +337,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -373,7 +376,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     if (cnn.Update(val, sqlcond, "we_group") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -391,7 +394,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 

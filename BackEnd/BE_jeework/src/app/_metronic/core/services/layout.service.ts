@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DefaultLayoutConfig } from '../../configs/default-layout.config';
 import * as objectPath from 'object-path';
 
-const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.APPVERSION}-layoutConfig`;
+const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
 
 @Injectable({
   providedIn: 'root',

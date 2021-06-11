@@ -381,7 +381,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-		const dialogRef = this.dialog.open(ClosedProjectComponent, { data: { _item } });
+		var isReset = true;
+		const dialogRef = this.dialog.open(ClosedProjectComponent, { data: { _item , isReset } });
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
 				this.ngOnInit();
@@ -593,13 +594,13 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 		});
 	}
 
-	Change() {
+	Change(item) {
 		const ObjectModels = new DepartmentModel();
 		ObjectModels.clear();
-		this.ChangeType(ObjectModels);
+		this.ChangeType(ObjectModels,item.id);
 	}
-	ChangeType(_item: DepartmentModel) {
-		_item.RowID = this.ID_Project;
+	ChangeType(_item: DepartmentModel,id_project_team:number) {
+		_item.RowID = id_project_team;
 		const _title = this.translate.instant('projects.chuyenloaiteam');
 		const _description = this.translate.instant('projects.confirmchange');
 		const _waitDesciption = this.translate.instant('projects.dulieudangduocthaydoi');

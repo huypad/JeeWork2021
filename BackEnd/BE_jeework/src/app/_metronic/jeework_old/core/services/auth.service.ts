@@ -50,7 +50,7 @@ export class AuthService {
 
 	getUserByToken(): Observable<User> {
 		
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders();
 		httpHeaders.set('Authorization', 'Bearer ' + userToken);
 		return this.http.get<User>(API_USERS_URL, { headers: httpHeaders });
@@ -197,7 +197,7 @@ export class AuthService {
 	}
 
 	resetSession(): Observable<any> {
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});
@@ -224,7 +224,7 @@ export class AuthService {
 			});
 	}
 	logout_new(): Observable<any> {
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});
@@ -241,14 +241,14 @@ export class AuthService {
 	}
 	//#region service worker
 	CreateFCM(): Observable<any> {
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});
 		return this.http.get<any>(environment.APIROOTS + `/fcm/CreateFCM`, { headers: httpHeaders });
 	}
 	DeleteFCM(data): Observable<any> {
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});
@@ -259,7 +259,7 @@ export class AuthService {
 
 	//#region vai trò
 	getVaiTro(): Observable<any> {
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});
@@ -268,7 +268,7 @@ export class AuthService {
 	}
 
 	doiVaiTro(id): Observable<any> {
-		const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+		const userToken = localStorage.getItem(environment.authTokenKey);
 		const httpHeaders = new HttpHeaders({
 			'Authorization': 'Bearer ' + userToken,
 		});

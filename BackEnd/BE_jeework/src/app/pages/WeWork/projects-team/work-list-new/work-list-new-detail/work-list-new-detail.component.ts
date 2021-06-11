@@ -184,7 +184,6 @@ export class WorkListNewDetailComponent implements OnInit {
 		}, 500);
 		this.ProjectsTeamService.WorkDetail(this.DataID).subscribe(res => {
 			if (res && res.status == 1) {
-				console.log(res.data);
 				this.item = res.data;
 				this.changeDetectorRefs.detectChanges();
 			}
@@ -506,6 +505,9 @@ export class WorkListNewDetailComponent implements OnInit {
 			if (res && res.status == 1) {
 				// this.CloseAddnewTask(true);
 				this.LoadData();
+			}
+			else{
+			  this.layoutUtilsService.showError(res.error.message)
 			}
 		})
 	}

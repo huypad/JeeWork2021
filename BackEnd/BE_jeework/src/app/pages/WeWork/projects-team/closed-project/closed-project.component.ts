@@ -196,6 +196,9 @@ export class ClosedProjectComponent implements OnInit {
 			this.viewLoading = false;
 			if (res && res.status === 1) {
 				if (withBack == true) {
+					if(this.data.isReset){
+						window.location.reload();
+					}
 					this.dialogRef.close({
 						_item
 					});

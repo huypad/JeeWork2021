@@ -1,8 +1,10 @@
 export const environment = {
-  PRODUCTION: true,
-  ISMOCKENABLED: false, // You have to switch this, when your real back-end is done
-  AUTHTOKENKEY: "authce9d77b308c149d5992a80073637e4d5",
-  // RootCookie: 'jeework.jee.vn',
+  production: true,
+  isMockEnabled: false, // You have to switch this, when your real back-end is done
+  authTokenKey: "authce9d77b308c149d5992a80073637e4d5",
+  appVersion: "v717demo1",
+  USERDATA_KEY: "authf649fc9a5f55",
+  apiUrl: "api",
 
   APIROOTSLANDING: "https://api-proxy.vts-demo.com",
   APIROOTS: "https://jeework-api.jee.vn", //"https://localhost:44336/",//root chung
@@ -10,9 +12,6 @@ export const environment = {
   MODULE: "wework",
   // ApiRootAcount: "https://wms-apisys.bookve.com.vn/api",
   // WMSApiRoot: 'https://wms-apisys.bookve.com.vn/api',
-  APPVERSION: "v717demo1",
-  USERDATA_KEY: "authf649fc9a5f55",
-  APIURL: "api",
 
   APIIDENTITY: "https://identityserver.jee.vn",
   REDIRECTURL: "https://portal.jee.vn",

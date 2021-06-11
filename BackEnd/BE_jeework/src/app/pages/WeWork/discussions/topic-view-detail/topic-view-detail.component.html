@@ -73,10 +73,10 @@
                                         </div>
         
                                         <div class="attach-item-del">
-                                            <button mat-icon-button class="text-success" (click)="blank.click()" type="button"
+                                            <button mat-icon-button class="text-success" (click)="preview(att2.path)" type="button"
                                                 matTooltip="{{ 'topic.preview' | translate}}">
                                                 <mat-icon>remove_red_eye</mat-icon>
-                                                <a #blank class="d-none" href="{{att2.path}}" target="_blank"> </a>
+                                            <!-- <a #blank class="d-none" href="{{att2.path}}" target="_blank"> </a> -->
                                             </button>
                                             <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)"
                                                 type="button" matTooltip="{{ 'topic.download' | translate}}">

@@ -1068,6 +1068,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.LoadData();
       }
+      else{
+        this.layoutUtilsService.showError(res.error.message)
+      }
     })
   }
 

@@ -1,7 +1,7 @@
 import { environment } from "src/environments/environment";
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.APPVERSION}-layoutConfig`;
+const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
 
 @Injectable()
 export class TokenStorage {
@@ -24,7 +24,7 @@ export class TokenStorage {
   }
   public getAccessTokenNew(): Observable<string> {
     const token: string = <string>(
-      localStorage.getItem(environment.AUTHTOKENKEY)
+      localStorage.getItem(environment.authTokenKey)
     );
     return of(token);
   }

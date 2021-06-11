@@ -258,6 +258,9 @@ export class WorkKanBanComponent implements OnInit {
 				this.CloseAddnewTask(true);
 				this.LoadData();
 			}
+			else{
+			  this.layoutUtilsService.showError(res.error.message)
+			}
 		})
 	}
 

@@ -8,7 +8,7 @@ import { AuthModel } from '../../../_models/auth.model';
 import { UsersTable } from '../../../../../_fake/fake-db/users.table';
 import { environment } from '../../../../../../environments/environment';
 
-const API_USERS_URL = `${environment.APIURL}/users`;
+const API_USERS_URL = `${environment.apiUrl}/users`;
 
 @Injectable({
   providedIn: 'root',

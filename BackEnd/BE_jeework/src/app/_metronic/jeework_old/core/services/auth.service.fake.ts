@@ -93,7 +93,7 @@
 //     }
 
 //     getUserByToken(): Observable<User> {
-//         const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+//         const userToken = localStorage.getItem(environment.authTokenKey);
 //         if (!userToken) {
 //             return of(null);
 //         }

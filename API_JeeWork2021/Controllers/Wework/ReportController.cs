@@ -18,6 +18,7 @@ using static JeeWork_Core2021.Controllers.Wework.ReportController.Simulate;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -38,14 +39,16 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private readonly ILogger<ReportController> _logger;
 
 
-        public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.filter["collect_by"]))
                         collect_by = collect[query.filter["collect_by"]];
                     SqlConditions cond = new SqlConditions();
-                    string strW = "", strP = "";
+                    string strW = "", strP = "", strD = "";
                     DateTime from = DateTime.Now;
                     DateTime to = DateTime.Now;
                     if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
@@ -126,6 +129,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         strP += " and id_department in (" + listDept + ") ";
                         strW += " and p.id_department in (" + listDept + ") ";
+                        strD += " and id_row in (" + listDept + ") ";
                     }
 
                     string list_Complete = "";
@@ -171,10 +175,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     sqlq += @$";select count(distinct pu.id_user) as Tong from we_project_team_user pu
                               join we_project_team p on p.id_row=pu.id_project_team
                               where pu.Disabled=0 and pu.id_user in ({listID}) and p.Disabled=0" + strP;
+                    sqlq += @"select COUNT(*) as Tong , COUNT(*) as PhongBanNoiBo,0 as PhongBanNgoai from we_department where Disabled = 0" + strD;
 
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     var data = new
                     {
                         DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
@@ -183,11 +188,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                             DuAnNoiBo = ds.Tables[0].Rows[0]["DuAnNoiBo"],
                             DuAnKH = ds.Tables[0].Rows[0]["DuAnKH"]
                         } : null,
-                        PhongBan = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
+                        PhongBan = ds.Tables[4] != null && ds.Tables[4].Rows.Count > 0 ? new
                         {
-                            Tong = ds.Tables[0].Rows[0]["PhongBan"],
-                            DuAnNoiBo = ds.Tables[0].Rows[0]["PhongBanNoiBo"],
-                            DuAnKH = ds.Tables[0].Rows[0]["PhongBanNgoai"]
+                            Tong = ds.Tables[4].Rows[0]["Tong"],
+                            DuAnNoiBo = ds.Tables[4].Rows[0]["PhongBanNoiBo"],
+                            DuAnKH = ds.Tables[4].Rows[0]["PhongBanNgoai"]
                         } : null,
                         CongViec = ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0 ? new
                         {
@@ -214,7 +219,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -295,7 +300,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     List<string> label = new List<string>() { "Đúng tiến độ", "Chậm tiến độ", "Có rủi to cao", "Dự án hoàn thành", "Dự án bị hủy" };
@@ -311,7 +316,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -407,7 +412,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     //var data = from r in dtW
@@ -427,7 +432,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -525,7 +530,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -577,7 +582,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -673,7 +678,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -710,7 +715,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -809,7 +814,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -834,7 +839,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -933,7 +938,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     DataTable dtW = ds.Tables[1];
                     var Children = from r in ds.Tables[0].AsEnumerable()
@@ -956,7 +961,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -981,7 +986,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
-                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1165,7 +1170,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1188,7 +1193,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -1372,7 +1377,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1398,7 +1403,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
-                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1499,7 +1504,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1519,7 +1524,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -1676,7 +1681,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1696,7 +1701,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             {
                 if (query == null)
                     query = new QueryParams();
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -1816,7 +1821,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
 
                     bool hasValue = dt_data.Rows.Count > 0;
                     DataView view = new DataView(dt_data.Copy());
-                    DataTable dt = view.ToTable(true, new string[7] { "id_nv", "username", "mobile", "email", "hoten", "tong", "ht" });
+                    DataTable dt = view.ToTable(true, new string[8] { "id_nv", "username", "mobile", "email", "hoten", "image", "tong", "ht" });
 
                     foreach (DataRow dr in dt.Rows)
                     {
@@ -1849,14 +1854,14 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                    username = r["username"],
                                    mobile = r["mobile"],
                                    percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"]),
-                                   image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                   image = r["image"],
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1877,7 +1882,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                 if (query == null)
                     query = new QueryParams();
                 string key = "";
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -2034,7 +2039,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2050,7 +2055,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
-            string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+            string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
             try
             {
                 if (query == null)
@@ -2211,7 +2216,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2235,7 +2240,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string key = "";
-                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                             {
@@ -2346,7 +2351,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2472,7 +2477,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     else
                         comment = 0;
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     var  data = new
                                        {
                                            week = string.Format("{0:###,##0.00}", work_of_week),
@@ -2486,7 +2491,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         [Route("TagCloud")]
@@ -2505,7 +2510,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
-                    string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                    string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                     Dictionary<string, string> collect = new Dictionary<string, string>
                             {
                                 { "CreatedDate", "CreatedDate"},
@@ -2590,7 +2595,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>

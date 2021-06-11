@@ -145,7 +145,7 @@
                                 </div>
                                 <button mat-icon-button (click)="snav.toggle()" style="position: absolute; right: 0;bottom: 0;z-index: 999;"><mat-icon>menu</mat-icon></button>
                             </div>
-                            <div class="search-box user-detail--search" style="padding-right: 5px;"
+                            <!-- <div class="search-box user-detail--search" style="padding-right: 5px;"
                                 *ngIf="selectedItem==undefined">
                                 <div class="search">
                                     <div class="input">
@@ -155,7 +155,7 @@
                                             placeholder="{{ 'wuser.timkiemcv' | translate }}" style="overflow: hidden;">
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="form-group  kt-form__group row user-detail--filter d-none" style="border-bottom: 1px solid #ccc;"
                             *ngIf="selectedItem==undefined">
@@ -203,7 +203,7 @@
                         </div> 
                         
                         <div class="kt-form__group w-100">
-                            <kt-list-task-cu [ID_NV]="this.UserID"></kt-list-task-cu>
+                            <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID"></kt-list-task-cu>
                         </div>
                     </div> 
                 </div>

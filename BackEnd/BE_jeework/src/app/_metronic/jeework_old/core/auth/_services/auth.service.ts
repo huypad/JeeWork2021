@@ -19,7 +19,7 @@ export class AuthenticationService {
     public ldp_logOutUser: string = '/user/logout';
     public ldp_refresh: string = '/user/refresh';
     private _errorMessage = new BehaviorSubject<string>('');
-    public authLocalStorageToken = `${environment.APPVERSION}-${environment.USERDATA_KEY}`;
+    public authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
     constructor(
         private http: HttpClient,
         private httpUtils: HttpUtilsService,
@@ -58,7 +58,7 @@ export class AuthenticationService {
 
     // getUserByToken(): Observable<User> {
     //     ;
-    //     const userToken = localStorage.getItem(environment.AUTHTOKENKEY);
+    //     const userToken = localStorage.getItem(environment.authTokenKey);
     //     const httpHeaders = new HttpHeaders();
     //     httpHeaders.append('Authorization', 'Bearer ' + userToken);
     //     return this.http.get<User>(API_URL + API_LOGIN_URL, { headers: httpHeaders });

@@ -1,3 +1,4 @@
+import { filter } from 'rxjs/operators';
 import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
@@ -27,7 +28,7 @@ import { ProjectsTeamService } from './../../Services/department-and-project.ser
 import { DOCUMENT, DatePipe } from '@angular/common';
 import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
-import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
 import * as moment  from 'moment';
 
 @Component({
@@ -35,14 +36,15 @@ import * as moment  from 'moment';
   templateUrl: './list-task-cu.component.html',
   styleUrls: ['./list-task-cu.component.scss']
 })
-export class ListTaskCUComponent implements OnInit {
+export class ListTaskCUComponent implements OnInit,OnChanges {
 
   @Input() ID_Project: number = 1;
   @Input() ID_NV: number = 0;
   @Input() selectedTab: number = 0;
   @Input() idFilter: number = 0;
-  @Input() myWorks: boolean = true;
+  @Input() myWorks: boolean = false;
   @Input() getMystaff: boolean = false;
+  @Input() detailWork: number = 0;
 
   @ViewChild('table1', { static: true }) table1: MatTable<any>;
   @ViewChild('table2', { static: true }) table2: MatTable<any>;
@@ -76,6 +78,7 @@ export class ListTaskCUComponent implements OnInit {
   showclosedsubtask = false;
   showtaskmutiple = true;
   showemptystatus = false;
+  viewTaskOrder = false;
   status_dynamic: any = [];
   ListAllStatusDynamic: any = [];
   list_priority: any[];
@@ -86,7 +89,11 @@ export class ListTaskCUComponent implements OnInit {
   list_role: any = [];
   ItemFinal = 0;
   ProjectTeam: any = {};
-
+  filterDay = {
+      startDate: new Date('09/01/2020'),
+      endDate: new Date('09/30/2020'),
+    }
+    public column_sort: any = [];
   constructor(
     @Inject(DOCUMENT) private document: Document,// multi level
     private _service: ProjectsTeamService,
@@ -114,10 +121,17 @@ export class ListTaskCUComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.myWorks,'work');
     // get filter groupby
     this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
 
+    var today = new Date();
+    this.filterDay = {
+      endDate: new Date(today.setDate(today.getDate() + 1)),
+      startDate: new Date(today.setDate(1)),
+    }
+    this.column_sort = this.sortField[0];
     this.route.params.subscribe(res => {
       if (this.selectedTab == 2) {
         if (res && res.id)
@@ -153,6 +167,25 @@ export class ListTaskCUComponent implements OnInit {
   }
 
   ngOnChanges() {
+    if(this.detailWork > 0){
+      this._service.WorkDetail(this.detailWork).subscribe(res => {
+        if (res && res.status == 1) {
+          console.log(res.data,"data detail");
+          const item = res.data;
+
+          const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+            width: '90vw',
+            height: '90vh',
+            data: item
+          });
+      
+          dialogRef.afterClosed().subscribe(() => {
+            this.detailWork = 0;
+            this.LoadData();
+          });
+        }
+      });
+    }
   }
 
   DanhsSachCongViec: any = [];
@@ -160,6 +193,14 @@ export class ListTaskCUComponent implements OnInit {
     this.clearList()
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration2(),
+      '',
+      '',
+      0,
+      50,
+      true
+    );
+    const queryParams1 = new QueryParamsModelNew(
+      this.filterConfigurationMywork(),
       '',
       '',
       0,
@@ -179,7 +220,7 @@ export class ListTaskCUComponent implements OnInit {
           }
         })
       } else {
-        this._service.ListByUserCU(queryParams).subscribe(res => {
+        this._service.ListByUserCU(queryParams1).subscribe(res => {
           this.layoutUtilsService.OffWaitingDiv();
           if (res && res.status == 1) {
             this.DanhsSachCongViec = res.data;
@@ -287,6 +328,11 @@ export class ListTaskCUComponent implements OnInit {
   masterToggle() {
 
   }
+
+  SelectedField(item) {
+    this.column_sort = item;
+    this.LoadSampleList();
+  }
   LoadData() {
 
     const queryParams = new QueryParamsModelNew(
@@ -354,10 +400,43 @@ export class ListTaskCUComponent implements OnInit {
     if (this.idFilter > 0) {
       filter.id_filter = this.idFilter;
     }
-    // 'id_nv':this.ID_NV,
-    //     'groupby':'member',
-    //     'displayChild':1
     return filter;
+  }
+
+  filterConfigurationMywork(): any {
+    const filter: any = {};
+    filter.groupby = this.filter_groupby.value;//assignee
+    filter.keyword = this.keyword;
+    filter.id_nv = this.ID_NV;
+    filter.displayChild = 1;
+    filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
+    filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
+    filter.collect_by = this.column_sort.value;
+    if (this.idFilter > 0) {
+      filter.id_filter = this.idFilter;
+    }
+    return filter;
+  }
+  viewData(DanhsSachCongViec){
+    console.log(DanhsSachCongViec);
+    // viewTaskOrder -- xem cv của người khác 
+    if( this.viewTaskOrder){
+      const danhsach1 = DanhsSachCongViec;
+
+      // var orderuser = node.User.find(x=>+x.id_nv != +this.UserID);
+      // if(orderuser)
+      //   return true;
+      // return false;
+      danhsach1.forEach(element => {
+        if(element.data && element.data.length > 0){
+          element.data = element.data.filter(x=>x.User.find(x1=>+x1.id_nv != +this.UserID));
+        }
+      });
+      console.log('DSCV:',DanhsSachCongViec);
+      return danhsach1;
+    }
+    // this.LoadSampleList();
+    return DanhsSachCongViec;
   }
 
   getColorStatus(id_project_team, val) {
@@ -880,6 +959,20 @@ export class ListTaskCUComponent implements OnInit {
       }
     });
   }
+  SelectFilterDate() {
+    const dialogRef = this.dialog.open(DialogSelectdayComponent, {
+      width: '500px',
+      data: this.filterDay
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        this.filterDay.startDate = new Date(result.startDate)
+        this.filterDay.endDate = new Date(result.endDate)
+        this.LoadSampleList();
+      }
+    });
+  }
   ViewDetai(item) {
     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
       width: '90vw',
@@ -988,6 +1081,9 @@ export class ListTaskCUComponent implements OnInit {
         this.CloseAddnewTask(true);
         this.LoadData();
         this.LoadSampleList();
+      }
+      else{
+        this.layoutUtilsService.showError(res.error.message)
       }
     })
   }
@@ -1426,5 +1522,20 @@ export class ListTaskCUComponent implements OnInit {
     }
     return {};
   }
+
+  sortField = [
+    {
+      title: this.translate.instant('day.theongaytao'),
+      value: 'CreatedDate',
+    },
+    {
+      title: this.translate.instant('day.theothoihan'),
+      value: 'Deadline',
+    },
+    {
+      title: this.translate.instant('day.theongaybatdau'),
+      value: 'StartDate',
+    },
+  ]
 
 }

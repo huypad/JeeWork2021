@@ -70,7 +70,7 @@ function appInitializer(authService: AuthService) {
     HighlightModule,
     ClipboardModule,
     // #fake-start#
-    environment.ISMOCKENABLED
+    environment.isMockEnabled
       ? HttpClientInMemoryWebApiModule.forRoot(FakeAPIService, {
           passThruUnknownUrl: true,
           dataEncapsulation: false,

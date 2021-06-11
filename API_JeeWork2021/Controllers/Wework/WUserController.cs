@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -30,13 +31,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private readonly ILogger<WUserController> _logger;
 
-        public WUserController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        public WUserController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WUserController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _logger = logger;
         }
         /// <summary>
         /// DS account
@@ -83,12 +86,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     if (query.filter.keys.Contains("keyword") && !string.IsNullOrEmpty(query.filter["keyword"]))
                     {
-                        dieukien_where += " and (hoten like N'%@keyword%' or username like N'%@keyword%')";
+                        dieukien_where += " and (hoten like N'%@keyword%' ')";
                         dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
                         keywork = query.filter["keyword"];
                     }
                 }
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -133,13 +136,24 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     //manangers = getMananger(r.Jobtitle, ds, domain, loginData.CustomerID),
                                     manangers = ""
                                 });
-                    var list = data.Skip((query.page - 1) * query.record).Take(query.record).ToList();
-                    return JsonResultCommon.ThanhCong(list, pageModel);
+                    //var list = data.Skip((query.page - 1) * query.record).Take(query.record).ToList();
+                    if (query.sortField == "hoten")
+                    {
+                        if(query.sortOrder == "asc")
+                        {
+                            data = data.OrderBy(x => x.hoten);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.hoten);
+                        }
+                    }
+                    return JsonResultCommon.ThanhCong(data, pageModel);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -158,7 +172,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                        mobile = r["mobile"],
                        email = r["email"],
                        tenchucdanh = r["tenchucdanh"],
-                       image = WeworkLiteController.genLinkImage(domain, IDKHDPS, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
+                       image = r["image"],
                    };
         }
 
@@ -174,7 +188,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (id <= 0)
                     return JsonResultCommon.BatBuoc("Thành viên");
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 DataTable dtStaff = null;
                 using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
                 {
@@ -206,7 +220,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     if (infoAccount == null)
                         return JsonResultCommon.KhongTonTai();
@@ -285,7 +299,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                                      tenchucdanh = r["tenchucdanh"],
                                      //username = r["username"],
                                      //mobile = r["mobile"],
-                                     image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                     image = r["image"],
                                  },
                         uyquyens = from r in ds.Tables[1].AsEnumerable()
                                    select new
@@ -295,7 +309,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                                        tenchucdanh = r["tenchucdanh"],
                                        username = r["username"],
                                        mobile = r["mobile"],
-                                       image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       image = r["image"],
                                    },
                         projects = from rr in ds.Tables[2].AsEnumerable()
                                    select new
@@ -310,7 +324,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         [Route("ListAuthorize")]
@@ -362,7 +376,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
 "order by " + dieukienSort;
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     #region Map info account từ JeeAccount
@@ -417,7 +431,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         [Route("Authorize")]
@@ -452,7 +466,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
                     if (cnn.Insert(val, "we_authorize") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu authorize: User được ủy quyền=" + data.id_user + ", Người ủy quyền=" + data.CreatedBy;
@@ -465,7 +479,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
     }

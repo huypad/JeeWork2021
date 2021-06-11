@@ -13,6 +13,7 @@ using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -25,12 +26,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        public AttachmentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        private readonly ILogger<AttachmentController> _logger;
+        public AttachmentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<AttachmentController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _logger = logger;
         }
         /// <summary>
         /// 
@@ -79,10 +82,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     data.id_user = iduser;
                     cnn.BeginTransaction();
-                    if (!upload(data, cnn, _hostingEnvironment.ContentRootPath))
+                    if (!upload(data, cnn, _hostingEnvironment.ContentRootPath, _configuration))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -90,7 +93,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -122,7 +125,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string LogContent = "Xóa dữ liệu attachment (" + id + ")";
                     cnn.EndTransaction();
@@ -131,7 +134,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -143,14 +146,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="id"></param>
         /// <param name="type">1: work,2: topic</param>
         /// <returns></returns>
-        public static bool upload(AttachmentModel data, DpsConnection cnn, string ContentRootPath)
+        public static bool upload(AttachmentModel data, DpsConnection cnn, string ContentRootPath, IConfiguration _configuration)
         {
             var item = data.item;
             if (item == null)
                 return false;
             string x = "";
             string folder = "/attachment/" + getFolderByType(data.object_type) + "/";
-            if (!UploadHelper.UploadFile(item.strBase64, item.filename, folder, ContentRootPath, ref x))
+            if (!UploadHelper.UploadFile(item.strBase64, item.filename, folder, ContentRootPath, ref x, _configuration))
             {
                 return false;
             }

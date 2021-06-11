@@ -649,7 +649,7 @@ namespace JeeWork_Core2021.Classes
             StringCollection id = new StringCollection();
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                DataTable t = cnn.CreateDataTable($"select id_nv, id_chucdanh from {HRCatalog}.dbo.Tbl_Nhanvien where (thoiviec=0) and (tamnghi=0) and ((id_chucdanh=" + dt.Rows[i][0].ToString() + ") or (id_nv in (select id_nv from lslamviec where id_chucdanh=" + dt.Rows[i][0].ToString() + " and active=1 and disable=0 and hinhthuc=3)))");
+                DataTable t = cnn.CreateDataTable($"select id_nv, id_chucdanh,'' as image from {HRCatalog}.dbo.Tbl_Nhanvien where (thoiviec=0) and (tamnghi=0) and ((id_chucdanh=" + dt.Rows[i][0].ToString() + ") or (id_nv in (select id_nv from lslamviec where id_chucdanh=" + dt.Rows[i][0].ToString() + " and active=1 and disable=0 and hinhthuc=3)))");
                 if (t.Rows.Count <= 0)
                 {
                     StringCollection tmp = GetListChild(dt.Rows[i][0].ToString(), cnn);
@@ -679,7 +679,7 @@ namespace JeeWork_Core2021.Classes
                 return dt;
             }
             id_nv = id_nv.Substring(1);
-            dt = cnn.CreateDataTable(@$"select nv.id_nv, nv.holot + ' ' + nv.ten as hoten, {HRCatalog}.dbo.tbl_chucdanh.tenchucdanh, nv.manv, cctc.title as tenbp, ngaysinh, isnull(isdangkyfaceid,0) as isdangkyfaceid from {HRCatalog}.dbo.Tbl_Nhanvien nv join {HRCatalog}.dbo.tbl_chucdanh on nv.id_chucdanh = {HRCatalog}.dbo.tbl_chucdanh.id_row
+            dt = cnn.CreateDataTable(@$"select '' as image, nv.id_nv, nv.holot + ' ' + nv.ten as hoten, {HRCatalog}.dbo.tbl_chucdanh.tenchucdanh, nv.manv, cctc.title as tenbp, ngaysinh, isnull(isdangkyfaceid,0) as isdangkyfaceid from {HRCatalog}.dbo.Tbl_Nhanvien nv join {HRCatalog}.dbo.tbl_chucdanh on nv.id_chucdanh = {HRCatalog}.dbo.tbl_chucdanh.id_row
             join {HRCatalog}.dbo.Tbl_Cocautochuc cctc on cctc.RowID = nv.CocauID where nv.thoiviec=0 and nv.disable=0 and id_nv in (" + id_nv + ")");
             if (cnn.LastError != null)
             {

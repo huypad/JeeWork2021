@@ -5,10 +5,11 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  HostListener,
 } from '@angular/core';
 import { LayoutService, LayoutInitService } from '../../_metronic/core';
 import KTLayoutContent from '../../../assets/js/layout/base/content';
-const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.APPVERSION}-layoutConfig`;
+const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
 
 @Component({
   selector: 'app-layout',
@@ -107,6 +108,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     this.extrasScrollTopDisplay = this.layout.getProp(
       'extras.scrolltop.display'
     );
+
   }
 
   ngAfterViewInit(): void {
@@ -141,5 +143,49 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
     // Init Content
     KTLayoutContent.init('kt_content');
+
+    // setup onesignal
+    const username = "huypad";// sau khi xác thực có username
+    const host = {
+      portal: 'https://portal.jee.vn',
+    }
+
+    // Thiết lập iframe đến trang đăng ký 
+    const iframeSource = `${host.portal}/?getstatus=true`
+    const iframe = document.createElement('iframe')
+    iframe.setAttribute('src', iframeSource)
+    iframe.style.display = 'none'
+    document.body.appendChild(iframe)
+
+    console.log('show oneSignal out')
+    // Thiết lập Event Listener để xác nhận người dùng đăng ký chưa
+    window.addEventListener(
+      'message',
+      (event) => {
+        console.log('show oneSignal')
+        if (event.origin !== host.portal) return // Quan trọng, bảo mật, nếu không phải message từ portal thì ko làm gì cả, tránh XSS attack
+        // event.data = false là user chưa đăng ký nhận thông báo, nếu đăng ký rồi thì là true
+        if (event.data === false) {
+            // Đoạn setTimeout này chỉ là 1 ví dụ -> Nếu người dùng vào trang mà chưa đăng ký thì 2s sau sẽ hiện popup cho người dùng đăng ký
+            // Có thể tùy chỉnh đoạn này, thêm vào cookie, popup, button,... để tự chủ động trong việc đăng ký
+          setTimeout(() => {
+              // Lệnh window.open này chính là lệnh gọi mở popup đến trang đăng ký
+              // Trang này vừa có thể đăng ký, vừa có thể hủy đăng ký
+              // Có thể sử dụng lệnh này gán vào 1 nút nào đó trên trang cho người dùng chủ động trong việc đăng ký hoặc hủy đăng ký
+            window.open(
+              `${host.portal}/notificationsubscribe?username=${username}`, // username điền vào đây
+              'childWin',
+              'width=400,height=400'
+            )
+          }, 2000) 
+        }
+      },
+      false
+    )
+  }
+
+  @HostListener("document:message", ["$event"])
+  onMessage(event) {
+    // ...
   }
 }

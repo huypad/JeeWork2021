@@ -1,5 +1,8 @@
-import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import {
+  LayoutUtilsService,
+  MessageType,
+} from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { DanhMucChungService } from "./../../../../_metronic/jeework_old/core/services/danhmuc.service";
 import {
   Component,
   OnInit,
@@ -200,6 +203,7 @@ export class DuplicateProjectComponent implements OnInit {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
+        window.location.reload();
         if (withBack == true) {
           this.dialogRef.close({
             res,
@@ -242,6 +246,7 @@ export class DuplicateProjectComponent implements OnInit {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
+        window.location.reload();
         if (withBack == true) {
           this.dialogRef.close({
             _item,
@@ -291,7 +296,7 @@ export class DuplicateProjectComponent implements OnInit {
       }
     }
   }
-  text(e: any ) {
+  text(e: any) {
     if (
       !(
         (e.keyCode > 95 && e.keyCode < 106) ||

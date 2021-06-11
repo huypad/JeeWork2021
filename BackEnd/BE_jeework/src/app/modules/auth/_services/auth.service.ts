@@ -20,7 +20,7 @@ const API_IDENTITY_REFESHTOKEN = `${API_IDENTITY}/user/refresh`;
 export class AuthService implements OnDestroy {
   // private fields
   private unsubscribe: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
-  authLocalStorageToken = `${environment.APPVERSION}-${environment.USERDATA_KEY}`;
+  authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
 
   // public fields
   currentUser$: Observable<UserModel>;

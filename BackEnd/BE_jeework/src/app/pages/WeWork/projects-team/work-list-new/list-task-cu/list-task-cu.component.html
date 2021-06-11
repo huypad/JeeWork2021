@@ -2,9 +2,7 @@
 <kt-portlet [options]="{hideHeader: true}">
     <div class="kt-portlet__head kt-portlet__head__custom pd-0">
         <div class="kt-portlet__head-label">
-            <div class="my-form-header w-100">
-                
-                
+            <div class="my-form-header w-100">                
                 <ng-container *ngIf="selectedTab == 2;else normal">
                     <div class="text-dark filter-search">
                         <i class="fas fa-filter"
@@ -15,17 +13,15 @@
                                 [popoverCloseOnMouseOutside]="true"> {{showTitleFilter(idFilter)}} </span>
                         </span>
                     </div>
-                    <div class="popover-menu">
-                        <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom">
-                            <ng-container *ngFor="let f of danhsachboloc">
-                                <a (click)="ChangeFilter(f.id_row)">{{f.title}}</a>
-                            </ng-container>
-                            <a style="border-top:solid 1px #eee" href="javascript:;" (click)="UpdateFilter()">{{
-                                'work.suaboloctuychinhhientai' | translate }}</a>
-                            <a style="border-top:solid 1px #eee" href="javascript:;" (click)="addFilter()">{{
-                                'work.themboloctuychinh' | translate }}</a>
-                        </popover-content>
-                    </div>
+                    <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom" style="z-index: 999999999;">
+                        <ng-container *ngFor="let f of danhsachboloc">
+                            <a (click)="ChangeFilter(f.id_row)">{{f.title}}</a>
+                        </ng-container>
+                        <a style="border-top:solid 1px #eee" href="javascript:;" (click)="UpdateFilter()">{{
+                            'work.suaboloctuychinhhientai' | translate }}</a>
+                        <a style="border-top:solid 1px #eee" href="javascript:;" (click)="addFilter()">{{
+                            'work.themboloctuychinh' | translate }}</a>
+                    </popover-content>
                 </ng-container>
                 <ng-template #normal>
                     <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
@@ -47,6 +43,32 @@
                             </ng-container>
                         </div>
                         <div style="flex-grow: 1;"></div>
+                        <ng-container *ngIf="myWorks">
+                            <div (click)="SelectFilterDate()" class="filter ">{{'filter.tu'|translate}}:
+                                <em>{{  filterDay.startDate | date:'dd/MM'}} -
+                                    {{ filterDay.endDate | date:'dd/MM/yyyy'}}</em>
+                                &nbsp;
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="filter" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+                                <em>{{column_sort.title}}</em>
+                                &nbsp;
+                                <i class="fas fa-chevron-down"></i>
+                                <mat-menu #menu="matMenu">
+                                    <button mat-menu-item *ngFor="let item of sortField"
+                                    [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                                    (click)="SelectedField(item)">{{item.title}}</button>
+                                </mat-menu>
+                            </div>
+                            <div class="filter row pd-0">
+                                <div class="icon-user border" (click)="viewTaskOrder=false" >
+                                    <i class="fas fa-user" [ngClass]="{'text-success': !viewTaskOrder}"></i>
+                                </div>
+                                <div class="icon-user border" (click)="viewTaskOrder=true" >
+                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': viewTaskOrder}"></i>
+                                </div>
+                            </div>
+                        </ng-container> 
                         <div class="cu-filter-right row text-dark" *ngIf="getMystaff">                            
                             <div class="item-filter url -hover">
                                 <i class="fas fa-ellipsis-h" [matMenuTriggerFor]="viewSetting"></i>
@@ -85,7 +107,7 @@
         <div class="kt-form__filtration">
             <div class="form-group kt-form__group row">
                 <div style="padding: 25px;    flex-grow: 1;">
-                    <ng-container *ngFor="let lstcongviec of DanhsSachCongViec;trackBy: trackByFn">
+                    <ng-container *ngFor="let lstcongviec of viewData(DanhsSachCongViec);trackBy: trackByFn">
                         <div class="cu-list-group" *ngIf="lstcongviec.data.length > 0 || showemptystatus">
                             <div class="cu-task-list">
                                 <div class="task-list-header text-dark">
@@ -136,7 +158,7 @@
 
                                 <!-- binding list -->
 
-                                <ng-template #tmplNode1 let-node="node">
+                                <ng-template #tmplNode1 let-node="node" >
                                     <div class="node-item" [attr.data-id]="node.id_row" [attr.id]="'node-'+node.id_row">
                                         <!-- node cha + con -->
 
@@ -218,8 +240,8 @@
 																							<div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
 																								style="min-width:20px;padding:0 5px;    display: flex;
 																								align-items: center;">
-																								<img style="height: 15px;"
-																								src="https://img.icons8.com/ios/50/000000/parallel-tasks.png" />
+																								<mat-icon style="    height: 16px;
+                                                                                                width: 16px;" class="text-muted">group_work</mat-icon>
 																								&nbsp;
 																								<span>{{node.Childs.length}}</span>
 																							</div>

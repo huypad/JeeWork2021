@@ -1,7 +1,9 @@
-﻿using JeeWork_Core2021.Classes;
+﻿using DPSinfra.UploadFile;
+using JeeWork_Core2021.Classes;
 using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -165,7 +167,7 @@ namespace JeeWork_Core2021.Classes
         /// <param name="ContentRootPath">_hostingEnvironment.ContentRootPath</param>
         /// <param name="filepath">file path sau khi upload trả về</param>
         /// <returns></returns>
-        public static bool UploadFile(string strBase64, string filename, string folder, string ContentRootPath, ref string filepath)
+        public static bool UploadFile(string strBase64, string filename, string folder, string ContentRootPath, ref string filepath, IConfiguration _configuration)
         {
             error = "";
             if (string.IsNullOrEmpty(strBase64))
@@ -186,12 +188,30 @@ namespace JeeWork_Core2021.Classes
                 if (!Directory.Exists(Base_Path)) //tạo thư mục nếu chưa có
                     Directory.CreateDirectory(Base_Path);
                 filename = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + filename;
-                filename = checkFilename(filename, path);
+                //filename = checkFilename(filename, path);
                 path += filename;
                 File.WriteAllBytes(path, bytes);
                 //string s_name = Path.GetFileName(filename);
                 filepath = folder + filename;
-                return true;
+                #region Upload file lên link CDN để quản lý
+                string FileResult = "";
+                string contentType = GetContentType(path);
+                byte[] imageBytes = Convert.FromBase64String(strBase64.ToString());
+                upLoadFileModel up = new upLoadFileModel()
+                {
+                    bs = imageBytes, //Convert sang dạng byte
+                    FileName = filename, // ví dụ test.docx
+                    Linkfile = JeeWorkConstant.RootUpload + folder // Folder chứ File ví dụ File
+                };
+                UploadResult kq = DPSinfra.UploadFile.UploadFile.UploadFileAllTypeMinio(up, _configuration, contentType);
+                if (kq.status)
+                {
+                    FileResult = path;
+                    return true;
+                }
+                else
+                    return false;
+                #endregion
             }
             catch (Exception ex)
             {

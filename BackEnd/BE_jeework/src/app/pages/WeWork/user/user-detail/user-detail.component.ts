@@ -41,7 +41,7 @@ export class UserDetailComponent implements OnInit {
 	image: any = [];
 	hoten: any = [];
 	tenchucdanh: any = [];
-	UserID_authorize: number;
+	UserID_authorize: number = 0;
 	customStyle:any = {};
 	keyword:string = "";
 	constructor(
@@ -150,8 +150,8 @@ export class UserDetailComponent implements OnInit {
 	}
 	filterConfiguration(): any {
 		const filter: any = { id_nv: this.UserID };
-		filter.TuNgay = this.TuNgay.format("DD/MM/YYYY");
-		filter.DenNgay = this.DenNgay.format("DD/MM/YYYY");
+		// filter.TuNgay = this.TuNgay.format("DD/MM/YYYY");
+		// filter.DenNgay = this.DenNgay.format("DD/MM/YYYY");
 		if (this.id_project_team > 0) {
 			filter.id_project_team = this.id_project_team;
 		}
@@ -195,7 +195,9 @@ export class UserDetailComponent implements OnInit {
 			if (res && res.status === 1) {
 
 				this.list_authorize = res.data;
-				this.UserID_authorize = this.list_authorize[0].id_user;
+				console.log(res.data);
+				if(this.list_authorize && this.list_authorize[0])
+					this.UserID_authorize = this.list_authorize[0].id_user;
 			}
 			this.changeDetect.detectChanges();
 		});

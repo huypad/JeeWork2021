@@ -12,6 +12,7 @@ import { AuthorizeModel } from '../Model/user.model';
 const API = environment.APIROOTS + '/api/wuser';
 const API_authorize = environment.APIROOTS + '/api/authorizecontroler';
 const API_Work=environment.APIROOTS + '/api/work';
+const API_Work_CU=environment.APIROOTS + '/api/work-click-up';
 
 @Injectable()
 export class UserService {
@@ -42,7 +43,7 @@ export class UserService {
 	ExportExcelByUsers(params): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		let httpparams = this.httpUtils.getFindHTTPParams(params)
-		return this.http.get(API_Work + '/ExportExcelByUsers', {
+		return this.http.get(API_Work_CU + '/ExportExcelByUsers', {
 			headers: httpHeaders,
 			params: httpparams,
 			responseType: 'blob',

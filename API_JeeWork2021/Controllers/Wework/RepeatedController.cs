@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using DPSinfra.Notifier;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -33,14 +34,16 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private INotifier _notifier;
+        private readonly ILogger<RepeatedController> _logger;
 
-        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
+        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<RepeatedController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
             _notifier = notifier;
+            _logger = logger;
         }
         APIModel.Models.Notify Knoti;
         /// <summary>
@@ -62,7 +65,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -117,7 +120,7 @@ task.UserID as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' a
 from we_repeated_user u where u.Disabled = 0");
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -216,7 +219,7 @@ from we_repeated_user u where u.Disabled = 0");
                                        hoten = r["hoten"],
                                        username = r["username"],
                                        mobile = r["mobile"],
-                                       image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       image = r["image"],
                                    },
                                    Users = from u in dt_user.AsEnumerable()
                                            where u["id_repeated"].Equals(r["id_row"])
@@ -244,7 +247,7 @@ from we_repeated_user u where u.Disabled = 0");
                                                    hoten = dr["hoten"],
                                                    username = dr["username"],
                                                    mobile = dr["mobile"],
-                                                   image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, dr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                                   image = dr["image"],
                                                },
                                            }
                                };
@@ -254,7 +257,7 @@ from we_repeated_user u where u.Disabled = 0");
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -273,7 +276,7 @@ from we_repeated_user u where u.Disabled = 0");
                 return JsonResultCommon.DangNhap();
             try
             {
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -301,7 +304,7 @@ from we_repeated_Task task where task.Disabled=0";
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -378,7 +381,7 @@ from we_repeated_Task task where task.Disabled=0";
                                                     hoten = dr2["hoten"],
                                                     username = dr2["username"],
                                                     mobile = dr2["mobile"],
-                                                    image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, dr2["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                                    image = dr2["image"],
                                                 },
                                             }
                                 }).FirstOrDefault();
@@ -388,7 +391,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -450,7 +453,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.Insert(val, "we_repeated") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_repeated')").ToString());
                     if (data.Users != null)
@@ -466,7 +469,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val1, "we_repeated_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                             }
                         }
                     }
@@ -486,7 +489,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val2, "we_repeated_Task") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                             }
                         }
                     }
@@ -500,7 +503,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -574,7 +577,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.Update(val, sqlcond, "we_repeated") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     if (data.Users.Count > 0) //
                     {
@@ -585,7 +588,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                             }
                         }
                         DataTable dt_user = cnn.CreateDataTable($"select id_user from we_repeated_user where  Disabled=0 and  id_repeated={data.id_row}");
@@ -602,7 +605,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val1, "we_repeated_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                             }
                         }
                     }
@@ -612,7 +615,7 @@ from we_repeated_Task task where task.Disabled=0";
                         if (cnn.ExecuteNonQuery(deleteuser) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                         }
                     }
                     string idtask = string.Join(",", data.Tasks.Where(x => x.id_row > 0).Select(x => x.id_row));
@@ -623,7 +626,7 @@ from we_repeated_Task task where task.Disabled=0";
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                         }
                     }
                     if (data.Tasks != null)
@@ -642,7 +645,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (cnn.Insert(val2, "we_repeated_Task") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                             }
                         }
                     }
@@ -661,7 +664,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -697,7 +700,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu repeated (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -707,7 +710,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -748,7 +751,7 @@ from we_repeated_Task task where task.Disabled=0";
                     if (cnn.Update(val, sqlcond, "we_repeated") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -766,7 +769,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -799,14 +802,14 @@ from we_repeated_Task task where task.Disabled=0";
                     val["UpdatedBy"] = iduser;
                     if (cnn.Update(val, new SqlConditions() { { "id_row", id } }, "we_repeated") != 1)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -838,14 +841,14 @@ from we_repeated_Task task where task.Disabled=0";
                     val["UpdatedBy"] = iduser;
                     if (cnn.Update(val, new SqlConditions() { { "id_row", id } }, "we_repeated") != 1)
                     {
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1007,7 +1010,7 @@ from we_repeated_Task task where task.Disabled=0";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         public static bool WeWork_CreateTaskAuto(DataTable dt, DpsConnection cnn, string runby, DateTime ngaybatdau)

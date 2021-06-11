@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Specialized;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -27,12 +28,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
-        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        private readonly ILogger<MenuController> _logger;
+        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<MenuController> logger)
         {
             ConnectionCache = _cache;
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             _configuration = configuration;
+            _logger = logger;
         }
         //private JeeWorkConfig _config;
         // Đang sửa
@@ -255,7 +258,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -286,7 +289,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     DataSet ds = Conn.CreateDataSet(sqlq);
                     DataTable dt_Project = Conn.CreateDataTable(sqlq);
                     if (Conn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(Conn.LastError,_config, int.Parse(id_nv), ControllerContext);
+                        return JsonResultCommon.Exception(_logger,Conn.LastError,_config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
@@ -315,7 +318,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, int.Parse(id_nv));
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         //public static bool ListRole(long id_project)

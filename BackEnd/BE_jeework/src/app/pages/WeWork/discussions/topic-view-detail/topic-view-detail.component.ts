@@ -120,7 +120,7 @@ export class ViewTopicDetailComponent implements OnInit {
 		window.open(link);
 	}
 	preview(link) {
-		this.layoutUtilsService.showInfo("" + link);
+		this.layoutUtilsService.ViewDoc(link);
 	}
 	download(path: any) {
 		window.open(path);

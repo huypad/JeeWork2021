@@ -5,13 +5,13 @@
     <div class="card-body" style="min-height:150px">
         <mat-form-field class="w-100 bg-white" appearance="fill">
             <mat-label>{{'GeneralKey.ngaybatdau'|translate}}</mat-label>
-            <input matInput [(ngModel)]="data.startDate" [max]="data.endDate" [matDatepicker]="picker">
+            <input matInput [(ngModel)]="data.startDate" [max]="data.endDate" [matDatepicker]="picker" readonly>
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
         <mat-form-field class="w-100 bg-white" appearance="fill">
             <mat-label>{{'GeneralKey.ngayketthuc'|translate}}</mat-label>
-            <input matInput [(ngModel)]="data.endDate" [min]="data.startDate" [matDatepicker]="picker1">
+            <input matInput [(ngModel)]="data.endDate" [min]="data.startDate" [matDatepicker]="picker1" readonly>
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
             <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>

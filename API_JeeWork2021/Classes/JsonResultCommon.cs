@@ -1,5 +1,8 @@
-﻿using JeeWork_Core2021.Models;
+﻿using DPSinfra.Logger;
+using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -83,8 +86,9 @@ namespace JeeWork_Core2021.Classes
                 },
             };
         }
-        public static BaseModel<object> Exception(Exception last_error, JeeWorkConfig config, long custemerid = 0, ControllerContext ControllerContext = null)
+        public static BaseModel<object> Exception<T>(ILogger<T> logger, Exception last_error, JeeWorkConfig config, UserJWT loginData, ControllerContext ControllerContext = null)
         {
+            
             string noidung = last_error != null ? last_error.Message : "";
             if (last_error != null && last_error.Data != null)
             {
@@ -93,8 +97,19 @@ namespace JeeWork_Core2021.Classes
                     noidungmail += "<br>Tại: " + ControllerContext.ActionDescriptor.ControllerName + "/" + ControllerContext.ActionDescriptor.ActionName;
                 if (last_error != null)
                     noidungmail += "<br>Chi tiết:<br>" + last_error.StackTrace;
-                if (custemerid > 0)
-                    AutoSendMail.SendErrorReport(custemerid.ToString(), noidungmail, config,"");
+                if (loginData.CustomerID > 0)
+                    AutoSendMail.SendErrorReport(loginData.CustomerID.ToString(), noidungmail, config,"");
+
+                string category = "Lỗi thao tác";
+                string action = @$"{loginData.Username} thao tác lỗi. ";
+                var d2 = new ActivityLog()
+                {
+                    username = loginData.Username,
+                    category = category,
+                    action = action,
+                    data = noidungmail,
+                };
+                logger.LogError(JsonConvert.SerializeObject(d2));
             }
             return new BaseModel<object>()
             {

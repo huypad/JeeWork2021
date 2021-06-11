@@ -13,6 +13,7 @@ using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -30,12 +31,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        public CommentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration)
+        private readonly ILogger<CommentController> _logger;
+        public CommentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<CommentController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
+            _logger = logger;
         }
         APIModel.Models.Notify Knoti;
         /// <summary>
@@ -58,7 +61,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
 
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -119,7 +122,7 @@ left join (select count(*) as tong, id_parent from we_comment where disabled=0 g
 join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabled = 0 and l.createdby in ({listID})";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -181,7 +184,7 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         private object getChild(IEnumerable<DataRow> data, string domain, UserJWT loginData, IEnumerable<DataRow> asAttachment, IEnumerable<DataRow> asLike, object parent = null)
@@ -209,7 +212,7 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                     hoten = r["hoten"],
                     username = r["username"],
                     mobile = r["mobile"],
-                    image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                    image = r["image"],
                 },
                 UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
                 Attachment = from dr in asAttachment
@@ -217,7 +220,7 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                              select new
                              {
                                  id_row = dr["id_row"],
-                                 path = WeworkLiteController.genLinkAttachment(domain, dr["path"]),
+                                 path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                  filename = dr["filename"],
                                  type = dr["type"],
                                  isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -277,7 +280,7 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                 int id_action = data.object_type == 2 ? 24 : 0;
 
 
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API");
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -308,7 +311,7 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                     if (cnn.Insert(val, "we_comment") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_comment')").ToString());
                     if (data.Attachments != null)
@@ -322,32 +325,32 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                                 object_id = idc,
                                 id_user = loginData.UserID
                             };
-                            if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath))
+                            if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath, _configuration))
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                             }
                         }
                     }
-                    //if (!WeworkLiteController.log(cnn, 39, idc, iduser, data.comment))
+                    //if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 39, idc, iduser, data.comment))
                     //{
                     //    cnn.RollbackTransaction();
                     //    return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
                     //}
-                    if (!WeworkLiteController.log(cnn, 39, data.object_id, loginData.UserID, data.comment, null, idc))
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 39, data.object_id, loginData.UserID, data.comment, null, idc))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu comment: comment=" + data.comment + ", object_type=" + data.object_type + ", object_id=" + data.object_id;
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
                     //if (data.id_parent == 0)
                     //{
-                    //    if (!WeworkLiteController.log(cnn, id_action, data.object_id, loginData.UserID, data.comment, null, idc))
+                    //    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, id_action, data.object_id, loginData.UserID, data.comment, null, idc))
                     //    {
                     //        cnn.RollbackTransaction();
-                    //        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                    //        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     //    }
                     //}
                     cnn.EndTransaction();
@@ -471,7 +474,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -536,13 +539,13 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                     if (cnn.Update(val, sqlcond, "we_comment") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    if (!WeworkLiteController.log(cnn, 39, data.id_row, iduser, data.comment))
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 39, data.id_row, iduser, data.comment))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID, ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogEditContent = DpsPage.GetEditLogContent(old, dt);
@@ -596,7 +599,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -628,7 +631,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu comment (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -638,7 +641,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
 
@@ -681,7 +684,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                     sqlq = "select '' as username, * from we_comment_like l join we_like_icon ico on l.type=ico.id_row where CreatedBy=" + loginData.UserID + " and id_comment=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     bool value = true;
                     int re = 0;
                     Hashtable val = new Hashtable();
@@ -704,7 +707,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_comment_like");
                     }
                     if (re <= 0)
-                        return JsonResultCommon.Exception(cnn.LastError, _config, loginData.CustomerID,ControllerContext);
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     sqlq += @$";select l.*, ico.title, ico.icon,'' as hoten from we_comment_like l 
 join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and l.createdby in ({listID}) and ico.disabled = 0 and l.id_comment=" + id;
                     DataSet ds = cnn.CreateDataSet(sqlq);
@@ -746,7 +749,7 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and l.createdb
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(ex, _config, loginData.CustomerID);
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
         #endregion
