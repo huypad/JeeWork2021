@@ -7,7 +7,7 @@ import { Component, OnInit, Inject } from '@angular/core';
   styleUrls: ['./template-center.component.scss']
 })
 export class TemplateCenterComponent implements OnInit {
-
+  buocthuchien = 1;
   constructor(
 		public dialogRef: MatDialogRef<TemplateCenterComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,

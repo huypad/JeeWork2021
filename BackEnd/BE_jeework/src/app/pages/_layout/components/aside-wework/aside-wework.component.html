@@ -135,7 +135,7 @@
     <!-- if menu item has icon -->
     <span class="svg-icon menu-icon" *ngIf="item.icon">
         <ng-container *ngIf="item.icon == 'flaticon-signs-1'; else icon">
-            <div class="text-white box-icon">{{getText(item)}}</div>
+            <div class="text-white box-icon" [ngStyle]="{'backgroundColor': getColorText(item)}">{{getText(item)}}</div>
         </ng-container>
         <ng-template #icon>
             <i class="kt-menu__link-icon" [ngClass]="item.icon"></i>

@@ -122,23 +122,31 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                         //{
                         where_department = @$" disabled = 0 and CreatedBy in ({listID}) 
                                         and IdKH = {loginData.CustomerID} and (id_row in (select id_department from we_project_team 
-                                        where(id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
-                                        and Disabled = 0) 
-                                        or(CreatedBy = { loginData.UserID}
-                                        or UpdatedBy = { loginData.UserID })) and disabled = 0) or(CreatedBy = { loginData.UserID}
-                                        or UpdatedBy = { loginData.UserID }));";
+                                        where (id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
+                                        and Disabled = 0) or (CreatedBy = { loginData.UserID})) and disabled = 0) or (CreatedBy = { loginData.UserID}));";
                         sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID
                                         from we_department
                                         where ParentID is null and " + where_department + "";
-                        sql_project = "select id_row, icon, title, detail, id_department" +
-                            ", loai, start_date, end_date, color, template, status, is_project" +
-                            ", priority, CreatedDate, CreatedBy, Locked, Disabled, default_view " +
-                            "from we_project_team " +
-                            $"where Disabled = 0 and CreatedBy in ({listID})";
+                        sql_project = "select p.id_row, p.icon, p.title, p.detail, p.id_department" +
+                            ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
+                            ", p.priority, p.CreatedDate, p.CreatedBy, p.Locked, p.Disabled, default_view " +
+                            "from we_project_team p (admin_group)" +
+                            $" p.Disabled = 0 and p.CreatedBy in ({listID})";
                         //}
                         sql_folder = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID 
                                         from we_department
                                         where ParentID is not null and " + where_department + "";
+                        if (!CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID))
+                        {
+                            sql_project = sql_project.Replace("(admin_group)", "join we_project_team_user " +
+                            "on we_project_team_user.id_project_team = p.id_row " +
+                            "and (we_project_team_user.id_user = " + loginData.UserID + ") " +
+                            "where we_project_team_user.id_user = " + loginData.UserID + " and ");
+                        }
+                        else
+                        {
+                            sql_project = sql_project.Replace("(admin_group)", " where ");
+                        }    
                         dt_space = Conn.CreateDataTable(sql_space);
                         dt_project = Conn.CreateDataTable(sql_project);
                         dt_folder = Conn.CreateDataTable(sql_folder);
@@ -243,35 +251,11 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                 {
                     return JsonResultCommon.KhongHopLe("Tài khoản bạn bị khóa hoặc hết hạn đăng nhập. Bạn vui lòng đăng nhập lại!");
                 }
-
             }
             catch (Exception ex)
             {
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
-        }
-        private object findFolderByDepartment(long IdParent, long CustomerID)
-        {
-            using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
-            {
-                string where = " where ParentID is not null and Disabled=0 ";
-                string sqlq = $@"select * from we_department {where} order by title asc";
-
-                var dt = cnn.CreateDataTable(sqlq);
-                var data = from r in dt.AsEnumerable()
-                           where r["Parent"].ToString() == IdParent.ToString()
-                           select new
-                           {
-                               folder_id = r["title"].ToString(),
-                               folder_title = r["title"].ToString(),
-                               folder_icon = "flaticon-list",
-                               folder_priority = r["priority"].ToString(),
-                               //Children = findFolderByDepartment(long.Parse(r["Id"].ToString()), CustomerID)
-                           };
-
-                return data;
-            };
-
         }
         [HttpGet]
         [Route("GetRoleWeWork")]
@@ -330,6 +314,28 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             catch (Exception ex)
             {
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
+        public static bool CheckGroupAdministrator(string username, DpsConnection Conn, long CustomerID)
+        {
+            string sqlq = "";
+            SqlConditions cond = new SqlConditions();
+            try
+            {
+                cond.Add("Username", username);
+                sqlq = "select Id_group from tbl_group_account " +
+                    "where Id_group in (select Id_group from tbl_group " +
+                    "where IsAdmin = 1 and CustemerID = " + CustomerID + ") and (where)";
+                DataTable dt_checkuser = Conn.CreateDataTable(sqlq, "(where)", cond);
+                if (dt_checkuser.Rows.Count > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
         //public static bool ListRole(long id_project)

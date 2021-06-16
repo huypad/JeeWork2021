@@ -138,7 +138,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 and id_department=" + query.filter["id_department"] + " where u.disabled=0  and u.Id_user in (" + listID + " )";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -229,7 +229,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("List")]
@@ -289,34 +289,48 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
-                    #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    bool Visible = Common.CheckRoleByToken(loginData.Token, "3500", ConnectionString, DataAccount);
+
 
                     #region get list trạng thái status 
-
                     List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where IsFinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
                     List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-
                     string strhoanthanh = string.Join(",", lstHoanthanh);
                     string strquahan = string.Join(",", lstQuahan);
-
                     #endregion
                     string sqlq = @$"select p.*, de.title as department,coalesce(w.tong,0) as tong
                                     ,coalesce( w.ht,0) as ht, coalesce(w.quahan,0) as quahan
                                     , '' as NguoiTao, '' as NguoiSua from we_project_team p 
                                     left join we_department de on de.id_row=p.id_department
-                                    left join (select count(*) as tong, COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
+                                    left join (select count(*) as tong
+                                    , COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
                                     ,w.id_project_team from we_work w where w.Disabled=0 group by w.id_project_team) w 
                                     on p.id_row=w.id_project_team 
-                                    where p.Disabled=0 and p.CreatedBy in ({listID}) and  de.Disabled = 0 and id_department in ({listDept}) 
+                                    (admin) p.Disabled=0 and p.CreatedBy in ({listID}) 
+                                    and de.Disabled = 0 and p.id_department in ({listDept}) 
                                     " + dieukien_where + "  order by " + dieukienSort;
+                    if (Visible)
+                    {
+                        sqlq = sqlq.Replace("(admin)", " where ");
+                    }
+                    else
+                    {
+                        sqlq = sqlq.Replace("(admin)", "join we_project_team_user " +
+                            "on we_project_team_user.id_project_team = p.id_row " +
+                            "and (we_project_team_user.id_user = " + loginData.UserID + ")"+
+                            "where (de.id_row in (select distinct p1.id_department " +
+                            "from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
+                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and ");
+                    }
                     sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image 
                                 from we_project_team_user u 
                                 join we_project_team p on p.id_row=u.id_project_team 
-                                where u.disabled=0 and u.Id_user in (" + listID+" )";
+                                where u.disabled=0 and u.Id_user in (" + listID + " )";
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel);
@@ -324,7 +338,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     foreach (DataRow item in ds.Tables[1].Rows)
                     {
                         var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if(info != null)
+                        if (info != null)
                         {
                             item["hoten"] = info.FullName;
                             item["username"] = info.Username;
@@ -374,7 +388,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                id_project_team = u["id_project_team"],
                                                id_user = u["id_user"],
                                                admin = u["admin"],
-                                               //id_nv = u["id_nv"],
                                                hoten = u["hoten"],
                                                username = u["username"],
                                                tenchucdanh = u["tenchucdanh"],
@@ -397,7 +410,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -452,7 +465,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -523,7 +536,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
 
                     }
-                    
+
                     // table 5
                     foreach (DataRow item in ds.Tables[5].Rows)
                     {
@@ -547,7 +560,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 {
                                     id_row = r["id_row"],
                                     title = r["title"],
-                                    icon = r["icon"] == DBNull.Value ? "" : (_configuration.GetValue<string>("Host:JeeWork_API") +"/"+ JeeWorkConstant.RootUpload + r["icon"]),
+                                    icon = r["icon"] == DBNull.Value ? "" : (_configuration.GetValue<string>("Host:JeeWork_API") + "/" + JeeWorkConstant.RootUpload + r["icon"]),
                                     description = r["description"],
                                     detail = r["detail"],
                                     id_department = r["id_department"],
@@ -680,7 +693,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -704,7 +717,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -745,7 +758,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #region Map info account từ JeeAccount
                     // table 0
@@ -814,7 +827,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -896,7 +909,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Insert(val, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu project_team: title=" + data.title + ", id_department=" + data.id_department + ", loai=" + data.loai;
@@ -913,14 +926,14 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         if (cnn.Insert(val1, "we_project_team_user") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
 
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     // Tạo status mặc định cho project này dựa vào id_department
                     string sql_insert = "";
@@ -934,17 +947,17 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         if (cnn.LastError != null)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #endregion
-                    
+
                     cnn.EndTransaction();
                     data.id_row = idc;
                     Hashtable has_replace = new Hashtable();
@@ -980,7 +993,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         {
                             bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
                         }
-                        
+
                     }
                     #endregion
                     WeworkLiteController.mailthongbao(idc, data.Users.Where(x => !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier);//thêm vào dự án
@@ -1022,7 +1035,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1080,7 +1093,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Insert(val, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
                     DataTable dt_member = new DataTable();
@@ -1092,7 +1105,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.LastError != null)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     dt_member = cnn.CreateDataTable("select id_user from we_project_team_user where admin = 0 and id_project_team = " + idc + "");
                     // insert admin
@@ -1105,20 +1118,20 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Insert(has, "we_project_team_user") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     var list_roles = new List<long> { 1 };
                     if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, ConnectionString))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
 
                     }
                     #region Khởi tạo view mặc định
                     if (!WeworkLiteController.Init_DefaultView_Project(idc, cnn))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
@@ -1133,20 +1146,20 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         if (cnn.LastError != null)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
@@ -1226,7 +1239,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1337,7 +1350,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string ids = string.Join(",", data.Users.Where(x => x.id_row > 0).Select(x => x.id_row));
                     if (ids != "")//xóa owner và thành viên
@@ -1346,7 +1359,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     Hashtable val1 = new Hashtable();
@@ -1362,7 +1375,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             if (cnn.Insert(val1, "we_project_team_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -1379,7 +1392,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 32, data.id_row, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList(), 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
@@ -1507,7 +1520,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1557,7 +1570,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
 
                     Hashtable val1 = new Hashtable();
@@ -1569,7 +1582,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Insert(val1, "we_project_team_stage") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -1584,7 +1597,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 34, data.id_row, iduser, "", old.Rows[0]["status"], data.status))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1592,7 +1605,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1639,7 +1652,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -1654,7 +1667,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 32, id, iduser, ""))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -1662,7 +1675,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1706,7 +1719,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
@@ -1721,7 +1734,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 34, data.id_row, iduser, "", old.Rows[0]["status"], data.close_status))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1729,7 +1742,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [CusAuthorize(Roles = "3501")]
@@ -1767,14 +1780,14 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
 
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 34, data.id_row, iduser, "", old.Rows[0]["status"], data.close_status))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1782,7 +1795,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1817,14 +1830,14 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu project_team (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 33, id, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     if (email_delete_team)
@@ -1834,14 +1847,14 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                         #endregion
-                         mailthongbao(id, 4, loginData,Token,cnn,DataAccount);
+                        mailthongbao(id, 4, loginData, Token, cnn, DataAccount);
                     }
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1876,7 +1889,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "Chỉnh sửa dữ liệu project_team (" + id + "):is_project=" + value;
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -1884,7 +1897,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 35, id, iduser, "", !value, value))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -1892,7 +1905,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1949,7 +1962,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.Insert(val, "we_project_team_dupplicate") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu project_team_duplicate: title=" + data.title + ", id=" + data.id + ", type=" + data.type;
@@ -1961,11 +1974,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #region
                     DataTable dt_liststt = cnn.CreateDataTable("select * from we_status where id_project_team = " + data.id + " and Disabled = 0");
-                    foreach(DataRow item in dt_liststt.Rows)
+                    foreach (DataRow item in dt_liststt.Rows)
                     {
                         Hashtable val1 = new Hashtable();
                         val1.Add("StatusName", item["StatusName"]);
@@ -1991,7 +2004,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(dt.AsEnumerable().FirstOrDefault());
@@ -1999,7 +2012,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -2081,7 +2094,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -2158,12 +2171,12 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         if (re != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                         if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 36, data.id_row, iduser, null, owner.id_user))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     //check phải người quản lý
@@ -2253,7 +2266,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -2285,7 +2298,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //check phải người quản lý
                     sqlq = "select ISNULL((select count(*) from we_project_team_user where disabled=0 and admin=1 and id_project_team = " + temp + "),0)";
@@ -2300,7 +2313,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -2338,7 +2351,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //check phải người quản lý
                     sqlq = "select ISNULL((select count(*) from we_project_team_user where disabled=0 and admin=1 and id_project_team = " + id_project_team + "),0)";
@@ -2350,7 +2363,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 37, id, loginData.UserID, "", !admin, admin))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
@@ -2401,7 +2414,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         #endregion
@@ -2448,7 +2461,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         #endregion
@@ -2477,7 +2490,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sql = "select * from we_role r left join we_project_role role on r.id_row=role.id_role and id_project_team=" + id_project_team + " where r.disabled = 0 order by stt";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from dr in dt.AsEnumerable()
                                group dr by dr["group"] into g
                                select new
@@ -2500,7 +2513,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2526,7 +2539,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sqlq = "select role.id_row," + key + " from we_role r left join we_project_role role on r.id_row=role.id_role and id_project_team = " + id + " and id_role=" + role + " order by id_row desc";
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.Custom("Quyền không tồn tại hoặc đối tượng phân quyền không đúng");
                     cnn.BeginTransaction();
@@ -2550,7 +2563,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -2558,7 +2571,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         #endregion
@@ -2618,7 +2631,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sqlq = "";
                     //if (!role.IsUserInRole(loginData.UserName, "3502"))
                     //{
-                        sqlq = @$"exec GetActivitiesNew '{listID}',@id_project_team";
+                    sqlq = @$"exec GetActivitiesNew '{listID}',@id_project_team";
                     //}
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     #region Map info account từ JeeAccount
@@ -2643,7 +2656,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     }
                     #endregion
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -2680,7 +2693,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             sql_query = sql_query.Replace("$DB_HR$", _config.HRCatalog);
                             DataTable dt_temp = cnn.CreateDataTable(sql_query, new SqlConditions() { { "old", dr["oldvalue"] }, { "new", dr["newvalue"] } });
                             if (dt_temp == null)
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         }
@@ -2699,7 +2712,8 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
                     var data = from r in dt.AsEnumerable()
                                group r by new { a = r["object_type"], b = r["object_id"], c = r["title"], d = r["project_team"], e = r["id_project_team"] } into g
-                               select new
+                               //orderby g.Key.u descending
+                               select new 
                                {
                                    object_type = g.Key.a,
                                    object_id = g.Key.b,
@@ -2718,6 +2732,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                                     oldvalue = u["oldvalue"],
                                                     newvalue = u["newvalue"],
                                                     CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["CreatedDate"]),
+                                                    UpdatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["UpdatedDate"]),
                                                     NguoiTao = new
                                                     {
                                                         id_nv = u["id_nv"],
@@ -2729,14 +2744,14 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                                         //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, u["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                                     }
                                                 }
-                               };
+                };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
                 #endregion
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         #endregion
@@ -2798,12 +2813,12 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (re != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 48, data.id_row, iduser, null, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                 }
@@ -2811,7 +2826,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -2881,12 +2896,12 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (re != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 49, data.id_row, iduser, null, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                 }
@@ -2894,7 +2909,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -2923,12 +2938,12 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 50, id, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -2936,11 +2951,11 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         #region mail thông báo
-        private async void mailthongbao(long id, int id_template, UserJWT loginData,string Token, DpsConnection cnn, List<AccUsernameModel> DataAccount)
+        private async void mailthongbao(long id, int id_template, UserJWT loginData, string Token, DpsConnection cnn, List<AccUsernameModel> DataAccount)
         {
             emailMessage mailinfo2 = MailTemplate2(id_template, id, loginData, cnn, DataAccount);
             //get nguoi nhan
@@ -2965,7 +2980,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     };
                     await _notifier.sendEmail(asyncnotice);
                 }
-                
+
             }
             #endregion
         }
@@ -3054,7 +3069,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     else
                         val = values[val].ToString();
                 }
-                if(key== "$nguoitao$")
+                if (key == "$nguoitao$")
                 {
                     var infou = DataAccount.Where(x => values["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (infou != null)

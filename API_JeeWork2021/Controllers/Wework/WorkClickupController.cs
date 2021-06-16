@@ -430,6 +430,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         strW = " and ( ( (w.createdby=@iduser or w.NguoiGiao = @iduser )and w.Id_NV not in (@iduser) and w.Id_NV is not null))";
                     }
+                    if (!string.IsNullOrEmpty(query.filter["following"]) && bool.Parse(query.filter["following"]))
+                    {
+                        strW = $" and (w.id_row in ( select id_work from we_work_user where loai=2 and disabled=0 and id_user = { loginData.UserID }))";
+                    }
                     #region group
                     string strG = @$"select distinct p.id_row, p.title from we_project_team_user u
 join we_project_team p on p.id_row=u.id_project_team 

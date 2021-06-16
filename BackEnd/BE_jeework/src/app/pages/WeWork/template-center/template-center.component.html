@@ -1,1 +1,1304 @@
-<p>{{data | json}}</p>
+<!-- <kt-portlet>
+    <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
+        <ng-container ktPortletTitle>
+            <h3>Template Center</h3>
+        </ng-container>
+        <ng-container ktPortletTools>
+            <button mat-button class="jee_btn-addclose" style="border-radius:20px" type="button">
+                <span translate="X"></span>
+            </button>
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body>
+        
+    </kt-portlet-body>
+</kt-portlet> -->
+
+<div id="template-center">
+    <div class="template-center-header">
+        <div class="template-center-header__back" (click)="buocthuchien = (buocthuchien+1)">
+            Back
+        </div>
+        <div class="template-center-header__title">
+            Template Center
+        </div>
+        <div class="template-center-header__close" (click)="buocthuchien = (buocthuchien-1)" >
+            x
+        </div>
+    </div>
+    <ng-container [ngSwitch]="buocthuchien">
+        <!-- [ngTemplateOutletContext]="{ item: child }" -->
+        <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="step1">
+
+        </ng-container>
+        <ng-container *ngSwitchCase="2" [ngTemplateOutlet]="step2">
+
+        </ng-container>
+        <ng-container *ngSwitchCase="3" [ngTemplateOutlet]="step3">
+
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+
+        </ng-container>
+    </ng-container>
+    
+
+    
+</div>
+
+<ng-template #step1>
+    <div class="cu-template-center__body ng-star-inserted">
+        <div class="cu-template-center-sidebar ps">
+            <div class="cu-template-center-sidebar__header"> Templates </div>
+            <div class="cu-template-center-sidebar__choices ng-star-inserted">
+                <div class="cu-template-center-sidebar__choice ng-star-inserted">
+                    <div class="cu-team-avatar">
+                        <div data-test="avatar" class="cu-avatar ng-star-inserted" style="background: rgb(27, 94, 32);">
+                            N
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__choice-name"> Nguyễn's Workspace </div>
+                    <div class="cu-template-center-sidebar__choice-count">
+                        <div class="cu-template-center-sidebar__choice-count-number"> 1 </div>
+                    </div>
+                </div>
+                <div
+                    class="cu-template-center-sidebar__choice ng-star-inserted cu-template-center-sidebar__choice-active">
+                    <div class="cu-template-center-sidebar__choice-icon">
+                        <div icon="clickup-symbol" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-clickup-symbol">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__choice-name"> Community </div>
+                    <div class="cu-template-center-sidebar__choice-count">
+                        <div class="cu-template-center-sidebar__choice-count-number"> 127 </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cu-template-center-sidebar__header"> Types </div>
+            <div class="cu-template-center-sidebar__types ng-star-inserted">
+                <div class="cu-template-center-sidebar__type cu-template-center-sidebar__type-active ng-star-inserted"
+                    style="display: flex;">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Space
+                    </div>
+                    <div class="cu-template-center-sidebar__type-count"> (5) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type ng-star-inserted" style="display: flex;">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Folder
+                    </div>
+                    <div class="cu-template-center-sidebar__type-count"> (68) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type ng-star-inserted" style="display: flex;">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> List
+                    </div>
+                    <div class="cu-template-center-sidebar__type-count"> (15) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type cu-template-center-sidebar__type-disabled ng-star-inserted"
+                    style="display: flex;">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Task
+                    </div>
+                    <div class="cu-template-center-sidebar__type-count"> (0) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type ng-star-inserted" style="display: flex;">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Doc
+                    </div>
+                    <div class="cu-template-center-sidebar__type-count"> (40) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type cu-template-center-sidebar__type-disabled ng-star-inserted"
+                    style="display: flex;">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> View
+                    </div>
+                    <div class="cu-template-center-sidebar__type-count"> (0) </div>
+                </div>
+
+            </div>
+            <div class="cu-template-center-sidebar__header ng-star-inserted"> Levels </div>
+            <div class="cu-template-center-sidebar__types ng-star-inserted">
+                <div class="cu-template-center-sidebar__type ng-star-inserted">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Beginner </div>
+                    <div class="cu-template-center-sidebar__type-count"> (79) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type ng-star-inserted">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Intermediate </div>
+                    <div class="cu-template-center-sidebar__type-count"> (77) </div>
+                </div>
+                <div class="cu-template-center-sidebar__type ng-star-inserted">
+                    <div class="cu-template-center-sidebar__type-checkbox">
+                        <div icon="cu2-check-3" class="icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-check-3">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="cu-template-center-sidebar__type-name"> Advanced </div>
+                    <div class="cu-template-center-sidebar__type-count"> (3) </div>
+                </div>
+
+            </div>
+
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+            </div>
+            <div class="ps__rail-y" style="top: 0px; right: 0px;">
+                <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+            </div>
+        </div>
+        <div class="cu-template-center-main">
+            <div class="cu-template-center-main__header">
+                <div class="cu-template-center-main__header-item cu-template-center-main__header-search">
+                    <div icon="cu2-search2" class="icon"><svg class="ng-star-inserted">
+                            <use
+                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-search2">
+                            </use>
+                        </svg>
+
+                    </div><input type="text" placeholder="Search templates...">
+
+                </div>
+                <!-- <cu-dropdown-list class="cu-dropdown-list ng-star-inserted">
+                    <div cudropdown="" class="cu-dropdown">
+                        <div cudropdowntoggle="" class="cu-dropdown__toggle">
+                            <div
+                                class="cu-template-center-main__header-item cu-template-center-main__header-cases ng-star-inserted">
+                                <div icon="cu2-briefcase-2" class="icon"><svg class="ng-star-inserted">
+                                        <use
+                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-briefcase-2">
+                                        </use>
+                                    </svg>
+
+                                </div>
+                                <div class="cu-template-center-main__header-item-text"> Use cases </div>
+                                <div icon="cu2-angle-down-2"
+                                    class="cu-template-center-main__header-item-down-arrow icon"><svg
+                                        class="ng-star-inserted">
+                                        <use
+                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-down-2">
+                                        </use>
+                                    </svg>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </cu-dropdown-list> -->
+
+                <div cudropdown="" class="cu-dropdown ng-star-inserted">
+                    <div cudropdowntoggle=""
+                        class="cu-template-center-main__header-tags-dropdown-toggle cu-dropdown__toggle">
+                        <div class="cu-template-center-main__header-item cu-template-center-main__header-tags">
+                            <div icon="cu2-tag-o" class="icon ng-star-inserted"><svg class="ng-star-inserted">
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-tag-o">
+                                    </use>
+                                </svg>
+
+                            </div>
+
+
+                            <div class="cu-template-center-main__header-item-text"> Tags </div>
+                            <div icon="cu2-angle-down-2" class="cu-template-center-main__header-item-down-arrow icon">
+                                <svg class="ng-star-inserted">
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-down-2">
+                                    </use>
+                                </svg>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- <cu-user-list-dropdown class="cu-user-list-dropdown">
+                    <div cudropdown="" class="cu-dropdown">
+                        <div cudropdowntoggle="" class="cu-dropdown__toggle">
+                            <div cutooltip="Filter by who created the template"
+                                class="cu-template-center-main__header-item cu-template-center-main__header-creator ng-star-inserted">
+                                <div class="cu-template-center-main__header-item-text"> Created by: </div>
+                                <div icon="cu2-assign-3" class="icon ng-star-inserted"><svg class="ng-star-inserted">
+                                        <use
+                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-assign-3">
+                                        </use>
+                                    </svg>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </cu-user-list-dropdown> -->
+            </div>
+
+            <div class="cu-template-center-main__template-section ng-star-inserted">
+
+                <div class="cu-template-center-main__section ng-star-inserted">
+                    <div class="cu-template-center-main__section-header">
+                        <div class="cu-template-center-main__section-header-text"> Nguyễn's Workspace templates </div>
+                        <div class="cu-template-center-main__section-header-line"></div>
+                    </div>
+
+
+
+                </div>
+
+                <div data-test="template-center-main__section"
+                    class="cu-template-center-main__section ng-star-inserted">
+                    <div class="cu-template-center-main__section-header ng-star-inserted">
+                        <div class="cu-template-center-main__section-header-text"> ClickUp </div>
+                        <div class="cu-template-center-main__section-header-line"></div>
+                    </div>
+
+
+
+
+                    <div class="cu-template-center-main__rows ng-star-inserted">
+                        <div class="cu-template-center-main__row-container">
+
+
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text"> Project Management
+
+                                </div>
+
+                            </div>
+                            <div class="cu-template-center-main__row ng-star-inserted">
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/6ec587b3-6ceb-42ab-a960-c6921de6ddf2/Agile%20Management%203%402x.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Agile Management </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Agile Management (Full)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/d83c10fb-928c-48a7-9c0a-2bbdc6d5860a/Waterfall%20Management%201%402x.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Waterfall Management
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div class="cu-template-center-main__rows ng-star-inserted">
+                        <div class="cu-template-center-main__row-container">
+
+
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text"> Agile Project Management
+
+                                </div>
+
+                            </div>
+                            <div class="cu-template-center-main__row ng-star-inserted">
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Agile Management (Full)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/7b5b6b3d-938b-413d-928a-6ea78833108b/Sprints%20Space%203_2x.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Simple Sprints </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="cu-template-center-main__rows ng-star-inserted">
+                        <div class="cu-template-center-main__row-container">
+
+
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text"> Education
+
+                                </div>
+
+                            </div>
+                            <div class="cu-template-center-main__row ng-star-inserted">
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/ec6c12a2-ac98-4a12-856e-10c02affec91/Student%20-%20doc%402x.png&quot;);">
+                                            </div>
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Student </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-main__rows ng-star-inserted">
+                        <div class="cu-template-center-main__row-container">
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text"> Student
+                                </div>
+                            </div>
+                            <div class="cu-template-center-main__row ng-star-inserted">
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/ec6c12a2-ac98-4a12-856e-10c02affec91/Student%20-%20doc%402x.png&quot;);">
+                                            </div>
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Student </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-main__rows ng-star-inserted">
+                        <div class="cu-template-center-main__row-container">
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text"> Sprints &amp; Backlogs
+
+                                </div>
+                            </div>
+                            <div class="cu-template-center-main__row ng-star-inserted">
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/6ec587b3-6ceb-42ab-a960-c6921de6ddf2/Agile%20Management%203%402x.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Agile Management </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Agile Management (Full)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/7b5b6b3d-938b-413d-928a-6ea78833108b/Sprints%20Space%203_2x.png&quot;);">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Simple Sprints </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cu-template-center-main__rows ng-star-inserted">
+                        <div class="cu-template-center-main__row-container">
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text"> Bug Queues
+                                </div>
+                            </div>
+                            <div class="cu-template-center-main__row ng-star-inserted">
+                                <div
+                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space ng-star-inserted">
+                                    <div class="cu-template-center-template__container">
+                                        <div class="cu-template-center-template__cu-icon ng-star-inserted"><svg
+                                                width="12" height="12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
+                                                    fill="url(#paint0_linear)"></path>
+                                                <path
+                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
+                                                    fill="url(#paint1_linear)"></path>
+                                                <defs>
+                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
+                                                        y2="8.827" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#49CCF9"></stop>
+                                                        <stop offset="1" stop-color="#8930FD"></stop>
+                                                    </linearGradient>
+                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
+                                                        y2=".67" gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#FFC800"></stop>
+                                                        <stop offset="1" stop-color="#FF02F0"></stop>
+                                                    </linearGradient>
+                                                </defs>
+                                            </svg></div>
+
+                                        <div class="cu-template-center-template__quick-use ng-star-inserted"> Quick Use
+                                        </div>
+                                        <div class="cu-template-center-template__top">
+                                            <div class="cu-template-center-template__image ng-star-inserted"
+                                                style="background-image: url(&quot;https://attachments.clickup.com/7b5b6b3d-938b-413d-928a-6ea78833108b/Sprints%20Space%203_2x.png&quot;);">
+                                            </div>
+                                        </div>
+                                        <div class="cu-template-center-template__bot">
+                                            <div class="cu-template-center-template__bot-left">
+                                                <div class="icon"><svg class="ng-star-inserted">
+                                                        <use
+                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                                        </use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot-right"> Simple Sprints </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #step2>
+    <div class="cu-template-center-selected-template ng-tns-c370-39 cu-template-center-selected-template__clickup cu-template-center-selected-template__space ng-star-inserted">
+        <div class="cu-template-center-selected-template__top ng-tns-c370-39">
+            <div cudroparea="" cudropuploader=""
+                class="cu-template-center-selected-template__image ng-tns-c370-39 cu-template-center-selected-template__image-clickup">
+
+                <div class="cu-template-center-selected-template__image-controls ng-tns-c370-39 ng-star-inserted">
+
+
+                </div>
+
+
+                <div class="cu-template-center-selected-template__image-cover ng-tns-c370-39 ng-star-inserted"
+                    style="background-image: url(&quot;https://attachments.clickup.com/6ec587b3-6ceb-42ab-a960-c6921de6ddf2/Agile%20Management%203%402x.png&quot;);">
+                </div>
+
+
+
+
+
+            </div>
+            <div class="cu-template-center-selected-template__info ng-tns-c370-39">
+                <div class="cu-template-center-selected-template__info-top ng-tns-c370-39">
+                    <div class="cu-template-center-selected-template__info-type ng-tns-c370-39">
+                        <div class="ng-tns-c370-39 icon"><svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="cu-template-center-selected-template__info-type-text ng-tns-c370-39"> Space
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="cu-template-center-selected-template__info-name cu-template-center-selected-template__info-name-clickup ng-tns-c370-39 ng-star-inserted">
+                    Agile Management </div>
+
+                <div
+                    class="cu-template-center-selected-template__info-experience-level ng-tns-c370-39 ng-star-inserted">
+                    <div class="ng-tns-c370-39 icon"><svg class="ng-star-inserted">
+                            <use
+                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-center-experience-intermediate">
+                            </use>
+                        </svg>
+
+                    </div>
+                    <div class="ng-tns-c370-39">Intermediate</div>
+                </div>
+
+
+                <div
+                    class="cu-template-center-selected-template__info-desc cu-template-center-selected-template__info-desc-clickup ng-tns-c370-39 ng-star-inserted">
+                    Every facet of a project is visible, measurable, and organized thanks to ClickUp's Project
+                    Management templates for teams in every department.
+
+
+
+
+                </div>
+
+
+                <div class="cu-template-center-selected-template__info-actions ng-tns-c370-39">
+                    <div class="cu-template-center-selected-template__info-use-template ng-tns-c370-39"> Use Template
+                    </div>
+                    <div
+                        class="cu-template-center-selected-template__info-use-template cu-template-center-selected-template__info-use-template-clickup ng-tns-c370-39 ng-star-inserted">
+                        Add to Library
+
+
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+        <div class="cu-template-center-selected-template__bot ng-tns-c370-39">
+            <div class="cu-template-center-selected-template__includes ng-tns-c370-39 ps">
+                <div class="cu-template-center-selected-template__includes-header ng-tns-c370-39"> Template includes
+                </div>
+
+                <div class="cu-template-center-selected-template__includes-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__includes-item-top ng-tns-c370-39"><span
+                            class="ng-tns-c370-39">7</span> status groups
+
+
+                        <div icon="cu2-angle-right"
+                            class="cu-template-center-selected-template__includes-item-top-icon ng-tns-c370-39 icon">
+                            <svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-right">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="cu-template-center-selected-template__includes-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__includes-item-top ng-tns-c370-39"><span
+                            class="ng-tns-c370-39">1</span> custom field
+
+
+                        <div icon="cu2-angle-right"
+                            class="cu-template-center-selected-template__includes-item-top-icon ng-tns-c370-39 icon">
+                            <svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-right">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="cu-template-center-selected-template__includes-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__includes-item-top ng-tns-c370-39"><span
+                            class="ng-tns-c370-39">8</span> clickapps
+
+
+                        <div icon="cu2-angle-right"
+                            class="cu-template-center-selected-template__includes-item-top-icon ng-tns-c370-39 icon">
+                            <svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-right">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="cu-template-center-selected-template__includes-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__includes-item-top ng-tns-c370-39"><span
+                            class="ng-tns-c370-39">10</span> view types
+
+
+                        <div icon="cu2-angle-right"
+                            class="cu-template-center-selected-template__includes-item-top-icon ng-tns-c370-39 icon">
+                            <svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-right">
+                                </use>
+                            </svg>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+
+                <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                    <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                </div>
+                <div class="ps__rail-y" style="top: 0px; right: 0px;">
+                    <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+                </div>
+            </div>
+            <div class="cu-template-center-selected-template__data ng-tns-c370-39 ps">
+                <div class="cu-template-center-selected-template__data-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__data-label ng-tns-c370-39 ng-star-inserted">
+                        CREATED BY </div>
+
+
+                    <div class="cu-template-center-selected-template__data-creator ng-tns-c370-39 ng-star-inserted"><img
+                            src="assets/images/brand/clickup-symbol_color.svg" class="ng-tns-c370-39">
+                        <div class="cu-template-center-selected-template__data-text ng-tns-c370-39"> ClickUp </div>
+                    </div>
+
+                </div>
+
+
+                <div class="cu-template-center-selected-template__data-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__data-label ng-tns-c370-39"> CREATED DATE </div>
+                    <div class="cu-template-center-selected-template__data-text ng-tns-c370-39"> December 19, 2020
+                    </div>
+                </div>
+
+
+
+                <div class="cu-template-center-selected-template__data-item ng-tns-c370-39 ng-star-inserted">
+                    <div class="cu-template-center-selected-template__data-label ng-tns-c370-39"> USED </div>
+                    <div class="cu-template-center-selected-template__data-text ng-tns-c370-39"> 17.7K times
+
+                    </div>
+                </div>
+
+                <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                    <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                </div>
+                <div class="ps__rail-y" style="top: 0px; right: 0px;">
+                    <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #step3>
+    <div class="cu-template-center-use-template__folder ng-star-inserted" >
+        
+        <div class="cu-template-center-use-template ps ng-star-inserted ps--active-y">
+            <div class="cu-template-center-use-template__container">
+                <div class="cu-template-center__option-section ng-star-inserted">
+                    <div class="cu-template-center__option-label"> Folder
+                         name
+                    </div><input type="text" class="cu-template-center__option-input ng-untouched ng-pristine ng-valid"
+                        placeholder="Enter Folder name">
+                </div>
+                
+                <div class="cu-template-center__option-section ng-star-inserted">
+                    <div class="cu-template-center__option-label"> Select location for this Folder
+                         to be created
+                    </div>
+                    <!-- <cu-category-list-dropdown class="cu-category-list-dropdown">
+                        <cu-hierarchy-picker-dropdown _nghost-fuc-c152="">
+                            <div _ngcontent-fuc-c152="" cudropdown="" class="cu-dropdown">
+                                <div _ngcontent-fuc-c152="" cudropdowntoggle="" class="cu-dropdown__toggle">
+                                    <div
+                                        class="cu-template-center__option-input cu-template-center-use-template__select-location-input-invalid ng-star-inserted">
+                                        Nguyễn's Workspace </div>
+                                    
+                                    
+                                </div>
+                                
+                            </div>
+                        </cu-hierarchy-picker-dropdown>
+                    </cu-category-list-dropdown> -->
+                </div>
+                
+                <div class="cu-template-center__option-section ng-star-inserted">
+                    <div class="cu-template-center__option-label"> Import options </div>
+                    <div class="cu-template-center__dual-options">
+                        <div class="cu-template-center__dual-options-header">
+                            <div class="cu-template-center__dual-options-header-tab">
+                                <div
+                                    class="cu-template-center__radio-item cu-template-center__radio-item-no-margin cu-template-center__radio-item-active">
+                                    Import everything </div>
+                            </div>
+                            <div
+                                class="cu-template-center__dual-options-header-tab cu-template-center__dual-options-header-tab-disabled">
+                                <div class="cu-template-center__radio-item cu-template-center__radio-item-no-margin">
+                                    Customize import items </div>
+                            </div>
+                        </div>
+                        <div class="cu-template-center__dual-options-body">
+                            <div class="cu-template-center__dual-options-body-header ng-star-inserted"> Items to import:
+                            </div>
+                            <div class="cu-template-center__dual-options-body-text ng-star-inserted"> Import all Due
+                                Dates, Start Dates, Assignees, Watchers, Subtasks, Attachments, Comment Attachments,
+                                Statuses, Old Statuses, Tags, Contents, Recurring Settings, Priorities, Dependencies,
+                                Checklists, Custom Fields, Time Estimates, Views, Automations and Tasks as is. </div>
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cu-template-center__option-section ng-star-inserted">
+                    <div class="cu-template-center__option-label ng-star-inserted"> Project Dates </div>
+                    
+                    
+                    <div class="cu-template-center__dual-options">
+                        <div class="cu-template-center__dual-options-header">
+                            <div class="cu-template-center__dual-options-header-tab">
+                                <div
+                                    class="cu-template-center__radio-item cu-template-center__radio-item-no-margin cu-template-center__radio-item-active">
+                                    Import as is </div>
+                            </div>
+                            <div
+                                class="cu-template-center__dual-options-header-tab cu-template-center__dual-options-header-tab-disabled">
+                                <div class="cu-template-center__radio-item cu-template-center__radio-item-no-margin">
+                                    Remap Dates </div><a
+                                    href="https://docs.clickup.com/en/articles/1201565-remapping-dates-in-templates"
+                                    target="_blank" class="cu-template-center__dual-options-header-tab-link"> How it
+                                    works </a>
+                            </div>
+                        </div>
+                        <div class="cu-template-center__dual-options-body">
+                            <div class="cu-template-center__dual-options-body-text ng-star-inserted"> Due and Start
+                                dates are static and will be imported exactly as is. </div>
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cu-template-center__option-section ng-star-inserted">
+                    <div class="cu-template-center__option-label"> Do you want to include archived tasks? </div>
+                    <div class="cu-template-center__radio-container cu-template-center__radio-container-space-between">
+                        <div class="cu-template-center__radio-item cu-template-center__radio-item-active"> Nope </div>
+                        <div class="cu-template-center__radio-item"> Yes, but make them unarchived </div>
+                        <div class="cu-template-center__radio-item"> Yes (keep them archived) </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+            </div>
+            <div class="ps__rail-y" style="top: 0px; right: 0px; height: 693px;">
+                <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 559px;"></div>
+            </div>
+        </div>
+        
+        <div class="cu-template-center-use-template__footer">
+            <div class="cu-template-center-use-template__footer-text ng-star-inserted"> Once you use a template, a new
+                Folder
+                 will be created in selected location!
+                
+                
+                
+            </div>
+            
+            
+            <div class="cu-template-center-use-template__footer-buttons">
+                <div
+                    class="cu-template-center-use-template__footer-button cu-template-center-use-template__footer-button-cancel">
+                    Cancel </div>
+                <div
+                    class="cu-template-center-use-template__footer-button cu-template-center-use-template__footer-button-disabled">
+                    Use Template </div>
+            </div>
+        </div> 
+    </div>
+</ng-template>

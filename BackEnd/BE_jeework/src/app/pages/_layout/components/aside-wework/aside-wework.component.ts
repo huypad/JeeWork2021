@@ -1,3 +1,4 @@
+import { WeWorkService } from './../../../WeWork/services/wework.services';
 import {
   LayoutUtilsService,
   MessageType,
@@ -121,7 +122,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     public _Services: ProjectsTeamService,
     private changeDetectorRefs: ChangeDetectorRef,
-    public commonService: CommonService
+    public commonService: CommonService,
+    public WeWorkService: WeWorkService
   ) {}
 
   ngAfterViewInit(): void {}
@@ -893,5 +895,16 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 		  return item.title[0];
 	  }
 	  return 'N';
+  }
+  getColorText(item){
+    var text = "";
+	  console.log(item);
+	  if(item.title){
+		  text = item.title[0];
+	  }
+    if(text != ""){
+      return this.WeWorkService.getColorNameUser(text);
+    }
+    return "red";
   }
 }

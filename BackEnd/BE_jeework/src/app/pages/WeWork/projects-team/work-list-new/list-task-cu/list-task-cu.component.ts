@@ -416,6 +416,9 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
     filter.collect_by = this.column_sort.value;
+    if(this.selectedTab == 3){
+      filter.following = true;
+    }
     if (this.idFilter > 0) {
       filter.id_filter = this.idFilter;
     }

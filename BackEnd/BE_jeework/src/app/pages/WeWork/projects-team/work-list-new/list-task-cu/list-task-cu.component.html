@@ -60,7 +60,7 @@
                                     (click)="SelectedField(item)">{{item.title}}</button>
                                 </mat-menu>
                             </div>
-                            <div class="filter row pd-0">
+                            <div class="filter row pd-0" *ngIf="selectedTab != 3">
                                 <div class="icon-user border" (click)="viewTaskOrder=false;ChangeData()" >
                                     <i class="fas fa-user" [ngClass]="{'text-success': !viewTaskOrder}"></i>
                                 </div>
