@@ -140,7 +140,7 @@
                 <div class="row">
                     <div class="col-md-12 kt--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid ">
-                            <input matInput class="require" required placeholder="{{ 'repeated.deadline' | translate }}"
+                            <input matInput class="require" placeholder="{{ 'repeated.deadline' | translate }}"
                                 formControlName="deadline" />
                         </mat-form-field>
                     </div>
@@ -240,7 +240,7 @@
                     </div>
                     <div class="col-md-3 kt--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid">
-                            <input matInput placeholder="{{ 'repeated.deadline_hour' | translate}}"
+                            <input matInput type="number" placeholder="{{ 'repeated.deadline_hour' | translate}}"
                                 [(ngModel)]="listColumn[i].Deadline">
                         </mat-form-field>
                     </div>

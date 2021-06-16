@@ -1,3 +1,4 @@
+import { TemplateCenterComponent } from './../../template-center/template-center.component';
 import { values } from 'lodash';
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
@@ -14,7 +15,7 @@ import {
 	ChangeDetectorRef,
 } from "@angular/core";
 
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
 	FormBuilder,
 	FormGroup,
@@ -113,6 +114,7 @@ export class DepartmentEditNewComponent implements OnInit {
 		private danhMucChungService: DanhMucChungService,
 		public weworkService: WeWorkService,
 		public TokenStorage: TokenStorage,
+		public dialog: MatDialog,
 		private router: Router
 	) {
 		this.itemFormGroup = this.fb.group({
@@ -295,6 +297,9 @@ export class DepartmentEditNewComponent implements OnInit {
 			return result;
 		}
 		result = this.translate.instant("department.chinhsua");
+		if(this.item.ParentID>0){
+			result = this.translate.instant("department.chinhsuafolder");
+		}
 		return result;
 	}
 	/** ACTIONS */
@@ -302,6 +307,7 @@ export class DepartmentEditNewComponent implements OnInit {
 		const controls = this.itemFormGroup.controls;
 		const _item = new DepartmentModel();
 		_item.id_row = this.item.id_row;
+		_item.ParentID = this.item.ParentID;
 		_item.id_cocau = controls["dept_name"].value?controls["dept_name"].value:0;
 		_item.title = controls["title"].value;
 		_item.Owners = [];
@@ -356,7 +362,21 @@ export class DepartmentEditNewComponent implements OnInit {
 			this.Create(updatedegree, withBack);
 		}
 	}
-
+	AddTemplate(){
+		const item = "Danh sách giao diện template";
+		const dialogRef = this.dialog.open(TemplateCenterComponent, {
+			data: { item },
+			width:'50vw',
+			height:'95vh'
+		  });
+		  dialogRef.afterClosed().subscribe((res) => {
+			if (!res) {
+			  return;
+			} else {
+			  this.changeDetectorRefs.detectChanges();
+			}
+		  });
+	}
 	Update(_item: DepartmentModel, withBack: boolean) {
 		this.loadingAfterSubmit = true;
 		this.viewLoading = true;
@@ -519,7 +539,7 @@ export class DepartmentEditNewComponent implements OnInit {
 			(x) => x.id_nv == data.id_nv
 		);
 
-		if(index >= 0){
+		if(index >= 0){    
 			if(type == this.list_Owners[index].type){
 				this.list_Owners.splice(index, 1);
 			}else{

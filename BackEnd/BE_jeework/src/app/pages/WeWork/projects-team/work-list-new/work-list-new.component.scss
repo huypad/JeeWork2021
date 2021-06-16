@@ -1300,3 +1300,14 @@ textarea:focus{
 		border: 1px solid #3699FF;
 	}
 }
+
+.filter{
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+    color: #999;
+    padding: 10px 20px;
+    .icon-user{
+        padding: 7px 10px;
+    }
+}

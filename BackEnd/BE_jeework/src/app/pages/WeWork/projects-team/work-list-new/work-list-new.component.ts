@@ -96,7 +96,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   DataNewField: any = [];
   textArea: string = "";
 	Emtytask = false;
-  constructor(
+  filterDay = {
+    startDate: new Date('09/01/2020'),
+    endDate: new Date('09/30/2020'),
+  }
+    public column_sort: any = [];
+    constructor(
     @Inject(DOCUMENT) private document: Document,// multi level
     private _service: ProjectsTeamService,
     private WorkService: WorkService,
@@ -124,6 +129,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    var today = new Date();
+    this.filterDay = {
+      endDate: new Date(today.setDate(today.getDate() + 1)),
+      startDate: new Date(today.setDate(1)),
+    }
+    
+    this.column_sort = this.sortField[0];
     // this.selection = new SelectionModel<WorkModel>(true, []);
     this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
       if (res)
@@ -338,6 +350,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     filter.id_project_team = this.ID_Project;
     filter.groupby = this.filter_groupby.value;//assignee
     filter.keyword = this.keyword;
+    filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
+    filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
+    filter.collect_by = this.column_sort.value;
     return filter;
   }
 
@@ -561,63 +576,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         // var icon = { filename: filesAmount.name, strBase64: strBase64, base64Str: base64Str };
         // this.changeDetectorRefs.detectChanges();
       }
-
-      // var filesAmount = event.target.files[0];
-      // var Strfilename = filesAmount.name.split('.');
-
-      // event.target.type = 'text';
-      // event.target.type = 'file';
-      // var reader = new FileReader();
-      // let base64Str: any;
-      // reader.onload = (event) => {
-      // 	base64Str = event.target["result"]
-      // 	var metaIdx = base64Str.indexOf(';base64,');
-      // 	let strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
-      // 	var icon = { filename: filesAmount.name, strBase64: strBase64, base64Str: base64Str };
-      // 	this.changeDetectorRefs.detectChanges();
-      // }
-      // reader.readAsDataURL(filesAmount);
     }
-
-    // if (event.target.files && event.target.files.length) {//Nếu có file	
-    // 	var size = event.target.files[0].size;
-    // 	if (size / 1024 / 1024 > 3) {
-    // 		this.layoutUtilsService.showActionNotification("File upload không được vượt quá 3 MB", MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
-    // 		return;
-    // 	}
-    // 	let file = event.target.files[0]; // Ví dụ chỉ lấy file đầu tiên
-    // 	var TenFile = file.name;
-    // 	let reader = new FileReader();
-    // 	reader.readAsDataURL(event.target.files[0]);
-    // 	let base64Str;
-    // 	setTimeout(() => {
-    // 		base64Str = reader.result as String;
-    // 		var metaIdx = base64Str.indexOf(';base64,');
-    // 		base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
-    // 		var File = base64Str;
-    // 		var _model = new AttachmentModel;
-    // 		_model.object_type = parseInt('1');
-    // 		// _model.object_id = this.item.id_row;
-    // 		const ct = new FileUploadModel();
-    // 		ct.strBase64 = File;
-    // 		ct.filename = TenFile;
-    // 		ct.IsAdd = true;
-    // 		_model.item = ct;
-    // 		this._attservice.Upload_attachment(_model).subscribe(res => {
-    // 			this.changeDetectorRefs.detectChanges();
-    // 			if (res && res.status === 1) {
-    // 				const _messageType = this.translate.instant('GeneralKey.capnhatthanhcong');
-    // 				this.layoutUtilsService.showActionNotification(_messageType, MessageType.Update, 4000, true, false).afterDismissed().subscribe(tt => {
-    // 				});
-    // 				this.LoadData();
-    // 			}
-    // 			else {
-    // 				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
-    // 			}
-    // 		});
-
-    // 	}, 50);
-    // }
   }
 
 
@@ -1081,7 +1040,20 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     })
   }
+  SelectFilterDate() {
+    const dialogRef = this.dialog.open(DialogSelectdayComponent, {
+      width: '500px',
+      data: this.filterDay
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        this.filterDay.startDate = new Date(result.startDate)
+        this.filterDay.endDate = new Date(result.endDate)
+        this.LoadData();
+      }
+    });
+  }
   clearList() {
     this.selection = new SelectionModel<WorkModel>(true, []);
   }
@@ -1625,10 +1597,29 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   getHeight(){
-    var height = window.innerHeight - 113 - this.tokenStorage.getHeightHeader(); 
+    var height = window.innerHeight - 103 - this.tokenStorage.getHeightHeader(); 
     return height;
   }
 
+  SelectedField(item) {
+    this.column_sort = item;
+    this.LoadData();
+  }
+
+  sortField = [
+    {
+      title: this.translate.instant('day.theongaytao'),
+      value: 'CreatedDate',
+    },
+    {
+      title: this.translate.instant('day.theothoihan'),
+      value: 'Deadline',
+    },
+    {
+      title: this.translate.instant('day.theongaybatdau'),
+      value: 'StartDate',
+    },
+  ]
 }
 
 

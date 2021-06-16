@@ -55,9 +55,11 @@ export class WorkComponent implements OnInit {
 
 	loadThongTinUser() {
 		let id: any;
-		this.tokenStore.getIDUser().subscribe(res => {
+		this.tokenStore.getUserData().subscribe(res => {
 			if(res){
-				id = +res;
+				this.Image = res.Image;
+				this.Ten = res.HoTen;
+				this.ChucVu = res.ChucVu;
 				// this.userProfileService.getHinhAnhByID(+id).subscribe(res => {
 				// 	this.profile = res;
 				// 	let UserData = {

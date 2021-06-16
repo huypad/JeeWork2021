@@ -32,6 +32,7 @@ namespace JeeWork_Core2021.Models
         public bool allow_estimate_time { get; set; }
         public List<ProjectTeamUserModel> Users { get; set; }
         public long id_template { get; set; } = 0;
+
     }
     public class ProjectTeamUserModel
     {

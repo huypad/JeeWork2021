@@ -56,6 +56,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             DataTable dt_space = new DataTable();
             DataTable dt_project = new DataTable();
+            DataTable dt_folder = new DataTable();
             //JeeWorkConfig _config;
             try
             {
@@ -68,7 +69,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
                         string err = "";
                         string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
                         if (err != "")
@@ -85,7 +85,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             cond.Add("IDRole" + i, listrole[i]);
                         }
                         if (!"".Equals(sql_listRole)) sql_listRole = sql_listRole.Substring(1);
-
                         if (listrole.Length == 0)
                         {
                             sql_listRole = "0";
@@ -103,7 +102,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             and (Hienthi=@HienThi)))
                             --order by position  
                             ";
-
                         //select menu sub
                         select_Menu = $@"
 select title, pagekey, AllowPermit, Target, tbl_submenu.id_row,
@@ -119,52 +117,35 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             .Replace("--,title, PermissionID, page, Target, Summary, isNULL(ALink, '#') as ALink, ISNULL(Icon, 'flaticon-interface-7') as Icon", ",title, PermissionID, page, Target, Summary, isNULL(ALink, '#') as ALink, ISNULL(Icon, 'flaticon-interface-7') as Icon")
                             .Replace("--order by position", " order by position ");
                         select_MainMenu += select_Menu;
-                        string sql_space = "", sql_project = "";
-                        if (v_module.ToLower().Equals("module = 'wework'"))
-                        {
-                            sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled 
+                        string sql_space = "", sql_project = "", sql_folder = "", where_department = "";
+                        //if (v_module.ToLower().Equals("module = 'wework'"))
+                        //{
+                        where_department = @$" disabled = 0 and CreatedBy in ({listID}) 
+                                        and IdKH = {loginData.CustomerID} and (id_row in (select id_department from we_project_team 
+                                        where(id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
+                                        and Disabled = 0) 
+                                        or(CreatedBy = { loginData.UserID}
+                                        or UpdatedBy = { loginData.UserID })) and disabled = 0) or(CreatedBy = { loginData.UserID}
+                                        or UpdatedBy = { loginData.UserID }));";
+                        sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID
                                         from we_department
-                                        where Disabled = 0 and we_department.CreatedBy in ({listID}) and IdKH = {loginData.CustomerID} and (id_row in (select id_department from we_project_team 
-                                        where (id_row in (select id_project_team from we_project_team_user where id_user = {loginData.UserID} and Disabled = 0) 
-                                        or (CreatedBy = {loginData.UserID} or UpdatedBy = { loginData.UserID })) and disabled = 0) or (CreatedBy = {loginData.UserID} or UpdatedBy = {loginData.UserID }));
-                                        ";
-                            sql_project = "select id_row, icon, title, detail, id_department" +
-                                ", loai, start_date, end_date, color, template, status, stage_description" +
-                                ", allow_percent_done, require_evaluate, evaluate_by_assignner" +
-                                ", allow_estimate_time, stop_reminder, note, is_project, period_type" +
-                                ", priority, CreatedDate, CreatedBy, Locked, Disabled, UpdatedDate" +
-                                ", email_assign_work, email_update_work, email_update_status, email_delete_work" +
-                                ", email_update_team, email_delete_team, email_upload_file, default_view " +
-                                "from we_project_team " +
-                                $"where Disabled = 0 and CreatedBy in ({listID})";
-                        }
+                                        where ParentID is null and " + where_department + "";
+                        sql_project = "select id_row, icon, title, detail, id_department" +
+                            ", loai, start_date, end_date, color, template, status, is_project" +
+                            ", priority, CreatedDate, CreatedBy, Locked, Disabled, default_view " +
+                            "from we_project_team " +
+                            $"where Disabled = 0 and CreatedBy in ({listID})";
+                        //}
+                        sql_folder = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID 
+                                        from we_department
+                                        where ParentID is not null and " + where_department + "";
                         dt_space = Conn.CreateDataTable(sql_space);
                         dt_project = Conn.CreateDataTable(sql_project);
-                        dt_space.Columns.Add("Data", typeof(DataTable));
+                        dt_folder = Conn.CreateDataTable(sql_folder);
                         DataTable tmp_ww = new DataTable();
-                        foreach (DataRow dr in dt_space.Rows)
-                        {
-                            tmp_ww = new DataTable();
-                            tmp_ww.Columns.Add("ID");
-                            tmp_ww.Columns.Add("Title");
-                            tmp_ww.Columns.Add("Link");
-                            tmp_ww.Columns.Add("Locked");
-                            tmp_ww.Columns.Add("Color");
-                            tmp_ww.Columns.Add("Status");
-                            tmp_ww.Columns.Add("Default_View");
-                            tmp_ww.Columns.Add("Is_Project");
-                            DataRow[] dr_ = dt_project.Select("id_department=" + dr[0]);
-                            foreach (DataRow r in dr_)
-                            {
-                                tmp_ww.Rows.Add(new object[] { r["id_row"], r["title"], "/" + r["id_row"], r["Locked"], r["Color"], r["Status"], r["Default_View"], r["Is_Project"] });
-                            }
-                            dr["Data"] = tmp_ww;
-                        }
                         ds = Conn.CreateDataSet(select_MainMenu, cond);
                         #endregion
                     }
-                    //string link = General.GetDomain(loginData.CustomerID.ToString());
-                    //link = link + "images/AppIcon/";
                     System.Data.DataColumn newColumn = new System.Data.DataColumn("Child", typeof(object));
                     newColumn.DefaultValue = ds.Tables[1];
                     ds.Tables[0].Columns.Add(newColumn);
@@ -193,46 +174,54 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                        PageKey = c["pagekey"].ToString(),
                                                        AllowPermit = c["AllowPermit"].ToString(),
                                                        Target = c["Target"].ToString(),
-                                                       HinhThucTinhLuong = c["Loaihinh"].ToString(),
                                                        IconImage = c["IconImage"].ToString(),
                                                        GroupName = c["GroupName"].ToString(),
                                                        ALink = c["ALink"].ToString(),
                                                        Title_ = c["title_"].ToString(),
                                                    },
-                                           ChildApp = from c in ((DataTable)r["Child"]).AsEnumerable()
-                                                      where c["groupname"].ToString().Trim().ToLower().Equals(r["groupname"].ToString().Trim().ToLower()) && !c["AppLink"].ToString().Equals("")
-                                                      && ((c["id_row"].ToString().Equals("70652") && ds.Tables[2].Rows.Count > 0) || !c["id_row"].ToString().Equals("70652"))
-                                                      select new
-                                                      {
-                                                          Title = c["title"].ToString(),
-                                                          Summary = c["Summary"].ToString(),
-                                                          PageKey = c["pagekey"].ToString(),
-                                                          AllowPermit = c["AllowPermit"].ToString(),
-                                                          Target = c["Target"].ToString(),
-                                                          HinhThucTinhLuong = c["Loaihinh"].ToString(),
-                                                          //IconImage = link + c["AppIcon"].ToString(),
-                                                          GroupName = c["GroupName"].ToString(),
-                                                          ALink = c["AppLink"],
-                                                      }
                                        };
                             var menuWework = from r in dt_space.AsEnumerable()
                                              select new
                                              {
                                                  RowID = r["id_row"],
                                                  Title = r["title"],
-                                                 Icon = "flaticon-list",
-                                                 Data = from k in ((DataTable)r["data"]).AsEnumerable()
+                                                 Icon = "flaticon-signs-1",
+                                                 Priority = r["priority"],
+                                                 IsFolder = false,
+                                                 Data = from r2 in dt_project.AsEnumerable()
+                                                        where r2["id_department"].ToString() == r["id_row"].ToString()
                                                         select new
                                                         {
-                                                            ID_Row = k["ID"],
-                                                            Title = k["Title"],
-                                                            ALink = k["Link"],
-                                                            Locked = k["Locked"],
-                                                            Color = k["Color"],
-                                                            Status = k["Status"],
-                                                            Default_View = k["Default_View"],
-                                                            Is_Project = k["is_project"],
+                                                            ID_Row = r2["id_row"],
+                                                            Title = r2["Title"],
+                                                            Locked = r2["Locked"],
+                                                            Color = r2["Color"],
+                                                            Status = r2["Status"],
+                                                            Default_View = r2["Default_View"],
+                                                            Is_Project = r2["is_project"],
                                                         },
+                                                 Data_Folder = from r3 in dt_folder.AsEnumerable()
+                                                               where r3["ParentID"].ToString() == r["id_row"].ToString()
+                                                               select new
+                                                               {
+                                                                   RowID = r3["id_row"],
+                                                                   Title = r3["title"],
+                                                                   Icon = "flaticon-folder",
+                                                                   Priority = r3["priority"],
+                                                                   IsFolder = true,
+                                                                   Data = from r4 in dt_project.AsEnumerable()
+                                                                          where r4["id_department"].ToString() == r3["id_row"].ToString()
+                                                                          select new
+                                                                          {
+                                                                              ID_Row = r4["id_row"],
+                                                                              Title = r4["Title"],
+                                                                              Locked = r4["Locked"],
+                                                                              Color = r4["Color"],
+                                                                              Status = r4["Status"],
+                                                                              Default_View = r4["Default_View"],
+                                                                              Is_Project = r4["is_project"],
+                                                                          },
+                                                               },
                                              };
                             return JsonResultCommon.ThanhCong(new
                             {
@@ -258,16 +247,38 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        private object findFolderByDepartment(long IdParent, long CustomerID)
+        {
+            using (DpsConnection cnn = new DpsConnection(ConnectionCache.GetConnectionString(CustomerID)))
+            {
+                string where = " where ParentID is not null and Disabled=0 ";
+                string sqlq = $@"select * from we_department {where} order by title asc";
 
+                var dt = cnn.CreateDataTable(sqlq);
+                var data = from r in dt.AsEnumerable()
+                           where r["Parent"].ToString() == IdParent.ToString()
+                           select new
+                           {
+                               folder_id = r["title"].ToString(),
+                               folder_title = r["title"].ToString(),
+                               folder_icon = "flaticon-list",
+                               folder_priority = r["priority"].ToString(),
+                               //Children = findFolderByDepartment(long.Parse(r["Id"].ToString()), CustomerID)
+                           };
+
+                return data;
+            };
+
+        }
         [HttpGet]
         [Route("GetRoleWeWork")]
-        public object GetRoleWeWork(string id_nv,long CustomerID)
+        public object GetRoleWeWork(string id_nv, long CustomerID)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if(loginData != null)
+            if (loginData != null)
             {
                 CustomerID = loginData.CustomerID;
             }
@@ -289,7 +300,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     DataSet ds = Conn.CreateDataSet(sqlq);
                     DataTable dt_Project = Conn.CreateDataTable(sqlq);
                     if (Conn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,Conn.LastError,_config, loginData, ControllerContext);
+                        return JsonResultCommon.Exception(_logger, Conn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());

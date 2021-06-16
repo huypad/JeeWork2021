@@ -144,8 +144,21 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     // Init Content
     KTLayoutContent.init('kt_content');
 
+    var username = "";// sau khi xác thực có username
+		let data = JSON.parse(localStorage.getItem("User"));
+		if(data && data.Username){
+			username = data.Username;
+		}
+		else{
+			setTimeout(() => {
+				data = JSON.parse(localStorage.getItem("User"));
+				if(data && data.Username){
+					username = data.Username;
+				}
+			}, 1000);
+		}
     // setup onesignal
-    const username = "huypad";// sau khi xác thực có username
+    //const username = "huypad";// sau khi xác thực có username
     const host = {
       portal: 'https://portal.jee.vn',
     }

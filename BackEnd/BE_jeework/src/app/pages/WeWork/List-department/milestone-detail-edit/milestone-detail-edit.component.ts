@@ -37,6 +37,7 @@ export class milestoneDetailEditComponent implements OnInit {
 	id_project_team: string = '';
 	listProject: any;
 	isChangeTeam = true;
+	reloadPage = true;
 	constructor(public dialogRef: MatDialogRef<milestoneDetailEditComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		private fb: FormBuilder,
@@ -51,6 +52,9 @@ export class milestoneDetailEditComponent implements OnInit {
 	/** LOAD DATA */
 	ngOnInit() {
 		this.item = this.data._item;
+		if(this.data.reloadPage){
+			this.reloadPage = this.data.reloadPage;
+		}
 		console.log(this.item);
 		if (this.data._item) {
 			if (this.item.id_row > 0) {
@@ -151,8 +155,6 @@ export class milestoneDetailEditComponent implements OnInit {
 		return _item;
 	}
 	onSubmit(withBack: boolean = false) {
-		
-
 		this.hasFormErrors = false;
 		this.loadingAfterSubmit = false;
 		const controls = this.itemForm.controls;
@@ -201,25 +203,19 @@ export class milestoneDetailEditComponent implements OnInit {
 	}
 	Create(_item: MilestoneModel, withBack: boolean) {
 		_item.id_project_team = +this.itemForm.controls.id_project_team.value;
-
 		this.loadingAfterSubmit = true;
 		this.disabledBtn = true;
+		const _messageType = this.translate.instant('GeneralKey.themthanhcong');
 		this.ObjectService.InsertMilestone(_item).subscribe(res => {
 			this.disabledBtn = false;
 			if (res && res.status === 1) {
-				location.reload();
-				// if (withBack == true) {
-				// 	this.dialogRef.close({
-				// 		_item
-				// 	});
-				// }
-				// else {
-				// 	this.dialogRef.close();
-				// }
+				if(this.reloadPage){
+					location.reload();
+				}
 			}
 			else {
 				this.viewLoading = false;
-				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+				this.layoutUtilsService.showError(res.error.message);
 			}
 		});
 	}

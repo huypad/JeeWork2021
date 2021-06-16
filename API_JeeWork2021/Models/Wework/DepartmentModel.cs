@@ -15,6 +15,8 @@ namespace JeeWork_Core2021.Models
         public List<DepartmentOwnerModel> Owners { get; set; }
         public bool ReUpdated { get; set; } // áp dụng cho trường hợp sửa. Khi muốn cập nhật lại dữ liệu thành viên
         public List<DepartmentViewModel> DefaultView { get; set; }
+        public bool IsFolder { get; set; } = false;
+        public long ParentID { get; set; }
     }
     public class DepartmentOwnerModel
     {

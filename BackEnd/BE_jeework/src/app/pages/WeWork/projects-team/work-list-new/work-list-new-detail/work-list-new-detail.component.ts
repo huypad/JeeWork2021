@@ -499,8 +499,12 @@ export class WorkListNewDetailComponent implements OnInit {
 			this.listUser.filter(bank => bank.hoten.toLowerCase().indexOf(search) > -1)
 		);
 	}
-
+	newtask = true;
 	CreateTask(val) {
+		this.newtask = false;
+		setTimeout(() => {
+			this.newtask = true;
+		}, 1000);
 		this.ProjectsTeamService.InsertTask(val).subscribe(res => {
 			if (res && res.status == 1) {
 				// this.CloseAddnewTask(true);
@@ -617,10 +621,9 @@ export class WorkListNewDetailComponent implements OnInit {
 				checklist_model.title = this.Value;
 
 				this.updatebykeyService.Insert_CheckList(checklist_model).subscribe(res => {
-					this.changeDetectorRefs.detectChanges();
 					if (res && res.status === 1) {
 						this.IsShow_CheckList = !this.IsShow_CheckList;
-						this.refreshData();
+						this.LoadChecklist();
 						this.changeDetectorRefs.detectChanges();
 					}
 					else {
@@ -679,9 +682,12 @@ export class WorkListNewDetailComponent implements OnInit {
 		}
 	}
 	UpdateDescription() {
-		if (this.valueFocus.trim() != this.item.description.trim()) {
+		// description
+		var x = document.getElementById("txtdescription");
+		var ele = (<HTMLInputElement>document.getElementById("txtdescription"));
+		if( ele.value.toString().trim() != this.item.description.toString().trim() ){
+			this.item.description = ele.value;
 			this.UpdateByKeyNew(this.item, 'description', this.item.description);
-			this.setTextinput(this.item.description);
 		}
 	}
 
@@ -1024,12 +1030,10 @@ export class WorkListNewDetailComponent implements OnInit {
 	}
 
 	updateStartDate(event) {
-		// alert(event.value)
 		var date = event.value
 		this.UpdateByKeyNew(this.item, 'start_date', moment(date).format('MM/DD/YYYY HH:mm'));
 	}
 	updateDueDate(event) {
-		// alert(event.value)
 		var date = event.value
 		this.UpdateByKeyNew(this.item, 'deadline', moment(date).format('MM/DD/YYYY HH:mm'));
 	}
@@ -1099,11 +1103,12 @@ export class WorkListNewDetailComponent implements OnInit {
 		return item.id_row;
 	}
 
-	preview(val){
-		
+	DownloadFile(link) {
+		window.open(link);
 	}
-	DownloadFile(val){
 
+	preview(link) {
+		this.layoutUtilsService.ViewDoc(link);
 	}
 
 	UpdateStatus_dynamic(_item,user) {
