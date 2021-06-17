@@ -1,3 +1,18 @@
+input{
+    &:focus,
+    &:active{
+        border: none;
+        outline: none;
+    }
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
 #template-center {
     display: flex;
     flex-direction: column;
@@ -50,108 +65,78 @@
             width: 16px;
             cursor: pointer;
         }
+        .cu-template-center-header__back {
+            transition: fill .2s cubic-bezier(.785,.135,.15,.86) 0s;
+            position: absolute;
+            left: 20px;
+            top: 22px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            .icon {
+                fill: #b9bec7;
+                height: 16px;
+                width: 16px;
+                margin-right: 7px;
+            }
+            
+            .cu-template-center-header__back-text {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                font-family: Gotham Pro,Proxima Nova,arial,serif;
+                font-weight: 500;
+                font-size: 12px;
+                line-height: 1;
+                color: #b9bec7;
+            }
+
+            .cu-template-center-header__back-text {
+                font-family: var(--global-font-support);
+            }
+        }
+        .cu-template-center-header__type-container {
+            display: flex;
+            align-items: center;
+            margin-left: 65px;
+            position: absolute;
+            left: 20px;
+            top: 10px;
+
+            .cu-template-center-header__type {
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 8px;
+                border-radius: 6px;
+            }
+            .cu-template-center-header__type-text {
+                color: #1aaee1;
+            }
+            .icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-grow: 0;
+                flex-shrink: 0;
+            }
+        }
+
+        .cu-template-center-header__close {
+            transition: transform .2s cubic-bezier(.785,.135,.15,.86) 0s;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            fill: #b9bec7;
+            height: 16px;
+            width: 16px;
+            cursor: pointer;
+        }
     }
-
-    //     .cu-template-center__body {
-    //         display: flex;
-    //         justify-content: space-between;
-    //         flex-grow: 1;
-    //         max-height: 100%;
-
-    //         .cu-template-center-sidebar {
-    //             width: 230px;
-    //             min-width: 230px;
-    //             height: 100%;
-    //             padding: 24px 0;
-    //             border-right: 1px solid #e9ebf0;
-
-    //             &__header {
-    //                 -webkit-font-smoothing: antialiased;
-    //                 -moz-osx-font-smoothing: grayscale;
-    //                 font-family: Gotham Pro, Proxima Nova, arial, serif;
-    //                 font-weight: 500;
-    //                 font-size: 13px;
-    //                 line-height: 1;
-    //                 padding: 0 22px 14px;
-    //                 color: #292d34;
-    //             }
-
-    //             .cu-template-center-sidebar__choices {
-    //                 padding: 0 12px;
-    //                 margin-bottom: 24px;
-
-    //             }
-
-    //             .cu-template-center-sidebar__choice {
-    //                 display: flex;
-    //                 align-items: center;
-    //                 height: 36px;
-    //                 border-radius: 4px;
-    //                 position: relative;
-    //                 cursor: pointer;
-    //                 margin-bottom: 4px;
-    //                 z-index: 1;
-    //                 padding: 0 10px;
-    //             }
-
-    //             .cu-template-center-sidebar__types {
-    //                 padding: 0 13px;
-    //                 margin-bottom: 24px;
-    //             }
-
-    //             .cu-template-center-sidebar__type {
-    //                 height: 32px;
-    //                 display: flex;
-    //                 align-items: center;
-    //                 cursor: pointer;
-    //                 padding: 0 8px;
-    //                 border-radius: 4px;
-    //             }
-
-    //             .cu-template-center-sidebar__type-checkbox {
-    //                 width: 16px;
-    //                 height: 16px;
-    //                 border-radius: 3px;
-    //                 border: 1px solid #e9ebf0;
-    //                 margin-right: 12px;
-    //             }
-
-    //             .cu-template-center-sidebar__type-name {
-    //                 -webkit-font-smoothing: antialiased;
-    //                 -moz-osx-font-smoothing: grayscale;
-    //                 font-family: Gotham Pro, Proxima Nova, arial, serif;
-    //                 font-weight: 400;
-    //                 font-size: 13px;
-    //                 line-height: 1;
-    //                 color: #292d34;
-    //                 padding-right: 5px;
-    //                 text-transform: capitalize;
-    //             }
-
-    //             .cu-template-center-sidebar__type-count {
-    //                 -webkit-font-smoothing: antialiased;
-    //                 -moz-osx-font-smoothing: grayscale;
-    //                 font-family: Gotham Pro, Proxima Nova, arial, serif;
-    //                 font-weight: 400;
-    //                 font-size: 13px;
-    //                 line-height: 1;
-    //                 color: #7c828d;
-    //             }
-
-
-    //         }
-
-    //     }
-
-    //     .cu-template-center-main {
-    //         flex-grow: 1;
-    //         background-color: #fafbfc;
-    //         max-width: calc(100% - 230px);
-    //     }
 
 }
 
-// setup body --
 .cu-template-center {
     display: flex;
     flex-direction: column;
@@ -252,7 +237,20 @@
     border-radius: 4px;
     display: flex;
     align-items: center;
-    box-shadow: none !important
+    box-shadow: none !important;
+
+    input{
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-family: Gotham Pro, Proxima Nova, arial, serif;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 1;
+        flex-grow: 1;
+        border: none;
+        background-color: transparent;
+        box-shadow: none !important;
+    }
 }
 
 @supports (--global-font-support:"Gotham Pro", "Proxima Nova", arial, serif) {
@@ -904,7 +902,7 @@
     flex-grow: 1
 }
 
-// body left
+
 .cu-template-center-sidebar {
     width: 230px;
     min-width: 230px;
@@ -1062,7 +1060,9 @@
 .cu-template-center-sidebar__choice .cu-team-avatar .cu-avatar {
     width: 20px;
     height: 20px;
-    border-radius: 25%
+    border-radius: 25%;
+    text-align: center;
+    color: white;
 }
 
 .cu-template-center-sidebar__types {
@@ -1152,7 +1152,6 @@
 
 .cu-template-center-sidebar__type-active>.cu-template-center-sidebar__type-checkbox .icon {
     display: flex;
-    padding: 2px;
     fill: #fff
 }
 
@@ -1222,7 +1221,6 @@
 }
 
 
-// body main Clickup
 .cu-template-center-main {
     flex-grow: 1;
     background-color: #fafbfc;
@@ -1803,7 +1801,6 @@
 
 .cu-template-center-main__row-expanded .cu-template-center-template {
     margin-bottom: 16px;
-    width: 232px
 }
 
 .cu-template-center-main__row-header {
@@ -2090,7 +2087,6 @@
     z-index: 9
 }
 
-// Children view
 .cu-template-center-template {
     transition: border-color .3s cubic-bezier(.785, .135, .15, .86) 0s;
     width: 30.5%;
@@ -2329,7 +2325,6 @@
     fill: #fd7171
 }
 
-// template selected
 .cu-template-center-selected-template {
     display: flex;
     flex-direction: column;
@@ -4163,13 +4158,12 @@
     height: 24px
 }
 
-// step3
-.cu-template-center-use-template {
-    max-height: calc(100vh - 154px);
+.cu-template-center-use-template__folder {
+    max-height: calc(100vh - 100px);
     background-color: #fafbfc;
     display: flex;
-    // flex-direction: column;
-    overflow: hidden
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .dark-theme cu-template-center-use-template {
@@ -4183,7 +4177,7 @@
     background-color: #fafbfc;
     flex-grow: 1;
     max-height: 100%;
-    margin-bottom: 100px
+    margin-bottom: 25px
 }
 
 .dark-theme .cu-template-center-use-template {
@@ -4220,9 +4214,7 @@
 
 .cu-template-center-use-template__footer {
     height: 96px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    position: relative;
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -4652,3 +4644,5 @@
     height: 12px;
     margin-left: 5px
 }
+
+

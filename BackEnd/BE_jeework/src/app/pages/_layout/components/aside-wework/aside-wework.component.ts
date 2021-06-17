@@ -192,7 +192,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 
   Create(_item: ProjectTeamModel) {
     this._Services.InsertFasttProjectTeam(_item).subscribe((res) => {
-      console.log(res);
       if (res && res.status == 1) {
         location.reload();
       } else {
@@ -595,7 +594,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     var item: any = [];
     this._deptServices.DeptDetail(ID_Department).subscribe((res) => {
       if (res && res.status == 1) {
-		console.log(res.data)
         item = res.data;
         _item.RowID = item.id_row;
         _item.title = item.title;
@@ -781,7 +779,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     this.Update(ObjectModels);
   }
   AddFolder(item) {
-	  console.log(item);
     const ObjectModels = new DepartmentModel();
     ObjectModels.clear(); // Set all defaults fields
 	ObjectModels.ParentID = item.id;
@@ -890,7 +887,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   }
 
   getText(item){
-	  console.log(item);
 	  if(item.title){
 		  return item.title[0];
 	  }
@@ -898,7 +894,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   }
   getColorText(item){
     var text = "";
-	  console.log(item);
 	  if(item.title){
 		  text = item.title[0];
 	  }
