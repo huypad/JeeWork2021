@@ -343,7 +343,6 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
       Locked: [this.item.Locked == null ? "" : this.item.Locked],
       deadline: [
         this.item.deadline == null ? "" : this.item.deadline,
-        Validators.required,
       ],
     });
     // this.itemForm.controls["id_project_team"].markAsTouched();
@@ -622,16 +621,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
         controls[controlName].markAsTouched()
       );
       this.hasFormErrors = true;
-      this.layoutUtilsService.showActionNotification(
-        "Vui lòng nhập đầy đủ thông tin bắt buộc",
-        MessageType.Read,
-        9999999999,
-        true,
-        true,
-        3000,
-        "top",
-        0
-      );
+      this.layoutUtilsService.showError("Vui lòng nhập đầy đủ thông tin bắt buộc");
       // this.layoutUtilsService.showActionNotification("Error Valid")
       return;
     }
@@ -656,7 +646,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     // _item.id_group = controls['id_group'].value == "null" ? "0" : controls['id_group'].value;
     // _item.assign = controls['assign'].value;// chỉ lưu id
     _item.frequency = controls["frequency"].value;
-    _item.deadline = controls["deadline"].value;
+    _item.deadline = +controls["deadline"].value>0?controls["deadline"].value:"0";
 
     if (!this.show_frequency)
       _item.repeated_day = controls["repeated_day"].value;
@@ -747,21 +737,12 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
           const _messageType = this.translate.instant(
             "GeneralKey.themthanhcong"
           );
-          this.layoutUtilsService.showInfo(_messageType);
+          this.layoutUtilsService.showActionNotification(_messageType);
           // this.layoutUtilsService.showActionNotification(_messageType, MessageType.Update, 4000, true, false).afterDismissed().subscribe(tt => {
           // });
         }
       } else {
-        this.layoutUtilsService.showActionNotification(
-          res.error.message,
-          MessageType.Read,
-          9999999999,
-          true,
-          false,
-          3000,
-          "top",
-          0
-        );
+        this.layoutUtilsService.showError(res.error.message);
       }
       this.changeDetectorRefs.detectChanges();
     });

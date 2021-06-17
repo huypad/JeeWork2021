@@ -91,8 +91,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     dieukien_where += $"and de.CreatedBy in ({listID}) ";
-                   string sqlq = @$"select de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
-                                    from we_department de (admin) " + dieukien_where +$"  order by " + dieukienSort;
+                    string sqlq = @$"select de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
+                                    from we_department de (admin) " + dieukien_where + $"  order by " + dieukienSort;
                     if (!Visible)
                     {
                         sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
@@ -104,7 +104,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         sqlq = sqlq.Replace("(admin)", " where ");
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData, ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     var temp = dt.AsEnumerable();
@@ -173,7 +173,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -187,16 +187,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
-                    string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
+                string error = "";
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                if (error != "")
+                    return JsonResultCommon.Custom(error);
+                #endregion
                 PageModel pageModel = new PageModel();
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
@@ -224,7 +224,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -273,6 +273,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     UpdatedBy = r["UpdatedBy"],
                                     NguoiSua = r["NguoiSua"],
                                     viewid = r["TemplateID"],
+                                    ParentID = r["ParentID"],
                                     Owners = from rr in ds.Tables[1].AsEnumerable()
                                              select new
                                              {
@@ -329,7 +330,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -369,6 +370,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("CreatedBy", iduser);
                     val.Add("IsDataStaff_HR", data.IsDataStaff_HR);
                     val.Add("TemplateID", data.TemplateID);
+                    if (data.ParentID > 0)
+                    {
+                        val.Add("ParentID", data.ParentID);
+                    }
                     string strCheck = "select count(*) from we_department where Disabled=0 and (IdKH=@custemerid) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "custemerid", idk }, { "name", data.title } }).ToString()) > 0)
                     {
@@ -378,7 +383,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.Insert(val, "we_department") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu department: title=" + data.title + ", id_cocau=" + data.id_cocau;
@@ -397,7 +402,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             if (cnn.Insert(val1, "we_department_view") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -415,7 +420,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             if (cnn.Insert(val1, "we_department_owner") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -441,7 +446,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                         if (cnn.Insert(has, "we_department_owner") != 1)
                                         {
                                             cnn.RollbackTransaction();
-                                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                         }
                                     }
                                 }
@@ -455,7 +460,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -509,7 +514,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.Update(val, sqlcond, "we_department") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (data.Owners != null)
                     {
@@ -520,7 +525,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                         Hashtable val1 = new Hashtable();
@@ -536,7 +541,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 if (cnn.Insert(val1, "we_department_owner") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
                         }
@@ -550,7 +555,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                         Hashtable val1 = new Hashtable();
@@ -566,7 +571,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 if (cnn.Insert(val1, "we_department_view") != 1)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
                         }
@@ -593,7 +598,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                         if (cnn.Insert(has, "we_department_owner") != 1)
                                         {
                                             cnn.RollbackTransaction();
-                                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                         }
                                     }
                                 }
@@ -615,7 +620,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -647,7 +652,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu department (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
@@ -657,7 +662,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
     }

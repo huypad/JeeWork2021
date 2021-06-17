@@ -60,11 +60,11 @@
                                     (click)="SelectedField(item)">{{item.title}}</button>
                                 </mat-menu>
                             </div>
-                            <div class="filter row pd-0">
-                                <div class="icon-user border" (click)="viewTaskOrder=false" >
+                            <div class="filter row pd-0" *ngIf="selectedTab != 3">
+                                <div class="icon-user border" (click)="viewTaskOrder=false;ChangeData()" >
                                     <i class="fas fa-user" [ngClass]="{'text-success': !viewTaskOrder}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="viewTaskOrder=true" >
+                                <div class="icon-user border" (click)="viewTaskOrder=true;ChangeData()" >
                                     <i class="fas fa-user-friends" [ngClass]="{'text-success': viewTaskOrder}"></i>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
         <div class="kt-form__filtration">
             <div class="form-group kt-form__group row">
                 <div style="padding: 25px;    flex-grow: 1;">
-                    <ng-container *ngFor="let lstcongviec of viewData(DanhsSachCongViec);trackBy: trackByFn">
+                    <ng-container *ngFor="let lstcongviec of filteredDanhSachCongViec | async ;trackBy: trackByFn">
                         <div class="cu-list-group" *ngIf="lstcongviec.data.length > 0 || showemptystatus">
                             <div class="cu-task-list">
                                 <div class="task-list-header text-dark">

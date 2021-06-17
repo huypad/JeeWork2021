@@ -115,9 +115,48 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
-                    string strW = "";
+                    string strW = "",strW1 = "";
+                    SqlConditions Conds = new SqlConditions();
                     DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), ConnectionString);
                     dt_new_fields = cnn.CreateDataTable(data_newfield);
+
+                    Dictionary<string, string> collect = new Dictionary<string, string>
+                        {
+                            { "CreatedDate", "CreatedDate"},
+                            { "Deadline", "deadline"},
+                            { "StartDate", "start_date"}
+                        };
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+
+                    //if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    //{
+                    //    DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    //    dieukien_where += " and w." + collect_by + ">=@from";
+                    //    Conds.Add("from", from);
+                    //}
+                    //if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    //{
+                    //    DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    //    to = to.AddDays(1);
+                    //    dieukien_where += " and w." + collect_by + "<@to";
+                    //    Conds.Add("to", to);
+                    //}
+
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        strW1 += " and w." + collect_by + ">=@from";
+                        Conds.Add("from", from);
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        to = to.AddDays(1);
+                        strW1 += " and w." + collect_by + "<@to";
+                        Conds.Add("to", to);
+                    }
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         strW = " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
@@ -258,9 +297,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!FieldsSelected.Equals(""))
                         FieldsSelected = FieldsSelected.Substring(1);
                     string sql = "Select  iIf(id_group is null,0,id_group) as id_group ,work_group, " + FieldsSelected;
-                    sql += $@" from v_wework_clickup_new w where w.Disabled = 0 " + strW;
+                    sql += $@" from v_wework_clickup_new w where w.Disabled = 0 " +strW1 + strW;
                     DataTable result = new DataTable();
-                    result = cnn.CreateDataTable(sql);
+                    result = cnn.CreateDataTable(sql, Conds);
                     DataTable dt_comments = cnn.CreateDataTable("select id_row, object_type, object_id, comment, id_parent, Disabled " +
                        "from we_comment where disabled = 0 and object_type = 1");
                     string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a 
@@ -363,6 +402,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    long IDNV = loginData.UserID;
                     #region filter thời gian , keyword
                     DateTime from = DateTime.Now;
                     DateTime to = DateTime.Now;
@@ -379,21 +419,31 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
+                    if (!string.IsNullOrEmpty(query.filter["id_nv"]))
+                        IDNV = long.Parse(query.filter["id_nv"]);
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
                     string columnName = "id_project_team";
-                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser
+                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    if (!string.IsNullOrEmpty(query.filter["workother"]) && bool.Parse(query.filter["workother"]))
+                    {
+                        strW = " and ( ( (w.createdby=@iduser or w.NguoiGiao = @iduser )and w.Id_NV not in (@iduser) and w.Id_NV is not null))";
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["following"]) && bool.Parse(query.filter["following"]))
+                    {
+                        strW = $" and (w.id_row in ( select id_work from we_work_user where loai=2 and disabled=0 and id_user = { loginData.UserID }))";
+                    }
                     #region group
                     string strG = @$"select distinct p.id_row, p.title from we_project_team_user u
 join we_project_team p on p.id_row=u.id_project_team 
 join we_department d on d.id_row = p.id_department
-where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { loginData.UserID } and d.IdKH = { loginData.CustomerID}";
+where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } and d.IdKH = { loginData.CustomerID}";
                     #endregion
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = getWork(cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -1797,7 +1847,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;
-                            item["image"] = info.PhoneNumber;
+                            item["image"] = info.AvartarImgURL;
                         }
                     }
                     #endregion
@@ -3946,7 +3996,8 @@ join we_department d on d.id_row = p.id_department
 where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.filter["id_nv"] } and d.IdKH = { loginData.CustomerID}";
                     DataTable dtG = cnn.CreateDataTable(strG);
                     //DataSet ds = getWork(cnn, query, loginData.UserID);
-                    DataSet ds = getWork(cnn, query, long.Parse(query.filter["id_nv"].ToString()), DataAccount, "");
+                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    DataSet ds = getWork(cnn, query, long.Parse(query.filter["id_nv"].ToString()), DataAccount, strW);
                     var tags = ds.Tables[1].AsEnumerable();
                     var followers = ds.Tables[2].AsEnumerable();
                     if (cnn.LastError != null || ds == null)

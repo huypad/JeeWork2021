@@ -662,6 +662,41 @@ namespace JeeWork_Core2021.Controllers.Wework
                                ChucDanh = nv["Jobtitle"],
                                CCTC = nv["Department"]
                            };
+                if (!string.IsNullOrEmpty(query.filter["HoTen"]))
+                {
+                    data = data.Where(x => x.HoTen.ToString().ToLower().Contains(query.filter["HoTen"].ToString().ToLower()));
+                }
+                if(query.sortField == "HoTen")
+                {
+                    if (query.sortOrder == "asc")
+                    {
+                        data = data.OrderBy(x => x.HoTen);
+                    }
+                    else
+                    {
+                        data = data.OrderByDescending(x => x.HoTen);
+                    }
+                } else if (query.sortField == "TenDangNhap")
+                {
+                    if (query.sortOrder == "asc")
+                    {
+                        data = data.OrderBy(x => x.Username);
+                    }
+                    else
+                    {
+                        data = data.OrderByDescending(x => x.Username);
+                    }
+                } else if (query.sortField == "ChucDanh")
+                {
+                    if (query.sortOrder == "asc")
+                    {
+                        data = data.OrderBy(x => x.ChucDanh);
+                    }
+                    else
+                    {
+                        data = data.OrderByDescending(x => x.ChucDanh);
+                    }
+                }
                 return JsonResultCommon.ThanhCong(data, pageModel, Visible);
             }
             catch (Exception ex)

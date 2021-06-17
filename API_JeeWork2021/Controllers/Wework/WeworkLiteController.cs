@@ -195,10 +195,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                bool Visible = true;
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -212,16 +212,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     conds.Add("id_user", loginData.UserID);
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select distinct de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
-from we_department de (admin) and de.CreatedBy in ({listID})";
-                    if (!Visible)
-                    {
-                        sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
-                            "where de.Disabled = 0 and (do.id_user = " + loginData.UserID + " " +
-                            "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
-                    }
-                    else
-                        sqlq = sqlq.Replace("(admin)", " where de.Disabled = 0  ");
+from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and id_row in ({listDept})";
+                    //if (!Visible)
+                    //{
+                    //    sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
+                    //        "where de.Disabled = 0 and (do.id_user = " + loginData.UserID + " " +
+                    //        "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
+                    //        "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
+                    //}
+                    //else
+                    //    sqlq = sqlq.Replace("(admin)", " where de.Disabled = 0  ");
                     //DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     #endregion
 

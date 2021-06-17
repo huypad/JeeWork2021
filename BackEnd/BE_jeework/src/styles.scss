@@ -552,3 +552,14 @@ span{
   /* Safari */
   animation: spin 2s linear infinite;
 }
+
+//@at-root
+
+:root {
+  --theme-main-color: #1DB954;
+  --theme-main-color-dark: #179644;
+  --theme-main-color-light: #6de899;
+  --theme-main-header-color: #1DB954;
+  --global-font-support: "Gotham Pro", "Proxima Nova", Arial, serif;
+  --global-second-font-support: "Proxima Nova", Arial, serif;
+}

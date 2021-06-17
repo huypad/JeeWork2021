@@ -165,8 +165,12 @@ export class WorkService {
 	}
 	UpdateByKey(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.post<any>(API_work + '/Update-by-key', item, { headers: httpHeaders });
+		return this.http.post<any>(API_work_CU + '/Update-by-key', item, { headers: httpHeaders });
 	}
+	// UpdateByKeyNew(item): Observable<any> {
+	// 	const httpHeaders = this.httpUtils.getHTTPHeaders();
+	// 	return this.http.post<any>(API_work_CU + '/Update-by-key', item, { headers: httpHeaders });
+	// }
 	//#region import/export
 	// ImportData(item): Observable<any> {
 	// 	const httpHeaders = this.httpUtils.getHTTPHeaders();
@@ -179,7 +183,7 @@ export class WorkService {
 	ExportExcel(params): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		let httpparams = this.httpUtils.getFindHTTPParams(params)
-		return this.http.get(API_work + '/ExportExcel', {
+		return this.http.get(API_work_CU + '/ExportExcel', { //API_work
 			headers: httpHeaders,
 			params: httpparams,
 			responseType: 'blob',

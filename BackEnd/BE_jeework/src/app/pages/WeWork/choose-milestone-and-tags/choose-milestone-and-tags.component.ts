@@ -143,8 +143,9 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType =
 			_item.id_row > 0 ? MessageType.Update : MessageType.Create;
+		const reloadPage = false;
 		const dialogRef = this.dialog.open(milestoneDetailEditComponent, {
-			data: { _item },
+			data: { _item,reloadPage },
 		});
 		dialogRef.afterClosed().subscribe((res) => {
 			if (!res) {

@@ -134,7 +134,12 @@
 <ng-template #menuItemTextTemplate let-item="item" let-parentItem="parentItem">
     <!-- if menu item has icon -->
     <span class="svg-icon menu-icon" *ngIf="item.icon">
-        <i class="kt-menu__link-icon" [ngClass]="item.icon"></i>
+        <ng-container *ngIf="item.icon == 'flaticon-signs-1'; else icon">
+            <div class="text-white box-icon" [ngStyle]="{'backgroundColor': getColorText(item)}">{{getText(item)}}</div>
+        </ng-container>
+        <ng-template #icon>
+            <i class="kt-menu__link-icon" [ngClass]="item.icon"></i>
+        </ng-template>
     </span>
     
     <!-- if menu item using bullet -->
@@ -238,6 +243,7 @@
                 <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
             </button>
             <mat-menu #belowMenu="matMenu" yPosition="below">
+                <button mat-menu-item><span translate="GeneralKey.templatecenter"></span></button>
                 <!-- <button mat-menu-item >
                     <span translate="projects.themnhanhduan"></span>
                 </button> -->
@@ -250,13 +256,22 @@
                 <a [routerLink]="['/depts',item.id,'report',item.id]"><button mat-menu-item>
                         <span translate="work.xemchitietbaocao"></span>
                     </button></a>
-                <button (click)="AddDept(item,item.id)" mat-menu-item><span translate="department.chinhsua"></span></button>
-                <button (click)="DeleteDept(item)" mat-menu-item><span translate="department.xoa"></span></button>
+                <button (click)="AddDept(item,item.id)" mat-menu-item><span translate="department.{{item.IsFolder?'chinhsuafolder':'chinhsua'}}"></span></button>
+                <button (click)="DeleteDept(item)" mat-menu-item><span translate="department.{{item.IsFolder?'xoafolder':'xoa'}}"></span></button>
             </mat-menu>
     
         </div>
-        <i matTooltip="{{'projects.themnhanhduan' | translate}}" matTooltipPosition="above"
+        <i matTooltip="{{'projects.themnhanhduan' | translate}}" matTooltipPosition="above" *ngIf="item.IsFolder;else IsFolder"
             class="align-items-center d-flex las la-plus-circle hover-to-show" style="font-size: 15px;" (click)="QuickInsert = item.id"></i>
+        <ng-template #IsFolder>
+            <i [matMenuTriggerFor]="folder" matTooltipPosition="above"
+            class="align-items-center d-flex las la-plus-circle hover-to-show" style="font-size: 15px;"></i>
+                <mat-menu #folder="matMenu" yPosition="below"> 
+                    <button (click)="QuickInsert = item.id" mat-menu-item><span translate="projects.themnhanhduan"></span></button>
+                    <button (click)="AddFolder(item)" mat-menu-item><span translate="projects.themfolder"></span></button> 
+                </mat-menu>
+        </ng-template>
+        
     </ng-container>
     
     <!-- if menu item has submenu child then put arrow icon -->

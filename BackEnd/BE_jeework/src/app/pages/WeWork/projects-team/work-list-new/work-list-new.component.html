@@ -86,6 +86,22 @@
             </ng-container>
         </div>
         <div style="flex-grow: 1;"></div>
+        <div (click)="SelectFilterDate()" class="filter ">{{'filter.tu'|translate}}:
+            <em>{{  filterDay.startDate | date:'dd/MM'}} -
+                {{ filterDay.endDate | date:'dd/MM/yyyy'}}</em>
+            &nbsp;
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="filter" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+            <em>{{column_sort.title}}</em>
+            &nbsp;
+            <i class="fas fa-chevron-down"></i>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item *ngFor="let item of sortField"
+                [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                (click)="SelectedField(item)">{{item.title}}</button>
+            </mat-menu>
+        </div>
         <div class="cu-filter-right row text-dark">
             <div class="item-filter url -hover">
                 <div [matMenuTriggerFor]="groupby">
@@ -607,7 +623,7 @@
                                                                     </ng-template>
                                                                 </ng-container>
                                                                 <ng-template #nosetdatetime>
-                                                                    <div class="item-field">
+                                                                    <div class="item-field hide-more-text">
                                                                         <ng-template #code>
                                                                             <span class="hide-more-text">
                                                                                 {{node[item.fieldname]?'#'+node[item.fieldname]

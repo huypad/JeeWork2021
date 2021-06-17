@@ -302,6 +302,7 @@ export const locale = {
 			stt: 'STT',
 			report: 'Báo cáo',
 			// T
+			templatecenter:'Mẫu có sẵn',
 			tacvu: 'Tác vụ',
 			taifile: 'Tải file',
 			tatca: 'Tất cả',
@@ -660,8 +661,11 @@ export const locale = {
 			themmoi: 'Tạo mới phòng ban',
 			taomoi: 'Thêm mới phòng ban',
 			xoa: 'Xóa phòng ban',
+			xoafolder: 'Xóa thư mục',
 			chinhsua: 'Chỉnh sửa phòng ban',
+			chinhsuafolder: 'Chỉnh sửa thư mục',
 			ten: 'Tên phòng ban',
+			tenfolder: 'Tên thư mục',
 			chusohuu: 'Người quản trị',
 			motachusohuu: 'Mô tả chủ sở hữu',
 			project: 'Dự án và phòng ban',
@@ -1135,6 +1139,7 @@ export const locale = {
 		},
 		work:
 		{
+			congviecfollower:'Công việc đang theo dõi',
 			nhanviencuatoi: 'Nhân viên của tôi',
 			addsubtask: 'Thêm công việc con',
 			binhthuong: 'Bình thường',

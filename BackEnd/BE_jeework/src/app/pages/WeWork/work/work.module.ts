@@ -53,11 +53,11 @@ const routes: Routes = [
 		// 	path: 'team/report',
 		// 	component: MyStaffReportComponent
 		// },
-		// {
-		// 	path: 'following',
-		// 	loadChildren: () => WorkListModule,
-		// 	data: { selectedTab: 3 }
-		// },
+		{
+			path: 'following',
+			loadChildren: ()=> import('./work-list/work-list.module').then(m => m.WorkListModule),
+			data: { selectedTab: 3 }
+		},
 		{
 			path: 'filter/:id',
 			loadChildren: () =>  import('./work-list/work-list.module').then(m => m.WorkListModule),

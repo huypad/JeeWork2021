@@ -45,7 +45,7 @@ namespace JeeWork_Core2021.Classes
             _config = config.Value;
             _configuration = configuration;
             ConnectionCache = _cache;
-            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache,1119,_configuration);
+            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache,1119,_configuration); // #update customerID
             _notifier = notifier;
         }
         public string MsgError;

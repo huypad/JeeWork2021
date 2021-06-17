@@ -211,7 +211,7 @@
 
                     <div class="action float-right" style="flex-grow: 1;"> 
                         <div class="title float-right" *ngIf="item.Process">
-                            <a class="action float-right" (click)="Update_CheckList()" *ngIf="CheckRoles(12)">
+                            <a class="action float-right">
                                 <button class="btn -hover text-muted" [matMenuTriggerFor]="follower">
                                     <i class="fas fa-user-cog pd-0" style="font-size: 20px; color: green;"></i>
                                 </button>
@@ -329,8 +329,8 @@
                                             </div>
 
                                             <div class="row" style="margin-bottom: 20px!important;">
-                                                <textarea placeholder="{{ 'work.description' | translate}}"
-                                                    [(ngModel)]="item.description" [disabled]="!CheckRoles(9)"
+                                                <textarea placeholder="{{ 'work.description' | translate}}" id="txtdescription"
+                                                    [value]="item.description" [disabled]="!CheckRoles(9)"
                                                     (keyup.enter)="UpdateDescription()" (focusout)="UpdateDescription()"
                                                     class="form-control" rows="10"></textarea>
                                             </div>
@@ -496,7 +496,7 @@
                                                     </div>
 
                                                     <ng-container *ngIf="item.id_row > 0 && CheckRoles(1)">
-                                                        <kt-add-task [item]="item" [loai]="'subtask'"
+                                                        <kt-add-task [item]="item" [loai]="'subtask'" *ngIf="newtask"
                                                             [showIconclose]="false" [ID_Project]="Id_project_team"
                                                             (dataTask)="CreateTask($event)"></kt-add-task>
                                                     </ng-container>
@@ -516,7 +516,7 @@
 
                                                     <div class="textcus" style="flex-grow: 1;">
                                                         <mat-form-field class="mat-form-field-fluid">
-                                                            <input matInput
+                                                            <input matInput (keyup.enter)="UpdateByKey('0', '', true)"
                                                                 placeholder="{{ 'work.themchecklist' | translate }}"
                                                                 [(ngModel)]="checklist">
                                                         </mat-form-field>
@@ -701,20 +701,17 @@
                                                                             <p>{{att2.filename}}</p>
                                                                         </div>
                                                                         <div class="attach-item-del">
-                                                                            <a class="text-success"
-                                                                                (click)="preview(att2.path)"
+                                                                            <a class="url" (click)="preview(att2.path)"
                                                                                 matTooltip="Preview">
-                                                                                <i class="far fa-eye"></i>
+                                                                                <i class="far fa-eye text-success"></i>
                                                                             </a>
-                                                                            <a class=" text-primary"
-                                                                                (click)="DownloadFile(att2.path)"
+                                                                            <a class="url" (click)="DownloadFile(att2.path)"
                                                                                 matTooltip="Download">
-                                                                                <i class="fas fa-download"></i>
+                                                                                <i class="fas fa-download text-primary"></i>
                                                                             </a>
-                                                                            <a class=" text-danger"
-                                                                                (click)="Delete_File(att2.id_row)"
+                                                                            <a class="url" (click)="Delete_File(att2.id_row)"
                                                                                 matTooltip="Xóa File">
-                                                                                <i class="fas fa-trash-alt"></i>
+                                                                                <i class="fas fa-trash-alt  text-danger"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -736,10 +733,10 @@
                         </div>
                     </div>
                     <div class="task-column__footer cu-hidden-print ng-tns-c150-53 ng-star-inserted">
-                        <div class="task-uploader border-top url" style="font-size: 16px;
+                        <div class="task-uploader border-top url text-primary" style="font-size: 16px;
                                     font-style: italic; font-weight: 600; color: gray;"
                             (click)="CheckRoles(15)?csvInput.click():''">
-                            <i class="fas fa-cloud-upload-alt" style="font-size: 24px; padding: 0 10px;"></i><span
+                            <i class="fas fa-cloud-upload-alt text-primary" style="font-size: 24px; padding: 0 10px;"></i><span
                                 translate="work.attachfile"></span>
                         </div>
                     </div>

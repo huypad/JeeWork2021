@@ -135,7 +135,10 @@
                                         <nav mat-tab-nav-bar *ngIf="selectedItem==undefined">
                                             <a mat-tab-link [routerLink]="['./',UserID]"
                                                 [active]="true">{{'wuser.congviecduocgiao' | translate}}</a>
-                                            <a mat-tab-link href="javascript:;" (click)="in()">{{'wuser.in' | translate}}</a>
+                                            <a mat-tab-link (click)="printme.click()" href="javascript:;">{{'wuser.in' | translate}}</a>
+                                                <button class="d-none" #printme [useExistingCss]="true"
+                                                printSectionId="print-section"
+                                                ngxPrint></button>
                                             <a mat-tab-link href="javascript:;"
                                                 (click)="export()">{{'wuser.export' | translate}}</a>
                                             <a *ngIf="Is_authorize" mat-tab-link href="javascript:;"
@@ -202,7 +205,7 @@
                             </div>
                         </div> 
                         
-                        <div class="kt-form__group w-100">
+                        <div id="print-section" class="kt-form__group w-100">
                             <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID"></kt-list-task-cu>
                         </div>
                     </div> 

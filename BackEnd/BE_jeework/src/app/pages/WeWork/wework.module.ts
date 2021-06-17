@@ -131,7 +131,7 @@ import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/d
 import { MatIconRegistry, MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-
+import {NgxPrintModule} from 'ngx-print';
 
 
 // Data table
@@ -167,6 +167,7 @@ import {
 } from '@angular/material/bottom-sheet';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
+import { TemplateCenterComponent } from './template-center/template-center.component';
 @NgModule({
 	imports: [
 		MatFormFieldModule,
@@ -231,6 +232,7 @@ import { MatDividerModule } from '@angular/material/divider';
 		AvatarModule,
 		FullCalendarModule,
 		CRUDTableModule,
+		NgxPrintModule
 	],
 	providers: [
 		{ provide: MAT_DATE_LOCALE, useValue: 'vi' },
@@ -323,6 +325,7 @@ import { MatDividerModule } from '@angular/material/divider';
 		AddNewFieldsComponent,
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
+		TemplateCenterComponent,
 	],
 	declarations: [
 		RepeatedListComponent,
@@ -388,6 +391,7 @@ import { MatDividerModule } from '@angular/material/divider';
 		AddNewFieldsComponent,
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
+		TemplateCenterComponent,
 
 	],
 	exports: [
@@ -491,6 +495,8 @@ import { MatDividerModule } from '@angular/material/divider';
 		AddNewFieldsComponent,
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
+		NgxPrintModule,
+		TemplateCenterComponent,
 
 	]
 })

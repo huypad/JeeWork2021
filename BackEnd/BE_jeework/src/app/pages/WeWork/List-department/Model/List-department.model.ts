@@ -13,6 +13,7 @@ export class DepartmentModel extends BaseModel {
 	ReUpdated: boolean;
 	TemplateID: number;
 	DefaultView: any;
+	ParentID: any;
 
 	clear() {
 		this.RowID = 0;
@@ -25,6 +26,7 @@ export class DepartmentModel extends BaseModel {
 		this.IsDataStaff_HR = false;
 		this.ReUpdated = false;
 		this.TemplateID = 0;
+		this.ParentID = 0;
 	}
 }
 export class DepartmentOwnerModel extends BaseModel {

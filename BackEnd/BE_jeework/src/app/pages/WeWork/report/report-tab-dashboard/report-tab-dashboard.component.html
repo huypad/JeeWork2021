@@ -110,9 +110,14 @@
                         </div>
                         <div class="card-body pd-0 overflow-auto" style="padding:10px">
                             <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffExcellent">
-                                <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
                                     [info]=getInfoCVHT(item.hoanthanh,item.num_work)>
                                 </kt-custom-user>
+                                <mat-menu #user="matMenu"> 
+                                    <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
+                                        [info]="item.tenchucdanh">
+                                    </kt-custom-user>
+                                </mat-menu>
                             </div>
                         </div>
                     </div>
@@ -357,9 +362,14 @@
                         </div>
                         <div class="card-body pd-0 overflow-auto" style="height: 500px;padding:10px">
                             <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffMostTask">
-                                <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
                                     [info]=getInfoCVDTH(item.danglam,item.num_work)>
                                 </kt-custom-user>
+                                <mat-menu #user="matMenu">
+                                    <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
+                                        [info]="item.tenchucdanh">
+                                    </kt-custom-user>
+                                </mat-menu>
                             </div>
 
                         </div>
@@ -372,9 +382,16 @@
                         </div>
                         <div class="card-body pd-0 overflow-auto" style="height: 500px;padding:10px">
                             <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffMostLate">
-                                <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
                                     [info]=getInfoquahan(item.quahan,item.ht_quahan) [textcolor]="'red'">
                                 </kt-custom-user>
+                                <mat-menu #user="matMenu">
+                                    <div style="max-width:250px">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
+                                            [info]="item.tenchucdanh">
+                                        </kt-custom-user>
+                                    </div>
+                                </mat-menu>
                             </div>
                         </div>
                     </div>

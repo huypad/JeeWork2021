@@ -380,6 +380,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (listDept != "")
                     {
                         strW += " and id_department in (" + listDept + ") ";
+                        strW1 += " and id_row in (" + listDept + ") ";
                     }
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");

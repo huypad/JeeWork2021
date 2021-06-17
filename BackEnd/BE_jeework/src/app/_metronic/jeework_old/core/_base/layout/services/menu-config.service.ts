@@ -44,7 +44,7 @@ export class MenuConfigService {
 		console.log("Roles new", res);
 		localStorage.setItem('WeWorkRoles', JSON.stringify(res));
 	}
-	
+
 	AllRoles_WeWork(username) {
 		return this.menuPhanQuyenServices.WW_Roles(username).toPromise();
 	}
@@ -70,12 +70,7 @@ export class MenuConfigService {
 					if (!item.IsShowAdd && +item.GroupName > 0 && item.Child.length == 0) return;
 					let src = "";
 					if (item.Title != "" && item.Title != null) {//menu gốc
-						if (environment.MODULE == "QLBTSC") {//Quản lý SCBT k có đa ngôn ngữ
-							src = item.Summary;//hiện tại lấy summary để lấy tên hiển thị
-						} else {
-							src = this.translate.instant('MainMenu.' + '' + item.Title);
-						}
-
+						src = this.translate.instant('MainMenu.' + '' + item.Title);
 					} else {//menu phân loại
 						src = item.Title_;
 					}
@@ -96,7 +91,6 @@ export class MenuConfigService {
 						item.Child.forEach((itemE, indexE) => {
 							let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
 							let child = {
-								//title: '' + itemE.Summary,
 								title: '' + srcSub,
 								page: '' + itemE.ALink,
 								target: '' + itemE.Target // bổ sung vào để phân biệt kiểu target
@@ -117,33 +111,67 @@ export class MenuConfigService {
 						root: item.Data.length == 0,
 						icon: '' + item.Icon,
 						page: '',
-						// target: '' + item.Target,
 						id_phanloai: 1,
-						// showAdd: item.IsShowAdd,
 						alignment: 'left',//dành cho header menu
 						id: '' + item.RowID,
-
+						IsFolder: item.IsFolder
 					};
-
-					if (item.Data && item.Data.length > 0) {
-						parentMenu["bullet"] = 'dot';
+					if (item.Data_Folder && item.Data_Folder.length > 0) {
+						// parentMenu["bullet"] = 'dot';
 						parentMenu["submenu"] = [];
-						item.Data.forEach((itemE, indexE) => {
-							let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
-							let child = {
-								//title: '' + itemE.Summary,
+						item.Data_Folder.forEach((itemE, indexE) => {
+							// let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
+							let _folder = {
 								title: '' + itemE.Title,
-								page: '/project' + itemE.ALink + '/home/clickup',
-								target: '' + itemE.Target, // bổ sung vào để phân biệt kiểu target
-								id_phanloai: 0,
-								id: '' + itemE.ID_Row,
-								Locked: itemE.Locked,
-								Is_Project: itemE.Is_Project,
-								Status: itemE.Status,
-								Default_View: itemE.Default_View //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+								root: item.Data.length == 0,
+								icon: '' + itemE.Icon,
+								page: '',
+								id_phanloai: 1,
+								alignment: 'left',
+								id: '' + itemE.RowID,
+								IsFolder: itemE.IsFolder
+
 							};
-							parentMenu["submenu"].push(child);
+							parentMenu["submenu"].push(_folder);
+							_folder["bullet"] = 'dot';
+							_folder["submenu"] = [];
+							itemE.Data.forEach((itemS, indexE) => {
+								let child = {
+									title: '' + itemS.Title,
+									page: '/project/' + itemS.ID_Row + '/home/clickup',
+									target: '' + itemS.Target, // bổ sung vào để phân biệt kiểu target
+									id_phanloai: 0,
+									id: '' + itemS.ID_Row,
+									Locked: itemS.Locked,
+									Is_Project: itemS.Is_Project,
+									Status: itemS.Status,
+									Default_View: itemS.Default_View //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+								};
+								_folder["submenu"].push(child);
+							});
 						});
+					}
+					else {
+						if (item.Data && item.Data.length > 0) {
+							parentMenu["bullet"] = 'dot';
+							parentMenu["submenu"] = [];
+							item.Data.forEach((itemE, indexE) => {
+								let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
+								let child = {
+									//title: '' + itemE.Summary,
+									title: '' + itemE.Title,
+									page: '/project/' + itemE.ID_Row + '/home/clickup',
+									target: '' + itemE.Target, // bổ sung vào để phân biệt kiểu target
+									id_phanloai: 0,
+									id: '' + itemE.ID_Row,
+									Locked: itemE.Locked,
+									Is_Project: itemE.Is_Project,
+									Status: itemE.Status,
+									Default_View: itemE.Default_View //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+								};
+								parentMenu["submenu"].push(child);
+							});
+						}
 					}
 					config.aside.items.push(parentMenu);
 				});
@@ -221,77 +249,8 @@ export class MenuConfigService {
 		return config;
 	}
 
-	fs_AssignWF(res: any) {
-		let config = {
-			header: {
-				self: {},
-				items: []
-			},
-			aside: {
-				self: {},
-				items: []
-			}
-		};
-		if (res && res.status == 1) {
-			let dt = res.data;
-			let arr = [];
-			// Menu chính
-			if (dt.length > 0) {
-				dt.forEach((item, index) => {
-					//Có quyền thêm quy trình động mới hiển thị nút thêm
-					if (!item.IsShowAdd && +item.GroupName > 0 && item.Child.length == 0) return;
-					let src = "";
-					if (item.Title != "" && item.Title != null) {//menu gốc
-						if (environment.MODULE == "QLBTSC") {//Quản lý SCBT k có đa ngôn ngữ
-							src = item.Summary;//hiện tại lấy summary để lấy tên hiển thị
-						} else {
-							src = this.translate.instant('MainMenu.' + '' + item.Title);
-						}
-
-					} else {//menu phân loại
-						src = item.Title_;
-					}
-					let parentMenu = {
-						title: src,
-						root: item.Child.length == 0,
-						icon: '' + item.Icon,
-						page: '',
-						target: '' + item.Target, // bổ sung vào để phân biệt kiểu target
-						id_phanloai: +item.GroupName ? +item.GroupName : -1, //ID theo phân loại
-						isproject: +item.GroupName ? false : true, //ID theo phân loại
-						showAdd: item.IsShowAdd, //hiển thị icon để thêm nhiệm vụ theo phân loại, có quyền thiết lập quy trình động
-						alignment: 'left',//dành cho header menu
-					};
-					if (item.Child && item.Child.length > 0) {
-						parentMenu["bullet"] = 'dot';
-						parentMenu["submenu"] = [];
-						item.Child.forEach((itemE, indexE) => {
-							let srcSub = "";
-							if (itemE.Title != "" && itemE.Title != null) {//menu gốc
-								srcSub = this.translate.instant('SubMenu.' + '' + itemE.Title);
-							} else {//menu phân loại
-								srcSub = itemE.Title_;
-							}
-							let child = {
-								title: srcSub,
-								page: '' + itemE.ALink,
-								target: '' + itemE.Target, // bổ sung vào để phân biệt kiểu target,
-								id_phanloai: 0,
-								showAdd: false,
-								type: itemE.Title,
-							};
-							parentMenu["submenu"].push(child);
-						});
-					}
-					config.aside.items.push(parentMenu);
-					config.header.items.push(parentMenu);
-				});
-			}
-		}
-		return config;
-	}
 	async GetWMSRolesToLocalStorage() {
-		
+
 	}
 
 	/**

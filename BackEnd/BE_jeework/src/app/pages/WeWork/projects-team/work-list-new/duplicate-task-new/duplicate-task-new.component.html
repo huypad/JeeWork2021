@@ -6,7 +6,7 @@
         </ng-container>
     </kt-portlet-header>
     <kt-portlet-body class="pd-0 h-100 mh-100">
-        <div class="copy-body">
+        <div class="copy-body" [ngStyle]="{'max-height': (type==2||getOnlyIDproject)?'600px':'auto'}">
             <ng-container *ngIf="!getOnlyIDproject">
                 <div class="task-copy__input-block ng-star-inserted">
                     <div class="task-copy__title"><span translate="work.newtaskname"></span></div>

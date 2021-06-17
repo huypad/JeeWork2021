@@ -30,6 +30,7 @@ import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
 import * as moment  from 'moment';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'kt-list-task-cu',
@@ -89,6 +90,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   list_role: any = [];
   ItemFinal = 0;
   ProjectTeam: any = {};
+  public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
       startDate: new Date('09/01/2020'),
       endDate: new Date('09/30/2020'),
@@ -121,7 +123,6 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   }
 
   ngOnInit() {
-    console.log(this.myWorks,'work');
     // get filter groupby
     this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
@@ -170,7 +171,6 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     if(this.detailWork > 0){
       this._service.WorkDetail(this.detailWork).subscribe(res => {
         if (res && res.status == 1) {
-          console.log(res.data,"data detail");
           const item = res.data;
 
           const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
@@ -215,6 +215,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
           this.layoutUtilsService.OffWaitingDiv();
           if (res && res.status == 1) {
             this.DanhsSachCongViec = res.data;
+            this.filterDanhSach();
             this.changeDetectorRefs.detectChanges();
             // this.ProjectTeam = res.data
           }
@@ -224,6 +225,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
           this.layoutUtilsService.OffWaitingDiv();
           if (res && res.status == 1) {
             this.DanhsSachCongViec = res.data;
+            this.filterDanhSach();
             this.changeDetectorRefs.detectChanges();
             // this.ProjectTeam = res.data
           }
@@ -234,7 +236,8 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         this.layoutUtilsService.OffWaitingDiv();
         if (res && res.status == 1) {
           this.DanhsSachCongViec = res.data;
-          this.changeDetectorRefs.detectChanges();
+            this.filterDanhSach();
+            this.changeDetectorRefs.detectChanges();
           // this.ProjectTeam = res.data
         }
       })
@@ -409,36 +412,46 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = 1;
+    filter.workother = this.viewTaskOrder;
     filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
     filter.collect_by = this.column_sort.value;
+    if(this.selectedTab == 3){
+      filter.following = true;
+    }
     if (this.idFilter > 0) {
       filter.id_filter = this.idFilter;
     }
     return filter;
   }
-  viewData(DanhsSachCongViec){
-    console.log(DanhsSachCongViec);
-    // viewTaskOrder -- xem cv của người khác 
-    if( this.viewTaskOrder){
-      const danhsach1 = DanhsSachCongViec;
-
-      // var orderuser = node.User.find(x=>+x.id_nv != +this.UserID);
-      // if(orderuser)
-      //   return true;
-      // return false;
-      danhsach1.forEach(element => {
-        if(element.data && element.data.length > 0){
-          element.data = element.data.filter(x=>x.User.find(x1=>+x1.id_nv != +this.UserID));
-        }
-      });
-      console.log('DSCV:',DanhsSachCongViec);
-      return danhsach1;
-    }
-    // this.LoadSampleList();
-    return DanhsSachCongViec;
+  
+  reloadData = false;
+  protected filterDanhSach() {
+    // filter the banks
+    this.filteredDanhSachCongViec.next(
+      this.DanhsSachCongViec
+    );
+    // if (this.viewTaskOrder) {
+    //   this.reloadData = true;
+    //   this.DanhsSachCongViec.forEach(element => {
+    //     if(element.data && element.data.length > 0){
+    //       element.data = element.data.filter(x=>x.User.find(x1=>+x1.id_nv != +this.UserID));
+    //     }
+    //   });
+    //   this.filteredDanhSachCongViec.next(
+    //     this.DanhsSachCongViec
+    //   );
+    // } else{
+    //   if(this.reloadData){
+    //     this.reloadData = false;
+    //     this.LoadSampleList();
+    //   }
+    // }
   }
-
+  
+  ChangeData(){
+    this.LoadSampleList()
+  }
   getColorStatus(id_project_team, val) {
     var item = this.ListAllStatusDynamic.find(x => +x.id_row == id_project_team);
     var index;
@@ -1075,7 +1088,11 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   }
 
   CreateTask(val) {
-
+    var x = this.newtask;
+		this.CloseAddnewTask(true);
+		setTimeout(() => {
+			this.newtask = x;
+		}, 3000);
     this._service.InsertTask(val).subscribe(res => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
@@ -1222,14 +1239,16 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     this.Update_work(model);
   }
   assign(node) {
-    var item = this.getOptions_Assign();
+    this.loadOptionprojectteam(node);
+    var item = this.options_assign;
     const dialogRef = this.dialog.open(WorkAssignedComponent, {
       width: '500px',
-      height: '500px',
-      data: { item }
+      data: { item,ID_Project : node.id_project_team }
     });
     dialogRef.afterClosed().subscribe(res => {
-      this.UpdateByKey(node, 'assign', res.id_nv);
+      if(res){
+        this.UpdateByKey(node, 'assign', res.id_nv);
+      }
     });
   }
   Update_work(_item: WorkModel) {
@@ -1278,110 +1297,6 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         return;
       }
     });
-  }
-
-  // nhóm công việc 
-  Assignmore() {
-    var item = this.getOptions_Assign();
-    const dialogRef = this.dialog.open(WorkAssignedComponent, {
-      width: '500px',
-      height: '500px',
-      data: { item }
-    });
-    dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.selection.selected.forEach(element => {
-          this.UpdateByKey(element, 'assign', res.id_nv);
-        })
-      }
-    });
-  }
-  // nhóm status
-  UpdateStatuslist(status) {
-    this.selection.selected.forEach(element => {
-      this.UpdateByKey(element, 'status', status.id_row);
-      // this.UpdateByKey(task, 'status', status.id_row);
-    })
-  }
-  // nhóm start date
-  updateStartDateList() {
-    var date = moment(this.startDatelist).format('MM/DD/YYYY HH:mm');
-    this.selection.selected.forEach(element => {
-      this.UpdateByKey(element, 'start_date', moment(this.startDatelist).format('MM/DD/YYYY HH:mm'));
-      // this.UpdateByKey(task, 'status', status.id_row);
-    })
-  }
-  // nhóm start date
-  XoaCVList() {
-    this.selection.selected.forEach(element => {
-      this.DeleteTask(element);
-    })
-  }
-
-  getViewCheck(node) {
-    let checked = this.selection.selected.find(x => x.id_row == node);
-    if (checked)
-      return 1;
-    return '';
-  }
-  Chontatca(node) {
-    var list = node.data;
-    list.forEach(element => {
-      let checked = this.selection.selected.find(x => x.id_row == element.id_row);
-      if (!checked) {
-        this.selection.selected.push(element);
-      }
-    });
-  }
-
-  // lisst dupliacte
-  UpdateListDuplicate(type) {
-    if (type == 1) {
-      this.selection.selected.forEach(element => {
-        this.DuplicateTask(element, type);
-      })
-    } else if (type == 2) {
-      let saveMessageTranslateParam = 'JeeHR.themthanhcong';
-      const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-      const _messageType = MessageType.Create;
-      var getOnlyIDproject = true;
-      const dialogRef = this.dialog.open(DuplicateTaskNewComponent, { data: { getOnlyIDproject: true } });
-      dialogRef.afterClosed().subscribe(res => {
-        if (res) {
-          this.selection.selected.forEach(element => {
-            this.DuplicateTask(element, type, res);
-          })
-        }
-      });
-    }
-  }
-  DuplicateTask(task, type, id_project_team = 0) {
-    const duplicate = new WorkDuplicateModel();
-    duplicate.clear();
-    duplicate.title = task.title;
-    duplicate.type = type;
-    duplicate.id = task.id_row;
-    duplicate.description = task.description ? task.description : '';
-    duplicate.id_parent = task.id_parent ? task.id_parent : 0;
-    duplicate.id_project_team = id_project_team;
-    if (task.deadline) {
-      duplicate.deadline = task.deadline;
-    }
-    if (task.start_date) {
-      duplicate.start_date = task.start_date;
-    }
-    if (task.id_nv) {
-      duplicate.assign = task.id_nv;
-    }
-    duplicate.id_group = 0;
-    duplicate.followers = [];
-    duplicate.urgent = 'true';
-    duplicate.required_result = 'true';
-    duplicate.require = 'true';
-    duplicate.Users = [];
-    duplicate.duplicate_child = 'true';
-
-    this.Create(duplicate);
   }
 
   Create(_item: WorkDuplicateModel) {
