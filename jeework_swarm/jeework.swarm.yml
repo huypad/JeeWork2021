@@ -17,17 +17,31 @@ services:
       - kafka-network
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      KafkaConfig__Brokers: ${KAFKA_BROKER}
-      KafkaConfig__ProjectName: jee-work
       VaultConfig__Endpoint: ${VAULT_ENDPOINT}
       VaultConfig__Token: ${VAULT_TOKEN}
-      Error__mailto: huytv@dps.com.vn
-      Error__cc: huypaddaica@gmail.com
-      JeeWorkConfig__SysName: JeeWork
-      JeeWorkConfig__LinkAPI: ${PUBLIC_LINK_API}
-      JeeWorkConfig__ConnectionString: ${CONNECTION_STRING}
-      JeeWorkConfig__LinkBackend: ${BACKEND_URL}
-      JeeWorkConfig__API_Account: ${JEEACCOUNT_API}
+      MinioConfig__MinioSSL: "true"
+      MinioConfig__MinioServer: "cdn.jee.vn"
+      AppConfig__AppCode: WORK
+      AppConfig__IsOnlineDB: "1"
+      AppConfig__DecryptKey: WORK
+      AppConfig__SysName: JeeWork
+      AppConfig__ConnectionString: ${CONNECTION_STRING}
+      AppConfig__SecretKey: 6LfyWeYUAAAAAPMDrJF8PQ6hsO0ytRLRIc2fKgds
+      AppConfig__Key: ZbsHPbRqNvdgMfyG
+      AppConfig__Error_MailTo: huytv@dps.com.vn
+      AppConfig__Error_MailCC: huypaddaica@gmail.com
+      KafkaConfig__Brokers: ${KAFKA_BROKER}
+      KafkaConfig__ProjectName: jee-work
+      KafkaConfig__TopicProduce__JeeplatformInitializationAppupdate: jeeplatform.initialization.appupdate
+      KafkaConfig__TopicConsume__JeeplatformInitialization: jeeplatform.initialization
+      KafkaConfig__TopicConsume__JeeplatformUpdateAdmin: jeeplatform.updateadmin
+      KafkaConfig__Consumer__JeeWorkGroupInit: jeework-group-init
+      KafkaConfig__Consumer__JeeWorkGroupUpdateAdmin: jeework-group-updateadmin
+      Host__JeeWork_API: ${HOST_JEEWORK_API}
+      Host__JeeWork_BE: ${HOST_JEEWORK_BE}
+      Host__JeeAccount_API: ${HOST_JEEACCOUNT_API}
+      Host__Issuer: ${HOST_ISSUER}
+      Host__MinIOBrowser: ${HOST_MINIO}
     deploy:
       mode: replicated
       replicas: 1
