@@ -249,6 +249,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
+                    bool Visible = Common.CheckRoleByToken(loginData.Token, "3500", ConnectionString, DataAccount);
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
@@ -275,6 +276,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dieukien_where += " and p.locked=@locked";
                         Conds.Add("locked", query.filter["locked"]);
                     }
+                    bool IsMobile = false;
+                    if (!string.IsNullOrEmpty(query.filter["join"]) || !string.IsNullOrEmpty(query.filter["created_by"]))
+                    {
+                        IsMobile = true;
+                    }
                     #region Sort data theo các dữ liệu bên dưới
                     Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
@@ -289,9 +295,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
-                    bool Visible = Common.CheckRoleByToken(loginData.Token, "3500", ConnectionString, DataAccount);
-
-
                     #region get list trạng thái status 
                     List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where IsFinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
                     List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
@@ -307,26 +310,42 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
                                     ,w.id_project_team from we_work w where w.Disabled=0 group by w.id_project_team) w 
                                     on p.id_row=w.id_project_team 
-                                    (admin) p.Disabled=0 and p.CreatedBy in ({listID}) 
-                                    and de.Disabled = 0 and p.id_department in ({listDept}) 
+                                    (admin) p.Disabled=0 and de.Disabled = 0 
                                     " + dieukien_where + "  order by " + dieukienSort;
-                    if (Visible)
+                    //and p.CreatedBy in ({listID}) and p.id_department in ({listDept}) 
+                    string dk_user_by_project = " join we_project_team_user " +
+                            "on we_project_team_user.id_project_team = p.id_row " +
+                            "and (we_project_team_user.id_user = " + loginData.UserID + ")" +
+                            "where (de.id_row in (select distinct p1.id_department " +
+                            "from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
+                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and ";
+                    if (IsMobile)
                     {
-                        sqlq = sqlq.Replace("(admin)", " where ");
+                        if (!string.IsNullOrEmpty(query.filter["created_by"]))
+                        {
+                            sqlq = sqlq.Replace("(admin)", " where p.CreatedBy="+ loginData.UserID + " and ");
+                        }
+                        if (!string.IsNullOrEmpty(query.filter["join"]))
+                        {
+                            sqlq = sqlq.Replace("(admin)", dk_user_by_project);
+                        }
                     }
                     else
                     {
-                        sqlq = sqlq.Replace("(admin)", "join we_project_team_user " +
-                            "on we_project_team_user.id_project_team = p.id_row " +
-                            "and (we_project_team_user.id_user = " + loginData.UserID + ")"+
-                            "where (de.id_row in (select distinct p1.id_department " +
-                            "from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and ");
+                        if (Visible)
+                        {
+                            sqlq = sqlq.Replace("(admin)", " where ");
+                        }
+                        else
+                        {
+                            sqlq = sqlq.Replace("(admin)", dk_user_by_project);
+                        }
                     }
                     sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image 
                                 from we_project_team_user u 
                                 join we_project_team p on p.id_row=u.id_project_team 
-                                where u.disabled=0 and u.Id_user in (" + listID + " )";
+                                where u.disabled=0";
+                    // and u.Id_user in (" + listID + " )
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
@@ -2713,7 +2732,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     var data = from r in dt.AsEnumerable()
                                group r by new { a = r["object_type"], b = r["object_id"], c = r["title"], d = r["project_team"], e = r["id_project_team"] } into g
                                //orderby g.Key.u descending
-                               select new 
+                               select new
                                {
                                    object_type = g.Key.a,
                                    object_id = g.Key.b,
@@ -2744,7 +2763,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                                         //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, u["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                                     }
                                                 }
-                };
+                               };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
                 #endregion

@@ -17,6 +17,8 @@ namespace JeeWork_Core2021.Models
         public List<DepartmentViewModel> DefaultView { get; set; }
         public bool IsFolder { get; set; } = false;
         public long ParentID { get; set; }
+        public List<TemplateCenterModel> templatecenter { get; set; }
+
     }
     public class DepartmentOwnerModel
     {

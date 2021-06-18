@@ -417,7 +417,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             val1["id_user"] = owner.id_user;
                             val1["type"] = owner.type;
-
                             if (cnn.Insert(val1, "we_department_owner") != 1)
                             {
                                 cnn.RollbackTransaction();

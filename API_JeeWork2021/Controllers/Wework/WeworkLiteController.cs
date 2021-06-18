@@ -64,7 +64,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Lite_Department()
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -76,7 +76,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sql = "select id_row, title from we_department where Disabled=0 and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -88,7 +88,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -100,7 +100,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Lite_Project_Team_ByUser(string keyword = "")
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -117,7 +117,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                      "and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -135,7 +135,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -147,7 +147,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Lite_Project_Team_ByDepartment(string id = "")
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -160,11 +160,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 join we_department d on d.id_row = p.id_department
                                 join we_project_team_user u on u.id_project_team = p.id_row
                                  where u.Disabled = 0 and id_user = " + loginData.UserID + " " +
-                                 "and p.Disabled = 0  and d.Disabled = 0 and d.id_row= "+id+" " +
+                                 "and p.Disabled = 0  and d.Disabled = 0 and d.id_row= " + id + " " +
                                  "and IdKH=" + loginData.CustomerID + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -177,7 +177,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -189,7 +189,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Lite_Department_ByUser(string keyword = "")
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -227,7 +227,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
 
                     DataTable dt = cnn.CreateDataTable(sqlq, conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     #region Map info account từ JeeAccount
 
                     foreach (DataRow item in dt.Rows)
@@ -257,7 +257,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -268,7 +268,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object Lite_Milestone(long id_project_team)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -282,7 +282,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string sql = "select id_row, title,deadline from we_milestone where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -295,7 +295,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -306,7 +306,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object Lite_Tag(long id_project_team)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -320,7 +320,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string sql = "select id_row, title, color from we_tag where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -333,7 +333,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -345,7 +345,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object Lite_WorkGroup(long id_project_team)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -359,7 +359,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string sql = "select id_row, title from we_group where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -371,7 +371,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -383,7 +383,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object Lite_Account([FromQuery] FilterModel filter)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -424,7 +424,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     {
                         dt = cnn.CreateDataTable(sql);
                         if (cnn.LastError != null || dt == null)
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                         List<AccUsernameModel> listTemp = new List<AccUsernameModel>();
                         foreach (var item in nvs)
@@ -456,7 +456,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         public static DataTable List_Account_HR(long CocauID, IHeaderDictionary pHeader, IConfiguration _configuration)
@@ -515,7 +515,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     sql += ";select * from we_like_icon where disabled=0";
                     DataSet ds = cnn.CreateDataSet(sql);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var emotions = new List<object>();
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
@@ -552,14 +552,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("lite_emotion")]
         [HttpGet]
         public object LiteEmotion(int id = 0, string keyword = "")
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -573,7 +573,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         sql += " where id_row=" + id;
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                     var data = new List<object>();
                     foreach (DataRow r in dt.Rows)
@@ -600,7 +600,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -611,7 +611,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object work_tag(long id_work, long id_project_team)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -635,7 +635,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                     where (where)";
                     DataTable dt = cnn.CreateDataTable(sql, "(where)", cond);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -648,7 +648,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -659,7 +659,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object getColorName(string name)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             string result = "";
             if (loginData == null)
@@ -764,7 +764,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -777,7 +777,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListFields(long id_project_team, bool isnewfield)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -786,9 +786,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    DataTable dt = GetListField(id_project_team,ConnectionString);
+                    DataTable dt = GetListField(id_project_team, ConnectionString);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
 
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -809,7 +809,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -820,7 +820,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListNewFields()
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -832,7 +832,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string sql = "select * from we_fields where isnewfield = 1";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -849,7 +849,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -857,7 +857,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListProcessing()
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -871,7 +871,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         "where Disabled = 0 " +
                         "order by priority");
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -886,7 +886,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -899,7 +899,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListStatusDynamic(long id_project_team)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -942,7 +942,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     }
                     dt.AcceptChanges();
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
 
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -966,7 +966,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -978,7 +978,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListAllStatusDynamic()
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -994,7 +994,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     DataSet ds = cnn.CreateDataSet(query);
                     DataTable dt = ds.Tables[0];
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -1024,7 +1024,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1038,7 +1038,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object GetOptions_NewField(long id_project_team, long fieldID)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1058,7 +1058,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             where (where)";
                     DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conditions);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -1078,7 +1078,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1090,7 +1090,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object GetListDefaultView([FromQuery] FilterModel filter)
         {
-             //this.item.RowID
+            //this.item.RowID
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1139,7 +1139,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     }
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = dt.AsEnumerable();
                     var data = (from r in temp
                                 select new
@@ -1158,7 +1158,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1169,7 +1169,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListTemplateByCustomer()
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1202,14 +1202,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             if (cnn.Insert(val, "we_template_customer") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
                     #endregion
                     DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
                     if (cnn.LastError != null || dt_template == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     string sql_status = "";
                     sql_status = "select Id_row, StatusID, TemplateID, StatusName, description, CreatedDate, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
                         "from we_Template_Status where Disabled = 0 and TemplateID in (select id_row from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID + ")";
@@ -1247,7 +1247,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1259,7 +1259,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListViewByProject(long id_project_team)
         {
-            
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1285,7 +1285,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     }
                     dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
 
                     var data = from r in dt.AsEnumerable()
                                select new
@@ -1310,7 +1310,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1392,17 +1392,17 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                     on p.id_row=w.id_project_team 
                                     join we_project_team_user project_user 
                                     on project_user.id_project_team = p.id_row and admin = 1 
-									and project_user.id_user = "+ loginData.UserID+ " " +
+									and project_user.id_user = " + loginData.UserID + " " +
                                     "where p.Disabled=0 and de.Disabled = 0 " +
-                                    ""+dieukien_where+ " order by " + dieukienSort;
-                                    sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh
+                                    "" + dieukien_where + " order by " + dieukienSort;
+                    sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh
                                             ,'' as mobile,'' as image
                                             from we_project_team_user u 
                                             join we_project_team p on p.id_row=u.id_project_team 
                                             where u.disabled=0 and u.Id_user in (" + listID + " )";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -1483,7 +1483,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1593,17 +1593,17 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         /// <param name="_old"></param>
         /// <param name="_new"></param>
         /// <returns></returns>
-        public static bool log<T>(ILogger<T> logger,string username, DpsConnection cnn, int id_action, long object_id, long id_user, string log_content = "", object _old = null, object _new = null)
+        public static bool log<T>(ILogger<T> logger, string username, DpsConnection cnn, int id_action, long object_id, long id_user, string log_content = "", object _old = null, object _new = null)
         {
             string category = "";
             string action = "";
-            if(id_action > 0)
+            if (id_action > 0)
             {
                 category = cnn.ExecuteScalar("select action from we_log_action where id_row = " + id_action).ToString();
             }
             if (string.IsNullOrEmpty(log_content))
             {
-                action = @$"@{username} {category} từ {_old} thành {_new}"  ;
+                action = @$"@{username} {category} từ {_old} thành {_new}";
             }
             else
             {
@@ -1614,7 +1614,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             {
                 username = username,
                 category = category,
-                action = action ,
+                action = action,
                 data = action,
             };
             logger.LogDebug(JsonConvert.SerializeObject(d2));
@@ -1659,16 +1659,16 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         //    return "Oke";
         //}
 
-        public static bool SendNotify(string sender, string receivers,NotifyModel notify_model)
+        public static bool SendNotify(string sender, string receivers, NotifyModel notify_model)
         {
             NotificationMess noti_mess = new NotificationMess();
             noti_mess.AppCode = notify_model.AppCode;
             noti_mess.Content = notify_model.TitleLanguageKey;
             noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
-            noti_mess.Img= "https://jeework.jee.vn/assets/images/Jee_Work.png";
+            noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
             noti_mess.Link = notify_model.To_Link_WebApp;
             string html = "<h1>Gửi nội dung thông báo</h1>";
-            notify.notification(sender, receivers, notify_model.TitleLanguageKey,html, noti_mess);
+            notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess);
             return true;
         }
 
@@ -1775,7 +1775,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 continue;
                             string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
                             string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString,_notifier);
+                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, _notifier);
                         }
                     }
                 }
@@ -1848,7 +1848,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString,_notifier, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, dtOld);
             }
         }
         /// <summary>
@@ -2301,7 +2301,7 @@ where Disabled = 0";
         /// <param name="WorkID"></param>
         /// <param name="statusID"></param>
         /// <returns></returns>
-        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config,string ConnectionString, INotifier _notifier)
+        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config, string ConnectionString, INotifier _notifier)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
@@ -2333,7 +2333,7 @@ where Disabled = 0";
                             return false;
                         }
                         var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                        mailthongbao(WorkID, users, 10, data, ConnectionString,_notifier);
+                        mailthongbao(WorkID, users, 10, data, ConnectionString, _notifier);
                         return true;
                     }
                     return true;
@@ -2457,7 +2457,7 @@ where Disabled = 0";
             request.AddHeader("Authorization", _bearer_token);
             request.AddHeader("Accept", "application/json");
             // request.AddJsonBody(new { Username = "huypad" }); // Anonymous type object is converted to Json body
-            request.AddJsonBody( new { username = loginData.Username });
+            request.AddJsonBody(new { username = loginData.Username });
             IRestResponse response = client.Execute(request);
             var model = JsonConvert.DeserializeObject<List<AccUsernameModel>>(response.Content);
             if (model != null)
@@ -2473,11 +2473,11 @@ where Disabled = 0";
         /// <param name="pHeader"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static string getConnectionString(IConnectionCache ConnectionCache, long CustomerID, IConfiguration _configuration )
+        public static string getConnectionString(IConnectionCache ConnectionCache, long CustomerID, IConfiguration _configuration)
         {
             var x = _configuration.GetValue<string>("AppConfig:IsOnlineDB");
             string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
-            if(string.IsNullOrEmpty(x))
+            if (string.IsNullOrEmpty(x))
             {
                 ConnectionString = _configuration.GetValue<string>("AppConfig:ConnectionString");
             }
@@ -2486,7 +2486,7 @@ where Disabled = 0";
         public static void Insert_Template(DpsConnection cnn, string CustemerID)
         {
             SqlConditions Conds = new SqlConditions();
-            string select = "select * from we_template_customer where disabled = 0 and customerid = "+ CustemerID;
+            string select = "select * from we_template_customer where disabled = 0 and customerid = " + CustemerID;
             DataTable dt = cnn.CreateDataTable(select);
             string sql_insert = "";
             if (dt.Rows.Count <= 0)
@@ -2509,6 +2509,78 @@ where Disabled = 0";
                     }
                 }
             }
+        }
+        public static bool Init_TemplateCenter(DpsConnection cnn, TemplateCenterModel template)
+        {
+            SqlConditions Conds = new SqlConditions();
+            string sqlq = "";
+            sqlq = @$"select id_row, title, description, createddate, createdby
+                                    , isdefault, color, id_department, templateid, customerid
+                                    , is_template_center, types, levels, viewid, group_statusid 
+                                    , template_typeid, img_temp, field_id
+                                    from we_template_customer 
+                                    where is_template_center = 1 and id_row=" + template.id_row;
+            string list_viewid = "", group_statusid = "", field_id = "";
+            DataTable dt_Detail = new DataTable();
+            dt_Detail = cnn.CreateDataTable(sqlq);
+            list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
+            group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
+            field_id = dt_Detail.Rows[0]["field_id"].ToString();
+            sqlq += @$";select id_row, view_name, description, is_default, icon, link, image, templateid 
+                                from we_default_views 
+                                where id_row in (" + list_viewid + ") " +
+                        "order by is_default desc";
+            sqlq += @$";select id_field, fieldname, title, type, position, isdefault, typeid
+                            from we_fields 
+                            where isNewField = 1 and IsDel = 0 and isvisible = 0 
+                            and id_field in (" + field_id + ") " +
+                    "order by position, title";
+            sqlq += @$";select id_row, title, description, locked, array_status 
+                                from we_status_group 
+                                where id_row in (" + group_statusid + ") " +
+                        "order by title";
+            DataSet ds = cnn.CreateDataSet(sqlq);
+            DataTable dt = cnn.CreateDataTable(sqlq);
+            string sql_insert = "";
+            if (ds.Tables.Count == 4)
+            {
+                if (template.types == 1) // department
+                {
+
+                }
+                //Conds.Add("CustomerID", custemerid);
+                //sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
+                //        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + custemerid + " as CustomerID from we_Template_List where Disabled = 0";
+                //cnn.ExecuteNonQuery(sql_insert);
+                //dt = cnn.CreateDataTable(sqlq);
+                //if (dt.Rows.Count > 0)
+                //{
+                //    sql_insert = "";
+                //    foreach (DataRow item in dt.Rows)
+                //    {
+                //        sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
+                //            "select id_Row, " + item["id_row"] + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
+                //            "from we_Status_List where Disabled = 0 and IsDefault = 1";
+                //        cnn.ExecuteNonQuery(sql_insert);
+                //        sql_insert = "";
+                //    }
+                //}
+            }
+            return true;
+        }
+        public static bool DefaultView_Department(DpsConnection cnn, DataTable dt_data, long id, UserJWT loginData)
+        {
+            foreach (DataRow item in dt_data.Rows)
+            {
+                Hashtable has = new Hashtable();
+                has.Add("id_department", id);
+                has.Add("viewid", item["id_row"]);
+                has.Add("createddate", DateTime.Now);
+                has.Add("createdby", loginData.CustomerID);
+                has.Add("is_default", item["is_default"]);
+
+            }
+            return false;
         }
     }
 }

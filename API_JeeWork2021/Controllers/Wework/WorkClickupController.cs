@@ -480,8 +480,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } an
             }
             catch (Exception ex)
             {
-
-
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
