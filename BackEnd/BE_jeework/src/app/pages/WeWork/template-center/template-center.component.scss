@@ -73,6 +73,11 @@ input{
             display: flex;
             align-items: center;
             cursor: pointer;
+
+            &:hover{
+                color: var(--theme-main-color);
+                fill: var(--theme-main-color);
+            }
             .icon {
                 fill: #b9bec7;
                 height: 16px;
@@ -4645,4 +4650,15 @@ input{
     margin-left: 5px
 }
 
+.view-mat-menu{
+    width: 230px;
+    max-height: 400px;
+}
 
+.mat-checkbox {
+    font-family: var(--global-font-support);
+    font-size: 12pt;
+    padding: 0 5px;
+    border: 0.5;
+    border-radius: 5px;
+}

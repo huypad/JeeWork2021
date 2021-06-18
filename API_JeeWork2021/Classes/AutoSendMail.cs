@@ -45,7 +45,7 @@ namespace JeeWork_Core2021.Classes
             _config = config.Value;
             _configuration = configuration;
             ConnectionCache = _cache;
-            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache,1119,_configuration); // #update customerID
+            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
             _notifier = notifier;
         }
         public string MsgError;
@@ -120,7 +120,7 @@ namespace JeeWork_Core2021.Classes
                         //generate task from repeated
                         using (DpsConnection cnnWW = new DpsConnection(ConnectionString))
                         {
-                            Insert_Template(cnnWW, CustemerID);
+                            WeworkLiteController.Insert_Template(cnnWW, CustemerID);
                             EveryDayForceRun(cnnWW, CustemerID);
                             EveryDay_UpdateLate(cnnWW, CustemerID);
                             ThongBaoSapHetHan(cnnWW, CustemerID);
@@ -322,35 +322,7 @@ namespace JeeWork_Core2021.Classes
                 }
             }
         }
-        private void Insert_Template(DpsConnection cnn, string CustemerID)
-        {
-            SqlConditions Conds = new SqlConditions();
 
-            string select = "select * from we_template_customer where disabled = 0";
-            DataTable dt = cnn.CreateDataTable(select);
-            string sql_insert = "";
-            if (dt.Rows.Count <= 0)
-            {
-                Conds.Add("CustomerID", CustemerID);
-                sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
-                        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_Template_List where Disabled = 0";
-                cnn.ExecuteNonQuery(sql_insert);
-                dt = cnn.CreateDataTable("select id_row from we_template_customer where CustomerID = " + CustemerID + "");
-                if (dt.Rows.Count > 0)
-                {
-                    sql_insert = "";
-                    foreach (DataRow item in dt.Rows)
-                    {
-                        sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
-                            "select id_Row, " + item["id_row"] + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                            "from we_Status_List where Disabled = 0 and IsDefault = 1";
-                        cnn.ExecuteNonQuery(sql_insert);
-                        sql_insert = "";
-                    }
-                }
-
-            }
-        }
         private void ThongBaoSapHetHan(DpsConnection cnn, string CustemerID)
         {
             PushNotifyModel notify = new PushNotifyModel();
@@ -411,7 +383,7 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
 
 
         }
-        public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config,string ConnectionString)
+        public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config, string ConnectionString)
         {
             try
             {

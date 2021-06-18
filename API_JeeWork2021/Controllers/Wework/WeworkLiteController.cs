@@ -1487,6 +1487,43 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
         }
         /// <summary>
+        /// DS loại template
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_template_types")]
+        [HttpGet]
+        public object Lite_Template_Types()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sql = "select id_row, title, description, disabled, isdefault, types " +
+                        "from we_template_types " +
+                        "where isdefault = 1 and disabled = 0 order by title";
+                    DataTable dt = cnn.CreateDataTable(sql);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   isdefault = r["isdefault"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
         /// Tính phần trăm
         /// </summary>
         /// <param name="tong"></param>
@@ -2406,6 +2443,30 @@ where Disabled = 0";
             else
                 return null;
         }
+        public static List<AccUsernameModel> GetMyStaff(IHeaderDictionary pHeader, IConfiguration _configuration, UserJWT loginData)
+        {
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+            IHeaderDictionary _d = pHeader;
+            string _bearer_token;
+            _bearer_token = _d[HeaderNames.Authorization].ToString();
+            string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
+            string link_api = API_Account + "/api/accountmanagement/ListNhanVienCapDuoiDirectManager";
+            var client = new RestClient(link_api);
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Authorization", _bearer_token);
+            request.AddHeader("Accept", "application/json");
+            // request.AddJsonBody(new { Username = "huypad" }); // Anonymous type object is converted to Json body
+            request.AddJsonBody( new { username = loginData.Username });
+            IRestResponse response = client.Execute(request);
+            var model = JsonConvert.DeserializeObject<List<AccUsernameModel>>(response.Content);
+            if (model != null)
+            {
+                return model;
+            }
+            else
+                return null;
+        }
         /// <summary>
         /// getConnectionString
         /// </summary>
@@ -2421,6 +2482,33 @@ where Disabled = 0";
                 ConnectionString = _configuration.GetValue<string>("AppConfig:ConnectionString");
             }
             return ConnectionString;
+        }
+        public static void Insert_Template(DpsConnection cnn, string CustemerID)
+        {
+            SqlConditions Conds = new SqlConditions();
+            string select = "select * from we_template_customer where disabled = 0 and customerid = "+ CustemerID;
+            DataTable dt = cnn.CreateDataTable(select);
+            string sql_insert = "";
+            if (dt.Rows.Count <= 0)
+            {
+                Conds.Add("CustomerID", CustemerID);
+                sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
+                        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_Template_List where Disabled = 0";
+                cnn.ExecuteNonQuery(sql_insert);
+                dt = cnn.CreateDataTable(select);
+                if (dt.Rows.Count > 0)
+                {
+                    sql_insert = "";
+                    foreach (DataRow item in dt.Rows)
+                    {
+                        sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
+                            "select id_Row, " + item["id_row"] + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
+                            "from we_Status_List where Disabled = 0 and IsDefault = 1";
+                        cnn.ExecuteNonQuery(sql_insert);
+                        sql_insert = "";
+                    }
+                }
+            }
         }
     }
 }

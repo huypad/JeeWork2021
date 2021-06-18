@@ -1140,6 +1140,7 @@ export const locale = {
 		work:
 		{
 			congviecfollower:'Công việc đang theo dõi',
+			follower:'Người theo dõi',
 			nhanviencuatoi: 'Nhân viên của tôi',
 			addsubtask: 'Thêm công việc con',
 			binhthuong: 'Bình thường',

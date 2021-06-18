@@ -69,6 +69,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400", ConnectionString, DataAccount);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    //WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " de.Disabled=0 and (IdKH = @CustemerID)";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))

@@ -232,7 +232,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         })
       }
     } else {
-      this._service.ListByManageCU(queryParams).subscribe(res => {
+      this._service.ListByManageCU(queryParams1).subscribe(res => {
         this.layoutUtilsService.OffWaitingDiv();
         if (res && res.status == 1) {
           this.DanhsSachCongViec = res.data;

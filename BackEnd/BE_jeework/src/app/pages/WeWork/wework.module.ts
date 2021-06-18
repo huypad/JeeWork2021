@@ -1,3 +1,4 @@
+import { TemplateCenterService } from './template-center/template-center.service';
 import { CRUDTableModule } from './../../_metronic/shared/crud-table/crud-table.module';
 import { DynamicFormService } from './../dynamic-form/dynamic-form.service';
 import { ActionNotificationComponent } from './../../_metronic/jeework_old/_shared/action-natification/action-notification.component';
@@ -267,7 +268,8 @@ import { TemplateCenterComponent } from './template-center/template-center.compo
 		AuthService,
 		TokenStorage,
 		AttachmentService,
-		DynamicFormService
+		DynamicFormService,
+		TemplateCenterService
 	],
 	entryComponents: [
 		DepartmentEditComponent,

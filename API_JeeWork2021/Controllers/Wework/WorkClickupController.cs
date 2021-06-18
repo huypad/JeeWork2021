@@ -618,6 +618,12 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } an
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    
+                    List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration,loginData);
+                    if (DataStaff == null)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
+                    string listIDNV = string.Join(",", nvs);
 
                     string error = "";
                     string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
@@ -643,6 +649,8 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } an
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
+
+                    string strW = $" and (w.id_nv in ({listIDNV}) or w.createdby in ({listIDNV}))";
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
@@ -650,7 +658,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } an
                     string groupby = "";
                     string columnName = "";
                     string query_group = "";
-                    DataTable dt_data_group = new DataTable();
                     DataTable dtG = new DataTable();
                     dtG.Columns.Add("id_row", typeof(object));
                     dtG.Columns.Add("title", typeof(string));
@@ -672,20 +679,20 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } an
                             dtG.Columns.Add("id_row", typeof(object));
                             dtG.Columns.Add("title", typeof(string));
                             columnName = "Id_NV";
-                            using (DpsConnection cnnHR = new DpsConnection(_config.HRConnectionString))
+                            //using (DpsConnection cnnHR = new DpsConnection(_config.HRConnectionString))
+                            //{
+                            //    dt_data_group = Common.GetListByManager(loginData.UserID.ToString(), cnnHR);//id_nv, hoten...
+                            //}
+                            foreach (var item in DataStaff)
                             {
-                                dt_data_group = Common.GetListByManager(loginData.UserID.ToString(), cnnHR);//id_nv, hoten...
-                            }
-                            foreach (DataRow dr in dt_data_group.Rows)
-                            {
-                                dtG.Rows.Add(new object[] { dr[0], dr["hoten"] });
+                                dtG.Rows.Add(new object[] { item.UserId, item.FullName });
                             }
                         }
                     }
                     #endregion
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount);
+                    DataSet ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount,strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -4581,7 +4588,7 @@ where 1=1 and  w.CreatedBy in ({ListID}) " + dieukien_where + "  order by " + di
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
                 sqlq += " and id_project_team=" + query.filter["id_project_team"];
             //người theo dõi
-            sqlq += @$";select id_work,'' as hoten from we_work_user u 
+            sqlq += @$";select id_work,'' as hoten,id_user from we_work_user u 
 where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
 
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
@@ -4671,7 +4678,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))
             // k có phần này thì workclickup lấy dữ liệu không map theo id dự án
             var re = from r in temp
-                     where r["id_parent"].Equals(parent) && (columnName == "" || (columnName != "" && r[columnName].Equals(id))) //(parent == null &&  r[columnName].Equals(id)) || (r["id_parent"].Equals(parent) && parent != null)
+                     where r["id_parent"].Equals(parent) && (columnName == "" || (columnName != "" && r[columnName].ToString().Equals(id.ToString()))) //(parent == null &&  r[columnName].Equals(id)) || (r["id_parent"].Equals(parent) && parent != null)
                      select new
                      {
                          id_parent = r["id_parent"],

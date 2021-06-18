@@ -262,7 +262,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string dieukienSort = "tong desc", dieukien_where = " ";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
-                        dieukien_where += " and (p.title like '%@keyword%' or p.description like '%@keyword%')";
+                        dieukien_where += " and (p.title like N'%@keyword%' or p.description like N'%@keyword%')";
                         dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
                     }
                     if (!string.IsNullOrEmpty(query.filter["status"]))

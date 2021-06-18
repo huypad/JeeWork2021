@@ -43,7 +43,7 @@
                             </ng-container>
                         </div>
                         <div style="flex-grow: 1;"></div>
-                        <ng-container *ngIf="myWorks">
+                        <ng-container *ngIf="myWorks || getMystaff">
                             <div (click)="SelectFilterDate()" class="filter ">{{'filter.tu'|translate}}:
                                 <em>{{  filterDay.startDate | date:'dd/MM'}} -
                                     {{ filterDay.endDate | date:'dd/MM/yyyy'}}</em>
@@ -60,7 +60,7 @@
                                     (click)="SelectedField(item)">{{item.title}}</button>
                                 </mat-menu>
                             </div>
-                            <div class="filter row pd-0" *ngIf="selectedTab != 3">
+                            <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
                                 <div class="icon-user border" (click)="viewTaskOrder=false;ChangeData()" >
                                     <i class="fas fa-user" [ngClass]="{'text-success': !viewTaskOrder}"></i>
                                 </div>
