@@ -1,0 +1,78 @@
+version: '3.9'
+
+networks:
+  vault_vault_network:
+    external: true
+  traefik_traefik-network:
+    external: true
+  kafka-network:
+    external: true
+
+services:
+  api:
+    image: ${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}-api:latest
+    networks: 
+      - vault_vault_network
+      - traefik_traefik-network
+      - kafka-network
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      VaultConfig__Endpoint: ${VAULT_ENDPOINT}
+      VaultConfig__Token: ${VAULT_TOKEN}
+      MinioConfig__MinioServer: ${HOST_CDN}
+      KafkaConfig__Brokers: ${KAFKA_BROKER}
+      Host__JeeWork_API: ${HOST_JEEWORK_BE}
+      Host__JeeWork_BE: ${HOST_JEEWORK_API}
+      Host__JeeAccount_API: ${HOST_ACCOUNT_API}
+      Host__MinIOBrowser: https://${HOST_CDN}
+      AppConfig__IsOnlineDB: ${APP_IsOnlineDB}
+      AppConfig__ConnectionString: ${APP_ConnectionString}
+      AppConfig__SecretKey: ${APP_SecretKey}
+      AppConfig__Key: ${APP_Key}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        order: start-first
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik_traefik-network
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.${PROJECT_NAME}-api-http.rule=Host(`${PROJECT_NAME}-api.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-api-http.entrypoints=http
+        - traefik.http.routers.${PROJECT_NAME}-api-http.middlewares=https-redirect
+        - traefik.http.routers.${PROJECT_NAME}-api-https.rule=Host(`${PROJECT_NAME}-api.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-api-https.entrypoints=https
+        - traefik.http.routers.${PROJECT_NAME}-api-https.tls=true
+        - traefik.http.routers.${PROJECT_NAME}-api-https.tls.certresolver=le
+        - traefik.http.services.${PROJECT_NAME}-api.loadbalancer.server.port=80
+
+  backend:
+    image: ${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}-backend:latest
+    networks:
+      - traefik_traefik-network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        order: start-first
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik_traefik-network
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.${PROJECT_NAME}-backend-http.rule=Host(`${PROJECT_NAME}.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-backend-http.entrypoints=http
+        - traefik.http.routers.${PROJECT_NAME}-backend-http.middlewares=https-redirect
+        - traefik.http.routers.${PROJECT_NAME}-backend-https.rule=Host(`${PROJECT_NAME}.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-backend-https.entrypoints=https
+        - traefik.http.routers.${PROJECT_NAME}-backend-https.tls=true
+        - traefik.http.routers.${PROJECT_NAME}-backend-https.tls.certresolver=le
+        - traefik.http.services.${PROJECT_NAME}-backend.loadbalancer.server.port=80
