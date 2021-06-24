@@ -206,7 +206,7 @@ export class UserDetailComponent implements OnInit {
 		let saveMessageTranslateParam = '';
 		var _item = new AuthorizeModel();
 		_item.clear();
-		_item.id_user = '' + this.UserID_authorize;
+		_item.id_user = this.UserID_authorize;
 		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;

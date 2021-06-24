@@ -853,6 +853,54 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
         }
 
+        /// <summary>
+        /// Danh sách field mới
+        /// </summary>
+        /// <returns></returns>
+        [Route("list-field-template")]
+        [HttpGet]
+        public object GetListFields()
+        {
+
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sql = @"SELECT  id_field, fieldname, title, isvisible, note, type, position, isNewField, IsDefault, TypeID, IsDel
+FROM            we_fields
+WHERE        (isNewField = 0) AND (IsDel = 0)
+ORDER BY IsDefault DESC";
+                    DataTable dt = cnn.CreateDataTable(sql);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_field = r["id_field"],
+                                   fieldname = r["fieldname"],
+                                   title = r["title"],
+                                   isvisible = r["isvisible"],
+                                   note = r["note"],
+                                   type = r["type"],
+                                   position = r["position"],
+                                   isnewfield = r["isnewfield"],
+                                   isdefault = r["isdefault"],
+                                   typeid = r["typeid"]
+                               };
+
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
         [Route("list-processing")]
         [HttpGet]
         public object ListProcessing()
@@ -1514,6 +1562,110 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    id_row = r["id_row"],
                                    title = r["title"],
                                    isdefault = r["isdefault"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// DS loại template
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_department_folder_user")]
+        [HttpGet]
+        public object Lite_Department_Folder_User()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                string err = "";
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
+                if (err != "")
+                    return JsonResultCommon.Custom(err);
+                #endregion
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string listDept = getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+
+                    string sql = @$"select * from we_department where Disabled = 0 and ParentID is null and id_row in ({listDept}) order by title;
+                                            select * from we_department where Disabled = 0 and ParentID is not null and ParentID in ({listDept}) order by title";
+                    DataSet ds = cnn.CreateDataSet(sql);
+                    string sql_space = "", sql_project = "", sql_folder = "", where_department = "";
+                    //if (v_module.ToLower().Equals("module = 'wework'"))
+                    //{
+                    where_department = @$" disabled = 0 and CreatedBy in ({listID}) 
+                                        and IdKH = {loginData.CustomerID} and (id_row in (select id_department from we_project_team 
+                                        where (id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
+                                        and Disabled = 0) or (CreatedBy = { loginData.UserID})) and disabled = 0) or (CreatedBy = { loginData.UserID}));";
+                    sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID
+                                        from we_department
+                                        where ParentID is null and " + where_department + "";
+                    sql_project = "select p.id_row, p.icon, p.title, p.detail, p.id_department" +
+                        ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
+                        ", p.priority, p.CreatedDate, p.CreatedBy, p.Locked, p.Disabled, default_view " +
+                        "from we_project_team p (admin_group)" +
+                        $" p.Disabled = 0 and p.CreatedBy in ({listID})";
+                    //}
+                    sql_folder = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID 
+                                        from we_department
+                                        where ParentID is not null and " + where_department + "";
+                    if (!MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID))
+                    {
+                        sql_project = sql_project.Replace("(admin_group)", "join we_project_team_user " +
+                        "on we_project_team_user.id_project_team = p.id_row " +
+                        "and (we_project_team_user.id_user = " + loginData.UserID + ") " +
+                        "where we_project_team_user.id_user = " + loginData.UserID + " and ");
+                    }
+                    else
+                    {
+                        sql_project = sql_project.Replace("(admin_group)", " where ");
+                    }
+                    DataTable dt_space = cnn.CreateDataTable(sql_space);
+                    DataTable dt_project = cnn.CreateDataTable(sql_project);
+                    DataTable dt_folder = cnn.CreateDataTable(sql_folder);
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt_space.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   type = 1,
+                                   folder = from f in dt_folder.AsEnumerable()
+                                            where int.Parse(r["id_row"].ToString()) == int.Parse(f["ParentID"].ToString())
+                                            select new
+                                            {
+                                                id_row = f["id_row"],
+                                                title = f["title"],
+                                                type = 2,
+                                                project = from p in dt_project.AsEnumerable()
+                                                          where int.Parse(f["id_row"].ToString()) == int.Parse(p["id_department"].ToString())
+                                                          select new
+                                                          {
+                                                              id_row = p["id_row"],
+                                                              title = p["title"],
+                                                              type = 3,
+                                                          }
+                                            },
+                                   project = from p in dt_project.AsEnumerable()
+                                             where int.Parse(r["id_row"].ToString()) == int.Parse(p["id_department"].ToString())
+                                             select new
+                                             {
+                                                 id_row = p["id_row"],
+                                                 title = p["title"],
+                                                 type = 3,
+                                             }
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -2212,7 +2364,7 @@ where Disabled = 0";
         /// <param name="id_project"></param>
         /// <param name="conn"></param>
         /// <returns></returns>
-        public static bool Init_Column_Project(long id_project, DpsConnection conn)
+        public static bool Init_Column_Project(long id_project, DpsConnection conn, bool is_custom = false, string list_field = "")
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
@@ -2226,7 +2378,12 @@ where Disabled = 0";
             dt = conn.CreateDataTable(sqlq, "(where)", conds);
             if (dt.Rows.Count <= 0)
             {
-                sqlq = "select fieldname, title, position, isNewField from we_fields where IsDefault = 1";
+                sqlq = "select fieldname, title, position, isnewfield, id_field " +
+                    "from we_fields where isdefault = 1";
+                if (is_custom)
+                {
+                    sqlq += " and isnewfield = 0 and id_field in (" + list_field + ")";
+                }
                 dt = conn.CreateDataTable(sqlq);
                 if (dt.Rows.Count > 0)
                 {
@@ -2251,7 +2408,59 @@ where Disabled = 0";
                 conn.EndTransaction();
             }
             return true;
+        }
+        /// <summary>
+        /// Khởi tạo status theo template mặc định cho project
+        /// </summary>
+        /// <param name="id_project"></param>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static bool Init_Status_Project(long id_project, DpsConnection conn, UserJWT loginData, string list_status = "")
+        {
+            SqlConditions cond = new SqlConditions();
+            DataTable dt = new DataTable();
 
+            string sqlq = "";
+            SqlConditions conds = new SqlConditions();
+            Hashtable has = new Hashtable();
+            conds.Add("disabled", 0);
+            conds.Add("id_project_team", id_project);
+            sqlq = "select * from we_status where (where)";
+            dt = conn.CreateDataTable(sqlq, "(where)", conds);
+            if (dt.Rows.Count <= 0)
+            {
+                sqlq = "select statusname, description, type, isdefault" +
+                    ", color, position, isfinal, isdeadline, istodo " +
+                    "from we_status_list " +
+                    "where disabled = 1 and id_row in (" + list_status + ")";
+                dt = conn.CreateDataTable(sqlq);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow item in dt.Rows)
+                    {
+                        Hashtable val1 = new Hashtable();
+                        val1.Add("statusname", item["statusname"]);
+                        val1.Add("description", item["description"]);
+                        val1.Add("id_project_team", id_project);
+                        val1.Add("type", item["type"]);
+                        val1.Add("isdefault", item["isdefault"]);
+                        val1.Add("color", item["color"]);
+                        val1.Add("position", item["position"]);
+                        val1.Add("isfinal", item["isfinal"]);
+                        val1.Add("isdeadline", item["isdeadline"]);
+                        val1.Add("istodo", item["istodo"]);
+                        val1.Add("createddate", DateTime.Now);
+                        val1.Add("createdby", loginData.UserID);
+                        if (conn.Insert(val1, "we_status") != 1)
+                        {
+                            conn.RollbackTransaction();
+                            return false;
+                        }
+                    }
+                }
+                conn.EndTransaction();
+            }
+            return true;
         }
         /// <summary>
         /// Lấy danh sách view theo project
@@ -2510,10 +2719,10 @@ where Disabled = 0";
                 }
             }
         }
-        public static bool Init_TemplateCenter(DpsConnection cnn, TemplateCenterModel template)
+        public static bool Init_TemplateCenter(DpsConnection cnn, TemplateCenterModel template, UserJWT loginData)
         {
             SqlConditions Conds = new SqlConditions();
-            string sqlq = "";
+            string sqlq = "", error = "";
             sqlq = @$"select id_row, title, description, createddate, createdby
                                     , isdefault, color, id_department, templateid, customerid
                                     , is_template_center, types, levels, viewid, group_statusid 
@@ -2539,48 +2748,526 @@ where Disabled = 0";
                                 from we_status_group 
                                 where id_row in (" + group_statusid + ") " +
                         "order by title";
+            //sqlq += @$";select de.id_row, de.title, de.parentid, de.levels, de.disabled, de.templateid, de.isdefault 
+            //            from we_sample_data de left join we_sample_data folder 
+            //            on de.id_row = folder.parentid 
+            //            where de.templateid like '%" + template.id_row + "%' " +
+            //            "union " +
+            //            "select b.id_row, b.title, b.parentid, b.levels, b.disabled, b.templateid, b.isdefault " +
+            //            "from we_sample_data a left join we_sample_data b " +
+            //            "on a.id_row = b.parentid " +
+            //            "where a.templateid like '%" + template.id_row + "%' " +
+            //            "union " +
+            //            "select work.id_row, work.title, work.parentid, work.levels, work.disabled" +
+            //            ", work.templateid, work.isdefault " +
+            //            "from we_sample_data work " +
+            //            "where work.parentid in (select b.id_row" +
+            //            "from we_sample_data a left join we_sample_data b " +
+            //            "on a.id_row = b.parentid " +
+            //            "where a.templateid like '%" + template.id_row + "%')";
             DataSet ds = cnn.CreateDataSet(sqlq);
-            DataTable dt = cnn.CreateDataTable(sqlq);
-            string sql_insert = "";
+            //DataTable dt = cnn.CreateDataTable(sqlq);
             if (ds.Tables.Count == 4)
             {
                 if (template.types == 1) // department
                 {
-
+                    if (!init_status_by_template(cnn, template, loginData, out error))
+                    {
+                        return false;
+                    }
+                    if (!insert_sample_data(cnn, template, loginData, out error))
+                    {
+                        return false;
+                    }
                 }
-                //Conds.Add("CustomerID", custemerid);
-                //sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
-                //        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + custemerid + " as CustomerID from we_Template_List where Disabled = 0";
-                //cnn.ExecuteNonQuery(sql_insert);
-                //dt = cnn.CreateDataTable(sqlq);
-                //if (dt.Rows.Count > 0)
-                //{
-                //    sql_insert = "";
-                //    foreach (DataRow item in dt.Rows)
-                //    {
-                //        sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
-                //            "select id_Row, " + item["id_row"] + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                //            "from we_Status_List where Disabled = 0 and IsDefault = 1";
-                //        cnn.ExecuteNonQuery(sql_insert);
-                //        sql_insert = "";
-                //    }
-                //}
             }
             return true;
         }
-        public static bool DefaultView_Department(DpsConnection cnn, DataTable dt_data, long id, UserJWT loginData)
+        public static bool init_view_by_project(DpsConnection cnn, string list_views, long id_project_team, UserJWT loginData, out string error)
         {
-            foreach (DataRow item in dt_data.Rows)
+            error = "";
+            string sql_insert = "";
+            sql_insert = $@"insert into we_projects_view (id_project_team, viewid, view_name_new, createddate, createdby, default_view, disabled) " +
+                    "select " + id_project_team + ", id_row, view_name, getdate(), " + loginData.UserID + ", is_default, 0 " +
+                    "from we_default_views where id_row in (" + list_views + ")";
+            cnn.ExecuteNonQuery(sql_insert);
+            if (cnn.LastError == null)
+                return true;
+            else
             {
-                Hashtable has = new Hashtable();
-                has.Add("id_department", id);
-                has.Add("viewid", item["id_row"]);
-                has.Add("createddate", DateTime.Now);
-                has.Add("createdby", loginData.CustomerID);
-                has.Add("is_default", item["is_default"]);
-
+                error = cnn.LastError.Message;
+                return false;
             }
-            return false;
+        }
+        public static bool init_status_by_template(DpsConnection cnn, TemplateCenterModel template, UserJWT loginData, out string error)
+        {
+            error = "";
+            string sql_insert = "";
+            string[] group = template.group_statusid.Split(',');
+            string array_status = cnn.ExecuteScalar("select array_status " +
+               "from we_status_group " +
+               "where id_row = " + group[0] + "").ToString();
+            sql_insert = $@"insert into we_template_status (statusid, templateid, statusname, description, createddate, createdby, disabled, type, isdefault, color, position, isfinal, isdeadline, istodo) " +
+                        "select id_row, " + template.id_row + ", statusname, description, getdate(), " + loginData.UserID + ", disabled, type, isdefault, color, position, isfinal, isdeadline, istodo " +
+                        "from we_status_list where disabled = 0 and isdefault = 1 and id_row in (" + array_status + ")";
+            cnn.ExecuteNonQuery(sql_insert);
+            if (cnn.LastError == null)
+                return true;
+            else
+            {
+                error = cnn.LastError.Message;
+                return false;
+            }
+        }
+        public static bool init_field_by_project(DpsConnection cnn, string list_field, long id_project_team, UserJWT loginData, out string error)
+        {
+            error = "";
+            string sql_insert = "";
+
+            //sql_insert = $@"insert into we_fields_project_team (id_project_team, fieldname, title, createddate, createdby, disabled, ObjectID, position, IsNewField, IsHidden, FieldID) " +
+            //        "select " + id_project_team + ", fieldname, title, getdate(), " + loginData.UserID + ", disabled, type, isdefault, color, position, isfinal, isdeadline, istodo " +
+            //        "from we_status_list where disabled = 0 and isdefault = 1 and id_row in (" + _st + ")";
+            //cnn.ExecuteNonQuery(sql_insert);
+            //if (cnn.LastError == null)
+            //    return true;
+            //else
+            //{
+            //    error = cnn.LastError.Message;
+            //    return false;
+            //}
+            return true;
+        }
+        public static bool init_status_by_project(DpsConnection cnn, string group_statusid, long id_project_team, UserJWT loginData, out string error)
+        {
+            error = "";
+            string sql_insert = "";
+            string array_status = cnn.ExecuteScalar("select array_status " +
+           "from we_status_group " +
+           "where id_row = " + group_statusid + "").ToString();
+            sql_insert = $@"insert into we_status (id_project_team, statusname, description, createddate, createdby, disabled, type, isdefault, color, position, isfinal, isdeadline, istodo) " +
+                    "select " + id_project_team + ", statusname, description, getdate(), " + loginData.UserID + ", disabled, type, isdefault, color, position, isfinal, isdeadline, istodo " +
+                    "from we_status_list where disabled = 0 and isdefault = 1 and id_row in (" + array_status + ")";
+            cnn.ExecuteNonQuery(sql_insert);
+            if (cnn.LastError == null)
+                return true;
+            else
+            {
+                error = cnn.LastError.Message;
+                return false;
+            }
+        }
+        public static bool init_work_sample(DpsConnection cnn, long id_project_team, DataRow item, UserJWT loginData, out string error)
+        {
+            error = "";
+            Random rnd = new Random();
+            int groupid = rnd.Next(21, 39);
+            DataTable dt_work = cnn.CreateDataTable("select title from we_sample_data where groupid = " + groupid + " and levels = 4");
+            foreach (DataRow r_work in dt_work.Rows)
+            {
+                string id_w = cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString();
+                long id_current = long.Parse(id_w) + 1;
+                Hashtable has = new Hashtable();
+                has["title"] = r_work["title"];
+                has["id_project_team"] = id_project_team;
+                has["createddate"] = DateTime.Now;
+                has["createdby"] = loginData.UserID;
+                has["status"] = item["id_row"];
+                int prioritize = rnd.Next(1, 4);
+                has["clickup_prioritize"] = prioritize;
+                DateTime start = new DateTime(DateTime.Today.Year, DateTime.Today.Month - 1, 1);
+                int range = (DateTime.Today - start).Days;
+                has["start_date"] = start.AddDays(rnd.Next(range));
+                DateTime deadline = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                int range_de = (DateTime.Today - deadline).Days;
+                has["deadline"] = deadline.AddDays(rnd.Next(range_de));
+                if (cnn.Insert(has, "we_work") != 1)
+                {
+                    cnn.RollbackTransaction();
+                    error = cnn.LastError.Message;
+                    return false;
+                }
+                id_w = cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString();
+                // insert we_work_user
+                Hashtable val1 = new Hashtable();
+                val1["id_work"] = id_w;
+                val1["createddate"] = DateTime.Now;
+                val1["createdby"] = loginData.UserID;
+                val1["id_user"] = loginData.UserID;
+                val1["loai"] = 1;
+                if (cnn.Insert(val1, "we_work_user") != 1)
+                {
+                    cnn.RollbackTransaction();
+                    error = cnn.LastError.Message;
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static bool init_department_sample(DpsConnection cnn, long id, DataRow dr, UserJWT loginData, out string error)
+        {
+            error = "";
+            Hashtable has = new Hashtable();
+            has.Add("parentid", id);
+            has.Add("id_cocau", 0);
+            has.Add("priority", 1);
+            has.Add("title", dr["title"]);
+            has.Add("idkh", loginData.CustomerID);
+            has.Add("createddate", DateTime.Now);
+            has.Add("createdby", loginData.UserID);
+            cnn.BeginTransaction();
+            if (cnn.Insert(has, "we_department") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
+            }
+            return true;
+        }
+        // Hàm khởi tạo các bảng dữ liệu dùng chung khi tạo template center
+        public static bool init_data_general(DpsConnection cnn, long id_project_team, TemplateCenterModel template, UserJWT loginData, out string error)
+        {
+            #region Type = mấy thì cũng phải tạo dữ liệu mặc định
+            error = "";
+            // Khởi tạo status mặc định
+            DataTable dt_st = cnn.CreateDataTable("select id_row from we_status where id_project_team =" + id_project_team);
+            if (dt_st.Rows.Count == 0)
+            {
+                var random = new Random();
+                string[] list = template.group_statusid.Split(",");
+                int index = random.Next(list.Length);
+                if (!init_status_by_project(cnn, list[index], id_project_team, loginData, out error))
+                {
+                    cnn.RollbackTransaction();
+                    error = cnn.LastError.Message;
+                    return false;
+                }
+            }
+            dt_st = cnn.CreateDataTable("select id_row from we_status where id_project_team =" + id_project_team);
+            // insert we_work
+            if (dt_st.Rows.Count > 0)
+            {
+                if (template.is_task) // Nếu có chọn tạo sẵn mẫu công việc
+                {
+                    foreach (DataRow item in dt_st.Rows)
+                    {
+                        if (!init_work_sample(cnn, template.ObjectTypesID, item, loginData, out error))
+                        {
+                            cnn.RollbackTransaction();
+                            error = cnn.LastError.Message;
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return true;
+            }
+            return true;
+            #endregion
+        }
+        public static bool init_list_sample(DpsConnection cnn, long id, DataRow dr, UserJWT loginData, TemplateCenterModel template, out string error)
+        {
+            error = "";
+            Hashtable has = new Hashtable();
+            has.Add("title", dr["title"]);
+            has.Add("id_department", id);
+            has.Add("loai", 1);
+            has.Add("is_project", 1);
+            if (!template.is_projectdates)
+            {
+                if (template.projectdates.start_date != DateTime.MinValue)
+                    has.Add("start_date", template.projectdates.start_date);
+                if (template.projectdates.end_date != DateTime.MinValue)
+                    has.Add("end_date", template.projectdates.end_date);
+            }
+            else
+            {
+                has.Add("start_date", DateTime.Now);
+                has.Add("end_date", DateTime.Now.AddMonths(6));
+            }
+            has.Add("status", 1);
+            has.Add("color", "bg7");
+            has.Add("createddate", DateTime.Now);
+            has.Add("createdby", loginData.UserID);
+            has.Add("id_template", template.id_row);
+            string strCheck = "select count(*) from we_project_team where disabled=0 and (id_department=@id_department) and title=@name";
+            if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", template.ObjectTypesID }, { "name", dr["title"] } }).ToString()) > 0)
+            {
+                cnn.RollbackTransaction();
+                error = "Trùng tên dự án/phòng ban";
+                return false;
+            }
+            if (cnn.Insert(has, "we_project_team") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
+            }
+            string id_p = cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString();
+            template.ObjectTypesID = long.Parse(id_p);
+            // insert we_project_team_user
+            has = new Hashtable();
+            has["id_project_team"] = template.ObjectTypesID;
+            has["createddate"] = DateTime.Now;
+            has["createdby"] = loginData.UserID;
+            has["id_user"] = loginData.UserID;
+            has["admin"] = 1;
+            if (cnn.Insert(has, "we_project_team_user") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
+            }
+            if (template.is_views) // Nếu có chọn tạo view mẫu thì tạo cho người ta
+            {
+                if (!init_view_by_project(cnn, template.viewid, template.ObjectTypesID, loginData, out error))
+                {
+                    cnn.RollbackTransaction();
+                    error = cnn.LastError.Message;
+                    return false;
+                }
+            }
+            // tạo field trong project
+            if (!template.is_customitems)
+            {
+                if (template.list_field_name != null)
+                {
+                    Hashtable val1 = new Hashtable();
+                    val1["id_project_team"] = template.ObjectTypesID;
+                    val1["createddate"] = DateTime.Now;
+                    val1["createdby"] = loginData.UserID;
+                    foreach (var _field in template.list_field_name)
+                    {
+                        val1["title"] = _field.title;
+                        val1["fieldname"] = _field.fieldname;
+                        val1["position"] = _field.position;
+                        val1["fieldid"] = _field.id_field;
+                        val1["isnewfield"] = _field.isnewfield;
+                        val1["ishidden"] = _field.isnewfield ? true : false;
+                        if (cnn.Insert(val1, "we_fields_project_team") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            error = cnn.LastError.Message;
+                            return false;
+                        }
+                    }
+                }
+            }
+            #region Type = mấy thì cũng phải tạo dữ liệu mặc định
+            init_data_general(cnn, long.Parse(id_p), template, loginData, out error);
+            #endregion
+            return true;
+        }
+        public static bool insert_sample_data2(DpsConnection cnn, TemplateCenterModel template, UserJWT loginData, out string error)
+        {
+            error = "";
+            long soluongproject = 1; // áp dụng cho template.types = 3 (Tức là đã có dự án không cần tạo bộ dữ liệu mẫu cho dự án nữa)
+            Hashtable has = new Hashtable();
+            ////string[] group = template.group_statusid.Split(',');
+            string[] group = template.group_statusid.Split(',');
+            string id_department = template.ObjectTypesID.ToString();
+            string id_bandau = template.ObjectTypesID.ToString();
+            foreach (string _st in group)
+            {
+                #region Trường hợp tạo dữ liệu của space và folder
+                if (template.types < 3)
+                {
+                    //init_department_sample(cnn, long.Parse(id_bandau), loginData, out error);
+                    //soluongproject = 3;
+                    //has = new Hashtable();
+                    //has.Add("parentid", id_bandau);
+                    //has.Add("id_cocau", 0);
+                    //has.Add("priority", _st);
+                    //has.Add("title", "Thư mục " + _st);
+                    //has.Add("idkh", template.customerid);
+                    //has.Add("createddate", DateTime.Now);
+                    //has.Add("createdby", loginData.UserID);
+                    //cnn.BeginTransaction();
+                    //if (cnn.Insert(has, "we_department") != 1)
+                    //{
+                    //    cnn.RollbackTransaction();
+                    //    error = cnn.LastError.Message;
+                    //    return false;
+                    //}
+                    id_department = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
+                    template.ObjectTypesID = long.Parse(id_department);
+                    has = new Hashtable();
+                    has["id_department"] = template.ObjectTypesID;
+                    has["createddate"] = DateTime.Now;
+                    has["createdby"] = loginData.UserID;
+                    has["id_user"] = loginData.UserID;
+                    has["type"] = 1;
+                    if (cnn.Insert(has, "we_department_owner") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        error = cnn.LastError.Message;
+                        return false;
+                    }
+                }
+                #endregion
+                for (int p = 1; p <= soluongproject; p++)
+                {
+                    #region Nếu template.types < 3 thì vẫn tạo bộ dữ liệu mẫu cho dự án
+                    // Tạo list
+                    if (template.types < 3)
+                    {
+                        has = new Hashtable();
+                        has.Add("title", "Dự án " + _st + "." + p);
+                        has.Add("id_department", id_department);
+                        has.Add("loai", 1);
+                        has.Add("is_project", 1);
+                        if (!template.is_projectdates)
+                        {
+                            if (template.projectdates.start_date != DateTime.MinValue)
+                                has.Add("start_date", template.projectdates.start_date);
+                            if (template.projectdates.end_date != DateTime.MinValue)
+                                has.Add("end_date", template.projectdates.end_date);
+                        }
+                        else
+                        {
+                            has.Add("start_date", DateTime.Now);
+                            has.Add("end_date", DateTime.Now.AddMonths(6));
+                        }
+                        has.Add("status", 1);
+                        has.Add("color", "bg7");
+                        has.Add("createddate", DateTime.Now);
+                        has.Add("createdby", loginData.UserID);
+                        has.Add("id_template", template.id_row);
+                        string strCheck = "select count(*) from we_project_team where disabled=0 and (id_department=@id_department) and title=@name";
+                        if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", template.ObjectTypesID }, { "name", "Dự án " + _st } }).ToString()) > 0)
+                        {
+                            cnn.RollbackTransaction();
+                            error = "Trùng tên dự án/phòng ban";
+                            return false;
+                        }
+                        if (cnn.Insert(has, "we_project_team") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            error = cnn.LastError.Message;
+                            return false;
+                        }
+                        string id_p = cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString();
+                        template.ObjectTypesID = long.Parse(id_p);
+                        // insert we_project_team_user
+                        has = new Hashtable();
+                        has["id_project_team"] = template.ObjectTypesID;
+                        has["createddate"] = DateTime.Now;
+                        has["createdby"] = loginData.UserID;
+                        has["id_user"] = loginData.UserID;
+                        has["admin"] = 1;
+                        if (cnn.Insert(has, "we_project_team_user") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            error = cnn.LastError.Message;
+                            return false;
+                        }
+                    }
+                    #endregion
+                    #region Type = mấy thì cũng phải tạo dữ liệu mặc định
+                    // tạo field trong project
+                    if (!template.is_customitems)
+                    {
+                        if (template.list_field_name != null)
+                        {
+                            Hashtable val1 = new Hashtable();
+                            val1["id_project_team"] = template.ObjectTypesID;
+                            val1["createddate"] = DateTime.Now;
+                            val1["createdby"] = loginData.UserID;
+                            val1["isnewfield"] = 0;
+                            foreach (var _field in template.list_field_name)
+                            {
+                                val1["title"] = _field.title;
+                                val1["fieldname"] = _field.fieldname;
+                                val1["position"] = _field.position;
+                                val1["fieldid"] = _field.id_field;
+                                val1["isnewfield"] = _field.isnewfield;
+                                if (cnn.Insert(val1, "we_fields_project_team") != 1)
+                                {
+                                    cnn.RollbackTransaction();
+                                    error = cnn.LastError.Message;
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                    if (template.is_views) // Nếu có chọn tạo view mẫu thì tạo cho người ta
+                    {
+                        if (!init_view_by_project(cnn, template.viewid, template.ObjectTypesID, loginData, out error))
+                        {
+                            cnn.RollbackTransaction();
+                            error = cnn.LastError.Message;
+                            return false;
+                        }
+                    }
+                    // Khởi tạo status mặc định
+                    if (init_status_by_project(cnn, _st, template.ObjectTypesID, loginData, out error))
+                    {
+                        // insert we_work
+                        if (template.is_task) // Nếu có chọn tạo sẵn mẫu công việc
+                        {
+                            DataTable dt_st = cnn.CreateDataTable("select id_row from we_status where id_project_team =" + template.ObjectTypesID);
+                            if (dt_st.Rows.Count > 0)
+                            {
+                                foreach (DataRow item in dt_st.Rows)
+                                {
+                                    init_work_sample(cnn, template.ObjectTypesID, item, loginData, out error);
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+                }
+            }
+            return true;
+        }
+        public static bool insert_sample_data(DpsConnection cnn, TemplateCenterModel template, UserJWT loginData, out string error)
+        {
+            error = "";
+            Hashtable has = new Hashtable();
+            string id_department = template.ObjectTypesID.ToString();
+            string id_bandau = template.ObjectTypesID.ToString();
+            Random rnd = new Random();
+            DataTable dt_projects = new DataTable();
+            #region Trường hợp tạo dữ liệu của space và folder
+            if (template.types < 3)
+            {
+                int groupid = rnd.Next(1, 4);
+                DataTable dt_de = cnn.CreateDataTable("select title from we_sample_data where groupid = " + groupid + " and levels = 2");
+                foreach (DataRow r_de in dt_de.Rows)
+                {
+                    if (template.types == 1) // Là space ==> Tạo folder --> Tạo List --> Tạo Work
+                    {
+                        init_department_sample(cnn, long.Parse(id_bandau), r_de, loginData, out error);
+                        id_department = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
+                        template.ObjectTypesID = long.Parse(id_department);
+                        has = new Hashtable();
+                        has["id_department"] = template.ObjectTypesID;
+                        has["createddate"] = DateTime.Now;
+                        has["createdby"] = loginData.UserID;
+                        has["id_user"] = loginData.UserID;
+                        has["type"] = 1;
+                        if (cnn.Insert(has, "we_department_owner") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            error = cnn.LastError.Message;
+                            return false;
+                        }
+                    }
+                    // (template.types = 2 || 1) // Tạo List --> Tạo Work
+                    groupid = rnd.Next(11, 19);
+                    dt_projects = cnn.CreateDataTable("select * from we_sample_data " +
+                        "where groupid = " + groupid + " and levels = 3");
+                    foreach (DataRow r_list in dt_projects.Rows)
+                    {
+                        init_list_sample(cnn, long.Parse(id_department), r_list, loginData, template, out error);
+                    }
+                }
+            }
+            #endregion
+            if (template.types == 3) // Là list --> Tạo Work
+            {
+                init_data_general(cnn, template.ObjectTypesID, template, loginData, out error);
+            }
+            return true;
         }
     }
 }

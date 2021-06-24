@@ -144,8 +144,9 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     this.selection = new SelectionModel<WorkModel>(true, []);
 
     this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-      if (res)
+      if (res && res.status == 1)
         this.list_role = res.data;
+      console.log(res);
       // if (!this.CheckRoles(3)) {
       //   this.myWorks = true;
       // }
@@ -283,6 +284,10 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         return true;
       }
       else {
+        if(roleID == 3 || roleID == 4){
+          if(x.isuyquyen) 
+            return true;
+        }
         if (x.Roles.find(r => r.id_role == 15))
           return false;
         var r = x.Roles.find(r => r.id_role == roleID);
@@ -305,6 +310,10 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         return true;
       }
       else {
+        if(key == 'id_nv'){
+          if(x.isuyquyen) 
+            return true;
+        }
         var r = x.Roles.find(r => r.keypermit == key);
         if (r) {
           return true;
@@ -1134,6 +1143,9 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
       if (res && res.status == 1) {
         this.LoadData();
         this.LoadSampleList();
+      }else {
+        this.LoadSampleList();
+        this.layoutUtilsService.showError(res.error.message);
       }
     })
 

@@ -126,7 +126,9 @@
                                     <a mat-tab-link class="hover-viewoption d-flex"
                                         *ngIf="ID_Project==view.id_project_team" [active]="activeLink == view.link">
                                         <div (click)="click(view.link);linkTo(view.link)">
-                                            <i class="fas fa-thumbtack text-success" style="margin-right: 5px;transform: translateY(6px);font-size: 20px;" *ngIf="view.pin_view"></i>
+                                            <i class="fas fa-thumbtack text-success"
+                                                style="margin-right: 5px;transform: translateY(6px);font-size: 20px;"
+                                                *ngIf="view.pin_view"></i>
                                             <img src="{{view.icon}}" style="margin-right: 5px;" width="20px" alt="">
                                             {{ view.view_name_new}}
                                         </div>
@@ -135,10 +137,11 @@
                                             #trigger="matMenuTrigger"></i>
                                         <mat-menu style="justify-content: flex-start !important" xPosition="before"
                                             #viewoption="matMenu">
-                                            <div  (click)="$event.stopPropagation()">
+                                            <div (click)="$event.stopPropagation()">
                                                 <button mat-menu-item>
                                                     <mat-slide-toggle (ngModelChange)="modelChangeFn(view)"
-                                                        [(ngModel)]="view.default_everyone">Mặc định cho tất cả mọi người
+                                                        [(ngModel)]="view.default_everyone">Mặc định cho tất cả mọi
+                                                        người
                                                     </mat-slide-toggle>
                                                 </button>
                                                 <button mat-menu-item>
@@ -155,14 +158,20 @@
                                                         [(ngModel)]="view.personal_view">Chế độ xem cá nhân
                                                     </mat-slide-toggle>
                                                 </button>
-                                                <button mat-menu-item (click)="view.favourite=!view.favourite;modelChangeFn(view)">
-                                                    <i class="far fa-star text-warning" style="font-size: 20px;padding: 0 10px;" *ngIf="!view.favourite"></i>
-                                                    <i class="fas fa-star text-warning" style="font-size: 20px;padding: 0 10px;" *ngIf="view.favourite"></i>
+                                                <button mat-menu-item
+                                                    (click)="view.favourite=!view.favourite;modelChangeFn(view)">
+                                                    <i class="far fa-star text-warning"
+                                                        style="font-size: 20px;padding: 0 10px;"
+                                                        *ngIf="!view.favourite"></i>
+                                                    <i class="fas fa-star text-warning"
+                                                        style="font-size: 20px;padding: 0 10px;"
+                                                        *ngIf="view.favourite"></i>
                                                     Yêu thích
                                                 </button>
                                                 <hr>
                                                 <button mat-menu-item (click)="deleteView(view)">
-                                                    <i class="fas fa-trash text-danger" style="font-size: 20px;padding: 0 10px;"></i>
+                                                    <i class="fas fa-trash text-danger"
+                                                        style="font-size: 20px;padding: 0 10px;"></i>
                                                     Xóa view
                                                 </button>
                                             </div>
@@ -207,8 +216,8 @@
                                     [routerLink]="['./documents']" (click)="click('documents')"
                                     [active]="activeLink == 'documents'">{{'projects.documents' |
                                     translate}}&nbsp;({{listDocument.length}})</a>
-                                <a mat-tab-link *ngIf="CheckRoles(18)"
-                                    [routerLink]="['./activities']" (click)="click('activities')"
+                                <a mat-tab-link *ngIf="CheckRoles(18)" [routerLink]="['./activities']"
+                                    (click)="click('activities')"
                                     [active]="activeLink == 'activities'">{{'projects.hoatdong' |
                                     translate}}</a>
                                 <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3610).length>0"

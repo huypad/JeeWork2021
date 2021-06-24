@@ -30,6 +30,7 @@ using DPSinfra.ConnectionCache;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using JeeWork_Core2021.ConsumerServices;
+using API_JeeWork2021.Classes;
 
 namespace JeeWork_Core2021
 {
@@ -146,7 +147,8 @@ namespace JeeWork_Core2021
             services.AddHttpClient();
             // add notify sv
             services.addNotificationService();
-            services.AddSingleton<IHostedService, JeeInit_Kafka>(); 
+            services.AddSingleton<IHostedService, JeeInit_Kafka>();
+            services.AddHostedService<kafkaTestSoLuongNhacNho>();
             services.AddMemoryCache();
             services.addConnectionCacheService();
 

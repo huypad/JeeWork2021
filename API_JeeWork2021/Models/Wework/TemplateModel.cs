@@ -34,17 +34,17 @@ namespace JeeWork_Core2021.Models
         public long ObjectTypesID { get; set; } // Truyền id department hoặc id list
         public long ParentID { get; set; } //2 - folder (Truyền ID Department chọn), 3 - list (Project) Truyền id_Folder chọn
         public long levels { get; set; } // 1 - Beginner, 2 - Intermediate, 3 - Advanced
-        public long viewid { get; set; } // 
-        public long group_statusid { get; set; } //
+        public string viewid { get; set; } // 
+        public string group_statusid { get; set; } //
         public long template_typeid { get; set; } //
-        public long img_temp { get; set; } //
-        public long field_id { get; set; } //
-        public bool is_customitems { get; set; } = false;
-        public bool is_projectdates { get; set; } = false;
-        public bool is_task { get; set; } = false;
-        public bool is_views { get; set; } = false;
-        public List<ListFieldModel> customitems { get; set; }
-        public List<ProjectDatesModel> projectdates { get; set; }
+        public string img_temp { get; set; } //
+        public string field_id { get; set; } // truyền is new field, anh tự lấy trong DB
+        public bool is_customitems { get; set; }
+        public bool is_projectdates { get; set; }
+        public bool is_task { get; set; }
+        public bool is_views { get; set; }
+        public List<ListFieldModel> list_field_name { get; set; }
+        public ProjectDatesModel projectdates { get; set; }
     }
     public class ListFieldModel
     {

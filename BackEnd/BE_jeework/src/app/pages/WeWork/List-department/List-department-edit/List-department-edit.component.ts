@@ -117,7 +117,7 @@ export class DepartmentEditComponent implements OnInit {
       this.viewLoading = false;
     }
     this.createForm();
-    this.getTreeValue();
+    // this.getTreeValue();
     // this.focusInput.nativeElement.focus();
   }
   clickOnUser = (event: Event) => {

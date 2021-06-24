@@ -1,3 +1,4 @@
+import { TemplateCenterModel } from './../../template-center/template-model/template.model';
 import { BaseModel } from './../../../../_metronic/jeework_old/core/_base/crud/models/_base.model';
 
 export class DepartmentModel extends BaseModel {
@@ -5,7 +6,7 @@ export class DepartmentModel extends BaseModel {
 	title: string;
 	dept_name: string;
 	IsEdit: boolean;
-	id_cocau: string = '';
+	id_cocau: number;
 	id_row: number;
 	// Owners: Array<DepartmentOwnerModel> = [];
 	Owners: any = [];
@@ -14,13 +15,13 @@ export class DepartmentModel extends BaseModel {
 	TemplateID: number;
 	DefaultView: any;
 	ParentID: any;
-
+	templatecenter: TemplateCenterModel;
 	clear() {
 		this.RowID = 0;
 		this.dept_name = '';
 		this.title = '';
 		this.IsEdit = true;
-		this.id_cocau = '';
+		this.id_cocau = 0;
 		this.Owners = [];
 		this.DefaultView = [];
 		this.IsDataStaff_HR = false;

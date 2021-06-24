@@ -21,19 +21,19 @@ const routes: Routes = [
 			},
 			{
 				path: 'calendar',
-				loadChildren:()=> WorkCalendarModule
+				loadChildren: () => WorkCalendarModule
 			},
 			{
 				path: 'documents',
-				loadChildren:()=> DocumentsModule
+				loadChildren: () => DocumentsModule
 			},
 			{
 				path: 'activities',
-				loadChildren: () =>  import('../activities/activities.module').then(m => m.ActivitiesModule),
+				loadChildren: () => import('../activities/activities.module').then(m => m.ActivitiesModule),
 			},
 			{
 				path: 'discussions',
-				loadChildren: () =>  import('../discussions/discussions.module').then(m => m.DiscussionsModule),
+				loadChildren: () => import('../discussions/discussions.module').then(m => m.DiscussionsModule),
 			},
 			{
 				path: 'report/:id',

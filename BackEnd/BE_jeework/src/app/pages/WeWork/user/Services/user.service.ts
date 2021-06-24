@@ -17,6 +17,7 @@ const API_Work_CU=environment.APIROOTS + '/api/work-click-up';
 @Injectable()
 export class UserService {
 	lastFilter$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));
+	lastFilterUQ$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));
 	ReadOnlyControl: boolean;
 	constructor(private http: HttpClient,
 		private httpUtils: HttpUtilsService) { }
@@ -25,6 +26,15 @@ export class UserService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
 		const url = API + '/List';
+		return this.http.get<QueryResultsModel>(url, {
+			headers: httpHeaders,
+			params: httpParams
+		});
+	}
+	findDataUQ(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+		const url = API + '/List-uy-quyen';
 		return this.http.get<QueryResultsModel>(url, {
 			headers: httpHeaders,
 			params: httpParams
@@ -61,6 +71,11 @@ export class UserService {
 	Detail(id: any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = `${API}/detail?id=${id}`;
+		return this.http.get<any>(url, { headers: httpHeaders });
+	}
+	DetailUQ(id: any): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = `${API}/detail-uy-quyen?id=${id}`;
 		return this.http.get<any>(url, { headers: httpHeaders });
 	}
 	//#region ủy quyền

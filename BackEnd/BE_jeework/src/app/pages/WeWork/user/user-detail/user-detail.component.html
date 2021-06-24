@@ -133,7 +133,7 @@
                                             <span>{{hoten}}</span>
                                         </div>
                                         <nav mat-tab-nav-bar *ngIf="selectedItem==undefined">
-                                            <a mat-tab-link [routerLink]="['./',UserID]"
+                                            <a mat-tab-link [routerLink]="['/users/',UserID]"
                                                 [active]="true">{{'wuser.congviecduocgiao' | translate}}</a>
                                             <a mat-tab-link (click)="printme.click()" href="javascript:;">{{'wuser.in' | translate}}</a>
                                                 <button class="d-none" #printme [useExistingCss]="true"
@@ -141,8 +141,9 @@
                                                 ngxPrint></button>
                                             <a mat-tab-link href="javascript:;"
                                                 (click)="export()">{{'wuser.export' | translate}}</a>
-                                            <a *ngIf="Is_authorize" mat-tab-link href="javascript:;"
-                                                (click)="uyquyen()">{{'wuser.uyquyen' | translate}}</a>
+                                                <!-- (click)="uyquyen()" -->
+                                            <a *ngIf="Is_authorize" mat-tab-link href="javascript:;" [routerLink]="['/users/',UserID,'uyquyen']"
+                                                >{{'wuser.uyquyen' | translate}}</a>
                                         </nav>
                                     </div>
                                 </div>
@@ -206,7 +207,8 @@
                         </div> 
                         
                         <div id="print-section" class="kt-form__group w-100">
-                            <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID"></kt-list-task-cu>
+                            <!-- <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID"></kt-list-task-cu> -->
+                            <router-outlet></router-outlet>
                         </div>
                     </div> 
                 </div>

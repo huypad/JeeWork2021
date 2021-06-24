@@ -125,6 +125,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
+                    val.Add("is_all_project", data.is_all_project);
+                    val.Add("list_project", data.list_project);
+                    val.Add("start_date", data.start_date);
+                    val.Add("end_date", data.end_date);
                     val.Add("id_user", data.id_user);
                     val.Add("UpdatedDate", DateTime.Now);
                     val.Add("UpdatedBy", iduser);

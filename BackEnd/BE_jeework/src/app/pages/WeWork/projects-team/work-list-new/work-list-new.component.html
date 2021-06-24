@@ -629,8 +629,7 @@
                                                                                 {{node[item.fieldname]?'#'+node[item.fieldname]
                                                                                 : ''}} </span>
                                                                         </ng-template>
-                                                                        <ng-container
-                                                                            *ngIf="item.type != 'code';else code">
+                                                                        <ng-container *ngIf="item.type != 'code';else code">
                                                                             <ng-template #assignintask>
                                                                                 <div class="item-field" *ngIf="CheckRoleskeypermit(item.fieldname)">
                                                                                     <ng-container

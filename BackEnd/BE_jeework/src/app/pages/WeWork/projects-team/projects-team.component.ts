@@ -48,9 +48,9 @@ export class ProjectsTeamComponent implements OnInit {
 		this.translate.instant("filter.dangcho"),
 	];
 	UserID = 0;
-	list_role:any = [];
-	listDefaultView:any = [];
-	listDocument:any = [];
+	list_role: any = [];
+	listDefaultView: any = [];
+	listDocument: any = [];
 	customStyle = {
 		// backgroundColor: "#ffffaa",
 		// border: "1px solid #7e7e7e",
@@ -106,8 +106,8 @@ export class ProjectsTeamComponent implements OnInit {
 
 		this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
 			if (res)
-			  this.list_role = res.data;
-		  });
+				this.list_role = res.data;
+		});
 
 		this.activatedRoute.params.subscribe(params => {
 			this.ID_Project = +params.id;
@@ -117,69 +117,69 @@ export class ProjectsTeamComponent implements OnInit {
 			if (path) {
 				var arr = path.split('/');
 				if (arr.length > 3)
-					this.activeLink = arr[3] + (arr[4]?'/'+arr[4]:'');
+					this.activeLink = arr[3] + (arr[4] ? '/' + arr[4] : '');
 			}
 		});
-		
+
 	}
 
 	CheckRoles(roleID: number) {
 		var x = this.list_role.find(x => x.id_row == this.ID_Project);
 		if (x) {
-		  if (x.admin == true) {
-			return true;
-		  }
-		  else {
-			if (x.Roles.find(r => r.id_role == 15))
-			  return false;
-			var r = x.Roles.find(r => r.id_role == roleID);
-			if (r) {
-			  return true;
+			if (x.admin == true) {
+				return true;
 			}
 			else {
-			  return false;
+				if (x.Roles.find(r => r.id_role == 15))
+					return false;
+				var r = x.Roles.find(r => r.id_role == roleID);
+				if (r) {
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
-		  }
 		}
 		else {
-		  return false;
+			return false;
 		}
-	  }
+	}
 
-	  modelChangeFn(view){
+	modelChangeFn(view) {
 		let saveMessageTranslateParam = '';
-		saveMessageTranslateParam +='GeneralKey.capnhatthanhcong';
+		saveMessageTranslateParam += 'GeneralKey.capnhatthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		setTimeout(() => {
 			var _item = new ProjectViewsModel();
 			_item = view;
 			this._Services.update_view(_item).subscribe(res => {
-				if(res && res.status==1){
+				if (res && res.status == 1) {
 					this.layoutUtilsService.showActionNotification(_saveMessage);
 				}
-				else{
+				else {
 					this.layoutUtilsService.showError(res.error.message);
 				}
 				this.LoadData();
 			})
 		}, 10);
-	  }
+	}
 
-	  deleteView(view){
+	deleteView(view) {
 		this._Services.Delete_View(view.id_row).subscribe(res => {
-			if(res && res.status==1){
-					this.router.navigateByUrl(`/project/` + this.ID_Project).then(()=>{
+			if (res && res.status == 1) {
+				this.router.navigateByUrl(`/project/` + this.ID_Project).then(() => {
 					this.ngOnInit();
 				});
 			}
-			else{
+			else {
 				this.layoutUtilsService.showError(res.error.message);
 			}
 		})
-	  }
+	}
 
-	linkTo(link){
-		let _backUrl = `/project/` + this.ID_Project + `/`+link;
+	linkTo(link) {
+		let _backUrl = `/project/` + this.ID_Project + `/` + link;
 		this.router.navigateByUrl(_backUrl);
 	}
 	LoadData() {
@@ -187,12 +187,12 @@ export class ProjectsTeamComponent implements OnInit {
 		this.WeWorkService.ListViewByProject(this.ID_Project).subscribe((res) => {
 			if (res && res.status === 1) {
 				this.listDefaultView = res.data;
-				var x = this.listDefaultView.find(x=>x.id_project_team==null)
-				if(x){
+				var x = this.listDefaultView.find(x => x.id_project_team == null)
+				if (x) {
 					this.isShowaddview = true;
-					this.selectedNewView(x.view_name_new,x.image,x.viewid);
+					this.selectedNewView(x.view_name_new, x.image, x.viewid);
 				}
-				else{
+				else {
 					this.isShowaddview = false;
 				}
 			}
@@ -315,10 +315,10 @@ export class ProjectsTeamComponent implements OnInit {
 		return filter;
 	}
 
-	nameNewView :any= "";
-	idNewView :any= "";
-	imageNewView :any= "";
-	selectedNewView(name,image,viewid){
+	nameNewView: any = "";
+	idNewView: any = "";
+	imageNewView: any = "";
+	selectedNewView(name, image, viewid) {
 		this.nameNewView = name;
 		this.imageNewView = image;
 		this.idNewView = viewid;
@@ -455,12 +455,12 @@ export class ProjectsTeamComponent implements OnInit {
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
 				// this.router.navigateByUrl("/project/"+this.ID_Project).then(()=>{
-					this.LoadData();
+				this.LoadData();
 				// });
 			}
 			else {
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
-				this.router.navigateByUrl("/project/"+this.ID_Project).then(()=>{
+				this.router.navigateByUrl("/project/" + this.ID_Project).then(() => {
 					this.LoadData();
 				});
 			}
@@ -656,40 +656,40 @@ export class ProjectsTeamComponent implements OnInit {
 		});
 	}
 
-	addView(){
+	addView() {
 		var _item = new ProjectViewsModel();
 		_item.clear();
 		_item.id_project_team = this.ID_Project;
 		_item.view_name_new = this.nameNewView;
 		_item.viewid = this.idNewView;
 		this._Services.Add_View(_item).subscribe(res => {
-			if(res && res.status == 1){
+			if (res && res.status == 1) {
 				this.layoutUtilsService.showActionNotification('Thêm mới thành công');
-				
+
 				// load view
 				this.WeWorkService.ListViewByProject(this.ID_Project).subscribe((res) => {
 					if (res && res.status === 1) {
 						this.listDefaultView = res.data;
-						var x = this.listDefaultView.find(x=>x.id_project_team==null)
-						if(x){
+						var x = this.listDefaultView.find(x => x.id_project_team == null)
+						if (x) {
 							this.isShowaddview = true;
-							this.selectedNewView(x.view_name_new,x.image,x.viewid);
-						}else{
+							this.selectedNewView(x.view_name_new, x.image, x.viewid);
+						} else {
 							this.isShowaddview = false;
 						}
 					}
 					this.changeDetectorRefs.detectChanges();
 				});
 			}
-			else{
+			else {
 				this.layoutUtilsService.showError(res.error.message);
 			}
 		})
 	}
 
-	ViewReport(){
+	ViewReport() {
 		const url = 'project/' + this.ID_Project + '/report/' + this.ID_Project;
-				this.router.navigateByUrl(url);
+		this.router.navigateByUrl(url);
 		// this._Services.FindDepartmentFromProjectteam(this.ID_Project).subscribe(res => {
 		// 	if (res && res.status == 1) {
 		// 		const url = 'project/' + this.ID_Project + '/report/' + res.data; ///project/1/activities

@@ -18,6 +18,23 @@
 	<form class="kt-form" [formGroup]="itemForm">
 		<div class="kt-portlet__body">
 			<div class="row">
+				<div class="col-md-6">
+					<mat-form-field appearance="fill" class="w-100">
+						<mat-label>Ngày bắt đầu</mat-label>
+						<input formControlName="start" matInput [matDatepicker]="picker">
+						<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-datepicker #picker></mat-datepicker>
+					  </mat-form-field>					  
+				</div>
+				<div class="col-md-6">
+					<mat-form-field appearance="fill" class="w-100">
+						<mat-label>Ngày kết thúc</mat-label>
+						<input formControlName="end" matInput [matDatepicker]="picker1">
+						<mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+						<mat-datepicker #picker1></mat-datepicker>
+					  </mat-form-field>					  
+				</div>
+
 				<div class="col-md-4 kt--margin-bottom-10-mobile" style="padding: 25px;">
 					<span translate="wuser.chonnguoiuyquyen"></span>
 				</div>
@@ -36,6 +53,31 @@
 						</mat-select>
 					</mat-form-field>
 				</div>
+
+				
+				<div class="col-md-4 kt--margin-bottom-10-mobile" style="padding: 25px;">
+					<span translate="wuser.tatcaduan"></span>
+				</div>
+				<div class="col-md-8 kt--margin-bottom-10-mobile">
+					<section class="example-section">
+						<mat-checkbox [(ngModel)]="is_all_project" [ngModelOptions]="{standalone: true}" class="example-margin">Chọn tất cả dự án!</mat-checkbox>
+					  </section>
+				</div>
+				
+				<div class="col-md-4 kt--margin-bottom-10-mobile" style="padding: 25px;">
+					<span translate="wuser.listproject"></span>
+				</div>
+				<div class="col-md-8 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select [disabled]="is_all_project" multiple (selectionChange)="checkProject($event.value)" formControlName="list_project"
+							placeholder="{{ 'wuser.listproject' | translate }}">
+							<mat-option *ngFor="let item of ds_project" [value]="item.id_row">
+								{{item.title}}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+				
 			</div>
 		</div>
 	</form>

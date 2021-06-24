@@ -10,7 +10,7 @@ namespace JeeWork_Core2021.Models
     {
         public string From_IDNV { get; set; }
         public string To_IDNV { get; set; }
-        public string AppCode { get; set; } = "WW";
+        public string AppCode { get; set; } = "WORK";
         public string TitleLanguageKey { get; set; }
         public Hashtable ReplaceData { get; set; }
         public string To_Link_WebApp { get; set; }

@@ -1,32 +1,30 @@
 <div id="template-center">
     <div class="template-center-header">
-        <div class="cu-template-center-header__back ng-star-inserted" (click)="PrevStep()">
+        <div class="cu-template-center-header__back" (click)="PrevStep()">
             <div icon="cu2-arrow-left2" class="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M0 12l9-8v6h15v4h-15v6z" />
                 </svg>
             </div>
-            <div data-test="template-center-header__back-text" class="cu-template-center-header__back-text"> Back </div>
+            <div data-test="template-center-header__back-text" class="cu-template-center-header__back-text">
+                {{'GeneralKey.trolai'| translate}} </div>
         </div>
-        <div class="cu-template-center-header__type-container ng-star-inserted">
+        <div class="cu-template-center-header__type-container" *ngIf="buocthuchien > 1">
             <div class="cu-template-center-header__type">
                 <div class="icon">
-                    <!-- <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd"
-                        clip-rule="evenodd">
-                        <path
-                            d="M24 23h-22v-20h22v20zm-1-14h-20v13h20v-13zm-1-7h-21v19h-1v-20h22v1zm1 2h-20v4h20v-4z" />
-                    </svg> -->
-                    <img width="24" height="24" src="https://image.flaticon.com/icons/png/512/1642/1642054.png"
-                        alt="icon department">
-                    <!-- <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M0 2h8l3 3h10v4h3l-4 13h-20v-20zm22.646 8h-17.907l-3.385 11h17.907l3.385-11zm-2.646-1v-3h-9.414l-3-3h-6.586v15.75l3-9.75h16z"/></svg> -->
+                    <img width="24" height="24" src="{{getIconTemplate(TemplateDetail)}}" alt="">
                 </div>
             </div>
-            <div class="cu-template-center-header__type-text">Space
+            <div class="cu-template-center-header__type-text">
+                {{getTypesName(TemplateDetail)}}
             </div>
         </div>
 
         <div class="template-center-header__title">
-            Template Center
+            <ng-container *ngIf="buocthuchien > 1">
+                <img width="24" height="24" src="../../../../assets/images/Jee_Work.png" alt="logo jeework">
+            </ng-container>
+            {{ getTitle() }}
         </div>
         <div data-test="template-center-header__close" icon="cu2-close" class="cu-template-center-header__close icon"
             (click)="this.dialogRef.close();">
@@ -59,7 +57,7 @@
 <ng-template #step1>
     <div class="cu-template-center__body ">
         <div class="cu-template-center-sidebar ps">
-            <div class="cu-template-center-sidebar__header"> Templates </div>
+            <div class="cu-template-center-sidebar__header"> {{ 'template.templates' | translate }} </div>
             <div class="cu-template-center-sidebar__choices ">
                 <div class="cu-template-center-sidebar__choice ">
                     <div class="cu-team-avatar">
@@ -68,9 +66,9 @@
                         </div>
                     </div>
                     <div class="cu-template-center-sidebar__choice-name"> Nguyễn's Workspace </div>
-                    <div class="cu-template-center-sidebar__choice-count">
+                    <!-- <div class="cu-template-center-sidebar__choice-count">
                         <div class="cu-template-center-sidebar__choice-count-number"> 1 </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="cu-template-center-sidebar__choice  cu-template-center-sidebar__choice-active">
                     <div class="cu-template-center-sidebar__choice-icon"
@@ -80,16 +78,16 @@
                         </div>
                     </div>
                     <div class="cu-template-center-sidebar__choice-name"> Community </div>
-                    <div class="cu-template-center-sidebar__choice-count">
+                    <!-- <div class="cu-template-center-sidebar__choice-count">
                         <div class="cu-template-center-sidebar__choice-count-number"> 127 </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
-            <div class="cu-template-center-sidebar__header"> Types </div>
+            <div class="cu-template-center-sidebar__header"> {{ 'template.types' | translate }} </div>
             <div class="cu-template-center-sidebar__types ">
                 <ng-container *ngFor="let item of Types">
-                    <div (click)="CheckedType(item)"
-                        class="cu-template-center-sidebar__type {{item.countitem > 0 ?'':'cu-template-center-sidebar__type-disabled'}}"
+                    <!-- {{item.countitem > 0 ?'':'cu-template-center-sidebar__type-disabled'}} -->
+                    <div (click)="CheckedType(item)" class="cu-template-center-sidebar__type "
                         [ngClass]="{'cu-template-center-sidebar__type-active': item.checked}" style="display: flex;">
                         <div class="cu-template-center-sidebar__type-checkbox">
                             <div icon="cu2-check-3" class="icon">
@@ -100,15 +98,16 @@
                         </div>
                         <div class="cu-template-center-sidebar__type-name"> {{item.name}}
                         </div>
-                        <div class="cu-template-center-sidebar__type-count"> ({{item.countitem}}) </div>
+                        <!-- <div class="cu-template-center-sidebar__type-count"> ({{item.countitem}}) </div> -->
                     </div>
                 </ng-container>
-                
+
             </div>
-            <div class="cu-template-center-sidebar__header "> Levels </div>
+            <div class="cu-template-center-sidebar__header "> {{ 'template.levels' | translate }} </div>
             <div class="cu-template-center-sidebar__types ">
                 <ng-container *ngFor="let item of Levels">
-                    <div class="cu-template-center-sidebar__type" (click)="item.checked = !item.checked;LoadTC()" [ngClass]="{'cu-template-center-sidebar__type-active': item.checked}">
+                    <div class="cu-template-center-sidebar__type" (click)="item.checked = !item.checked;LoadTC()"
+                        [ngClass]="{'cu-template-center-sidebar__type-active': item.checked}">
                         <div class="cu-template-center-sidebar__type-checkbox">
                             <div icon="cu2-check-3" class="icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
@@ -117,11 +116,11 @@
                             </div>
                         </div>
                         <div class="cu-template-center-sidebar__type-name"> {{item.name}} </div>
-                        <div class="cu-template-center-sidebar__type-count"> ({{item.countitem}}) </div>
+                        <!-- <div class="cu-template-center-sidebar__type-count"> ({{item.countitem}}) </div> -->
                     </div>
-                    
+
                 </ng-container>
-                
+
             </div>
 
             <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
@@ -142,10 +141,10 @@
 
                     </div>
                     <input type="text" [(ngModel)]="TemplateKeyWorks" (keyup.enter)="LoadTC()"
-                        placeholder="Search templates...">
+                        placeholder=" {{ 'template.search' | translate }}...">
 
                 </div>
-                <div class="cu-dropdown-list url"  [matMenuTriggerFor]="menu">
+                <div class="cu-dropdown-list url" [matMenuTriggerFor]="menu">
                     <div cudropdown="" class="cu-dropdown">
                         <div cudropdowntoggle="" class="cu-dropdown__toggle">
                             <div class="cu-template-center-main__header-item cu-template-center-main__header-cases ">
@@ -155,8 +154,10 @@
                                             d="M22 9v1.528c-.476.69-3.815 1.971-9.77 1.971-6.239 0-9.736-1.358-10.23-2.088v-1.411h20zm2-2h-24v3.491c0 2.657 6.154 4.009 12.23 4.009 5.922 0 11.77-1.284 11.77-3.895v-3.605zm-2 8.074v4.926h-20v-5.001c-.823-.337-1.478-.711-2-1.096v8.097h24v-7.949c-.583.402-1.262.741-2 1.023zm-8 1.958c0 1.087-.896 1.968-2 1.968s-2-.881-2-1.968v-1.032h4v1.032zm-5-15.032c-1.104 0-2 .896-2 2v2h2v-1.5c0-.276.224-.5.5-.5h5c.276 0 .5.224.5.5v1.5h2v-2c0-1.104-.896-2-2-2h-6z" />
                                     </svg>
                                 </div>
-                                <div class="cu-template-center-main__header-item-text"> Use cases </div>
-                                <div icon="cu2-angle-down-2" class="cu-template-center-main__header-item-down-arrow icon">
+                                <div class="cu-template-center-main__header-item-text"> {{ 'template.usecase' |
+                                    translate }} </div>
+                                <div icon="cu2-angle-down-2"
+                                    class="cu-template-center-main__header-item-down-arrow icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                         <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z" />
                                     </svg>
@@ -165,64 +166,19 @@
                         </div>
                     </div>
                 </div>
-                <mat-menu #menu="matMenu"  xPosition="before">
+                <mat-menu #menu="matMenu" xPosition="before">
                     <div class="view-mat-menu" (click)="$event.stopPropagation();">
-                        <mat-checkbox [(ngModel)]="item.isdefault" (change)="LoadTC()" *ngFor="let item of TemplateTypes" class="w-100 hide-more-text text-dark">{{item.title}}</mat-checkbox>
+                        <mat-checkbox [(ngModel)]="item.isdefault" (change)="LoadTC()"
+                            *ngFor="let item of TemplateTypes" class="w-100 hide-more-text text-dark">{{item.title}}
+                        </mat-checkbox>
                     </div>
                 </mat-menu>
 
-                <!-- <div cudropdown="" class="cu-dropdown ">
-                    <div cudropdowntoggle=""
-                        class="cu-template-center-main__header-tags-dropdown-toggle cu-dropdown__toggle">
-                        <div class="cu-template-center-main__header-item cu-template-center-main__header-tags">
-                            <div icon="cu2-tag-o" class="icon "><svg class="">
-                                    <use
-                                        xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-tag-o">
-                                    </use>
-                                </svg>
-
-                            </div>
-
-
-                            <div class="cu-template-center-main__header-item-text"> Tags </div>
-                            <div icon="cu2-angle-down-2" class="cu-template-center-main__header-item-down-arrow icon">
-                                <svg class="">
-                                    <use
-                                        xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-down-2">
-                                    </use>
-                                </svg>
-
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- <cu-user-list-dropdown class="cu-user-list-dropdown">
-                    <div cudropdown="" class="cu-dropdown">
-                        <div cudropdowntoggle="" class="cu-dropdown__toggle">
-                            <div cutooltip="Filter by who created the template"
-                                class="cu-template-center-main__header-item cu-template-center-main__header-creator ">
-                                <div class="cu-template-center-main__header-item-text"> Created by: </div>
-                                <div icon="cu2-assign-3" class="icon "><svg class="">
-                                        <use
-                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-assign-3">
-                                        </use>
-                                    </svg>
-
-                                </div>
-
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </cu-user-list-dropdown> -->
             </div>
 
             <div class="cu-template-center-main__template-section">
 
-                <div class="cu-template-center-main__section">
+                <!-- <div class="cu-template-center-main__section">
                     <div class="cu-template-center-main__section-header">
                         <div class="cu-template-center-main__section-header-text"> Nguyễn's Workspace templates </div>
                         <div class="cu-template-center-main__section-header-line"></div>
@@ -282,11 +238,11 @@
                         </div>
                     </div>
 
-                </div>
+                </div> -->
 
                 <div data-test="template-center-main__section" class="cu-template-center-main__section">
                     <div class="cu-template-center-main__section-header">
-                        <div class="cu-template-center-main__section-header-text"> ClickUp </div>
+                        <div class="cu-template-center-main__section-header-text"> JeeWork </div>
                         <div class="cu-template-center-main__section-header-line"></div>
                     </div>
 
@@ -303,7 +259,7 @@
                                     (click)="Template.expanded = !Template.expanded">
                                     <div
                                         class="cu-template-center-main__row-controls-more cu-template-center-main__row-controls-more-no-border">
-                                        {{Template.expanded?'Collapse':'See all'}}
+                                        {{ 'template.' + (Template.expanded?'collapse':'seeall') | translate}}
                                     </div>
                                 </div>
                             </div>
@@ -320,12 +276,14 @@
                                                     alt="">
                                             </div>
 
-                                            <div class="cu-template-center-template__quick-use"> Quick Use
+                                            <div class="cu-template-center-template__quick-use"> {{ 'template.quickuse'
+                                                | translate }}
                                             </div>
 
                                             <div class="cu-template-center-template__top">
                                                 <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png&quot;);">
+                                                    style="background-image: url(&quot;{{item.img_temp}}&quot;);">
+                                                    <!-- https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png -->
                                                 </div>
                                             </div>
                                             <div class="cu-template-center-template__bot">
@@ -341,992 +299,10 @@
                                         </div>
                                     </div>
                                 </ng-container>
-
                             </div>
-
-
                         </div>
                     </div>
-
-                    <!-- 
-                    <div class="cu-template-center-main__rows">
-                        <div class="cu-template-center-main__row-container">
-                            <div class="cu-template-center-main__row-header">
-                                <div class="cu-template-center-main__row-header-text"> Agile Project Management
-
-                                </div>
-                                <div class="cu-template-center-main__row-controls">
-                                    <div
-                                        class="cu-template-center-main__row-controls-more cu-template-center-main__row-controls-more-no-border">
-                                        Collapse
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="cu-template-center-main__row cu-template-center-main__row-expanded">
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Agile Management (Full)
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/900326cb-cc06-4fbc-89d0-ab72c74428e1/8454971_GHt.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Bug queues </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__doc">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/f97aedc2-ac51-4070-86de-0e0e61006893/Product%20Brief_2x%202.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-doc">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Product Brief </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__doc">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/84a2e541-9974-4fdc-8592-5b66f4d18653/Release%20Notes%202_2x.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-doc">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Release Notes </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__doc">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/ced5cb48-48a0-4f0e-9fcc-a1e9b6b49c70/Roadmap%20with%20Timeline_2x.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-doc">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Roadmap with Timeline
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__doc">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/9ff9bb7b-aa60-4065-a20f-272badd2b2b6/Simple%20Roadmap_2x.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-doc">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Simple Roadmap </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/7b5b6b3d-938b-413d-928a-6ea78833108b/Sprints%20Space%203_2x.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Simple Sprints </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__list">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/81003fa2-d54b-4096-9ce6-b4a37dc90dd0/Sprints%20List%203_2x.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-list">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Sprints </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/97a58a30-2536-4691-846f-8f225f1c321e/4418933_zHV.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Sprints and backlogs
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-
-
-                        </div>
-                    </div>
-
-
-
-                    <div class="cu-template-center-main__rows">
-                        <div class="cu-template-center-main__row-container">
-
-                            <div
-                                class="cu-template-center-main__row-container-arrow cu-template-center-main__row-container-arrow-right">
-                                <div icon="cu2-angle-right"
-                                    class="cu-template-center-main__row-container-arrow-icon icon"><svg
-                                        class="ng-star-inserted">
-                                        <use
-                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-right">
-                                        </use>
-                                    </svg>
-
-                                </div>
-                            </div>
-
-                            <div class="cu-template-center-main__row-header">
-                                <div class="cu-template-center-main__row-header-text"> Education
-
-                                </div>
-                                <div class="cu-template-center-main__row-controls">
-                                    <div
-                                        class="cu-template-center-main__row-controls-more cu-template-center-main__row-controls-more-no-border">
-                                        See all
-
-
-
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="cu-template-center-main__row-slider">
-                                <div class="cu-template-center-main__row">
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__list">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/a6d16d1a-345e-4713-823e-b9ba46dc73c2/Class%20Assignments%402x.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-list">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Class Assignments
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__doc">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/34954bcc-8848-4635-84ca-6fb4715b768a/Class%20Notes%203%402x.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-doc">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Class Notes </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/9610ba4b-2561-49f2-9f5f-c0ea882ad8e1/4853812_eIB.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Class Planning
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/ed3df8b3-57e3-49e1-aa16-aa596565cfe5/4308481_sUw.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Student </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-
-                                                <div
-                                                    class="cu-template-center-template__image cu-template-center-template__image-empty">
-                                                    <div class="cu-template-center-template__image-empty-rect icon"><svg
-                                                            class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-rectangle">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Student Progress
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-
-                                </div>
-                                <div class="cu-template-center-main__row">
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/54af0a2a-b5b4-437a-8355-f74f100a4548/4853818_6R7.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Class Management
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__list">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/866f1a20-e971-4204-9043-f5b3da96a6fd/Class%20Notes%402x.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-list">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Class Notes </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__doc">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/e581b960-6da6-4132-9126-34f3ed607c0e/Cornell%20Notes%202%402x.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-doc">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Cornell Notes
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__space">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/ec6c12a2-ac98-4a12-856e-10c02affec91/Student%20-%20doc%402x.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-space">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Student </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__folder">
-                                        <div class="cu-template-center-template__container">
-                                            <div class="cu-template-center-template__cu-icon">
-                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                    alt="">
-                                            </div>
-
-                                            <div class="cu-template-center-template__quick-use"> Quick
-                                                Use </div>
-
-                                            <div class="cu-template-center-template__top">
-                                                <div class="cu-template-center-template__image"
-                                                    style="background-image: url(&quot;https://attachments.clickup.com/39107c27-12c6-400f-a332-3c9e525c0570/4853810_dmh.png&quot;);">
-                                                </div>
-
-
-                                            </div>
-                                            <div class="cu-template-center-template__bot">
-                                                <div class="cu-template-center-template__bot-left">
-                                                    <div class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                            </use>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <div class="cu-template-center-template__bot-right"> Syllabus Planning
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-
-
-                    <div class="cu-template-center-main__rows">
-                        <div class="cu-template-center-main__row-container">
-
-
-                            <div class="cu-template-center-main__row-header">
-                                <div class="cu-template-center-main__row-header-text"> Video Production
-
-                                </div>
-
-                            </div>
-                            <div class="cu-template-center-main__row">
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__clickup cu-template-center-template__list">
-                                    <div class="cu-template-center-template__container">
-                                        <div class="cu-template-center-template__cu-icon"><svg width="12" height="12"
-                                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M.9 9.22l1.883-1.415c1 1.28 2.061 1.87 3.244 1.87 1.177 0 2.21-.583 3.164-1.853l1.909 1.38C9.723 11.032 8.01 12 6.027 12 4.051 12 2.322 11.04.9 9.22z"
-                                                    fill="url(#paint0_linear)"></path>
-                                                <path
-                                                    d="M6.021 3.075l-3.35 2.83-1.549-1.76L6.028 0l4.867 4.147L9.34 5.902 6.02 3.075z"
-                                                    fill="url(#paint1_linear)"></path>
-                                                <defs>
-                                                    <linearGradient id="paint0_linear" x1="11.1" y1="7.805" x2=".468"
-                                                        y2="8.827" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#49CCF9"></stop>
-                                                        <stop offset="1" stop-color="#8930FD"></stop>
-                                                    </linearGradient>
-                                                    <linearGradient id="paint1_linear" x1="10.895" y1="0" x2=".775"
-                                                        y2=".67" gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#FFC800"></stop>
-                                                        <stop offset="1" stop-color="#FF02F0"></stop>
-                                                    </linearGradient>
-                                                </defs>
-                                            </svg></div>
-
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/5db44f68-e2b8-44b5-a7d7-f3b08750b4fd/Video%20Production%20%20-%20timeline%402x.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-list">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Video Production </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-
-
-                        </div>
-                    </div>
- -->
-
-
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -1334,20 +310,16 @@
 
 
 <ng-template #step2>
-    <div *ngIf="TemplateDetail.title"
+    <div
         class="cu-template-center-selected-template cu-template-center-selected-template__clickup cu-template-center-selected-template__space ">
         <div class="cu-template-center-selected-template__top">
             <div cudroparea="" cudropuploader=""
                 class="cu-template-center-selected-template__image cu-template-center-selected-template__image-clickup">
-
                 <div class="cu-template-center-selected-template__image-controls ">
-
                 </div>
-
                 <div class="cu-template-center-selected-template__image-cover "
-                    style="background-image: url(&quot;https://attachments.clickup.com/6ec587b3-6ceb-42ab-a960-c6921de6ddf2/Agile%20Management%203%402x.png&quot;);">
+                    style="background-image: url(&quot;{{TemplateDetail.img_temp}}&quot;);">
                 </div>
-
             </div>
             <div class="cu-template-center-selected-template__info">
                 <div class="cu-template-center-selected-template__info-top">
@@ -1359,14 +331,12 @@
                     <div class="cu-template-center-selected-template__info-type-text">
                         {{getTypesName(TemplateDetail)}}
                     </div>
-
                 </div>
-
                 <div
                     class="cu-template-center-selected-template__info-name cu-template-center-selected-template__info-name-clickup ">
                     {{ TemplateDetail.title }} </div>
 
-                <div class="cu-template-center-selected-template__info-experience-level ">
+                <!-- <div class="cu-template-center-selected-template__info-experience-level ">
                     <div class="ng-tns-c370-39 icon"><svg class="">
                             <use
                                 xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-center-experience-intermediate">
@@ -1375,7 +345,7 @@
 
                     </div>
                     <div class="ng-tns-c370-39">Intermediate</div>
-                </div>
+                </div> -->
 
 
                 <div
@@ -1385,74 +355,107 @@
                 </div>
 
                 <div class="cu-template-center-selected-template__info-actions">
-                    <div class="cu-template-center-selected-template__info-use-template"> Use Template
+                    <div class="cu-template-center-selected-template__info-use-template"
+                        (click)="NextStep();LoadInfoStep3()"> {{ 'template.usetemp' | translate }}
                     </div>
-                    <div
+                    <div disabled
                         class="cu-template-center-selected-template__info-use-template cu-template-center-selected-template__info-use-template-clickup ">
-                        Add to Library
+                        {{ 'template.addtolib' | translate }}
                     </div>
                 </div>
             </div>
         </div>
         <div class="cu-template-center-selected-template__bot">
             <div class="cu-template-center-selected-template__includes ps" style="overflow-y: auto !important;">
-                <div class="cu-template-center-selected-template__includes-header"> Template includes
+                <div class="cu-template-center-selected-template__includes-header"> {{ 'template.includes' | translate
+                    }}
                 </div>
-
                 <mat-accordion class="example-headers-align" multi>
-                    <mat-expansion-panel>
+                    <mat-expansion-panel *ngIf="TemplateDetail.data_status && TemplateDetail.data_status.length > 0">
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                {{countID( TemplateDetail.group_statusid )}} Status Group
+                                <div class="text-uppercase" *ngIf="TemplateDetail.data_status">
+                                    {{ TemplateDetail.data_status.length }} {{ 'template.statusgroup' | translate }}
+                                </div>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
 
-                        <div class="cu-template-center-selected-template__includes-item ">
-                            <div class="cu-template-center-selected-template__includes-item-top"><span
-                                    class="ng-tns-c370-39">7</span> status groups
+                        <div class="cu-template-center-selected-template__includes-item-bot">
+                            <div class="cu-template-center-selected-template__includes-item-bot-items">
+                                <ng-container *ngFor="let status of TemplateDetail.data_status">
+                                    <div matTooltip="{{ getTooltipStatus(status)}}"
+                                        class="cu-template-center-selected-template__includes-item-bot-item cu-template-center-selected-template__includes-item-bot-item-status-group">
+                                        <ng-container *ngFor="let item of status.status_list">
+                                            <div class="cu-template-center-selected-template__includes-item-bot-item-status-group-bubble"
+                                                [ngStyle]="{'backgroundColor': item.color}"></div>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
 
 
-                                <div icon="cu2-angle-right"
-                                    class="cu-template-center-selected-template__includes-item-top-icon icon">
-                                    <svg class="">
-                                        <use
-                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-cu2-angle-right">
-                                        </use>
-                                    </svg>
-
-                                </div>
                             </div>
                         </div>
                     </mat-expansion-panel>
 
-                    <!-- <mat-expansion-panel disabled>
+                    <mat-expansion-panel *ngIf="TemplateDetail.data_fields && TemplateDetail.data_fields.length > 0">
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                Destination
-                            </mat-panel-title>
-                            <mat-panel-description>
-
-                            </mat-panel-description>
-                        </mat-expansion-panel-header>
-
-                        <mat-form-field>
-                            <mat-label>Country</mat-label>
-                            <input matInput>
-                        </mat-form-field>
-                    </mat-expansion-panel> -->
-
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                {{countID( TemplateDetail.viewid )}} view types
+                                <div class="text-uppercase" *ngIf="TemplateDetail.data_fields">
+                                    {{TemplateDetail.data_fields.length}} {{ 'template.customfield' | translate }}
+                                </div>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
 
-                        <mat-form-field>
-                            <mat-label>Date</mat-label>
-                            <input matInput [matDatepicker]="picker" (focus)="picker.open()" readonly>
-                        </mat-form-field>
-                        <mat-datepicker #picker></mat-datepicker>
+                        <div class="cu-template-center-selected-template__includes-item-bot">
+                            <div class="cu-template-center-selected-template__includes-item-bot-items">
+                                <ng-container *ngFor="let field of TemplateDetail.data_fields">
+                                    <div
+                                        class="cu-template-center-selected-template__includes-item-bot-item cu-template-center-selected-template__includes-item-bot-item-view not-show-lasted">
+                                        <div class="cu-template-center-selected-template__includes-item-bot-item-name">
+                                            {{field.fieldname}} </div>
+                                        <div
+                                            class="cu-template-center-selected-template__includes-item-bot-item-spacer">
+                                            <div class="hide">•</div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="TemplateDetail.data_fields && TemplateDetail.data_fields.length == 0">
+                                    <h4>Không có dữ liệu</h4>
+                                </ng-container>
+
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel *ngIf="TemplateDetail.data_views && TemplateDetail.data_views.length > 0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <div class="text-uppercase" *ngIf="TemplateDetail.data_views">
+                                    {{TemplateDetail.data_views.length}} {{ 'template.viewtype' | translate }}
+                                </div>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div class="cu-template-center-selected-template__includes-item-bot">
+                            <div class="cu-template-center-selected-template__includes-item-bot-items">
+                                <ng-container *ngFor="let view of TemplateDetail.data_views">
+                                    <div
+                                        class="cu-template-center-selected-template__includes-item-bot-item cu-template-center-selected-template__includes-item-bot-item-view not-show-lasted">
+                                        <div
+                                            class="cu-template-center-selected-template__includes-item-bot-item-icon icon">
+                                            <img width="16" height="16" [src]="view.icon" alt="">
+                                        </div>
+                                        <div class="cu-template-center-selected-template__includes-item-bot-item-name">
+                                            {{view.view_name}} </div>
+                                        <div
+                                            class="cu-template-center-selected-template__includes-item-bot-item-spacer">
+                                            <div class="hide">•</div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
                     </mat-expansion-panel>
 
                 </mat-accordion>
@@ -1468,27 +471,24 @@
             <div class="cu-template-center-selected-template__data ps">
                 <div class="cu-template-center-selected-template__data-item ">
                     <div class="cu-template-center-selected-template__data-label ">
-                        CREATED BY </div>
-
+                        {{'GeneralKey.taoboi'| translate}} </div>
 
                     <div class="cu-template-center-selected-template__data-creator "><img
-                            src="assets/images/brand/clickup-symbol_color.svg" class="ng-tns-c370-39">
+                            src="assets/images/Jee_Work.png" class="ng-tns-c370-39">
                         <div class="cu-template-center-selected-template__data-text"> JEEWORK </div>
                     </div>
 
                 </div>
 
-
                 <div class="cu-template-center-selected-template__data-item ">
-                    <div class="cu-template-center-selected-template__data-label"> CREATED DATE </div>
+                    <div class="cu-template-center-selected-template__data-label"> {{'GeneralKey.ngaytao'| translate}}
+                    </div>
                     <div class="cu-template-center-selected-template__data-text"> December 19, 2020
                     </div>
                 </div>
 
-
-
                 <div class="cu-template-center-selected-template__data-item ">
-                    <div class="cu-template-center-selected-template__data-label"> USED </div>
+                    <div class="cu-template-center-selected-template__data-label"> {{'template.used'| translate}} </div>
                     <div class="cu-template-center-selected-template__data-text"> 17.7K times
 
                     </div>
@@ -1512,109 +512,214 @@
         <div class="cu-template-center-use-template ps  ps--active-y" style="overflow: auto!important;">
             <div class="cu-template-center-use-template__container">
                 <div class="cu-template-center__option-section ">
-                    <div class="cu-template-center__option-label"> Folder
-                        name
+                    <div class="cu-template-center__option-label">
+                        {{infoStep3.name}}
                     </div>
                     <div class="cu-template-center__option-input ng-untouched ng-pristine ng-valid">
-                        <input type="text" placeholder="Enter Folder name">
+                        <input id="titleTemplate" type="text" placeholder="{{infoStep3.inputname}}">
                     </div>
                 </div>
 
-                <div class="cu-template-center__option-section ">
-                    <div class="cu-template-center__option-label"> Select location for this Folder
-                        to be created
+                <div class="cu-template-center__option-section " *ngIf="this.TemplateDetail.types != 1">
+                    <div class="cu-template-center__option-label">
+                        {{ infoStep3.selectFolder }}
                     </div>
-                    <!-- <cu-category-list-dropdown class="cu-category-list-dropdown">
-                        <cu-hierarchy-picker-dropdown _nghost-fuc-c152="">
-                            <div _ngcontent-fuc-c152="" cudropdown="" class="cu-dropdown">
-                                <div _ngcontent-fuc-c152="" cudropdowntoggle="" class="cu-dropdown__toggle">
-                                    <div
-                                        class="cu-template-center__option-input cu-template-center-use-template__select-location-input-invalid ">
-                                        Nguyễn's Workspace </div>
-                                    
-                                    
+                    <div class="cu-category-list-dropdown" [matMenuTriggerFor]="DF" #menuTrigger="matMenuTrigger">
+                        <div
+                            class="cu-template-center__option-input cu-template-center-use-template__select-location-input-invalid ">
+                            {{ ParentName }}
+                        </div>
+                    </div>
+
+                    <mat-menu #DF="matMenu">
+                        <div class="view-mat-menu-df" (click)="$event.stopPropagation();">
+                            <ng-container *ngFor="let space of ListDepartmentFolder">
+                                <div class="cu2-space-row__item cu2-space-row__item_expanded"
+                                    (click)="space.expanded = !space.expanded">
+                                    <div class="cu-project-avatar_20 cu-project-avatar">
+                                        <div class="cu-project-avatar__item cu-avatar cu-project-avatar__text cu-project-avatar__text_bg"
+                                            style="color: rgb(191, 74, 204);">
+                                            <span style="margin-top:-1px"> {{space.title[0]}} </span>
+                                        </div>
+                                    </div>
+                                    <div tooltipdelay="300" class="cu2-space-row__item-name"> {{space.title}} </div>
+                                    <div class="cu2-space-row__item-multi">
+                                        <div class="cu-template-center-sidebar__type pd-0"
+                                            [ngClass]="{'cu-template-center-sidebar__type-active': IsChecked(space)}"
+                                            style="display: flex;"
+                                            (click)="selectedParent(space);menuTrigger.closeMenu()">
+                                            <div class="cu-template-center-sidebar__type-checkbox mg-0">
+                                                <div icon="cu2-check-3" class="icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                        viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M9 21.035l-9-8.638 2.791-2.87 6.156 5.874 12.21-12.436 2.843 2.817z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                
-                            </div>
-                        </cu-hierarchy-picker-dropdown>
-                    </cu-category-list-dropdown> -->
+                                <ng-container *ngIf="space.expanded">
+                                    <ng-container *ngFor="let folder of space.folder">
+                                        <div class="cu2-space-row__item_1 cu2-space-row__item_expanded"
+                                            (click)="folder.expanded = !folder.expanded">
+                                            <div class="cu-project-avatar_20 cu-project-avatar">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" />
+                                                </svg>
+                                            </div>
+                                            &nbsp;
+                                            <div tooltipdelay="300" class="cu2-space-row__item-name"> {{folder.title}}
+                                            </div>
+                                            <div class="cu2-space-row__item-multi">
+                                                <div class="cu-template-center-sidebar__type pd-0"
+                                                    [ngClass]="{'cu-template-center-sidebar__type-active': IsChecked(folder)}"
+                                                    style="display: flex;"
+                                                    (click)="selectedParent(folder);menuTrigger.closeMenu()">
+                                                    <div class="cu-template-center-sidebar__type-checkbox mg-0">
+                                                        <div icon="cu2-check-3" class="icon">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14"
+                                                                height="14" viewBox="0 0 24 24">
+                                                                <path
+                                                                    d="M9 21.035l-9-8.638 2.791-2.87 6.156 5.874 12.21-12.436 2.843 2.817z" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngIf="folder.expanded">
+                                            <div *ngFor="let project of folder.project"
+                                                class="cu2-space-row__item_2 cu2-space-row__item_expanded"
+                                                (click)="project.expanded = !project.expanded">
+                                                <div class="cu-project-avatar_20 cu-project-avatar">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                        viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12z" />
+                                                    </svg>
+                                                </div>
+                                                &nbsp;
+                                                <div tooltipdelay="300" class="cu2-space-row__item-name">
+                                                    {{project.title}}
+                                                </div>
+                                                <div class="cu2-space-row__item-multi">
+                                                    <div class="cu-template-center-sidebar__type pd-0"
+                                                        [ngClass]="{'cu-template-center-sidebar__type-active': IsChecked(project)}"
+                                                        style="display: flex;"
+                                                        (click)="selectedParent(project);menuTrigger.closeMenu()">
+                                                        <div class="cu-template-center-sidebar__type-checkbox mg-0">
+                                                            <div icon="cu2-check-3" class="icon">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14"
+                                                                    height="14" viewBox="0 0 24 24">
+                                                                    <path
+                                                                        d="M9 21.035l-9-8.638 2.791-2.87 6.156 5.874 12.21-12.436 2.843 2.817z" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+
+                                    </ng-container>
+                                    <div *ngFor="let project of space.project"
+                                        class="cu2-space-row__item_1 cu2-space-row__item_expanded"
+                                        (click)="project.expanded = !project.expanded">
+                                        <div class="cu-project-avatar_20 cu-project-avatar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12z" />
+                                            </svg>
+                                        </div>
+                                        &nbsp;
+                                        <div tooltipdelay="300" class="cu2-space-row__item-name"> {{project.title}}
+                                        </div>
+                                        <div class="cu2-space-row__item-multi">
+                                            <div class="cu-template-center-sidebar__type pd-0"
+                                                [ngClass]="{'cu-template-center-sidebar__type-active': IsChecked(project)}"
+                                                style="display: flex;"
+                                                (click)="selectedParent(project);menuTrigger.closeMenu()">
+                                                <div class="cu-template-center-sidebar__type-checkbox mg-0">
+                                                    <div icon="cu2-check-3" class="icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                            viewBox="0 0 24 24">
+                                                            <path
+                                                                d="M9 21.035l-9-8.638 2.791-2.87 6.156 5.874 12.21-12.436 2.843 2.817z" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </mat-menu>
                 </div>
 
                 <div class="cu-template-center__option-section ">
-                    <div class="cu-template-center__option-label"> Import options </div>
+                    <div class="cu-template-center__option-label"> {{ 'template.importoptions' | translate }} </div>
                     <div class="cu-template-center__dual-options">
                         <div class="cu-template-center__dual-options-header">
                             <div class="cu-template-center__dual-options-header-tab {{importall?'':'cu-template-center__dual-options-header-tab-disabled'}}"
                                 (click)="importall = true">
                                 <div
                                     class="cu-template-center__radio-item cu-template-center__radio-item-no-margin {{importall?'cu-template-center__radio-item-active':''}}">
-                                    Import everything </div>
+                                    {{ 'template.importeverything' | translate }} </div>
                             </div>
                             <div (click)="importall = false"
                                 class="cu-template-center__dual-options-header-tab {{!importall?'':'cu-template-center__dual-options-header-tab-disabled'}}">
                                 <div
                                     class="cu-template-center__radio-item cu-template-center__radio-item-no-margin {{!importall?'cu-template-center__radio-item-active':''}}">
-                                    Customize import items </div>
+                                    {{ 'template.customnizeimportitems' | translate }} </div>
                             </div>
                         </div>
                         <div class="cu-template-center__dual-options-body">
 
                             <ng-container *ngIf="importall;else selectimport">
-                                <div class="cu-template-center__dual-options-body-header "> Items to import:
+                                <div class="cu-template-center__dual-options-body-header "> {{ 'template.itemstoimport'
+                                    | translate }}:
                                 </div>
-                                <div class="cu-template-center__dual-options-body-text "> Import all Due
-                                    Dates, Start Dates, Assignees, Watchers, Subtasks, Attachments, Comment Attachments,
-                                    Statuses, Old Statuses, Tags, Contents, Recurring Settings, Priorities,
-                                    Dependencies,
-                                    Checklists, Custom Fields, Time Estimates, Views, Automations and Tasks as is.
+                                <div class="cu-template-center__dual-options-body-text "> {{ 'template.importall' |
+                                    translate }} {{LoadFieldName()}}.
                                 </div>
                             </ng-container>
                             <ng-template #selectimport>
-                                <div class="cu-template-center__dual-options-body-header"> Select items to import:
+                                <div class="cu-template-center__dual-options-body-header"> {{
+                                    'template.selecteitemstoimport' | translate }}:
                                 </div>
                                 <div
                                     class="cu-template-center__radio-container cu-template-center__radio-container-squares cu-template-center__radio-container-unbordered">
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-active">
-                                        Tasks </div>
-                                    <div class="cu-template-center__radio-item ">
-                                        Views </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Automations </div>
-
+                                    <div class="cu-template-center__radio-item "
+                                        [ngClass]="{'cu-template-center__radio-item-active': isAddTask}"
+                                        (click)="isAddTask = !isAddTask">
+                                        {{ 'template.task' | translate }} </div>
+                                    <div class="cu-template-center__radio-item "
+                                        [ngClass]="{'cu-template-center__radio-item-active': AllView}"
+                                        (click)="AllView = !AllView">
+                                        {{ 'template.views' | translate }} </div>
+                                    <!-- <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
+                                        {{ 'template.automations' | translate }} </div> -->
                                 </div>
 
                                 <div
                                     class="cu-template-center__radio-container cu-template-center__radio-container-squares">
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-active">
+                                    <div class="cu-template-center__radio-item " (click)="item.checked = !item.checked"
+                                        [ngClass]="{'cu-template-center__radio-item-active': item.checked}"
+                                        *ngFor="let item of ListField">
+                                        {{ 'filter.'+item.title | translate }} </div>
+                                    <!-- <div class="cu-template-center__radio-item cu-template-center__radio-item-active">
                                         Due dates </div>
                                     <div class="cu-template-center__radio-item ">
                                         Assignees </div>
                                     <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Start date </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Attachments </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Watchers </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Comment Attachments </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Keep task statuses </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Recurring settings </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Dependencies </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Tags </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Priority </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Copy settings for Statuses </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Custom Fields </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Subtasks </div>
-                                    <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
-                                        Checklists </div>
+                                        Start date </div> -->
                                 </div>
                             </ng-template>
                         </div>
@@ -1622,8 +727,7 @@
                 </div>
 
                 <div class="cu-template-center__option-section ">
-                    <div class="cu-template-center__option-label "> Project Dates </div>
-
+                    <div class="cu-template-center__option-label "> {{ 'template.projectdate' | translate }} </div>
 
                     <div class="cu-template-center__dual-options">
                         <div class="cu-template-center__dual-options-header">
@@ -1631,22 +735,23 @@
                                 (click)="ProjectDatesDefault = true">
                                 <div
                                     class="cu-template-center__radio-item cu-template-center__radio-item-no-margin {{ProjectDatesDefault?'cu-template-center__radio-item-active':''}}">
-                                    Import as is </div>
+                                    {{ 'template.importasis' | translate }} </div>
                             </div>
                             <div (click)="ProjectDatesDefault = false"
                                 class="cu-template-center__dual-options-header-tab {{!ProjectDatesDefault?'':'cu-template-center__dual-options-header-tab-disabled'}}">
                                 <div
                                     class="cu-template-center__radio-item cu-template-center__radio-item-no-margin {{!ProjectDatesDefault?'cu-template-center__radio-item-active':''}}">
-                                    Remap Dates </div><a
-                                    href="https://docs.clickup.com/en/articles/1201565-remapping-dates-in-templates"
+                                    {{ 'template.remapdates' | translate }} </div>
+                                <!-- <a href="https://docs.clickup.com/en/articles/1201565-remapping-dates-in-templates"
                                     target="_blank" class="cu-template-center__dual-options-header-tab-link"> How it
-                                    works </a>
+                                    works </a> -->
                             </div>
                         </div>
                         <div class="cu-template-center__dual-options-body">
                             <ng-container *ngIf="ProjectDatesDefault;else setupDate">
-                                <div class="cu-template-center__dual-options-body-text "> Due and Start
-                                    dates are static and will be imported exactly as is. </div>
+                                <div class="cu-template-center__dual-options-body-text ">
+                                    {{ 'template.nosetdate' | translate }}
+                                </div>
                             </ng-container>
                             <ng-template #setupDate>
                                 <div class="template__duedate-tab-body">
@@ -1655,35 +760,33 @@
                                         <div class="template__duedate-tab-body-new-left">
                                             <div class="template__duedate-tab-body-new-date active">
                                                 <div class="template__duedate-tab-body-new-date-top">
-                                                    <div icon="calendar-1" class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-calendar-1">
-                                                            </use>
+                                                    <div icon="calendar-1" class="icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24">
+                                                            <path
+                                                                d="M20 20h-4v-4h4v4zm-6-10h-4v4h4v-4zm6 0h-4v4h4v-4zm-12 6h-4v4h4v-4zm6 0h-4v4h4v-4zm-6-6h-4v4h4v-4zm16-8v22h-24v-22h3v1c0 1.103.897 2 2 2s2-.897 2-2v-1h10v1c0 1.103.897 2 2 2s2-.897 2-2v-1h3zm-2 6h-20v14h20v-14zm-2-7c0-.552-.447-1-1-1s-1 .448-1 1v2c0 .552.447 1 1 1s1-.448 1-1v-2zm-14 2c0 .552-.447 1-1 1s-1-.448-1-1v-2c0-.552.447-1 1-1s1 .448 1 1v2z" />
                                                         </svg>
-
-                                                    </div>Start Date
-
+                                                    </div> {{ 'template.startdate' | translate }}
                                                 </div>
-                                                <div class="template__duedate-tab-body-new-date-bot"> Use start date if
-                                                    you
-                                                    know when your project is starting. </div>
+                                                <div class="template__duedate-tab-body-new-date-bot">
+                                                    {{ 'template.usingstartdate' | translate }}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="template__duedate-tab-body-new-right">
                                             <div class="template__duedate-tab-body-new-date">
                                                 <div class="template__duedate-tab-body-new-date-top">
-                                                    <div icon="calendar-31" class="icon"><svg class="ng-star-inserted">
-                                                            <use
-                                                                xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-calendar-31">
-                                                            </use>
+                                                    <div icon="calendar-31" class="icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24">
+                                                            <path
+                                                                d="M20 20h-4v-4h4v4zm-6-10h-4v4h4v-4zm6 0h-4v4h4v-4zm-12 6h-4v4h4v-4zm6 0h-4v4h4v-4zm-6-6h-4v4h4v-4zm16-8v22h-24v-22h3v1c0 1.103.897 2 2 2s2-.897 2-2v-1h10v1c0 1.103.897 2 2 2s2-.897 2-2v-1h3zm-2 6h-20v14h20v-14zm-2-7c0-.552-.447-1-1-1s-1 .448-1 1v2c0 .552.447 1 1 1s1-.448 1-1v-2zm-14 2c0 .552-.447 1-1 1s-1-.448-1-1v-2c0-.552.447-1 1-1s1 .448 1 1v2z" />
                                                         </svg>
-
-                                                    </div>End Date
-
+                                                    </div> {{ 'template.enddate' | translate }}
                                                 </div>
-                                                <div class="template__duedate-tab-body-new-date-bot"> Use end date if
-                                                    you
-                                                    know the final project deadline. </div>
+                                                <div class="template__duedate-tab-body-new-date-bot">
+                                                    {{ 'template.usingenddate' | translate }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1691,79 +794,39 @@
                                     <div class="template__duedate-tab-body-new-bot">
                                         <div class="template__duedate-tab-body-new-bot-left">
                                             <div class="template__duedate-tab-body-new-bot-date">
-                                                <div class="template__duedate-tab-body-new-bot-date-header">START DATE
+                                                <div class="template__duedate-tab-body-new-bot-date-header"> {{
+                                                    'template.startdate' | translate }}
                                                 </div>
                                                 <div class="template__duedate-tab-body-new-bot-date-picker">
-                                                    <mat-form-field appearance="fill" class="example-form-field">
-                                                        <mat-label>Choose a date</mat-label>
-                                                        <input matInput [matDatepicker]="datepicker" readonly>
-                                                        <mat-datepicker-toggle matSuffix [for]="datepicker">
+                                                    <mat-form-field appearance="fill">
+                                                        <mat-label>{{ 'template.chooseadate' | translate }}</mat-label>
+                                                        <input [(ngModel)]="start_date" [max]="end_date" matInput
+                                                            [matDatepicker]="picker" readonly>
+                                                        <mat-datepicker-toggle matSuffix [for]="picker">
                                                         </mat-datepicker-toggle>
-                                                        <mat-datepicker #datepicker>
-                                                            <mat-datepicker-actions>
-                                                                <button mat-button matDatepickerCancel>Cancel</button>
-                                                                <button mat-raised-button color="primary"
-                                                                    matDatepickerApply>Apply</button>
-                                                            </mat-datepicker-actions>
-                                                        </mat-datepicker>
+                                                        <mat-datepicker #picker></mat-datepicker>
                                                     </mat-form-field>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="template__duedate-tab-body-new-bot-right">
                                             <div class="template__duedate-tab-body-new-bot-date">
-                                                <div class="template__duedate-tab-body-new-bot-date-header">END DATE
-
-
+                                                <div class="template__duedate-tab-body-new-bot-date-header"> {{
+                                                    'template.enddate' | translate }}
                                                 </div>
                                                 <div class="template__duedate-tab-body-new-bot-date-picker">
-                                                    <mat-form-field appearance="fill" class="example-form-field">
-                                                        <mat-label>Choose a date</mat-label>
-                                                        <input matInput [matDatepicker]="datepicker" readonly>
-                                                        <mat-datepicker-toggle matSuffix [for]="datepicker">
+                                                    <mat-form-field appearance="fill">
+                                                        <mat-label>{{ 'template.chooseadate' | translate }}</mat-label>
+                                                        <input [(ngModel)]="end_date" [min]="start_date" matInput
+                                                            [matDatepicker]="picker1" readonly>
+                                                        <mat-datepicker-toggle matSuffix [for]="picker1">
                                                         </mat-datepicker-toggle>
-                                                        <mat-datepicker #datepicker>
-                                                            <mat-datepicker-actions>
-                                                                <button mat-button matDatepickerCancel>Cancel</button>
-                                                                <button mat-raised-button color="primary"
-                                                                    matDatepickerApply>Apply</button>
-                                                            </mat-datepicker-actions>
-                                                        </mat-datepicker>
+                                                        <mat-datepicker #picker1></mat-datepicker>
                                                     </mat-form-field>
-
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- <div class="template__duedate-tab-body-new-skip">
-                                        <cu-toggle-switch><label data-test="toggle-switch" class="cu-toggle-switch"><input
-                                                    type="checkbox" class="ng-untouched ng-pristine ng-valid">
-                                                <div data-test="toggle-switch"
-                                                    class="cu-toggle-switch__slider cu-toggle-switch__round"></div>
-                                            </label></cu-toggle-switch>Skip Weekends
-    
-                                    </div>
-    
-    
-                                    <div class="template__duedate-tab-body-new-import">
-                                        <cu-toggle-switch><label data-test="toggle-switch" class="cu-toggle-switch"><input
-                                                    type="checkbox" class="ng-untouched ng-pristine ng-valid">
-                                                <div data-test="toggle-switch"
-                                                    class="cu-toggle-switch__slider cu-toggle-switch__round"></div>
-                                            </label></cu-toggle-switch>Import all tasks as open
-    
-                                        <div icon="question-o"
-                                            cutooltip="Note: If you don't import tasks as open, then any CLOSED tasks will be missing"
-                                            class="icon"><svg class="ng-star-inserted">
-                                                <use
-                                                    xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-question-o">
-                                                </use>
-                                            </svg>
-    
-                                        </div>
-                                    </div> -->
-
 
                                 </div>
                             </ng-template>
@@ -1771,7 +834,7 @@
                     </div>
                 </div>
 
-                <div class="cu-template-center__option-section ">
+                <!-- <div class="cu-template-center__option-section ">
                     <div class="cu-template-center__option-label"> Do you want to include archived tasks? </div>
                     <div class="cu-template-center__radio-container cu-template-center__radio-container-space-between">
                         <div class="cu-template-center__radio-item"
@@ -1784,7 +847,7 @@
                             [ngClass]="{'cu-template-center__radio-item-active': chontacvu == 3}"
                             (click)="chontacvu = 3"> Yes (keep them archived) </div>
                     </div>
-                </div>
+                </div> -->
 
             </div>
             <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
@@ -1796,22 +859,18 @@
         </div>
 
         <div class="cu-template-center-use-template__footer">
-            <div class="cu-template-center-use-template__footer-text "> Once you use a template, a new
-                Folder
-                will be created in selected location!
-
-
-
+            <div class="cu-template-center-use-template__footer-text ">
+                {{ 'template.notifycreate' | translate }}
             </div>
-
 
             <div class="cu-template-center-use-template__footer-buttons">
                 <div
                     class="cu-template-center-use-template__footer-button cu-template-center-use-template__footer-button-cancel">
-                    Cancel </div>
-                <div class="cu-template-center-use-template__footer-button ">
+                    {{ 'template.cancel' | translate }}
+                </div>
+                <div class="cu-template-center-use-template__footer-button " (click)="Onsubmit()">
                     <!-- cu-template-center-use-template__footer-button-disabled -->
-                    Use Template
+                    {{ 'template.usetemp' | translate }}
                 </div>
             </div>
         </div>

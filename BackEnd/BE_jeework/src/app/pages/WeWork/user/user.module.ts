@@ -62,7 +62,7 @@ const routes: Routes = [
 	],
 	declarations: [
 		UserComponent,
-		ListUserComponent
+		ListUserComponent,
 	]
 })
 export class UserModule { }

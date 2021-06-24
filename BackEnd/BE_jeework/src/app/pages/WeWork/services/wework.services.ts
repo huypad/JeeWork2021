@@ -5,7 +5,7 @@ import { QueryParamsModel } from './../../../_metronic/jeework_old/core/_base/cr
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
-import { Injectable } from '@angular/core'; 
+import { Injectable } from '@angular/core';
 
 const API_Lite = environment.APIROOTS + '/api/wework-lite';
 
@@ -58,10 +58,10 @@ export class WeWorkService {
 		'rgb(0, 0, 0)',
 		'rgb(255, 0, 255)',
 	];
-	
-	getName(val){
+
+	getName(val) {
 		var x = val.split(' ');
-		return x[x.length-1];
+		return x[x.length - 1];
 	}
 
 	list_account(filter: any): Observable<any> {
@@ -70,12 +70,12 @@ export class WeWorkService {
 		return this.http.get<any>(API_Lite + `/lite_account`, { headers: httpHeaders, params: params });
 	}
 	//get-list-default-view   
-	list_default_view (filter: any): Observable<any> {
+	list_default_view(filter: any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		let params = this.httpUtils.parseFilter(filter);
 		return this.http.get<any>(API_Lite + `/get-list-default-view`, { headers: httpHeaders, params: params });
 	}
-	ListViewByProject (id): Observable<any> {
+	ListViewByProject(id): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-view-project?id_project_team=${id}`, { headers: httpHeaders });
 	}
@@ -115,7 +115,7 @@ export class WeWorkService {
 		return this.http.get<any>(API_Lite + `/lite_project_team_bydepartment?id=${keyword}`, { headers: httpHeaders });
 	}
 	lite_emotion(id: number = 0): Observable<any> {
-		
+
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/lite_emotion?id=${id}`, { headers: httpHeaders });
 	}
@@ -131,7 +131,7 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-new-field`, { headers: httpHeaders });
 	}
-	GetOptions_NewField(id_project_team,fieldID): Observable<any> {
+	GetOptions_NewField(id_project_team, fieldID): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/get-options-new-field?id_project_team=${id_project_team}&&fieldID=${fieldID}`, { headers: httpHeaders });
 	}
@@ -145,11 +145,11 @@ export class WeWorkService {
 		return this.http.get<any>(API_Lite + `/list-all-status-dynamic`, { headers: httpHeaders });
 	}
 	//insert status dyamic
-	
+
 
 	// setup avatar 
 	getNameUser(val) {
-		if(val){
+		if (val) {
 			var list = val.split(' ');
 			return list[list.length - 1];
 		}
@@ -157,7 +157,7 @@ export class WeWorkService {
 	}
 
 	getColorNameUser(fullname) {
-		var name = this.getNameUser(fullname).substr(0,1);
+		var name = this.getNameUser(fullname).substr(0, 1);
 		var result = "#bd3d0a";
 		switch (name) {
 			case "A":

@@ -18,6 +18,8 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using DPSinfra.Notifier;
 using Microsoft.Extensions.Logging;
+using API_JeeWork2021.Classes;
+using DPSinfra.Kafka;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -38,8 +40,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private INotifier _notifier;
+        private IProducer _producer;
         private readonly ILogger<WorkClickupController> _logger;
-        public WorkClickupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<WorkClickupController> logger)
+        public WorkClickupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<WorkClickupController> logger, IProducer producer)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
@@ -47,6 +50,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             _configuration = configuration;
             _notifier = notifier;
             _logger = logger;
+            _producer = producer;
 
         }
         APIModel.Models.Notify Knoti;
@@ -161,6 +165,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         strW = " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
                         strW = strW.Replace("@keyword", query.filter["keyword"]);
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
+                    {
+                        strW = " and (w.id_project_team = @id_project_team)";
+                        strW = strW.Replace("@id_project_team", query.filter["id_project_team"]);
                     }
                     if (!string.IsNullOrEmpty(query.filter["groupby"]))
                     {
@@ -312,6 +321,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                     where w_user.Disabled = 0 and we_work.id_project_team = " + query.filter["id_project_team"] + "and id_work = ";
                     result.Columns.Add("Tags", typeof(DataTable));
                     result.Columns.Add("User", typeof(DataTable));
+                    result.Columns.Add("Follower", typeof(DataTable));
                     result.Columns.Add("id_nv", typeof(string));
                     if (result.Rows.Count > 0)
                     {
@@ -319,7 +329,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             dr["comments"] = dt_comments.Compute("count(id_row)", "object_id =" + dr["id_row"].ToString() + "").ToString();
                             dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
-                            DataTable dt_u = cnn.CreateDataTable(queryUser + dr["id_row"]);
+                            DataTable dt_u = cnn.CreateDataTable(queryUser + dr["id_row"] + "  and loai = 1");
+                            DataTable dt_f = cnn.CreateDataTable(queryUser + dr["id_row"] + "  and loai = 2");
                             #region Map info account từ JeeAccount
                             foreach (DataRow item in dt_u.Rows)
                             {
@@ -331,6 +342,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                             #endregion
                             dr["User"] = dt_u;
+                            dr["Follower"] = dt_f;
                         }
                     }
                     DataTable dt_data = new DataTable();
@@ -346,13 +358,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             item["DataChildren"] = dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount);
                         }
-                        DataSet ds = await GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept, strW);
-                        if (cnn.LastError != null || ds == null)
-                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                        dt_data = ds.Tables[0];
-                        var tags = ds.Tables[1].AsEnumerable();
+                        //DataSet ds = await GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept, strW);
+                        //if (cnn.LastError != null || ds == null)
+                        //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        //dt_data = ds.Tables[0];
+                        //var tags = ds.Tables[1].AsEnumerable();
                     }
-                    int a = tmp.Rows.Count;
                     var data = new
                     {
                         datawork = tmp,
@@ -432,13 +443,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     if (!string.IsNullOrEmpty(query.filter["following"]) && bool.Parse(query.filter["following"]))
                     {
-                        strW = $" and (w.id_row in ( select id_work from we_work_user where loai=2 and disabled=0 and id_user = { loginData.UserID }))";
+                        strW = $" and (w.id_row in ( select id_work from we_work_user where loai = 2 and disabled=0 and id_user = { loginData.UserID }))";
                     }
                     #region group
-                    string strG = @$"select distinct p.id_row, p.title from we_project_team_user u
-join we_project_team p on p.id_row=u.id_project_team 
-join we_department d on d.id_row = p.id_department
-where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } and d.IdKH = { loginData.CustomerID}";
+                    string strG = @$"select distinct p.id_row, p.title 
+                                    from we_project_team_user u
+                                    join we_project_team p on p.id_row=u.id_project_team 
+                                    join we_department d on d.id_row = p.id_department
+                                    where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 
+                                    and id_user = { IDNV } and d.IdKH = { loginData.CustomerID}";
                     #endregion
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
@@ -446,25 +459,25 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } an
                     DataSet ds = getWork(cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
+                    //var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
-                    int total = temp.Count();
-                    if (total == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
-                    if (query.more)
-                    {
-                        query.page = 1;
-                        query.record = total;
-                    }
-
-                    pageModel.TotalCount = total;
-                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
-                    pageModel.Size = query.record;
-                    pageModel.Page = query.page;
-                    var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
-                    var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
-                    dtNew = dtNew.Concat(dtChild);
+                    var dt_data = ds.Tables[0].Rows.Count;
+                    //int total = temp.Count();
+                    //if (total == 0)
+                    //return JsonResultCommon.ThanhCong(new List<string>());
+                    //if (query.more)
+                    //{
+                    //    query.page = 1;
+                    //    query.record = total;
+                    //}
+                    //pageModel.TotalCount = total;
+                    //pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    //pageModel.Size = query.record;
+                    //pageModel.Page = query.page;
+                    //var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
+                    //var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
+                    //dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                     var Children = from rr in dtG.AsEnumerable()
                                    select new
@@ -2385,6 +2398,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
+
                     }
                     if (data.Tags != null)
                     {
@@ -2429,6 +2443,15 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+
+                    // thông báo nhắc nhở
+                    foreach (var user in data.Users)
+                    {
+                        if (user.loai == 1)
+                        {
+                            NhacNho.UpdateSoluongCV(user.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                        }
+                    }
                     data.id_row = idc;
                     WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier);
                     #region Notify thêm mới công việc
@@ -3028,20 +3051,27 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
                         StatusPresent = long.Parse(dt_infowork.Rows[0]["status"].ToString());
                     }
-                    string sql_status = "select id_row, IsDeadline, IsToDo, IsFinal,IsDefault " +
+                    DataTable dt_user1 = cnn.CreateDataTable("select distinct id_nv, title, id_row from v_wework_new where id_nv is not null and (where)", "(where)", sqlcond);
+                    List<long> danhsachU = new List<long>();
+                    if (cnn.LastError is null && dt_user1.Rows.Count > 0)
+                    {
+                        danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
+                    }
+                        string sql_status = "select id_row, IsDeadline, IsToDo, IsFinal,IsDefault " +
                         "from we_status where disabled = 0 and id_project_team = @id_project_team";
                     DataTable dt_StatusID = new DataTable();
                     dt_StatusID = cnn.CreateDataTable(sql_status, new SqlConditions() { { "id_project_team", id_project_team.ToString() } });
-                    if (data.key != "Tags" && data.key != "Attachments" && data.key != "assign")
+                    if (data.key != "Tags" && data.key != "Attachments" && data.key != "assign" && data.key != "follower")
                     {
                         Hashtable val = new Hashtable();
                         val.Add("UpdatedDate", DateTime.Now);
                         val.Add("UpdatedBy", iduser);
                         cnn.BeginTransaction();
-                        bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.id_row + " and IsFinal = 1").ToString()) > 0;
                         // Xử lý riêng cho update status
                         if ("status".Equals(data.key))
                         {
+                            bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsFinal = 1").ToString()) > 0;
+                            bool isDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsDeadline = 1").ToString()) > 0;
                             string StatusID = "";
                             if ("complete".Equals(data.status_type))
                             {
@@ -3090,6 +3120,22 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     }
                                 }
                             }
+                            #region gửi thông báo nhắc nhở
+                            if (isDeadline)
+                            {
+                                foreach (long idUser in danhsachU)
+                                {
+                                    NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                                }
+                            }
+                            if (isFinal)
+                            {
+                                foreach (long idUser in danhsachU)
+                                {
+                                    NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                                }
+                            }
+                            #endregion
                         }
                         else
                         {
@@ -3145,6 +3191,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         val.Add("status", StatusPresent);
 
                                     }
+                                }
+                                
+                                foreach (long idUser in danhsachU)
+                                {
+                                    NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
                                 }
                             }
                             #endregion
@@ -3378,7 +3429,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     else
                     {
-                        if (data.key == "assign")//assign cho 1 người mới hoặc xóa
+                        if (data.key == "assign" || data.key == "follower")//assign , follower cho 1 người mới hoặc xóa
                         {
                             //string strDel = "Update we_work_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row;
                             //if (cnn.ExecuteNonQuery(strDel) < 0)
@@ -3396,12 +3447,20 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     val1["id_user"] = DBNull.Value;
                                 else
                                     val1["id_user"] = data.value;
-                                val1["loai"] = 1;
+                                long loai = 1;
+                                if (data.key == "follower")
+                                    loai = 2;
+                                val1["loai"] = loai;
+                                if(loai == 1) // loai = 1 đếm lại nhắc nhở
+                                {
+                                    NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, ConnectionString, _configuration, _producer);
+                                }
 
                                 SqlConditions sqlcond123 = new SqlConditions();
                                 sqlcond123.Add("id_work", data.id_row);
                                 sqlcond123.Add("id_user", data.value);
-                                var sql = @"select * from we_work_user where id_work = @id_work and id_user = @id_user";
+                                sqlcond123.Add("loai", loai);
+                                var sql = @"select * from we_work_user where id_work = @id_work and id_user = @id_user and loai = @loai";
                                 DataTable dtG = cnn.CreateDataTable(sql, sqlcond123);
                                 if (dtG.Rows.Count > 0)
                                 {
@@ -3692,6 +3751,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
                     DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
+                    DataTable dt_user1 = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where id_nv is not null and (where)", "(where)", sqlcond);
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {
@@ -3750,6 +3810,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         }
                     }
                     #endregion
+                    if(cnn.LastError is null && dt_user1.Rows.Count > 0)
+                    {
+                        List<long> danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
+                        foreach (long idUser in danhsachU)
+                        {
+                            NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                        }
+                    }
                     return JsonResultCommon.ThanhCong();
                 }
             }
@@ -4191,13 +4259,20 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     result.Columns.Add(item["fieldName"].ToString());
                 }
             }
-
-            string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a join we_work_tag b on a.id_row=b.id_tag 
-                                                    where a.disabled=0 and b.disabled = 0 and a.id_project_team = " + id_project_team + "and id_work = ";
+            string queryTag = @"select a.id_row,a.title,a.color,b.id_work 
+                                from we_tag a join we_work_tag b 
+                                on a.id_row=b.id_tag 
+                                where a.disabled=0 and b.disabled = 0 
+                                and a.id_project_team = " + id_project_team + " " +
+                                "and id_work = ";
             //DataTable dt_Tags = cnn.CreateDataTable(queryTag);
-            string queryUser = $@"select w_user.id_work, w_user.id_user, w_user.loai, id_child, w_user.Disabled, '' as hoten, id_project_team
-from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
-where w_user.Disabled = 0  and we_work.id_project_team = " + id_project_team + "and id_work = ";
+            string queryUser = $@"select w_user.id_work, w_user.id_user, w_user.loai
+                                , id_child, w_user.disabled, '' as hoten, id_project_team
+                                from we_work_user w_user 
+                                join we_work 
+                                on we_work.id_row = w_user.id_work 
+                                where w_user.Disabled = 0 
+                                and we_work.id_project_team = " + id_project_team + " and id_work = ";
             result.Columns.Add("Tags", typeof(DataTable));
             result.Columns.Add("User", typeof(DataTable));
             //result.Columns.Add("comments", typeof(string));
@@ -4216,7 +4291,6 @@ where w_user.Disabled = 0  and we_work.id_project_team = " + id_project_team + "
                 drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount);
                 result.Rows.Add(drow);
             }
-
             if (result.Rows.Count > 0)
             {
                 foreach (DataRow dr in result.Rows)
@@ -4232,8 +4306,8 @@ where w_user.Disabled = 0  and we_work.id_project_team = " + id_project_team + "
                             item["hoten"] = info.FullName;
                         }
                     }
-                    #endregion
                     dr["User"] = user;
+                    #endregion
                 }
             }
             return result;
@@ -4435,31 +4509,31 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             #region Trả dữ liệu về backend để hiển thị lên giao diện 
             //, nv.holot+' '+nv.ten as hoten_nguoigiao -- w.NguoiGiao,
             string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,
-w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w.result,w.CreatedDate,w.CreatedBy,
-w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,w.Id_NV,''as hoten
-, Iif(fa.id_row is null ,0,1) as favourite 
-,coalesce( f.count,0) as num_file,coalesce( com.count,0) as num_com,
-iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
-iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
-iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
-iif(w.status=1 and w.start_date is null,1,0) as require,
-'' as NguoiTao, '' as NguoiSua from v_wework_new w 
-left join (select count(*) as count,object_id 
-from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
-left join (select count(*) as count,object_id 
-from we_comment where object_type=1 group by object_id) com on com.object_id=w.id_row
-left join we_work_favourite fa 
-on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
-where 1=1  and w.CreatedBy in ({ListID}) " + dieukien_where + "  order by " + dieukienSort;
+                            w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w.result,w.CreatedDate,w.CreatedBy,
+                            w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,w.Id_NV,''as hoten
+                            , Iif(fa.id_row is null ,0,1) as favourite 
+                            ,coalesce( f.count,0) as num_file,coalesce( com.count,0) as num_com,
+                            iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
+                            iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
+                            iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
+                            iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
+                            iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
+                            iif(w.status=1 and w.start_date is null,1,0) as require,
+                            '' as NguoiTao, '' as NguoiSua from v_wework_new w 
+                            left join (select count(*) as count,object_id 
+                            from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
+                            left join (select count(*) as count,object_id 
+                            from we_comment where object_type=1 group by object_id) com on com.object_id=w.id_row
+                            left join we_work_favourite fa 
+                            on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
+                            where 1=1  and w.CreatedBy in ({ListID}) " + dieukien_where + "  order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.Disabled=0";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
                 sqlq += " and id_project_team=" + query.filter["id_project_team"];
             //người theo dõi
             sqlq += @$";select id_work,id_user,'' as hoten from we_work_user u 
-where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
+                        where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
 
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
             #region Map info account từ JeeAccount
@@ -4638,7 +4712,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 SqlConditions conds1 = new SqlConditions();
                 conds1 = new SqlConditions();
                 conds1.Add("w_user.Disabled", 0);
-                string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as image, id_work
+                string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as image, id_work,w_user.loai
                                         from we_work_user w_user 
                                         join we_work on we_work.id_row = w_user.id_work where (where)";
                 dt_status = WeworkLiteController.StatusDynamic(long.Parse(id.ToString()), DataAccount, ConnectString);
@@ -4722,7 +4796,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                          //    image = WeworkLiteController.genLinkImage(domain, IdKHDPS, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                          //},
                          User = from us in User.AsEnumerable()
-                                where r["id_row"].Equals(us["id_work"])
+                                where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                 select new
                                 {
                                     id_nv = us["id_user"],
@@ -4731,7 +4805,17 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                                     //tenchucdanh = us["tenchucdanh"],
                                     //mobile = us["mobile"],
                                     image = us["image"],
+                                    loai = us["loai"],
                                     //image = WeworkLiteController.genLinkImage(domain, IdKHDPS, us["id_user"].ToString(), _hostingEnvironment.ContentRootPath),
+                                },
+                         Follower = from us in User.AsEnumerable()
+                                where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
+                                select new
+                                {
+                                    id_nv = us["id_user"],
+                                    hoten = us["hoten"],
+                                    image = us["image"],
+                                    loai = us["loai"],
                                 },
                          Tags = from t in tags
                                 where r["id_row"].Equals(t["id_work"])

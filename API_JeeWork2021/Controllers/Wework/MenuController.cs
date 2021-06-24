@@ -1,20 +1,17 @@
-﻿using DpsLibs.Data;
+﻿using DPSinfra.ConnectionCache;
+using DpsLibs.Data;
+using JeeWork_Core2021.Classes;
+using JeeWork_Core2021.Models;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using JeeWork_Core2021.Classes;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Hosting;
-using JeeWork_Core2021.Models;
-using Microsoft.Extensions.Options;
-using System.Collections.Specialized;
-using DPSinfra.ConnectionCache;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -273,11 +270,11 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                 using (DpsConnection Conn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";
-                    sqlq = "select * from we_project_team " +
-                        "join we_project_team_user " +
+                    sqlq = "select *,  Iif( we_project_team_user.admin = 1 and id_user <> "+loginData.UserID+",1,0 ) as isuyquyen " +
+                        " from we_project_team join we_project_team_user " +
                         "on we_project_team.id_row = we_project_team_user.id_project_team " +
                         "where we_project_team.disabled = 0 and we_project_team_user.disabled = 0 " +
-                        "and locked = 0 and id_user = " + id_nv + ";";
+                        "and locked = 0 and id_user = " + id_nv + $" or id_user in (select CreatedBy from we_authorize where id_user = {id_nv} and disabled =0);";
                     sqlq += @"select we_project_role.id_row,id_project_team,id_role, admin, member,customer, KeyPermit 
                             from we_project_role join we_role on we_role.id_row = we_project_role.id_role
                             where member = 1 and we_role.Disabled = 0";
@@ -293,7 +290,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                {
                                    id_row = r["id_row"],
                                    id_user = r["title"],
-                                   admin = r["admin"],
+                                   admin = int.Parse(r["isuyquyen"].ToString()) == 1?0:r["admin"],
+                                   isuyquyen = r["isuyquyen"],
                                    id_department = r["id_department"],
                                    locked = r["locked"],
                                    Roles = from u in ds.Tables[1].AsEnumerable()

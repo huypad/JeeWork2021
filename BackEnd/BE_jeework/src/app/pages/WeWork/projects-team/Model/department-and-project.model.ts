@@ -1,3 +1,4 @@
+import { TemplateCenterModel } from './../../template-center/template-model/template.model';
 import { BaseModel } from './../../../../_metronic/jeework_old/core/_base/crud/models/_base.model_new';
 export class ObjectDetailsModel extends BaseModel {
 	RowID: number;
@@ -90,7 +91,7 @@ export class  ProjectTeamModel extends BaseModel {
 	child: any;
 	person_in_charge: any;
 	id_project_team: string;
-
+	templatecenter: TemplateCenterModel;
 	clear() {
 		this.id_row = 0;
 		this.default_view = 4;
@@ -124,6 +125,12 @@ export class ProjectTeamUserModel {
 	id_user: number;
 	admin: boolean;
 	id_nv: number;
+	clear() {
+		this.id_row = 0;
+		this.id_project_team = 0;
+		this.id_user = 0;
+		this.admin = false;
+	}
 }
 
 export class ProjectTeamCloseModel extends BaseModel {

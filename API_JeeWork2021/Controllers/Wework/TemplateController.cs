@@ -649,6 +649,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     group_statusid = r["group_statusid"],
                                     template_typeid = r["template_typeid"],
                                     img_temp = r["img_temp"],
+                                    field_id = r["field_id"],
                                     data_views = from rr in ds.Tables[1].AsEnumerable()
                                                  select new
                                                  {

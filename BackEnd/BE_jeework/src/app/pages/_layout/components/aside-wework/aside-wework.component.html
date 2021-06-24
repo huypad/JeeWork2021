@@ -243,8 +243,14 @@
                 <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
             </button>
             <mat-menu #belowMenu="matMenu" yPosition="below">
-                <button mat-menu-item><span translate="GeneralKey.templatecenter"></span></button>
-                <!-- <button mat-menu-item >
+                <button mat-menu-item [matMenuTriggerFor]="tc"><span translate="GeneralKey.templatecenter"></span></button>
+                <mat-menu #tc="matMenu" yPosition="below">
+                    <div>
+                        <h5 style="color:#101010">Template Center</h5>
+                        <button mat-menu-item><span translate="GeneralKey.browsetemplate"></span></button>
+                    </div>
+                </mat-menu>
+                <!-- <button mat-menu-item > 
                     <span translate="projects.themnhanhduan"></span>
                 </button> -->
                 <a [routerLink]="['/depts',item.id,'projects']"><button mat-menu-item>

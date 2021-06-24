@@ -178,6 +178,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         return true;
       }
       else {
+        if(roleID == 3 || roleID == 4){
+          if(x.isuyquyen) 
+            return true;
+        }
         if (x.Roles.find(r => r.id_role == 15))
           return false;
         var r = x.Roles.find(r => r.id_role == roleID);
@@ -200,6 +204,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         return true;
       }
       else {
+        if(key == 'id_nv'){
+          if(x.isuyquyen) 
+            return true;
+        }
         var r = x.Roles.find(r => r.keypermit == key);
         if (r) {
           return true;

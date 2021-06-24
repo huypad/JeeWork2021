@@ -424,6 +424,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                         }
                     }
+                    data.templatecenter.ObjectTypesID = long.Parse(idc);
+                    if (!WeworkLiteController.Init_TemplateCenter(cnn, data.templatecenter, loginData))
+                    {
+                        cnn.RollbackTransaction();
+                        return false;
+                    }
                     if (data.ReUpdated)
                     {
                         if (data.IsDataStaff_HR)

@@ -22,6 +22,8 @@ using DPSinfra.Notifier;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Logging;
+using API_JeeWork2021.Classes;
+using DPSinfra.Kafka;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -43,9 +45,10 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private IProducer _producer;
         private readonly ILogger<ProjectTeamController> _logger;
 
-        public ProjectTeamController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache, IConfiguration configuration, ILogger<ProjectTeamController> logger)
+        public ProjectTeamController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache, IConfiguration configuration, ILogger<ProjectTeamController> logger, IProducer producer)
         {
             ConnectionCache = _cache;
             _configuration = configuration;
@@ -53,6 +56,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             _config = config.Value;
             _notifier = notifier;
             _logger = logger;
+            _producer = producer;
         }
         APIModel.Models.Notify Knoti;
         /// <summary>
@@ -293,6 +297,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                             {"UpdatedDate","UpdatedDate" }
                         };
                     #endregion
+                    #region Ủy quyền giao việc
+                    string sqluq = $@"or we_project_team_user.id_user in (select CreatedBy from we_authorize
+where id_user = {loginData.UserID} and Disabled = 0)";
+                    #endregion
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region get list trạng thái status 
@@ -315,10 +323,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //and p.CreatedBy in ({listID}) and p.id_department in ({listDept}) 
                     string dk_user_by_project = " join we_project_team_user " +
                             "on we_project_team_user.id_project_team = p.id_row " +
-                            "and (we_project_team_user.id_user = " + loginData.UserID + ")" +
+                            "and (we_project_team_user.id_user = " + loginData.UserID + sqluq + ")" +
                             "where (de.id_row in (select distinct p1.id_department " +
                             "from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and ";
+                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + sqluq + ")) and ";
                     if (IsMobile)
                     {
                         if (!string.IsNullOrEmpty(query.filter["created_by"]))
@@ -367,7 +375,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #endregion
-                    var temp = dt.AsEnumerable();
+                    var temp = dt.AsEnumerable().Distinct();
                     dt = temp.CopyToDataTable();
                     int total = dt.Rows.Count;
                     if (query.more)
@@ -381,7 +389,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     pageModel.Page = query.page;
                     // Phân trang
                     dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
-                    var data = from r in dt.AsEnumerable()
+                    var data = (from r in dt.AsEnumerable()
                                select new
                                { //
                                    id_row = r["id_row"],
@@ -422,7 +430,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                        quahan = r["quahan"],
                                        percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"])
                                    }
-                               };
+                               }).Distinct();
                     return JsonResultCommon.ThanhCong(data, pageModel);
                 }
                 #endregion
@@ -1396,6 +1404,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
+                            NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
                         }
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
@@ -2206,6 +2215,10 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
                     }
                     cnn.EndTransaction();
+                    foreach(var owner in datas)
+                    {
+                        NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                    }
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
                     List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
@@ -2327,6 +2340,8 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
                     }
                     cnn.EndTransaction();
+
+                    NhacNho.UpdateSoluongDuan(id, loginData.CustomerID, ConnectionString, _configuration, _producer);
                     return JsonResultCommon.ThanhCong();
                 }
             }

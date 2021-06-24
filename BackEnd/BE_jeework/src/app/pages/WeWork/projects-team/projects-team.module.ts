@@ -40,7 +40,7 @@ import { ClickOutsideDirective } from "./work-list-new/clickoutside.directive";
 import { MatChipsModule } from "@angular/material/chips";
 import { NgDragDropModule } from "ng-drag-drop";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
-import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 // import { CommonService } from '../../_core/services/common.service';
 @NgModule({
   imports: [
@@ -50,13 +50,13 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    WeWorkModule, 
+    WeWorkModule,
     AngularMultiSelectModule,
     MatDatepickerModule,
     MatExpansionModule,
     DynamicComponentModule,
     EditorModule,
-	  MatMenuModule,
+    MatMenuModule,
     ProjectTeamRoutingModule,
     AngularGanttScheduleTimelineCalendarModule,
     ChartsModule,
@@ -73,7 +73,7 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     ListDepartmentService,
     WorkService,
     CommonService,
-	  WeWorkService,
+    WeWorkService,
     SubheaderService
   ],
   entryComponents: [
@@ -95,4 +95,4 @@ import { NO_ERRORS_SCHEMA,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     NO_ERRORS_SCHEMA
   ]
 })
-export class ProjectsTeamModule {}
+export class ProjectsTeamModule { }
