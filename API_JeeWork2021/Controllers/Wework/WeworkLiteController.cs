@@ -1799,7 +1799,7 @@ ORDER BY IsDefault DESC";
             _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
             return "Oke";
         }
-        
+
         [HttpGet]
         [Route("test-getaccount-notoken")]
         public object GetAccountNonuseToken()
@@ -2688,7 +2688,7 @@ where Disabled = 0";
         {
             string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
             string internal_secret = _configuration.GetValue<string>("Jwt:internal_secret");
-            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID/internal/"+CustomerID;
+            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID/internal/" + CustomerID;
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", internal_secret);
@@ -3225,10 +3225,14 @@ where Disabled = 0";
                 has["CreatedBy"] = loginData.UserID;
                 foreach (var item in template.list_status)
                 {
-                    has["StatusName"] = item.id_row;
+                    has["StatusName"] = "Tình trạng 1";
                     has["description"] = item.Description;
+                    if (!string.IsNullOrEmpty(item.Description))
+                        has["description"] = item.Description;
+                    else
+                        has["description"] = DBNull.Value;
                     has["Type"] = item.Type;
-                    has["is_default"] = item.IsDefault;
+                    has["isdefault"] = item.IsDefault;
                     has["color"] = item.color;
                     has["IsFinal"] = item.IsFinal;
                     has["IsDeadline"] = item.IsDeadline;

@@ -476,17 +476,18 @@ export class TemplateCenterUpdateComponent implements OnInit {
     
     if (this.listStatus && this.listStatus.length > 0) {
       console.log(this.listStatus,'12345')
-      if(this.TemplateDetail.types == 1 && this.TemplateDetail.types == 2){
+      if(this.TemplateDetail.types == 1 || this.TemplateDetail.types == 2){
         this.listStatus.forEach(element => {
           const status = new StatusListModel();
           status.clear();
           status.id_row = element.Id_row;
           status.StatusName = element.StatusName;
-          status.color = element.color;
-          status.IsDefault = element.IsDefault;
+          status.color = element.color?element.color:'';
+          status.IsDefault = element.IsDefault?element.IsDefault:false;
           status.IsFinal = element.IsFinal;
           status.IsDeadline = element.IsDeadline;
-          status.IsToDo = element.IsToDo;
+          status.IsToDo = element.IsTodo;
+          status.Type = 1;
           TCinsert.list_status.push(status);
         });
       }else{
@@ -501,6 +502,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           status.IsFinal = element.IsFinal;
           status.IsDeadline = element.IsDeadline;
           status.IsToDo = element.IsToDo;
+          status.Type = 1;
           TCinsert.list_status.push(status);
         });
       }
