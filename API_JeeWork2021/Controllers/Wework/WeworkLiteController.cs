@@ -1799,6 +1799,21 @@ ORDER BY IsDefault DESC";
             _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
             return "Oke";
         }
+        
+        [HttpGet]
+        [Route("test-getaccount-notoken")]
+        public object GetAccountNonuseToken()
+        {
+
+            List<long> DanhSachCustomer = GetDanhSachCustomerID(_configuration);
+            var data = from r in DanhSachCustomer
+                       select new
+                       {
+                           CustomerID = r,
+                           DataAccount = GetDanhSachAccountFromCustomerID(_configuration, r),
+                       };
+            return data;
+        }
         /// <summary>
         /// tesst notify
         /// </summary>
@@ -2656,15 +2671,15 @@ where Disabled = 0";
         {
             string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
             string internal_secret = _configuration.GetValue<string>("Jwt:internal_secret");
-            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID";
+            string link_api = API_Account + "/api/accountmanagement/GetListCustomerID/internal/WORK"; // work là appcode jeework
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", internal_secret);
             IRestResponse response = client.Execute(request);
-            var model = JsonConvert.DeserializeObject<BaseModel<List<long>>>(response.Content);
-            if (model != null && model.status == 1)
+            var model = JsonConvert.DeserializeObject<List<long>>(response.Content);
+            if (model != null)
             {
-                return model.data;
+                return model;
             }
             else
                 return null;
@@ -2673,15 +2688,15 @@ where Disabled = 0";
         {
             string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
             string internal_secret = _configuration.GetValue<string>("Jwt:internal_secret");
-            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID";
+            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID/internal/"+CustomerID;
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
             request.AddHeader("Authorization", internal_secret);
             IRestResponse response = client.Execute(request);
-            var model = JsonConvert.DeserializeObject<BaseModel<List<AccUsernameModel>>>(response.Content);
-            if (model != null && model.status == 1)
+            var model = JsonConvert.DeserializeObject<List<AccUsernameModel>>(response.Content);
+            if (model != null)
             {
-                return model.data;
+                return model;
             }
             else
                 return null;
@@ -3203,7 +3218,7 @@ where Disabled = 0";
             SqlConditions conds = new SqlConditions();
             conds.Add("disabled", 0);
             conds.Add("id_row", template.save_as_id);
-            if (template.list_status != null)
+            if (template.list_status.Count > 0)
             {
                 has = new Hashtable();
                 has["CreatedDate"] = DateTime.Now;
@@ -3267,6 +3282,7 @@ where Disabled = 0";
                 error = cnn.LastError.Message;
                 return false;
             }
+            types = types + 1;
             conds.Add("disabled", 0);
             conds.Add("id_row", dr["id_row"].ToString());
             if (types == 2)
@@ -3288,7 +3304,7 @@ where Disabled = 0";
                 conds.Add("id_project_team", dr["id_row"].ToString());
                 table_name = "we_work";
             }
-            if (types <= 4)
+            while (types < 5)
             {
                 maxid_new = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_sample_data')").ToString());
                 sqlq = "select id_row, title,'' as description from " + table_name + " where (where)";
@@ -3301,31 +3317,19 @@ where Disabled = 0";
                 }
                 if (dt.Rows.Count > 0)
                 {
-                    types = types + 1;
                     foreach (DataRow item in dt.Rows)
                     {
                         insert_sample_data(cnn, item, types, maxid_new, loginData, out error);
                     }
+                    types++;
                 }
                 else
                 {
-                    types = 3;
+                    types++;
                     conds = new SqlConditions();
                     conds.Add("disabled", 0);
                     conds.Add("id_department", dr["id_row"].ToString());
                     table_name = "we_project_team";
-                    sqlq = "select id_row, title,'' as description from " + table_name + " where (where)";
-                    dt = cnn.CreateDataTable(sqlq, "(where)", conds);
-                    if (cnn.LastError != null || dt == null)
-                    {
-                        cnn.RollbackTransaction();
-                        error = cnn.LastError.Message;
-                        return false;
-                    }
-                    foreach (DataRow item in dt.Rows)
-                    {
-                        insert_sample_data(cnn, item, types, maxid_new, loginData, out error);
-                    }
                 }
             }
             return true;

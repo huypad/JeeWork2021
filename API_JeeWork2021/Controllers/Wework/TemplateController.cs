@@ -886,12 +886,12 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     cnn.BeginTransaction();
-                    if (WeworkLiteController.init_save_as_new_template(cnn, data, loginData, out error))
+                    if (!WeworkLiteController.init_save_as_new_template(cnn, data, loginData, out error))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom(error);
                     }
-                    if (WeworkLiteController.init_status_group(cnn, data, loginData, out error))
+                    if (!WeworkLiteController.init_status_group(cnn, data, loginData, out error))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom(error);

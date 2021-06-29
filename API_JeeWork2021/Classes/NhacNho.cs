@@ -39,8 +39,8 @@ namespace API_JeeWork2021.Classes
             //Timer5Minute = new System.Timers.Timer(300000);
             //Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
             ////10p chạy 1 lần
-            //TimerSendNotify = new System.Timers.Timer(600000);
-            //TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendReminder_Elapsed);
+            TimerSendReminder = new System.Timers.Timer(600000);
+            TimerSendReminder.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendReminder_Elapsed);
             ////60p chạy 1 lần
             //TimerAutoUpdate = new System.Timers.Timer(3600000);
             //TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
@@ -65,7 +65,7 @@ namespace API_JeeWork2021.Classes
             }
         }
         //System.Timers.Timer TimerAutoUpdate;
-        //System.Timers.Timer TimerSendNotify;
+        System.Timers.Timer TimerSendReminder;
         System.Timers.Timer Timer1Minute;
         //System.Timers.Timer Timer5Minute;
 
@@ -96,20 +96,6 @@ namespace API_JeeWork2021.Classes
                 {
                     string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
                     List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration,item);
-                    // Chạy tự động từ danh sach Account
-                    /*
-                     var data = from r in DataAccount
-                               select new
-                               {
-                                   UserID = r.UserId,
-                                   Fullname = r.FullName,
-                                   congviecphutrach = NhacNho.GetSoluongCongviecUser(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   congviecquahan = NhacNho.GetSoluongCongviecQuaHan(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   congviechethantrongngay = NhacNho.GetSoluongCongviecHethanTrongngay(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   duanquahan = NhacNho.GetSoluongDuAnQuaHan(r.UserId,r.CustomerID, ConnectionString, _configuration, _producer),
-                               };
-                     */
-
                     foreach(var account in DataAccount)
                     {
                         GetSoluongCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
