@@ -3225,7 +3225,7 @@ where Disabled = 0";
                 has["CreatedBy"] = loginData.UserID;
                 foreach (var item in template.list_status)
                 {
-                    has["StatusName"] = "Tình trạng 1";
+                    has["StatusName"] = item.StatusName;
                     has["description"] = item.Description;
                     if (!string.IsNullOrEmpty(item.Description))
                         has["description"] = item.Description;
