@@ -113,7 +113,7 @@ export class UyquyenComponent implements OnInit {
           this.filterConfiguration(),
           this.sorting.direction,
           this.sorting.column,
-          (this.paginatorNew.page = 1),
+          this.paginatorNew.page = 0,
           this.paginatorNew.pageSize
         );
         this.dataSource.loadList(queryParams1);

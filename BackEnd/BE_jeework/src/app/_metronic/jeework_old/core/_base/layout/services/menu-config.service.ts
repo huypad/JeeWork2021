@@ -114,7 +114,8 @@ export class MenuConfigService {
 						id_phanloai: 1,
 						alignment: 'left',//dành cho header menu
 						id: '' + item.RowID,
-						IsFolder: item.IsFolder
+						IsFolder: item.IsFolder,
+						type: item.type
 					};
 					if (item.Data_Folder && item.Data_Folder.length > 0) {
 						// parentMenu["bullet"] = 'dot';
@@ -129,7 +130,8 @@ export class MenuConfigService {
 								id_phanloai: 1,
 								alignment: 'left',
 								id: '' + itemE.RowID,
-								IsFolder: itemE.IsFolder
+								IsFolder: itemE.IsFolder,
+								type: itemE.type
 
 							};
 							parentMenu["submenu"].push(_folder);
@@ -145,7 +147,8 @@ export class MenuConfigService {
 									Locked: itemS.Locked,
 									Is_Project: itemS.Is_Project,
 									Status: itemS.Status,
-									Default_View: itemS.Default_View //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+									Default_View: itemS.Default_View, //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt,
+									type: itemS.type
 								};
 								_folder["submenu"].push(child);
 							});
@@ -167,7 +170,8 @@ export class MenuConfigService {
 									Locked: itemE.Locked,
 									Is_Project: itemE.Is_Project,
 									Status: itemE.Status,
-									Default_View: itemE.Default_View //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+									Default_View: itemE.Default_View, //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+									type: itemE.type
 								};
 								parentMenu["submenu"].push(child);
 							});

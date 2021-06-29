@@ -1,0 +1,414 @@
+<div id="template-center">
+    <div class="template-center-header">
+        <div class="cu-template-center-header__back" *ngIf="buocthuchien==1" (click)="buocthuchien=2">
+            <div icon="cu2-arrow-left2" class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M0 12l9-8v6h15v4h-15v6z" />
+                </svg>
+            </div>
+            <div data-test="template-center-header__back-text" class="cu-template-center-header__back-text">
+                {{'GeneralKey.trolai'| translate}} </div>
+        </div>
+
+        <div class="template-center-header__title">
+            {{ getTitle() }}
+        </div>
+        <div data-test="template-center-header__close" icon="cu2-close" class="cu-template-center-header__close icon"
+            (click)="this.dialogRef.close();">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path
+                    d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z" />
+            </svg>
+        </div>
+    </div>
+    <ng-container [ngSwitch]="buocthuchien">
+        <!-- [ngTemplateOutletContext]="{ item: child }" -->
+        <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="step1">
+        </ng-container>
+        <ng-container *ngSwitchCase="2" [ngTemplateOutlet]="step2">
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+            <h1>trang trống</h1>
+        </ng-container>
+    </ng-container>
+
+
+
+</div>
+
+<ng-template #step1>
+    <div class="cu-template-center-save-templates">
+        <div class="cu-template-center-save-template ps">
+            <div class="cu-template-center-save-template__container">
+                <div class="cu-template-center__option-section">
+                    <div class="cu-template-center__option-label"> {{ 'template.templatename' | translate }}  </div>
+                    <input type="text" placeholder="{{ 'template.entertemplatename' | translate }}" [(ngModel)]="TemplateDetail.title"
+                        class="cu-template-center__option-input ng-untouched ng-pristine ng-valid">
+                    <div class="cu-template-center-save-template__customize " *ngIf="adddescription">
+                        <div class="cu-template-center-save-template__desc ">
+                            <div icon="info2" class="icon">
+                                <!-- matTooltip="A description will help you and your team keep track of what this template is used for" -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2.033 16.01c.564-1.789 1.632-3.932 1.821-4.474.273-.787-.211-1.136-1.74.209l-.34-.64c1.744-1.897 5.335-2.326 4.113.613-.763 1.835-1.309 3.074-1.621 4.03-.455 1.393.694.828 1.819-.211.153.25.203.331.356.619-2.498 2.378-5.271 2.588-4.408-.146zm4.742-8.169c-.532.453-1.32.443-1.761-.022-.441-.465-.367-1.208.164-1.661.532-.453 1.32-.442 1.761.022.439.466.367 1.209-.164 1.661z" />
+                                </svg>
+
+                            </div>
+                            <!-- <span class="textarea" role="textbox" contenteditable></span> -->
+                            <textarea matInput placeholder="{{ 'template.enterdescription' | translate }}" cdkTextareaAutosize
+                                [(ngModel)]="TemplateDetail.description" #autosize="cdkTextareaAutosize"
+                                cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"></textarea>
+                            <div icon="cu2-times" class="icon" (click)="adddescription = !adddescription">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24">
+                                    <path
+                                        d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z" />
+                                </svg>
+
+                            </div>
+                        </div>
+                        <!--                         
+                        <div class="cu-template-center-save-template__tags ">
+                            <div icon="cu2-tag" class="icon"><svg>
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-cu2-tag">
+                                    </use>
+                                </svg>
+                                
+                            </div>
+                            <div class="cu-task-row-tags">
+                                <div class="cu2-tags-list">
+                                    <div class="cu-dropdown">
+                                        <div data-test="dropdown__toggle"
+                                            class="cu-dropdown__toggle">
+                                            <div modifier="list-view">
+                                                <div class="cu-tags-view list-view ">
+                                                     <div tooltipmodifier="tooltip_indent-on-bottom"
+                                                        class="cu-tags-view__icon icon "><svg
+                                                            viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg"
+                                                           >
+                                                            <g transform="translate(0 1)" fill="none"
+                                                                fill-rule="evenodd" class="cu-stroke">
+                                                                <path
+                                                                    d="M14.18 16.24l.68.61c.68.68 1.8.68 2.5-.03l4.41-4.4c.7-.7.71-1.83.03-2.51l-8.22-8.22a1.72 1.72 0 0 0-.77-.45L9.37.3a2.25 2.25 0 0 0-.8-.06c-.25.03-.5.1-.7.22a.87.87 0 0 0-.36.35">
+                                                                </path>
+                                                                <path
+                                                                    d="M2.06 8.13c.03.11.09.22.18.3l9.16 9.17a.7.7 0 0 0 .99 0l5.95-5.95a.7.7 0 0 0 0-1L9.18 1.5a.7.7 0 0 0-.31-.19L4.56.15a.7.7 0 0 0-.68.18L1.06 3.14a.7.7 0 0 0-.18.68l1.17 4.3z">
+                                                                </path>
+                                                                <circle cx="5.409" cy="4.668" r="1.403"></circle>
+                                                            </g>
+                                                        </svg>
+                                                      </div>
+                                                 </div>
+                                             </div>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+                            <div icon="cu2-times" class="cu-template-center-save-template__tags-clear icon"><svg
+                                   >
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-cu2-times">
+                                    </use>
+                                </svg>
+                                
+                            </div>
+                        </div>
+                         -->
+                    </div>
+                    <div class="cu-template-center-save-template__badges" *ngIf="!adddescription"
+                        (click)="adddescription = !adddescription">
+                        <div class="cu-template-center-save-template__badge">
+                            <div icon="info2" class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2.033 16.01c.564-1.789 1.632-3.932 1.821-4.474.273-.787-.211-1.136-1.74.209l-.34-.64c1.744-1.897 5.335-2.326 4.113.613-.763 1.835-1.309 3.074-1.621 4.03-.455 1.393.694.828 1.819-.211.153.25.203.331.356.619-2.498 2.378-5.271 2.588-4.408-.146zm4.742-8.169c-.532.453-1.32.443-1.761-.022-.441-.465-.367-1.208.164-1.661.532-.453 1.32-.442 1.761.022.439.466.367 1.209-.164 1.661z" />
+                                </svg>
+                            </div>{{ 'template.adddescription' | translate }}
+
+                        </div>
+
+                        <!-- <div class="cu-template-center-save-template__badge">
+                            <div icon="cu2-tag" class="icon"><svg class="ng-star-inserted">
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-cu2-tag">
+                                    </use>
+                                </svg>
+                                
+                            </div>Add tags
+                            
+                        </div> -->
+
+                    </div>
+
+
+                </div>
+                <div class="cu-template-center__option-section">
+                    <div class="cu-template-center__option-label"> {{ 'template.sharewith' | translate }} </div>
+                    <div class="cu-template-center__radio-container">
+                        <!-- share_with -->
+                        <div class="cu-template-center__radio-item cu-template-center__radio-item-margin-right"
+                            [ngClass]="{' cu-template-center__radio-item-active': share_with==1}" (click)="Share(1)">
+                            {{ 'template.onlyme' | translate }}
+                        </div>
+                        <div class="cu-template-center__radio-item cu-template-center__radio-item-margin-right cu-template-center__radio-item-disabled"
+                            [ngClass]="{' cu-template-center__radio-item-active': share_with==2}" (click)="Share(2)">
+                            {{ 'template.everyone' | translate }} </div>
+                        <div (click)="Share(3)" [ngClass]="{' cu-template-center__radio-item-active': share_with==3}"
+                            class="cu-template-center__radio-item cu-template-center__radio-item-margin-right">
+                            {{ 'template.allmember' | translate }} </div>
+                        <div class="cu-template-center__radio-item cu-template-center__radio-item-margin-right"
+                            style="margin-right: 5px;"
+                            [ngClass]="{' cu-template-center__radio-item-active': share_with==4}" (click)="Share(4)">
+                            {{ 'template.selectpeople' | translate }}:
+                        </div>
+                        <div class="cu-template-center__radio-item__user cu-template-center__radio-item-users cu-template-center__radio-item-active"
+                            style="padding-left: 5px;" (click)="Share(4)">
+                            
+                            <kt-avatar-list-users [ListUser]="listUserSelected" MaxSize="4" iconSize="20">
+                            </kt-avatar-list-users>
+
+                            <div class="add-user" [matMenuTriggerFor]="owner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path
+                                        d="M9.602 3.7c-1.154 1.937-.635 5.227 1.424 9.025.93 1.712.697 3.02.338 3.815-.982 2.178-3.675 2.799-6.525 3.456-1.964.454-1.839.87-1.839 4.004h-1.995l-.005-1.241c0-2.52.199-3.975 3.178-4.663 3.365-.777 6.688-1.473 5.09-4.418-4.733-8.729-1.35-13.678 3.732-13.678 3.321 0 5.97 2.117 5.97 6.167 0 3.555-1.949 6.833-2.383 7.833h-2.115c.392-1.536 2.499-4.366 2.499-7.842 0-5.153-5.867-4.985-7.369-2.458zm13.398 15.3h-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z" />
+                                </svg>
+                            </div>
+                            <mat-menu #owner="matMenu">
+                                <div class="page-work-detail">
+                                    <kt-choose-users isNewView="true" [options]="options"
+                                        (ItemSelected)="ItemSelected($event)">
+                                    </kt-choose-users>
+                                </div>
+                            </mat-menu>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cu-template-center__option-section ">
+                    <div class="cu-template-center__option-label"> {{ 'template.importoptions' | translate }} </div>
+                    <div class="cu-template-center__dual-options">
+                        <div class="cu-template-center__dual-options-header">
+                            <div class="cu-template-center__dual-options-header-tab {{importall?'':'cu-template-center__dual-options-header-tab-disabled'}}"
+                                (click)="importall = true">
+                                <div
+                                    class="cu-template-center__radio-item cu-template-center__radio-item-no-margin {{importall?'cu-template-center__radio-item-active':''}}">
+                                    {{ 'template.importeverything' | translate }} </div>
+                            </div>
+                            <div (click)="importall = false"
+                                class="cu-template-center__dual-options-header-tab {{!importall?'':'cu-template-center__dual-options-header-tab-disabled'}}">
+                                <div
+                                    class="cu-template-center__radio-item cu-template-center__radio-item-no-margin {{!importall?'cu-template-center__radio-item-active':''}}">
+                                    {{ 'template.customnizeimportitems' | translate }} </div>
+                            </div>
+                        </div>
+                        <div class="cu-template-center__dual-options-body">
+
+                            <ng-container *ngIf="importall;else selectimport">
+                                <div class="cu-template-center__dual-options-body-header "> {{ 'template.itemstoimport'
+                                    | translate }}:
+                                </div>
+                                <div class="cu-template-center__dual-options-body-text "> {{ 'template.importall' |
+                                    translate }} {{LoadFieldName()}}.
+                                </div>
+                            </ng-container>
+                            <ng-template #selectimport>
+                                <div class="cu-template-center__dual-options-body-header"> {{
+                                    'template.selecteitemstoimport' | translate }}:
+                                </div>
+                                <div
+                                    class="cu-template-center__radio-container cu-template-center__radio-container-squares cu-template-center__radio-container-unbordered">
+                                    <div class="cu-template-center__radio-item "
+                                        [ngClass]="{'cu-template-center__radio-item-active': isAddTask}"
+                                        (click)="isAddTask = !isAddTask">
+                                        {{ 'template.task' | translate }} </div>
+                                    <div class="cu-template-center__radio-item "
+                                        [ngClass]="{'cu-template-center__radio-item-active': AllView}"
+                                        (click)="AllView = !AllView">
+                                        {{ 'template.views' | translate }} </div>
+                                    <!-- <div class="cu-template-center__radio-item cu-template-center__radio-item-disabled">
+                                        {{ 'template.automations' | translate }} </div> -->
+                                </div>
+
+                                <div
+                                    class="cu-template-center__radio-container cu-template-center__radio-container-squares">
+                                    <div class="cu-template-center__radio-item " (click)="item.checked = !item.checked"
+                                        [ngClass]="{'cu-template-center__radio-item-active': item.checked}"
+                                        *ngFor="let item of ListField">
+                                        {{ 'filter.'+item.title | translate }} </div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+            </div>
+            <div class="ps__rail-y" style="top: 0px; right: 0px;">
+                <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+            </div>
+        </div>
+        <div class="cu-template-center-save-template__footer">
+            <div class="cu-template-center-save-template__footer-text" (click)="buocthuchien=2">
+                <div icon="cu2-refresh" class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path
+                            d="M20.944 12.979c-.489 4.509-4.306 8.021-8.944 8.021-2.698 0-5.112-1.194-6.763-3.075l1.245-1.633c1.283 1.645 3.276 2.708 5.518 2.708 3.526 0 6.444-2.624 6.923-6.021h-2.923l4-5.25 4 5.25h-3.056zm-15.864-1.979c.487-3.387 3.4-6 6.92-6 2.237 0 4.228 1.059 5.51 2.698l1.244-1.632c-1.65-1.876-4.061-3.066-6.754-3.066-4.632 0-8.443 3.501-8.941 8h-3.059l4 5.25 4-5.25h-2.92z" />
+                    </svg>
+                </div> {{ 'GeneralKey.updateexitingtemplate' | translate }} 
+
+            </div>
+            <div class="cu-template-center-save-template__footer-buttons">
+                <div class="cu-template-center-save-template__footer-button cu-template-center-save-template__footer-button-cancel">
+                    {{ 'template.cancel' | translate }} 
+                 </div>
+                <div class="cu-template-center-save-template__footer-button" (click)="Onsubmit()"> {{ 'GeneralKey.luu' | translate }}  </div>
+            </div>
+        </div>
+
+        
+
+    </div>
+</ng-template>
+
+
+<ng-template #step2>
+    <div class=" cu-template-center-update-templates ">
+        <div class="cu-template-center-update-template ps">
+            <div class="cu-template-center-update-template__container">
+                <div class="cu-template-center-update-template__header">
+                    <div
+                        class="cu-template-center-update-template__header-item cu-template-center-update-template__header-search">
+                        <div icon="cu2-search2" class="icon">
+                            <svg class="ng-star-inserted">
+                                <use
+                                    xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-cu2-search2">
+                                </use>
+                            </svg>
+
+                        </div><input type="text" placeholder="{{ 'template.search' | translate }}...">
+
+                    </div>
+                    <div class="cu-user-list-dropdown url">
+                        <div cudropdown="" class="cu-dropdown">
+                            <div cudropdowntoggle="" class="cu-dropdown__toggle">
+                                <div class="cu-template-center-update-template__header-item cu-template-center-update-template__header-creator"
+                                    [matMenuTriggerFor]="createdBy">
+                                    <div class="cu-template-center-update-template__header-item-text"> {{ 'GeneralKey.taoboi' | translate }}:
+                                    </div>
+                                    <ng-container *ngIf="CreatedBy.id_nv>0">
+                                        <ngx-avatar size="20" matTooltip="{{CreatedBy.hoten}}" src="{{CreatedBy.image}}"
+                                            *ngIf="CreatedBy.image;else bindText">
+                                        </ngx-avatar>
+                                        <ng-template #bindText>
+                                            <ngx-avatar textSizeRatio="2.5" matTooltip="{{CreatedBy.hoten}}" size="20"
+                                                [name]="weWorkService.getNameUser(CreatedBy.hoten)"
+                                                bgColor="{{weWorkService.getColorNameUser(CreatedBy.hoten)}}">
+                                            </ngx-avatar>
+                                        </ng-template>
+                                    </ng-container>
+                                    &nbsp;
+                                    <div icon="cu2-assign-3" class="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 2c2.757 0 5 2.243 5 5.001 0 2.756-2.243 5-5 5s-5-2.244-5-5c0-2.758 2.243-5.001 5-5.001zm0-2c-3.866 0-7 3.134-7 7.001 0 3.865 3.134 7 7 7s7-3.135 7-7c0-3.867-3.134-7.001-7-7.001zm6.369 13.353c-.497.498-1.057.931-1.658 1.302 2.872 1.874 4.378 5.083 4.972 7.346h-19.387c.572-2.29 2.058-5.503 4.973-7.358-.603-.374-1.162-.811-1.658-1.312-4.258 3.072-5.611 8.506-5.611 10.669h24c0-2.142-1.44-7.557-5.631-10.647z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <mat-menu #createdBy="matMenu">
+                                    <div class="page-work-detail">
+                                        <kt-choose-users isNewView="true" [options]="options"
+                                            (ItemSelected)="ItemSelectedCreatedBy($event)">
+                                        </kt-choose-users>
+                                    </div>
+                                </mat-menu>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="cu-template-center-update-template__body">
+                    <ng-container *ngFor="let item of ListTemplateUser">
+                        <div class="cu-template-center-update-template__item"
+                            [ngClass]="{'cu-template-center-update-template__item-active': item.id_row == ItemSelect.id_row}"
+                            (click)="UpdateTemplate(item)">
+                            <div
+                                class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
+                                <div class="icon">
+                                    <svg class="ng-star-inserted">
+                                        <use
+                                            xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
+                                        </use>
+                                    </svg>
+
+                                </div>
+                            </div>
+                            <div class="cu-template-center-update-template__item-text"> {{item.title}} </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- <div
+                        class="cu-template-center-update-template__item cu-template-center-update-template__item-active">
+                        <div
+                            class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
+                            <div class="icon"><svg class="ng-star-inserted">
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
+                                    </use>
+                                </svg>
+                                
+                            </div>
+                        </div>
+                        <div class="cu-template-center-update-template__item-text"> Project Management </div>
+                    </div>
+                    <div class="cu-template-center-update-template__item">
+                        <div
+                            class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
+                            <div class="icon"><svg class="ng-star-inserted">
+                                    <use
+                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
+                                    </use>
+                                </svg>
+                                
+                            </div>
+                        </div>
+                        <div class="cu-template-center-update-template__item-text"> TL7 </div>
+                    </div> -->
+
+                </div>
+            </div>
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+            </div>
+            <div class="ps__rail-y" style="top: 0px; height: 111px; right: 0px;">
+                <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 88px;"></div>
+            </div>
+        </div>
+
+        <div class="cu-template-center-update-template__footer">
+            <div class="cu-template-center-update-template__footer-text" (click)="SaveAs()">
+                <ng-container *ngIf="IsSaveAs">
+                    <div icon="cu2-save" class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24">
+                        <path
+                            d="M15.003 3h2.997v5h-2.997v-5zm8.997 1v20h-24v-24h20l4 4zm-19 5h14v-7h-14v7zm16 4h-18v9h18v-9z" />
+                    </svg>
+                    </div> {{ 'GeneralKey.saveastemplate' | translate }} 
+                </ng-container>
+                
+
+            </div>
+            <div class="cu-template-center-update-template__footer-buttons">
+                <div
+                    class="cu-template-center-update-template__footer-button cu-template-center-update-template__footer-button-cancel">
+                    {{ 'template.cancel' | translate }} </div>
+                <div class="cu-template-center-update-template__footer-button" (click)="NextStep()"
+                    [ngClass]="{'cu-template-center-update-template__footer-button-disabled': !(ItemSelect.id_row > 0)}">
+                    {{ 'template.next' | translate }}
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -193,6 +193,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                  Icon = "flaticon-signs-1",
                                                  Priority = r["priority"],
                                                  IsFolder = false,
+                                                 type = 1,
                                                  Data = from r2 in dt_project.AsEnumerable()
                                                         where r2["id_department"].ToString() == r["id_row"].ToString()
                                                         select new
@@ -204,6 +205,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                             Status = r2["Status"],
                                                             Default_View = r2["Default_View"],
                                                             Is_Project = r2["is_project"],
+                                                            type = 3,
                                                         },
                                                  Data_Folder = from r3 in dt_folder.AsEnumerable()
                                                                where r3["ParentID"].ToString() == r["id_row"].ToString()
@@ -213,6 +215,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                                    Title = r3["title"],
                                                                    Icon = "flaticon-folder",
                                                                    Priority = r3["priority"],
+                                                                   type = 2,
                                                                    IsFolder = true,
                                                                    Data = from r4 in dt_project.AsEnumerable()
                                                                           where r4["id_department"].ToString() == r3["id_row"].ToString()
@@ -224,6 +227,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                                               Color = r4["Color"],
                                                                               Status = r4["Status"],
                                                                               Default_View = r4["Default_View"],
+                                                                              type = 3,
                                                                               Is_Project = r4["is_project"],
                                                                           },
                                                                },

@@ -29,6 +29,12 @@ export class TemplateCenterService {
     return this.http.get<any>(API_Template + '/detail?id=' + id,
       { headers: httpHeaders });
   }
+  getListTemplateUser(queryParams: QueryParamsModel): Observable<any> {
+    const httpHeaders = this.httpUtils.getHTTPHeaders();
+    const httpParms = this.httpUtils.getFindHTTPParams(queryParams)
+    return this.http.get<any>(API_Template + '/get-template-by-user', //get-template-by-user update-template-center
+    { headers: httpHeaders, params: httpParms });
+  }
   //lite_template_types
   getTemplateTypes(): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();

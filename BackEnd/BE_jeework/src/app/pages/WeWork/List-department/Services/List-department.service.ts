@@ -31,6 +31,14 @@ export class ListDepartmentService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_department + '/Insert', item, { headers: httpHeaders });
 	}
+	UpdateTemplateCenter(item): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.post<any>(API_Template + '/update-template-center', item, { headers: httpHeaders });
+	}
+	SaveAsTemplateCenter(item): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.post<any>(API_Template + '/save-as-template', item, { headers: httpHeaders });
+	}
 	DeptDetail(id: any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = `${API_department}/Detail?id=${id}`;

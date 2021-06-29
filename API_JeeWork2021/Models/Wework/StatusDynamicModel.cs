@@ -31,7 +31,6 @@ namespace JeeWork_Core2021.Models
         public bool IsFinal { get; set; }
         public bool IsDeadline { get; set; }
         public bool IsToDo { get; set; }
-
     }
     public class TemplateStatusModel
     {

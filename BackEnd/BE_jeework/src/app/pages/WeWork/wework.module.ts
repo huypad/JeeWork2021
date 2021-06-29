@@ -169,6 +169,7 @@ import {
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { TemplateCenterComponent } from './template-center/template-center.component';
+import { TemplateCenterUpdateComponent } from './template-center/template-center-update/template-center-update.component';
 @NgModule({
 	imports: [
 		MatFormFieldModule,
@@ -327,7 +328,7 @@ import { TemplateCenterComponent } from './template-center/template-center.compo
 		AddNewFieldsComponent,
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
-		TemplateCenterComponent,
+		TemplateCenterComponent,TemplateCenterUpdateComponent
 	],
 	declarations: [
 		RepeatedListComponent,
@@ -394,6 +395,7 @@ import { TemplateCenterComponent } from './template-center/template-center.compo
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
 		TemplateCenterComponent,
+		TemplateCenterUpdateComponent,
 
 	],
 	exports: [
@@ -499,6 +501,7 @@ import { TemplateCenterComponent } from './template-center/template-center.compo
 		ProjectTeamEditStatusComponent,
 		NgxPrintModule,
 		TemplateCenterComponent,
+		TemplateCenterUpdateComponent
 
 	]
 })

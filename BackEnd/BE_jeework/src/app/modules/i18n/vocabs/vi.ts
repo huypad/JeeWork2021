@@ -188,6 +188,7 @@ export const locale = {
     GeneralKey: {
       boqua: "Bỏ qua",
       bancochacchanmuonxoakhong: "Bạn có chắc muốn xóa dữ liệu này không?",
+      browsetemplate: 'Các mẫu có sẵn',
       // C
       cactuychonkhac: "Các tùy chọn khác",
       chuagantinhtrang: "Chưa gắn trạng thái",
@@ -303,6 +304,7 @@ export const locale = {
       // S
       stt: "STT",
       report: "Báo cáo",
+      saveastemplate: "Lưu thành mẫu mới",
       // T
       templatecenter: "Mẫu xây dựng sẵn",
       tacvu: "Tác vụ",
@@ -345,6 +347,7 @@ export const locale = {
       taoboi: "Tạo bởi", // CREATED BY
       // U
       upload: "Upload file",
+      updateexitingtemplate: "Chỉnh sửa các mẫu khác",
       // V
 
       //Q
@@ -372,12 +375,12 @@ export const locale = {
       //====================Dùng cho phần xác nhận duyệt - không duyệt (Phép, tăng ca, .....)
       nhanvien: "Nhân viên",
     },
-	//==================== Dùng trong templateCenter
+    //==================== Dùng trong templateCenter
     template: {
       addtolib: "Thêm vào thư viện cá nhân",
       automations: "Tự động hóa",
       chooseadate: "Chọn ngày",
-	  cancel:'Hủy bỏ',
+	    cancel:'Hủy bỏ',
       customfield: "Cột tùy chỉnh",
       customnizeimportitems: "Tùy chỉnh các mục",
       enddate: "Ngày kết thúc",
@@ -417,8 +420,20 @@ export const locale = {
       collapse: "Ẩn bớt",
       seeall: "Xem tất cả",
       templates: "Các mẫu",
+      mauhethong:'Mẫu của hệ thống',
       quickuse: "Chọn nhanh",
       used: "Đã dùng",
+      templatename: "Tên mẫu",
+      entertemplatename: "Nhập tên mẫu",
+      description: "Mô tả mẫu",
+      enterdescription: "Nhập mô tả cho mẫu",
+      adddescription: "Thêm mô tả",
+      sharewith: "Chia sẻ với:",
+      onlyme: "Chỉ mình tôi",
+      allmember: "Tất cả thành viên:",
+      selectpeople: "Chọn người chia sẻ:",
+      everyone: "Tất cả mọi người( bao gồm cả khách)",
+      next: "Chọn mẫu",
     },
     //===================Dung cho phần workfollow===================
     process: {
@@ -955,7 +970,8 @@ export const locale = {
       filter_tuychonhienthi: "Tùy chọn hiển thị",
       report: "Báo cáo",
       danhsachduan: "Danh sách dự án",
-      themnhanhduan: "Thêm nhanh dự án",
+      themnhanhduan: "Thêm dự án",
+      themfolder: 'Thêm thư mục',
       nhaptenduan: "Nhập tên dự án",
       documents: "Tài liệu",
       themview: "Thêm dạng hiển thị",

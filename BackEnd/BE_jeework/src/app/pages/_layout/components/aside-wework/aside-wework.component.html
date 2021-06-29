@@ -165,6 +165,15 @@
             <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
         </button>
         <mat-menu #menu="matMenu">
+            <button mat-menu-item [matMenuTriggerFor]="tc"><span translate="GeneralKey.templatecenter"></span></button>
+                <mat-menu #tc="matMenu" yPosition="below">
+                    <div>
+                        <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5>
+                        <button mat-menu-item><span translate="GeneralKey.browsetemplate" (click)="AddTemplate()"></span></button>
+                        <button mat-menu-item><span translate="GeneralKey.saveastemplate" (click)="UpdateTemplate(1,item)"></span></button>
+                        <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate" (click)="UpdateTemplate(2,item)"></span></button> 
+                    </div>
+                </mat-menu> 
             <button mat-menu-item color="accent">
                 <mat-icon style="color: rgb(35, 93, 201) ">arrow_forward
                 </mat-icon>
@@ -246,10 +255,12 @@
                 <button mat-menu-item [matMenuTriggerFor]="tc"><span translate="GeneralKey.templatecenter"></span></button>
                 <mat-menu #tc="matMenu" yPosition="below">
                     <div>
-                        <h5 style="color:#101010">Template Center</h5>
-                        <button mat-menu-item><span translate="GeneralKey.browsetemplate"></span></button>
+                        <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5>
+                        <button mat-menu-item><span translate="GeneralKey.browsetemplate" (click)="AddTemplate()"></span></button>
+                        <button mat-menu-item><span translate="GeneralKey.saveastemplate" (click)="UpdateTemplate(1,item)"></span></button>
+                        <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate" (click)="UpdateTemplate(2,item)"></span></button> 
                     </div>
-                </mat-menu>
+                </mat-menu> 
                 <!-- <button mat-menu-item > 
                     <span translate="projects.themnhanhduan"></span>
                 </button> -->

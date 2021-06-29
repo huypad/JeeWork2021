@@ -89,7 +89,6 @@ export class ListUserComponent implements OnInit, OnChanges {
 		}, 500)
 	}
 	sortField(column: string) {
-		console.log(column);
 		const sorting = this.sorting;
 		const isActiveColumn = sorting.column === column;
 		if (!isActiveColumn) {
@@ -98,7 +97,6 @@ export class ListUserComponent implements OnInit, OnChanges {
 		} else {
 		  sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
 		}
-		// this.paginatorNew.page = 1;
 		this.loadDataList();
 	  }
 	loadPage() {
@@ -122,7 +120,7 @@ export class ListUserComponent implements OnInit, OnChanges {
 					this.filterConfiguration(),
 					this.sorting.direction,
 					this.sorting.column,
-					this.paginatorNew.page = 1,
+					this.paginatorNew.page = 0,
 					this.paginatorNew.pageSize
 				);
 				this.dataSource.loadList(queryParams1);

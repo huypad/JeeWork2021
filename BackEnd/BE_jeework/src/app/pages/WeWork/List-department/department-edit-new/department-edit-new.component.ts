@@ -198,7 +198,9 @@ export class DepartmentEditNewComponent implements OnInit {
 	}
 
 	LoadDetail(item){
-		this.TempSelected = item.Template[0].TemplateID;
+		if(item.Template[0] && item.Template[0].TemplateID){
+			this.TempSelected = item.Template[0].TemplateID;
+		}
 		setTimeout(() => {
 			this.LoadListSTT();
 		}, 1000);
@@ -307,7 +309,7 @@ export class DepartmentEditNewComponent implements OnInit {
 		const controls = this.itemFormGroup.controls;
 		const _item = new DepartmentModel();
 		_item.id_row = this.item.id_row;
-		_item.ParentID = this.item.ParentID;
+		_item.ParentID = this.item.ParentID?this.item.ParentID:0;
 		_item.id_cocau = controls["dept_name"].value?controls["dept_name"].value:0;
 		_item.title = controls["title"].value;
 		_item.Owners = [];

@@ -2449,7 +2449,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         if (user.loai == 1)
                         {
-                            NhacNho.UpdateSoluongCV(user.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                            NhacNho.UpdateSoluongCV(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
                         }
                     }
                     data.id_row = idc;
@@ -3071,6 +3071,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         if ("status".Equals(data.key))
                         {
                             bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsFinal = 1").ToString()) > 0;
+                            bool hasDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = (select status from v_wework_clickup_new where id_row = "+data.id_row+") and IsDeadline = 1").ToString()) > 0;
                             bool isDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsDeadline = 1").ToString()) > 0;
                             string StatusID = "";
                             if ("complete".Equals(data.status_type))
@@ -3125,14 +3126,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             {
                                 foreach (long idUser in danhsachU)
                                 {
-                                    NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                                    NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
                                 }
                             }
                             if (isFinal)
                             {
                                 foreach (long idUser in danhsachU)
                                 {
-                                    NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                                    NhacNho.UpdateCVHoanthanh(idUser, loginData.CustomerID, hasDeadline, _configuration, _producer);
                                 }
                             }
                             #endregion
@@ -3179,6 +3180,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             }
                                             #endregion
                                             val.Add("status", StatusPresent);
+
+                                            foreach (long idUser in danhsachU)
+                                            {
+                                                NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "-", _configuration, _producer);
+                                            }
                                         }
                                     }
                                     else
@@ -3190,13 +3196,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         }
                                         val.Add("status", StatusPresent);
 
+                                        foreach (long idUser in danhsachU)
+                                        {
+                                            NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
+                                        }
                                     }
                                 }
 
-                                foreach (long idUser in danhsachU)
-                                {
-                                    NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
-                                }
+                                
                             }
                             #endregion
                         }
@@ -3451,10 +3458,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 if (data.key == "follower")
                                     loai = 2;
                                 val1["loai"] = loai;
-                                if (loai == 1) // loai = 1 đếm lại nhắc nhở
-                                {
-                                    NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, ConnectionString, _configuration, _producer);
-                                }
 
                                 SqlConditions sqlcond123 = new SqlConditions();
                                 sqlcond123.Add("id_work", data.id_row);
@@ -3469,6 +3472,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         cnn.RollbackTransaction();
                                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                     }
+
+                                    if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
+                                    {
+                                        NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
+                                    }
                                 }
                                 else
                                 {
@@ -3476,6 +3484,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     {
                                         cnn.RollbackTransaction();
                                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                    }
+
+                                    if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở thêm người +1
+                                    {
+                                        NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "+", _configuration, _producer);
                                     }
                                 }
 
@@ -3815,7 +3828,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         List<long> danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
                         foreach (long idUser in danhsachU)
                         {
-                            NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                            NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, "-", _configuration, _producer);
                         }
                     }
                     return JsonResultCommon.ThanhCong();

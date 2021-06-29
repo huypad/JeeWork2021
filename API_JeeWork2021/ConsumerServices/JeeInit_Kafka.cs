@@ -187,27 +187,27 @@ namespace JeeWork_Core2021.ConsumerServices
             Console.WriteLine(value);
         }
 
-        public async void TestReminder()
-        {
-            var field = new List<DataField>()
-            {
-                new DataField() { ID = "Sophu1", Value = 1},
-                new DataField() { ID = "Sophu2", Value = 2},
-                new DataField() { ID = "Sophu3", Value = 3},
-            };
+        //public async void TestReminder()
+        //{
+        //    var field = new List<DataField>()
+        //    {
+        //        new DataField() { ID = "Sophu1", Value = 1},
+        //        new DataField() { ID = "Sophu2", Value = 2},
+        //        new DataField() { ID = "Sophu3", Value = 3},
+        //    };
 
-            var demo = new Remider()
-            {
-                PhanLoaiID = 0,
-                SoLuong = 0,
-                UserID = 0,
-                CustomerID = 0,
-                DataField = field,
-            };
+        //    var demo = new Remider()
+        //    {
+        //        PhanLoaiID = 0,
+        //        SoLuong = 0,
+        //        UserID = 0,
+        //        CustomerID = 0,
+        //        DataField = field,
+        //    };
 
-            string TopicCus = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
-            await _producer.PublishAsync(TopicCus,Newtonsoft.Json.JsonConvert.SerializeObject(demo));
-        }
+        //    string TopicCus = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
+        //    await _producer.PublishAsync(TopicCus,Newtonsoft.Json.JsonConvert.SerializeObject(demo));
+        //}
 
     }
 }

@@ -93,7 +93,7 @@ export class UsersListComponent implements OnInit {
 				debounceTime(150),
 				distinctUntilChanged(),
 				tap(() => {
-					this.paginatorNew.page = 1;
+					this.paginatorNew.page = 0;
 					this.loadDataList();
 				})
 			)

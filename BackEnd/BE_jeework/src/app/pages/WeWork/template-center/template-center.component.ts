@@ -25,7 +25,6 @@ import {
 import { type } from "node:os";
 import {
   ListFieldModel,
-  ProjectDatesModel,
   TemplateCenterModel,
 } from "./template-model/template.model";
 
@@ -37,7 +36,7 @@ import {
 export class TemplateCenterComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   ItemParentID: any = {};
-  ParentName = "Nguyễn's Workspace";
+  ParentName = "Chọn vị trí lưu";
   buocthuchien = 1;
   isAddTask = true;
   AllView = true;
@@ -244,6 +243,9 @@ export class TemplateCenterComponent implements OnInit {
     TCinsert.is_views = this.AllView;
     TCinsert.group_statusid = this.TemplateDetail.group_statusid;
     TCinsert.viewid = this.TemplateDetail.viewid;
+    if(this.TemplateDetail.sample_id > 0){
+      TCinsert.sample_id = ''+this.TemplateDetail.sample_id;
+    }
     // kiểm tra title
     let titleTemplate = (<HTMLInputElement>(
       document.getElementById("titleTemplate")
@@ -337,24 +339,23 @@ export class TemplateCenterComponent implements OnInit {
     //ListField new
     // kiểm tra project date
     TCinsert.is_projectdates = this.ProjectDatesDefault;
-    const _date = new ProjectDatesModel();
     if (!this.ProjectDatesDefault) {
       if (this.start_date) {
-        _date.start_date = this.f_convertDate(this.start_date);
+        TCinsert.start_date = this.f_convertDate(this.start_date);
       }
       if (this.end_date) {
-        _date.end_date = this.f_convertDate(this.end_date);
+        TCinsert.end_date = this.f_convertDate(this.end_date);
       }
     }
-    TCinsert.projectdates = _date;
 
     if (TCinsert.types == 3) {
       const _item = new ProjectTeamModel();
-      _item.clear();
       _item.templatecenter = TCinsert;
       _item.id_department = "" + TCinsert.ParentID;
       _item.title = TCinsert.title;
       _item.description = this.TemplateDetail.description;
+      _item.loai = "1";
+      _item.is_project = true;
       const ct = new ProjectTeamUserModel();
       ct.clear();
       ct.id_user = +localStorage.getItem("idUser");
@@ -407,13 +408,10 @@ export class TemplateCenterComponent implements OnInit {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
-        if (withBack == true) {
-          this.dialogRef.close({
-            _item,
-          });
-        } else {
-          this.dialogRef.close();
-        }
+        this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+        setTimeout(() => {
+          window.location.reload();
+        }, 10);
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
@@ -425,13 +423,10 @@ export class TemplateCenterComponent implements OnInit {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
-        if (withBack == true) {
-          this.dialogRef.close({
-            _item,
-          });
-        } else {
-          this.dialogRef.close();
-        }
+        this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+        setTimeout(() => {
+          window.location.reload();
+        }, 10);
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }

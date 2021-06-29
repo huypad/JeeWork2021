@@ -1,4 +1,6 @@
-import { WeWorkService } from './../../../WeWork/services/wework.services';
+import { TemplateCenterComponent } from "./../../../WeWork/template-center/template-center.component";
+import { TemplateCenterUpdateComponent } from "./../../../WeWork/template-center/template-center-update/template-center-update.component";
+import { WeWorkService } from "./../../../WeWork/services/wework.services";
 import {
   LayoutUtilsService,
   MessageType,
@@ -326,6 +328,38 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     return classes;
   }
 
+  UpdateTemplate(value,itemMenu) {
+    console.log(itemMenu);
+    const item = itemMenu;
+    const dialogRef = this.dialog.open(TemplateCenterUpdateComponent, {
+      data: { item, buocthuchien: value },
+      width: "50vw",
+      height: "95vh",
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (!res) {
+        return;
+      } else {
+        this.changeDetectorRefs.detectChanges();
+      }
+    });
+  }
+
+  AddTemplate() {
+    const item = "Danh sách giao diện template";
+    const dialogRef = this.dialog.open(TemplateCenterComponent, {
+      data: { item },
+      width: "50vw",
+      height: "95vh",
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (!res) {
+        return;
+      } else {
+        this.changeDetectorRefs.detectChanges();
+      }
+    });
+  }
   getItemAttrSubmenuToggle(item) {
     let toggle = "hover";
     if (objectPath.get(item, "toggle") === "click") {
@@ -781,7 +815,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   AddFolder(item) {
     const ObjectModels = new DepartmentModel();
     ObjectModels.clear(); // Set all defaults fields
-	ObjectModels.ParentID = item.id;
+    ObjectModels.ParentID = item.id;
     this.Update(ObjectModels);
   }
 
@@ -886,18 +920,18 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  getText(item){
-	  if(item.title){
-		  return item.title[0];
-	  }
-	  return 'N';
+  getText(item) {
+    if (item.title) {
+      return item.title[0];
+    }
+    return "N";
   }
-  getColorText(item){
+  getColorText(item) {
     var text = "";
-	  if(item.title){
-		  text = item.title[0];
-	  }
-    if(text != ""){
+    if (item.title) {
+      text = item.title[0];
+    }
+    if (text != "") {
       return this.WeWorkService.getColorNameUser(text);
     }
     return "red";
