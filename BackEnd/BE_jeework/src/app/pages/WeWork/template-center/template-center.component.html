@@ -46,7 +46,6 @@
 
         </ng-container>
         <ng-container *ngSwitchDefault>
-            <h1>trang trống</h1>
         </ng-container>
     </ng-container>
 
@@ -175,71 +174,9 @@
 
             <div class="cu-template-center-main__template-section">
 
-                <!-- <div class="cu-template-center-main__section">
+                <div class="cu-template-center-main__section">
                     <div class="cu-template-center-main__section-header">
-                        <div class="cu-template-center-main__section-header-text"> Nguyễn's Workspace templates </div>
-                        <div class="cu-template-center-main__section-header-line"></div>
-                    </div>
-
-
-                    <div class="cu-template-center-main__rows">
-                        <div class="cu-template-center-main__row-container">
-
-
-                            <div class="cu-template-center-main__row-header">
-                                <div class="cu-template-center-main__row-header-text"> Folder
-
-                                </div>
-
-                            </div>
-                            <div class="cu-template-center-main__row">
-                                <div
-                                    class="cu-template-center-template cu-template-center-template__team cu-template-center-template__folder">
-                                    <div class="cu-template-center-template__container">
-
-                                        <div class="cu-template-center-template__cu-icon">
-                                            <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
-                                                alt="">
-                                        </div>
-                                        <div class="cu-template-center-template__quick-use"> Quick Use
-                                        </div>
-
-                                        <div class="cu-template-center-template__top">
-                                            <div class="cu-template-center-template__image"
-                                                style="background-image: url(&quot;https://attachments.clickup.com/0d6037fc-9482-4d12-bef2-95e59d290e40/2995435_dY0.png&quot;);">
-                                            </div>
-
-
-                                        </div>
-                                        <div class="cu-template-center-template__bot">
-                                            <div class="cu-template-center-template__bot-left">
-                                                <div class="icon"><svg class="ng-star-inserted">
-                                                        <use
-                                                            xlink:href="https://app.clickup.com/map.c8036d241969bb12be88.svg#svg-sprite-template-type-folder">
-                                                        </use>
-                                                    </svg>
-
-                                                </div>
-                                            </div>
-                                            <div class="cu-template-center-template__bot-right"> Project Management
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-
-
-                        </div>
-                    </div>
-
-                </div> -->
-
-                <div data-test="template-center-main__section" class="cu-template-center-main__section">
-                    <div class="cu-template-center-main__section-header">
-                        <div class="cu-template-center-main__section-header-text"> JeeWork </div>
+                        <div class="cu-template-center-main__section-header-text"> {{ 'template.maucongviecduocsudung'|translate }} </div>
                         <div class="cu-template-center-main__section-header-line"></div>
                     </div>
 
@@ -264,6 +201,70 @@
                             <div class="cu-template-center-main__row"
                                 [ngClass]="{'cu-template-center-main__row-expanded': Template.expanded}">
                                 <ng-container *ngFor="let item of Template.Data_Templates">
+                                    <div
+                                        class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
+                                        <div class="cu-template-center-template__container"
+                                            (click)="SelectedTemplate(item)">
+                                            <div class="cu-template-center-template__cu-icon">
+                                                <img width="12" height="12" src="../../../../assets/images/Jee_Work.png"
+                                                    alt="">
+                                            </div>
+
+                                            <div class="cu-template-center-template__quick-use"> {{ 'template.quickuse'
+                                                | translate }}
+                                            </div>
+
+                                            <div class="cu-template-center-template__top">
+                                                <div class="cu-template-center-template__image"
+                                                    style="background-image: url(&quot;{{item.img_temp}}&quot;);">
+                                                    <!-- https://attachments.clickup.com/73ce570e-588f-4c2e-82de-31c526efef19/6JryduvCY3.png -->
+                                                </div>
+                                            </div>
+                                            <div class="cu-template-center-template__bot">
+                                                <div class="cu-template-center-template__bot-left">
+                                                    <div class="icon">
+                                                        <img width="24" height="24" src="{{getIconTemplate(item)}}"
+                                                            alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="cu-template-center-template__bot-right"> {{item.title}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-test="template-center-main__section" class="cu-template-center-main__section">
+                    <div class="cu-template-center-main__section-header">
+                        <div class="cu-template-center-main__section-header-text"> JeeWork </div>
+                        <div class="cu-template-center-main__section-header-line"></div>
+                    </div>
+
+                    <div class="cu-template-center-main__rows" *ngFor="let Template of DanhSachTC">
+                        <div class="cu-template-center-main__row-container">
+
+
+                            <div class="cu-template-center-main__row-header">
+                                <div class="cu-template-center-main__row-header-text">
+                                    {{Template.title}}
+                                </div>
+                                <div class="cu-template-center-main__row-controls"
+                                    *ngIf="Template.Data_Templates_Default.length > 3"
+                                    (click)="Template.expanded = !Template.expanded">
+                                    <div
+                                        class="cu-template-center-main__row-controls-more cu-template-center-main__row-controls-more-no-border">
+                                        {{ 'template.' + (Template.expanded?'collapse':'seeall') | translate}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cu-template-center-main__row"
+                                [ngClass]="{'cu-template-center-main__row-expanded': Template.expanded}">
+                                <ng-container *ngFor="let item of Template.Data_Templates_Default">
                                     <div
                                         class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
                                         <div class="cu-template-center-template__container"

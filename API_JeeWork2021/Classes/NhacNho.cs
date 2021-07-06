@@ -125,23 +125,6 @@ namespace API_JeeWork2021.Classes
         {
 
         }
-        // Update tình trạng và gửi email của những công việc trễ hạn
-        private void EveryDay_UpdateLate(DpsConnection cnn, string CustemerID)
-        {
-                   
-        }
-
-        private void ThongBaoSapHetHan(DpsConnection cnn, string CustemerID)
-        {
-
-        }
-
-        private void ThongBaoHetHan(DpsConnection cnn, string CustemerID)
-        {
-            
-
-        }
-
         /// <summary>
         /// Update số lượng công việc  +1 hoặc -1 với những tài kkhoan quy định mà không nhắc nhở theo định kì 
         /// </summary>
@@ -319,7 +302,6 @@ and p.Disabled = 0  and d.Disabled = 0 and IdKH=@IdKH ";
             string obj = Newtonsoft.Json.JsonConvert.SerializeObject(remider);
             _producer.PublishAsync(TopicCus, obj);
         }
-
         public class Remider
         {
             public long PhanLoaiID{ get; set; }
@@ -329,7 +311,5 @@ and p.Disabled = 0  and d.Disabled = 0 and IdKH=@IdKH ";
             public string DataField{ get; set; }
             public string FieldChange { get; set; } = "";
         }
-
-
     }
 }

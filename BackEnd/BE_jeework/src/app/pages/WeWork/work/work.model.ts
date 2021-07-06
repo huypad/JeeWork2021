@@ -199,6 +199,18 @@ export class WorkTagModel extends BaseModel {
 		this.id_tag = 0;
 	}
 }
+export class WorkUserModel extends BaseModel {
+	id_row: number;
+	id_work: number;
+	id_user: number;
+	loai: number;
+	clear() {
+		this.id_row = 0;
+		this.id_work = 0;
+		this.id_user = 0;
+		this.loai = 0;
+	}
+}
 
 export class WorkDuplicateModel extends BaseModel {
 	id_row: number;

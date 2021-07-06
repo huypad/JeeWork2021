@@ -140,6 +140,10 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-status-dynamic?id_project_team=${id_project_team}`, { headers: httpHeaders });
 	}
+	ListStatusDynamicByDepartment(id_department: any): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API_Lite + `/list-status-dynamic-bydepartment?id_department=${id_department}`, { headers: httpHeaders });
+	}
 	ListAllStatusDynamic(): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-all-status-dynamic`, { headers: httpHeaders });

@@ -1,0 +1,66 @@
+<ng-container *ngIf="row==1">
+    <div class="cu-automation-label__summary">
+        <div class="cu-automation-label__default"> Khi </div>
+        <div class="cu-automation-label__strong"> {{ value.event_name }} </div>
+
+        <div class="cu-automation-label__default"> thì </div>
+
+        <div class="cu-automation-label__strong"> {{ value.actionname }} </div>
+
+    </div>
+    <div class="cu-automation-label__additional">
+        <div class="cu-automation-label__description cu-automation-label__description_allow-edit cu-automation-label__description_add w-100">
+
+            <span class="badge badge-secondary url" *ngIf="!editdesc" (click)="editdesc=true"> + Add Description </span>
+            <ng-container *ngIf="editdesc">
+                <input type="text" (focusout)="editdesc=false" placeholder="Add Description" class="form-control">
+            </ng-container>
+            
+
+
+
+        </div>
+
+        <div class="cu-automation-tab-manage__item-info">
+            <div class="cu-automation-tab-manage__item-info-label"> Người tạo </div>
+            <kt-avatar-user [image]="''" [size]="20" name="{{value.nguoitao_fullname}}">
+            </kt-avatar-user>
+            <div class="cu-automation-tab-manage__item-info-name"> {{value.nguoitao_fullname}} </div>
+        </div>
+    </div>
+</ng-container>
+<ng-container *ngIf="row==2">
+
+    <div class="cu-automation-label__summary">
+
+        <span class="cu-automation-label__shortcut-badge">Shortcut</span>
+        <div class="cu-automation-label__default"> Always assign tasks to </div>
+        <kt-avatar-user [image]="''" [size]="20" name="Thắng">
+        </kt-avatar-user>
+
+    </div>
+    <div class="cu-automation-label__additional">
+        <div
+            class="cu-automation-label__description cu-automation-label__description_allow-edit cu-automation-label__description_add">
+
+            <div class="cu-automation-label__description-add"> + Add Description
+
+            </div>
+
+
+
+        </div>
+
+        <div class="cu-automation-tab-manage__item-info">
+            <div class="cu-automation-tab-manage__item-info-label"> Updated by </div>
+            <kt-avatar-user [image]="''" [size]="20" name="Thắng">
+            </kt-avatar-user>
+            <div class="cu-automation-tab-manage__item-info-name"> Nguyễn Thanh Thắng </div>
+
+
+        </div>
+
+
+    </div>
+
+</ng-container>

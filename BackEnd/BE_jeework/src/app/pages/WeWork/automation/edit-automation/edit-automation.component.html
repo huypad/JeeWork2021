@@ -1,0 +1,152 @@
+<div class="cu-edit-automation__container">
+
+    <div class="cu-edit-automation__container-body ps">
+        <div class="cu-edit-automation__container-body-column">
+            <div class="cu-edit-automation__container-body-column-container">
+                <div class="cu-edit-automation__container-body-title">
+                    <div class="cu-edit-automation__container-body-title-icon"><img
+                            class="cu-edit-automation__container-body-title-icon-clickup"
+                            src="../../../../assets/images/Icon material-autorenew.png" alt="JeeWork">
+                    </div>
+                    <div class="cu-edit-automation__container-body-title-text">
+                        <div class="cu-edit-automation__container-body-title-text-top"> Khi </div>
+                        <div class="cu-edit-automation__container-body-title-text-bot"> những điều này xảy ra </div>
+                    </div>
+                </div>
+                <div
+                    class="cu-edit-automation__container-body-actions cu-edit-automation__container-body-actions_left-side">
+                    <div class="cu-edit-automation__container-body-actions-top">
+
+                        <mat-form-field class="w-100" appearance="fill">
+                            <mat-label>Select</mat-label>
+                            <mat-select [(ngModel)]="Triggerselect">
+                                <mat-option *ngFor="let item of ListEvent" [value]="item.rowid"> {{item.title}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <app-automation-trigger-state-condition [ID_department]="ID_department"
+                        [ID_projectteam]="ID_projectteam" [type]="Triggerselect" (valueout)="GetvalueEvent($event)">
+                    </app-automation-trigger-state-condition>
+                </div>
+
+                <div class="cu-edit-automation__container-body-add">
+                    <div icon="cu2-plus" class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="svg-sprite-cu2-plus">
+                            <path
+                                d="M416 208H272V64a32 32 0 00-32-32h-32a32 32 0 00-32 32v144H32a32 32 0 00-32 32v32a32 32 0 0032 32h144v144a32 32 0 0032 32h32a32 32 0 0032-32V304h144a32 32 0 0032-32v-32a32 32 0 00-32-32z"
+                                stroke="transparent"></path>
+                        </svg>
+
+                    </div>Add Condition
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="cu-edit-automation__container-body-column">
+            <div cdkdroplist="" class="cdk-drop-list cu-edit-automation__container-body-column-container"
+                id="cdk-drop-list-10">
+                <div class="cu-edit-automation__container-body-title">
+                    <div class="cu-edit-automation__container-body-title-icon"><img
+                            class="cu-edit-automation__container-body-title-icon-clickup"
+                            src="../../../../assets/images/Icon ionic-md-shuffle.png" alt="JeeWork">
+                    </div>
+
+                    <div class="cu-edit-automation__container-body-title-text">
+                        <div class="cu-edit-automation__container-body-title-text-top"> Thì </div>
+                        <div class="cu-edit-automation__container-body-title-text-bot"> thực hiện những điều sau </div>
+                    </div>
+                </div>
+                <div cdkdrag="" class="cdk-drag cu-edit-automation__container-body-actions cdk-drag-disabled">
+                    <div
+                        class="cu-edit-automation__container-body-actions-top cu-edit-automation__container-body-actions-top_has-inputs">
+                        <mat-form-field class="w-100" appearance="fill">
+                            <mat-label>Select</mat-label>
+                            <mat-select [(ngModel)]="Actionselect">
+                                <mat-option *ngFor="let item of ListAction" [value]="item.rowid"> {{item.actionname}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <app-automation-action-field [ID_department]="ID_department" [ID_projectteam]="ID_projectteam"
+                        [type]="Actionselect" (valueout)="GetvalueAction($event)"></app-automation-action-field>
+                </div>
+
+
+                <div class="cu-edit-automation__container-body-add">
+                    <div icon="cu2-plus" class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="svg-sprite-cu2-plus">
+                            <path
+                                d="M416 208H272V64a32 32 0 00-32-32h-32a32 32 0 00-32 32v144H32a32 32 0 00-32 32v32a32 32 0 0032 32h144v144a32 32 0 0032 32h32a32 32 0 0032-32V304h144a32 32 0 0032-32v-32a32 32 0 00-32-32z"
+                                stroke="transparent"></path>
+                        </svg>
+
+                    </div>Add Action
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="cu-edit-automation__container-body-arrow">
+            <div icon="arrow-right-rounded" class="icon">
+                <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+                    <path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z" />
+                </svg>
+
+            </div>
+        </div>
+        <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+        </div>
+        <div class="ps__rail-y" style="top: 0px; right: 0px;">
+            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+        </div>
+    </div>
+    <div class="cu-edit-automation__container-footer valid">
+        <div class="cu-edit-automation__container-badge"> Tổng kết giao thức </div>
+        <div class="cu-edit-automation__container-footer-text cu-automation-label cu-automation-label_summary">
+            <div class="cu-automation-label__summary">
+                <div class="cu-automation-label__default"> Khi </div>
+                <div class="cu-automation-label__strong"> {{ getTitleTrigger() }} </div>
+
+                <div icon="arrow-right-rounded" class="cu-automation-label__arrow icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 12" id="svg-sprite-arrow-right-rounded">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M16.586 5H1a1 1 0 000 2h15.586l-3.293 3.293a1 1 0 101.414 1.414l5-5a.996.996 0 00.235-1.043.997.997 0 00-.235-.371l-5-5a1 1 0 00-1.414 1.414L16.586 5z">
+                        </path>
+                    </svg>
+
+                </div>
+
+                <div class="cu-automation-label__default"> Thì </div>
+
+
+
+                <div class="cu-automation-label__strong"> {{ getTitleAction() }} </div>
+
+            </div>
+            <div class="cu-automation-label__additional">
+
+            </div>
+        </div>
+        <div class="cu-edit-automation__container-footer-buttons">
+            <!-- <button class="cu-edit-automation__container-footer-button create" (click)="OnSubmit()">Create
+
+                    </button> -->
+            <button mat-raised-button ><span translate="GeneralKey.cancel"></span></button>&nbsp;&nbsp;
+            <button mat-raised-button class="jee_btn-addclose" (click)="OnSubmit()"><span
+                    translate="GeneralKey.luudong"></span></button>&nbsp;&nbsp;
+            <button type="button" mat-raised-button class="btn-luutieptuc" (click)="OnSubmit()" 
+                matTooltip="{{ 'GeneralKey.luutieptuc' | translate }}">
+                <mat-icon>repeat</mat-icon>
+                <span translate="GeneralKey.luutieptuc"></span>
+            </button>
+        </div>
+    </div>
+
+
+
+</div>

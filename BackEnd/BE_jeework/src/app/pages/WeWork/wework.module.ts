@@ -1,3 +1,4 @@
+import { AutomationService } from './automation/automation.service';
 import { TemplateCenterService } from './template-center/template-center.service';
 import { CRUDTableModule } from './../../_metronic/shared/crud-table/crud-table.module';
 import { DynamicFormService } from './../dynamic-form/dynamic-form.service';
@@ -170,6 +171,13 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { TemplateCenterComponent } from './template-center/template-center.component';
 import { TemplateCenterUpdateComponent } from './template-center/template-center-update/template-center-update.component';
+import { AutomationComponent } from './automation/automation.component';
+import { AutomationTriggerStateConditionComponent } from './automation/automation-trigger-state-condition/automation-trigger-state-condition.component';
+import { AutomationActionFieldComponent } from './automation/automation-action-field/automation-action-field.component';
+import { EditAutomationComponent } from './automation/edit-automation/edit-automation.component';
+import { AutomationTabBrowseComponent } from './automation/automation-tab-browse/automation-tab-browse.component';
+import { AutomationTabManageComponent } from './automation/automation-tab-manage/automation-tab-manage.component';
+import { AutomationLabelComponent } from './automation/automation-label/automation-label.component';
 @NgModule({
 	imports: [
 		MatFormFieldModule,
@@ -270,7 +278,8 @@ import { TemplateCenterUpdateComponent } from './template-center/template-center
 		TokenStorage,
 		AttachmentService,
 		DynamicFormService,
-		TemplateCenterService
+		TemplateCenterService,
+		AutomationService
 	],
 	entryComponents: [
 		DepartmentEditComponent,
@@ -328,7 +337,14 @@ import { TemplateCenterUpdateComponent } from './template-center/template-center
 		AddNewFieldsComponent,
 		AppFocusBlockComponent,
 		ProjectTeamEditStatusComponent,
-		TemplateCenterComponent,TemplateCenterUpdateComponent
+		TemplateCenterComponent,
+		TemplateCenterUpdateComponent,
+		AutomationComponent,
+		AutomationTriggerStateConditionComponent,
+		AutomationActionFieldComponent,
+		EditAutomationComponent,
+		AutomationTabBrowseComponent,
+		AutomationTabManageComponent,
 	],
 	declarations: [
 		RepeatedListComponent,
@@ -396,6 +412,13 @@ import { TemplateCenterUpdateComponent } from './template-center/template-center
 		ProjectTeamEditStatusComponent,
 		TemplateCenterComponent,
 		TemplateCenterUpdateComponent,
+		AutomationComponent,
+		AutomationTriggerStateConditionComponent,
+		AutomationActionFieldComponent,
+		EditAutomationComponent,
+		AutomationTabBrowseComponent,
+		AutomationTabManageComponent,
+		AutomationLabelComponent,
 
 	],
 	exports: [
@@ -501,7 +524,13 @@ import { TemplateCenterUpdateComponent } from './template-center/template-center
 		ProjectTeamEditStatusComponent,
 		NgxPrintModule,
 		TemplateCenterComponent,
-		TemplateCenterUpdateComponent
+		TemplateCenterUpdateComponent,
+		AutomationComponent,
+		AutomationTriggerStateConditionComponent,
+		AutomationActionFieldComponent,
+		EditAutomationComponent,
+		AutomationTabBrowseComponent,
+		AutomationTabManageComponent,
 
 	]
 })

@@ -24,6 +24,7 @@ using DPSinfra.Notifier;
 using DPSinfra.ConnectionCache;
 using DPSinfra.Logger;
 using Microsoft.Extensions.Logging;
+using DPSinfra.Utils;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -70,7 +71,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select id_row, title from we_department where Disabled=0 and IdKH=" + loginData.CustomerID + " order by title";
@@ -106,7 +107,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, Locked 
@@ -870,10 +871,11 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sql = @"SELECT  id_field, fieldname, title, isvisible, note, type, position, isNewField, IsDefault, TypeID, IsDel
-FROM            we_fields
-WHERE        (isNewField = 0) AND (IsDel = 0)
-ORDER BY IsDefault DESC";
+                    string sql = @"select id_field, fieldname, title, isvisible, note, type, position
+                                , isNewField, IsDefault, TypeID, IsDel
+                                from we_fields
+                                where (isNewField = 0) and (IsDel = 0)
+                                order by IsDefault DESC";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1008,6 +1010,83 @@ ORDER BY IsDefault DESC";
                                    IsToDo = r["IsToDo"],
                                    Description = r["description"],
                                    SL_Tasks = r["SL_Tasks"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
+        [Route("list-status-dynamic-bydepartment")]
+        [HttpGet]
+        public object ListStatusDynamicByDepartment(long id_department)
+        {
+
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+                    string query = "";
+                    query = $@"select id_row, StatusName, description, id_project_team,IsToDo
+                    ,Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, '' as hoten_Follower
+                    from we_status 
+                    where Disabled = 0 and  id_project_team in ( select distinct p.id_row from we_project_team p
+join we_department d on d.id_row = p.id_department
+join we_project_team_user u on u.id_project_team = p.id_row
+where u.Disabled = 0 and id_user = {loginData.UserID} 
+and p.Disabled = 0  and d.Disabled = 0 and  ( d.id_row= {id_department} or d.ParentID = {id_department} )
+and IdKH={loginData.CustomerID} )";
+                    query += " order by IsFinal,id_row";
+
+                    DataTable dt = dt = cnn.CreateDataTable(query);
+
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    #region Map info account từ JeeAccount
+
+                    foreach (DataRow item in dt.Rows)
+                    {
+                        var info = DataAccount.Where(x => item["Follower"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+
+                        if (info != null)
+                        {
+                            item["hoten_Follower"] = info.FullName;
+                        }
+                    }
+
+                    #endregion
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   statusname = r["StatusName"],
+                                   id_project_team = r["id_project_team"],
+                                   isdefault = r["IsDefault"],
+                                   color = r["color"],
+                                   position = r["Position"],
+                                   IsFinal = r["IsFinal"],
+                                   Follower = r["Follower"],
+                                   hoten_Follower = r["hoten_Follower"],
+                                   IsDeadline = r["IsDeadline"],
+                                   IsToDo = r["IsToDo"],
+                                   Description = r["description"],
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -1666,6 +1745,82 @@ ORDER BY IsDefault DESC";
                                                  title = p["title"],
                                                  type = 3,
                                              }
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// danh sách hành động
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_automation_actionlist")]
+        [HttpGet]
+        public object lite_automation_actionlist()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sql = "select rowid, actionname, description, disabled " +
+                        "from automation_actionList " +
+                        "where disabled = 0 order by actionname";
+                    DataTable dt = cnn.CreateDataTable(sql);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   rowid = r["rowid"],
+                                   actionname = r["actionname"],
+                                   description = r["description"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// danh sách sự kiện
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_automation_eventlist")]
+        [HttpGet]
+        public object lite_automation_eventlist()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sql = "select rowid, title, description, tiltelangkey, datacantruyen " +
+                        "from automation_eventList " +
+                        "order by title";
+                    DataTable dt = cnn.CreateDataTable(sql);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   rowid = r["rowid"],
+                                   title = r["title"],
+                                   description = r["description"],
+                                   tiltelangkey = r["tiltelangkey"],
+                                   datacantruyen = r["datacantruyen"],
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -2667,10 +2822,17 @@ where Disabled = 0";
             else
                 return null;
         }
+        public static string getSecretToken(IConfiguration _configuration)
+        {
+            var secret = _configuration.GetValue<string>("Jwt:internal_secret");
+            var projectName = _configuration.GetValue<string>("KafkaConfig:ProjectName");
+            var token = JsonWebToken.issueToken(new TokenClaims { projectName = projectName }, secret);
+            return token;
+        }
         public static List<long> GetDanhSachCustomerID(IConfiguration _configuration)
         {
             string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
-            string internal_secret = _configuration.GetValue<string>("Jwt:internal_secret");
+            string internal_secret = getSecretToken(_configuration);
             string link_api = API_Account + "/api/accountmanagement/GetListCustomerID/internal/WORK"; // work là appcode jeework
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
@@ -2687,7 +2849,7 @@ where Disabled = 0";
         public static List<AccUsernameModel> GetDanhSachAccountFromCustomerID(IConfiguration _configuration, long CustomerID)
         {
             string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
-            string internal_secret = _configuration.GetValue<string>("Jwt:internal_secret");
+            string internal_secret = getSecretToken(_configuration);
             string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID/internal/" + CustomerID;
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.GET);
@@ -3335,6 +3497,58 @@ where Disabled = 0";
                     conds.Add("id_department", dr["id_row"].ToString());
                     table_name = "we_project_team";
                 }
+            }
+            return true;
+        }
+
+        // áp dụng cho các trường hợp chưa có space nào
+        public static bool init_space(DpsConnection cnn, UserJWT loginData, long RequestID, out string error)
+        {
+            error = "";
+            Hashtable val = new Hashtable();
+            Insert_Template(cnn, loginData.CustomerID.ToString());
+            string max_template = cnn.ExecuteScalar("select top 1 (id_row) " +
+                "from we_template_customer " +
+                "where Disabled = 0 and (is_template_center = 0 or is_template_center is null) " +
+                "and CustomerID =" + loginData.CustomerID + "").ToString();
+            val.Add("title", "Phòng ban theo yêu cầu " + RequestID);
+            val.Add("id_cocau", 0);
+            val.Add("IdKH", loginData.CustomerID);
+            val.Add("CreatedDate", DateTime.Now);
+            val.Add("CreatedBy", loginData.UserID);
+            val.Add("IsDataStaff_HR", 0);
+            val.Add("TemplateID", max_template);
+            cnn.BeginTransaction();
+            if (cnn.Insert(val, "we_department") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
+            }
+            string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
+            val = new Hashtable();
+            val["id_department"] = idc;
+            val["CreatedDate"] = DateTime.Now;
+            val["CreatedBy"] = loginData.UserID;
+            val["viewid"] = 1;
+            val["is_default"] = 1;
+            if (cnn.Insert(val, "we_department_view") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
+            }
+            val = new Hashtable();
+            val["id_department"] = idc;
+            val["CreatedDate"] = DateTime.Now;
+            val["CreatedBy"] = loginData.UserID;
+            val["id_user"] = loginData.UserID;
+            val["type"] = 1;
+            if (cnn.Insert(val, "we_department_owner") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
             }
             return true;
         }

@@ -105,6 +105,14 @@ namespace JeeWork_Core2021.Controllers
             _logger.LogDebug(JsonConvert.SerializeObject(d2));
             return d2;
         }
+        [HttpGet]
+        [Route("testAuto")]
+        public string testAuto()
+        {
+            string topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeWorkAutomationService");
+            _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
+            return "Oke";
+        }
         [HttpGet("XinChao")]
         public object TestCode()
         {
@@ -125,6 +133,104 @@ namespace JeeWork_Core2021.Controllers
                 return ex;
             }
         }
+        [HttpGet("testgetvalue")]
+        public async Task<IActionResult> testgetvalue()
+        {
+            try
+            {
+                var event1 = new AutomaticModel
+                {
+                    EventID = 1,
+                    TaskID = 1,
+                    ListID = 1,
+                    data = new Data
+                    {
+                        X = 10,
+                        Y = 12,
+                    }
+                };
 
+                // chỗ này anh parse lại json raw để bắn, em tạm thời đóng code này
+                // await _producer.PublishAsync("topioc ở đây", Newtonsoft.Json.JsonConvert.SerializeObject(event1));
+
+                // hàm dưới này là test chỗ getvalue thôi, em parse lại raw json xong em parse lại object để làm tiếp
+                var getvalueEvent1 = Newtonsoft.Json.JsonConvert.SerializeObject(event1);
+                var objEvent1 = Newtonsoft.Json.JsonConvert.DeserializeObject<AutomaticModel>(getvalueEvent1);
+
+                if (objEvent1.EventID == 1)
+                {
+                    // cách lấy X, Y trong data
+                    long statusid_Old = Int32.Parse(objEvent1.data.X.ToString());
+                    long statusid_New = Int32.Parse(objEvent1.data.Y.ToString());
+                }
+
+                var event2 = new AutomaticModel
+                {
+                    EventID = 2,
+                    TaskID = 1,
+                    ListID = 1,
+                    data = new Data
+                    {
+                        X = 3,
+                        Y = 4,
+                    }
+                };
+
+                var getvalueEvent2 = Newtonsoft.Json.JsonConvert.SerializeObject(event2);
+                var objEvent2 = Newtonsoft.Json.JsonConvert.DeserializeObject<AutomaticModel>(getvalueEvent2);
+
+                if (objEvent2.EventID == 2)
+                {
+                    // cách lấy X, Y trong data
+                    long priorityID_old = Int32.Parse(objEvent1.data.X.ToString());
+                    long priorityID_new = Int32.Parse(objEvent1.data.Y.ToString());
+                }
+
+                var event3 = new AutomaticModel
+                {
+                    EventID = 3,
+                    TaskID = 1,
+                    ListID = 1
+                };
+
+                var getvalueEvent3 = Newtonsoft.Json.JsonConvert.SerializeObject(event3);
+                var objEvent3 = Newtonsoft.Json.JsonConvert.DeserializeObject<AutomaticModel>(getvalueEvent3);
+
+                if (objEvent3.EventID == 3)
+                {
+                    // chỗ này do eventid = 3 nên em không tạo data phía trên nhưng anh tò mò nó có giá trị gì thì anh debug xem object chỗ này nha
+                    var data = objEvent3.data;
+                }
+
+                // mấy cái khác tương tự nha a
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return null;
+                //return BadRequest(MessageReturnHelper.Exception(ex));
+            }
+        }
+        public class AutomaticModel
+        {
+            public long EventID { get; set; }
+            public long TaskID { get; set; }
+            public long ListID { get; set; }
+            public Data data { get; set; }
+        }
+
+        public class Post_Automation_Model
+        {
+            public long eventid { get; set; }
+            public int taskid { get; set; }
+            public long userid { get; set; }
+            public long listid { get; set; }
+            public Data data { get; set; }
+        }
+        public class Data
+        {
+            public object X { get; set; }
+            public object Y { get; set; }
+        }
     }
 }

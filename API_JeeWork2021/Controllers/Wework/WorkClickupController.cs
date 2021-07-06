@@ -2359,6 +2359,17 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
+                    #region gửi event insert công việc mới
+                    DataTable dtwork = cnn.CreateDataTable("select * from v_wework_new where Disabled = 0 and id_row = "+idc);
+                    Post_Automation_Model postauto = new Post_Automation_Model();
+                    postauto.taskid = idc; // id task mới tạo
+                    postauto.userid = loginData.UserID;
+                    postauto.listid = data.id_project_team; // id project team
+                    postauto.customerid = loginData.CustomerID;
+                    postauto.eventid = 7;
+                    postauto.departmentid = long.Parse(dtwork.Rows[0]["id_department"].ToString()); // id_department
+                    Automation.SendAutomation(postauto, _configuration, _producer);
+                    #endregion
                     // Insert người follow cho từng tình trạng của công việc
                     dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), ConnectionString);
                     if (dt_status.Rows.Count > 0)
@@ -3041,7 +3052,13 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     string workname = "";
                     long id_project_team = 0;
                     long StatusPresent = 0;
-
+                    Post_Automation_Model postauto = new Post_Automation_Model();
+                    postauto.taskid = data.id_row; // id task
+                    postauto.userid = loginData.UserID;
+                    postauto.listid = long.Parse(old.Rows[0]["id_project_team"].ToString()); // id project team
+                    postauto.departmentid = long.Parse(old.Rows[0]["id_department"].ToString()); // id_department
+                    postauto.customerid = loginData.CustomerID;
+                    //Data datapost = new Data();
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
                         "from we_work " +
                         "where id_row = @id_row", new SqlConditions() { { "id_row", data.id_row } });
@@ -3233,12 +3250,45 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     }
                                 }
                             }
+
                         }
+                        
                         if (cnn.Update(val, sqlcond, "we_work") != 1)
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
+                        // gửi event sau khi update thành công
+                        #region gửi event đổi độ ưu tiên công việc
+                        if ("clickup_prioritize".Equals(data.key))
+                        {
+                            postauto.eventid = 2;
+
+                            if (string.IsNullOrEmpty(old.Rows[0]["clickup_prioritize"].ToString()))
+                            {
+                                postauto.data_input = "any"; // giá trị cũ
+                            }
+                            else
+                            {
+                                postauto.data_input = old.Rows[0]["clickup_prioritize"].ToString(); // giá trị cũ
+                            }
+                            postauto.data_input += "," + data.value; // giá trị mới
+                            //postauto.data_input = datapost;
+                            Automation.SendAutomation(postauto, _configuration, _producer);
+                        }
+                        #endregion
+                        #region gửi event post automation -- deadline or start_date
+                        if ("deadline".Equals(data.key)) // key deadline
+                        {
+                            postauto.eventid = 3;
+                            Automation.SendAutomation(postauto, _configuration, _producer);
+                        }
+                        else if ("start_date".Equals(data.key))// key start_date
+                        {
+                            postauto.eventid = 4;
+                            Automation.SendAutomation(postauto, _configuration, _producer);
+                        }
+                        #endregion
                         if (data.key == "title")
                         {
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
@@ -3343,6 +3393,20 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         }
                         if (data.key == "status")
                         {
+                            #region gửi event post automation
+                            postauto.eventid = 1;
+                            if (string.IsNullOrEmpty(old.Rows[0]["status"].ToString()))
+                            {
+                                postauto.data_input = "any";
+                            }
+                            else
+                            {
+                                postauto.data_input = old.Rows[0]["status"].ToString(); // giá trị cũ
+                            }
+                            postauto.data_input += "," + data.value; // giá trị mới
+                            //postauto.data_input = datapost;
+                            Automation.SendAutomation(postauto, _configuration, _producer);
+                            #endregion
                             cnn.EndTransaction();
                             WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config, ConnectionString, _notifier);
                             DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
@@ -3438,14 +3502,9 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         if (data.key == "assign" || data.key == "follower")//assign , follower cho 1 người mới hoặc xóa
                         {
-                            //string strDel = "Update we_work_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row;
-                            //if (cnn.ExecuteNonQuery(strDel) < 0)
-                            //{
-                            //    cnn.RollbackTransaction();
-                            //    return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
-                            //}
                             if (data.value != null)
                             {
+                                bool isAssign = false; // = true: thêm người, = false: xóa người
                                 Hashtable val1 = new Hashtable();
                                 val1["id_work"] = data.id_row;
                                 val1["CreatedDate"] = DateTime.Now;
@@ -3485,57 +3544,73 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         cnn.RollbackTransaction();
                                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                     }
-
+                                    isAssign = true;
                                     if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở thêm người +1
                                     {
                                         NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "+", _configuration, _producer);
                                     }
                                 }
 
-                            }
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, ConnectionString))
-                            {
-                                if (data.IsStaff) // Trường hợp Case update về giá trị NULL thì không gửi email (Người nhận = null nên gửi không được)
+                                #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
+                                if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, ConnectionString))
                                 {
-                                    var users = new List<long> { long.Parse(data.value.ToString()) };
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier);
-                                    #region Notify assign
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
+                                    if (data.IsStaff) // Trường hợp Case update về giá trị NULL thì không gửi email (Người nhận = null nên gửi không được)
                                     {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WW";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = "ww_assign";
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = "";
-                                        notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
-                                        try
+                                        var users = new List<long> { long.Parse(data.value.ToString()) };
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier);
+                                        #region Notify assign
+                                        Hashtable has_replace = new Hashtable();
+                                        for (int i = 0; i < users.Count; i++)
                                         {
-                                            if (notify_model != null)
+                                            NotifyModel notify_model = new NotifyModel();
+                                            has_replace = new Hashtable();
+                                            has_replace.Add("nguoigui", loginData.Username);
+                                            has_replace.Add("tencongviec", workname);
+                                            notify_model.AppCode = "WW";
+                                            notify_model.From_IDNV = loginData.UserID.ToString();
+                                            notify_model.To_IDNV = users[i].ToString();
+                                            notify_model.TitleLanguageKey = "ww_assign";
+                                            notify_model.ReplaceData = has_replace;
+                                            notify_model.To_Link_MobileApp = "";
+                                            notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                                            try
                                             {
-                                                Knoti = new APIModel.Models.Notify();
-                                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                                if (notify_model != null)
+                                                {
+                                                    Knoti = new APIModel.Models.Notify();
+                                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                                }
+                                            }
+                                            catch
+                                            { }
+
+                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                            if (info is not null)
+                                            {
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
                                             }
                                         }
-                                        catch
-                                        { }
-
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
-                                        }
+                                        #endregion
                                     }
-                                    #endregion
                                 }
-                            }
-                            #endregion
+                                #endregion
+
+                                #region gửi event post automation - giao việc
+                                if (isAssign) // nếu được giao event = 5 else event = 6
+                                {
+                                    postauto.eventid = 5;
+                                }
+                                else
+                                {
+                                    postauto.eventid = 6;
+                                }
+                                postauto.data_input = "any";
+                                postauto.data_input += "," +data.value; // giá trị mới
+                                //postauto.data_input = datapost;
+                                Automation.SendAutomation(postauto, _configuration, _producer);
+                                #endregion
+                            } //data.key == "assign"
+
                         }
                         if (data.key == "Tags")//thêm 1 tag mới
                         {

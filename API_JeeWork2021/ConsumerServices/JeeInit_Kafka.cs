@@ -77,58 +77,58 @@ namespace JeeWork_Core2021.ConsumerServices
                 string roles = "";
 
                 Console.WriteLine(message);
-                if (kq.AppCode.Contains("WORK"))
-                {
-                    string conn = _cache.GetConnectionString(kq.CustomerID);
+                //if (kq.AppCode.Contains("WORK"))
+                //{
+                //    string conn = _cache.GetConnectionString(kq.CustomerID);
 
-                    List<string> roles_ad = ConsumerHelper.getRoles(conn);
-                    Console.WriteLine("New customer has in app !!");
-                    Console.WriteLine(DateTime.Now);
-                    Console.WriteLine(roles);
+                //    List<string> roles_ad = ConsumerHelper.getRoles(conn);
+                //    Console.WriteLine("New customer has in app !!");
+                //    Console.WriteLine(DateTime.Now);
+                //    Console.WriteLine(roles);
 
-                    if (kq.IsInitial) //cấp luôn roles Admin
-                    {
-                        roles = string.Join(",", roles_ad);
-                        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
-                        if (idnhom > 0)
-                        {
-                            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
-                            {
-                                return; //insert thất bại
-                            }
-                        }
-                        ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
-                        return;
-                    }
+                //    if (kq.IsInitial) //cấp luôn roles Admin
+                //    {
+                //        roles = string.Join(",", roles_ad);
+                //        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
+                //        if (idnhom > 0)
+                //        {
+                //            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
+                //            {
+                //                return; //insert thất bại
+                //            }
+                //        }
+                //        ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
+                //        return;
+                //    }
 
-                    if (kq.IsAdmin)
-                    {
-                        roles = string.Join(",", roles_ad);
-                        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
-                        if (idnhom > 0)
-                        {
-                            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
-                            {
-                                return;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        roles = "3400, 3500"; //quyền mặc định: gửi yêu cầu vpp
-                        List<string> rol_df = new List<string>() { "3400", "3500" };
-                        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, rol_df);
-                        if (idnhom > 0)
-                        {
-                            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
-                            {
-                                return;
-                            }
-                        }
-                    }
-                    ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
-                    return;
-                }
+                //    if (kq.IsAdmin)
+                //    {
+                //        roles = string.Join(",", roles_ad);
+                //        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
+                //        if (idnhom > 0)
+                //        {
+                //            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
+                //            {
+                //                return;
+                //            }
+                //        }
+                //    }
+                //    else
+                //    {
+                //        roles = "3400, 3500"; //quyền mặc định: gửi yêu cầu vpp
+                //        List<string> rol_df = new List<string>() { "3400", "3500" };
+                //        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, rol_df);
+                //        if (idnhom > 0)
+                //        {
+                //            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
+                //            {
+                //                return;
+                //            }
+                //        }
+                //    }
+                //    ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
+                //    return;
+                //}
             }
             catch (Exception ex)
             {

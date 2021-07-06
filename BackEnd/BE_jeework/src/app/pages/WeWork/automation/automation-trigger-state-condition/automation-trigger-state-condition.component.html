@@ -1,0 +1,240 @@
+<ng-container [ngSwitch]="type">
+    <!-- [ngTemplateOutletContext]="{ item: child }" -->
+    <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="status"></ng-container>
+    <ng-container *ngSwitchCase="6" [ngTemplateOutlet]="assign"></ng-container>
+    <ng-container *ngSwitchCase="5" [ngTemplateOutlet]="assign"></ng-container>
+    <ng-container *ngSwitchCase="2" [ngTemplateOutlet]="priority"></ng-container>
+    <ng-container *ngSwitchDefault></ng-container>
+</ng-container>
+
+<ng-template #status>
+    <div class="cu-automation-trigger-special-condition">
+
+    </div>
+    <div class="cu-edit-automation__container-body-actions-row">
+        <div class="cu-edit-automation__container-body-actions-label">Từ :
+        </div>
+    
+        <div class="cu-automation-field-value cu-automation-field-value_stretch url" [matMenuTriggerFor]="statusfrom">
+            <div class="cu-automation-field-value-status-multiple">
+                <div class="cu-status-filter">
+                    <div cudropdown="" class="cu-dropdown_left cu-dropdown">
+                        <div cudropdowntoggle="" class="cu-status-filter__toggle cu-dropdown__toggle">
+                            <!-- <div class="cu-status-filter__value"> Chọn </div> -->
+
+                            <div  *ngIf="!this.value.from || (this.value.from && this.value.from.length < 1)" class="cu-status-filter__value"> Chọn </div>
+                            <ng-container *ngIf="this.value.from && this.value.from.length == 1">
+                                <div class="row">
+                                    <div class="cu-task-row-status1"
+                                        style="width:20px;padding-right:5px">
+                                        <div class="point"
+                                            [ngStyle]="{'backgroundColor': this.value.from[0].color}">
+                                        </div>
+                                    </div>
+                                    {{this.value.from[0].statusname}}
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="this.value.from && this.value.from.length > 1 && this.value.from.length <= 5">
+                                <div class="row">
+                                    <div class="cu-task-row-status1" matTooltip="{{stt.statusname}}" style="width:20px;padding-right:5px" *ngFor="let stt of this.value.from">
+                                        <div class="point" [ngStyle]="{'backgroundColor': stt.color}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="this.value.from && this.value.from.length > 5">
+                                <div class="row">
+                                    <ng-container  *ngFor="let stt of this.value.from; let index = index">
+                                        <div class="cu-task-row-status1" style="width:20px;padding-right:5px" *ngIf="index<=4">
+                                            <div class="point" matTooltip=" {{ stt.statusname }} "
+                                                [ngStyle]="{'backgroundColor': stt.color}">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    {{ ' +' + (this.value.from.length - 5)}}
+                                    
+                                </div>
+                            </ng-container>
+
+                            <div icon="angle-right" class="cu-status-filter__down icon">
+                                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="13 0 582 2048" id="svg-sprite-angle-right"><path d="M595 1088c0 8.667-3.333 16.333-10 23l-466 466c-6.667 6.667-14.333 10-23 10s-16.333-3.333-23-10l-50-50c-6.667-6.667-10-14.333-10-23s3.333-16.333 10-23l393-393L23 695c-6.667-6.667-10-14.333-10-23s3.333-16.333 10-23l50-50c6.667-6.667 14.333-10 23-10s16.333 3.333 23 10l466 466c6.667 6.667 10 14.333 10 23z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <mat-menu #statusfrom="matMenu">  
+            <button mat-menu-item *ngFor="let stt of listStatus" (click)="$event.stopPropagation();">
+                <mat-checkbox (click)="SelectedStatus(stt)">
+                    <div class="row">
+                        <div class="cu-task-row-status1"
+                            style="width:20px;padding-right:5px">
+                            <div class="point"
+                                [ngStyle]="{'backgroundColor': stt.color}">
+                            </div>
+                        </div>
+                        {{stt.statusname}}
+                    </div>
+                  </mat-checkbox>
+            </button>
+        </mat-menu>
+    
+    
+    </div>
+    
+    <div class="cu-edit-automation__container-body-actions-row">
+        <div class="cu-edit-automation__container-body-actions-label">Sang:
+    
+    
+        </div>
+    
+        <div class="cu-automation-field-value cu-automation-field-value_stretch" [matMenuTriggerFor]="statusto">
+            <div class="cu-automation-field-value-status-multiple">
+                <div class="cu-status-filter">
+                    <div cudropdown="" class="cu-dropdown_left cu-dropdown">
+                        <div cudropdowntoggle="" class="cu-status-filter__toggle cu-dropdown__toggle">
+                            <div  *ngIf="!this.value.to || (this.value.to && this.value.to.length < 1)" class="cu-status-filter__value"> Chọn </div>
+                            <ng-container *ngIf="this.value.to && this.value.to.length == 1">
+                                <div class="row">
+                                    <div class="cu-task-row-status1"
+                                        style="width:20px;padding-right:5px">
+                                        <div class="point"
+                                            [ngStyle]="{'backgroundColor': this.value.to[0].color}">
+                                        </div>
+                                    </div>
+                                    {{this.value.to[0].statusname}}
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="this.value.to && this.value.to.length > 1 && this.value.to.length <= 5">
+                                <div class="row">
+                                    <div class="cu-task-row-status1" style="width:20px;padding-right:5px" *ngFor="let stt of this.value.to">
+                                        <div class="point" matTooltip=" {{ stt.statusname }} "
+                                            [ngStyle]="{'backgroundColor': stt.color}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="this.value.to && this.value.to.length > 5">
+                                <div class="row">
+                                    <ng-container  *ngFor="let stt of this.value.to; let index = index">
+                                        <div class="cu-task-row-status1" style="width:20px;padding-right:5px" *ngIf="index<=4">
+                                            <div class="point" matTooltip=" {{ stt.statusname }} "
+                                                [ngStyle]="{'backgroundColor': stt.color}">
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    {{ ' +' + (this.value.to.length - 5)}}
+                                    
+                                </div>
+                            </ng-container>
+
+                            <div icon="angle-right" class="cu-status-filter__down icon">
+                                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="13 0 582 2048" id="svg-sprite-angle-right"><path d="M595 1088c0 8.667-3.333 16.333-10 23l-466 466c-6.667 6.667-14.333 10-23 10s-16.333-3.333-23-10l-50-50c-6.667-6.667-10-14.333-10-23s3.333-16.333 10-23l393-393L23 695c-6.667-6.667-10-14.333-10-23s3.333-16.333 10-23l50-50c6.667-6.667 14.333-10 23-10s16.333 3.333 23 10l466 466c6.667 6.667 10 14.333 10 23z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <mat-menu #statusto="matMenu">  
+            <button mat-menu-item *ngFor="let stt of listStatus"  (click)="$event.stopPropagation();">
+                <mat-checkbox (click)="SelectedStatus(stt,false)">
+                    <div class="row">
+                        <div class="cu-task-row-status1"
+                            style="width:20px;padding-right:5px">
+                            <div class="point"
+                                [ngStyle]="{'backgroundColor': stt.color}">
+                            </div>
+                        </div>
+                        {{stt.statusname}}
+                    </div>
+                  </mat-checkbox>
+            </button>
+        </mat-menu>
+    </div>
+    
+</ng-template>
+
+<ng-template #assign>
+    <div class="cu-automation-trigger-special-condition">
+
+    </div>
+    <div class="cu-edit-automation__container-body-actions-row">
+        <div class="cu-edit-automation__container-body-actions-label">Assignee:
+        </div>
+    
+        <div class="row w-100 url" style="margin-left: 15px!important;">
+            
+            <kt-avatar-list-users [ListUser]="getItemSelectedAssign()" MaxSize="3" iconSize="24">
+            </kt-avatar-list-users>
+            <div class="user"  [matMenuTriggerFor]="owner">
+                <img width="24" height="24" src="./../../../../../assets/images/user-add.png" alt="add user">
+            </div>
+            <mat-menu #owner="matMenu">
+                <div class="page-work-detail">
+                    <kt-choose-users isNewView="true" [options]="getOptions()"
+                        (ItemSelected)="SelectedUser($event)">
+                    </kt-choose-users>
+                </div>
+            </mat-menu>
+    
+        </div>
+    
+    
+    </div>
+</ng-template>
+
+<ng-template #priority>
+    <div class="cu-automation-trigger-special-condition">
+
+    </div>
+    <div class="cu-edit-automation__container-body-actions-row">
+        <div class="cu-edit-automation__container-body-actions-label">Từ:
+        </div>
+    
+        <div class="cu-automation-field-value cu-automation-field-value_stretch url">
+            <!-- <div class="cu-automation-field-value-status-multiple">
+                <div class="cu-status-filter">
+                    <div cudropdown="" class="cu-dropdown_left cu-dropdown">
+                        <div cudropdowntoggle="" class="cu-status-filter__toggle cu-dropdown__toggle">
+                            <div class="cu-status-filter__value"> Chọn
+                            </div>
+                            <div icon="angle-right" class="cu-status-filter__down icon">
+                                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="13 0 582 2048" id="svg-sprite-angle-right"><path d="M595 1088c0 8.667-3.333 16.333-10 23l-466 466c-6.667 6.667-14.333 10-23 10s-16.333-3.333-23-10l-50-50c-6.667-6.667-10-14.333-10-23s3.333-16.333 10-23l393-393L23 695c-6.667-6.667-10-14.333-10-23s3.333-16.333 10-23l50-50c6.667-6.667 14.333-10 23-10s16.333 3.333 23 10l466 466c6.667 6.667 10 14.333 10 23z"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <mat-form-field class="w-100" appearance="fill">
+                <mat-label>Chọn</mat-label>
+                <mat-select [(ngModel)]="value.from">
+                  <mat-option [value]="item.value" *ngFor="let item of listPriority">
+                        <i class="{{item.icon}} pd-r-10"></i>
+                        {{ 'priority.'+item.name | translate }}
+                  </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="cu-edit-automation__container-body-actions-row">
+        <div class="cu-edit-automation__container-body-actions-label">Sang:
+        </div>
+    
+        <div class="cu-automation-field-value cu-automation-field-value_stretch url">
+            
+            <mat-form-field class="w-100" appearance="fill">
+                <mat-label>Chọn</mat-label>
+                <mat-select [(ngModel)]="value.to">
+                  <mat-option [value]="item.value" *ngFor="let item of listPriority">
+                        <i class="{{item.icon}} pd-r-10"></i>
+                        {{ 'priority.'+item.name | translate }}
+                  </mat-option>
+                </mat-select>
+            </mat-form-field>
+            
+        </div>
+    </div>
+
+</ng-template>

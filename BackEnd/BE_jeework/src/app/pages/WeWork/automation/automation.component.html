@@ -1,0 +1,91 @@
+<ng-container *ngIf="!isEditAuto;else editauto">
+    <div class="cu-automation-list__container overflow-hidden">
+
+        <div class="cu-automation-list__header">
+            <div class="cu-automation-list__header-title"> Automations </div>
+            <div class="cu-automation-list__header-tabs">
+                <div class="cu-automation-list__header-tab"
+                    [ngClass]="{'cu-automation-list__header-tab_active': tab=='brower'}" (click)="tab='brower'"> Browse
+                </div>
+                <div class="cu-automation-list__header-tab"
+                    [ngClass]="{'cu-automation-list__header-tab_active': tab=='manage'}" (click)="tab='manage'"> Manage
+                </div>
+                <!-- <div class="cu-automation-list__header-tab"> Usage </div> -->
+            </div>
+            <div class="cu-automation-list__header-close">
+                <div icon="cu2-close" class="cu-automation-list__header-close-icon icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="svg-sprite-cu2-close">
+                        <path
+                            d="M502.43 55.57l-446.9 446.9a31.97 31.97 0 01-45.25 0 31.97 31.97 0 010-45.26l446.9-446.9a31.97 31.97 0 0145.25 0 31.97 31.97 0 010 45.26z">
+                        </path>
+                        <path
+                            d="M457.17 502.47L10.28 55.57a31.97 31.97 0 010-45.25 31.97 31.97 0 0145.25 0l446.9 446.89a31.97 31.97 0 010 45.26 31.97 31.97 0 01-45.26 0z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <ng-container [ngSwitch]="tab">
+            <!-- [ngTemplateOutletContext]="{ item: child }" -->
+            <ng-container *ngSwitchCase="'brower'">
+                <app-automation-tab-browse [ID_department]="ID_department" [ID_projectteam]="ID_projectteam">
+                </app-automation-tab-browse>
+            </ng-container>
+            <ng-container *ngSwitchCase="'manage'">
+                <app-automation-tab-manage class="cu-automation-tab-manage__container"></app-automation-tab-manage>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+            </ng-container>
+        </ng-container>
+    </div>
+</ng-container>
+<ng-template #editauto>
+    <div class="cu-automation-list__container overflow-hidden">
+        <div class="cu-edit-automation__container-header ng-star-inserted">
+            <div class="cu-category-list-dropdown">
+                <div _nghost-jtc-c147="">
+                    <div _ngcontent-jtc-c147="" cudropdown="" class="cu-dropdown">
+                        <div _ngcontent-jtc-c147="" cudropdowntoggle=""
+                            class="cu-dropdown__toggle cu-dropdown__toggle_disabled">
+                            <div class="cu-edit-automation__container-header-location" style="border: 0;">
+                                <div icon="cu2-pin" class="cu-edit-automation__container-header-location-pin icon"><svg
+                                        class="ng-star-inserted">
+                                        <use
+                                            xlink:href="https://app.clickup.com/map.6622ace68aec573cbb83.svg#svg-sprite-cu2-pin">
+                                        </use>
+                                    </svg>
+
+                                </div>
+                                <div class="cu-edit-automation__container-header-location-value"> 💼 Project Activities
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="cu-edit-automation__container-header-title text-center">
+                Edit Automation
+                <div class="cu-edit-automation__container-header-title-breadcrumbs d-block">
+                    <div class="cu-automation-breadcrumbs">
+                        in check Custom field &gt; ⏳ Phase 1 - Initiation &gt; 💼 Project Activities
+                    </div>
+                </div>
+            </div>
+            <div class="cu-edit-automation__container-header-exit">
+                <div icon="cu2-close" class="icon"><svg class="ng-star-inserted">
+                        <use xlink:href="https://app.clickup.com/map.6622ace68aec573cbb83.svg#svg-sprite-cu2-close">
+                        </use>
+                    </svg>
+
+                </div>
+            </div>
+        </div>
+        <app-edit-automation class="cu-automation-page-edit__container w-100" [ID_department]="ID_department"
+            [ID_projectteam]="ID_projectteam">
+        </app-edit-automation>
+    </div>
+
+
+</ng-template>

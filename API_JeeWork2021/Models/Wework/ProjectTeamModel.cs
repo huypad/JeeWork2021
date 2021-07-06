@@ -92,7 +92,7 @@ namespace JeeWork_Core2021.Models
     }
     public class ProjectViewsModel
     {
-        public long id_row { get; set; } 
+        public long id_row { get; set; }
         public long viewid { get; set; } // View chọn
         public long id_project_team { get; set; }
         public string view_name_new { get; set; } // tên view mới
@@ -103,5 +103,14 @@ namespace JeeWork_Core2021.Models
         public bool? personal_view { get; set; }
         public bool? favourite { get; set; }
         public long id_department { get; set; }
+    }
+    public class GenerateProjectAutoModel
+    {
+        public long listid { get; set; } = 0;
+        public long id_department { get; set; } = 0;
+        public string title { get; set; } // Tiêu đề của đối tượng
+        // 1:dự án nội bộ, 2: dự án làm việc vs khách hàng, 3 - dự án tạo từ cuộc họp
+        public long loai { get; set; } = 3;
+        public long meetingid { get; set; }
     }
 }

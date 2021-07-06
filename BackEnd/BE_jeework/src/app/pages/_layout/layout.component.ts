@@ -170,12 +170,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     iframe.style.display = 'none'
     document.body.appendChild(iframe)
 
-    console.log('show oneSignal out')
     // Thiết lập Event Listener để xác nhận người dùng đăng ký chưa
     window.addEventListener(
       'message',
       (event) => {
-        console.log('show oneSignal')
         if (event.origin !== host.portal) return // Quan trọng, bảo mật, nếu không phải message từ portal thì ko làm gì cả, tránh XSS attack
         // event.data = false là user chưa đăng ký nhận thông báo, nếu đăng ký rồi thì là true
         if (event.data === false) {

@@ -3040,6 +3040,15 @@ $main-color: #16a850; // màu chính
 		}
 	}
 }
+.popover-menu-1 {
+	position: relative;
+	top: -5px;
+
+	.popover-content {
+		top: 0 !important;
+	}
+
+}
 
 /*#endregion*/
 /*#region choose user*/

@@ -186,6 +186,7 @@ export const locale = {
       phanquyennguoidung: "Phân quyền người dùng",
     },
     GeneralKey: {
+      automation: 'Tự động hóa',
       boqua: "Bỏ qua",
       bancochacchanmuonxoakhong: "Bạn có chắc muốn xóa dữ liệu này không?",
       browsetemplate: 'Các mẫu có sẵn',

@@ -1,3 +1,4 @@
+import { AutomationComponent } from './../../../WeWork/automation/automation.component';
 import { TemplateCenterComponent } from "./../../../WeWork/template-center/template-center.component";
 import { TemplateCenterUpdateComponent } from "./../../../WeWork/template-center/template-center-update/template-center-update.component";
 import { WeWorkService } from "./../../../WeWork/services/wework.services";
@@ -935,5 +936,22 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       return this.WeWorkService.getColorNameUser(text);
     }
     return "red";
+  }
+
+  AddAutomation(itemMenu){
+    console.log(itemMenu);
+    const item = itemMenu;
+    const dialogRef = this.dialog.open(AutomationComponent, {
+      data: { item },
+      width: "1240px",
+      height: "95vh",
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (!res) {
+        return;
+      } else {
+        this.changeDetectorRefs.detectChanges();
+      }
+    });
   }
 }

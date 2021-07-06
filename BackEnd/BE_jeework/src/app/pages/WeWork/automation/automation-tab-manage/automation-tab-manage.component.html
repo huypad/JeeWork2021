@@ -1,0 +1,67 @@
+<div class="cu-automation-tab-manage__header ng-star-inserted">
+    <div class="cu-automation-tab-manage__header-left">
+        <div class="cu-automation-tab-manage__header-count"><span>{{listAutomation.length}}</span></div>
+        <div class="cu-automation-tab-manage__header__main">
+            <div class="cu-automation-tab-manage__header-title"> Active automations </div>
+            <div class="cu-automation-tab-manage__header-breadcrumbs">
+                
+                <div _ngcontent-abp-c307="" class="cu-automation-breadcrumbs"> in Space Cuối thứ 5
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cu-automation-tab-manage__header-right"><button class="btn btn-skype"> Create Automation
+        </button></div>
+</div>
+<div class="cu-automation-tab-manage__item ng-star-inserted" *ngFor="let item of listAutomation">
+    <div class="cu-automation-tab-manage__item-section">
+        <div class="cu-automation-tab-manage__item-edit">
+            <!-- <div icon="cu2-pencil" matTooltip="Edit"
+                class="cu-automation-tab-manage__item-edit-pencil icon ng-star-inserted">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" id="svg-sprite-cu2-pencil">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.446 7.613a1.004 1.004 0 00-.262.452l-1.138 4.25a1.325 1.325 0 000 .697c.191.71.921 1.131 1.631.941l4.215-1.13a.992.992 0 00.586-.361l6.645-6.644a2.995 2.995 0 000-4.235l-.706-.706a2.995 2.995 0 00-4.235 0L1.446 7.613zm3.42 3.419l-1.9-1.9-.696 2.595 2.595-.695zm1.52-1.302l3.207-3.206-2.118-2.118L4.27 7.613 6.387 9.73zm4.618-4.618L8.888 2.995l.706-.706a.998.998 0 011.411 0l.706.706a.998.998 0 010 1.411l-.706.706z">
+                    </path>
+                </svg>
+
+            </div>
+
+            <div icon="cu2-trash-thick" matTooltip="Delete" class="cu-automation-tab-manage__item-edit-trash icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" id="svg-sprite-cu2-trash-thick">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M5 0a2 2 0 00-2 2v1H1a1 1 0 000 2h.5l.5 6a3 3 0 003 3h4a3 3 0 003-3l.5-6h.5a1 1 0 100-2h-2V2a2 2 0 00-2-2H5zm5.5 5h-7l.5 6a1 1 0 001 1h4a1 1 0 001-1l.5-6zM9 3H5V2h4v1zM5.502 6.065a1 1 0 011.063.933l.195 2.994a1 1 0 11-1.996.13L4.57 7.128a1 1 0 01.933-1.063zm1.933.933a1 1 0 011.996.13l-.195 2.994a1 1 0 01-1.996-.13l.195-2.994z">
+                    </path>
+                </svg>
+
+            </div> -->
+                <mat-icon class="text-dark url" (click)="UpdateAutomation(item)" matTooltip="Chỉnh sửa hành động">edit</mat-icon>
+                <mat-icon mat-icon-button class="url" color="warn" matTooltip="Xóa hành động">delete</mat-icon>
+                
+            <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+
+        </div>
+    </div>
+
+    <app-automation-label class="cu-automation-label" row="1" [value]="item"></app-automation-label>
+</div>
+
+
+<div class="cu-automation-tab-manage__item ng-star-inserted">
+    <div class="cu-automation-tab-manage__item-section">
+        <div class="cu-automation-tab-manage__item-edit">
+
+            <div icon="cu2-trash-thick" matTooltip="Delete" class="cu-automation-tab-manage__item-edit-trash icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" id="svg-sprite-cu2-trash-thick">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M5 0a2 2 0 00-2 2v1H1a1 1 0 000 2h.5l.5 6a3 3 0 003 3h4a3 3 0 003-3l.5-6h.5a1 1 0 100-2h-2V2a2 2 0 00-2-2H5zm5.5 5h-7l.5 6a1 1 0 001 1h4a1 1 0 001-1l.5-6zM9 3H5V2h4v1zM5.502 6.065a1 1 0 011.063.933l.195 2.994a1 1 0 11-1.996.13L4.57 7.128a1 1 0 01.933-1.063zm1.933.933a1 1 0 011.996.13l-.195 2.994a1 1 0 01-1.996-.13l.195-2.994z">
+                    </path>
+                </svg>
+
+            </div>
+
+        </div>
+    </div>
+
+    <app-automation-label class="cu-automation-label" row="2"></app-automation-label>
+</div>
