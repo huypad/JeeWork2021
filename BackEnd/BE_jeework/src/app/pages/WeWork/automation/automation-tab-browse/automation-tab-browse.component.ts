@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-automation-tab-browse',
@@ -6,6 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./automation-tab-browse.component.scss']
 })
 export class AutomationTabBrowseComponent implements OnInit {
+  @Output() eventClose = new EventEmitter<any>();
 
   @Input() ID_projectteam : number = 0;
   @Input() ID_department : number = 0;
@@ -13,5 +14,8 @@ export class AutomationTabBrowseComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+ 
+  Close(event){
+    this.eventClose.emit(event);
+  }
 }

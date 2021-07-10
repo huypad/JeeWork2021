@@ -906,16 +906,16 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         val.Add("description", data.description);
                     else
                         val.Add("description", DBNull.Value);
-                    val.Add("CustomerID", loginData.CustomerID);
-                    val.Add("CreatedDate", DateTime.Now);
-                    val.Add("CreatedBy", iduser);
+                    val.Add("customerid", loginData.CustomerID);
+                    val.Add("createddate", DateTime.Now);
+                    val.Add("createdby", iduser);
                     val.Add("isdefault", 0);
                     val.Add("is_template_center", 1);
                     val.Add("types", data.types);
                     val.Add("levels", data.levels);
                     val.Add("viewid", data.viewid);
                     val.Add("group_statusid", group_id);
-                    val.Add("template_typeid", data.template_typeid);
+                    val.Add("template_typeid", 1); // lấy mặc định trong we_template_types
                     if (!string.IsNullOrEmpty(data.img_temp))
                         val.Add("img_temp", data.img_temp);
                     else
@@ -938,6 +938,19 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString());
+                    #region insert we_template_library
+                    val = new Hashtable();
+                    val.Add("id_template", idc);
+                    val.Add("createddate", DateTime.Now);
+                    val.Add("createdby", iduser);
+                    val.Add("disabled", 0);
+                    val.Add("id_user", loginData.UserID);
+                    if (cnn.Insert(val, "we_template_library") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 45, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();

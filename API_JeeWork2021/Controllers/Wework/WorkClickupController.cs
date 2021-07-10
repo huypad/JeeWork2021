@@ -133,21 +133,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string collect_by = "CreatedDate";
                     if (!string.IsNullOrEmpty(query.filter["collect_by"]))
                         collect_by = collect[query.filter["collect_by"]];
-
-                    //if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
-                    //{
-                    //    DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                    //    dieukien_where += " and w." + collect_by + ">=@from";
-                    //    Conds.Add("from", from);
-                    //}
-                    //if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    //{
-                    //    DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                    //    to = to.AddDays(1);
-                    //    dieukien_where += " and w." + collect_by + "<@to";
-                    //    Conds.Add("to", to);
-                    //}
-
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -2359,17 +2344,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
-                    #region gửi event insert công việc mới
-                    DataTable dtwork = cnn.CreateDataTable("select * from v_wework_new where Disabled = 0 and id_row = "+idc);
-                    Post_Automation_Model postauto = new Post_Automation_Model();
-                    postauto.taskid = idc; // id task mới tạo
-                    postauto.userid = loginData.UserID;
-                    postauto.listid = data.id_project_team; // id project team
-                    postauto.customerid = loginData.CustomerID;
-                    postauto.eventid = 7;
-                    postauto.departmentid = long.Parse(dtwork.Rows[0]["id_department"].ToString()); // id_department
-                    Automation.SendAutomation(postauto, _configuration, _producer);
-                    #endregion
+                    
                     // Insert người follow cho từng tình trạng của công việc
                     dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), ConnectionString);
                     if (dt_status.Rows.Count > 0)
@@ -2463,6 +2438,17 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             NhacNho.UpdateSoluongCV(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
                         }
                     }
+                    #region gửi event insert công việc mới
+                    DataTable dtwork = cnn.CreateDataTable("select * from v_wework_new where Disabled = 0 and id_row = " + idc);
+                    Post_Automation_Model postauto = new Post_Automation_Model();
+                    postauto.taskid = idc; // id task mới tạo
+                    postauto.userid = loginData.UserID;
+                    postauto.listid = data.id_project_team; // id project team
+                    postauto.customerid = loginData.CustomerID;
+                    postauto.eventid = 7;
+                    postauto.departmentid = long.Parse(dtwork.Rows[0]["id_department"].ToString()); // id_department
+                    Automation.SendAutomation(postauto, _configuration, _producer);
+                    #endregion
                     data.id_row = idc;
                     WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier);
                     #region Notify thêm mới công việc
@@ -3407,7 +3393,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             //postauto.data_input = datapost;
                             Automation.SendAutomation(postauto, _configuration, _producer);
                             #endregion
-                            cnn.EndTransaction();
                             WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config, ConnectionString, _notifier);
                             DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                             if (dt_user.Rows.Count > 0)
@@ -3604,8 +3589,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 {
                                     postauto.eventid = 6;
                                 }
-                                postauto.data_input = "any";
-                                postauto.data_input += "," +data.value; // giá trị mới
+                                //postauto.data_input = "any";
+                                postauto.data_input += data.value; // giá trị mới
                                 //postauto.data_input = datapost;
                                 Automation.SendAutomation(postauto, _configuration, _producer);
                                 #endregion

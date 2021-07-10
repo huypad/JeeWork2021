@@ -803,6 +803,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    Title = r["title"],
                                    Title_NewField = r["Title_NewField"],
                                    IsHidden = r["IsHidden"],
+                                   show_default_type = r["show_default_type"]
                                };
                     data.OrderBy(x => x.position).ThenByDescending(x => x.id_project_team);
                     return JsonResultCommon.ThanhCong(data);
@@ -1054,8 +1055,8 @@ where u.Disabled = 0 and id_user = {loginData.UserID}
 and p.Disabled = 0  and d.Disabled = 0 and  ( d.id_row= {id_department} or d.ParentID = {id_department} )
 and IdKH={loginData.CustomerID} )";
                     query += " order by IsFinal,id_row";
-
-                    DataTable dt = dt = cnn.CreateDataTable(query);
+                    
+                    DataTable dt = cnn.CreateDataTable(query);
 
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2275,7 +2276,8 @@ and IdKH={loginData.CustomerID} )";
                     cond.Add("Disabled", 0);
                     select = $@"select we_fields_project_team.id_row, we_fields.fieldname, we_fields.title, IsHidden
                                             ,we_fields_project_team.Title as Title_NewField, we_fields.isnewfield
-                                            ,type, TypeID, id_project_team, IsDefault, we_fields_project_team.position
+                                            ,type, TypeID, id_project_team, IsDefault
+                                            ,we_fields.show_default_type, we_fields_project_team.position
                                              from we_fields left join we_fields_project_team
                                              on we_fields.FieldName = we_fields_project_team.fieldname 
                                             and id_project_team = " + id_project_team + " " +
@@ -2701,19 +2703,29 @@ where Disabled = 0";
                         "and loai = 2";
                     if (cnn.ExecuteScalar(sql_user) == null)
                     {
-                        Hashtable val = new Hashtable();
-                        val.Add("id_work", WorkID);
-                        val.Add("id_user", dt.Rows[0]["Checker"].ToString());
-                        val.Add("CreatedDate", DateTime.Now);
-                        val.Add("CreatedBy", data.UserID);
-                        val.Add("loai", 1);
-                        if (cnn.Insert(val, "we_work_user") != 1)
+                        SqlConditions sqlcond123 = new SqlConditions();
+                        sqlcond123.Add("id_work", WorkID);
+                        sqlcond123.Add("id_user", dt.Rows[0]["Checker"].ToString());
+                        sqlcond123.Add("loai", 1);
+                        sqlcond123.Add("Disabled", 0);
+                        var sql = @"select * from we_work_user where id_work = @id_work and id_user = @id_user and loai = @loai and Disabled = @Disabled";
+                        DataTable dtG = cnn.CreateDataTable(sql, sqlcond123);
+                        if (dtG.Rows.Count == 0)
                         {
-                            return false;
+                            Hashtable val = new Hashtable();
+                            val.Add("id_work", WorkID);
+                            val.Add("id_user", dt.Rows[0]["Checker"].ToString());
+                            val.Add("CreatedDate", DateTime.Now);
+                            val.Add("CreatedBy", data.UserID);
+                            val.Add("loai", 1);
+                            if (cnn.Insert(val, "we_work_user") != 1)
+                            {
+                                return false;
+                            }
+                            var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
+                            mailthongbao(WorkID, users, 10, data, ConnectionString, _notifier);
+                            return true;
                         }
-                        var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                        mailthongbao(WorkID, users, 10, data, ConnectionString, _notifier);
-                        return true;
                     }
                     return true;
                 }

@@ -39,8 +39,8 @@ namespace JeeWork_Core2021.Models
     {
         public long id_row { get; set; }
         public string title { get; set; }
-        public DateTime deadline { get; set; }
-        public DateTime start_date { get; set; }
+        public string deadline { get; set; }
+        public string start_date { get; set; }
         public string description { get; set; }
         public long id_project_team { get; set; }
         public long id_group { get; set; }

@@ -28,15 +28,25 @@ export class AutomationService {
         { headers: httpHeaders });
     }
 
-    getAutomationList(): Observable<any> {
+    getAutomationList(queryParams): Observable<any> {
+      const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
       const httpHeaders = this.httpUtils.getHTTPHeaders();
       return this.http.get<any>(API_Auto + '/get-automation-list',
-        { headers: httpHeaders });
+        { headers: httpHeaders , params: httpParams});
     }
-
     InsertAutomation(data): Observable<any> {
       const httpHeaders = this.httpUtils.getHTTPHeaders();
       return this.http.post<any>(API_Auto + '/add-automation',data,
+        { headers: httpHeaders });
+    }
+    UpdateAutomation(data): Observable<any> {
+      const httpHeaders = this.httpUtils.getHTTPHeaders();
+      return this.http.post<any>(API_Auto + '/update-automation',data,
+        { headers: httpHeaders });
+    }
+    UpdateStatusAutomation(rowid): Observable<any> {
+      const httpHeaders = this.httpUtils.getHTTPHeaders();
+      return this.http.get<any>(API_Auto + '/updatestatus-automation?rowid='+rowid,
         { headers: httpHeaders });
     }
     ListTaskParent(id,isDeparment): Observable<any> {

@@ -20,15 +20,20 @@ import {
   templateUrl: "./automation-trigger-state-condition.component.html",
   styleUrls: ["./automation-trigger-state-condition.component.scss"],
 })
-export class AutomationTriggerStateConditionComponent implements OnInit, OnChanges {
-  @Input() ID_projectteam : number = 0;
-  @Input() ID_department : number = 0;
-  @Input() type: number = 1;
+export class AutomationTriggerStateConditionComponent
+  implements OnInit, OnChanges
+{
+  @Input() ID_projectteam: number = 0;
+  @Input() ID_department: number = 0;
+  @Input() condition: any = {};
+  @Input() Eventid: number = 1;
   @Output() valueout = new EventEmitter<any>();
+  Remapdata = false;
   value: any = [];
   listPriority: any = [];
   listStatus: any = [];
   listUser: any = [];
+  data_condition: any = [];
   constructor(
     private layoutUtilsService: LayoutUtilsService,
     private projectsTeamService: ProjectsTeamService,
@@ -48,41 +53,115 @@ export class AutomationTriggerStateConditionComponent implements OnInit, OnChang
     this.weWorkService.list_account({}).subscribe((res) => {
       if (res && res.status == 1) {
         this.listUser = res.data;
+        if (this.Eventid == 5 || this.Eventid == 6) this.loadAssign_ev56();
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
-
   }
 
-  LoadDataStatus(){
-    if(this.ID_projectteam > 0){
-      this.weWorkService.ListStatusDynamic(this.ID_projectteam).subscribe((res) => {
-        if (res && res.status == 1) {
-          this.listStatus = res.data;
-          this.changeDetectorRefs.detectChanges();
-        } else {
-          this.layoutUtilsService.showError(res.error.message);
-        }
-      });
-    }else if(this.ID_department > 0 ){
-      this.weWorkService.ListStatusDynamicByDepartment(this.ID_department).subscribe((res) => {
-        if (res && res.status == 1) {
-          this.listStatus = res.data;
-          this.changeDetectorRefs.detectChanges();
-        } else {
-          this.layoutUtilsService.showError(res.error.message);
-        }
-      });
+  LoadDataStatus() {
+    if (this.ID_projectteam > 0) {
+      this.weWorkService
+        .ListStatusDynamic(this.ID_projectteam)
+        .subscribe((res) => {
+          if (res && res.status == 1) {
+            this.listStatus = res.data;
+            this.LoadDataEvent1();
+            this.changeDetectorRefs.detectChanges();
+          } else {
+            this.layoutUtilsService.showError(res.error.message);
+          }
+        });
+    } else if (this.ID_department > 0) {
+      this.weWorkService
+        .ListStatusDynamicByDepartment(this.ID_department)
+        .subscribe((res) => {
+          if (res && res.status == 1) {
+            this.listStatus = res.data;
+            this.LoadDataEvent1();
+            this.changeDetectorRefs.detectChanges();
+          } else {
+            this.layoutUtilsService.showError(res.error.message);
+          }
+        });
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.LoadDataStatus();
     this.value = {};
-
+    if (this.condition.condition && this.condition.condition[0]) {
+      this.data_condition = this.condition.condition[0];
+      this.MapvalueEdit();
+    }
     this.valueout.emit(this.value);
-
+  }
+  MapvalueEdit() {
+    console.log(this.data_condition, "datacondition");
+    switch (this.Eventid) {
+      case 1: // thay đổi trạng thái
+        {
+          this.LoadDataEvent1();
+        }
+        break;
+      case 2: // priority
+        {
+          if (this.data_condition.from && this.data_condition.from != "any") {
+            var x = this.data_condition.from.split(",");
+            if (x && x.length > 0) {
+              this.value.from = +x[0];
+            }
+          }
+          if (this.data_condition.to && this.data_condition.to != "any") {
+            var x = this.data_condition.to.split(",");
+            if (x && x.length > 0) {
+              this.value.to = +x[0];
+            }
+          }
+        }
+        break;
+      case 5: // gắn người
+      case 6:
+        {
+          this.loadAssign_ev56();
+        }
+        break;
+    }
+  }
+  loadAssign_ev56() {
+    if (!this.listUser || this.listUser.length == 0) return;
+    if (this.Eventid != this.condition.eventid) return;
+    if ( !this.Remapdata && this.data_condition.list && this.data_condition.list != "any") {
+      this.Remapdata = true;
+      var listID = this.data_condition.list.split(",");
+      // debugger
+      listID.forEach((id) => {
+        var user = this.listUser.find((x) => +x.id_nv == +id);
+        if (user) this.SelectedUser(user);
+      });
+    }
+  }
+  LoadDataEvent1() {
+    if (this.listStatus.length == 0) return;
+    if (this.Eventid != this.condition.eventid || this.Eventid != 1) return;
+    var condition = this.data_condition;
+    var listIDfrom = condition.from.split(",");
+    var listIDto = condition.to.split(",");
+    this.value.from = [];
+    this.value.to = [];
+    if (listIDfrom) {
+      listIDfrom.forEach((element) => {
+        var item = this.listStatus.find((x) => x.id_row == element);
+        if (item) this.value.from.push(item);
+      });
+    }
+    if (listIDto) {
+      listIDto.forEach((element) => {
+        var item = this.listStatus.find((x) => x.id_row == element);
+        if (item) this.value.to.push(item);
+      });
+    }
   }
   SelectedStatus(status, isfrom = true) {
     if (isfrom) {

@@ -1,3 +1,4 @@
+import { QueryResultsModel } from './../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
 import { HttpUtilsService } from './../../../_metronic/jeework_old/core/utils/http-utils.service';
 import { environment } from 'src/environments/environment';
 import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
@@ -148,6 +149,14 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-all-status-dynamic`, { headers: httpHeaders });
 	}
+
+	//#region nhắc nhở 
+	Get_DSNhacNho(): Observable<QueryResultsModel> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        return this.http.get<any>(environment.HOST_JEELANDINGPAGE_API + `/api/widgets/Get_DSNhacNho`, { headers: httpHeaders });
+    }
+	//#endregion
+
 	//insert status dyamic
 
 

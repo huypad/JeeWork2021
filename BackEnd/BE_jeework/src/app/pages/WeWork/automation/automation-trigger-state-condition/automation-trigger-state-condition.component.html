@@ -1,4 +1,4 @@
-<ng-container [ngSwitch]="type">
+<ng-container [ngSwitch]="Eventid">
     <!-- [ngTemplateOutletContext]="{ item: child }" -->
     <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="status"></ng-container>
     <ng-container *ngSwitchCase="6" [ngTemplateOutlet]="assign"></ng-container>
@@ -161,7 +161,7 @@
 
     </div>
     <div class="cu-edit-automation__container-body-actions-row">
-        <div class="cu-edit-automation__container-body-actions-label">Assignee:
+        <div class="cu-edit-automation__container-body-actions-label">{{'filter.Assignee'|translate}}:
         </div>
     
         <div class="row w-100 url" style="margin-left: 15px!important;">

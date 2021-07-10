@@ -22,14 +22,14 @@
         </div>
 
         <div class="cu-automation-tab-manage__item-info">
-            <div class="cu-automation-tab-manage__item-info-label"> Người tạo </div>
+            <div class="cu-automation-tab-manage__item-info-label"> {{'filter.createdby' | translate}} </div>
             <kt-avatar-user [image]="''" [size]="20" name="{{value.nguoitao_fullname}}">
             </kt-avatar-user>
             <div class="cu-automation-tab-manage__item-info-name"> {{value.nguoitao_fullname}} </div>
         </div>
     </div>
 </ng-container>
-<ng-container *ngIf="row==2">
+<!-- <ng-container *ngIf="row==2">
 
     <div class="cu-automation-label__summary">
 
@@ -63,4 +63,4 @@
 
     </div>
 
-</ng-container>
+</ng-container> -->

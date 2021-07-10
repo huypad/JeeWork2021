@@ -1,17 +1,17 @@
 <div class="cu-automation-tab-manage__header ng-star-inserted">
     <div class="cu-automation-tab-manage__header-left">
-        <div class="cu-automation-tab-manage__header-count"><span>{{listAutomation.length}}</span></div>
+        <div class="cu-automation-tab-manage__header-count"><span>{{ getAutomationActive() }}</span></div>
         <div class="cu-automation-tab-manage__header__main">
-            <div class="cu-automation-tab-manage__header-title"> Active automations </div>
+            <div class="cu-automation-tab-manage__header-title"> {{'GeneralKey.activeautomation'|translate}} </div>
             <div class="cu-automation-tab-manage__header-breadcrumbs">
                 
-                <div _ngcontent-abp-c307="" class="cu-automation-breadcrumbs"> in Space Cuối thứ 5
+                <div _ngcontent-abp-c307="" class="cu-automation-breadcrumbs" [innerHTML]="vitri">
 
                 </div>
             </div>
         </div>
     </div>
-    <div class="cu-automation-tab-manage__header-right"><button class="btn btn-skype"> Create Automation
+    <div class="cu-automation-tab-manage__header-right"><button class="btn btn-skype"> {{'GeneralKey.themmoi'|translate}}
         </button></div>
 </div>
 <div class="cu-automation-tab-manage__item ng-star-inserted" *ngFor="let item of listAutomation">
@@ -38,7 +38,7 @@
                 <mat-icon class="text-dark url" (click)="UpdateAutomation(item)" matTooltip="Chỉnh sửa hành động">edit</mat-icon>
                 <mat-icon mat-icon-button class="url" color="warn" matTooltip="Xóa hành động">delete</mat-icon>
                 
-            <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+            <mat-slide-toggle [checked]="item.status==1" (click)="Update(item)"></mat-slide-toggle>
 
         </div>
     </div>
@@ -46,7 +46,7 @@
     <app-automation-label class="cu-automation-label" row="1" [value]="item"></app-automation-label>
 </div>
 
-
+<!-- 
 <div class="cu-automation-tab-manage__item ng-star-inserted">
     <div class="cu-automation-tab-manage__item-section">
         <div class="cu-automation-tab-manage__item-edit">
@@ -64,4 +64,4 @@
     </div>
 
     <app-automation-label class="cu-automation-label" row="2"></app-automation-label>
-</div>
+</div> -->

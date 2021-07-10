@@ -194,7 +194,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                  Priority = r["priority"],
                                                  IsFolder = false,
                                                  type = 1,
-                                                 Data = from r2 in dt_project.AsEnumerable()
+                                                 list = from r2 in dt_project.AsEnumerable()
                                                         where r2["id_department"].ToString() == r["id_row"].ToString()
                                                         select new
                                                         {
@@ -207,7 +207,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                             Is_Project = r2["is_project"],
                                                             type = 3,
                                                         },
-                                                 Data_Folder = from r3 in dt_folder.AsEnumerable()
+                                                folder = from r3 in dt_folder.AsEnumerable()
                                                                where r3["ParentID"].ToString() == r["id_row"].ToString()
                                                                select new
                                                                {
@@ -217,7 +217,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                                    Priority = r3["priority"],
                                                                    type = 2,
                                                                    IsFolder = true,
-                                                                   Data = from r4 in dt_project.AsEnumerable()
+                                                                   list = from r4 in dt_project.AsEnumerable()
                                                                           where r4["id_department"].ToString() == r3["id_row"].ToString()
                                                                           select new
                                                                           {

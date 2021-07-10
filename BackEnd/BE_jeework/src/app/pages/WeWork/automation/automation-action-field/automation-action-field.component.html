@@ -1,11 +1,11 @@
-<ng-container [ngSwitch]="type">
+<ng-container [ngSwitch]="Actionid">
     <!-- [ngTemplateOutletContext]="{ item: child }" -->
     <ng-container *ngSwitchCase="9" [ngTemplateOutlet]="status"></ng-container>
     <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="assign"></ng-container>
     <ng-container *ngSwitchCase="10" [ngTemplateOutlet]="priority"></ng-container>
     <ng-container *ngSwitchCase="2" [ngTemplateOutlet]="task"></ng-container>
     <ng-container *ngSwitchCase="3" [ngTemplateOutlet]="task"></ng-container>
-    <!-- <ng-container *ngSwitchCase="7" [ngTemplateOutlet]="tags"></ng-container> -->
+    <ng-container *ngSwitchCase="7" [ngTemplateOutlet]="tags"></ng-container>
     <ng-container *ngSwitchCase="13" [ngTemplateOutlet]="movetolist"></ng-container>
     <ng-container *ngSwitchCase="6" [ngTemplateOutlet]="movetolist"></ng-container>
     <ng-container *ngSwitchCase="14" [ngTemplateOutlet]="movetolist"></ng-container>
@@ -18,14 +18,14 @@
 <ng-template #status>
 
     <div class="cu-edit-automation__container-body-actions-row">
-        <div class="cu-edit-automation__container-body-actions-label">Chọn trạng thái: </div>
+        <div class="cu-edit-automation__container-body-actions-label">{{'GeneralKey.chontinhtrang' | translate}}: </div>
 
         <div class="cu-automation-field-value cu-automation-field-value_stretch" [matMenuTriggerFor]="statusto">
             <div class="cu-automation-field-value-status-multiple">
                 <div class="cu-status-filter">
                     <div cudropdown="" class="cu-dropdown_left cu-dropdown">
                         <div class="cu-status-filter__toggle cu-dropdown__toggle">
-                            <div *ngIf="!this.value.checked" class="cu-status-filter__value"> Chọn </div>
+                            <div *ngIf="!this.value.checked" class="cu-status-filter__value"> {{'GeneralKey.chon' | translate}} </div>
                             <ng-container *ngIf="this.value.checked">
                                 <div class="row">
                                     <div class="cu-task-row-status1" style="width:20px;padding-right:5px">
@@ -103,7 +103,7 @@
                     <div class="cu-automation-field-value-assignees__more">
                         <div class="cu-automation-field-value-assignees__more-text"
                             (click)="showfullassign=!showfullassign">
-                            Advanced </div>
+                            {{'GeneralKey.nangcao' | translate}} </div>
                     </div>
 
                 </div>
@@ -113,7 +113,7 @@
             <div class="cu-edit-automation__container-body-actions-row">
                 <div
                     class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_assignee">
-                    Add assignee(s): </div>
+                    {{'GeneralKey.them'|translate}}: </div>
 
                 <div class="row">
                     <kt-avatar-list-users [ListUser]="getItemSelectedAssign()" MaxSize="3" iconSize="24">
@@ -139,7 +139,7 @@
             <div class="cu-edit-automation__container-body-actions-row ng-trigger ng-trigger-loadingEnter">
                 <div
                     class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_assignee">
-                    Remove assignee(s): </div>
+                    {{'GeneralKey.bot'|translate}}: </div>
                 <div class="row">
                     <kt-avatar-list-users [ListUser]="getItemRemoveAssign()" MaxSize="3" iconSize="24">
                     </kt-avatar-list-users>
@@ -164,7 +164,7 @@
             <div class="cu-edit-automation__container-body-actions-row ng-trigger ng-trigger-loadingEnter">
                 <div
                     class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_assignee">
-                    Reassign: </div>
+                    {{'GeneralKey.chidinhlai'|translate}}: </div>
                 <div class="row">
                     <kt-avatar-list-users [ListUser]="getItemReassign()" MaxSize="3" iconSize="24">
                     </kt-avatar-list-users>
@@ -179,7 +179,7 @@
                     <mat-menu #owner3="matMenu">
                         <div class="page-work-detail" (click)="$event.stopPropagation();">
                             <kt-choose-users isNewView="true" [options]="getOptions()"
-                                (ItemSelected)="ItemSelectedAssign($event,3)">
+                                (ItemSelected)="ItemSelectedAssign($event,4)">
                             </kt-choose-users>
                         </div>
                     </mat-menu>
@@ -189,7 +189,7 @@
             <div class="cu-edit-automation__container-body-actions-row ng-trigger ng-trigger-loadingEnter">
                 <div
                     class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_assignee">
-                    Remove all assignees: </div>
+                    {{'GeneralKey.botatca'|translate}}: </div>
                 <div class="cu-automation-field-value cu-automation-field-value_stretch">
                     <mat-checkbox [(ngModel)]="value.removeall" class="example-margin"></mat-checkbox>
 
@@ -202,10 +202,8 @@
 
     <div _ngcontent-gxg-c554="" class="cu-automation-task-helper__container">
         <div _ngcontent-gxg-c554="" class="cu-automation-task-helper">
-            <div _ngcontent-gxg-c554="" class="cu-automation-task-helper__container"> If
-                the <span _ngcontent-gxg-c554="" class="cu-automation-task-helper__action">assignee</span>
-                doesn't
-                have access to the task, this action will be skipped. </div>
+            <div _ngcontent-gxg-c554="" class="cu-automation-task-helper__container"> Nếu <span _ngcontent-gxg-c554="" class="cu-automation-task-helper__action"> người được giao việc </span>
+               không có quyền trong công việc thì được bỏ qua. </div>
         </div>
     </div>
 
@@ -213,7 +211,7 @@
 
 <ng-template #priority>
     <div class="cu-edit-automation__container-body-actions-row">
-        <div class="cu-edit-automation__container-body-actions-label">Chọn độ ưu tiên:
+        <div class="cu-edit-automation__container-body-actions-label"> {{'GeneralKey.chondouutien' | translate}} :
         </div>
 
         <div class="cu-automation-field-value cu-automation-field-value_stretch url">
@@ -223,7 +221,7 @@
                         <div class="cu-status-filter__toggle cu-dropdown__toggle" [matMenuTriggerFor]="priorityto">
                             <div class="cu-status-filter__value">
                                 <ng-container *ngIf="!value.to; else bidingpriorityto">
-                                    Select a prioirty
+                                    {{'GeneralKey.chonmuc' | translate}}
                                 </ng-container>
                                 <ng-template #bidingpriorityto>
                                     <i class="{{ getPriority(value.to).icon }}"></i>
@@ -252,7 +250,7 @@
 
     </div>
     <div class="cu-edit-automation__container-body-actions-row">
-        <div class="cu-edit-automation__container-body-actions-label">Add Tags:
+        <div class="cu-edit-automation__container-body-actions-label">{{'tags.themtag'|translate}}:
         </div>
     </div>
     <div class="cu-edit-automation__container-body-actions-row">
@@ -262,7 +260,7 @@
         </svg>
     </div>
     <div class="cu-edit-automation__container-body-actions-row">
-        <div class="cu-edit-automation__container-body-actions-label">Remove Tags:
+        <div class="cu-edit-automation__container-body-actions-label">{{'tags.xoatag'|translate}}:
         </div>
     </div>
     <div class="cu-edit-automation__container-body-actions-row">
@@ -515,7 +513,7 @@
         </div>
     </div> -->
 
-    <ng-container *ngIf="type==3">
+    <ng-container *ngIf="Actionid==3">
         <ng-container [ngTemplateOutlet]="taskparent"></ng-container>
     </ng-container>
 
@@ -524,7 +522,7 @@
 
         <div
             class="Name cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Task ">
-            Task Name: *
+            {{ 'work.taskname' | translate }}: *
         </div>
 
         <div class="Name cu-automation-field-value_stretch cu-automation-field-value_stretch_Task">
@@ -533,7 +531,7 @@
                     <div class="cu-automation-field-value-text-input__container ">
                         <div class="cu-automation-field-value-text-input__input ql-container ql-snow">
                             <input class="input-tencv w-100" type="text" [(ngModel)]="value.taskname"
-                                placeholder="Nhập tên công việc">
+                                placeholder="{{ 'work.entertaskname' | translate }}">
                         </div>
                     </div>
                 </div>
@@ -543,15 +541,13 @@
     </div>
 
     
-    <ng-container *ngIf="type==2">
+    <ng-container *ngIf="Actionid==2">
         <ng-container [ngTemplateOutlet]="movetolist"></ng-container>
     </ng-container>
 
-    <div
-        class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
-        <div
-            class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Status ">
-            Status:
+    <div class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
+        <div class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Status ">
+            {{ 'GeneralKey.trangthai' | translate }}:
         </div>
 
         <div class="cu-automation-field-value_stretch cu-automation-field-value_stretch_Status">
@@ -561,7 +557,7 @@
                         <div class="cu-edit-automation-dropdown__value">
                             <em class="row" style="align-items: center;">
                                 <ng-container *ngIf="!this.value.status;else showstatus">
-                                    Select a status
+                                    {{ 'department.chontrangthaicv' | translate }}
                                 </ng-container>
 
                                 <ng-template #showstatus>
@@ -635,7 +631,7 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="Date cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Due ">
-            Start Date:
+            {{ 'filter.ngayketthuc' | translate }}:
         </div>
         <div class="Date cu-automation-field-value_stretch cu-automation-field-value_stretch_Due">
             <div class="cu-automation-field-value cu-automation-field-value_stretch">
@@ -664,7 +660,7 @@
         <ng-container *ngIf="value.startdatetype == 3">
             <div style="padding-top: 10px;">
                 <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Choose a date</mat-label>
+                    <mat-label>{{'day.chonngay' | translate}}</mat-label>
                     <input matInput [(ngModel)]="value.startdateValue" [matDatepicker]="startpicker" readonly>
                     <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
                     <mat-datepicker #startpicker></mat-datepicker>
@@ -674,7 +670,7 @@
         <ng-container *ngIf="value.startdatetype == 1">
             <div style="padding-top: 10px;">
                 <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Write a number</mat-label>
+                    <mat-label>{{'GeneralKey.songay' | translate}}</mat-label>
                     <input matInput [(ngModel)]="value.startdateValue" type="number">
                 </mat-form-field>
             </div>
@@ -686,10 +682,7 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="Date cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Start ">
-            Due Date:
-
-
-
+            {{ 'filter.ngayketthuc' | translate }}:
         </div>
 
         <div class="Date cu-automation-field-value_stretch cu-automation-field-value_stretch_Due">
@@ -719,7 +712,7 @@
         <ng-container *ngIf="value.duedatetype == 3">
             <div style="padding-top: 10px;">
                 <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Choose a date</mat-label>
+                    <mat-label>{{'day.chonngay' | translate}}</mat-label>
                     <input matInput [(ngModel)]="value.duedateValue" [matDatepicker]="duepicker" readonly>
                     <mat-datepicker-toggle matSuffix [for]="duepicker"></mat-datepicker-toggle>
                     <mat-datepicker #duepicker></mat-datepicker>
@@ -729,7 +722,7 @@
         <ng-container *ngIf="value.duedatetype == 1">
             <div style="padding-top: 10px;">
                 <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Write a number</mat-label>
+                    <mat-label>{{'GeneralKey.songay' | translate}}</mat-label>
                     <input matInput [(ngModel)]="value.duedateValue" type="number">
                 </mat-form-field>
             </div>
@@ -761,7 +754,7 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Assignees ">
-            Assignees:
+            {{'filter.Assignee'|translate}}:
 
         </div>
 
@@ -825,7 +818,7 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_List ">
-            List: *
+            {{ 'topic.projectteam' | translate}}: *
         </div>
 
         <div class="cu-automation-field-value_stretch cu-automation-field-value_stretch_List">
@@ -836,7 +829,8 @@
                         <div class="cu-edit-automation-dropdown__value">
 
                             <em class="">
-                                {{ value.title_project_team?value.title_project_team:'Select a List' }}
+                                <ng-container *ngIf="value.title_project_team">{{value.title_project_team}}</ng-container>
+                                <ng-container *ngIf="!value.title_project_team">{{'filter.chonduan'|translate}}</ng-container>
                             </em>
 
 
@@ -935,13 +929,16 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="Date cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Due ">
-            {{ type==11?'Ngày hết hạn':'Ngày bắt đầu' }}
+            <!-- {{ Actionid==11?'filter.ngayketthuc':'filter.ngaybatdau' | translate }} -->
+            <ng-container *ngIf="Actionid==11">{{'filter.ngayketthuc' | translate }}</ng-container>
+            <ng-container *ngIf="Actionid!=11">{{'filter.ngaybatdau' | translate }}</ng-container>
+            
         </div>
         <div class="Date cu-automation-field-value_stretch cu-automation-field-value_stretch_Due">
             <div class="cu-automation-field-value cu-automation-field-value_stretch">
 
                 <mat-form-field class="w-100" appearance="fill">
-                    <mat-label>Chọn</mat-label>
+                    <mat-label>{{'GeneralKey.chon' | translate}}</mat-label>
                     <mat-select [(ngModel)]="value.datetype">
                         <mat-option [value]="item.value" *ngFor="let item of OPTIONDATE">
                             {{ item.name }}
@@ -955,7 +952,7 @@
         <ng-container *ngIf="value.datetype == 3">
             <div style="padding-top: 10px;">
                 <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Choose a date</mat-label>
+                    <mat-label>{{'day.chonngay' | translate}}</mat-label>
                     <input matInput [(ngModel)]="value.dateValue" [matDatepicker]="picker" readonly>
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
@@ -965,7 +962,7 @@
         <ng-container *ngIf="value.datetype == 1">
             <div style="padding-top: 10px;">
                 <mat-form-field appearance="fill" class="w-100">
-                    <mat-label>Write a number</mat-label>
+                    <mat-label>{{'GeneralKey.songay' | translate}}</mat-label>
                     <input matInput [(ngModel)]="value.dateValue" type="number">
                 </mat-form-field>
             </div>
@@ -978,7 +975,7 @@
     <div
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <mat-form-field [style.fontSize]="'14px'" class="w-100">
-            <mat-label>Comment</mat-label>
+            <mat-label>{{'filter.comments' | translate}}</mat-label>
             <textarea matInput cdkTextareaAutosize [(ngModel)]="value.data" #autosize="cdkTextareaAutosize"
                 cdkAutosizeMinRows="3" cdkAutosizeMaxRows="8"></textarea>
         </mat-form-field>
@@ -1019,7 +1016,7 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_List ">
-            Công việc con:
+            {{'filter.parenttask'|translate}}:
         </div>
 
         <div class="cu-automation-field-value_stretch cu-automation-field-value_stretch_List">
@@ -1030,7 +1027,7 @@
                         <div class="cu-edit-automation-dropdown__value">
 
                             <em class="">
-                                {{ value.title_task?value.title_task:'Chọn công việc cha' }}
+                                {{ value.title_task?value.title_task:('filter.chooseparenttask'|translate ) }}
                             </em>
 
 

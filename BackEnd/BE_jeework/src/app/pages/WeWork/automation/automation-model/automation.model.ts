@@ -90,7 +90,7 @@ export class Auto_Task_Model {
 	deadline_type: string;
 
 	clear() {
-		// this.id_row = 0;
+		this.id_row = 0;
 		// this.title = "";
 		// this.description = "";
 		// this.color = "";

@@ -1,0 +1,65 @@
+.title{
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.hoten{
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.chucvu{
+    font-size: 13px;
+    color: #3E3E3E;
+}
+
+.quanlytaikhoan{
+    color: #FFFFFF;
+    background-color: #3699FF;
+    border-color: transparent;
+    height: 32px;
+    width: 128px;
+    margin-right: 10px;
+}
+
+.dangxuat{
+    color: #FFFFFF;
+    background-color: #F64E60;
+    border-color: transparent;
+    height: 32px;
+    width: 96px;
+}
+
+.nhacnho{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.nhacnho-text{
+    font-size: 14px;
+    font-weight: bold;
+    color: #444444;
+}
+
+.soluong{
+    position: absolute;
+    border-radius: 50%;
+    background: #EE9D01;
+    color: #fff;
+    text-align: center;
+    font-size: 14pxpx;
+    font-size: 14px;
+    height: 24px;
+    width: 24px;
+}
+
+.link{
+    cursor: pointer;
+    height: 48px;
+    align-items: center;
+}
+
+.link:hover{
+    background-color: #e1f0ff;
+}

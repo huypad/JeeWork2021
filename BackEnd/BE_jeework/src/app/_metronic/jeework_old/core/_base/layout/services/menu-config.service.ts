@@ -105,26 +105,24 @@ export class MenuConfigService {
 			// Các menu project wework
 			if (spaceww.length > 0) {
 				spaceww.forEach((item, index) => {
-					// if (item.Data.length == 0) return;
 					let parentMenu = {
 						title: '' + item.Title,
-						root: item.Data.length == 0,
+						root: item.list.length == 0,
 						icon: '' + item.Icon,
 						page: '',
 						id_phanloai: 1,
 						alignment: 'left',//dành cho header menu
 						id: '' + item.RowID,
 						IsFolder: item.IsFolder,
-						type: item.type
+						type: item.type,
+						submenu: [],
 					};
-					if (item.Data_Folder && item.Data_Folder.length > 0) {
-						// parentMenu["bullet"] = 'dot';
+					if (item.folder && item.folder.length > 0) {
 						parentMenu["submenu"] = [];
-						item.Data_Folder.forEach((itemE, indexE) => {
-							// let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
+						item.folder.forEach((itemE, indexE) => {
 							let _folder = {
 								title: '' + itemE.Title,
-								root: item.Data.length == 0,
+								root: item.list.length == 0,
 								icon: '' + itemE.Icon,
 								page: '',
 								id_phanloai: 1,
@@ -137,7 +135,7 @@ export class MenuConfigService {
 							parentMenu["submenu"].push(_folder);
 							_folder["bullet"] = 'dot';
 							_folder["submenu"] = [];
-							itemE.Data.forEach((itemS, indexE) => {
+							itemE.list.forEach((itemS, indexE) => {
 								let child = {
 									title: '' + itemS.Title,
 									page: '/project/' + itemS.ID_Row + '/home/clickup',
@@ -154,28 +152,30 @@ export class MenuConfigService {
 							});
 						});
 					}
-					else {
-						if (item.Data && item.Data.length > 0) {
-							parentMenu["bullet"] = 'dot';
-							parentMenu["submenu"] = [];
-							item.Data.forEach((itemE, indexE) => {
-								let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
-								let child = {
-									//title: '' + itemE.Summary,
-									title: '' + itemE.Title,
-									page: '/project/' + itemE.ID_Row + '/home/clickup',
-									target: '' + itemE.Target, // bổ sung vào để phân biệt kiểu target
-									id_phanloai: 0,
-									id: '' + itemE.ID_Row,
-									Locked: itemE.Locked,
-									Is_Project: itemE.Is_Project,
-									Status: itemE.Status,
-									Default_View: itemE.Default_View, //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
-									type: itemE.type
-								};
-								parentMenu["submenu"].push(child);
-							});
-						}
+					else
+					parentMenu["submenu"] = [];
+					// else {
+					if (item.list && item.list.length > 0) {
+						parentMenu["bullet"] = 'dot';
+						// parentMenu["submenu"] = [];
+						item.list.forEach((itemE, indexE) => {
+							let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
+							let child = {
+								//title: '' + itemE.Summary,
+								title: '' + itemE.Title,
+								page: '/project/' + itemE.ID_Row + '/home/clickup',
+								target: '' + itemE.Target, // bổ sung vào để phân biệt kiểu target
+								id_phanloai: 0,
+								id: '' + itemE.ID_Row,
+								Locked: itemE.Locked,
+								Is_Project: itemE.Is_Project,
+								Status: itemE.Status,
+								Default_View: itemE.Default_View, //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+								type: itemE.type
+							};
+							parentMenu["submenu"].push(child);
+						});
+						// }
 					}
 					config.aside.items.push(parentMenu);
 				});

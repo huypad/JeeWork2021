@@ -24,4 +24,6 @@ export const environment = {
   LINKACCOUNT: "http://jeeaccount.jee.vn",
   //jee-account
   JEEACCOUNTAPI: "https://jeeaccount-api.jee.vn",
+  HOST_JEELANDINGPAGE_API: "https://jeeglobal-api.jee.vn",
+  HOST_JEELANDINGPAGE: "https://jeeglobal.jee.vn",
 };

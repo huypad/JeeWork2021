@@ -18,11 +18,11 @@ namespace API_JeeWork2021.Classes
             _notifier = notifier;
         }
 
-        public static void SendAutomation(Post_Automation_Model post, IConfiguration _config, IProducer _producer)
+        public async static void SendAutomation(Post_Automation_Model post, IConfiguration _config, IProducer _producer)
         {
             string topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeWorkAutomationService");
             string obj = Newtonsoft.Json.JsonConvert.SerializeObject(post);
-            _producer.PublishAsync(topic, obj);
+            await _producer.PublishAsync(topic, obj);
         }
     }
 }

@@ -186,11 +186,21 @@ export const locale = {
       phanquyennguoidung: "Phân quyền người dùng",
     },
     GeneralKey: {
-      automation: 'Tự động hóa',
+      // a
+      automation:"Tự động hóa",
+      activeautomation:"Giao thức đang kích hoạt",
+      addcondition:"Thêm điều kiện",
+      addaction:"Thêm hành động",
+      //b
+      browse:'Duyệt qua',
+      manage:'Quản lý',
       boqua: "Bỏ qua",
       bancochacchanmuonxoakhong: "Bạn có chắc muốn xóa dữ liệu này không?",
       browsetemplate: 'Các mẫu có sẵn',
+      bot: "Bớt",
+      botatca: "Bỏ tất cả",
       // C
+      chidinhlai: "Chỉ định lại",
       cactuychonkhac: "Các tùy chọn khác",
       chuagantinhtrang: "Chưa gắn trạng thái",
       caidat: "Cài đặt",
@@ -227,6 +237,8 @@ export const locale = {
       congviec: "Công việc",
       cocautochuc: "Phòng ban/bộ phận",
       chonchucdanh: "Chọn chức danh",
+      chondouutien: "Chọn độ ưu tiên",
+      chonmuc: "Chọn mức",
       congdu: "Công đủ",
       chinhsuastatus: "Chỉnh sửa trạng thái công việc",
       cvlaplai: "Công việc lặp lại",
@@ -295,6 +307,7 @@ export const locale = {
       nhapmatkhaumoi: "Nhập mật khẩu mới",
       nhaplaimatkhaumoi: "Nhập lại mật khẩu mới",
       nhapdetimkiem: "Nhập để tìm kiếm",
+      nangcao: "Nâng cao",
       // P
       phailaso: " phải là số",
       phongban: "Phòng ban",
@@ -305,6 +318,7 @@ export const locale = {
       // S
       stt: "STT",
       report: "Báo cáo",
+      songay: "Số ngày",
       saveastemplate: "Lưu thành mẫu mới",
       // T
       templatecenter: "Mẫu xây dựng sẵn",
@@ -381,7 +395,8 @@ export const locale = {
       addtolib: "Thêm vào thư viện cá nhân",
       automations: "Tự động hóa",
       chooseadate: "Chọn ngày",
-	    cancel:'Hủy bỏ',
+      cancel: 'Hủy bỏ',
+      maucongviecduocsudung: 'Mẫu công việc được sử dụng',
       customfield: "Cột tùy chỉnh",
       customnizeimportitems: "Tùy chỉnh các mục",
       enddate: "Ngày kết thúc",
@@ -421,7 +436,7 @@ export const locale = {
       collapse: "Ẩn bớt",
       seeall: "Xem tất cả",
       templates: "Các mẫu",
-      mauhethong:'Mẫu của hệ thống',
+      mauhethong: 'Mẫu của hệ thống',
       quickuse: "Chọn nhanh",
       used: "Đã dùng",
       templatename: "Tên mẫu",
@@ -1119,6 +1134,8 @@ export const locale = {
       id_nv: "Giao cho",
       status: "Trạng thái",
       id_parent: "ID công việc cha",
+      parenttask: "Công việc cha",
+      chooseparenttask: "Chọn công việc cha",
       comments: "Bình luận",
       CreatedDate: "Ngày tạo",
       id_project_team: "ID dự án",
@@ -1269,6 +1286,7 @@ export const locale = {
       noduplicate: "Không, sao chép như công việc thông thường",
       parent: "Nhân bản công việc con của",
       suanguoireiewer: "Sửa người theo dõi công việc",
+      themnguoithuchien: "Thêm người thực hiện",
       tagtoassign: "Sử dụng @ để thêm người thực hiện công việc",
       tailieudinhkem: "Tài liệu đính kèm",
       taobansaococongvieckemtheo: "Tạo bản sao có công việc kèm theo",
@@ -1351,6 +1369,7 @@ export const locale = {
       all: "Tất cả",
       mine: "Của tôi",
       taskname: "Tên công việc",
+      entertaskname: "Nhập tên công việc",
       subtaskname: "Tên công việc con",
       ganhanchot: "Gắn hạn chót",
       chonthoigian: "Chọn thời gian bắt đầu - kết thúc",
@@ -1415,6 +1434,7 @@ export const locale = {
     tags: {
       tag: "Tag",
       themtag: "Thêm tag",
+      xoatag: "Xóa tag",
       htquahan: "Hoàn thành quá hạn",
       vao: "vào",
     },
@@ -1956,5 +1976,12 @@ export const locale = {
       statusname: "Tên tình trạng",
       themtinhtrang: "Thêm tình trạng",
     },
+    profile: {
+      thongtincanhan: 'Thông tin cá nhân',
+      quanlytaikhoan: 'Quản lý tài khoản',
+      dangxuat: 'Đăng xuất',
+      nhacnho: 'NHẮC NHỞ',
+    },
+
   },
 };

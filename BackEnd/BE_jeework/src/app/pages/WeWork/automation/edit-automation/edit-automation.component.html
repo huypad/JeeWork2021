@@ -18,15 +18,15 @@
                     <div class="cu-edit-automation__container-body-actions-top">
 
                         <mat-form-field class="w-100" appearance="fill">
-                            <mat-label>Select</mat-label>
-                            <mat-select [(ngModel)]="Triggerselect">
+                            <mat-label>Lựa chọn sự kiện</mat-label>
+                            <mat-select [(ngModel)]="Eventid">
                                 <mat-option *ngFor="let item of ListEvent" [value]="item.rowid"> {{item.title}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <app-automation-trigger-state-condition [ID_department]="ID_department"
-                        [ID_projectteam]="ID_projectteam" [type]="Triggerselect" (valueout)="GetvalueEvent($event)">
+                    <app-automation-trigger-state-condition [ID_department]="ID_department" [condition]="dataEdit"
+                        [ID_projectteam]="ID_projectteam" [Eventid]="Eventid" (valueout)="GetvalueEvent($event)">
                     </app-automation-trigger-state-condition>
                 </div>
 
@@ -38,7 +38,7 @@
                                 stroke="transparent"></path>
                         </svg>
 
-                    </div>Add Condition
+                    </div>{{'GeneralKey.addcondition' | translate}}
 
                 </div>
 
@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="cu-edit-automation__container-body-column">
-            <div cdkdroplist="" class="cdk-drop-list cu-edit-automation__container-body-column-container"
+            <div class="cdk-drop-list cu-edit-automation__container-body-column-container"
                 id="cdk-drop-list-10">
                 <div class="cu-edit-automation__container-body-title">
                     <div class="cu-edit-automation__container-body-title-icon"><img
@@ -59,19 +59,19 @@
                         <div class="cu-edit-automation__container-body-title-text-bot"> thực hiện những điều sau </div>
                     </div>
                 </div>
-                <div cdkdrag="" class="cdk-drag cu-edit-automation__container-body-actions cdk-drag-disabled">
+                <div class="cdk-drag cu-edit-automation__container-body-actions cdk-drag-disabled">
                     <div
                         class="cu-edit-automation__container-body-actions-top cu-edit-automation__container-body-actions-top_has-inputs">
                         <mat-form-field class="w-100" appearance="fill">
-                            <mat-label>Select</mat-label>
-                            <mat-select [(ngModel)]="Actionselect">
-                                <mat-option *ngFor="let item of ListAction" [value]="item.rowid"> {{item.actionname}}
+                            <mat-label>Lựa chọn hành động</mat-label>
+                            <mat-select [(ngModel)]="Actionid">
+                                <mat-option *ngFor="let item of ListAction" [disabled]="item.disabled" [value]="item.rowid"> {{item.actionname}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
                     <app-automation-action-field [ID_department]="ID_department" [ID_projectteam]="ID_projectteam"
-                        [type]="Actionselect" (valueout)="GetvalueAction($event)"></app-automation-action-field>
+                    [dataAction]="dataEdit" [Actionid]="Actionid" (valueout)="GetvalueAction($event)"></app-automation-action-field>
                 </div>
 
 
@@ -83,7 +83,7 @@
                                 stroke="transparent"></path>
                         </svg>
 
-                    </div>Add Action
+                    </div>{{'GeneralKey.addaction' | translate}}
 
                 </div>
 
@@ -136,8 +136,8 @@
             <!-- <button class="cu-edit-automation__container-footer-button create" (click)="OnSubmit()">Create
 
                     </button> -->
-            <button mat-raised-button ><span translate="GeneralKey.cancel"></span></button>&nbsp;&nbsp;
-            <button mat-raised-button class="jee_btn-addclose" (click)="OnSubmit()"><span
+            <button mat-raised-button ><span translate="GeneralKey.cancel" (click)="close(true)" ></span></button>&nbsp;&nbsp;
+            <button mat-raised-button class="jee_btn-addclose" (click)="OnSubmit(true)" ><span
                     translate="GeneralKey.luudong"></span></button>&nbsp;&nbsp;
             <button type="button" mat-raised-button class="btn-luutieptuc" (click)="OnSubmit()" 
                 matTooltip="{{ 'GeneralKey.luutieptuc' | translate }}">
