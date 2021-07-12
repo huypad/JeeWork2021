@@ -143,7 +143,7 @@
     </span>
     
     <!-- if menu item using bullet -->
-    <i *ngIf="parentItem && parentItem.bullet === 'dot'" _ngcontent-jgl-c108="" class="menu-bullet menu-bullet-dot"><span _ngcontent-jgl-c108=""></span></i>
+    <i *ngIf="parentItem && parentItem.bullet === 'dot' && !item.IsFolder" _ngcontent-jgl-c108="" class="menu-bullet menu-bullet-dot"><span _ngcontent-jgl-c108=""></span></i>
     
     <i *ngIf="parentItem && parentItem.bullet === 'line'" class="kt-menu__link-bullet kt-menu__link-bullet--line">
         <span></span>

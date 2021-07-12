@@ -10,6 +10,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static API_JeeWork2021.Classes.NhacNho;
+using Microsoft.Extensions.Logging;
+using DPSinfra.Logger;
+using JeeWork_Core2021.Controllers.Wework;
 
 namespace JeeWork_Core2021.ConsumerServices
 {
@@ -19,8 +22,9 @@ namespace JeeWork_Core2021.ConsumerServices
         private Consumer initJeeAdminConsumer, updateAdminCosumer;
         private string mess;
         IProducer _producer;
+        private readonly ILogger<JeeInit_Kafka> _logger;
         private IConnectionCache _cache;
-        public JeeInit_Kafka(IConfiguration config, IProducer producer, IConnectionCache connectionCache)
+        public JeeInit_Kafka(IConfiguration config, IProducer producer, IConnectionCache connectionCache, ILogger<JeeInit_Kafka> logger)
         {
             _config = config;
             _producer = producer;
@@ -31,12 +35,14 @@ namespace JeeWork_Core2021.ConsumerServices
             updateAdminCosumer = new Consumer(_config, groupid2);
 
             _cache = connectionCache;
+
+            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var topicProduceByAccount1 = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
-            var topicProduceByAccount2 = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
+            var topicProduceByAccount1 = _config.GetValue<string>("KafkaConfig:TopicConsume:JeeplatformInitialization");
+            var topicProduceByAccount2 = _config.GetValue<string>("KafkaConfig:TopicConsume:JeeplatformUpdateAdmin");
             _ = Task.Run(() =>
             {
                 //ko có thì khi topic có mess, consumer sẽ ko thể lấy được mess
@@ -70,6 +76,22 @@ namespace JeeWork_Core2021.ConsumerServices
         {
             try
             {
+                //string roles = "";
+                //string topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
+                //var data = JsonConvert.DeserializeObject<messageJeeAcount>(message);
+                //string conn = _cache.GetConnectionString(data.CustomerID);
+                //List<string> roles_ad = ConsumerHelper.getRolesAdmin(conn);
+                //Console.WriteLine("====================");
+                //Console.WriteLine(message);
+                //var d1 = new GeneralLog()
+                //{
+                //    name = "jee-work",
+                //    data = message,
+                //    message = "jeeplatform.initialization"
+                //};
+                //_logger.LogTrace(JsonConvert.SerializeObject(d1));
+                //Console.WriteLine("====================");
+
                 mess = message; //test để biết có nhận message từ topic ko
                 var kq = JsonConvert.DeserializeObject<InitMessage>(message);
                 var topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
@@ -77,58 +99,58 @@ namespace JeeWork_Core2021.ConsumerServices
                 string roles = "";
 
                 Console.WriteLine(message);
-                //if (kq.AppCode.Contains("WORK"))
-                //{
-                //    string conn = _cache.GetConnectionString(kq.CustomerID);
+                if (kq.AppCode.Contains("WORK"))
+                {
+                    string conn = WeworkLiteController.getConnectionString(_cache, kq.CustomerID, _config); ;
 
-                //    List<string> roles_ad = ConsumerHelper.getRoles(conn);
-                //    Console.WriteLine("New customer has in app !!");
-                //    Console.WriteLine(DateTime.Now);
-                //    Console.WriteLine(roles);
+                    List<string> roles_ad = ConsumerHelper.getRoles(conn);
+                    Console.WriteLine("New customer has in app !!");
+                    Console.WriteLine(DateTime.Now);
+                    Console.WriteLine(roles);
 
-                //    if (kq.IsInitial) //cấp luôn roles Admin
-                //    {
-                //        roles = string.Join(",", roles_ad);
-                //        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
-                //        if (idnhom > 0)
-                //        {
-                //            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
-                //            {
-                //                return; //insert thất bại
-                //            }
-                //        }
-                //        ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
-                //        return;
-                //    }
+                    if (kq.IsInitial) //cấp luôn roles Admin
+                    {
+                        roles = string.Join(",", roles_ad);
+                        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
+                        if (idnhom > 0)
+                        {
+                            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
+                            {
+                                return; //insert thất bại
+                            }
+                        }
+                        ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
+                        return;
+                    }
 
-                //    if (kq.IsAdmin)
-                //    {
-                //        roles = string.Join(",", roles_ad);
-                //        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
-                //        if (idnhom > 0)
-                //        {
-                //            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
-                //            {
-                //                return;
-                //            }
-                //        }
-                //    }
-                //    else
-                //    {
-                //        roles = "3400, 3500"; //quyền mặc định: gửi yêu cầu vpp
-                //        List<string> rol_df = new List<string>() { "3400", "3500" };
-                //        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, rol_df);
-                //        if (idnhom > 0)
-                //        {
-                //            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
-                //            {
-                //                return;
-                //            }
-                //        }
-                //    }
-                //    ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
-                //    return;
-                //}
+                    if (kq.IsAdmin)
+                    {
+                        roles = string.Join(",", roles_ad);
+                        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, roles_ad, 1);
+                        if (idnhom > 0)
+                        {
+                            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
+                            {
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        roles = "3400, 3500"; //quyền mặc định: gửi yêu cầu vpp
+                        List<string> rol_df = new List<string>() { "3400", "3500" };
+                        int idnhom = ConsumerHelper.createNhom(conn, kq.UserID, kq.CustomerID, rol_df);
+                        if (idnhom > 0)
+                        {
+                            if (ConsumerHelper.insertUsertoGroup(conn, kq.Username, idnhom) != 1)
+                            {
+                                return;
+                            }
+                        }
+                    }
+                    ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -144,7 +166,7 @@ namespace JeeWork_Core2021.ConsumerServices
                 var topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
                 string roles = "";
 
-                if (kq.AppCode == "WW")
+                if (kq.AppCode == "WORK")
                 {
                     string conn = _cache.GetConnectionString(kq.CustomerID);
                     List<string> roles_ad = ConsumerHelper.getRoles(conn);

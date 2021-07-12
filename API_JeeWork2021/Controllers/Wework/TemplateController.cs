@@ -725,8 +725,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dt_Detail = new DataTable();
                     dt_Detail = cnn.CreateDataTable(sqlq);
                     list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
+                    if (string.IsNullOrEmpty(list_viewid)) list_viewid = "0";
                     group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
+                    if (string.IsNullOrEmpty(group_statusid)) group_statusid = "0";
                     field_id = dt_Detail.Rows[0]["field_id"].ToString();
+                    if (string.IsNullOrEmpty(field_id)) field_id = "0";
                     sqlq += @$";select id_row, view_name, description, is_default, icon, link, image, templateid 
                                 from  we_default_views 
                                 where id_row in (" + list_viewid + ") " +
@@ -913,13 +916,17 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     val.Add("is_template_center", 1);
                     val.Add("types", data.types);
                     val.Add("levels", data.levels);
-                    val.Add("viewid", data.viewid);
+                    //val.Add("viewid", data.viewid);
                     val.Add("group_statusid", group_id);
                     val.Add("template_typeid", 1); // lấy mặc định trong we_template_types
                     if (!string.IsNullOrEmpty(data.img_temp))
                         val.Add("img_temp", data.img_temp);
                     else
                         val.Add("img_temp", DBNull.Value);
+                    if (!string.IsNullOrEmpty(data.viewid))
+                        val.Add("viewid", data.viewid);
+                    else
+                        val.Add("viewid", DBNull.Value);
                     if (!string.IsNullOrEmpty(data.field_id))
                         val.Add("field_id", data.field_id);
                     else

@@ -35,7 +35,7 @@ namespace JeeWork_Core2021.ConsumerServices
                     {
                         Hashtable _sub = new Hashtable();
                         _sub.Add("Id_Group", newId);
-                        _sub.Add("Id_Pemit", tmp);
+                        _sub.Add("Id_Permit", tmp);
                         if (cnn.Insert(_sub, "tbl_group_permit") != 1)
                         {
                             cnn.RollbackTransaction();
@@ -124,14 +124,14 @@ namespace JeeWork_Core2021.ConsumerServices
             UpdateMessage updateMess = new UpdateMessage();
             var topicUpdateAccount = topic;
             updateMess.userID = idUser;
-            updateMess.updateField = "jee-office";
+            updateMess.updateField = "jee-work";
             var datas = new { roles = roles };
             updateMess.fieldValue = datas;
             var mess_send = Newtonsoft.Json.JsonConvert.SerializeObject(updateMess);
             var obj = new
             {
                 userId = idUser,
-                updateField = "jee-office",
+                updateField = "jee-work",
                 fieldValue = datas
             };
             var mess_send2 = Newtonsoft.Json.JsonConvert.SerializeObject(obj);

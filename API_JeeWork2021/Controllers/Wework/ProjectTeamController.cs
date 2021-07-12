@@ -1032,7 +1032,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         }
 
                     }
@@ -1066,7 +1066,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         }
 
                     }
@@ -1246,7 +1246,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         //var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         //if (info is not null)
                         //{
-                        //    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                        //    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         //}
                     }
                     #endregion
@@ -1281,7 +1281,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             //var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             //if (info is not null)
                             //{
-                            //    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            //    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                             //}
                         }
                         #endregion
@@ -1448,7 +1448,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         }
                     }
                     #endregion
@@ -1483,7 +1483,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                             }
                         }
                     }
@@ -1682,7 +1682,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         }
                     }
                     #endregion
@@ -1714,7 +1714,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         }
                     }
                     #endregion
@@ -1763,7 +1763,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                                 }
                             }
                             #endregion
@@ -2480,7 +2480,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                             }
                         }
                     }
@@ -2515,7 +2515,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                             }
                         }
                     }
@@ -2666,7 +2666,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
                         }
                     }
                     #endregion

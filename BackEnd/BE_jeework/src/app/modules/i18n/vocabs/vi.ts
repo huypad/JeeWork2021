@@ -1982,6 +1982,9 @@ export const locale = {
       dangxuat: 'Đăng xuất',
       nhacnho: 'NHẮC NHỞ',
     },
-
+    Common: {
+      user_hello: 'Xin chào, ',
+			notify_titile: 'Thông báo',
+    }
   },
 };

@@ -1982,8 +1982,9 @@ and IdKH={loginData.CustomerID} )";
         //    return "Oke";
         //}
 
-        public static bool SendNotify(string sender, string receivers, NotifyModel notify_model)
+        public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier)
         {
+            notify = new Notification(notifier);
             NotificationMess noti_mess = new NotificationMess();
             noti_mess.AppCode = notify_model.AppCode;
             noti_mess.Content = notify_model.TitleLanguageKey;
@@ -2956,8 +2957,11 @@ where Disabled = 0";
             DataTable dt_Detail = new DataTable();
             dt_Detail = cnn.CreateDataTable(sqlq);
             list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
+            if (string.IsNullOrEmpty(list_viewid)) list_viewid = "0";
             group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
+            if (string.IsNullOrEmpty(group_statusid)) group_statusid = "0";
             field_id = dt_Detail.Rows[0]["field_id"].ToString();
+            if (string.IsNullOrEmpty(field_id)) field_id = "0";
             sqlq += @$";select id_row, view_name, description, is_default, icon, link, image, templateid 
                                 from we_default_views 
                                 where id_row in (" + list_viewid + ") " +

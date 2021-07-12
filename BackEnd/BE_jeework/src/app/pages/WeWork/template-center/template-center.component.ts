@@ -235,9 +235,11 @@ export class TemplateCenterComponent implements OnInit {
     TCinsert.types = this.TemplateDetail.types;
     TCinsert.customerid = this.TemplateDetail.customerid;
     TCinsert.template_typeid = this.TemplateDetail.template_typeid;
-    TCinsert.img_temp = this.TemplateDetail.img_temp;
+    if(this.TemplateDetail.img_temp)
+      TCinsert.img_temp = this.TemplateDetail.img_temp;
     TCinsert.id_row = this.TemplateDetail.id_row;
-    TCinsert.templateid = this.TemplateDetail.templateid;
+    if(this.TemplateDetail.templateid) 
+      TCinsert.templateid = this.TemplateDetail.templateid;
     TCinsert.levels = this.TemplateDetail.levels;
     TCinsert.is_task = this.isAddTask;
     TCinsert.is_views = this.AllView;
@@ -353,7 +355,7 @@ export class TemplateCenterComponent implements OnInit {
       _item.templatecenter = TCinsert;
       _item.id_department = "" + TCinsert.ParentID;
       _item.title = TCinsert.title;
-      _item.description = this.TemplateDetail.description;
+      _item.description = this.TemplateDetail.description?this.TemplateDetail.description:'';
       _item.loai = "1";
       _item.is_project = true;
       const ct = new ProjectTeamUserModel();

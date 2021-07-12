@@ -148,8 +148,7 @@ namespace JeeWork_Core2021
             // add notify sv
             services.addNotificationService();
             services.AddSingleton<IHostedService, JeeInit_Kafka>();
-            services.AddHostedService<kafkaTestSoLuongNhacNho>();
-            //services.AddHostedService<kafkaAutomationService>();
+            services.AddHostedService<kafkaAutomationService>();
             services.AddMemoryCache();
             services.addConnectionCacheService();
 
