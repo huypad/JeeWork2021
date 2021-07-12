@@ -499,9 +499,9 @@ export class TemplateCenterUpdateComponent implements OnInit {
           status.clear();
           status.id_row = element.id_row;
           status.StatusName = element.statusname;
-          status.Description = element.Description;
-          status.color = element.color;
-          status.IsDefault = element.isdefault;
+          status.Description = element.Description?element.Description:'';
+          status.color = element.color?element.color:'';
+          status.IsDefault = element.IsDefault?element.IsDefault:false;
           status.IsFinal = element.IsFinal;
           status.IsDeadline = element.IsDeadline;
           status.IsToDo = element.IsToDo;
