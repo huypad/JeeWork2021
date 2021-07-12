@@ -1015,7 +1015,8 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WW";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
+                        notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", "");
+                        //notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
@@ -1228,7 +1229,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WW";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users_admin[i].ToString();
-                        notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
+                        notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
@@ -1389,7 +1390,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
-                    long TemplateID = long.Parse(cnn.ExecuteScalar("select TemplateID from we_department").ToString());
+                    long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,1) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
                     if (TemplateID > 0)
                     {
                         sql_insert = "";
@@ -1430,7 +1431,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WW";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users_admin[i].ToString();
-                        notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
+                        notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
@@ -1664,7 +1665,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WW";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
+                        notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
@@ -2462,7 +2463,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.AppCode = "WW";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                            notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
+                            notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";

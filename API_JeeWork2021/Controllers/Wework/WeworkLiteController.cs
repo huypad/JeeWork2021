@@ -25,6 +25,7 @@ using DPSinfra.ConnectionCache;
 using DPSinfra.Logger;
 using Microsoft.Extensions.Logging;
 using DPSinfra.Utils;
+using JeeWork_Core2021.Controller;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -1313,11 +1314,12 @@ and IdKH={loginData.CustomerID} )";
                         "from we_template_customer " +
                         "where (where) order by Title";
                     //Check CustommerID có template chưa nếu chưa thì thêm vào
+                    cnn.BeginTransaction();
                     #region
                     int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID).ToString());
                     if (soluong == 0)
                     {
-                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list");
+                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list where is_template_center <>1 and disabled = 0");
                         Hashtable val = new Hashtable();
                         foreach (DataRow item in dt_listSTT.Rows)
                         {
@@ -1332,9 +1334,21 @@ and IdKH={loginData.CustomerID} )";
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
+                            string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString();
+                            string sql_insert = $@"insert into we_template_status (StatusID,TemplateID,StatusName,description,CreatedDate,CreatedBy,Type,IsDefault,color,Position,IsFinal,IsDeadline,IsTodo)
+select StatusID,{idc},StatusName,description,GETDATE(),0,Type,IsDefault,color,Position,IsFinal,IsDeadline,IsTodo from we_template_status
+where TemplateID = {item["id_row"]}  and IsDefault = 1";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+
                         }
                     }
                     #endregion
+                    cnn.EndTransaction();
                     DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
                     if (cnn.LastError != null || dt_template == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2810,8 +2824,9 @@ where Disabled = 0";
             DataTable dt = cnn.CreateDataTable(sqlq, conds);
             List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).Distinct().ToList();
             if (nvs.Count == 0)
-                return "";
+                return "null";
             string ids = string.Join(",", nvs);
+            if (string.IsNullOrEmpty(ids)) ids = "null";
             return ids;
         }
         public static List<AccUsernameModel> GetAccountFromJeeAccount(IHeaderDictionary pHeader, IConfiguration _configuration)
@@ -3567,6 +3582,29 @@ where Disabled = 0";
                 return false;
             }
             return true;
+        }
+        public static string getErrorMessageFromBackend(string ErrorCode, string LangCode = "vi", string _space = "")
+        {
+            string Mess = "";
+            string code = ErrorCode;
+            string space = _space;
+            if (LangCode == "vi")
+            {
+                Mess = LocalizationUtility.GetBackendMessage(code, space, "vi");
+                if (Mess == null)
+                {
+                    Mess = LocalizationUtility.GetBackendMessage("null", "", "vi");
+                }
+            }
+            else
+            {
+                Mess = LocalizationUtility.GetBackendMessage(code, space, "en");
+                if (Mess == null)
+                {
+                    Mess = LocalizationUtility.GetBackendMessage("null", "", "en");
+                }
+            }
+            return Mess;
         }
     }
 }
