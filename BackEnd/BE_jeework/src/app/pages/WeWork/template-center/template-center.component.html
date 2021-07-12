@@ -181,7 +181,7 @@
                     </div>
 
                     <div class="cu-template-center-main__rows" *ngFor="let Template of DanhSachTC">
-                        <div class="cu-template-center-main__row-container">
+                        <div class="cu-template-center-main__row-container" *ngIf="Template.Data_Templates.length > 0">
 
 
                             <div class="cu-template-center-main__row-header">
@@ -198,11 +198,9 @@
                                 </div>
                             </div>
 
-                            <div class="cu-template-center-main__row"
-                                [ngClass]="{'cu-template-center-main__row-expanded': Template.expanded}">
+                            <div class="cu-template-center-main__row" [ngClass]="{'cu-template-center-main__row-expanded': Template.expanded}">
                                 <ng-container *ngFor="let item of Template.Data_Templates">
-                                    <div
-                                        class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
+                                    <div class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
                                         <div class="cu-template-center-template__container"
                                             (click)="SelectedTemplate(item)">
                                             <div class="cu-template-center-template__cu-icon">

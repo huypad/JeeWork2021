@@ -511,11 +511,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     and id_row in (select template_typeid 
                                     from we_template_customer list
                                     where disabled = 0 and is_template_center = 1 " + where_template + ")";
-                    sqlq += @";select id_row, title, description, isdefault, color
+                    sqlq += @$";select id_row, title, description, isdefault, color
                                     , is_template_center, types, levels, img_temp, share_with, sample_id
                                     , viewid, group_statusid, template_typeid, field_id
                                     from we_template_customer list
-                                    where disabled = 0 and is_template_center = 1 " + where_template;
+                                    where disabled = 0 and is_template_center = 1 and id_row in (select id_template from we_template_library where id_user = {loginData.UserID})" + where_template;
                     sqlq += @";select id_row, title, description, isdefault, color
                                     , is_template_center, types, levels, img_temp, share_with, sample_id
                                     , viewid, group_statusid, template_typeid, field_id
@@ -1013,7 +1013,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                             return JsonResultCommon.KhongTonTai("Template");
                         val.Add("title", data.title);
                         if (!string.IsNullOrEmpty(data.description)) val.Add("description", data.description);
-                        val.Add("field_id", data.field_id);
+                        if (!string.IsNullOrEmpty(data.field_id)) val.Add("field_id", data.field_id);
                         val.Add("share_with", data.share_with);
                         val.Add("updatedby", iduser);
                         val.Add("updateddate", DateTime.Now);

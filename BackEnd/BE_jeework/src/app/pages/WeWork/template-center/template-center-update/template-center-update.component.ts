@@ -151,6 +151,9 @@ export class TemplateCenterUpdateComponent implements OnInit {
     if (this.CreatedBy.id_nv > 0) filter.collect_by = this.CreatedBy.id_nv;
     return filter;
   }
+  close(){
+    this.dialogRef.close();
+  }
   LoadTC() {
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),

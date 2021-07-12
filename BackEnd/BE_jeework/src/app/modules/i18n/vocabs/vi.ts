@@ -761,6 +761,7 @@ export const locale = {
       motachusohuu: "Mô tả chủ sở hữu",
       project: "Dự án và phòng ban",
       department: "Ban",
+      themmoifolder: "Thêm mới thư mục",
       thanhvien: "Thành viên",
       themthanhvien: "Thêm thành viên",
       thongke: "Thống kê",

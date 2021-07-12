@@ -1605,7 +1605,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   getHeight(){
-    var height = window.innerHeight - 103 - this.tokenStorage.getHeightHeader(); 
+    var height = window.innerHeight - 118 - this.tokenStorage.getHeightHeader(); 
     return height;
   }
 

@@ -46,7 +46,8 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     private changeDetectorRefs: ChangeDetectorRef,
     private socketService: SocketioService,
     ) {
-    this.user$ = this.auth.currentUserSubject.asObservable();
+    this.user$ = this.auth.getAuthFromLocalStorage(); 
+    console.log(this.user$);
   }
 
   ngOnInit(): void {

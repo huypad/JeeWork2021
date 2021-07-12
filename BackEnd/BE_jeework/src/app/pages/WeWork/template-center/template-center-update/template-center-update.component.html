@@ -259,7 +259,7 @@
 
             </div>
             <div class="cu-template-center-save-template__footer-buttons">
-                <div class="cu-template-center-save-template__footer-button cu-template-center-save-template__footer-button-cancel">
+                <div class="cu-template-center-save-template__footer-button cu-template-center-save-template__footer-button-cancel"  (click)="close()">
                     {{ 'template.cancel' | translate }} 
                  </div>
                 <div class="cu-template-center-save-template__footer-button" (click)="Onsubmit()"> {{ 'GeneralKey.luu' | translate }}  </div>
@@ -336,11 +336,12 @@
                             <div
                                 class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
                                 <div class="icon">
-                                    <svg class="ng-star-inserted">
+                                    <img [src]="getIconTemplate(item.types)" width="24"  alt="">
+                                    <!-- <svg class="ng-star-inserted">
                                         <use
                                             xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
                                         </use>
-                                    </svg>
+                                    </svg> -->
 
                                 </div>
                             </div>

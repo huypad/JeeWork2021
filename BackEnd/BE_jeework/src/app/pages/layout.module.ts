@@ -32,6 +32,7 @@ import { SubheaderModule } from '../_metronic/partials/layout/subheader/subheade
 import { AsideDynamicComponent } from './_layout/components/aside-dynamic/aside-dynamic.component';
 import { HeaderMenuDynamicComponent } from './_layout/components/header/header-menu-dynamic/header-menu-dynamic.component';
 import { AsideWeworkComponent } from './_layout/components/aside-wework/aside-wework.component';
+import { AvatarModule } from 'ngx-avatar';
 @NgModule({
   declarations: [
     LayoutComponent,
@@ -62,7 +63,8 @@ import { AsideWeworkComponent } from './_layout/components/aside-wework/aside-we
     CoreModule,
     SubheaderModule,
     WeWorkModule,
-    PartialsModule
+    PartialsModule,
+    AvatarModule, 
   ],
 })
 export class LayoutModule { }
