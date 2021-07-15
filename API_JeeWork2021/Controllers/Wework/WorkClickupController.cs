@@ -535,15 +535,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     // Phân trang
                     var dt_data = ds.Tables[0].Rows.Count;
+                    DataTable dt = WeworkLiteController.project_by_user(loginData.UserID, loginData.CustomerID, cnn);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                     var Children = from r in ds.Tables[0].AsEnumerable()
+                                   where r["deadline"].ToString() != ""
                                    select new
                                    {
                                        id_row = r["id_row"],
                                        title = r["title"],
                                        id_project_team = r["id_project_team"],
                                        deadline = r["deadline"],
-                                       clickup_prioritize = r["clickup_prioritize"],
                                        status = r["status"],
                                        start_date = r["start_date"],
                                        createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["createddate"]),
@@ -553,8 +556,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                                        hoten_assign = r["hoten"],
                                        id_nv_assign = r["id_nv"],
                                        prioritize = r["clickup_prioritize"],
-                                       typeid = "".Equals(r["nguoigiao"].ToString()) ? 0 : (r["nguoigiao"].Equals(loginData.UserID) ? 42 : (r["id_nv"].Equals(loginData.UserID) ? 41 : 0))
-
+                                       typeid = "".Equals(r["nguoigiao"].ToString()) ? 0 : (r["nguoigiao"].Equals(loginData.UserID) ? 42 : (r["id_nv"].Equals(loginData.UserID) ? 41 : 0)),
+                                       project_info = from t in dt.AsEnumerable()
+                                                      where r["id_project_team"].Equals(t["id_row"])
+                                                      select new
+                                                      {
+                                                          id_row = t["id_row"],
+                                                          title = t["title"],
+                                                          isproject = t["is_project"],
+                                                          start_date = t["start_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", t["start_date"]),
+                                                          end_date = t["end_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", t["end_date"]),
+                                                          color = t["color"],
+                                                          status = t["status"],
+                                                          locked = t["locked"],
+                                                      },
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -4662,18 +4677,15 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Trả dữ liệu về backend để hiển thị lên giao diện 
             //, nv.holot+' '+nv.ten as hoten_nguoigiao -- w.NguoiGiao,
-            string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,
-                            w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w.result,w.createddate,w.createdby,
-                            w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,w.Id_NV,''as hoten
+            string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group
+                            ,w.deadline,w.id_milestone,w.milestone,
+                            w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
+                            ,w.status,w.result,w.createddate,w.createdby,
+                            w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department
+                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,w.Id_NV,''as hoten
                             , Iif(fa.id_row is null ,0,1) as favourite 
-                            ,coalesce( f.count,0) as num_file,coalesce( com.count,0) as num_com,
-                            iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-                            iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
-                            iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-                            iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
-                            iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
-                            iif(w.status=1 and w.start_date is null,1,0) as require,
-                            '' as NguoiTao, '' as NguoiSua from v_wework_new w 
+                            ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
+                            ,'' as NguoiTao, '' as NguoiSua from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
                             left join (select count(*) as count,object_id 
@@ -4793,12 +4805,6 @@ w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w
 w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize 
 , Iif(fa.id_row is null ,0,1) as favourite 
 ,coalesce( f.count,0) as num_file,coalesce( com.count,0) as num_com,
-iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
-iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
-iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
-iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao, '' as NguoiSua from v_wework_new w 
 left join (select count(*) as count,object_id 
 from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -4927,15 +4933,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                          start_date = r["start_date"],
                          prioritize = r["prioritize"],
                          favourite = r["favourite"],
-                         require = r["require"],
                          status = r["status"],
                          id_milestone = r["id_milestone"],
                          milestone = r["milestone"],
-                         is_htquahan = r["is_htquahan"],
-                         is_htdunghan = r["is_htdunghan"],
-                         is_danglam = r["is_danglam"],
-                         is_quahan = r["is_quahan"],
-                         duetoday = r["duetoday"],
                          num_file = r["num_file"],
                          num_com = r["num_com"],
                          createddate = r["CreatedDate"],
@@ -4944,7 +4944,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                          updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
                          updatedby = r["UpdatedBy"],
                          nguoisua = r["NguoiSua"],
-                         //nguoigiao = r["NguoiGiao"],
                          clickup_prioritize = r["clickup_prioritize"],
                          //id_nv = r["id_nv"],
                          //assign = r["id_nv"] == DBNull.Value ? null : new

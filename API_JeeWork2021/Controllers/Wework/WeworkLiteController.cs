@@ -111,13 +111,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, Locked 
-                                    from we_project_team p
-                                    join we_department d on d.id_row = p.id_department
-                                    join we_project_team_user u on u.id_project_team = p.id_row
-                                     where u.Disabled = 0 and id_user = " + loginData.UserID + " " +
-                                     "and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " order by title";
-                    DataTable dt = cnn.CreateDataTable(sql);
+                    DataTable dt = project_by_user(loginData.UserID, loginData.CustomerID, cnn);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
@@ -1056,7 +1050,7 @@ where u.Disabled = 0 and id_user = {loginData.UserID}
 and p.Disabled = 0  and d.Disabled = 0 and  ( d.id_row= {id_department} or d.ParentID = {id_department} )
 and IdKH={loginData.CustomerID} )";
                     query += " order by IsFinal,id_row";
-                    
+
                     DataTable dt = cnn.CreateDataTable(query);
 
                     if (cnn.LastError != null || dt == null)
@@ -3606,6 +3600,22 @@ where Disabled = 0";
                 }
             }
             return Mess;
+        }
+        public static DataTable project_by_user(long userid, long customerid, DpsConnection cnn)
+        {
+            DataTable dt = new DataTable();
+            string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, locked 
+                                    from we_project_team p
+                                    join we_department d on d.id_row = p.id_department
+                                    join we_project_team_user u on u.id_project_team = p.id_row
+                                     where u.Disabled = 0 and id_user = " + userid + " " +
+                                    "and p.Disabled = 0  and d.disabled = 0 " +
+                                    "and idkh=" + customerid + " order by title";
+            dt = cnn.CreateDataTable(sql);
+            if (cnn.LastError != null || dt == null)
+                return new DataTable();
+            else
+                return dt;
         }
     }
 }
