@@ -27,7 +27,7 @@
                     </h1>
                     <div class="row">
                         <div class="themoi text-success">Thêm mới</div>
-                        <div (click)="AddTemplate()" class="btn-template text-hover-success">Template</div>
+                        <div (click)="AddTemplate()" class="btn-template text-hover-success" translate="GeneralKey.templatecenter"></div>
                     </div>
                     
                     <form class="kt-form" [formGroup]="itemFormGroup">
@@ -225,7 +225,7 @@
                     </div>
 
                     <div class="view-template d-flex">
-                        <div class="col-md-6">
+                        <div class="col-md-6 overflow-auto">
                             <div class="header-view-title" style="color: black;">
                                 {{ 'department.maudangchon'|translate}}
                             </div>
@@ -276,7 +276,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 overflow-auto">
                             <div class="header-view row">
                                 <div class="header-view-title">
                                     {{ 'department.danhsachtrangthai'|translate}}

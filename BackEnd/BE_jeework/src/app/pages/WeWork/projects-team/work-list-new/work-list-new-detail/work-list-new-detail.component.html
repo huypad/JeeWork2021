@@ -773,8 +773,13 @@
                                         </div>
                                     </ng-container>
                                     <ng-template #comment>
-                                        <kt-comment-new class="w-100" [Id]="item.id_row" [id_comment]="log.newvalue"
-                                            [Loai]="1"></kt-comment-new>
+                                        <!-- <kt-comment-new class="w-100" [Id]="item.id_row" [id_comment]="log.newvalue"
+                                            [Loai]="1"></kt-comment-new> -->
+                                        <app-jee-comment class="w-100"
+                                            [showCommentDefault]="true"
+                                            [componentName]="'task-0'"
+                                        >
+                                        </app-jee-comment>
                                     </ng-template>
                                 </div>
                             </div>
@@ -782,9 +787,13 @@
                     </div>
                     <div class="task-column__footer second cu-hidden-print ng-tns-c150-53 ng-star-inserted">
                         <div class="task-comment pd-0 border-top">
-                            <kt-view-comment class="w-100" style="padding-top: 5px;" (refesh)="Refesh($event)" [Id]="item.id_row" [Loai]="1">
-                            </kt-view-comment>
-                            
+                            <!-- <kt-view-comment class="w-100" style="padding-top: 5px;" (refesh)="Refesh($event)" [Id]="item.id_row" [Loai]="1">
+                            </kt-view-comment> -->
+                            <app-jee-comment class="w-100" style="padding-top: 5px;" 
+                                [showCommentDefault]="true"
+                                [componentName]="'task-0'"
+                            >
+                            </app-jee-comment>
                         </div>
                     </div>
                 </div>

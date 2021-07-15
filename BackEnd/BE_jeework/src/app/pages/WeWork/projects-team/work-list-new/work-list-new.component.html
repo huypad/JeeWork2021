@@ -801,12 +801,27 @@
                                                                                             {{node[item.fieldname]}}</span>
                                                                                         <mat-menu
                                                                                             #commentsmenu="matMenu">
-                                                                                            <div
-                                                                                                style="max-height:600px;min-width: 500px;">
-                                                                                                <kt-comment
+                                                                                            <div  (click)="$event.stopPropagation()"
+                                                                                             style="max-height:600px;min-width: 500px;min-height: 300px;">
+                                                                                                <!-- <kt-comment
                                                                                                     [Id]="node.id_row"
                                                                                                     [Loai]="1">
-                                                                                                </kt-comment>
+                                                                                                </kt-comment> -->
+                                                                                                <!-- <div *ngIf="node.id_row" class="card card-custom">
+                                                                                                    <app-jee-comment
+                                                                                                      [showCommentDefault]="true"
+                                                                                                      [componentName]="getComponentName(node.id_row)"
+                                                                                                    >
+                                                                                                    </app-jee-comment>
+                                                                                                  </div> -->
+                                                                                                  <ng-container *ngIf="node.id_row">
+                                                                                                    <app-jee-comment
+                                                                                                        [showCommentDefault]="true"
+                                                                                                        [componentName]="getComponentName(node.id_row)"
+                                                                                                    >
+                                                                                                    </app-jee-comment>
+                                                                                                  </ng-container>
+                                                                                                  
                                                                                             </div>
                                                                                         </mat-menu>
                                                                                     </ng-template>

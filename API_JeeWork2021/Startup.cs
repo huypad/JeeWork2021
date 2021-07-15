@@ -31,13 +31,18 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using JeeWork_Core2021.ConsumerServices;
 using API_JeeWork2021.Classes;
+using JeeAccount.Services.CommentService;
 
 namespace JeeWork_Core2021
 {
     public class Startup
     {
+        static AutoSendMail sendmail;
+        static NhacNho nhacnho;
         public Startup(IConfiguration configuration)
         {
+            //_notifier = notifier;
+            //ConnectionCache = _cache;
             Configuration = configuration;
         }
 
@@ -151,6 +156,7 @@ namespace JeeWork_Core2021
             services.AddHostedService<kafkaAutomationService>();
             services.AddMemoryCache();
             services.addConnectionCacheService();
+            services.AddTransient<ICommentService, CommentService>();
 
             services.AddLogging(builder =>
             {
@@ -158,8 +164,13 @@ namespace JeeWork_Core2021
             });
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConnectionCache _cache, INotifier notifier, IProducer producer)
         {
+            sendmail = new AutoSendMail(_cache, Configuration, notifier);
+            sendmail.Start();
+            nhacnho = new NhacNho(_cache, Configuration, notifier, producer);
+            nhacnho.Start();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

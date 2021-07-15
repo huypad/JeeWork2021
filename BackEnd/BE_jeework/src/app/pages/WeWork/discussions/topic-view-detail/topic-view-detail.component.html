@@ -258,11 +258,18 @@
                     </ng-container>
                 </kt-portlet>
             </div>
-            <div style="font-size: 10.5pt; padding: 10px 0px 10px 10px; ">
+            <div style="font-size: 10.5pt; padding: 0px 0px 10px 10px; ">
                 <kt-portlet [options]="{headLarge: true, hideHeader:true}">
-                    <ng-container mPortletBody>
+                    <!-- <ng-container mPortletBody>
                         <kt-comment [Id]="ItemData.Id"></kt-comment>
-                    </ng-container>
+                    </ng-container> -->
+                    <div *ngIf="topicObjectID$.asObservable() | async" class="card card-custom">
+                        <app-jee-comment
+                          [showCommentDefault]="true"
+                          [objectID]="topicObjectID$.asObservable() | async"
+                        >
+                        </app-jee-comment>
+                      </div>
                 </kt-portlet>
             </div>
         </form>

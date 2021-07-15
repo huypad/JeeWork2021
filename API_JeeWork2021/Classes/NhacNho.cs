@@ -21,13 +21,12 @@ namespace API_JeeWork2021.Classes
 {
     public class NhacNho
     {
-        private JeeWorkConfig _config;
         private readonly IHostingEnvironment _hostingEnvironment;
         private IConfiguration _configuration;
         private IConnectionCache ConnectionCache;
         private IProducer _producer;
         private INotifier _notifier;
-        public NhacNho(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, IProducer producer)
+        public NhacNho(IConnectionCache _cache, IConfiguration configuration, INotifier notifier, IProducer producer)
         {
             //
             // TODO: Add constructor logic here
@@ -35,16 +34,15 @@ namespace API_JeeWork2021.Classes
             //1p chạy 1 lần (chỉ áp dụng những chức năng cần chạy sớm và phải chạy nhanh)
             Timer1Minute = new System.Timers.Timer(60000);
             Timer1Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer1Minute_Elapsed);
-            ////5p chạy 1 lần
-            //Timer5Minute = new System.Timers.Timer(300000);
-            //Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
-            ////10p chạy 1 lần
+            //5p chạy 1 lần
+            Timer5Minute = new System.Timers.Timer(300000);
+            Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
+            //10p chạy 1 lần
             TimerSendReminder = new System.Timers.Timer(600000);
             TimerSendReminder.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendReminder_Elapsed);
-            ////60p chạy 1 lần
-            //TimerAutoUpdate = new System.Timers.Timer(3600000);
-            //TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
-            _config = config.Value;
+            //60p chạy 1 lần
+            TimerAutoUpdate = new System.Timers.Timer(3600000);
+            TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
             _producer = producer;
@@ -64,11 +62,25 @@ namespace API_JeeWork2021.Classes
                 _basePath = value;
             }
         }
-        //System.Timers.Timer TimerAutoUpdate;
+        System.Timers.Timer TimerAutoUpdate;
         System.Timers.Timer TimerSendReminder;
         System.Timers.Timer Timer1Minute;
-        //System.Timers.Timer Timer5Minute;
+        System.Timers.Timer Timer5Minute;
 
+        public void Start()
+        {
+            TimerAutoUpdate.Start();
+            TimerSendReminder.Start();
+            Timer1Minute.Start();
+            Timer5Minute.Start();
+        }
+        public void Stop()
+        {
+            TimerAutoUpdate.Stop();
+            TimerSendReminder.Stop();
+            Timer1Minute.Stop();
+            Timer1Minute.Stop();
+        }
         protected void Timer1Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             try

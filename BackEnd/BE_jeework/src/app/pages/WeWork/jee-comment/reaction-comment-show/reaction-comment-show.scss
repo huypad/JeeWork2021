@@ -1,0 +1,91 @@
+.reaction-show {
+  display: block;
+}
+
+.reaction-show-icon {
+  position: relative;
+}
+
+.icon-reaction-show {
+  align-items: center;
+  display: inline-flex;
+  cursor: pointer;
+  flex-basis: auto;
+  flex-shrink: 0;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  max-height: 0px;
+  max-width: 0px;
+  min-width: 0px;
+  min-height: 0px;
+  padding: 0px;
+  pointer-events: auto;
+  position: relative;
+  text-align: start;
+  white-space: nowrap;
+  z-index: 0;
+}
+
+.icon-reaction-show-emotion {
+  display: inline-flex;
+  background-color: rgb(255, 255, 255);
+  border-radius: 40px;
+  box-shadow: 0 0 2.9px rgba(0, 0, 0, 0.1), 0 0 1.5px rgba(0, 0, 0, 0.048), 0 0 1.5px rgba(0, 0, 0, 0.048), 0 0 2.9px rgba(0, 0, 0, 0.1);
+  border-color: rgb(28, 30, 33);
+  color: rgb(28, 30, 33);
+  pointer-events: auto;
+  white-space: nowrap;
+  width: auto;
+  padding: 2px;
+  flex-direction: row-reverse;
+}
+
+.icon-reaction-show-emotion-icon {
+  display: inline-block;
+  line-height: 0;
+  font-size: 0;
+  margin-right: -4px;
+}
+
+.style-icon-reaction-show {
+  background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.total-reaction {
+  padding-left: 6px;
+  padding-right: 4px;
+}
+
+#icon-reaction-show-like {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/like.png);
+}
+
+#icon-reaction-show-love {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/love.png);
+}
+
+#icon-reaction-show-haha {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/haha.png);
+}
+
+#icon-reaction-show-wow {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/wow.png);
+}
+
+#icon-reaction-show-sad {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/sad.png);
+}
+
+#icon-reaction-show-care {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/care.png);
+}
+
+#icon-reaction-show-angry {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/16/angry.png);
+}

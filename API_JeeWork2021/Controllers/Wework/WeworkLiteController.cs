@@ -1309,13 +1309,14 @@ and IdKH={loginData.CustomerID} )";
                 {
                     SqlConditions conds = new SqlConditions(); string sql = "";
                     conds.Add("Disabled", 0);
+                    conds.Add("is_template_center", 0);
                     conds.Add("CustomerID", loginData.CustomerID);
                     sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
                         "from we_template_customer " +
                         "where (where) order by Title";
                     //Check CustommerID có template chưa nếu chưa thì thêm vào
                     cnn.BeginTransaction();
-                    #region
+                    #region ktra k có thì thêm mới danh sách template cho kh mới
                     int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID).ToString());
                     if (soluong == 0)
                     {
@@ -2941,7 +2942,7 @@ where Disabled = 0";
             {
                 Conds.Add("CustomerID", CustemerID);
                 sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
-                        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_Template_List where Disabled = 0";
+                        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_Template_List where Disabled = 0  and  is_template_center <>1";
                 cnn.ExecuteNonQuery(sql_insert);
                 dt = cnn.CreateDataTable(select);
                 if (dt.Rows.Count > 0)
@@ -2951,7 +2952,7 @@ where Disabled = 0";
                     {
                         sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
                             "select id_Row, " + item["id_row"] + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                            "from we_Status_List where Disabled = 0 and IsDefault = 1";
+                            "from we_Status_List where Disabled = 0 and IsDefault = 1 and group_id = 1";
                         cnn.ExecuteNonQuery(sql_insert);
                         sql_insert = "";
                     }

@@ -19,35 +19,32 @@ namespace JeeWork_Core2021.Classes
 {
     public class AutoSendMail
     {
-        private JeeWorkConfig _config;
         private readonly IHostingEnvironment _hostingEnvironment;
         private IConfiguration _configuration;
         private IConnectionCache ConnectionCache;
         private string ConnectionString;
         private INotifier _notifier;
-        public AutoSendMail(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
+        public AutoSendMail(IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
         {
             //
             // TODO: Add constructor logic here
             //
-            //1p chạy 1 lần (chỉ áp dụng những chức năng cần chạy sớm và phải chạy nhanh)
+            //1p chạy 1 lần(chỉ áp dụng những chức năng cần chạy sớm và phải chạy nhanh)
             Timer1Minute = new System.Timers.Timer(60000);
             Timer1Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer1Minute_Elapsed);
-            ////5p chạy 1 lần
-            //Timer5Minute = new System.Timers.Timer(300000);
-            //Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
-            ////10p chạy 1 lần
-            //TimerSendNotify = new System.Timers.Timer(600000);
-            //TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendNotify_Elapsed);
-            ////60p chạy 1 lần
-            //TimerAutoUpdate = new System.Timers.Timer(3600000);
-            //TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
-            _config = config.Value;
+            //5p chạy 1 lần
+            Timer5Minute = new System.Timers.Timer(300000);
+            Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
+            //10p chạy 1 lần
+            TimerSendNotify = new System.Timers.Timer(600000);
+            TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendNotify_Elapsed);
+            //60p chạy 1 lần
+            TimerAutoUpdate = new System.Timers.Timer(3600000);
+            TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
-            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
+            //ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
             _notifier = notifier;
-            Start();
         }
         public string MsgError;
         private string _basePath;
@@ -62,10 +59,10 @@ namespace JeeWork_Core2021.Classes
                 _basePath = value;
             }
         }
-        //System.Timers.Timer TimerAutoUpdate;
-        //System.Timers.Timer TimerSendNotify;
+        System.Timers.Timer TimerAutoUpdate;
+        System.Timers.Timer TimerSendNotify;
         System.Timers.Timer Timer1Minute;
-        //System.Timers.Timer Timer5Minute;
+        System.Timers.Timer Timer5Minute;
 
         string CurrentMachineID = "";
         public Hashtable logtowrite = new Hashtable();
@@ -74,15 +71,15 @@ namespace JeeWork_Core2021.Classes
         public string NotSendmail;
         public void Start()
         {
-            //TimerAutoUpdate.Start();
-            //TimerSendNotify.Start();
+            TimerAutoUpdate.Start();
+            TimerSendNotify.Start();
             Timer1Minute.Start();
-            //Timer5Minute.Start();
+            Timer5Minute.Start();
         }
         public void Stop()
         {
-            //TimerAutoUpdate.Stop();
-            //TimerSendNotify.Stop();
+            TimerAutoUpdate.Stop();
+            TimerSendNotify.Stop();
             Timer1Minute.Stop();
             Timer1Minute.Stop();
         }
@@ -109,26 +106,42 @@ namespace JeeWork_Core2021.Classes
         {
             try
             {
-                string HRConnectionString = JeeWorkConstant.getHRCnn();
-                using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
+
+                #region danh sách tài khoản customer
+                List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
+                foreach(long CustomerID in DanhSachCustomer)
                 {
-                    DataTable tmp = cnn.CreateDataTable("select ngay,custemerid from tbl_ngaythongbao_custemer where id_row=4");
-                    DataTable dt = cnn.CreateDataTable("select rowid from tbl_custemers");
-                    for (int i = 0; i < dt.Rows.Count; i++)
+                    string _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
+                    using (DpsConnection cnnWW = new DpsConnection(_connection))
                     {
-                        string CustemerID = dt.Rows[i]["rowid"].ToString();
-                        //MailInfo MInfo = new MailInfo(CustemerID, cnn);
-                        //generate task from repeated
-                        using (DpsConnection cnnWW = new DpsConnection(ConnectionString))
-                        {
-                            WeworkLiteController.Insert_Template(cnnWW, CustemerID);
-                            EveryDayForceRun(cnnWW, CustemerID);
-                            EveryDay_UpdateLate(cnnWW, CustemerID);
-                            ThongBaoSapHetHan(cnnWW, CustemerID);
-                            ThongBaoHetHan(cnnWW, CustemerID);
-                        }
+                        WeworkLiteController.Insert_Template(cnnWW, CustomerID.ToString());
+                        EveryDayForceRun(cnnWW, CustomerID.ToString());
+                        EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
+                        ThongBaoSapHetHan(cnnWW, CustomerID.ToString());
+                        ThongBaoHetHan(cnnWW, CustomerID.ToString());
                     }
                 }
+                #endregion
+
+                //using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                //{
+                //    DataTable tmp = cnn.CreateDataTable("select ngay,custemerid from tbl_ngaythongbao_custemer where id_row=4");
+                //    DataTable dt = cnn.CreateDataTable("select rowid from tbl_custemers");
+                //    for (int i = 0; i < dt.Rows.Count; i++)
+                //    {
+                //        string CustemerID = dt.Rows[i]["rowid"].ToString();
+                //        //MailInfo MInfo = new MailInfo(CustemerID, cnn);
+                //        //generate task from repeated
+                //        using (DpsConnection cnnWW = new DpsConnection(ConnectionString))
+                //        {
+                //            WeworkLiteController.Insert_Template(cnnWW, CustemerID);
+                //            EveryDayForceRun(cnnWW, CustemerID);
+                //            EveryDay_UpdateLate(cnnWW, CustemerID);
+                //            ThongBaoSapHetHan(cnnWW, CustemerID);
+                //            ThongBaoHetHan(cnnWW, CustemerID);
+                //        }
+                //    }
+                //}
             }
             catch (Exception ex)
             {

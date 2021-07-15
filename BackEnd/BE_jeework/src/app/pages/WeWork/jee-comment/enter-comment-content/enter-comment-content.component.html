@@ -1,0 +1,71 @@
+<ng-container>
+  <div class="enter-post-comment post-comment" *ngIf="service.mainUser$ | async">
+    <div class="post-comment-avatar">
+      <img id="img-avatar" src="{{ (service.mainUser$ | async).AvartarImgURL }}" />
+    </div>
+    <div class="post-comment-input">
+      <textarea
+        #txtarea
+        (focus)="focusFunction()"
+        (focusout)="focusOutFunction()"
+        (keyup.escape)="cancleComment()"
+        (keydown)="onKeydown($event)"
+        (keyup.enter)="validateCommentAndPost()"
+        [(ngModel)]="inputTextArea"
+        placeholder="Viết bình luận"
+        class="textarea-input"
+        cdkTextareaAutosize
+      >
+      </textarea>
+      <ul class="comment-icon">
+        <li class="icon">
+          <span>
+            <div (click)="toggleEmojiPicker()" role="button" tabindex="0"><i id="emotion-icon"></i></div>
+          </span>
+          <div class="show-icon" (focus)="focusFunction()" (focusout)="focusOutFunction()">
+            <emoji-mart
+              (clickOutside)="clickOutSideEmoji()"
+              [i18n]="service.i18n"
+              [showPreview]="false"
+              [darkMode]="false"
+              size="32"
+              class="emoji-mart"
+              set="facebook"
+              *ngIf="showPopupEmoji"
+              (emojiSelect)="addEmoji($event)"
+              [showPreview]="false"
+              [enableSearch]="false"
+            >
+            </emoji-mart>
+          </div>
+        </li>
+        <li (click)="img.click()" class="icon">
+          <span>
+            <div role="button" tabindex="0"><i id="image-icon"></i></div> </span
+          ><input
+            #img
+            (change)="previewFileInput(img.files)"
+            id="input-flie"
+            accept="image/*, image/heic, image/heif"
+            type="file"
+            [multiple]="true"
+          />
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="enter-post-comment-image">
+    <ng-container *ngFor="let imageUrl of imagesUrl; let i = index">
+      <div class="img-preview"><img [src]="imageUrl" /><span (click)="deletePreviewImage(i)" class="delete-preview-image"></span></div>
+    </ng-container>
+  </div>
+  <div class="post-comment-cancle">
+    <span *ngIf="isLoading$ | async" class="click-show-spinner" [class.spinner]="isLoading$ | async"> </span>
+    <ng-container *ngIf="showSpanCancelFocus">
+      Nhấn
+      <span> Esc </span>
+      để <span class="span-cancel-comment"> huỷ bình luận</span>
+    </ng-container>
+    <span (click)="cancleComment()" *ngIf="showSpanCancelNoFocus" class="span-cancel-comment-not-in-textarea">Huỷ bình luận</span>
+  </div>
+</ng-container>

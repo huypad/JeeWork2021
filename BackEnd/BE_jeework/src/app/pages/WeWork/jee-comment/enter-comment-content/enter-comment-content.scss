@@ -1,0 +1,94 @@
+$color-x-button: black;
+$color-hover-x-button: #1ebcc5;
+
+.enter-post-comment {
+  padding-right: 16px;
+}
+
+.show-icon {
+  position: absolute;
+  bottom: 100%;
+  left: 72%;
+}
+
+.enter-post-comment-image {
+  padding-top: 0px;
+  img {
+    border: 0;
+    max-height: 37.5vh;
+    max-width: 25vw;
+    padding-bottom: 5px;
+    padding-right: 5px;
+    border-radius: 18px;
+  }
+}
+
+.img-preview {
+  display: inline-flex;
+  margin-right: 20px;
+  vertical-align: top;
+}
+
+.delete-preview-image {
+  cursor: pointer;
+  vertical-align: top;
+}
+.delete-preview-image {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 20px;
+  overflow: hidden;
+  &:hover {
+    &::before,
+    &::after {
+      background: $color-hover-x-button;
+    }
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    margin-top: -1px;
+    background: $color-x-button;
+  }
+  &::before {
+    transform: rotate(45deg);
+  }
+  &::after {
+    transform: rotate(-45deg);
+  }
+}
+
+.post-comment-cancle {
+  font-family: 'Roboto';
+  padding-left: 48px;
+  text-align: start;
+}
+
+.span-cancel-comment {
+  font-weight: 600;
+  color: #1ebcc5;
+}
+
+.span-cancel-comment-not-in-textarea {
+  font-weight: 600;
+  color: black;
+}
+
+.span-cancel-comment-not-in-textarea:hover {
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  color: black;
+}
+
+.textarea-input {
+  margin: 0;
+  padding: 0;
+}

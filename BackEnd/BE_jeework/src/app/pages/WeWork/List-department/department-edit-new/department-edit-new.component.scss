@@ -20,7 +20,7 @@
         margin-top: 25px;
         min-height: 500px;
         padding-bottom: 75px;
-
+        max-height: calc(100vh - 200px);
         // css con view template
         .edit-template{
             display: none;

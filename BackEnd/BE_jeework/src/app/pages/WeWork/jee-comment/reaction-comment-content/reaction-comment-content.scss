@@ -1,0 +1,125 @@
+.reaction {
+  align-items: normal;
+  align-content: normal;
+  direction: ltr;
+  display: block;
+  flex-direction: row;
+  flex-grow: 0;
+  flex-shrink: 1;
+  height: 49px;
+  justify-content: normal;
+  max-height: none;
+  max-width: none;
+  min-width: 0;
+  min-height: 0;
+  width: 329px;
+  position: relative;
+}
+
+.reaction-icon {
+  position: relative;
+  background-color: rgb(255, 255, 255);
+  border-radius: 40px;
+  box-shadow: 0 0 2.9px rgba(0, 0, 0, 0.1), 0 0 1.5px rgba(0, 0, 0, 0.048), 0 0 1.5px rgba(0, 0, 0, 0.048),
+    0 0 2.9px rgba(0, 0, 0, 0.1);
+  border-color: rgb(28, 30, 33);
+  color: rgb(28, 30, 33);
+  direction: ltr;
+  display: flex;
+  height: 39px;
+  pointer-events: auto;
+  padding-top: 19px;
+  padding-bottom: 5px;
+  white-space: nowrap;
+  width: 280px;
+  line-height: 16.08px;
+}
+
+.icon-reaction {
+  align-items: center;
+
+  display: flex;
+  cursor: pointer;
+  flex-basis: auto;
+  flex-shrink: 0;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  max-height: 0px;
+  max-width: 0px;
+  min-width: 0px;
+  min-height: 0px;
+  padding: 0px;
+  pointer-events: auto;
+  position: relative;
+  text-align: start;
+  white-space: nowrap;
+  z-index: 0;
+}
+
+.icon-reaction-emotion {
+  height: 32px;
+  width: 32px;
+  display: flex;
+}
+
+.icon-reaction-emotion-icon {
+  display: inline-block;
+  line-height: 0;
+  font-size: 0;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.style-icon-reaction {
+  background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+}
+
+.style-icon-reaction:hover {
+  background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  transform: scale(1.23) translateY(-3px);
+}
+
+#icon-reaction-like {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/like.png);
+}
+
+#icon-reaction-love {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/love.png);
+}
+
+#icon-reaction-haha {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/haha.png);
+}
+
+#icon-reaction-wow {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/wow.png);
+}
+
+#icon-reaction-sad {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/sad.png);
+}
+
+#icon-reaction-care {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/care.png);
+}
+
+#icon-reaction-angry {
+  background-image: url(https://cdn.jee.vn/jee-comment/icons/facebook-reactions-emoticons/32/angry.png);
+}
+
+.mat-tooltip {
+  color: white !important;
+  border-radius: 50px !important;
+  background-color: black !important;
+  font-weight: 600 !important;
+}

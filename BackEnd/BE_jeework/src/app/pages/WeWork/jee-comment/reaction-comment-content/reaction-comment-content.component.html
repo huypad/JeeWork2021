@@ -1,0 +1,29 @@
+<div class="reaction" *ngIf="!(isLoading$ | async)">
+  <div class="reaction-icon">
+    <div class="icon-reaction">
+      <div class="icon-reaction-emotion">
+        <div (click)="postReaction('Like')" class="icon-reaction-emotion-icon" matTooltip="Like" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-like"></canvas>
+        </div>
+        <div (click)="postReaction('Love')" class="icon-reaction-emotion-icon" matTooltip="Love" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-love"></canvas>
+        </div>
+        <div (click)="postReaction('Care')" class="icon-reaction-emotion-icon" matTooltip="Care" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-care"></canvas>
+        </div>
+        <div (click)="postReaction('Haha')" class="icon-reaction-emotion-icon" matTooltip="Haha" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-haha"></canvas>
+        </div>
+        <div (click)="postReaction('Wow')" class="icon-reaction-emotion-icon" matTooltip="Wow" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-wow"></canvas>
+        </div>
+        <div (click)="postReaction('Sad')" class="icon-reaction-emotion-icon" matTooltip="Sad" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-sad"></canvas>
+        </div>
+        <div (click)="postReaction('Angry')" class="icon-reaction-emotion-icon" matTooltip="Angry" matTooltipPosition="above">
+          <canvas class="style-icon-reaction" aria-hidden="true" id="icon-reaction-angry"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

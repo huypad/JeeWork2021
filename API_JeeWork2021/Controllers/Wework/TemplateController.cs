@@ -431,7 +431,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             string sql_insert = "";
                             sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
                             "select id_Row, " + idc + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                            "from we_Status_List where Disabled = 0 and IsDefault = 1";
+                            "from we_Status_List where Disabled = 0 and IsDefault = 1 and group_id = 1";
                             cnn.ExecuteNonQuery(sql_insert);
                         }
                         if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 45, data.id_row, iduser))

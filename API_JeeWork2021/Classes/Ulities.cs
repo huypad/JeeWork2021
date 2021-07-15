@@ -268,6 +268,50 @@ namespace JeeWork_Core2021.Classes
                 return null;
             }
         }
+        public static string GetAccessTokenByHeader(IHeaderDictionary pHeader)
+        {
+            try
+            {
+                if (pHeader == null) return null;
+                if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+
+                IHeaderDictionary _d = pHeader;
+                string _bearer_token, _user;
+                _bearer_token = _d[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+
+                return _bearer_token;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public static string GetUsernameByHeader(IHeaderDictionary pHeader)
+        {
+            try
+            {
+                if (pHeader == null) return null;
+                if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+
+                IHeaderDictionary _d = pHeader;
+                string _bearer_token, _user;
+                _bearer_token = _d[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+                var handler = new JwtSecurityTokenHandler();
+                var tokenS = handler.ReadToken(_bearer_token) as JwtSecurityToken;
+
+                _user = tokenS.Claims.Where(x => x.Type == "username").FirstOrDefault().Value;
+                if (string.IsNullOrEmpty(_user))
+                    return null;
+
+                var User = _user;
+                return User;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
 
     }
 }

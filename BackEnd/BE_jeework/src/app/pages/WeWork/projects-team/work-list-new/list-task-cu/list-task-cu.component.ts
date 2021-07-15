@@ -90,6 +90,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   list_role: any = [];
   ItemFinal = 0;
   ProjectTeam: any = {};
+  private readonly componentName: string = "kt-task";
   public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
       startDate: new Date('09/01/2020'),
@@ -1101,7 +1102,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
 		this.CloseAddnewTask(true);
 		setTimeout(() => {
 			this.newtask = x;
-		}, 3000);
+		}, 1000);
     this._service.InsertTask(val).subscribe(res => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
@@ -1464,5 +1465,12 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
       value: 'StartDate',
     },
   ]
-
+  getComponentName(id_row) {
+    console.log(id_row);
+    if (id_row) {
+      return this.componentName + id_row;
+    } else {
+      return "";
+    }
+  }
 }

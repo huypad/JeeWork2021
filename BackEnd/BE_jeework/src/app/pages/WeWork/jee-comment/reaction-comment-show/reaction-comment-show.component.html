@@ -1,0 +1,14 @@
+<div class="reaction-show" *ngIf="comment">
+  <div class="reaction-show-icon" *ngIf="comment.TotalLengthReaction > 0">
+    <div class="icon-reaction-show">
+      <div class="icon-reaction-show-emotion">
+        <div class="total-reaction">{{ comment.TotalLengthReaction }}</div>
+        <ng-container *ngFor="let id_reaction of lstShowReaction">
+          <div class="icon-reaction-show-emotion-icon">
+            <canvas class="style-icon-reaction-show" aria-hidden="true" id="{{ id_reaction }}"></canvas>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

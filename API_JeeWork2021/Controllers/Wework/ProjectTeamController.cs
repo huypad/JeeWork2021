@@ -1012,7 +1012,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
@@ -1020,13 +1020,15 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         //notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch
@@ -1047,19 +1049,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch
@@ -1152,28 +1156,42 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     data.listid = idc;
                     DataTable dt_member = new DataTable();
                     // insert thành viên
+                    val = new Hashtable();
+                    val["id_project_team"] = idc;
+                    val["createddate"] = DateTime.Now;
+                    val["createdby"] = iduser;
+                    foreach (var owner in data.Users)
+                    {
+                        val["id_user"] = owner.id_user;
+                        val["admin"] = owner.admin;
+                        if (cnn.Insert(val, "we_project_team_user") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
                     string sql_insert = "";
-                    sql_insert = $@"insert into we_project_team_user (id_project_team, id_user, admin, favourite, CreatedDate, CreatedBy, Disabled)
-                        select " + idc + ",id_user,0,0,getdate(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + $" and id_user != {iduser}";
-                    cnn.ExecuteNonQuery(sql_insert);
-                    if (cnn.LastError != null)
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    }
-                    dt_member = cnn.CreateDataTable("select id_user from we_project_team_user where admin = 0 and id_project_team = " + idc + "");
-                    // insert admin
-                    Hashtable has = new Hashtable();
-                    has["id_project_team"] = idc;
-                    has["CreatedDate"] = DateTime.Now;
-                    has["CreatedBy"] = iduser;
-                    has["id_user"] = iduser;
-                    has["admin"] = 1;
-                    if (cnn.Insert(has, "we_project_team_user") != 1)
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    }
+                    //sql_insert = $@"insert into we_project_team_user (id_project_team, id_user, admin, favourite, CreatedDate, CreatedBy, Disabled)
+                    //    select " + idc + ",id_user,0,0,getdate(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + $" and id_user != {iduser}";
+                    //cnn.ExecuteNonQuery(sql_insert);
+                    //if (cnn.LastError != null)
+                    //{
+                    //    cnn.RollbackTransaction();
+                    //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    //}
+                    //dt_member = cnn.CreateDataTable("select id_user from we_project_team_user where admin = 0 and id_project_team = " + idc + "");
+                    //// insert admin
+                    //Hashtable has = new Hashtable();
+                    //has["id_project_team"] = idc;
+                    //has["CreatedDate"] = DateTime.Now;
+                    //has["CreatedBy"] = iduser;
+                    //has["id_user"] = iduser;
+                    //has["admin"] = 1;
+                    //if (cnn.Insert(has, "we_project_team_user") != 1)
+                    //{
+                    //    cnn.RollbackTransaction();
+                    //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    //}
                     var list_roles = new List<long> { 1 };
                     if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, ConnectionString))
                     {
@@ -1227,20 +1245,22 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", "Cuộc họp");
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users_admin[i].ToString();
                         notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
                         //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch
@@ -1264,19 +1284,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             has_replace.Add("project_team", data.title);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = users_member[i].ToString();
                             notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
+                            notify_model.ComponentName = "";
+                            notify_model.Component = "";
                             notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
                             try
                             {
                                 if (notify_model != null)
                                 {
                                     Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                 }
                             }
                             catch
@@ -1430,20 +1452,22 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users_admin[i].ToString();
                         notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
                         //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch
@@ -1467,19 +1491,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             has_replace.Add("project_team", data.title);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = users_member[i].ToString();
                             notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
+                            notify_model.ComponentName = "";
+                            notify_model.Component = "";
                             notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                             try
                             {
                                 if (notify_model != null)
                                 {
                                     Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                 }
                             }
                             catch
@@ -1665,20 +1691,22 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
                         //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch
@@ -1699,19 +1727,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch
@@ -1748,19 +1778,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 has_replace = new Hashtable();
                                 has_replace.Add("nguoigui", loginData.Username);
                                 has_replace.Add("project_team", data.title);
-                                notify_model.AppCode = "WW";
+                                notify_model.AppCode = "WORK";
                                 notify_model.From_IDNV = loginData.UserID.ToString();
                                 notify_model.To_IDNV = data.Users[i].id_user.ToString();
                                 notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                                 notify_model.ReplaceData = has_replace;
                                 notify_model.To_Link_MobileApp = "";
+                                notify_model.ComponentName = "";
+                                notify_model.Component = "";
                                 notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                                 try
                                 {
                                     if (notify_model != null)
                                     {
                                         Knoti = new APIModel.Models.Notify();
-                                        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                     }
                                 }
                                 catch
@@ -2464,20 +2496,22 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             has_replace.Add("project_team", dtF.Rows[0]["title"]);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_user.ToString();
                             notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
                             //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
+                            notify_model.ComponentName = "";
+                            notify_model.Component = "";
                             notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                             try
                             {
                                 if (notify_model != null)
                                 {
                                     Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                 }
                             }
                             catch
@@ -2501,19 +2535,21 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             has_replace.Add("project_team", dtF.Rows[0]["title"]);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_user.ToString();
                             notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
+                            notify_model.ComponentName = "";
+                            notify_model.Component = "";
                             notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
                             try
                             {
                                 if (notify_model != null)
                                 {
                                     Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                 }
                             }
                             catch
@@ -2651,19 +2687,21 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("project_team", projectname);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users[i].ToString();
                         notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + id + "/settings/members";
                         try
                         {
                             if (notify_model != null)
                             {
                                 Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                             }
                         }
                         catch

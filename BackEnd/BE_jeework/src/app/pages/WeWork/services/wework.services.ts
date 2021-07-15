@@ -9,6 +9,7 @@ import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
 const API_Lite = environment.APIROOTS + '/api/wework-lite';
+const APIROOTS = environment.APIROOTS;
 
 
 @Injectable()
@@ -155,9 +156,23 @@ export class WeWorkService {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         return this.http.get<any>(environment.HOST_JEELANDINGPAGE_API + `/api/widgets/Get_DSNhacNho`, { headers: httpHeaders });
     }
+	//#region nhắc nhở 
+	// getTopicObjectIDByComponentName(componentName): Observable<any> {
+    //     const httpHeaders = this.httpUtils.getHTTPHeaders();
+	// 	const url = APIROOTS + `/api/comments/getByComponentName/${componentName}`;
+    //     return this.http.get<any>(url, { headers: httpHeaders });
+    // }
 	//#endregion
 
-	//insert status dyamic
+	// setup jee-comment
+	getTopicObjectIDByComponentName(componentName: string): Observable<string> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = APIROOTS + `/api/comments/getByComponentName/${componentName}`;
+		return this.http.get(url, {
+		  headers: httpHeaders,
+		  responseType: 'text'
+		});
+	  }
 
 
 	// setup avatar 

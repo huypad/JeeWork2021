@@ -112,5 +112,6 @@ namespace JeeWork_Core2021.Models
         // 1: dự án nội bộ, 2: dự án làm việc vs khách hàng, 3 - dự án tạo từ cuộc họp
         public long loai { get; set; } = 3;
         public long meetingid { get; set; }
+        public List<ProjectTeamUserModel> Users { get; set; }
     }
 }

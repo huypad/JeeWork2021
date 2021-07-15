@@ -1,0 +1,44 @@
+<div class="comment-container" *ngIf="!(service.isLoading$ | async)">
+  <div class="comment-header-container">
+    <div *ngIf="!hiddenLike" class="comment-header comment-header-like">
+      <div class="comment-header-reaction">
+        <jeecomment-reaction-content></jeecomment-reaction-content>
+      </div>
+      <mat-icon data-visualcompletion="css-img" class="icon-like item-align-middle"></mat-icon>
+      <span style="vertical-align: bottom"> Thích </span>
+    </div>
+    <div class="comment-header" (click)="clickButtonComment()">
+      <mat-icon data-visualcompletion="css-img" class="item-align-middle" id="icon-comment"></mat-icon>
+      <span style="vertical-align: bottom"> Bình Luận </span>
+    </div>
+    <div *ngIf="!hiddenShare" class="comment-header">
+      <mat-icon data-visualcompletion="css-img" id="icon-share" class="item-align-middle"></mat-icon>
+      <span style="vertical-align: bottom"> Chia Sẻ </span>
+    </div>
+  </div>
+  <div *ngIf="ShowSpinner$.asObservable() | async; else loading" class="click-show-spinner" [class.spinner]="true"></div>
+  <div *ngIf="(errorMessage$ | async) !== ''" class="show-error">Comment không hợp lệ hoặc đã bị xoá, vui lòng thử lại sau.</div>
+  <ng-template #loading>
+    <div class="comment-content-container" *ngIf="item">
+      <ng-container>
+        <div class="comment-filter" *ngIf="item.ViewLengthComment < item.TotalLengthComment">
+          <div class="view-more-comment">
+            <span (click)="viewMoreComment()" class="text-filter"> Xem thêm bình luận </span>
+            <span class="click-show-spinner-view-more-comment" [class.spinner]="ShowSpinnerViewMore$.asObservable() | async"></span>
+          </div>
+          <div style="display: none" class="filter">
+            <span>Toàn bộ bình luận </span>
+            <i data-visualcompletion="css-img" class="item-align-middle" id="filter-icon"></i>
+          </div>
+        </div>
+        <ng-container *ngFor="let comment of item.Comments">
+          <jeecomment-post-comment-content [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID" [comment]="comment">
+          </jeecomment-post-comment-content>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="(errorMessage$ | async) === ''">
+        <jeecomment-enter-comment-content *ngIf="!isFirstTime" [objectID]="objectID"> </jeecomment-enter-comment-content>
+      </ng-container>
+    </div>
+  </ng-template>
+</div>

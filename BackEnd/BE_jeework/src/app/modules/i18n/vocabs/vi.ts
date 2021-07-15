@@ -199,6 +199,7 @@ export const locale = {
       browsetemplate: 'Các mẫu có sẵn',
       bot: "Bớt",
       botatca: "Bỏ tất cả",
+      bancomuonthoat: "Khi xác nhận thoát tất cả dữ liệu không được lưu trữ?",
       // C
       chidinhlai: "Chỉ định lại",
       cactuychonkhac: "Các tùy chọn khác",
@@ -370,6 +371,7 @@ export const locale = {
 
       // X
       xacnhan: "Xác nhận",
+      xacnhanthoat: "Xác nhận thoát",
       xem: "Xem",
       xemtruoc: "Xem trước",
       xemdanhsach: "Xem danh sách",

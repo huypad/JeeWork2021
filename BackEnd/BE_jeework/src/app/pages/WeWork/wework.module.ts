@@ -178,8 +178,10 @@ import { EditAutomationComponent } from './automation/edit-automation/edit-autom
 import { AutomationTabBrowseComponent } from './automation/automation-tab-browse/automation-tab-browse.component';
 import { AutomationTabManageComponent } from './automation/automation-tab-manage/automation-tab-manage.component';
 import { AutomationLabelComponent } from './automation/automation-label/automation-label.component';
+import { JeeCommentModule } from './jee-comment/jee-comment.module';
 @NgModule({
 	imports: [
+		JeeCommentModule, 
 		MatFormFieldModule,
 		CommonModule,
 		HttpClientModule,
@@ -422,6 +424,7 @@ import { AutomationLabelComponent } from './automation/automation-label/automati
 
 	],
 	exports: [
+		JeeCommentModule,
 		CRUDTableModule,
 		MatDialogModule,
 		MatButtonModule,

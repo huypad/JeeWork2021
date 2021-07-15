@@ -1,8 +1,7 @@
-
 <kt-portlet [options]="{hideHeader: true}">
     <div class="kt-portlet__head kt-portlet__head__custom pd-0">
         <div class="kt-portlet__head-label">
-            <div class="my-form-header w-100">                
+            <div class="my-form-header w-100">
                 <ng-container *ngIf="selectedTab == 2;else normal">
                     <div class="text-dark filter-search">
                         <i class="fas fa-filter"
@@ -13,7 +12,8 @@
                                 [popoverCloseOnMouseOutside]="true"> {{showTitleFilter(idFilter)}} </span>
                         </span>
                     </div>
-                    <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom" style="z-index: 999999999;">
+                    <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom"
+                        style="z-index: 999999999;">
                         <ng-container *ngFor="let f of danhsachboloc">
                             <a (click)="ChangeFilter(f.id_row)">{{f.title}}</a>
                         </ng-container>
@@ -45,31 +45,32 @@
                         <div style="flex-grow: 1;"></div>
                         <ng-container *ngIf="myWorks || getMystaff">
                             <div (click)="SelectFilterDate()" class="filter ">{{'filter.tu'|translate}}:
-                                <em>{{  filterDay.startDate | date:'dd/MM'}} -
+                                <em>{{ filterDay.startDate | date:'dd/MM'}} -
                                     {{ filterDay.endDate | date:'dd/MM/yyyy'}}</em>
                                 &nbsp;
                                 <i class="fas fa-chevron-down"></i>
                             </div>
-                            <div class="filter" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+                            <div class="filter" [matMenuTriggerFor]="menu"
+                                matTooltip="{{'report.clicktoupdate'|translate}}">
                                 <em>{{column_sort.title}}</em>
                                 &nbsp;
                                 <i class="fas fa-chevron-down"></i>
                                 <mat-menu #menu="matMenu">
                                     <button mat-menu-item *ngFor="let item of sortField"
-                                    [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
-                                    (click)="SelectedField(item)">{{item.title}}</button>
+                                        [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                                        (click)="SelectedField(item)">{{item.title}}</button>
                                 </mat-menu>
                             </div>
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
-                                <div class="icon-user border" (click)="viewTaskOrder=false;ChangeData()" >
+                                <div class="icon-user border" (click)="viewTaskOrder=false;ChangeData()">
                                     <i class="fas fa-user" [ngClass]="{'text-success': !viewTaskOrder}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="viewTaskOrder=true;ChangeData()" >
+                                <div class="icon-user border" (click)="viewTaskOrder=true;ChangeData()">
                                     <i class="fas fa-user-friends" [ngClass]="{'text-success': viewTaskOrder}"></i>
                                 </div>
                             </div>
-                        </ng-container> 
-                        <div class="cu-filter-right row text-dark" *ngIf="getMystaff">                            
+                        </ng-container>
+                        <div class="cu-filter-right row text-dark" *ngIf="getMystaff">
                             <div class="item-filter url -hover">
                                 <i class="fas fa-ellipsis-h" [matMenuTriggerFor]="viewSetting"></i>
                                 <mat-menu #viewSetting="matMenu">
@@ -82,7 +83,7 @@
                                                     translate="viewsetting.tasklocation"></span></div>
                                             <mat-slide-toggle [(ngModel)]="tasklocation" class="float-right">
                                             </mat-slide-toggle>
-                                        </button> 
+                                        </button>
                                         <button mat-menu-item (click)="showemptystatus=!showemptystatus">
                                             <div class="float-left" style="line-height: 2;margin-right: 10px;"><span
                                                     translate="viewsetting.showemptystatus"></span></div>
@@ -103,7 +104,8 @@
             
         </ng-container>
     </kt-portlet-header> -->
-    <div class="kt-portlet-body pd-0 overflow-auto" style="background-color: #eeeeee;" [ngStyle]="{'height.px': getHeight()}">
+    <div class="kt-portlet-body pd-0 overflow-auto" style="background-color: #eeeeee;"
+        [ngStyle]="{'height.px': getHeight()}">
         <div class="kt-form__filtration">
             <div class="form-group kt-form__group row">
                 <div style="padding: 25px;    flex-grow: 1;">
@@ -116,12 +118,11 @@
                                         <div class="cu-task-list-header__item-label ng-star-inserted">
                                             <div
                                                 class="cu-task-list-header__item-label-body cu-task-list-header__item-label-body-fill ng-star-inserted text-success">
-                                                 <div class="cu-task-list-header__item-label-body-inner">
-                                                    <div
-                                                        class="cu-group-header__header-status ng-star-inserted url text-success" style="font-weight: 500;font-size: 11pt;">
+                                                <div class="cu-task-list-header__item-label-body-inner">
+                                                    <div class="cu-group-header__header-status ng-star-inserted url text-success"
+                                                        style="font-weight: 500;font-size: 11pt;">
                                                         <div class="row">
-                                                            <span class="text-uppercase"
-                                                                style="padding-right: 5px;">
+                                                            <span class="text-uppercase" style="padding-right: 5px;">
                                                                 {{lstcongviec.title}}
                                                             </span>
                                                         </div>
@@ -133,7 +134,8 @@
                                             sorttitle="Sort by task name">
                                             <div class="cu-dropdown-head">
                                                 <div class="cu-task-list-header-field__title">
-                                                    <div class="cu-task-list-header-field__title-text" style="padding-top: 6px;">
+                                                    <div class="cu-task-list-header-field__title-text"
+                                                        style="padding-top: 6px;">
                                                         {{lstcongviec.data.length}} {{ 'work.tasks' | translate}}
                                                     </div>
                                                 </div>
@@ -152,13 +154,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="cu-task-list-header-settings text-muted"> 
+                                    <div class="cu-task-list-header-settings text-muted">
                                     </div>
                                 </div>
 
                                 <!-- binding list -->
 
-                                <ng-template #tmplNode1 let-node="node" >
+                                <ng-template #tmplNode1 let-node="node">
                                     <div class="node-item" [attr.data-id]="node.id_row" [attr.id]="'node-'+node.id_row">
                                         <!-- node cha + con -->
 
@@ -184,8 +186,9 @@
                                                                 [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
                                                             </div>
                                                         </div>
-                                                        <div cudropdown="" class="cu-dropdown ng-star-inserted url-disabled"
-                                                            *ngIf="!CheckRoleskeypermit('status',node.id_project_team)" >
+                                                        <div cudropdown=""
+                                                            class="cu-dropdown ng-star-inserted url-disabled"
+                                                            *ngIf="!CheckRoleskeypermit('status',node.id_project_team)">
 
                                                             <div class="cu-task-row-status__item cu-dropdown__toggle"
                                                                 cudropdowntoggle="" cupreventdefault=""
@@ -232,26 +235,31 @@
                                                                             <span class="-hover"
                                                                                 (click)="ViewDetai(node)">{{node.title}}</span>
 
-																				<ng-container *ngIf="node.Childs.length > 0">
-																					<div class="cu-task-row-subtasks-count url"
-																						style="font-size: 13px;">
-																						<div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
-																							(click)="ExpandNode(node)">
-																							<div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
-																								style="min-width:20px;padding:0 5px;    display: flex;
+                                                                            <ng-container
+                                                                                *ngIf="node.Childs.length > 0">
+                                                                                <div class="cu-task-row-subtasks-count url"
+                                                                                    style="font-size: 13px;">
+                                                                                    <div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
+                                                                                        (click)="ExpandNode(node)">
+                                                                                        <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
+                                                                                            style="min-width:20px;padding:0 5px;    display: flex;
 																								align-items: center;">
-																								<mat-icon style="    height: 16px;
-                                                                                                width: 16px;" class="text-muted">group_work</mat-icon>
-																								&nbsp;
-																								<span>{{node.Childs.length}}</span>
-																							</div>
-																						</div>
-																						<div class="add-new-task -hover" *ngIf="CheckRoles(15,node.id_project_team)" (click)="AddnewTask(node.id_row);node.isExpanded=true"
-																						matTooltip="{{ 'work.addsubtask' | translate }}">
-																							<i class="fas fa-plus"></i>
-																						</div>
-																					</div>
-																				</ng-container>
+                                                                                            <mat-icon style="    height: 16px;
+                                                                                                width: 16px;"
+                                                                                                class="text-muted">
+                                                                                                group_work</mat-icon>
+                                                                                            &nbsp;
+                                                                                            <span>{{node.Childs.length}}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="add-new-task -hover"
+                                                                                        *ngIf="CheckRoles(15,node.id_project_team)"
+                                                                                        (click)="AddnewTask(node.id_row);node.isExpanded=true"
+                                                                                        matTooltip="{{ 'work.addsubtask' | translate }}">
+                                                                                        <i class="fas fa-plus"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </ng-container>
                                                                             <span class="action-inline text-muted"
                                                                                 *ngIf="CheckRoles(15,node.id_project_team)">
                                                                                 <i class="fas fa-pencil-alt"
@@ -297,9 +305,10 @@
                                                             <div class="w-100 h-100 url-disabled"
                                                                 *ngIf="!CheckRoleskeypermit(item.fieldname,node.id_project_team)"
                                                                 [ngStyle]="{'backgroundColor': getColorStatus(node.id_project_team,node.status)}">
-                                                                <div
-                                                                    class="text-white text-uppercase cu-task-row-status1"  matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
-                                                                    <span  class="hide-more-text">{{bindStatus(node.id_project_team,node[item.fieldname])}}</span>
+                                                                <div class="text-white text-uppercase cu-task-row-status1"
+                                                                    matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
+                                                                    <span
+                                                                        class="hide-more-text">{{bindStatus(node.id_project_team,node[item.fieldname])}}</span>
 
                                                                 </div>
                                                             </div>
@@ -307,9 +316,10 @@
                                                                 *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team)"
                                                                 [ngStyle]="{'backgroundColor': getColorStatus(node.id_project_team,node.status)}"
                                                                 [matMenuTriggerFor]="status">
-                                                                <div
-                                                                    class="text-white text-uppercase cu-task-row-status1"  matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
-                                                                    <span  class="hide-more-text">{{bindStatus(node.id_project_team,node[item.fieldname])}}</span>
+                                                                <div class="text-white text-uppercase cu-task-row-status1"
+                                                                    matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
+                                                                    <span
+                                                                        class="hide-more-text">{{bindStatus(node.id_project_team,node[item.fieldname])}}</span>
 
                                                                 </div>
                                                             </div>
@@ -333,14 +343,19 @@
                                                         <ng-template #status>
                                                             <ng-container
                                                                 *ngIf="item.type == 'datetime';else nosetdatetime">
-                                                                <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
-                                                                    <span class="hide-more-text item-field" matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}" > {{node[item.fieldname] | date:'dd/MM/yyyy'}} </span>
+                                                                <ng-container
+                                                                    *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
+                                                                    <span class="hide-more-text item-field"
+                                                                        matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}">
+                                                                        {{node[item.fieldname] | date:'dd/MM/yyyy'}}
+                                                                    </span>
                                                                 </ng-container>
                                                                 <ng-template #selectedDate>
                                                                     <div (click)="dt1.open()" class="item-field"
                                                                         *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team)">
                                                                         <span
-                                                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text" matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
+                                                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
+                                                                            matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
                                                                             *ngIf="node[item.fieldname];else setDate">
                                                                             {{node[item.fieldname] | date:'dd/MM/yyyy'}}
                                                                         </span>
@@ -352,7 +367,8 @@
                                                                     <div class="item-field"
                                                                         *ngIf="!CheckRoleskeypermit(item.fieldname,node.id_project_team)">
                                                                         <span
-                                                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text" matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
+                                                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
+                                                                            matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
                                                                             *ngIf="node[item.fieldname];else setDate">
                                                                             {{node[item.fieldname] | date:'dd/MM/yyyy'}}
                                                                         </span>
@@ -368,23 +384,24 @@
                                                                         class="date-picker position-picker"
                                                                         [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
                                                                     <owl-date-time #dt1></owl-date-time>
-																</ng-template>
+                                                                </ng-template>
                                                             </ng-container>
                                                             <ng-template #nosetdatetime>
                                                                 <div class="item-field">
                                                                     <ng-template #code>
-                                                                        <span  class="hide-more-text">
+                                                                        <span class="hide-more-text">
                                                                             {{node[item.fieldname]?'#'+node[item.fieldname]
                                                                             : ''}}
                                                                         </span>
-                                                                        
+
                                                                     </ng-template>
                                                                     <ng-container *ngIf="item.type != 'code';else code">
 
                                                                         <ng-template #assignintask>
                                                                             <div class="item-field"
                                                                                 *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team)">
-                                                                                <ng-container *ngFor="let us of node.User;let index = index">
+                                                                                <ng-container
+                                                                                    *ngFor="let us of node.User;let index = index">
                                                                                     <div *ngIf="index < 3"
                                                                                         class="user url scale-hover-02 position-relative"
                                                                                         style="justify-content: flex-end;">
@@ -546,10 +563,19 @@
                                                                                             class="far fa-comment-dots"></i>
                                                                                         {{node[item.fieldname]}}</span>
                                                                                     <mat-menu #commentsmenu="matMenu">
-                                                                                        <div style="max-height:600px;min-width: 500px;">
-                                                                                            <kt-comment
+                                                                                        <div (click)="$event.stopPropagation()"
+                                                                                            style="max-height:600px;min-width: 500px;min-height: 300px;">
+                                                                                            <!-- <kt-comment
                                                                                                 [Id]="node.id_row"
-                                                                                                [Loai]="1"></kt-comment>
+                                                                                                [Loai]="1">
+                                                                                            </kt-comment> -->
+                                                                                            <div *ngIf="node.id_row"
+                                                                                                class="card card-custom">
+                                                                                                <app-jee-comment
+                                                                                                    [showCommentDefault]="true"
+                                                                                                    [componentName]="getComponentName(node.id_row)">
+                                                                                                </app-jee-comment>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </mat-menu>
                                                                                 </ng-template>
@@ -565,8 +591,8 @@
                                                                                     </ng-container>
                                                                                     <ng-container
                                                                                         *ngIf="item.fieldname!='createdby'">
-                                                                                        <span  class="hide-more-text">
-                                                                                        {{node[item.fieldname]}}
+                                                                                        <span class="hide-more-text">
+                                                                                            {{node[item.fieldname]}}
                                                                                         </span>
                                                                                     </ng-container>
                                                                                 </ng-container>

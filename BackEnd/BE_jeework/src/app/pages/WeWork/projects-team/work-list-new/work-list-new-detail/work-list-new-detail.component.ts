@@ -32,7 +32,6 @@ import { UpdateByKeysComponent } from './../../../update-by-keys/update-by-keys-
 	styleUrls: ['./work-list-new-detail.component.scss']
 })
 export class WorkListNewDetailComponent implements OnInit {
-
 	selectedItem: any = undefined;
 	itemForm: FormGroup;
 	loadingSubject = new BehaviorSubject<boolean>(false);
