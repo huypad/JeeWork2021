@@ -14,6 +14,7 @@ export HOST_JEEWORK_BE=https://jeework.jee.vn
 export HOST_JEEWORK_API=https://jeework-api.jee.vn
 export HOST_ACCOUNT_API=https://jeeaccount-api.jee.vn
 export HOST_CDN=cdn.jee.vn
+export HOST_JEECOMMENT_API=https://jeecomment-api.jee.vn
 
 export APP_IsOnlineDB=null
 export APP_ConnectionString="Data Source=192.168.199.4,1433;Initial Catalog=jeework;User ID=jeework;Password=Jee33W0rkdB"
