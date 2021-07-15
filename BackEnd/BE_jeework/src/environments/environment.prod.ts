@@ -26,4 +26,5 @@ export const environment = {
   JEEACCOUNTAPI: "https://jeeaccount-api.jee.vn",
   HOST_JEELANDINGPAGE_API: "https://jeeglobal-api.jee.vn",
   HOST_JEELANDINGPAGE: "https://jeeglobal.jee.vn",
+  HOST_JEECOMMENT_API: 'https://jeecomment-api.jee.vn',
 };

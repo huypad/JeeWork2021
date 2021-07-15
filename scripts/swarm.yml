@@ -25,6 +25,7 @@ services:
       Host__JeeWork_BE: ${HOST_JEEWORK_API}
       Host__JeeAccount_API: ${HOST_ACCOUNT_API}
       Host__MinIOBrowser: https://${HOST_CDN}
+      Host__JeeComment_API: ${HOST_JEECOMMENT_API}
       AppConfig__IsOnlineDB: ${APP_IsOnlineDB}
       AppConfig__ConnectionString: ${APP_ConnectionString}
       AppConfig__SecretKey: ${APP_SecretKey}
