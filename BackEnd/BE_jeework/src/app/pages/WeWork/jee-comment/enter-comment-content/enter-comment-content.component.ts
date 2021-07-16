@@ -1,6 +1,6 @@
 import { catchError, takeUntil, tap } from 'rxjs/operators';
 import { of, Subject, BehaviorSubject } from 'rxjs';
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation, ChangeDetectorRef, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { JeeCommentService } from '../jee-comment.service';
 import { PostCommentModel } from '../jee-comment.model';
 
@@ -22,7 +22,7 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
   @Input() replyCommentID: string = '';
   @Input() isEdit?: boolean = false;
   @Input() isFocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
+  @Output() valuecomment = new EventEmitter<string>();
   showPopupEmoji: boolean;
   isClickIconEmoji: boolean;
   showSpanCancelFocus: boolean;
@@ -108,13 +108,32 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
     this.service.postCommentModel(model)
       .subscribe();
   }
+  Luulogcomment(model) {
+    this.service.LuuLogcomment(model)
+      .subscribe( () => {
+        this.valuecomment.emit(model.id_topic);
+      });
+  }
 
   postComment(model: PostCommentModel) {
     this._isLoading$.next(true);
     this.service.postCommentModel(model).
       pipe(
         tap(
-          (res) => { },
+          (res) => { 
+            var objSave: any = {};
+  //           TopicCommentID: string;
+  // CommentID: string;
+  // ReplyCommentID: string;
+  // Text: string;
+  // Attachs: Attach;
+            objSave.id_topic = res.Id;
+            objSave.comment = model.Text;
+            objSave.id_parent = 0;
+            objSave.object_type = 0;
+            objSave.object_id_new =  model.TopicCommentID;
+            this.Luulogcomment(objSave);
+          },
           catchError((err) => { console.log(err); return of() }),
           () => {
             this.ngOnInit();

@@ -90,7 +90,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   list_role: any = [];
   ItemFinal = 0;
   ProjectTeam: any = {};
-  private readonly componentName: string = "kt-task";
+  private readonly componentName: string = "kt-task_";
   public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
       startDate: new Date('09/01/2020'),
@@ -1466,7 +1466,6 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     },
   ]
   getComponentName(id_row) {
-    console.log(id_row);
     if (id_row) {
       return this.componentName + id_row;
     } else {

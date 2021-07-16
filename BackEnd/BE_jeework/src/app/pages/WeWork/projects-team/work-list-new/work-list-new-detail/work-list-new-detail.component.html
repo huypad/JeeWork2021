@@ -775,11 +775,15 @@
                                     <ng-template #comment>
                                         <!-- <kt-comment-new class="w-100" [Id]="item.id_row" [id_comment]="log.newvalue"
                                             [Loai]="1"></kt-comment-new> -->
-                                        <app-jee-comment class="w-100"
-                                            [showCommentDefault]="true"
-                                            [componentName]="'task-0'"
-                                        >
-                                        </app-jee-comment>
+                                        <ng-container *ngIf="LoadComment(log.newvalue)">
+                                            <!-- <app-jee-comment class="w-100" style="padding-top: 5px;" 
+                                                [showCommentDefault]="true"
+                                                [componentName]="getComponentName()"
+                                            >
+                                            </app-jee-comment> -->
+                                            <jeecomment-post-comment-content class="w-100" [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID" [comment]="LoadComment(log.newvalue)">
+                                            </jeecomment-post-comment-content>
+                                        </ng-container>
                                     </ng-template>
                                 </div>
                             </div>
@@ -789,11 +793,15 @@
                         <div class="task-comment pd-0 border-top">
                             <!-- <kt-view-comment class="w-100" style="padding-top: 5px;" (refesh)="Refesh($event)" [Id]="item.id_row" [Loai]="1">
                             </kt-view-comment> -->
-                            <app-jee-comment class="w-100" style="padding-top: 5px;" 
-                                [showCommentDefault]="true"
-                                [componentName]="'task-0'"
-                            >
-                            </app-jee-comment>
+                            <ng-container *ngIf="this.objectID">
+                                <!-- <app-jee-comment class="w-100" style="padding-top: 5px;" 
+                                    [showCommentDefault]="true"
+                                    [componentName]="getComponentName()"
+                                >
+                                </app-jee-comment> -->
+                                <jeecomment-enter-comment-content (valuecomment)="LoadLog()" class="w-100" [objectID]="this.objectID"> </jeecomment-enter-comment-content>
+                            </ng-container>
+                            
                         </div>
                     </div>
                 </div>

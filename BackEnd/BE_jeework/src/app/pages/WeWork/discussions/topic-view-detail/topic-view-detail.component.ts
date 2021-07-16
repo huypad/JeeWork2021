@@ -94,7 +94,7 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
   AttachFileComment: any[] = [];
   //===============Khai báo JEEcomment chi tiêt==================
   topicObjectID$: BehaviorSubject<string> = new BehaviorSubject<string>("");
-  private readonly componentName = "kt-topic-view-detail";
+  private readonly componentName = "kt-topic_";
   private readonly onDestroy = new Subject<void>();
   //========================================================
 

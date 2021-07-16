@@ -10,7 +10,7 @@ import { HttpUtilsService } from 'src/app/_metronic/jeework_old/core/utils/http-
 const API_JEECOMMENT_URL = environment.HOST_JEECOMMENT_API + '/api';
 const API_APP_URL = environment.JEEACCOUNTAPI + '/api';
 const API_ROOTS = environment.APIROOTS + '/api';
-
+const API_CMT = environment.APIROOTS + '/api/comment';
 @Injectable()
 export class JeeCommentService {
   private _isLoading$ = new BehaviorSubject<boolean>(false);
@@ -170,7 +170,7 @@ export class JeeCommentService {
 
   public postCommentModel(model: PostCommentModel): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
-    const url = API_ROOTS + `/comments/postcomment`;
+    const url = API_JEECOMMENT_URL + `/comments/postcomment`;
     return this.http.post<any>(url, model, {
       headers: httpHeaders
     });
@@ -178,7 +178,7 @@ export class JeeCommentService {
 
   public postReactionCommentModel(model: ReactionCommentModel): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
-    const url = API_ROOTS + `/comments/postReactionComment`;
+    const url = API_JEECOMMENT_URL + `/comments/postReactionComment`;
     return this.http.post<any>(url, model, {
       headers: httpHeaders
     });
@@ -192,5 +192,13 @@ export class JeeCommentService {
 		  responseType: 'text'
 		});
 	  }
+  
+    LuuLogcomment(model): Observable<any>{
+      const httpHeaders = this.httpUtils.getHTTPHeaders();
+      const url = API_CMT + `/luu-log-comment`;
+      return this.http.post<any>(url, model, {
+        headers: httpHeaders
+      });
+    }
 
 }

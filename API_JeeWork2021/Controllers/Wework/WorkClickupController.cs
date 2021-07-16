@@ -291,7 +291,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!FieldsSelected.Equals(""))
                         FieldsSelected = FieldsSelected.Substring(1);
                     string sql = "Select  iIf(id_group is null,0,id_group) as id_group ,work_group, " + FieldsSelected;
-                    sql += $@" from v_wework_clickup_new w where w.Disabled = 0 " + strW1 + strW;
+                    sql += $@" from v_wework_clickup_new w where w.disabled = 0 " + strW1 + strW;
                     DataTable result = new DataTable();
                     result = cnn.CreateDataTable(sql, Conds);
                     DataTable dt_comments = cnn.CreateDataTable("select id_row, object_type, object_id, comment, id_parent, Disabled " +
@@ -500,28 +500,30 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long IDNV = loginData.UserID;
-                    #region filter thời gian , keyword
+                    #region filter thời gian, keyword
                     DateTime from = DateTime.Now;
                     DateTime to = DateTime.Now;
-                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    int nam = DateTime.Today.Year;
+                    int thang = DateTime.Today.Month;
+                    var lastDayOfMonth = DateTime.DaysInMonth(nam, thang);
+                    string strW = "";
+                    if (!string.IsNullOrEmpty(query.filter["Thang"]))
                     {
-                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                        if (!from1)
-                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                        thang = int.Parse(query.filter["Thang"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    if (!string.IsNullOrEmpty(query.filter["Nam"]))
                     {
-                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                        if (!to1)
-                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                        nam = int.Parse(query.filter["Nam"]);
                     }
+                    from = new DateTime(nam, thang, 1, 0, 0, 1);
+                    to = new DateTime(nam, thang, lastDayOfMonth, 23, 59, 59);
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["id_nv"]))
                         IDNV = long.Parse(query.filter["id_nv"]);
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
                     if (!string.IsNullOrEmpty(query.filter["workother"]) && bool.Parse(query.filter["workother"]))
                     {
                         strW = " and (((w.createdby=@iduser or w.NguoiGiao = @iduser )and w.Id_NV not in (@iduser) and w.Id_NV is not null))";
@@ -530,6 +532,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = { loginData.UserID }))";
                     }
+                    strW += " and w.deadline is not null and (w.deadline >= '" + from + "' and w.deadline <= '" + to + "')";
                     DataSet ds = getWork(cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -556,7 +559,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                        hoten_assign = r["hoten"],
                                        id_nv_assign = r["id_nv"],
                                        prioritize = r["clickup_prioritize"],
-                                       typeid = "".Equals(r["nguoigiao"].ToString()) ? 0 : (r["nguoigiao"].Equals(loginData.UserID) ? 42 : (r["id_nv"].Equals(loginData.UserID) ? 41 : 0)),
+                                       typeid = "".Equals(r["nguoigiao"].ToString()) ? 0 : (r["nguoigiao"].Equals(loginData.UserID) ? 32 : (r["id_nv"].Equals(loginData.UserID) ? 31 : 0)),
                                        project_info = from t in dt.AsEnumerable()
                                                       where r["id_project_team"].Equals(t["id_row"])
                                                       select new

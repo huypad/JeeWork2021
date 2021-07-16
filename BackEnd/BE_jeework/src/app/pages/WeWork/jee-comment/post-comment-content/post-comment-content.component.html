@@ -134,8 +134,7 @@
         [isFocus$]="isFocus$$"
         *ngIf="(showEnterComment$.asObservable() | async) && lstObjectID.length < 3"
         [objectID]="objectID"
-        [commentID]="commentID"
-      >
+        [commentID]="commentID" >
       </jeecomment-enter-comment-content>
     </ng-container>
   </li>

@@ -126,7 +126,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   listNewField: any = [];
   DataNewField: any = [];
   textArea: string = "";
-  private readonly componentName: string = "kt-task";
+  private readonly componentName: string = "kt-task_";
   Emtytask = false;
   filterDay = {
     startDate: new Date("09/01/2020"),

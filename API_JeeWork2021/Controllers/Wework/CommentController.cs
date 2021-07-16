@@ -480,6 +480,67 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("luu-log-comment")]
+        [HttpPost]
+        public async Task<object> SaveLogComment([FromBody] CommentModel data)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    SqlConditions cond = new SqlConditions();
+                    cond.Add("ObjectID", data.object_id_new);
+                    string sqlq = "select * from CommentList where ObjectID = @ObjectID";
+                    DataTable dt = cnn.CreateDataTable(sqlq, cond);
+                    if(cnn.LastError != null || dt.Rows.Count == 0)
+                    {
+                        return JsonResultCommon.KhongCoDuLieu();
+                    }
+                    List<string> objectdata = dt.Rows[0]["ComponentName"].ToString().Split("_").ToList();
+                    string strRe = "";
+                    data.object_id = long.Parse(objectdata[1]);
+                    if(objectdata[0] == "kt-task")
+                    {
+                        data.object_type = 1;
+                    }
+                    else 
+                    {
+                        data.object_type = 2;
+                    }
+                    if (string.IsNullOrEmpty(data.comment))
+                        strRe += (strRe == "" ? "" : ",") + "nội dung";
+                    if (data.object_type <= 0 || data.object_id <= 0)
+                        strRe += (strRe == "" ? "" : ",") + "đối tượng";
+                    if (strRe != "")
+                        return JsonResultCommon.BatBuoc(strRe);
+
+
+                
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 39, data.object_id, loginData.UserID, data.comment, null, data.id_topic))
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+
+                    return JsonResultCommon.ThanhCong();
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+            }
+        }
 
         private List<String> ListUser(string str)
         {
@@ -767,7 +828,9 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and l.createdb
         /// </summary>
         public int object_type { get; set; }
         public long object_id { get; set; }
+        public string object_id_new { get; set; }
         public string comment { get; set; }
+        public string id_topic { get; set; }
         public long id_parent { get; set; }
         public List<CommentUserModel> Users { get; set; }
         public List<FileUploadModel> Attachments { get; set; }
