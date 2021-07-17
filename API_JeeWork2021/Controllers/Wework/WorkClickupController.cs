@@ -465,6 +465,271 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+
+
+        [Route("my-list-new")]
+        [HttpGet]
+        public object MyListNew([FromQuery] QueryParams query)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool isManage = false;
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                if (!string.IsNullOrEmpty(query.filter["isManage"]))
+                {
+                    isManage = bool.Parse(query.filter["isManage"].ToString());
+                }
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                string error = "";
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                if (isManage)
+                {
+                    List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
+                    if (DataStaff == null)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
+                    string listIDNV = string.Join(",", nvs);
+                    listID = listIDNV;
+                }
+                if (error != "")
+                    return JsonResultCommon.Custom(error);
+                #endregion
+
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    long IDNV = loginData.UserID;
+                    #region filter thời gian , keyword
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        if (!from1)
+                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        if (!to1)
+                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    }
+                    #endregion
+                    if (!string.IsNullOrEmpty(query.filter["id_nv"]))
+                        IDNV = long.Parse(query.filter["id_nv"]);
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    string columnName = "id_project_team";
+                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+
+                    if (!isManage)
+                    {
+                        if (!string.IsNullOrEmpty(query.filter["workother"]) && bool.Parse(query.filter["workother"]))
+                        {
+                            strW = " and ( ( (w.createdby=@iduser or w.NguoiGiao = @iduser )and w.Id_NV not in (@iduser) and w.Id_NV is not null))";
+                        }
+                        if (!string.IsNullOrEmpty(query.filter["following"]) && bool.Parse(query.filter["following"]))
+                        {
+                            strW = $" and (w.id_row in ( select id_work from we_work_user where loai = 2 and disabled=0 and id_user = { loginData.UserID }))";
+                        }
+                    }
+                    else
+                    {
+                        strW = $" and (w.id_nv in ({listID}) or w.createdby in ({listID}))";
+                    }
+                    strW += " and w.id_parent is null";
+                    #region group
+                    string strG = @$"select distinct p.id_row, p.title 
+                                    from we_project_team_user u
+                                    join we_project_team p on p.id_row=u.id_project_team 
+                                    join we_department d on d.id_row = p.id_department
+                                    where id_user = { IDNV } and d.IdKH = { loginData.CustomerID}";
+                    if (isManage)
+                    {
+                        strG = @"select distinct p.id_row, p.title from we_project_team_user u
+                                    join we_project_team p on p.id_row=u.id_project_team 
+                                    where u.disabled=0 and p.Disabled=0 and id_user=" + IDNV;
+                    }
+                    #endregion
+                    DataTable dtG = cnn.CreateDataTable(strG);
+                    if (dtG.Rows.Count == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
+                    DataSet ds = new DataSet();
+                    if (isManage)
+                    {
+                        ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount, strW);
+                    }
+                    else
+                    {
+                        ds = getWork(cnn, query, IDNV, DataAccount, strW);
+                    };
+                    var tmpW = ds.Tables[0];
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var tags = ds.Tables[1].AsEnumerable();
+                    // Phân trang
+                    var dt_data = ds.Tables[0].Rows.Count;
+                    Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                    var Children = from rr in dtG.AsEnumerable()
+                                   select new
+                                   {
+                                       id = rr["id_row"],
+                                       title = rr["title"],
+                                       //data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, ConnectionString)
+                                       count = tmpW.AsEnumerable().Where(x => x["id_project_team"].ToString() == rr["id_row"].ToString()).ToList().Count(),
+
+                                   };
+                    return JsonResultCommon.ThanhCong(Children);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// công việc trong từng dự án
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("task-in-project/{projectteamID}")]
+        [HttpGet]
+        public object TaskinProject([FromQuery] QueryParams query, long projectteamID)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool Visible = true;
+            bool isManage = false;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                if (!string.IsNullOrEmpty(query.filter["isManage"]))
+                {
+                    isManage = bool.Parse(query.filter["isManage"].ToString()); 
+                }
+                if(!(projectteamID > 0))
+                {
+                   return JsonResultCommon.KhongTonTai("Dự án");
+                }
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                string error = "";
+                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                if (isManage)
+                {
+                    List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
+                    if (DataStaff == null)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
+                    string listIDNV = string.Join(",", nvs);
+                    listID = listIDNV;
+                }
+                if (error != "")
+                    return JsonResultCommon.Custom(error);
+                #endregion
+
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    long IDNV = loginData.UserID;
+                    #region filter thời gian , keyword
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        if (!from1)
+                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        if (!to1)
+                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    }
+                    #endregion
+                    if (!string.IsNullOrEmpty(query.filter["id_nv"]))
+                        IDNV = long.Parse(query.filter["id_nv"]);
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    string columnName = "id_project_team";
+                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser)"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    if (!isManage)
+                    {
+                        if (!string.IsNullOrEmpty(query.filter["workother"]) && bool.Parse(query.filter["workother"]))
+                        {
+                            strW = " and ( ( (w.createdby=@iduser or w.NguoiGiao = @iduser )and w.Id_NV not in (@iduser) and w.Id_NV is not null))";
+                        }
+                        if (!string.IsNullOrEmpty(query.filter["following"]) && bool.Parse(query.filter["following"]))
+                        {
+                            strW = $" and (w.id_row in ( select id_work from we_work_user where loai = 2 and disabled=0 and id_user = { loginData.UserID }))";
+                        }
+                    }else
+                    {
+                        strW = $" and (w.id_nv in ({listID}) or w.createdby in ({listID}))";
+                    }
+
+
+                    strW += $" and w.id_project_team = " + projectteamID;
+                    #region group
+                    string strG = @$"select distinct id_row, title 
+                                    from we_project_team
+                                    where disabled=0 and id_row =  {projectteamID}";
+                    #endregion
+                    DataTable dtG = cnn.CreateDataTable(strG);
+                    if (dtG.Rows.Count == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
+                    DataSet ds = new DataSet();
+                    if (isManage)
+                    {
+                        ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount, strW);
+                    }
+                    else
+                    {
+                        ds = getWork(cnn, query, IDNV, DataAccount, strW);
+                    };
+                    var tmpW = ds.Tables[0];
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var tags = ds.Tables[1].AsEnumerable();
+                    // Phân trang
+                    var dt_data = ds.Tables[0].Rows.Count;
+                    Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                    var Children = (from rr in dtG.AsEnumerable()
+                                   select new
+                                   {
+                                       id = rr["id_row"],
+                                       title = rr["title"],
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, ConnectionString),
+                                       count = tmpW.AsEnumerable().Where(x => x["id_project_team"].ToString() == rr["id_row"].ToString()).ToList().Count(),
+                                   }).FirstOrDefault();
+                    return JsonResultCommon.ThanhCong(Children);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
         /// <summary>
         /// Danh sách công việc hiển thị trên widget 
         /// Type "41" công việc tôi làm
@@ -828,6 +1093,148 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        /// <summary>
+        /// Load danh sách công việc của user theo id quản lý (Click up)
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("list-work-user-by-manager-new")]
+        [HttpGet]
+        public object ListWorkUserByManagerNew([FromQuery] QueryParams query)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
+                    if (DataStaff == null)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
+                    string listIDNV = string.Join(",", nvs);
+
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+
+                    if (string.IsNullOrEmpty(query.filter["id_nv"]))
+                        return JsonResultCommon.Custom("Thành viên");
+                    #region filter thời gian , keyword
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        if (!from1)
+                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        if (!to1)
+                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    }
+                    #endregion
+
+                    string strW = $" and (w.id_nv in ({listIDNV}) or w.createdby in ({listIDNV}))";
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    #region group
+                    string groupby = "";
+                    string columnName = "";
+                    string query_group = "";
+                    DataTable dtG = new DataTable();
+                    dtG.Columns.Add("id_row", typeof(object));
+                    dtG.Columns.Add("title", typeof(string));
+                    if (!string.IsNullOrEmpty(query.filter["groupby"]))
+                    {
+                        groupby = query.filter["groupby"];
+                        // project,member
+                        if ("project".Equals(groupby))
+                        {
+                            columnName = "id_project_team";
+                            query_group = @"select distinct p.id_row, p.title from we_project_team_user u
+                                    join we_project_team p on p.id_row=u.id_project_team 
+                                    where u.disabled=0 and p.Disabled=0 and id_user=" + query.filter["id_nv"];
+                            dtG = cnn.CreateDataTable(query_group);
+                        }
+                        if ("member".Equals(groupby))
+                        {
+                            dtG = new DataTable();
+                            dtG.Columns.Add("id_row", typeof(object));
+                            dtG.Columns.Add("title", typeof(string));
+                            columnName = "Id_NV";
+                            //using (DpsConnection cnnHR = new DpsConnection(_config.HRConnectionString))
+                            //{
+                            //    dt_data_group = Common.GetListByManager(loginData.UserID.ToString(), cnnHR);//id_nv, hoten...
+                            //}
+                            foreach (var item in DataStaff)
+                            {
+                                dtG.Rows.Add(new object[] { item.UserId, item.FullName });
+                            }
+                        }
+                    }
+                    #endregion
+                    if (dtG.Rows.Count == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
+                    DataSet ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount, strW);
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
+                    var tags = ds.Tables[1].AsEnumerable();
+
+                    int total = temp.Count();
+                    if (total == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    if (query.more)
+                    {
+                        query.page = 1;
+                        query.record = total;
+                    }
+                    pageModel.TotalCount = total;
+                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    pageModel.Size = query.record;
+                    pageModel.Page = query.page;
+                    // Phân trang
+                    var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
+                    var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
+                    //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value);
+                    DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).CopyToDataTable();
+                    dtNew = dtNew.Concat(dtChild);
+                    var Children = from rr in dtG.AsEnumerable()
+                                   select new
+                                   {
+                                       id = rr["id_row"],
+                                       title = rr["title"],
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString)
+                                   };
+                    return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        
+        
         /// <summary>
         /// Ghi lại lịch sử công việc
         /// </summary>
@@ -4078,7 +4485,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                        start = rr["start_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["start_date"]) : "",
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
                                        title = rr["title"],
-                                       classNames = new List<string>() { rr["status"].ToString() == "2" ? "success" : "", rr["is_quahan"].ToString() == "1" ? "overdue" : "" },
+                                       classNames = "success",
                                        //imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
@@ -4169,7 +4576,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                        start = rr["start_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["start_date"]) : "",
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
                                        title = rr["title"],
-                                       classNames = new List<string>() { rr["status"].ToString() == "2" ? "success" : "", rr["is_quahan"].ToString() == "1" ? "overdue" : "" },
+                                       //classNames = new List<string>() { rr["status"].ToString() == "2" ? "success" : "", rr["is_quahan"].ToString() == "1" ? "overdue" : "" },
                                        //imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
@@ -4948,25 +5355,12 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                          updatedby = r["UpdatedBy"],
                          nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
-                         //id_nv = r["id_nv"],
-                         //assign = r["id_nv"] == DBNull.Value ? null : new
-                         //{
-                         //    id_nv = r["id_nv"],
-                         //    hoten = r["hoten"],
-                         //    username = r["username"],
-                         //    tenchucdanh = r["tenchucdanh"],
-                         //    mobile = r["mobile"],
-                         //    image = WeworkLiteController.genLinkImage(domain, IdKHDPS, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
-                         //},
                          User = from us in User.AsEnumerable()
                                 where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                 select new
                                 {
                                     id_nv = us["id_user"],
                                     hoten = us["hoten"],
-                                    //username = us["username"],
-                                    //tenchucdanh = us["tenchucdanh"],
-                                    //mobile = us["mobile"],
                                     image = us["image"],
                                     loai = us["loai"],
                                     //image = WeworkLiteController.genLinkImage(domain, IdKHDPS, us["id_user"].ToString(), _hostingEnvironment.ContentRootPath),

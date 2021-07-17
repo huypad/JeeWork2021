@@ -179,6 +179,7 @@ import { AutomationTabBrowseComponent } from './automation/automation-tab-browse
 import { AutomationTabManageComponent } from './automation/automation-tab-manage/automation-tab-manage.component';
 import { AutomationLabelComponent } from './automation/automation-label/automation-label.component';
 import { JeeCommentModule } from './jee-comment/jee-comment.module';
+import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu-2/list-task-cu-2.component';
 @NgModule({
 	imports: [
 		JeeCommentModule, 
@@ -331,6 +332,7 @@ import { JeeCommentModule } from './jee-comment/jee-comment.module';
 		AvatarUserComponent,
 		AvatarListUsersComponent,
 		ListTaskCUComponent,
+		ListTaskCUComponent2,
 		StatusDynamicDialogComponent,
 		// ChangeReivewerComponent
 		CheckListEditComponent,
@@ -404,6 +406,7 @@ import { JeeCommentModule } from './jee-comment/jee-comment.module';
 		AvatarUserComponent,
 		AvatarListUsersComponent,
 		ListTaskCUComponent,
+		ListTaskCUComponent2,
 		StatusDynamicDialogComponent,
 		InputCustomComponent,
 		CheckListEditComponent,
@@ -517,8 +520,9 @@ import { JeeCommentModule } from './jee-comment/jee-comment.module';
 		WorkListNewDetailComponent,
 		AvatarUserComponent,
 		AvatarListUsersComponent,
-		ListTaskCUComponent,
 		StatusDynamicDialogComponent,
+		ListTaskCUComponent,
+		ListTaskCUComponent2,
 		CheckListEditComponent,
 		ChangeReivewerComponent,
 		CuTagComponent,

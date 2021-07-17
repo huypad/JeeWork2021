@@ -168,7 +168,6 @@ export class WorkListNewDetailComponent implements OnInit {
     this.LoadData();
     this.LoadChecklist();
     this.LoadObjectID();
-    this.LoadLog();
 
     this.isReset = setInterval(() => {
 			this.resetComment();
@@ -222,7 +221,8 @@ export class WorkListNewDetailComponent implements OnInit {
   }
   LoadData() {
     this.mark_tag();
-    // }
+    this.LoadLog();
+
     this.weworkService
       .ListStatusDynamic(this.Id_project_team)
       .subscribe((res) => {

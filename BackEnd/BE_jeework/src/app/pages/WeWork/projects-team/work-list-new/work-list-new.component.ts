@@ -202,25 +202,26 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   CheckRoles(roleID: number) {
-    var x = this.list_role.find((x) => x.id_row == this.ID_Project);
-    if (x) {
-      if (x.admin == true) {
-        return true;
-      } else {
-        if (roleID == 3 || roleID == 4) {
-          if (x.isuyquyen) return true;
-        }
-        if (x.Roles.find((r) => r.id_role == 15)) return false;
-        var r = x.Roles.find((r) => r.id_role == roleID);
-        if (r) {
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == this.ID_Project);
+      if (x) {
+        if (x.admin == true) {
           return true;
         } else {
-          return false;
+          if (roleID == 3 || roleID == 4) {
+            if (x.isuyquyen) return true;
+          }
+          if (x.Roles.find((r) => r.id_role == 15)) return false;
+          var r = x.Roles.find((r) => r.id_role == roleID);
+          if (r) {
+            return true;
+          } else {
+            return false;
+          }
         }
       }
-    } else {
-      return false;
     }
+    return false;
   }
   CheckRoleskeypermit(key) {
     var x = this.list_role.find((x) => x.id_row == this.ID_Project);
@@ -254,6 +255,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {}
   LoadData() {
+    console.log("time start 1:", new Date());
     this.clearList();
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
@@ -426,6 +428,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   listStatus: any = [];
   LoadListStatus() {
+    console.log("time start 2 (map) :", new Date());
     this.listFilter.forEach((val) => {
       val.data = [];
     });
@@ -498,6 +501,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       });
     });
     this.listStatus = this.listFilter;
+    console.log("time end 2(map) :", new Date());
   }
 
   drop1(event: CdkDragDrop<string[]>) {
@@ -1776,7 +1780,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   getHeight() {
-    var height = window.innerHeight - 118 - this.tokenStorage.getHeightHeader();
+    var height = window.innerHeight - 125 - this.tokenStorage.getHeightHeader();
     return height;
   }
 

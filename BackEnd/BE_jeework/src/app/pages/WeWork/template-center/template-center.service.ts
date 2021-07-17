@@ -24,9 +24,9 @@ export class TemplateCenterService {
       { headers: httpHeaders, params: httpParms });
 
   }
-  getDetailTemplate(id): Observable<any> {
+  getDetailTemplate(id,istemplatelist = false): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
-    return this.http.get<any>(API_Template + '/detail?id=' + id,
+    return this.http.get<any>(API_Template + `/detail?id=${id}&istemplatelist=${istemplatelist}`,
       { headers: httpHeaders });
   }
   getListTemplateUser(queryParams: QueryParamsModel): Observable<any> {

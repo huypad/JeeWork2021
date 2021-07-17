@@ -24,8 +24,8 @@
                     </popover-content>
                 </ng-container>
                 <ng-template #normal>
-                    <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
-                        <div class="cu-hidden-print cu-filter-block ng-tns-c31-5 ng-star-inserted">
+                    <div class="cu2-views-bar__options ng-tns-c31-5">
+                        <div class="cu-hidden-print cu-filter-block ng-tns-c31-5">
                             <ng-container>
                                 <div class="cu-search-filter cu-search-filter_v5" style=" padding: 0 10px;">
                                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched"
@@ -33,7 +33,7 @@
                                         [(ngModel)]="keyword" type="text"
                                         placeholder="{{ 'work.filterbytaskname' | translate}}">
                                     <div class="cu-search-filter__extra">
-                                        <div class="cu-filter-value-list-dropdown ng-star-inserted">
+                                        <div class="cu-filter-value-list-dropdown">
                                             <div class="cu-dropdown_left cu-dropdown">
                                                 <i class="fas fa-filter"></i>
                                             </div>
@@ -99,24 +99,27 @@
             </div>
         </div>
     </div>
-
-    
+    <!-- <kt-portlet-header [sticky]="true" class="pd-0">
+        <ng-container ktPortletTitle>
+            
+        </ng-container>
+    </kt-portlet-header> -->
     <div class="kt-portlet-body pd-0 overflow-auto" style="background-color: #eeeeee;"
         [ngStyle]="{'height.px': getHeight()}">
         <div class="kt-form__filtration">
             <div class="form-group kt-form__group row">
                 <div style="padding: 25px;    flex-grow: 1;">
                     <ng-container *ngFor="let lstcongviec of filteredDanhSachCongViec | async ;trackBy: trackByFn">
-                        <div class="cu-list-group" *ngIf="lstcongviec.data.length > 0 || showemptystatus">
+                        <div class="cu-list-group" *ngIf="lstcongviec.count > 0">
                             <div class="cu-task-list">
                                 <div class="task-list-header text-dark">
                                     <div class="task-list-header__item task-list-header__item_main"
                                         style="flex-grow: 1;">
-                                        <div class="cu-task-list-header__item-label ng-star-inserted">
+                                        <div class="cu-task-list-header__item-label">
                                             <div
-                                                class="cu-task-list-header__item-label-body cu-task-list-header__item-label-body-fill ng-star-inserted text-success">
+                                                class="cu-task-list-header__item-label-body cu-task-list-header__item-label-body-fill text-success">
                                                 <div class="cu-task-list-header__item-label-body-inner">
-                                                    <div class="cu-group-header__header-status ng-star-inserted url text-success"
+                                                    <div class="cu-group-header__header-status url text-success"
                                                         style="font-weight: 500;font-size: 11pt;">
                                                         <div class="row">
                                                             <span class="text-uppercase" style="padding-right: 5px;">
@@ -127,21 +130,20 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="cu-task-list-header__item cu-task-list-header__count cu-task-list-header-field ng-star-inserted"
+                                        <div class="cu-task-list-header__item cu-task-list-header__count cu-task-list-header-field"
                                             sorttitle="Sort by task name">
                                             <div class="cu-dropdown-head">
                                                 <div class="cu-task-list-header-field__title">
                                                     <div class="cu-task-list-header-field__title-text"
                                                         style="padding-top: 6px;">
-                                                        {{lstcongviec.data.length}} {{ 'work.tasks' | translate}}
+                                                        {{lstcongviec.count }} {{ 'work.tasks' | translate}}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div cdkDropList cdkDropListOrientation="horizontal"
-                                        class=" cu-task-list-header__items" (cdkDropListDropped)="drop2($event)">
-                                        <div class="cu-task-list-header-field" *ngFor="let item of listField" cdkDrag>
+                                    <div class=" cu-task-list-header__items">
+                                        <div class="cu-task-list-header-field" *ngFor="let item of listField">
                                             <div class="cu-dropdown-head" style="width:100px">
                                                 <div class="cu-task-list-header-field__title">
                                                     <div class="cu-task-list-header-field__title-text text-center">
@@ -166,30 +168,25 @@
                                             *ngIf="!(this.showclosedtask && isItemFinal(node.status) && !(node.id_parent>0))">
                                             <div class="cu-task-row__placeholder cu-hidden" culazyitemplaceholder=""
                                                 style="padding-left: 34px; min-height: 36px;">
-                                                <div class="cu-task-row__placeholder-dot ng-tns-c111-86 ng-star-inserted"
+                                                <div class="cu-task-row__placeholder-dot ng-tns-c111-86"
                                                     style="background: rgb(46, 205, 111);"></div>
                                             </div>
 
                                             <div class="cu-task-row__container row">
                                                 <div class="cu-task-row__main url position-sticky">
                                                     <div class="cu-task-row-status_dot cu-task-row-status">
-                                                        <div cudropdown="" class="cu-dropdown ng-star-inserted"
+                                                        <div class="cu-dropdown"
                                                             *ngIf="CheckRoleskeypermit('status',node.id_project_team)"
                                                             [matMenuTriggerFor]="status1">
 
                                                             <div class="cu-task-row-status__item cu-dropdown__toggle"
-                                                                cudropdowntoggle="" cupreventdefault=""
-                                                                tooltipmargin="10"
                                                                 [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
                                                             </div>
                                                         </div>
-                                                        <div cudropdown=""
-                                                            class="cu-dropdown ng-star-inserted url-disabled"
+                                                        <div class="cu-dropdown url-disabled"
                                                             *ngIf="!CheckRoleskeypermit('status',node.id_project_team)">
 
                                                             <div class="cu-task-row-status__item cu-dropdown__toggle"
-                                                                cudropdowntoggle="" cupreventdefault=""
-                                                                tooltipmargin="10"
                                                                 [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
                                                             </div>
                                                         </div>
@@ -236,16 +233,22 @@
                                                                                 *ngIf="node.Childs.length > 0">
                                                                                 <div class="cu-task-row-subtasks-count url"
                                                                                     style="font-size: 13px;">
-                                                                                    <div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
+                                                                                    <div class="cu-task-row-subtasks-count__item -hover"
                                                                                         (click)="ExpandNode(node)">
                                                                                         <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
                                                                                             style="min-width:20px;padding:0 5px;    display: flex;
 																								align-items: center;">
-                                                                                            <mat-icon style="    height: 16px;
-                                                                                                width: 16px;"
-                                                                                                class="text-muted">
-                                                                                                group_work</mat-icon>
-                                                                                            &nbsp;
+                                                                                            <svg width="16" height="16"
+                                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                                viewBox="0 0 16 16"
+                                                                                                id="svg-sprite-cu2-subtask">
+                                                                                                <path
+                                                                                                    fill-rule="evenodd"
+                                                                                                    clip-rule="evenodd"
+                                                                                                    d="M2 4.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h1.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V6.95A2.5 2.5 0 012 4.5zM4.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
+                                                                                                </path>
+                                                                                            </svg>
+
                                                                                             <span>{{node.Childs.length}}</span>
                                                                                         </div>
                                                                                     </div>
@@ -262,9 +265,10 @@
                                                                                 <i class="fas fa-pencil-alt"
                                                                                     (click)="editTitle(node.id_row)"
                                                                                     matTooltip="{{ 'work.renametask' | translate }}"></i>
-                                                                                <!-- <i class="fas fa-tasks"
+                                                                                <i class="fas fa-tasks"
+                                                                                    *ngIf="node.Childs.length == 0"
                                                                                     (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
+                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i>
                                                                                 <i class="fas fa-tags"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
                                                                                     [matMenuTriggerFor]="selecedtag"></i>
@@ -705,7 +709,7 @@
                                                     </div>
                                                 </ng-container>
                                             </div>
-                                            <div class="cu-task-row-new ng-tns-c79-35 cu-task-row-new_subtask ng-star-inserted cu-task-row-new_active"
+                                            <div class="cu-task-row-new ng-tns-c79-35 cu-task-row-new_subtask cu-task-row-new_active"
                                                 *ngIf="CheckRoles(1,node.id_project_team)">
                                                 <!-- (clickOutside)="clickOutside()" click out side ở đây đang bị 1 số lỗi -->
                                                 <div class="cu-add-new-task bg-white">
@@ -734,20 +738,16 @@
                                     </div>
                                 </ng-template>
 
-                                <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="lstcongviec.data"
-                                    [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
-                                    (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
-
-                                    <div class="cu-task-row row"
-                                        *ngFor="let node of lstcongviec.data;trackBy: trackByFn">
-
-                                        <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}"></ng-container>
-
-                                    </div>
+                                <div class="cu-task-list__rows">
+                                    <ng-container *ngIf="TaskinProject[lstcongviec.id] as listNode">
+                                        <div class="cu-task-row row" *ngFor="let node of listNode;trackBy: trackByFn">
+                                            <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}">
+                                            </ng-container>
+                                        </div>
+                                    </ng-container>
                                 </div>
                                 <ng-container *ngIf="newtask == lstcongviec.id">
-                                    <div
-                                        class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
+                                    <div class="cu-task-row-new ng-tns-c104-196 cu-task-row-new_active">
                                         <kt-add-task [item]="lstcongviec" [loai]="'task'"
                                             (Close)="CloseAddnewTask($event)" [ID_Project]="lstcongviec.id"
                                             (dataTask)="CreateTask($event)"></kt-add-task>

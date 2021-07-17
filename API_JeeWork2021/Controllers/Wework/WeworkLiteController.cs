@@ -2902,6 +2902,11 @@ where Disabled = 0";
             // request.AddJsonBody(new { Username = "huypad" }); // Anonymous type object is converted to Json body
             request.AddJsonBody(new { username = loginData.Username });
             IRestResponse response = client.Execute(request);
+            if ((int)response.StatusCode >= 400)
+            {
+                return null;
+            };
+
             var model = JsonConvert.DeserializeObject<List<AccUsernameModel>>(response.Content);
             if (model != null)
             {
@@ -2955,67 +2960,77 @@ where Disabled = 0";
         }
         public static bool init_template_center(DpsConnection cnn, TemplateCenterModel template, UserJWT loginData)
         {
-            SqlConditions Conds = new SqlConditions();
+            //SqlConditions Conds = new SqlConditions();
             string sqlq = "", error = "";
-            sqlq = @$"select id_row, title, description, createddate, createdby
-                                    , isdefault, color, id_department, templateid, customerid
-                                    , is_template_center, types, levels, viewid, group_statusid 
-                                    , template_typeid, img_temp, field_id
-                                    from we_template_customer 
-                                    where is_template_center = 1 and id_row=" + template.id_row;
-            string list_viewid = "", group_statusid = "", field_id = "";
-            DataTable dt_Detail = new DataTable();
-            dt_Detail = cnn.CreateDataTable(sqlq);
-            list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
-            if (string.IsNullOrEmpty(list_viewid)) list_viewid = "0";
-            group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
-            if (string.IsNullOrEmpty(group_statusid)) group_statusid = "0";
-            field_id = dt_Detail.Rows[0]["field_id"].ToString();
-            if (string.IsNullOrEmpty(field_id)) field_id = "0";
-            sqlq += @$";select id_row, view_name, description, is_default, icon, link, image, templateid 
-                                from we_default_views 
-                                where id_row in (" + list_viewid + ") " +
-                        "order by is_default desc";
-            sqlq += @$";select id_field, fieldname, title, type, position, isdefault, typeid
-                            from we_fields 
-                            where isNewField = 1 and IsDel = 0 and isvisible = 0 
-                            and id_field in (" + field_id + ") " +
-                    "order by position, title";
-            sqlq += @$";select id_row, title, description, locked, array_status 
-                                from we_status_group 
-                                where id_row in (" + group_statusid + ") " +
-                        "order by title";
-            //sqlq += @$";select de.id_row, de.title, de.parentid, de.levels, de.disabled, de.templateid, de.isdefault 
-            //            from we_sample_data de left join we_sample_data folder 
-            //            on de.id_row = folder.parentid 
-            //            where de.templateid like '%" + template.id_row + "%' " +
-            //            "union " +
-            //            "select b.id_row, b.title, b.parentid, b.levels, b.disabled, b.templateid, b.isdefault " +
-            //            "from we_sample_data a left join we_sample_data b " +
-            //            "on a.id_row = b.parentid " +
-            //            "where a.templateid like '%" + template.id_row + "%' " +
-            //            "union " +
-            //            "select work.id_row, work.title, work.parentid, work.levels, work.disabled" +
-            //            ", work.templateid, work.isdefault " +
-            //            "from we_sample_data work " +
-            //            "where work.parentid in (select b.id_row" +
-            //            "from we_sample_data a left join we_sample_data b " +
-            //            "on a.id_row = b.parentid " +
-            //            "where a.templateid like '%" + template.id_row + "%')";
-            DataSet ds = cnn.CreateDataSet(sqlq);
-            //DataTable dt = cnn.CreateDataTable(sqlq);
-            if (ds.Tables.Count == 4)
+            //sqlq = @$"select id_row, title, description, createddate, createdby
+            //                        , isdefault, color, id_department, templateid, customerid
+            //                        , is_template_center, types, levels, viewid, group_statusid 
+            //                        , template_typeid, img_temp, field_id
+            //                        from we_template_customer 
+            //                        where is_template_center = 1 and id_row=" + template.id_row;
+            //string list_viewid = "", group_statusid = "", field_id = "";
+            //DataTable dt_Detail = new DataTable();
+            //dt_Detail = cnn.CreateDataTable(sqlq);
+            //list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
+            //if (string.IsNullOrEmpty(list_viewid)) list_viewid = "0";
+            //group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
+            //if (string.IsNullOrEmpty(group_statusid)) group_statusid = "0";
+            //field_id = dt_Detail.Rows[0]["field_id"].ToString();
+            //if (string.IsNullOrEmpty(field_id)) field_id = "0";
+            //sqlq += @$";select id_row, view_name, description, is_default, icon, link, image, templateid 
+            //                    from we_default_views 
+            //                    where id_row in (" + list_viewid + ") " +
+            //            "order by is_default desc";
+            //sqlq += @$";select id_field, fieldname, title, type, position, isdefault, typeid
+            //                from we_fields 
+            //                where isNewField = 1 and IsDel = 0 and isvisible = 0 
+            //                and id_field in (" + field_id + ") " +
+            //        "order by position, title";
+            //sqlq += @$";select id_row, title, description, locked, array_status 
+            //                    from we_status_group 
+            //                    where id_row in (" + group_statusid + ") " +
+            //            "order by title";
+            ////sqlq += @$";select de.id_row, de.title, de.parentid, de.levels, de.disabled, de.templateid, de.isdefault 
+            ////            from we_sample_data de left join we_sample_data folder 
+            ////            on de.id_row = folder.parentid 
+            ////            where de.templateid like '%" + template.id_row + "%' " +
+            ////            "union " +
+            ////            "select b.id_row, b.title, b.parentid, b.levels, b.disabled, b.templateid, b.isdefault " +
+            ////            "from we_sample_data a left join we_sample_data b " +
+            ////            "on a.id_row = b.parentid " +
+            ////            "where a.templateid like '%" + template.id_row + "%' " +
+            ////            "union " +
+            ////            "select work.id_row, work.title, work.parentid, work.levels, work.disabled" +
+            ////            ", work.templateid, work.isdefault " +
+            ////            "from we_sample_data work " +
+            ////            "where work.parentid in (select b.id_row" +
+            ////            "from we_sample_data a left join we_sample_data b " +
+            ////            "on a.id_row = b.parentid " +
+            ////            "where a.templateid like '%" + template.id_row + "%')";
+            //DataSet ds = cnn.CreateDataSet(sqlq);
+            ////DataTable dt = cnn.CreateDataTable(sqlq);
+            //if (ds.Tables.Count == 4)
+            //{
+            //    //if (template.types == 1) // department
+            //    {
+            //        if (!init_status_by_template(cnn, template, loginData, out error))
+            //        {
+            //            return false;
+            //        }
+            //        if (!insert_sample_data(cnn, template, loginData, out error))
+            //        {
+            //            return false;
+            //        }
+            //    }
+            //}
             {
-                //if (template.types == 1) // department
+                if (!init_status_by_template(cnn, template, loginData, out error))
                 {
-                    if (!init_status_by_template(cnn, template, loginData, out error))
-                    {
-                        return false;
-                    }
-                    if (!insert_sample_data(cnn, template, loginData, out error))
-                    {
-                        return false;
-                    }
+                    return false;
+                }
+                if (!insert_sample_data(cnn, template, loginData, out error))
+                {
+                    return false;
                 }
             }
             return true;

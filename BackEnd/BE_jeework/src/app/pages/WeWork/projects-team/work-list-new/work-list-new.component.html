@@ -478,8 +478,7 @@
                                                                                             <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
                                                                                                 style="min-width:20px;padding:0 5px;    display: flex;
                                                                                                 align-items: center;">
-                                                                                                <mat-icon style="    height: 16px;
-                                                                                                width: 16px;" class="text-muted">group_work</mat-icon>
+                                                                                                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="svg-sprite-cu2-subtask"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 4.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h1.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V6.95A2.5 2.5 0 012 4.5zM4.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"></path></svg>
                                                                                                 <span>{{node.DataChildren.length}}</span>
                                                                                             </div>
                                                                                         </div>
@@ -496,10 +495,10 @@
                                                                                     <i class="fas fa-pencil-alt"
                                                                                         (click)="editTitle(node.id_row)"
                                                                                         matTooltip="{{ 'work.chinhsuatencongviec' | translate }}"></i>
-                                                                                    <!-- <i class="fas fa-tasks"
-                                                                                        *ngIf="!(node.id_parent>0)"
+                                                                                    <i class="fas fa-tasks"
+                                                                                        *ngIf="!(node.id_parent>0) && node.DataChildren.length == 0"
                                                                                         (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                        matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
+                                                                                        matTooltip="{{ 'work.addsubtask' | translate }}"></i>
                                                                                     <mat-menu #tag="matMenu">
                                                                                         <kt-choose-milestone-and-tags
                                                                                             [options]="list_Tag"

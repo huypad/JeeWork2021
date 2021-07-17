@@ -183,10 +183,10 @@ export class TemplateCenterComponent implements OnInit {
     return filter;
   }
   //
-  SelectedTemplate(item) {
+  SelectedTemplate(item,istemplatelist = false) {
     this.NextStep();
     this.templatecenterService
-      .getDetailTemplate(item.id_row)
+      .getDetailTemplate(item.id_row,istemplatelist)
       .subscribe((res) => {
         if (res && res.status == 1) {
           this.TemplateDetail = res.data;

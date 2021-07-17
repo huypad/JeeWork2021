@@ -689,7 +689,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("Detail")]
         [HttpGet]
-        public object Detail(long id)
+        public object Detail(long id,bool istemplatelist=false)
         {
             string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -721,15 +721,27 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , template_typeid, img_temp, field_id, share_with, sample_id
                                     from we_template_customer 
                                     where is_template_center = 1 and id_row=" + id;
+                    if (istemplatelist)
+                    {
+                        sqlq = @$"select id_row, title, description, createddate, createdby
+                                    , isdefault, color, '' as id_department, '' as templateid, '{loginData.CustomerID}' as customerid
+                                    , is_template_center, types, levels, viewid, group_statusid 
+                                    , template_typeid, img_temp, field_id, share_with, sample_id
+                                    from we_template_list 
+                                    where is_template_center = 1 and id_row=" + id;
+                    }
                     string list_viewid = "", group_statusid = "", field_id = "";
                     DataTable dt_Detail = new DataTable();
                     dt_Detail = cnn.CreateDataTable(sqlq);
-                    list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
-                    if (string.IsNullOrEmpty(list_viewid)) list_viewid = "0";
-                    group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
-                    if (string.IsNullOrEmpty(group_statusid)) group_statusid = "0";
-                    field_id = dt_Detail.Rows[0]["field_id"].ToString();
-                    if (string.IsNullOrEmpty(field_id)) field_id = "0";
+                    if(dt_Detail.Rows.Count > 0)
+                    {
+                        list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
+                        group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
+                        field_id = dt_Detail.Rows[0]["field_id"].ToString();
+                    }
+                    if (string.IsNullOrEmpty(list_viewid)) list_viewid = "null";
+                    if (string.IsNullOrEmpty(group_statusid)) group_statusid = "null";
+                    if (string.IsNullOrEmpty(field_id)) field_id = "null";
                     sqlq += @$";select id_row, view_name, description, is_default, icon, link, image, templateid 
                                 from  we_default_views 
                                 where id_row in (" + list_viewid + ") " +
