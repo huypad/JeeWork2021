@@ -170,20 +170,20 @@ namespace JeeWork_Core2021.Classes
             SqlConditions Conds = new SqlConditions();
             Conds.Add("Username", username);
 
-                DataTable quyennhom = Conn.CreateDataTable("select Id_permit from tbl_group_permit gp " +
-                    "inner join tbl_group_account gu on gp.id_group=gu.id_group where Username=@Username", Conds);
-                StringCollection colroles = new StringCollection();
-                for (int i = 0; i < quyennhom.Rows.Count; i++)
-                {
-                    if (!colroles.Contains(quyennhom.Rows[i]["Id_permit"].ToString()))
-                        colroles.Add(quyennhom.Rows[i]["Id_permit"].ToString());
-                }
-                string[] roles = new string[colroles.Count];
-                for (int i = 0; i < colroles.Count; i++)
-                {
-                    roles[i] = colroles[i];
-                }
-                return roles;
+            DataTable quyennhom = Conn.CreateDataTable("select Id_permit from tbl_group_permit gp " +
+                "inner join tbl_group_account gu on gp.id_group=gu.id_group where Username=@Username", Conds);
+            StringCollection colroles = new StringCollection();
+            for (int i = 0; i < quyennhom.Rows.Count; i++)
+            {
+                if (!colroles.Contains(quyennhom.Rows[i]["Id_permit"].ToString()))
+                    colroles.Add(quyennhom.Rows[i]["Id_permit"].ToString());
+            }
+            string[] roles = new string[colroles.Count];
+            for (int i = 0; i < colroles.Count; i++)
+            {
+                roles[i] = colroles[i];
+            }
+            return roles;
 
 
         }
@@ -202,14 +202,14 @@ namespace JeeWork_Core2021.Classes
             }
 
         }
-        
+
         public static string GetToken(IHeaderDictionary pHeader)
         {
             if (pHeader == null) return null;
             if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
 
             IHeaderDictionary _d = pHeader;
-            return  _d[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            return _d[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
         }
 
         /// <summary>
@@ -218,34 +218,28 @@ namespace JeeWork_Core2021.Classes
         /// <param name="token">token</param>
         /// <param name="role">role</param>
         /// <returns></returns>
-        public static bool CheckRoleByToken(string userID, string role, string ConnectionString, List<AccUsernameModel> DataAccount)
+        public static bool CheckRoleByUserID(UserJWT loginData, long role, DpsConnection cnn)
         {
-            if (string.IsNullOrEmpty(userID))
+            if (loginData.UserID <= 0)
                 return false;
             try
             {
                 //Lấy username
-                //string select = "select username from Tbl_Account where id_nv=@userID";
-                var info = DataAccount.Where(x => userID.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 SqlConditions Conds = new SqlConditions();
-                Conds.Add("userID", userID);
-                using (DpsConnection ConnWW = new DpsConnection(ConnectionString))
+                Conds.Add("userID", loginData.UserID);
+                Conds = new SqlConditions();
+                Conds.Add("Id_permit", role);
+                Conds.Add("Username", loginData.Username);
+                DataTable Tb = cnn.CreateDataTable("select * from Tbl_Account_Permit where (where)", "(where)", Conds);
+                if (Tb.Rows.Count > 0)
                 {
-                    //DataTable dt = ConnWW.CreateDataTable(select, Conds);
-                   // if (dt.Rows.Count <= 0) return false;
-                    Conds = new SqlConditions();
-                    Conds.Add("Id_permit", role);
-                    //string username = dt.Rows[0][0].ToString();
-                    string username = info.Username;
-                    Conds.Add("Username", username);
-                    DataTable Tb = ConnWW.CreateDataTable("select * from Tbl_Account_Permit where (where)", "(where)", Conds);
-                    if (Tb.Rows.Count > 0)
-                    {
-                        return true;
-                    }
-                    Tb = ConnWW.CreateDataTable("select Id_permit from tbl_group_permit gp inner join tbl_group_account gu on gp.id_group=gu.id_group where (where)", "(where)", Conds);
-                    return Tb.Rows.Count > 0;
+                    return true;
                 }
+                Tb = cnn.CreateDataTable("select Id_permit from tbl_group_permit gp " +
+                    "join tbl_group_account gu " +
+                    "on gp.id_group=gu.id_group " +
+                    "where (where)", "(where)", Conds);
+                return Tb.Rows.Count > 0;
             }
             catch (Exception ex)
             {

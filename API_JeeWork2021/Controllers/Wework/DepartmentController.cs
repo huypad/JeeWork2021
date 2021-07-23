@@ -66,12 +66,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom(error);
                 #endregion
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3400", ConnectionString, DataAccount);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = Common.CheckRoleByUserID(loginData, 3400, cnn);
                     //WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "title", dieukien_where = " de.Disabled=0 and (IdKH = @CustemerID)";
+                    string dieukienSort = "title", dieukien_where = " de.disabled=0 and (idkh = @CustemerID)";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         dieukien_where += " and (title like N'%@keyword%') ";
@@ -91,7 +91,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    dieukien_where += $"and de.CreatedBy in ({listID}) ";
                     string sqlq = @$"select de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
                                     from we_department de (admin) " + dieukien_where + $"  order by " + dieukienSort;
                     if (!Visible)
@@ -201,9 +200,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                 PageModel pageModel = new PageModel();
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                bool Visible = Common.CheckRoleByToken(Token, "3403", ConnectionString, DataAccount);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = Common.CheckRoleByUserID(loginData, 3403, cnn);
                     // update later
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     // left join {_config.HRCatalog}.dbo.Tbl_Cocautochuc cc on cc.RowID=we_department.id_cocau

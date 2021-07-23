@@ -70,9 +70,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 #endregion
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3610", ConnectionString, DataAccount);
+                
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = Common.CheckRoleByUserID(loginData, 3610, cnn);
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
                     if (!string.IsNullOrEmpty(query.filter["id_project_team"]))

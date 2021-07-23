@@ -253,7 +253,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    bool Visible = Common.CheckRoleByToken(loginData.Token, "3500", ConnectionString, DataAccount);
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
@@ -262,9 +261,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
+                    bool Visible = Common.CheckRoleByUserID(loginData, 3500, cnn);
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "tong desc", dieukien_where = " ";
+                    string dieukienSort = "tong desc", dieukien_where = " p.disabled=0 and de.disabled = 0 and idkh = " + loginData.CustomerID + "";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         dieukien_where += " and (p.title like N'%@keyword%' or p.description like N'%@keyword%')";
@@ -328,7 +328,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
                                     ,w.id_project_team from we_work w where w.Disabled=0 group by w.id_project_team) w 
                                     on p.id_row=w.id_project_team 
-                                    (admin) p.Disabled=0 and de.Disabled = 0 
+                                    (admin)  
                                     " + dieukien_where + "  order by " + dieukienSort;
                     string dk_user_by_project = " join we_project_team_user " +
                             "on we_project_team_user.id_project_team = p.id_row " +
@@ -340,7 +340,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         if (!string.IsNullOrEmpty(query.filter["created_by"]))
                         {
-                            sqlq = sqlq.Replace("(admin)", " where p.CreatedBy=" + loginData.UserID + " and ");
+                            sqlq = sqlq.Replace("(admin)", " where p.createdBy=" + loginData.UserID + " and ");
                         }
                         if (!string.IsNullOrEmpty(query.filter["join"]))
                         {
@@ -487,16 +487,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                                 , COUNT(CASE WHEN w.status=1 and getdate()>w.deadline THEN 1 END) as quahan
                                 ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
-                                where p.Disabled=0 and p.CreatedBy in ({listID}) and p.id_row=" + id;
+                                where p.Disabled=0 and p.id_row=" + id;
                     sqlq += @$";select u.*,  '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image, admin from we_project_team_user u 
-                                join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + $" where u.disabled=0 and u.Id_user in ( {listID} )";
-                    sqlq += $";select *, '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_stage s where s.CreatedBy in ({listID}) and id_project_team=" + id;
+                                join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + $" where u.disabled=0 ";
+                    sqlq += $";select *, '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image " +
+                        $"from we_project_team_stage s where id_project_team=" + id;
                     sqlq += $";exec GetActivitiesNew '{listID}'," + id;
                     sqlq += ";select * from we_group where disabled=0 and  id_project_team=" + id;
                     sqlq += @$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht, '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image  from we_milestone m 
                                 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_milestone 
                                 from v_wework_new w group by w.id_milestone) w on m.id_row=w.id_milestone
-                                where m.Disabled=0 and m.person_in_charge in ({listID}) and id_project_team=" + id;
+                                where m.Disabled=0 and id_project_team=" + id;
 
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
@@ -965,7 +966,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
-                    if(data.templatecenter != null)
+                    if (data.templatecenter != null)
                     {
                         data.templatecenter.ObjectTypesID = idc;
                         if (!WeworkLiteController.init_template_center(cnn, data.templatecenter, loginData))
@@ -1039,7 +1040,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                         }
 
                     }
@@ -1075,7 +1076,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                         }
 
                     }
@@ -1479,7 +1480,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                         }
                     }
                     #endregion
@@ -1516,7 +1517,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                             }
                         }
                     }
@@ -1718,7 +1719,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                         }
                     }
                     #endregion
@@ -1752,7 +1753,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                         }
                     }
                     #endregion
@@ -1803,7 +1804,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                                 }
                             }
                             #endregion
@@ -2523,7 +2524,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                             }
                         }
                     }
@@ -2560,7 +2561,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                             }
                         }
                     }
@@ -2713,7 +2714,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                         }
                     }
                     #endregion
@@ -2906,9 +2907,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", ConnectionString, DataAccount);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = Common.CheckRoleByUserID(loginData, 3502, cnn);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)

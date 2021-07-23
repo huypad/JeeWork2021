@@ -2798,23 +2798,23 @@ where Disabled = 0";
                 return "";
             #endregion
 
-            bool Visible = Common.CheckRoleByToken(info.Token, "3400", ConnectionString, DataAccount);
+            bool Visible = Common.CheckRoleByUserID(info, 3400, cnn);
             SqlConditions conds = new SqlConditions();
             conds.Add("id_user", info.UserID);
-
-
+            conds.Add("idkh", info.UserID);
+            string where_string = "de.Disabled = 0 and idkh = "+info.CustomerID+"";
             #region Trả dữ liệu về backend để hiển thị lên giao diện
             string sqlq = @$"select de.*, '' as NguoiTao,'' as TenNguoiTao, '' as NguoiSua,'' as TenNguoiSua 
-                                    from we_department de  (admin) and de.CreatedBy in ({listID}) ";
+                                    from we_department de (admin)";
             if (!Visible)
             {
                 sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
                     "where de.Disabled = 0 and (do.id_user = " + info.UserID + " " +
                     "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                    "where p1.Disabled = 0 and id_user = " + info.UserID + ")) and de.Disabled = 0 ");
+                    "where p1.disabled = 0 and id_user = " + info.UserID + ")) and "+ where_string + "");
             }
             else
-                sqlq = sqlq.Replace("(admin)", " where de.Disabled = 0  ");
+                sqlq = sqlq.Replace("(admin)", " where "+ where_string + "");
             #endregion
             DataTable dt = cnn.CreateDataTable(sqlq, conds);
             List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).Distinct().ToList();

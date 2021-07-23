@@ -117,24 +117,27 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                         string sql_space = "", sql_project = "", sql_folder = "", where_department = "";
                         //if (v_module.ToLower().Equals("module = 'wework'"))
                         //{
-                        where_department = @$" disabled = 0 and CreatedBy in ({listID}) 
-                                        and IdKH = {loginData.CustomerID} and (id_row in (select id_department from we_project_team 
+                        where_department = @$" and (id_row in (select id_department from we_project_team 
                                         where (id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
                                         and Disabled = 0) or (CreatedBy = { loginData.UserID})) and disabled = 0) or (CreatedBy = { loginData.UserID}));";
                         sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID
                                         from we_department
-                                        where ParentID is null and " + where_department + "";
+                                        where ParentID is null and disabled = 0 
+                                        and IdKH = {loginData.CustomerID} (admin_group)";
                         sql_project = "select p.id_row, p.icon, p.title, p.detail, p.id_department" +
                             ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
                             ", p.priority, p.CreatedDate, p.CreatedBy, p.Locked, p.Disabled, default_view " +
                             "from we_project_team p (admin_group)" +
-                            $" p.Disabled = 0 and p.CreatedBy in ({listID})";
+                            $" p.Disabled = 0";
                         //}
                         sql_folder = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID 
                                         from we_department
-                                        where ParentID is not null and " + where_department + "";
+                                        where ParentID is not null and disabled = 0 
+                                        and IdKH = {loginData.CustomerID} (admin_group) ";
                         if (!CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID))
                         {
+                            sql_space =  sql_space.Replace("(admin_group)", where_department);
+                            sql_folder = sql_folder.Replace("(admin_group)", where_department);
                             sql_project = sql_project.Replace("(admin_group)", "join we_project_team_user " +
                             "on we_project_team_user.id_project_team = p.id_row " +
                             "and (we_project_team_user.id_user = " + loginData.UserID + ") " +
@@ -142,6 +145,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                         }
                         else
                         {
+                            sql_space = sql_space.Replace("(admin_group)", "");
+                            sql_folder = sql_folder.Replace("(admin_group)", "");
                             sql_project = sql_project.Replace("(admin_group)", " where ");
                         }    
                         dt_space = Conn.CreateDataTable(sql_space);
@@ -327,8 +332,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             {
                 cond.Add("Username", username);
                 sqlq = "select Id_group from tbl_group_account " +
-                    "where Id_group in (select Id_group from tbl_group " +
-                    "where IsAdmin = 1 and CustemerID = " + CustomerID + ") and (where)";
+                    "where id_group in (select Id_group from tbl_group " +
+                    "where isadmin = 1 and custemerid = " + CustomerID + ") and (where)";
                 DataTable dt_checkuser = Conn.CreateDataTable(sqlq, "(where)", cond);
                 if (dt_checkuser.Rows.Count > 0)
                     return true;

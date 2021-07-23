@@ -1303,14 +1303,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom(error);
                     #endregion
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                bool Visible = Common.CheckRoleByToken(loginData.UserID.ToString(), "3502", ConnectionString, DataAccount);
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = Common.CheckRoleByUserID(loginData, 3502, cnn);
+
                     string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
-join we_department d on d.id_row = p.id_department
-join we_project_team_user u on u.id_project_team = p.id_row
- where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " (where) order by title";
+                                join we_department d on d.id_row = p.id_department
+                                join we_project_team_user u on u.id_project_team = p.id_row
+                                 where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " (where) order by title";
 
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "id_row";
