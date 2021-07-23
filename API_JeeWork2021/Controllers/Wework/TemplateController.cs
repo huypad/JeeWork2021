@@ -810,6 +810,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                                     field_id = r["field_id"],
                                     share_with = r["share_with"],
                                     sample_id = r["sample_id"],
+                                    istemplatelist = istemplatelist,
                                     data_views = from rr in ds.Tables[1].AsEnumerable()
                                                  select new
                                                  {
@@ -1189,6 +1190,57 @@ from we_template_library where disabled = 0 and id_template = " + id;
             else
                 return new DataTable();
         }
+         /// <summary>
+        /// add user vào template library
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("save-image")]
+        [HttpPost]
+        public async Task<BaseModel<object>> SaveasImage(FileUploadModel data, bool istemplatelist= false)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                long iduser = loginData.UserID;
+                long idk = loginData.CustomerID;
+                string tablename = "we_template_list";
+                if(!istemplatelist)
+                    tablename = "we_template_customer";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    if (data != null)
+                    {
+                        string x = "";
+                        string folder = "/logo/";
+                        if (!UploadHelper.UploadFile(data.strBase64, data.filename, folder, _hostingEnvironment.ContentRootPath, ref x, _configuration))
+                            return JsonResultCommon.Custom("Không thể cập nhật hình ảnh");
+                        string link = WeworkLiteController.genLinkAttachment(_configuration, x);
+                        string sqlu = $"update {tablename} set img_temp =N'{link}' where id_row = {data.IdRow} ";
+                        cnn.BeginTransaction();
+                        if (cnn.ExecuteNonQuery(sqlu) != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.ThatBai("Cập nhật hình ảnh");
+                        }
+                        cnn.EndTransaction();
+                }
+
+                    
+                }
+                return JsonResultCommon.ThanhCong(data);
+                
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
         #endregion
     }
 }

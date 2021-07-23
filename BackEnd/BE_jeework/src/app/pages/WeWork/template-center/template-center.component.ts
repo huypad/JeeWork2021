@@ -1,3 +1,4 @@
+import { FileUploadModel } from './../discussions/Model/Topic.model';
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
 import { ProjectTeamUserModel } from "./../projects-team/Model/department-and-project.model";
 import { ProjectTeamModel } from "src/app/pages/WeWork/projects-team/Model/department-and-project.model";
@@ -447,6 +448,50 @@ export class TemplateCenterComponent implements OnInit {
     );
   }
 
+  onSelectFile(event) {
+    var icondata :any;
+    const file = new FileUploadModel();
+		file.clear()
+
+		if (event.target.files && event.target.files[0]) {
+			var filesAmount = event.target.files[0];
+			var Strfilename = filesAmount.name.split('.');
+
+			event.target.type = 'text';
+			event.target.type = 'file';
+			var reader = new FileReader();
+			let base64Str: any;
+			reader.onload = (event) => {
+				base64Str = event.target["result"]
+				var metaIdx = base64Str.indexOf(';base64,');
+				let strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
+        icondata = { filename: filesAmount.name, strBase64: strBase64, base64Str: base64Str };
+        this.TemplateDetail.img_temp = base64Str;
+        file.filename = filesAmount.name;
+        file.strBase64 = strBase64;
+        file.IdRow = this.TemplateDetail.id_row;
+				this.changeDetectorRefs.detectChanges();
+			}
+			reader.readAsDataURL(filesAmount);
+		}
+    setTimeout(() => {
+      console.log(file);
+      this.templatecenterService.UpdateFileTemplate(file,this.TemplateDetail.istemplatelist).subscribe((res) => {
+        this.disabledBtn = false;
+        this.changeDetectorRefs.detectChanges();
+        if (res && res.status === 1) {
+          this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 10);
+        } else {
+          this.layoutUtilsService.showError(res.error.message);
+        }
+      });
+    }, 50);
+
+		
+	}
   getBackground(text) {
     return "#1DB954";
   }

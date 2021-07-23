@@ -5092,7 +5092,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
                             ,w.status,w.result,w.createddate,w.createdby,
                             w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department
-                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,w.Id_NV,''as hoten
+                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,'' as Id_NV,''as hoten
                             , Iif(fa.id_row is null ,0,1) as favourite 
                             ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
                             ,'' as NguoiTao, '' as NguoiSua from v_wework_new w 

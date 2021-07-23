@@ -51,4 +51,9 @@ export class TemplateCenterService {
     return this.http.get<any>(API_Lite + '/list-field-template',
       { headers: httpHeaders });
   }
+  UpdateFileTemplate(file,istemplatelist): Observable<any> {
+    const httpHeaders = this.httpUtils.getHTTPHeaders();
+    return this.http.post<any>(API_Template + `/save-image?istemplatelist=${istemplatelist}`,file,
+      { headers: httpHeaders });
+  }
 }

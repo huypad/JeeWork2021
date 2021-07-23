@@ -745,6 +745,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             strW += " and ( w.createdby=@iduser and (w.id_nv is null  or w.id_parent > 0 ))";
                         }
+                        else if (int.Parse(query.filter["loaicongviec"].ToString()) == 3) // công việc giao
+                        {
+                            strW += " and ( w.id_row in (select distinct id_work from we_work_user where CreatedBy = @iduser and CreatedDate>=@from and CreatedDate<@to and Disabled = 0))";
+                        }
                     }
                     if (!string.IsNullOrEmpty(query.filter["timedeadline"]))
                         strW += $"and (w.deadline is not null and deadline >= GETDATE() and deadline =< '{query.filter["timedeadline"]}')";
@@ -788,7 +792,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     // Phân trang
                     int total = temp.Count();
                     if (total == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
+                        return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     if (query.more)
                     {
                         query.page = 1;
@@ -803,7 +807,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "Id_NV", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }

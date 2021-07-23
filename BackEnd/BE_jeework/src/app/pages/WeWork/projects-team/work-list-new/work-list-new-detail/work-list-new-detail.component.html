@@ -1,7 +1,7 @@
 <kt-portlet [options]="{hideHeader: true}" class="h-100">
     <kt-portlet-header [sticky]="true" title="Chi tiết công việc" [class]="'kt-portlet__head--lg'">
         <ng-container ktPortletTools>
-            <button mat-raised-button type="button" (click)="this.dialogRef.close();">
+            <button mat-raised-button [ngClass]="{'d-none': !isback}" type="button" (click)="this.dialogRef.close();">
                 <span translate="GeneralKey.trolai"></span>
             </button>
         </ng-container>

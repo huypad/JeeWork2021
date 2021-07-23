@@ -1,22 +1,28 @@
-import { environment } from './../../../../environments/environment';
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { finalize, share, tap } from 'rxjs/operators';
-import { AuthService } from 'src/app/modules/auth';
-import { QueryFilterComment, UserCommentInfo, PostCommentModel, ReactionCommentModel } from './jee-comment.model';
-import { HttpUtilsService } from 'src/app/_metronic/jeework_old/core/utils/http-utils.service';
+import { environment } from "./../../../../environments/environment";
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Observable, BehaviorSubject, of } from "rxjs";
+import { finalize, share, tap } from "rxjs/operators";
+import { AuthService } from "src/app/modules/auth";
+import {
+  QueryFilterComment,
+  UserCommentInfo,
+  PostCommentModel,
+  ReactionCommentModel,
+} from "./jee-comment.model";
+import { HttpUtilsService } from "src/app/_metronic/jeework_old/core/utils/http-utils.service";
 
-const API_JEECOMMENT_URL = environment.HOST_JEECOMMENT_API + '/api';
-const API_APP_URL = environment.JEEACCOUNTAPI + '/api';
-const API_ROOTS = environment.APIROOTS + '/api';
-const API_CMT = environment.APIROOTS + '/api/comment';
+const API_JEECOMMENT_URL = environment.HOST_JEECOMMENT_API + "/api";
+const API_APP_URL = environment.JEEACCOUNTAPI + "/api";
+const API_ROOTS = environment.APIROOTS + "/api";
+const API_CMT = environment.APIROOTS + "/api/comment";
 @Injectable()
 export class JeeCommentService {
   private _isLoading$ = new BehaviorSubject<boolean>(false);
-  private _errorMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>("");
   private _lstUser: UserCommentInfo[] = [];
-  private _mainUser$: BehaviorSubject<UserCommentInfo> = new BehaviorSubject<UserCommentInfo>(new UserCommentInfo());
+  private _mainUser$: BehaviorSubject<UserCommentInfo> =
+    new BehaviorSubject<UserCommentInfo>(new UserCommentInfo());
 
   get isLoading$() {
     return this._isLoading$.asObservable();
@@ -32,81 +38,100 @@ export class JeeCommentService {
 
   // tiếng việt icon
   public i18n = {
-    search: 'Tìm kiếm',
-    emojilist: 'Danh sách Emoji',
-    notfound: 'Không tìm thấy Emoji ',
-    clear: 'Xoá sạch',
+    search: "Tìm kiếm",
+    emojilist: "Danh sách Emoji",
+    notfound: "Không tìm thấy Emoji ",
+    clear: "Xoá sạch",
     categories: {
-      search: 'Kết quả',
-      recent: 'Sử dụng thường xuyên',
-      people: 'Biểu tượng mặt cười & Con người',
-      nature: 'Động vật & Thiên nhiên',
-      foods: 'Đồ ăn & Nước uống',
-      activity: 'Hoạt động',
-      places: 'Du lịch & Nghỉ dưỡng',
-      objects: 'Đồ vật',
-      symbols: 'Biểu tượng',
-      flags: 'Cờ',
-      custom: 'Custom',
+      search: "Kết quả",
+      recent: "Sử dụng thường xuyên",
+      people: "Biểu tượng mặt cười & Con người",
+      nature: "Động vật & Thiên nhiên",
+      foods: "Đồ ăn & Nước uống",
+      activity: "Hoạt động",
+      places: "Du lịch & Nghỉ dưỡng",
+      objects: "Đồ vật",
+      symbols: "Biểu tượng",
+      flags: "Cờ",
+      custom: "Custom",
     },
     skintones: {
-      1: 'Default Skin Tone',
-      2: 'Light Skin Tone',
-      3: 'Medium-Light Skin Tone',
-      4: 'Medium Skin Tone',
-      5: 'Medium-Dark Skin Tone',
-      6: 'Dark Skin Tone',
-    }
+      1: "Default Skin Tone",
+      2: "Light Skin Tone",
+      3: "Medium-Light Skin Tone",
+      4: "Medium Skin Tone",
+      5: "Medium-Dark Skin Tone",
+      6: "Dark Skin Tone",
+    },
   };
 
-  constructor(private http: HttpClient, private httpUtils: HttpUtilsService, private _authService: AuthService) {
+  constructor(
+    private http: HttpClient,
+    private httpUtils: HttpUtilsService,
+    private _authService: AuthService
+  ) {
     this.getlstUserCommentInfo();
   }
 
-  public showTopicCommentByObjectID(objectID: string, filter: QueryFilterComment): Observable<any> {
+  public showTopicCommentByObjectID(
+    objectID: string,
+    filter: QueryFilterComment
+  ): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
     const httpParams = this.getHttpParamsFilter(filter);
     const url = API_JEECOMMENT_URL + `/comments/show/${objectID}`;
     return this.http.get<any>(url, {
       headers: httpHeaders,
-      params: httpParams
+      params: httpParams,
     });
   }
 
-  public showChangeTopicCommentByObjectID(objectID: string, filter: QueryFilterComment): Observable<any> {
+  public showChangeTopicCommentByObjectID(
+    objectID: string,
+    filter: QueryFilterComment
+  ): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
     const httpParams = this.getHttpParamsFilter(filter);
     const url = API_JEECOMMENT_URL + `/comments/showChange/${objectID}`;
     return this.http.get<any>(url, {
       headers: httpHeaders,
-      params: httpParams
+      params: httpParams,
     });
   }
 
-  public showChangeComment(objectID: string, commentID: string, filter: QueryFilterComment): Observable<any> {
+  public showChangeComment(
+    objectID: string,
+    commentID: string,
+    filter: QueryFilterComment
+  ): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
     const httpParams = this.getHttpParamsFilter(filter);
-    const url = API_JEECOMMENT_URL + `/comments/showChange/${objectID}/${commentID}`;
+    const url =
+      API_JEECOMMENT_URL + `/comments/showChange/${objectID}/${commentID}`;
     return this.http.get<any>(url, {
       headers: httpHeaders,
-      params: httpParams
+      params: httpParams,
     });
   }
 
-  public showFullComment(objectID: string, commentID: string, filter: QueryFilterComment): Observable<any> {
+  public showFullComment(
+    objectID: string,
+    commentID: string,
+    filter: QueryFilterComment
+  ): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
     const httpParams = this.getHttpParamsFilter(filter);
     const url = API_JEECOMMENT_URL + `/comments/show/${objectID}/${commentID}`;
     return this.http.get<any>(url, {
       headers: httpHeaders,
-      params: httpParams
+      params: httpParams,
     });
   }
 
   private getHttpParamsFilter(filter: QueryFilterComment): HttpParams {
     let query = new HttpParams()
-      .set('ViewLengthComment', filter.ViewLengthComment.toString())
-      .set('Date', filter.Date.toISOString())
+      .set("ViewLengthComment", filter.ViewLengthComment.toString())
+      .set("Date", filter.Date.toISOString());
     return query;
   }
 
@@ -115,8 +140,9 @@ export class JeeCommentService {
       .pipe(
         tap((res) => {
           if (res && res.status == 1) {
-            const usernamelogin = this._authService.getAuthFromLocalStorage()['user']['username'];
-            res.data.forEach(element => {
+            const usernamelogin =
+              this._authService.getAuthFromLocalStorage()["user"]["username"];
+            res.data.forEach((element) => {
               // init ListUserCommentInfo
               const item = new UserCommentInfo();
               item.Username = element.Username;
@@ -125,7 +151,9 @@ export class JeeCommentService {
               item.Email = element.Email;
               item.Jobtitle = element.Jobtitle;
               item.FullName = element.FullName;
-              item.Display = element.FullName ? element.FullName : element.Username;
+              item.Display = element.FullName
+                ? element.FullName
+                : element.Username;
               this._lstUser.push(item);
 
               // init main User Login
@@ -140,8 +168,8 @@ export class JeeCommentService {
           this._isLoading$.next(false);
         }),
         share()
-      ).
-      subscribe();
+      )
+      .subscribe();
   }
 
   private getDSUserCommentInfo(): Observable<any> {
@@ -153,7 +181,9 @@ export class JeeCommentService {
   }
 
   public getDisplay(username?: string): string {
-    const object = this._lstUser.find(element => element.Username === username);
+    const object = this._lstUser.find(
+      (element) => element.Username === username
+    );
     if (object) return object.Display;
     return username;
   }
@@ -164,41 +194,45 @@ export class JeeCommentService {
   //   return 'https://cdn.jee.vn/jee-account/images/avatars/default2.png';
   // }
   public getUriAvatar(username?: string): string {
-    const avatar = this._lstUser.find(element => element.Username === username);
-    if (avatar.AvartarImgURL) return avatar.AvartarImgURL ? avatar.AvartarImgURL : 'https://cdn.jee.vn/jee-account/images/avatars/default2.png';
-    }
+    const avatar = this._lstUser.find(
+      (element) => element.Username === username
+    );
+    if (avatar.AvartarImgURL) return avatar.AvartarImgURL;
+    return 'https://cdn.jee.vn/jee-account/images/avatars/default2.png';
+  }
 
   public postCommentModel(model: PostCommentModel): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
     const url = API_JEECOMMENT_URL + `/comments/postcomment`;
     return this.http.post<any>(url, model, {
-      headers: httpHeaders
+      headers: httpHeaders,
     });
   }
 
-  public postReactionCommentModel(model: ReactionCommentModel): Observable<any> {
+  public postReactionCommentModel(
+    model: ReactionCommentModel
+  ): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
     const url = API_JEECOMMENT_URL + `/comments/postReactionComment`;
     return this.http.post<any>(url, model, {
-      headers: httpHeaders
+      headers: httpHeaders,
     });
   }
 
   getTopicObjectIDByComponentName(componentName: string): Observable<string> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		const url = API_ROOTS + `/comments/getByComponentName/${componentName}`;
-		return this.http.get(url, {
-		  headers: httpHeaders,
-		  responseType: 'text'
-		});
-	  }
-  
-    LuuLogcomment(model): Observable<any>{
-      const httpHeaders = this.httpUtils.getHTTPHeaders();
-      const url = API_CMT + `/luu-log-comment`;
-      return this.http.post<any>(url, model, {
-        headers: httpHeaders
-      });
-    }
+    const httpHeaders = this.httpUtils.getHTTPHeaders();
+    const url = API_ROOTS + `/comments/getByComponentName/${componentName}`;
+    return this.http.get(url, {
+      headers: httpHeaders,
+      responseType: "text",
+    });
+  }
 
+  LuuLogcomment(model): Observable<any> {
+    const httpHeaders = this.httpUtils.getHTTPHeaders();
+    const url = API_CMT + `/luu-log-comment`;
+    return this.http.post<any>(url, model, {
+      headers: httpHeaders,
+    });
+  }
 }

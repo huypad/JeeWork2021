@@ -130,6 +130,7 @@ export class WorkListNewDetailComponent implements OnInit {
   isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   );
+  isback = true;
   objectID: string;
   showCommentDefault?: boolean;
   number: number;
@@ -162,6 +163,10 @@ export class WorkListNewDetailComponent implements OnInit {
   /** LOAD DATA */
   ngOnInit() {
     this.data = this.datalog;
+    console.log(this.data,'dataaaaaa')
+    if(this.data && this.data.notback){
+      this.isback = false;
+    }
     this.DataID = this.data.id_row;
     this.Id_project_team = this.data.id_project_team;
     this.UserInfo = JSON.parse(localStorage.getItem("UserInfo"));
@@ -1563,8 +1568,6 @@ export class WorkListNewDetailComponent implements OnInit {
   }
 
   resetComment(){
-    // this.ListChild=[];
-    console.log('key:',Object.keys(this.ListChild));
     var listSub = Object.keys(this.ListChild);
     if(listSub){
       listSub.forEach(element => {

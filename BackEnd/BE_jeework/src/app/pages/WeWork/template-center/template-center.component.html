@@ -313,9 +313,11 @@
                 class="cu-template-center-selected-template__image cu-template-center-selected-template__image-clickup">
                 <div class="cu-template-center-selected-template__image-controls ">
                 </div>
-                <div class="cu-template-center-selected-template__image-cover "
+                <div class="cu-template-center-selected-template__image-cover " (click)="inputIcon.click()"
                     style="background-image: url(&quot;{{TemplateDetail.img_temp}}&quot;);">
                 </div>
+                <input type="file" hidden accept=".png, .jpg, .jpeg" #inputIcon
+							(change)="onSelectFile($event)" />
             </div>
             <div class="cu-template-center-selected-template__info">
                 <div class="cu-template-center-selected-template__info-top">

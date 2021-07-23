@@ -628,6 +628,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     });
   }
   ViewDetai(item) {
+    // this.router.navigate(['', { outlets: { auxName: 'aux/task/'+item.id_row }, }]);
     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
       width: '90vw',
       height: '90vh',
@@ -710,7 +711,6 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
 
 
   CreateTask(val) {
-    console.log(val);
     var x = this.newtask;
 		this.CloseAddnewTask(true);
 		setTimeout(() => {
@@ -1087,9 +1087,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   TaskinProject:any = {};
   LoadingTask:any = {};
   TaskProject(id){
-    console.log(id);
     if(this.TaskinProject[id]){
-      console.log('detail :',this.TaskinProject[id])
     }else{
       this.getChildTask(id);
     }
@@ -1107,7 +1105,6 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
       this._service.TaskinProject(queryParams1,id).pipe(
         tap((res) => {
           if (res && res.status == 1) {
-              console.log(res)
               this.TaskinProject[id] = res.data['data'];
               this.changeDetectorRefs.detectChanges();
             }
@@ -1122,5 +1119,8 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
       .subscribe();
   }
 
+  changeRoute(id) {
+    this.router.navigate(['', { outlets: { auxName: 'aux/task/'+id }, }])
+  }
 
 }
