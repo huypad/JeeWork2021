@@ -599,6 +599,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -631,6 +632,28 @@ namespace JeeWork_Core2021.Controllers.Wework
                         displayChild = query.filter["displayChild"];
                     string columnName = "id_project_team";
                     string strW = " and (w.id_nv=@iduser or (w.nguoigiao=@iduser or w.createdby=@iduser) and (w.id_nv is null  or w.id_parent > 0 ))";
+                    #region
+                    if (!string.IsNullOrEmpty(query.filter["tinhtrang"]))
+                    {
+                        string tinhtrang = query.filter["tinhtrang"];
+                        string hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
+                        string quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
+                        string todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
+                        if (tinhtrang == "todo")
+                        {
+                            strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                        }
+                        else if (tinhtrang == "deadline")
+                        {
+                            strW += $" and w.status in ({quahan}) ";
+                        }
+                        else
+                        {
+                            strW += $" and w.status in ({hoanthanh}) ";
+                        };
+
+                    }
+                    #endregion
                     #region group
                     string strG = @"select distinct p.id_row, p.title from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 
@@ -818,38 +841,139 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
+         
         /// <summary>
-        /// Lấy link image
+        ///  my-list-wiget
         /// </summary>
-        /// <param name="domain"></param>
-        /// <param name="idKH"></param>
-        /// <param name="id_nv"></param>
-        /// <param name="contentRootPath"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        public static string genLinkImage(string domain, long idKH, string id_nv, string contentRootPath)
+        [Route("page-work-staff")]
+        [HttpGet]
+        public object CongviecNhanvien([FromQuery] QueryParams query)
         {
-            //string Image = domain + "dulieu/Images/Noimage.jpg";
-            string Image = "";
-            string str = "dulieu/images/nhanvien/" + idKH + "/" + id_nv + ".jpg";
-            string path = Path.Combine(contentRootPath, str);
-            if (System.IO.File.Exists(path))
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
             {
-                Image = domain + str;
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
+                    if (DataStaff == null)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
+                    string listIDNV = string.Join(",", nvs);
+
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+
+                    #region filter thời gian , keyword
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        if (!from1)
+                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        if (!to1)
+                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    }
+                    #endregion
+                    string strW = $" and (w.id_nv in ({listIDNV}) or w.createdby in ({listIDNV}))";
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+
+                    string columnName = "id_project_team";
+                    if (!string.IsNullOrEmpty(query.filter["timedeadline"]))
+                        strW += $"and (w.deadline is not null and deadline >= GETDATE() and deadline =< '{query.filter["timedeadline"]}')";
+                    if (!string.IsNullOrEmpty(query.filter["tinhtrang"]))
+                    {
+                        string tinhtrang = query.filter["tinhtrang"];
+                        string hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
+                        string quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
+                        string todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
+                        if (tinhtrang == "todo")
+                        {
+                            strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                        }
+                        else if(tinhtrang == "deadline")
+                        {
+                            strW += $" and w.status in ({quahan}) ";
+                        }
+                        else {
+                            strW += $" and w.status in ({hoanthanh}) ";
+                        };
+
+                    }
+                        
+                    #region group
+                    string strG = @"select distinct p.id_row, p.title from we_project_team_user u
+                                    join we_project_team p on p.id_row=u.id_project_team 
+                                    where u.disabled=0 and p.Disabled=0 ";
+                    if (!string.IsNullOrEmpty(loginData.UserID.ToString()))
+                    {
+                        strG += "and id_user=" + loginData.UserID.ToString();
+                    }
+                    #endregion
+                    DataTable dtG = cnn.CreateDataTable(strG);
+                    if (dtG.Rows.Count == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
+                    DataSet ds = WorkClickupController.getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                    var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
+                    var tags = ds.Tables[1].AsEnumerable();
+                    // Phân trang
+                    int total = temp.Count();
+                    if (total == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
+                    if (query.more)
+                    {
+                        query.page = 1;
+                        query.record = total;
+                    }
+
+                    pageModel.TotalCount = total;
+                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    pageModel.Size = query.record;
+                    pageModel.Page = query.page;
+                    var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
+                    var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
+                    dtNew = dtNew.Concat(dtChild);
+                    Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                    var Children = WorkClickupController.getChild("", loginData.CustomerID, "", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString);
+                    return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
+                }
             }
-            return Image;
+            catch (Exception ex)
+            {
+
+
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+            }
         }
-        /// <summary>
-        /// Get link chỗ lưu file
-        /// </summary>
-        /// <param name="domain"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static string genLinkAttachment(string domain, object path)
-        {
-            if (path == null)
-                return "";
-            return domain + JeeWorkConstant.RootUpload + path;
-        }
+
+ 
         /// <summary>
         /// Write log
         /// </summary>
