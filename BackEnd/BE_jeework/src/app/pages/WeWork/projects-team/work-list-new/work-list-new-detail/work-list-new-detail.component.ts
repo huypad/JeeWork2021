@@ -136,6 +136,7 @@ export class WorkListNewDetailComponent implements OnInit {
   number: number;
   public lstObjectID: string[] = [];
 	isReset: any;
+  IsAdminGroup = false;
   constructor(
     private _service: WorkService,
     private el: ElementRef,
@@ -174,9 +175,9 @@ export class WorkListNewDetailComponent implements OnInit {
     this.LoadChecklist();
     this.LoadObjectID();
 
-    this.isReset = setInterval(() => {
-			this.resetComment();
-		}, 1000);
+    // this.isReset = setInterval(() => {
+		// 	this.resetComment();
+		// }, 1000);
   }
 
   OnChanges() {
@@ -218,6 +219,7 @@ export class WorkListNewDetailComponent implements OnInit {
      this.ProjectsTeamService.LogDetailCU(this.DataID).subscribe((res) => {
       if (res && res.status === 1) {
         this.LogDetail = res.data;
+        this.resetComment();
         this.changeDetectorRefs.detectChanges();
       } else {
         this.layoutUtilsService.showError(res.error.message);
@@ -266,7 +268,11 @@ export class WorkListNewDetailComponent implements OnInit {
 
     // quyền
     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
-      if (res) this.list_role = res.data;
+      if (res && res.status ==1) {
+        this.list_role = res.data.dataRole;
+        this.IsAdminGroup = res.data.IsAdminGroup;
+      }
+
     });
 
     this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
@@ -279,6 +285,7 @@ export class WorkListNewDetailComponent implements OnInit {
   }
 
   CheckRoles(roleID: number) {
+    if(this.IsAdminGroup) return true;
     var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
     if (x) {
       if (x.admin == true) {
@@ -297,6 +304,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
   }
   CheckRoleskeypermit(key) {
+    if(this.IsAdminGroup) return true;
     var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
     if (x) {
       if (x.admin == true) {
@@ -1566,7 +1574,26 @@ export class WorkListNewDetailComponent implements OnInit {
       return false;
     }
   }
-
+  CheckedChecklist(items){
+    console.log(items.id_row);
+    this._service.CheckedItem(items.id_row).subscribe((res) => {
+      if (res && res.status === 1) {
+        items.checked = !items.checked; 
+      } else {
+        this.layoutUtilsService.showActionNotification(
+          res.error.message,
+          MessageType.Read,
+          9999999999,
+          true,
+          false,
+          3000,
+          "top",
+          0
+        );
+      }
+      this.changeDetectorRefs.detectChanges();
+    });
+  }
   resetComment(){
     var listSub = Object.keys(this.ListChild);
     if(listSub){

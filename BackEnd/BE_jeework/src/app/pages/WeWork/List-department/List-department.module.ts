@@ -10,8 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ListDepartmentComponent } from './List-department.component';
 import { ListDepartmentService } from './Services/List-department.service';
 import { WeWorkModule } from '../wework.module';
-import { ListDepartmentListComponent } from './List-department-list/List-department-list.component';
-import { DepartmentTabModule } from './List-department-tab/List-department-tab.module';
+import { ListDepartmentListComponent } from './List-department-list/List-department-list.component'; 
 const routes: Routes = [
 	{
 		path: '',

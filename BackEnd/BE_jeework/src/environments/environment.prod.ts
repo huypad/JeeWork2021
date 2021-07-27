@@ -12,7 +12,8 @@ export const environment = {
   MODULE: "wework",
   // ApiRootAcount: "https://wms-apisys.bookve.com.vn/api",
   // WMSApiRoot: 'https://wms-apisys.bookve.com.vn/api',
-
+  HOST_JEECHAT_API: ' https://jeechat-api.jee.vn',
+  HOST_JEECHAT: "https://jeechat.jee.vn",
   APIIDENTITY: "https://identityserver.jee.vn",
   REDIRECTURL: "https://portal.jee.vn",
   SSO: "sso_token",

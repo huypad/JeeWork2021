@@ -53,6 +53,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             if (query == null)
                 query = new QueryParams();
+            string sqlq = "";
+            DataTable dt_folder = new DataTable();
             PageModel pageModel = new PageModel();
             try
             {
@@ -71,7 +73,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     bool Visible = Common.CheckRoleByUserID(loginData, 3400, cnn);
                     //WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "title", dieukien_where = " de.disabled=0 and (idkh = @CustemerID)";
+                    string dieukienSort = "title", dieukien_where = "de.disabled=0 and (idkh = @CustemerID)";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         dieukien_where += " and (title like N'%@keyword%') ";
@@ -91,18 +93,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
+                    sqlq = @$"select de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua,
+                                    statuslistid, templateid, IsDataStaff_HR, parentid, phanloaiid
                                     from we_department de (admin) " + dieukien_where + $"  order by " + dieukienSort;
                     if (!Visible)
                     {
+                        Conds.Add("UserID", loginData.UserID);
                         sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
-                            "where de.Disabled = 0 and (do.id_user = " + loginData.UserID + " " +
-                            "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                            "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
+                            "where de.Disabled = 0 and (do.id_user =  @UserID or de.CreatedBy = @UserID or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
+                            "where p1.Disabled = 0 and id_user = @UserID )) and ");
                     }
                     else
                         sqlq = sqlq.Replace("(admin)", " where ");
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
+
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (dt.Rows.Count == 0)
@@ -122,12 +126,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
 
                     #region Map info account từ JeeAccount
-
                     foreach (DataRow item in dt.Rows)
                     {
                         var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (infoNguoiTao != null)
                         {
                             item["NguoiTao"] = infoNguoiTao.Username;
@@ -140,7 +142,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #endregion
-
                     dt = temp.CopyToDataTable();
                     int total = dt.Rows.Count;
                     pageModel.TotalCount = total;
@@ -152,9 +153,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                         query.page = 1;
                         query.record = pageModel.TotalCount;
                     }
+
                     // Phân trang
+                    string icon_folder = "fa fa-folder-open";
+                    string icon_space = "fa fa-space-shuttle";
                     dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
                     var data = from r in dt.AsEnumerable()
+                               where DBNull.Value.Equals(r["parentid"])
                                select new
                                {
                                    id_row = r["id_row"],
@@ -162,10 +167,32 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    id_cocau = r["id_cocau"],
                                    CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
                                    CreatedBy = r["CreatedBy"],
-                                   NguoiTao = r["NguoiTao"],
+                                   NguoiTao = r["TenNguoiTao"],
                                    UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
                                    UpdatedBy = r["UpdatedBy"],
-                                   NguoiSua = r["NguoiSua"]
+                                   NguoiSua = r["NguoiSua"],
+                                   parentid = r["parentid"],
+                                   templateid = r["templateid"],
+                                   phanloaiid = r["phanloaiid"],
+                                   icon = icon_space,
+                                   data_folder = from s in dt.AsEnumerable()
+                                                 where s["parentid"].ToString() == r["id_row"].ToString() && s["parentid"] != DBNull.Value
+                                                 select new
+                                                 {
+                                                     id_row = s["id_row"],
+                                                     title = s["title"],
+                                                     id_cocau = s["id_cocau"],
+                                                     CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", s["CreatedDate"]),
+                                                     CreatedBy = s["CreatedBy"],
+                                                     NguoiTao = s["TenNguoiTao"],
+                                                     UpdatedDate = s["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", s["UpdatedDate"]),
+                                                     UpdatedBy = s["UpdatedBy"],
+                                                     NguoiSua = s["NguoiSua"],
+                                                     parentid = s["parentid"],
+                                                     templateid = s["templateid"],
+                                                     phanloaiid = s["phanloaiid"],
+                                                     icon = icon_folder,
+                                                 },
                                };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
@@ -206,8 +233,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     // update later
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     // left join {_config.HRCatalog}.dbo.Tbl_Cocautochuc cc on cc.RowID=we_department.id_cocau
-                    string sqlq = @$"select we_department.*, null as TenCoCau, '' as NguoiTao, '' as NguoiSua from we_department 
-                                    where Disabled=0 and  we_department.CreatedBy in ({listID}) and id_row=" + id;
+                    string sqlq = @$"select we_department.*, null as TenCoCau, '' as NguoiTao, '' as NguoiSua
+                                    from we_department 
+                                    where disabled=0 and (id_row=" + id + " or parentid = " + id + ") " +
+                                    "order by ParentID";
                     sqlq += @$"; select own.id_row,own.id_user as id_nv, '' as hoten, '' as mobile, '' as Username,'' as image,own.Type as type from we_department_owner own
                                 where disabled=0 and own.id_user in ({listID}) and id_department=" + id;
                     sqlq += @$";select id_department, de.id_row as id_view_de, viewid, view_name, de.is_default as default_view, icon, _view.is_default 
@@ -217,10 +246,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     sqlq += @$";select de.id_row, cus.id_row, IsDefault, Color, de.TemplateID, cus.Title
                                 from we_template_customer cus join we_department de on cus.id_row = de.TemplateID
                                 where cus.disabled = 0 and de.disabled = 0 and de.id_row=" + id;
-                    sqlq += @$";SELECT _status.Id_row, StatusID, _status.TemplateID, StatusName, description,Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo, 
+                    sqlq += @$";select _status.Id_row, StatusID, _status.TemplateID, StatusName, description,Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo, 
                                 Follower
                                 from we_template_status _status join we_department de on de.TemplateID = _status.TemplateID
                                 where de.disabled = 0 and de.id_row=" + id;
+
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
@@ -260,6 +290,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     var data = (from r in ds.Tables[0].AsEnumerable()
+                                where DBNull.Value.Equals(r["parentid"])
                                 select new
                                 {
                                     id_row = r["id_row"],
@@ -274,6 +305,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     NguoiSua = r["NguoiSua"],
                                     viewid = r["TemplateID"],
                                     ParentID = r["ParentID"],
+                                    parentid = r["parentid"],
                                     Owners = from rr in ds.Tables[1].AsEnumerable()
                                              select new
                                              {
@@ -321,7 +353,25 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                                 IsTodo = _status["IsTodo"],
                                                                 Follower = _status["Follower"],
                                                             },
-                                               }
+                                               },
+                                    data_folder = from s in ds.Tables[0].AsEnumerable()
+                                                  where s["parentid"].ToString() == r["id_row"].ToString() && s["parentid"] != DBNull.Value
+                                                  select new
+                                                  {
+                                                      id_row = s["id_row"],
+                                                      title = s["title"],
+                                                      id_cocau = s["id_cocau"],
+                                                      CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", s["CreatedDate"]),
+                                                      CreatedBy = s["CreatedBy"],
+                                                      NguoiTao = s["NguoiTao"],
+                                                      UpdatedDate = s["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", s["UpdatedDate"]),
+                                                      UpdatedBy = s["UpdatedBy"],
+                                                      NguoiSua = s["NguoiSua"],
+                                                      parentid = s["parentid"],
+                                                      templateid = s["templateid"],
+                                                      phanloaiid = s["phanloaiid"],
+                                                      //icon = icon_folder,
+                                                  },
                                 }).FirstOrDefault();
 
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
@@ -464,6 +514,165 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return false;
                         }
                     }
+                    cnn.EndTransaction();
+                    data.id_row = int.Parse(idc);
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+/// <param name="data"></param>
+        /// <returns></returns>
+        /// 
+        [CusAuthorize(Roles = "3402")]
+        [Route("Insert-quick-folder")]
+        [HttpPost]
+        public async Task<object> InsertQuickFolder(DepartmentModel data)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string strRe = "";
+                if (string.IsNullOrEmpty(data.title))
+                    strRe += (strRe == "" ? "" : ",") + "tên thư mục"; 
+                if (strRe != "")
+                {
+                    return JsonResultCommon.BatBuoc(strRe);
+                }
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+
+                    #region thêm nhanh thư mục
+                    //kiểm tra phòng ban
+                    string strCheck = "select count(*) from we_department where Disabled=0 and (IdKH=@custemerid) and title=@name";
+                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "custemerid", idk }, { "name", data.title } }).ToString()) > 0)
+                    {
+                        return JsonResultCommon.Trung("Thư mục");
+                    }
+                    // thêm project thành thư mục
+                    SqlConditions conds = new SqlConditions();
+                    conds.Add("title", data.title);
+                    conds.Add("UserID", loginData.UserID);
+                    conds.Add("ParentID", data.ParentID);
+                    string sqlq = $@"INSERT INTO [dbo].[we_department]
+                                       ([title]
+                                       ,[id_cocau]
+                                       ,[IdKH]
+                                       ,[priority]
+                                       ,[CreatedDate]
+                                       ,[CreatedBy]
+                                       ,[Disabled]
+                                       ,[StatusListID]
+                                       ,[TemplateID]
+                                       ,[ParentID]
+                                       ,[phanloaiid])
+                            SELECT  @title
+                                  ,[id_cocau]
+                                  ,[IdKH]
+                                  ,[priority]
+                                  ,GETDATE()
+                                  ,@UserID
+                                  ,0
+                                  ,[StatusListID]
+                                  ,[TemplateID]
+                                  ,@ParentID
+                                  ,[phanloaiid]
+                              FROM [dbo].[we_department] where id_row = @ParentID";
+
+                    cnn.BeginTransaction();
+                    if (cnn.ExecuteNonQuery(sqlq,conds) != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
+
+                    // thêm view
+                    string sqlv = @"select * from we_department_view where id_department = " + data.ParentID;
+                    List<long> listView = new List<long>();
+                    DataTable dtv = cnn.CreateDataTable(sqlv);
+                    if(dtv.Rows.Count == 0)
+                    {
+                        long viewdf = long.Parse(cnn.ExecuteScalar("select id_row from we_default_views where is_default = 1").ToString());
+                        listView.Add(viewdf);
+                    }
+                    else
+                    {
+                        foreach(DataRow item in dtv.Rows)
+                        {
+                            listView.Add(long.Parse(item["viewid"].ToString()));
+                        }
+                    }
+
+                    Hashtable val1 = new Hashtable();
+                    val1["id_department"] = idc;
+                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedBy"] = iduser;
+                    foreach (var view in listView)
+                    {
+                        val1["viewid"] = view;
+                        if (cnn.Insert(val1, "we_department_view") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+
+                    // thêm thành viên 
+                    string sqltv = @"select * from we_department_owner where id_department = " + data.ParentID;
+                    DataTable dttv = cnn.CreateDataTable(sqltv);
+                    if (dtv.Rows.Count == 0)
+                    {
+                        Hashtable valtv = new Hashtable();
+                        valtv["id_department"] = idc;
+                        valtv["CreatedDate"] = DateTime.Now;
+                        valtv["CreatedBy"] = iduser;
+                        valtv["id_user"] = iduser;
+                        valtv["type"] = 1;
+                        if (cnn.Insert(valtv, "we_department_owner") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    else
+                    {
+                        SqlConditions condstv = new SqlConditions();
+                        condstv.Add("id_department", idc);
+                        condstv.Add("UserID", loginData.UserID);
+                        condstv.Add("ParentID", data.ParentID);
+                        string sql_insert = @"INSERT INTO [dbo].[we_department_owner]
+                                                               ([id_department]
+                                                               ,[id_user]
+                                                               ,[CreatedDate]
+                                                               ,[CreatedBy]
+                                                               ,[Disabled]
+                                                               ,[Type])
+                                                    SELECT @id_department
+                                                    ,[id_user]
+                                                    ,GETDATE()
+                                                    ,@UserID
+                                                    ,[Disabled]
+                                                    ,[Type]
+                                                    FROM [dbo].[we_department_owner]
+                                                    where id_department = @ParentID
+                                                    and Disabled = 0";
+                        if (cnn.ExecuteNonQuery(sql_insert, condstv) <= 0)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    #endregion
                     cnn.EndTransaction();
                     data.id_row = int.Parse(idc);
                     return JsonResultCommon.ThanhCong(data);

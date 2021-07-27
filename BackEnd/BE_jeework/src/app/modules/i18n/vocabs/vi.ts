@@ -991,6 +991,8 @@ export const locale = {
       danhsachduan: "Danh sách dự án",
       themnhanhduan: "Thêm dự án",
       themfolder: 'Thêm thư mục',
+      themnhanhfolder: 'Thêm nhanh thư mục',
+      taonhanh: 'Tạo nhanh',
       nhaptenduan: "Nhập tên dự án",
       documents: "Tài liệu",
       themview: "Thêm dạng hiển thị",

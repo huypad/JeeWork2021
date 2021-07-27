@@ -1,3 +1,4 @@
+import { ChatService } from 'src/app/modules/my-chat/services/chat.service';
 import { environment } from 'src/environments/environment';
 import {
   Component,
@@ -6,6 +7,8 @@ import {
   ElementRef,
   AfterViewInit,
   HostListener,
+  NgZone,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { LayoutService, LayoutInitService } from '../../_metronic/core';
 import KTLayoutContent from '../../../assets/js/layout/base/content';
@@ -48,6 +51,10 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   constructor(
     private initService: LayoutInitService,
     private layout: LayoutService,
+		private _ngZone: NgZone,
+    private chatService:ChatService,
+    private changeDetectorRefs: ChangeDetectorRef,
+
   ) {
     this.initService.init();
   }
@@ -108,6 +115,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     this.extrasScrollTopDisplay = this.layout.getProp(
       'extras.scrolltop.display'
     );
+    this.subscribeToEvents();
 
   }
 
@@ -198,5 +206,64 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   @HostListener("document:message", ["$event"])
   onMessage(event) {
     // ...
+  }
+
+  // chat box
+  chatBoxUsers: UserChatBox[] = [];
+	usernameActived: number;
+
+
+  removeChatBox(event: number) {
+	  let index =this.chatBoxUsers.findIndex(x=>x.user.IdGroup);
+	  this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== event);
+   
+	  if(this.chatBoxUsers.length===1&& index==0)
+	  {
+		this.chatBoxUsers[index].right=300;
+		// this.chatService.reload$.next(true);
+	  }
+	  localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+	}
+  
+	activedChatBox(event: number){
+	  this.usernameActived = event;
+	  var u = this.chatBoxUsers.find(x => x.user.IdGroup === event);
+	  if(u){
+		this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== event);//remove
+		this.chatBoxUsers.push(u);// add to end of array
+		// localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+	  }    
+	}
+  private subscribeToEvents(): void {  
+  
+  
+ 
+
+    this._ngZone.run(() => {  
+   
+    this.chatService.OpenMiniChat$.subscribe(res=>
+      {  
+          const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
+          if (userChatBox) {
+          this.chatBoxUsers = userChatBox;
+          this.changeDetectorRefs.detectChanges();
+          } else {
+          this.chatBoxUsers = [];
+          }
+      })
+      
+    })
+
+ 
+  }
+}
+
+export class UserChatBox{
+  user: any;
+  right: number;//position
+
+  constructor(_user, _right){
+      this.user = _user;
+      this.right = _right;
   }
 }

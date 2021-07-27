@@ -1117,6 +1117,9 @@ div.cu-avatar {
         font-size: 8pt;
         padding: 5px;
     }
+    svg{
+        padding: 3px;
+    }
     
 }
 
@@ -1124,9 +1127,10 @@ div.cu-avatar {
     &:hover{
         .action-inline{
             display: inline-block;
-            i{
+            i,svg{
                 &:hover{
                     color: white;
+                    fill: white;
                     background: rgba(170, 170, 170, 0.795);
                 }
             }

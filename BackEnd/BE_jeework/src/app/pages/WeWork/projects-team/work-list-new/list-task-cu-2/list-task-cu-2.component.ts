@@ -84,6 +84,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   list_role: any = [];
   ItemFinal = 0;
   ProjectTeam: any = {};
+  IsAdminGroup = false;
   private readonly componentName: string = "kt-task_";
   public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
@@ -139,12 +140,15 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     this.selection = new SelectionModel<WorkModel>(true, []);
 
     this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-      if (res && res.status == 1)
-        this.list_role = res.data;
+      if (res && res.status ==1) {
+        this.list_role = res.data.dataRole;
+        this.IsAdminGroup = res.data.IsAdminGroup;
+      }
+
     });
 
     this.GetField();
-    this.mark_tag();
+    // this.mark_tag();
     this.LoadFilter();
     this.LoadListAccount();
     this.LoadDetailProject();
@@ -272,6 +276,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   }
 
   CheckRoles(roleID: number, id_project_team) {
+    if(this.IsAdminGroup) return true;
     var x = this.list_role.find(x => x.id_row == id_project_team);
     if (x) {
       if (x.admin == true) {
@@ -298,6 +303,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     }
   }
   CheckRoleskeypermit(key, id_project_team) {
+    if(this.IsAdminGroup) return true;
     var x = this.list_role.find(x => x.id_row == id_project_team);
     if (x) {
       if (x.admin == true) {
@@ -946,8 +952,9 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     });
   }
 
-  ReloadData(event) {
-    this.ngOnInit();
+  ReloadData(event,id_project_Team) {
+    // this.ngOnInit();
+    this.getChildTask(id_project_Team);
   }
 
   RemoveTag(tag, item) {

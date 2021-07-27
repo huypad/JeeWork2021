@@ -93,16 +93,16 @@ export class JeeCommentComponent implements OnInit {
       this.ShowSpinner$.next(true);
       if (this.objectID) {
         this.getShowTopic();
-        const source = interval(1000);
-        source.pipe(takeUntil(this.onDestroy)).subscribe(() => {
-          if (
-            this._errorMessage$.value == "" &&
-            this.isScrolledViewElement() &&
-            this._isLoading$.value === false
-          ) {
-            this.getShowChangeTopic();
-          }
-        });
+        // const source = interval(1000);
+        // source.pipe(takeUntil(this.onDestroy)).subscribe(() => {
+        //   if (
+        //     this._errorMessage$.value == "" &&
+        //     this.isScrolledViewElement() &&
+        //     this._isLoading$.value === false
+        //   ) {
+        //     this.getShowChangeTopic();
+        //   }
+        // });
       } else {
         this.ShowSpinner$.next(false);
         this.isFirstTime = false;
@@ -381,5 +381,10 @@ export class JeeCommentComponent implements OnInit {
       .subscribe();
     }
     
+  }
+
+  GetValueComment(event){
+    console.log('nhan value cuoi');
+    this.getShowTopic();
   }
 }

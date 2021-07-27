@@ -213,6 +213,7 @@ export class GroupNameListComponent implements OnInit {
       _item.ID_Nhom > 0 ? MessageType.Update : MessageType.Create;
     const dialogRef = this.dialog.open(DanhSachNguoiDungComponent, {
       data: { _item },
+      width:'1000px',
       height: "70%",
     });
     dialogRef.afterClosed().subscribe((res) => {

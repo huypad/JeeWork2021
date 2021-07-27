@@ -1114,11 +1114,13 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
-                    string strCheck = @$"select id_row, id_department, id_template, meetingid 
-                                            from we_project_team where (where)";
+                    //string strCheck = @$"select id_row, id_department, id_template, meetingid 
+                    //                        from we_project_team where (where)";
                     SqlConditions conds = new SqlConditions();
-                    conds.Add("meetingid", data.meetingid);
-                    conds.Add("disabled", 0);
+                    //conds.Add("meetingid", data.meetingid);
+                    //conds.Add("disabled", 0);
+                    string strCheck = @$"select id_row, idkh, phanloaiid from we_department where (where)";
+                    conds.Add("idkh", loginData.CustomerID);
                     DataTable dt_check = cnn.CreateDataTable(strCheck, "(where)", conds);
                     if (cnn.LastError != null || dt_check == null)
                     {
@@ -1128,13 +1130,13 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     string error = "", departmentid = "0";
                     if (dt_check.Rows.Count == 0) // Chưa có dự án trong cuộc họp ==> Khởi tạo dự án
                     {
-                        if (WeworkLiteController.init_space(cnn, loginData, data.meetingid, out error))
+                        if (WeworkLiteController.init_space(cnn, loginData, data, out error))
                         {
                             departmentid = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
                         }
                     }
                     else
-                        departmentid = dt_check.Rows[0]["id_department"].ToString();
+                        departmentid = dt_check.Rows[0]["id_row"].ToString();
                     data.id_department = long.Parse(departmentid);
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -1175,33 +1177,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     string sql_insert = "";
-                    //sql_insert = $@"insert into we_project_team_user (id_project_team, id_user, admin, favourite, CreatedDate, CreatedBy, Disabled)
-                    //    select " + idc + ",id_user,0,0,getdate(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + $" and id_user != {iduser}";
-                    //cnn.ExecuteNonQuery(sql_insert);
-                    //if (cnn.LastError != null)
-                    //{
-                    //    cnn.RollbackTransaction();
-                    //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    //}
-                    //dt_member = cnn.CreateDataTable("select id_user from we_project_team_user where admin = 0 and id_project_team = " + idc + "");
-                    //// insert admin
-                    //Hashtable has = new Hashtable();
-                    //has["id_project_team"] = idc;
-                    //has["CreatedDate"] = DateTime.Now;
-                    //has["CreatedBy"] = iduser;
-                    //has["id_user"] = iduser;
-                    //has["admin"] = 1;
-                    //if (cnn.Insert(has, "we_project_team_user") != 1)
-                    //{
-                    //    cnn.RollbackTransaction();
-                    //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    //}
                     var list_roles = new List<long> { 1 };
                     if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, ConnectionString))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-
                     }
                     #region Khởi tạo view mặc định
                     if (!WeworkLiteController.Init_DefaultView_Project(idc, cnn))
@@ -1315,6 +1295,43 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                         #endregion
                     }
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// Tạo nhanh phòng ban, folder
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// 
+        [Route("generate-space")]
+        [HttpPost]
+        public async Task<object> generate_space([FromBody] GenerateProjectAutoModel data)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    string error = "";
+                    if (WeworkLiteController.init_space(cnn, loginData, data, out error))
+                    {
+                        string departmentid = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
+                    }
+
                     return JsonResultCommon.ThanhCong(data);
                 }
             }

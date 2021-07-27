@@ -5,15 +5,15 @@
     </mat-form-field>
     <div class="users-container">
         <div class="user-item" matTooltip="@{{user.username}}" (click)="select(user)" *ngFor="let user of filteredUsers | async">
-            <div>
-                <ngx-avatar size="26"  src="{{user.image}}" *ngIf="user.image;else bindText"></ngx-avatar>
+            <div  class="align-items-center d-flex">
+                <ngx-avatar size="30"  src="{{user.image}}" *ngIf="user.image;else bindText"></ngx-avatar>
                 <ng-template #bindText>
-                    <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="26"
+                    <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="30"
                         bgColor="{{weworkService.getColorNameUser(user.hoten)}}"
                         [name]="this.weworkService.getName(user.hoten)"></ngx-avatar>
                 </ng-template>
             </div>
-            <div>
+            <div style="padding-left: 10px;">
                 <div>{{ user.hoten }}</div>
                 <span>{{ user.tenchucdanh }}</span>
             </div>
@@ -27,15 +27,15 @@
     </mat-form-field>
     <div class="users-container" (click)="stopPropagation($event)">
         <div class="user-item" matTooltip="@{{user.username}}" (click)="select(user)" *ngFor="let user of filteredUsers | async">
-            <div>
-                <ngx-avatar size="26"  src="{{user.image}}" *ngIf="user.image;else bindText"></ngx-avatar>
+            <div class="align-items-center d-flex">
+                <ngx-avatar size="30"  src="{{user.image}}" *ngIf="user.image;else bindText"></ngx-avatar>
                 <ng-template #bindText>
-                    <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="26"
+                    <ngx-avatar textSizeRatio="2.5" [style]="customStyle" size="30"
                         bgColor="{{weworkService.getColorNameUser(user.hoten)}}"
                         [name]="this.weworkService.getName(user.hoten)"></ngx-avatar>
                 </ng-template>
             </div>
-            <div>
+            <div style="padding-left: 10px;">
                 <div>{{ user.hoten }}</div>
                 <span>{{ user.tenchucdanh }}</span>
             </div>

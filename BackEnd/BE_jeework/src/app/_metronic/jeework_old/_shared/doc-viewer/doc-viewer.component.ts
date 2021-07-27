@@ -17,5 +17,4 @@ export class DocViewerComponent implements OnInit {
 
 	ngOnInit() {
 	}
-//https://localhost:44366/dulieu/attachment/comment/20210317091955_Xe.docx
 }

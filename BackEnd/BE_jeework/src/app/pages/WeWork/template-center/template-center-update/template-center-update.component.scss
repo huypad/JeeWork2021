@@ -361,15 +361,6 @@
     z-index: 9
 }
 
-input {
-
-    &:focus,
-    &:active {
-        border: none;
-        outline: none;
-    }
-}
-
 ::ng-deep .mat-expansion-panel-body {
     padding: 0 !important;
 }

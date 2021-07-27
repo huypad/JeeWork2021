@@ -113,14 +113,21 @@ namespace JeeWork_Core2021.Classes
                 {
                     foreach(long CustomerID in DanhSachCustomer)
                     {
-                        string _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
-                        using (DpsConnection cnnWW = new DpsConnection(_connection))
+                        try
                         {
-                            WeworkLiteController.Insert_Template(cnnWW, CustomerID.ToString());
-                            EveryDayForceRun(cnnWW, CustomerID.ToString());
-                            EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
-                            ThongBaoSapHetHan(cnnWW, CustomerID.ToString());
-                            ThongBaoHetHan(cnnWW, CustomerID.ToString());
+                            string _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
+                            using (DpsConnection cnnWW = new DpsConnection(_connection))
+                            {
+                                WeworkLiteController.Insert_Template(cnnWW, CustomerID.ToString());
+                                EveryDayForceRun(cnnWW, CustomerID.ToString());
+                                EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
+                                ThongBaoSapHetHan(cnnWW, CustomerID.ToString());
+                                ThongBaoHetHan(cnnWW, CustomerID.ToString());
+                            }
+                        }
+                        catch
+                        {
+                            continue;
                         }
                     }
 

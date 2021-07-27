@@ -95,7 +95,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select l.*,  '' as nguoitao, '' as nguoisua from we_checklist l 
 where Disabled=0 and l.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
-                    sqlq += @$";select i.*, l.title as checklist,  checker as id_nv, '' as hoten, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh
+                    sqlq += @$";select i.*, l.title as checklist,  checker as id_nv, '' as hoten, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh, '' as image
 from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.Disabled=0 and i.disabled=0 " + dieukien_where;
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
@@ -479,6 +479,65 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("Checked/{id}")]
+        [HttpGet]
+        public async Task<BaseModel<object>> CheckedItem(long id)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            { 
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sqlq = "select checked from we_checklist_item where id_row = @id_row and disabled = @disabled";
+                    SqlConditions sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", id);
+                    sqlcond.Add("disabled", 0);
+
+                    DataTable dt = cnn.CreateDataTable(sqlq, sqlcond);
+                    if(cnn.LastError != null || dt.Rows.Count == 0)
+                    {
+                        return JsonResultCommon.KhongTonTai("Check list");
+                    }
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+                    var x = dt.Rows[0][0];
+                    bool Checked = bool.Parse(dt.Rows[0][0].ToString());
+                    Hashtable val = new Hashtable();
+                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedBy", iduser);
+                    val.Add("checker", iduser);
+                    if(Checked)
+                    {
+                        val.Add("checked", 0);
+                    }
+                    else
+                    {
+                        val.Add("checked", 1);
+                    }
+                    cnn.BeginTransaction();
+                    if (cnn.Update(val, sqlcond, "we_checklist_item") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                    }
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(id);
                 }
             }
             catch (Exception ex)

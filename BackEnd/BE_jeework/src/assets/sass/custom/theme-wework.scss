@@ -567,7 +567,42 @@ $main-color: #16a850; // màu chính
 		&.pd-0 {
 			padding: 0px !important;
 		}
-
+		.dl-tk-dashboard {
+			display: flex;
+			flex: 1;
+			margin-left: -5px;
+			margin-right: -5px;
+			width: 100%;
+			@media screen and (max-width: 992px) {
+				flex-wrap: wrap;
+			}
+		.dl-tk-item {
+			flex: 1;
+			background-color: #fff;
+			border-radius: 10px;
+			padding: 10px 15px;
+			color: #141414;
+			margin: 5px;
+			box-shadow: 2px 3px 3px #ccc;
+			@media screen and (max-width: 992px) {
+				width: calc(50% - 10px);
+				flex: unset;
+			}
+			@media screen and (max-width: 600px) {
+				width: 100%;
+			}
+			&.success {
+				color: green;
+				background-color: #daf1e4;
+				// .item-status {
+				//     border-color: #c7c7c7;
+				// }
+			}
+			.title {
+				font-size: 1.2rem;
+				font-weight: bold;
+			}
+		}}
 		.kt-portlet.kt-card {
 			&:hover {
 				box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.15);
@@ -575,7 +610,17 @@ $main-color: #16a850; // màu chính
 			.title-department {
 				color: black !important;
 				font-weight: 700;
-				font-size: 14pt;
+				font-size: 13pt;
+
+				&:hover {
+					color: $main-color !important;
+					text-decoration: underline;
+				}
+			}
+			.title-folder {
+				color: rgb(8, 16, 121) !important;
+				font-weight: 400;
+				font-size: 11pt;
 
 				&:hover {
 					color: $main-color !important;

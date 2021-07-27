@@ -265,12 +265,12 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
         }
         [HttpGet]
         [Route("GetRoleWeWork")]
-        public object GetRoleWeWork(string id_nv, long CustomerID)
+        public object GetRoleWeWork(string id_nv) 
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData != null)
+            if (loginData == null)
             {
-                CustomerID = loginData.CustomerID;
+                return JsonResultCommon.DangNhap();
             }
             try
             {
@@ -294,6 +294,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
+                    bool IsAdmin = CheckGroupAdministrator(loginData.Username,Conn,loginData.CustomerID);
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
@@ -315,7 +316,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                keypermit = u["KeyPermit"],
                                            },
                                };
-                    return JsonResultCommon.ThanhCong(data);
+                    var dataNew = new { dataRole = data, IsAdminGroup = IsAdmin};
+                    return JsonResultCommon.ThanhCong(dataNew);
                 }
             }
             catch (Exception ex)

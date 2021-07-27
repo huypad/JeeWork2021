@@ -16,7 +16,7 @@ namespace JeeWork_Core2021.Models
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
         public string description { get; set; }
-        public long id_project_team { get; set; }
+        public string id_project_team { get; set; }
         public long id_group { get; set; }
         public bool Locked { get; set; }
         public long assign { get; set; }

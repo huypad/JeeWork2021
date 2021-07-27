@@ -295,6 +295,7 @@
             class="align-items-center d-flex las la-plus-circle hover-to-show" style="font-size: 15px;"></i>
                 <mat-menu #folder="matMenu" yPosition="below"> 
                     <button (click)="QuickInsert = item.id" mat-menu-item><span translate="projects.themnhanhduan"></span></button>
+                    <button (click)="AddQuickFolder(item)" mat-menu-item><span translate="projects.themnhanhfolder"></span></button> 
                     <button (click)="AddFolder(item)" mat-menu-item><span translate="projects.themfolder"></span></button> 
                 </mat-menu>
         </ng-template>

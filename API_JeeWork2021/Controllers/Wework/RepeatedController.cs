@@ -411,11 +411,12 @@ from we_repeated_Task task where task.Disabled=0";
             try
             {
                 string strRe = "";
+                List<string> listIDprojectTeam = data.id_project_team.Split(',').ToList();
                 if (string.IsNullOrEmpty(data.title))
                     strRe += (strRe == "" ? "" : ",") + "tên công việc lặp lại";
                 if (string.IsNullOrEmpty(data.repeated_day))
                     strRe += (strRe == "" ? "" : ",") + "các ngày lặp lại";
-                if (data.id_project_team <= 0)
+                if (listIDprojectTeam.Count <= 0)
                     strRe += (strRe == "" ? "" : ",") + "dự án/phòng ban";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
@@ -425,74 +426,82 @@ from we_repeated_Task task where task.Disabled=0";
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
-                    Hashtable val = new Hashtable();
-                    val.Add("title", data.title);
-                    val.Add("description", string.IsNullOrEmpty(data.description) ? "" : data.description);
-                    val.Add("id_project_team", data.id_project_team);
-                    val.Add("repeated_day", data.repeated_day);
-                    if (data.id_group > 0)
-                        val.Add("id_group", data.id_group);
-                    if (data.deadline > 0)
-                        val.Add("deadline", data.deadline);
-                    if (data.start_date != DateTime.MinValue)
-                        val.Add("start_date", data.start_date);
-                    if (data.end_date != DateTime.MinValue)
-                        val.Add("end_date", data.end_date);
-                    if (data.assign > 0)
-                        val.Add("assign", data.assign);
-                    val.Add("Locked", data.Locked);
-                    val.Add("frequency", data.frequency);
-                    val.Add("CreatedDate", DateTime.Now);
-                    val.Add("CreatedBy", iduser);
-                    string strCheck = "select count(*) from we_repeated where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
-                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
+                    long idc = 0;
+
+                    foreach (var item in listIDprojectTeam)
                     {
-                        return JsonResultCommon.Custom("Công việc lặp lại đã tồn tại trong dự án/phòng ban");
-                    }
-                    cnn.BeginTransaction();
-                    if (cnn.Insert(val, "we_repeated") != 1)
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
-                    }
-                    long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_repeated')").ToString());
-                    if (data.Users != null)
-                    {
-                        Hashtable val1 = new Hashtable();
-                        val1["id_repeated"] = idc;
-                        val1["CreatedDate"] = DateTime.Now;
-                        val1["CreatedBy"] = iduser;
-                        foreach (var u in data.Users)
+                        Hashtable val = new Hashtable();
+                        val.Add("title", data.title);
+                        val.Add("description", string.IsNullOrEmpty(data.description) ? "" : data.description);
+                        val.Add("repeated_day", data.repeated_day);
+                        if (data.id_group > 0)
+                            val.Add("id_group", data.id_group);
+                        if (data.deadline > 0)
+                            val.Add("deadline", data.deadline);
+                        if (data.start_date != DateTime.MinValue)
+                            val.Add("start_date", data.start_date);
+                        if (data.end_date != DateTime.MinValue)
+                            val.Add("end_date", data.end_date);
+                        if (data.assign > 0)
+                            val.Add("assign", data.assign);
+                        val.Add("Locked", data.Locked);
+                        val.Add("frequency", data.frequency);
+                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedBy", iduser);
+
+                        val.Add("id_project_team", item);
+                        string strCheck = "select count(*) from we_repeated where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
+                        if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", item }, { "name", data.title } }).ToString()) > 0)
                         {
-                            val1["id_user"] = u.id_user;
-                            val1["loai"] = u.loai;
-                            if (cnn.Insert(val1, "we_repeated_user") != 1)
+                            return JsonResultCommon.Custom("Công việc lặp lại đã tồn tại trong dự án/phòng ban");
+                        }
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_repeated") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                        idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_repeated')").ToString());
+                        if (data.Users != null)
+                        {
+                            Hashtable val1 = new Hashtable();
+                            val1["id_repeated"] = idc;
+                            val1["CreatedDate"] = DateTime.Now;
+                            val1["CreatedBy"] = iduser;
+                            foreach (var u in data.Users)
                             {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                val1["id_user"] = u.id_user;
+                                val1["loai"] = u.loai;
+                                if (cnn.Insert(val1, "we_repeated_user") != 1)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
                             }
                         }
-                    }
-                    if (data.Tasks != null)
-                    {
-                        Hashtable val2 = new Hashtable();
-                        val2["id_repeated"] = idc;
-                        val2["CreatedDate"] = DateTime.Now;
-                        val2["CreatedBy"] = iduser;
-                        val2["Disabled"] = 0;
-                        foreach (var _task in data.Tasks)
+                        if (data.Tasks != null)
                         {
-                            val2["IsTodo"] = _task.IsTodo;
-                            val2["Title"] = _task.Title;
-                            val2["UserID"] = _task.UserID;
-                            val2["Deadline"] = _task.Deadline;
-                            if (cnn.Insert(val2, "we_repeated_Task") != 1)
+                            Hashtable val2 = new Hashtable();
+                            val2["id_repeated"] = idc;
+                            val2["CreatedDate"] = DateTime.Now;
+                            val2["CreatedBy"] = iduser;
+                            val2["Disabled"] = 0;
+                            foreach (var _task in data.Tasks)
                             {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                val2["IsTodo"] = _task.IsTodo;
+                                val2["Title"] = _task.Title;
+                                val2["UserID"] = _task.UserID;
+                                val2["Deadline"] = _task.Deadline;
+                                if (cnn.Insert(val2, "we_repeated_Task") != 1)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
                             }
                         }
+
                     }
+
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu repeated: title=" + data.title + ", id_project_team=" + data.id_project_team;
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);

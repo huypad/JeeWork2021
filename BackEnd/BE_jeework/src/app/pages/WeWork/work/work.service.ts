@@ -153,6 +153,10 @@ export class WorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_checklist + '/Update-item', item, { headers: httpHeaders });
 	}
+	CheckedItem(id): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API_checklist + '/Checked/'+id, { headers: httpHeaders });
+	}
 	Delete_CheckList(id: number): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = `${API_checklist}/Delete?id=${id}`;

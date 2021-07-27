@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                                 {{status.statusname}} {{status.hoten_Follower==null?
-                                    '':'('+status.hoten_Follower+')'}}
+                                '':'('+status.hoten_Follower+')'}}
                             </div>
                         </button>
                     </mat-menu>
@@ -59,23 +59,26 @@
                     </div>
 
                     <div class="cu-task-row-assignee pd-r-10">
-                        
+
                         <ng-container *ngIf="CheckRoles(14);else norole14">
                             <ng-container *ngFor="let us of item.User;let index = index">
-                                <div *ngIf="index < 3" class="cu-user-group position-relative" style="justify-content: flex-end;">
-                                    <i class="far fa-times-circle url view-hover text-dark bg-white" style="position: absolute;top:0;right:0;border-radius: 50%;" (click)="ItemSelected(us)"></i>
-                                    <kt-avatar-user [matMenuTriggerFor]="assign1"
-                                        [image]="us.image"
-                                        size="26"
+                                <div *ngIf="index < 3" class="cu-user-group position-relative"
+                                    style="justify-content: flex-end;">
+                                    <i class="far fa-times-circle url view-hover text-dark bg-white"
+                                        style="position: absolute;top:0;right:0;border-radius: 50%;"
+                                        (click)="ItemSelected(us)"></i>
+                                    <kt-avatar-user [matMenuTriggerFor]="assign1" [image]="us.image" size="26"
                                         [name]="us.hoten">
                                     </kt-avatar-user>
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="item.User && item.User.length > 3">
-                                
+
                                 <div class="m--img-rounded m--marginless m--img-centered background url"
                                     [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
-                                    <div class="user w-100" style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;" [ngStyle]="{'font-size.px': 15}">
+                                    <div class="user w-100"
+                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                        [ngStyle]="{'font-size.px': 15}">
                                         +{{item.User.length-3}}
                                     </div>
                                 </div>
@@ -84,10 +87,13 @@
                                         style="justify-content: flex-end;">
                                         <ng-container *ngIf="index > 2">
                                             <div class="position-relative">
-                                                <i class="fas fa-times scale-hover-02 url" style="position: absolute;top:0;right:0" (click)="ItemSelected(user)"></i>
-                                                <div class="row"  [matMenuTriggerFor]="assign1" (click)="$event.stopPropagation()"> 
-                                                    <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten" [showFull]="true"
-                                                        [info]="'@' + user.username">
+                                                <i class="fas fa-times scale-hover-02 url"
+                                                    style="position: absolute;top:0;right:0"
+                                                    (click)="ItemSelected(user)"></i>
+                                                <div class="row" [matMenuTriggerFor]="assign1"
+                                                    (click)="$event.stopPropagation()">
+                                                    <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+                                                        [showFull]="true" [info]="'@' + user.username">
                                                     </kt-avatar-user>
                                                 </div>
                                             </div>
@@ -98,19 +104,19 @@
                         </ng-container>
                         <ng-template #norole14>
                             <ng-container *ngFor="let us of item.User;let index = index">
-                                <div *ngIf="index < 3" class="cu-user-group position-relative" style="justify-content: flex-end;">
-                                    <kt-avatar-user
-                                        [image]="us.image"
-                                        size="26"
-                                        [name]="us.hoten">
+                                <div *ngIf="index < 3" class="cu-user-group position-relative"
+                                    style="justify-content: flex-end;">
+                                    <kt-avatar-user [image]="us.image" size="26" [name]="us.hoten">
                                     </kt-avatar-user>
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="item.User && item.User.length > 3">
-                                
+
                                 <div class="m--img-rounded m--marginless m--img-centered background url"
                                     [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
-                                    <div class="user w-100" style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;" [ngStyle]="{'font-size.px': 15}">
+                                    <div class="user w-100"
+                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                        [ngStyle]="{'font-size.px': 15}">
                                         +{{item.User.length-3}}
                                     </div>
                                 </div>
@@ -119,9 +125,9 @@
                                         style="justify-content: flex-end;">
                                         <ng-container *ngIf="index > 2">
                                             <div class="position-relative">
-                                                <div class="row" (click)="$event.stopPropagation()"> 
-                                                    <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten" [showFull]="true"
-                                                        [info]="'@' + user.username">
+                                                <div class="row" (click)="$event.stopPropagation()">
+                                                    <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+                                                        [showFull]="true" [info]="'@' + user.username">
                                                     </kt-avatar-user>
                                                 </div>
                                             </div>
@@ -131,7 +137,7 @@
                             </ng-container>
                         </ng-template>
 
-                        
+
 
                         <div class="cu-user-group" *ngIf="CheckRoles(14)">
                             <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print"
@@ -139,9 +145,8 @@
                                 <div
                                     class="cu-avatar cu-avatar-border cu-avatar_lg cu-avatar_transparent cu-avatar__assign-mono cu-avatar_30">
                                     <div class="cu-user-group__icon-mono">
-                                        <button class="btn -hover text-muted" [matMenuTriggerFor]="assign1" >
-                                            <i class="fas fa-user-plus pd-0"
-                                                style="font-size: 13px;"></i>
+                                        <button class="btn -hover text-muted" [matMenuTriggerFor]="assign1">
+                                            <i class="fas fa-user-plus pd-0" style="font-size: 13px;"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -173,11 +178,9 @@
                             </div>
                         </div>
                         <mat-menu #priority="matMenu">
-                            <button mat-menu-item
-                                *ngFor="let prio of list_priority"
+                            <button mat-menu-item *ngFor="let prio of list_priority"
                                 (click)="updatePriority(prio.value)">
-                                <i
-                                    class="{{prio.icon}} pd-r-10"></i>
+                                <i class="{{prio.icon}} pd-r-10"></i>
                                 {{ 'priority.'+prio.name |
                                 translate }}
                             </button>
@@ -185,18 +188,16 @@
                     </div>
                     <!-- set muc tiêu -->
                     <div class="cu-task-row-assignee">
-                        <i *ngIf="CheckRoles(18)" class="fas fa-cog url -hover"  [ngStyle]="{'color': item.id_milestone > 0?'#0d6efd':'#6c757d'}" style="font-size: 18px;" [matMenuTriggerFor]="tag"></i> &nbsp;
-						{{item.milestone}}
-							<mat-menu #tag="matMenu">
-								<kt-choose-milestone-and-tags
-									[options]="list_milestone"
-									[project_team]="project_team"
-									[id_project_Team]="Id_project_team"
-									[Id]="item.id_row" [Id_key]="9"
-									[Loai]="'id_milestone'"
-									(ItemSelected)="ReloadData($event)">
-								</kt-choose-milestone-and-tags>
-							</mat-menu>
+                        <i *ngIf="CheckRoles(18)" class="fas fa-cog url -hover"
+                            [ngStyle]="{'color': item.id_milestone > 0?'#0d6efd':'#6c757d'}" style="font-size: 18px;"
+                            [matMenuTriggerFor]="tag"></i> &nbsp;
+                        {{item.milestone}}
+                        <mat-menu #tag="matMenu">
+                            <kt-choose-milestone-and-tags [options]="list_milestone" [project_team]="project_team"
+                                [id_project_Team]="Id_project_team" [Id]="item.id_row" [Id_key]="9"
+                                [Loai]="'id_milestone'" (ItemSelected)="ReloadData($event)">
+                            </kt-choose-milestone-and-tags>
+                        </mat-menu>
                     </div>
                     <!-- hiển thị người đang theo dõi -->
                     <div class="cu-task-row-assignee">
@@ -209,23 +210,23 @@
                         </ng-container>
                     </div>
 
-                    <div class="action float-right" style="flex-grow: 1;"> 
+                    <div class="action float-right" style="flex-grow: 1;">
                         <div class="title float-right" *ngIf="item.Process">
                             <a class="action float-right">
                                 <button class="btn -hover text-muted" [matMenuTriggerFor]="follower">
                                     <i class="fas fa-user-cog pd-0" style="font-size: 20px; color: green;"></i>
                                 </button>
                             </a>
-                         </div>
+                        </div>
                         <mat-menu #follower="matMenu">
-                            <button mat-menu-item *ngFor="let status of this.item.Process"  (click)="$event.stopPropagation()"
-                                [ngStyle]="{color: status.color}">
+                            <button mat-menu-item *ngFor="let status of this.item.Process"
+                                (click)="$event.stopPropagation()" [ngStyle]="{color: status.color}">
                                 <div class="row">
                                     <div class="cu-task-row-status1" style="width:20px;padding-right:5px">
                                         <div class="point" [ngStyle]="{'backgroundColor': status.color}">
                                         </div>
                                     </div>
-                                    {{status.statusname}} {{status.hoten?('('+status.hoten+')'):''}} 
+                                    {{status.statusname}} {{status.hoten?('('+status.hoten+')'):''}}
                                 </div>
                             </button>
                         </mat-menu>
@@ -250,14 +251,16 @@
                                 <div class="cu-task-info__key">
                                     <span translate="filter.ngaybatdau"></span>
                                 </div>
-                                <div class="cu-task-info__value url" (click)="pickerstart.open()" *ngIf="CheckRoles(10)">
+                                <div class="cu-task-info__value url" (click)="pickerstart.open()"
+                                    *ngIf="CheckRoles(10)">
                                     {{item.start_date?item.start_date:'Thêm ngày bắt đầu'}}
                                 </div>
                                 <div class="cu-task-info__value" *ngIf="!CheckRoles(10)">
                                     {{item.start_date?item.start_date:'Chưa có ngày bắt đầu'}}
                                 </div>
                             </div>
-                            <input matInput [value]="getDate(item.start_date)" (dateChange)="updateStartDate($event)" [matDatepicker]="pickerstart" class="date-picker">
+                            <input matInput [value]="getDate(item.start_date)" (dateChange)="updateStartDate($event)"
+                                [matDatepicker]="pickerstart" class="date-picker">
                             <mat-datepicker #pickerstart></mat-datepicker>
                         </div>
                         <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
@@ -272,15 +275,15 @@
                                     {{item.deadline?item.deadline:'Chưa có hạn chót'}}
                                 </div>
                             </div>
-                            <input matInput [value]="getDate(item.deadline)" (dateChange)="updateDueDate($event)" [matDatepicker]="picker"
-                                class="date-picker">
+                            <input matInput [value]="getDate(item.deadline)" (dateChange)="updateDueDate($event)"
+                                [matDatepicker]="picker" class="date-picker">
                             <mat-datepicker #picker></mat-datepicker>
                         </div>
-                        
+
                         <div style="position: relative; display: flex; flex-grow: 1;"> </div>
-                    
+
                     </div>
-                    
+
                 </div>
             </div>
             <div class="task__body">
@@ -289,7 +292,8 @@
                     <div class="cu-scrollbar task-column__body task-column__body-scroll-view">
                         <div class="kt-form work-detail w-100 h-100">
                             <div class="row h-100" style="font-size: 10.5pt;">
-                                <kt-portlet [options]="{headLarge: true, hideHeader:true}" style="min-height: 100%;" class="w-100">
+                                <kt-portlet [options]="{headLarge: true, hideHeader:true}" style="min-height: 100%;"
+                                    class="w-100">
                                     <ng-container mPortletBody>
                                         <div class="kt-form__group" style="padding: 15px; line-height: 25px;">
 
@@ -303,7 +307,7 @@
                                                     matTooltip="{{ 'work.chinhsuatag' | translate}}">
                                                     <i class="fas fa-tags"></i>
                                                 </div>
-                                                
+
                                                 <ng-container *ngFor="let tag of item.Tags">
                                                     <kt-cu-tag [node]="item" [tag]="tag" [detail]="true"
                                                         (RemoveTag)="RemoveTag(tag)">
@@ -329,12 +333,14 @@
                                             </div>
 
                                             <div class="row" style="margin-bottom: 20px!important;">
-                                                <textarea placeholder="{{ 'work.description' | translate}}" id="txtdescription"
-                                                    [value]="item.description" [disabled]="!CheckRoles(9)"
-                                                    (keyup.enter)="UpdateDescription()" (focusout)="UpdateDescription()"
-                                                    class="form-control" rows="10"></textarea>
+                                                <textarea placeholder="{{ 'work.description' | translate}}"
+                                                    id="txtdescription" [value]="item.description"
+                                                    [disabled]="!CheckRoles(9)" (keyup.enter)="UpdateDescription()"
+                                                    (focusout)="UpdateDescription()" class="form-control"
+                                                    rows="10"></textarea>
                                             </div>
-                                            <div class="row" style="margin-bottom: 20px!important;" *ngIf="!item.id_parent">
+                                            <div class="row" style="margin-bottom: 20px!important;"
+                                                *ngIf="!item.id_parent">
                                                 <div class="task-todo w-100">
                                                     <div class="task-todo__header cu-hidden-print">
                                                         <div class="task-todo__title">
@@ -344,7 +350,7 @@
                                                         </div>
                                                         <div class="task-todo-space"></div>
                                                         <div class="task-todo-nav">
-                                                            
+
                                                         </div>
                                                     </div>
                                                     <div class="task-todo__subtitle-row">
@@ -385,23 +391,32 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="cu-task-row-assignee pd-r-10">
-                                                                    
+
                                                                     <ng-container *ngIf="CheckRoles(14);else norole14">
-                                                                        <ng-container *ngFor="let us of child.User;let index = index">
-                                                                            <div *ngIf="index < 3" class="cu-user-group scale-hover-01 position-relative" style="justify-content: flex-end;">
-                                                                                <i class="far fa-times-circle url view-hover text-dark bg-white" style="position: absolute;top:0;right:0;border-radius: 50%;" (click)="ItemSelectedSubtask(us,child)"></i>
-                                                                                <kt-avatar-user [matMenuTriggerFor]="assign2"
-                                                                                    [image]="us.image"
-                                                                                    size="26"
+                                                                        <ng-container
+                                                                            *ngFor="let us of child.User;let index = index">
+                                                                            <div *ngIf="index < 3"
+                                                                                class="cu-user-group scale-hover-01 position-relative"
+                                                                                style="justify-content: flex-end;">
+                                                                                <i class="far fa-times-circle url view-hover text-dark bg-white"
+                                                                                    style="position: absolute;top:0;right:0;border-radius: 50%;"
+                                                                                    (click)="ItemSelectedSubtask(us,child)"></i>
+                                                                                <kt-avatar-user
+                                                                                    [matMenuTriggerFor]="assign2"
+                                                                                    [image]="us.image" size="26"
                                                                                     [name]="us.hoten">
                                                                                 </kt-avatar-user>
                                                                             </div>
                                                                         </ng-container>
-                                                                        <ng-container *ngIf="child.User && child.User.length > 3">
-                                                                            
+                                                                        <ng-container
+                                                                            *ngIf="child.User && child.User.length > 3">
+
                                                                             <div class="m--img-rounded m--marginless m--img-centered background url"
-                                                                                [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
-                                                                                <div class="user w-100" style="opacity: 1;color:white;padding-top:1px;text-align: center;background: grey;margin: 0;" [ngStyle]="{'font-size.px': 15}">
+                                                                                [matMenuTriggerFor]="menu1"
+                                                                                [ngStyle]="{'width.px': 30,'height.px':30}">
+                                                                                <div class="user w-100"
+                                                                                    style="opacity: 1;color:white;padding-top:1px;text-align: center;background: grey;margin: 0;"
+                                                                                    [ngStyle]="{'font-size.px': 15}">
                                                                                     +{{child.User.length-3}}
                                                                                 </div>
                                                                             </div>
@@ -409,10 +424,18 @@
                                                                                 <div *ngFor="let user of child.User;let index = index"
                                                                                     style="justify-content: flex-end;">
                                                                                     <ng-container *ngIf="index > 2">
-                                                                                        <div class="position-relative"> 
-                                                                                            <i class="fas fa-times scale-hover-02 url" style="position: absolute;top:0;right:0" (click)="ItemSelectedSubtask(user,child)"></i>
-                                                                                            <div class="row"  [matMenuTriggerFor]="assign2" (click)="$event.stopPropagation()"> 
-                                                                                                <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten" [showFull]="true"
+                                                                                        <div class="position-relative">
+                                                                                            <i class="fas fa-times scale-hover-02 url"
+                                                                                                style="position: absolute;top:0;right:0"
+                                                                                                (click)="ItemSelectedSubtask(user,child)"></i>
+                                                                                            <div class="row"
+                                                                                                [matMenuTriggerFor]="assign2"
+                                                                                                (click)="$event.stopPropagation()">
+                                                                                                <kt-avatar-user
+                                                                                                    [image]="user.image"
+                                                                                                    size="35"
+                                                                                                    [name]="user.hoten"
+                                                                                                    [showFull]="true"
                                                                                                     [info]="'@' + user.username">
                                                                                                 </kt-avatar-user>
                                                                                             </div>
@@ -422,21 +445,26 @@
                                                                             </mat-menu>
                                                                         </ng-container>
                                                                     </ng-container>
-                                                                    
+
                                                                     <ng-template #norole14>
-                                                                        <ng-container *ngFor="let us of child.User;let index = index">
-                                                                            <div *ngIf="index < 3" class="cu-user-group scale-hover-01 position-relative" style="justify-content: flex-end;">
-                                                                                <kt-avatar-user
-                                                                                    [image]="us.image"
-                                                                                    size="26"
-                                                                                    [name]="us.hoten">
+                                                                        <ng-container
+                                                                            *ngFor="let us of child.User;let index = index">
+                                                                            <div *ngIf="index < 3"
+                                                                                class="cu-user-group scale-hover-01 position-relative"
+                                                                                style="justify-content: flex-end;">
+                                                                                <kt-avatar-user [image]="us.image"
+                                                                                    size="26" [name]="us.hoten">
                                                                                 </kt-avatar-user>
                                                                             </div>
                                                                         </ng-container>
-                                                                        <ng-container *ngIf="child.User && child.User.length > 3"> 
+                                                                        <ng-container
+                                                                            *ngIf="child.User && child.User.length > 3">
                                                                             <div class="m--img-rounded m--marginless m--img-centered background url"
-                                                                                [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
-                                                                                <div class="user w-100" style="opacity: 1;color:white;padding-top:1px;text-align: center;background: grey;margin: 0;" [ngStyle]="{'font-size.px': 15}">
+                                                                                [matMenuTriggerFor]="menu1"
+                                                                                [ngStyle]="{'width.px': 30,'height.px':30}">
+                                                                                <div class="user w-100"
+                                                                                    style="opacity: 1;color:white;padding-top:1px;text-align: center;background: grey;margin: 0;"
+                                                                                    [ngStyle]="{'font-size.px': 15}">
                                                                                     +{{child.User.length-3}}
                                                                                 </div>
                                                                             </div>
@@ -444,9 +472,14 @@
                                                                                 <div *ngFor="let user of child.User;let index = index"
                                                                                     style="justify-content: flex-end;">
                                                                                     <ng-container *ngIf="index > 2">
-                                                                                        <div class="position-relative"> 
-                                                                                            <div class="row" (click)="$event.stopPropagation()"> 
-                                                                                                <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten" [showFull]="true"
+                                                                                        <div class="position-relative">
+                                                                                            <div class="row"
+                                                                                                (click)="$event.stopPropagation()">
+                                                                                                <kt-avatar-user
+                                                                                                    [image]="user.image"
+                                                                                                    size="35"
+                                                                                                    [name]="user.hoten"
+                                                                                                    [showFull]="true"
                                                                                                     [info]="'@' + user.username">
                                                                                                 </kt-avatar-user>
                                                                                             </div>
@@ -456,12 +489,17 @@
                                                                             </mat-menu>
                                                                         </ng-container>
                                                                     </ng-template>
-                                                                    
-                                                                    <div class="cu-user-group" *ngIf="child.User.length == 0">
-                                                                        <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print">
-                                                                            <div style="width:25px;height:25px;" class="cu-avatar cu-avatar-border cu-avatar_lg cu-avatar_transparent cu-avatar__assign-mono cu-avatar_30">
+
+                                                                    <div class="cu-user-group"
+                                                                        *ngIf="child.User.length == 0">
+                                                                        <div
+                                                                            class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print">
+                                                                            <div style="width:25px;height:25px;"
+                                                                                class="cu-avatar cu-avatar-border cu-avatar_lg cu-avatar_transparent cu-avatar__assign-mono cu-avatar_30">
                                                                                 <div class="cu-user-group__icon-mono">
-                                                                                    <button class="btn -hover text-muted" [matMenuTriggerFor]="assign2"
+                                                                                    <button
+                                                                                        class="btn -hover text-muted"
+                                                                                        [matMenuTriggerFor]="assign2"
                                                                                         *ngIf="CheckRoles(14)">
                                                                                         <i class="fas fa-user-plus pd-0"
                                                                                             style="font-size: 13px;"></i>
@@ -472,18 +510,21 @@
                                                                     </div>
                                                                     <mat-menu #assign2="matMenu">
                                                                         <div class="page-work-detail">
-                                                                            <kt-choose-users [options]="options_assign" (IsSearch)="stopPropagation($event)"
+                                                                            <kt-choose-users [options]="options_assign"
+                                                                                (IsSearch)="stopPropagation($event)"
                                                                                 (ItemSelected)="ItemSelectedSubtask($event,child)">
                                                                             </kt-choose-users>
                                                                         </div>
                                                                     </mat-menu>
-                                            
+
                                                                 </div>
                                                                 <div class="cu-todo-list__container">
-                                                                    <div class="cu-todo-list__container-items cu-todo-list__container-items_middle">
+                                                                    <div
+                                                                        class="cu-todo-list__container-items cu-todo-list__container-items_middle">
                                                                         <div class="task-todo-item__name subtask">
                                                                             <span class="task-todo-item__name-text">
-                                                                                <span class="task-todo-item__name-text-inner url"
+                                                                                <span
+                                                                                    class="task-todo-item__name-text-inner url"
                                                                                     (click)="LoadChild(child)">
                                                                                     {{child.title}}
                                                                                 </span>
@@ -522,7 +563,8 @@
                                                         </mat-form-field>
                                                     </div>
                                                     <div>
-                                                        <button type="button" style="font-size: 12pt;padding: 5px;padding-top: 10px;"
+                                                        <button type="button"
+                                                            style="font-size: 12pt;padding: 5px;padding-top: 10px;"
                                                             class="btn  text-danger" (click)="Update_CheckList()"
                                                             cdkFocusInitial
                                                             matTooltip="{{ 'GeneralKey.trolai' | translate }}">
@@ -567,7 +609,7 @@
                                                         </div>
                                                     </div>
                                                     <div style="padding-left: 15px;" *ngIf="!item.isExpanded">
-                                                        <table class="table table-hover w-100">
+                                                        <table class="table w-100">
                                                             <thead *ngIf="CheckRoles(12)">
                                                                 <tr>
                                                                     <mat-form-field class="mat-form-field-fluid">
@@ -590,13 +632,28 @@
                                                             </thead>
                                                             <tbody>
                                                                 <tr *ngFor="let items of item.items">
+
                                                                     <input type="text" class="form-control"
                                                                         *ngIf="items.updateChild"
                                                                         [(ngModel)]="items.title"
                                                                         (keyup.enter)="Update_CheckList_Item(items,item.id_row);items.updateChild=false"
                                                                         (focusout)="Update_CheckList_Item(items,item.id_row);items.updateChild=false">
-                                                                    <div class="check-list-item"
+                                                                    <div class="check-list-item url d-flex" [ngClass]="{'item-checked': items.checked}"
                                                                         *ngIf="!items.updateChild">
+                                                                        <div class="checklist2-bubble" (click)="CheckedChecklist(items)">
+                                                                            <svg height="9"
+                                                                                    width="12"
+                                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                                    <path
+                                                                                        d="M5.19
+                                                                            8.287l6.168-6.168a.618.618 0 0 0 .191-.452.618.618 0 0
+                                                                            0-.19-.452L10.333.191A.618.618 0 0 0 9.882 0a.618.618 0 0
+                                                                            0-.452.19L4.739 4.883l-2.12-2.12a.618.618 0 0 0-.452-.19.618.618 0 0
+                                                                            0-.452.19L.691 3.787a.618.618 0 0 0-.191.452c0 .174.064.325.19.452l3.597
+                                                                            3.596c.127.127.278.19.452.19a.618.618 0 0 0 .452-.19z"
+                                                                                        fill-rule="evenodd"></path>
+                                                                                </svg> 
+                                                                        </div>
                                                                         <div class="check-list-item--title">
                                                                             <span
                                                                                 style="font-size: 14px;">{{items.title}}</span>
@@ -614,7 +671,7 @@
                                                                                     (click)="DeleteItem(items)"
                                                                                     cdkFocusInitial
                                                                                     matTooltip="{{ 'GeneralKey.xoa' | translate }}">
-                                                                                    <mat-icon>delete_outline</mat-icon>
+                                                                                    <mat-icon>delete</mat-icon>
                                                                                 </span>
                                                                             </div>
 
@@ -705,13 +762,17 @@
                                                                                 matTooltip="Preview">
                                                                                 <i class="far fa-eye text-success"></i>
                                                                             </a>
-                                                                            <a class="url" (click)="DownloadFile(att2.path)"
+                                                                            <a class="url"
+                                                                                (click)="DownloadFile(att2.path)"
                                                                                 matTooltip="Download">
-                                                                                <i class="fas fa-download text-primary"></i>
+                                                                                <i
+                                                                                    class="fas fa-download text-primary"></i>
                                                                             </a>
-                                                                            <a class="url" (click)="Delete_File(att2.id_row)"
+                                                                            <a class="url"
+                                                                                (click)="Delete_File(att2.id_row)"
                                                                                 matTooltip="Xóa File">
-                                                                                <i class="fas fa-trash-alt  text-danger"></i>
+                                                                                <i
+                                                                                    class="fas fa-trash-alt  text-danger"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -736,11 +797,11 @@
                         <div class="task-uploader border-top url text-primary" style="font-size: 16px;
                                     font-style: italic; font-weight: 600; color: gray;"
                             (click)="CheckRoles(15)?csvInput.click():''">
-                            <i class="fas fa-cloud-upload-alt text-primary" style="font-size: 24px; padding: 0 10px;"></i><span
-                                translate="work.attachfile"></span>
+                            <i class="fas fa-cloud-upload-alt text-primary"
+                                style="font-size: 24px; padding: 0 10px;"></i><span translate="work.attachfile"></span>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="task-column task-column_activity task__mobile-display-for-activity ng-tns-c150-53 ng-star-inserted"
                     style="width:40%">
@@ -750,9 +811,8 @@
                                 <div class="task-history-item">
                                     <ng-container *ngIf="log.id_action != 39;else comment">
                                         <div class="task-history-item__content row">
-                                            <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} từ &nbsp; 
-                                            <ng-container
-                                                *ngIf="log.colorold">
+                                            <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} từ &nbsp;
+                                            <ng-container *ngIf="log.colorold">
                                                 <div class="point" style="margin: auto 5px;"
                                                     [ngStyle]="{'backgroundColor': log.colorold}"></div>
                                             </ng-container>
@@ -781,7 +841,9 @@
                                                 [componentName]="getComponentName()"
                                             >
                                             </app-jee-comment> -->
-                                            <jeecomment-post-comment-content class="w-100" [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID" [comment]="LoadComment(log.newvalue)">
+                                            <jeecomment-post-comment-content class="w-100"
+                                                [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID"
+                                                [comment]="LoadComment(log.newvalue)">
                                             </jeecomment-post-comment-content>
                                         </ng-container>
                                     </ng-template>
@@ -799,9 +861,10 @@
                                     [componentName]="getComponentName()"
                                 >
                                 </app-jee-comment> -->
-                                <jeecomment-enter-comment-content (valuecomment)="LoadLog()" class="w-100" [objectID]="this.objectID"> </jeecomment-enter-comment-content>
+                                <jeecomment-enter-comment-content (valuecomment)="LoadLog()" class="w-100"
+                                    [objectID]="this.objectID"> </jeecomment-enter-comment-content>
                             </ng-container>
-                            
+
                         </div>
                     </div>
                 </div>

@@ -45,7 +45,7 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
   @Input() showCommentDefault?: boolean;
   @Input() isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   @Output() isFocus = new EventEmitter<any>();
-
+  @Output() changeValue = new EventEmitter<any>();
   isDeteachChangeComment$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   constructor(public service: JeeCommentService, public cd: ChangeDetectorRef, private elementRef: ElementRef) { }
 
@@ -76,7 +76,7 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
     if (this.showCommentDefault) {
       setTimeout(() => {
         this.clickButtonShowReply();
-      }, 1000);
+      }, 500);
     }
   }
 
@@ -193,4 +193,8 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
     return isVisible;
   }
 
+  ChangeValue(){
+    console.log('log middle')
+    this.changeValue.emit(true);
+  }
 }

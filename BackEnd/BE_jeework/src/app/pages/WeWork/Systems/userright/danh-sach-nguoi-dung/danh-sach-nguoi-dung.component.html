@@ -115,7 +115,7 @@
 				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 			</table>
 		</div>
-		<!-- <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;" [paginator]="paginatorNew"
-        [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)"></app-paginator> -->
+		<app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;" [paginator]="paginatorNew"
+        [isLoading]="dataSource1.loading$  | async" (paginate)="paginate($event)"></app-paginator>
 	</kt-portlet-body>
 </kt-portlet>

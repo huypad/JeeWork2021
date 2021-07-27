@@ -12,14 +12,16 @@
                     </div>
                 </div>
             </div>
-            <button (click)="Add()" *ngIf="commonService.CheckRole_WeWork(3402).length>0" mat-button class="jee_btn-addclose" style="border-radius:20px"
-                matTooltip="{{ 'GeneralKey.themmoi' | translate }}" type="button">
+            <button (click)="Add()" *ngIf="commonService.CheckRole_WeWork(3402).length>0" mat-button
+                class="jee_btn-addclose" style="border-radius:20px" matTooltip="{{ 'GeneralKey.themmoi' | translate }}"
+                type="button">
                 <span translate="department.themmoi"></span>
             </button>
         </ng-container>
     </kt-portlet-header>
     <kt-portlet-body class="pd-0">
-        <form [formGroup]="itemForm" style="background-color: #eee;overflow: auto;" [ngStyle]="{'height': getHeight()}" class="kt-form kt-forkt--group-seperator-dashed">
+        <form [formGroup]="itemForm" style="background-color: #eee;overflow: auto;" [ngStyle]="{'height': getHeight()}"
+            class="kt-form kt-forkt--group-seperator-dashed">
             <div class="row" style="padding-bottom: 20px !important; padding-right: 25px;">
                 <div class="col-xl-3" style="padding: 25px 0 0 25px;" *ngFor="let list of listDept">
                     <div class="kt-portlet kt-card">
@@ -31,28 +33,54 @@
 										padding-bottom: 7px;">
                                         <a [routerLink]="['./', list.id_row]" color="primary" matTooltipPosition="above"
                                             matTooltip="{{ 'department.xemchitietduan' | translate }}">
-                                            <span class="title-department">{{list.title}}</span>
+                                            <i style="color: #4cbb2a" class="{{list.icon}}"></i>&nbsp;<span
+                                                class="title-department">{{list.title}}</span>
                                         </a>
                                     </div>
-									<ng-container *ngIf="commonService.CheckRole_WeWork(3402).length>0">
-										<button [matMenuTriggerFor]="menu" class="action-dept" mat-icon-button>
-											<mat-icon>more_vert</mat-icon>
-										</button>
-										<mat-menu #menu="matMenu">
-											<button (click)="Add(list.id_row)" mat-menu-item>
-												<span translate="department.chinhsua"></span>
-											</button>
-											<button (click)="Delete(list.id_row)" mat-menu-item>
-												<span translate="department.xoa"></span>
-											</button>
-										</mat-menu>
-									</ng-container>
+                                    <ng-container *ngIf="commonService.CheckRole_WeWork(3402).length>0">
+                                        <button [matMenuTriggerFor]="menu" class="action-dept" mat-icon-button>
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #menu="matMenu">
+                                            <button (click)="Add(list.id_row)" mat-menu-item>
+                                                <span translate="department.chinhsua"></span>
+                                            </button>
+                                            <button (click)="Delete(list.id_row)" mat-menu-item>
+                                                <span translate="department.xoa"></span>
+                                            </button>
+                                        </mat-menu>
+                                    </ng-container>
+                                </div>
+                                <div class="row row-class" *ngFor="let fd of list.data_folder"> 
+                                    <div class="col-md-12 ngay-css text-2-line" style="padding-right: 40px;padding-top: 7px;
+                                    padding-bottom: 7px;" >
+                                        <a [routerLink]="['./', fd.id_row]" color="primary" matTooltipPosition="above"
+                                            matTooltip="{{ 'department.xemchitietduan' | translate }}">
+                                            <i style="color: #e2a011" class="{{fd.icon}}"></i>&nbsp;<span
+                                                class="title-folder">{{fd.title}}</span>
+                                        </a>
+                                    </div>
+                                    <ng-container *ngIf="commonService.CheckRole_WeWork(3402).length>0">
+                                        <button [matMenuTriggerFor]="menu" class="action-dept" mat-icon-button>
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #menu="matMenu">
+                                            <button (click)="Add(list.id_row)" mat-menu-item>
+                                                <span translate="department.chinhsua"></span>
+                                            </button>
+                                            <button (click)="Delete(list.id_row)" mat-menu-item>
+                                                <span translate="department.xoa"></span>
+                                            </button>
+                                        </mat-menu>
+                                    </ng-container>
+                                </div>
+                                <div class="row row-class">
                                     <div class="col-md-12">
                                         <div style="font-size: 10pt; color: black; font-style: italic;"><span>
-                                                {{'workprocess.taoboi'|translate}} @{{list.NguoiTao}} {{'workprocess.luc'|translate}} {{list.CreatedDate}}</span> &nbsp;
+                                                {{'workprocess.taoboi'|translate}} {{list.NguoiTao}}
+                                                {{'workprocess.luc'|translate}} {{list.CreatedDate}}</span> &nbsp;
                                         </div>
                                     </div>
-                                    <br />
                                 </div>
                             </perfect-scrollbar>
                         </div>

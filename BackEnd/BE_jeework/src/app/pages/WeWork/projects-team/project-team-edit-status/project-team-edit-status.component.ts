@@ -76,8 +76,8 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 				if (this.TempSelected == 0)
 					this.TempSelected = this.litsTemplateDemo[0].id_row;
 				this.LoadListSTT();
+				this.changeDetectorRefs.detectChanges();
 			}
-			this.changeDetectorRefs.detectChanges();
 		});
 	}
 
@@ -88,6 +88,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 				this.listStatus.forEach(element => {
 					element.newvalue = 0;
 				});
+				this.LoadListSTT();
 				this.changeDetectorRefs.detectChanges();
 			}
 		})
@@ -99,7 +100,29 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 		);
 		if (x) {
 			this.listSTT = x.status;
+		}else{
+			if(this.listStatus){
+				// this.listSTT = this.listStatus;
+				var listTemp = [];
+				this.listStatus.forEach(element => {
+					var item = {
+						IsDeadline: element.IsDeadline,
+						IsDefault: element.isdefault,
+						IsFinal: element.IsFinal,
+						IsTodo: element.IsTodo,
+						Position: element.position,
+						StatusName: element.statusname,
+						color: element.color,
+						description: element.Description,
+						id_row: element.id_row,
+					}
+					listTemp.push(item);
+				});
+				this.listSTT = listTemp;
+				this.changeDetectorRefs.detectChanges();
+			}
 		}
+		
 	}
 
   LoadNewvalue(viewid){

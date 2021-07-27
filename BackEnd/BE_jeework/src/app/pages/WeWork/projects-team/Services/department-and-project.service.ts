@@ -15,6 +15,8 @@ const API_topic = environment.APIROOTS + '/api/topic';
 const API_tag = environment.APIROOTS + '/api/tag';
 const API_work_CU = environment.APIROOTS + '/api/work-click-up';
 const API_Status = environment.APIROOTS + '/api/status-dynamic';
+const api_department = environment.APIROOTS + '/api/department';
+
 
 
 
@@ -431,5 +433,9 @@ export class ProjectsTeamService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Project_Team + '/delete-view?id=' + id, { headers: httpHeaders });
 	}
-
+	department_detail(id: any): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = `${api_department}/Detail?id=${id}`;
+		return this.http.get<any>(url, { headers: httpHeaders });
+	}
 }

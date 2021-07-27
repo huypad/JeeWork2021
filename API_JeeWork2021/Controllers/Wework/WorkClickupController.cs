@@ -590,7 +590,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                                        count = tmpW.AsEnumerable().Where(x => x["id_project_team"].ToString() == rr["id_row"].ToString()).ToList().Count(),
 
                                    };
-                    return JsonResultCommon.ThanhCong(Children);
+                    var dataList = Children.Where(x => x.count > 0);
+                    return JsonResultCommon.ThanhCong(dataList);
                 }
             }
             catch (Exception ex)

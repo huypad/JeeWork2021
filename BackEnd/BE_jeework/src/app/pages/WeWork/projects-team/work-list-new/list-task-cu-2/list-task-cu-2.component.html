@@ -271,7 +271,9 @@
                                                                                     matTooltip="{{ 'work.addsubtask' | translate }}"></i>
                                                                                 <i class="fas fa-tags"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
-                                                                                    [matMenuTriggerFor]="selecedtag"></i>
+                                                                                    [matMenuTriggerFor]="selecedtag"
+                                                                                    (menuOpened)="node.showtag = true"
+                                                                                    (menuClosed)="node.showtag = false" ></i>
                                                                             </span>
                                                                         </span>
 
@@ -282,14 +284,16 @@
                                                                         </ng-container>
 
                                                                         <mat-menu #selecedtag="matMenu">
-                                                                            <kt-choose-milestone-and-tags
-                                                                                [options]="list_Tag"
-                                                                                [project_team]="project_team"
-                                                                                [id_project_Team]="node.id_project_team"
-                                                                                [Id]="node.id_row" [Id_key]="9"
-                                                                                [Loai]="'Tags'"
-                                                                                (ItemSelected)="ReloadData($event)">
-                                                                            </kt-choose-milestone-and-tags>
+                                                                            <ng-container *ngIf="node.showtag">
+                                                                                <kt-choose-milestone-and-tags (click)="$event.stopPropagation()"
+                                                                                    [options]="list_Tag"
+                                                                                    [project_team]="project_team"
+                                                                                    [id_project_Team]="node.id_project_team"
+                                                                                    [Id]="node.id_row" [Id_key]="9"
+                                                                                    [Loai]="'Tags'"
+                                                                                    (ItemSelected)="ReloadData($event,node.id_project_team)">   
+                                                                                </kt-choose-milestone-and-tags>
+                                                                            </ng-container>
                                                                         </mat-menu>
 
                                                                     </ng-container>
@@ -559,18 +563,15 @@
                                                                             <ng-container
                                                                                 *ngIf="item.fieldname != 'clickup_prioritize';else prioritize">
                                                                                 <ng-template #comments>
-                                                                                    <span
-                                                                                        [matMenuTriggerFor]="commentsmenu"><i
+                                                                                    <span (menuOpened)="node.showcomment = true"
+                                                                                    (menuClosed)="node.showcomment = false"
+                                                                                    [matMenuTriggerFor]="commentsmenu"><i
                                                                                             class="far fa-comment-dots"></i>
                                                                                         {{node[item.fieldname]}}</span>
                                                                                     <mat-menu #commentsmenu="matMenu">
                                                                                         <div (click)="$event.stopPropagation()"
                                                                                             style="max-height:600px;min-width: 500px;min-height: 300px;">
-                                                                                            <!-- <kt-comment
-                                                                                                [Id]="node.id_row"
-                                                                                                [Loai]="1">
-                                                                                            </kt-comment> -->
-                                                                                            <div *ngIf="node.id_row"
+                                                                                            <div *ngIf="node.id_row && node.showcomment"
                                                                                                 class="card card-custom">
                                                                                                 <app-jee-comment
                                                                                                     [showCommentDefault]="true"

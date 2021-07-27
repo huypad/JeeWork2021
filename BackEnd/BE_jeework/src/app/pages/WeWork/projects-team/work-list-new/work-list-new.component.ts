@@ -132,6 +132,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     startDate: new Date("09/01/2020"),
     endDate: new Date("09/30/2020"),
   };
+  IsAdminGroup = false;
   public column_sort: any = [];
   constructor(
     @Inject(DOCUMENT) private document: Document, // multi level
@@ -170,7 +171,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.column_sort = this.sortField[0];
     // this.selection = new SelectionModel<WorkModel>(true, []);
     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
-      if (res) this.list_role = res.data;
+      if (res && res.status ==1) {
+        this.list_role = res.data.dataRole;
+        this.IsAdminGroup = res.data.IsAdminGroup;
+      }
       if (!this.CheckRoles(3)) {
         this.isAssignforme = true;
       }
@@ -202,6 +206,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   CheckRoles(roleID: number) {
+    if(this.IsAdminGroup) return true;
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {
@@ -224,6 +229,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return false;
   }
   CheckRoleskeypermit(key) {
+    if(this.IsAdminGroup) return true;
     var x = this.list_role.find((x) => x.id_row == this.ID_Project);
     if (x) {
       if (x.admin == true) {
@@ -1659,12 +1665,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         return "red-color";
     }
     return "";
-  }
-
-  preventCloseOnClickOut() {}
-
-  allowCloseOnClickOut() {
-    // this.LoadData();
   }
 
   preventCloseOnClickOutTextArea(value) {

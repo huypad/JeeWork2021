@@ -59,7 +59,8 @@ export class WorkKanBanComponent implements OnInit {
 	showclosedtask = false;
 	showemptystatus = false;
 	tasklocation = false;
-	addNodeitem:number = -1
+	addNodeitem:number = -1;
+	IsAdminGroup = false;
 	@Input() ID_Project: number = 0;
 	constructor(public _service: ProjectsTeamService,
 		private danhMucService: DanhMucChungService,
@@ -144,8 +145,10 @@ export class WorkKanBanComponent implements OnInit {
 	status_dynamic: any = [];
 	LoadData() {
 		this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-			if (res)
-				this.list_role = res.data;
+			if (res && res.status ==1) {
+				this.list_role = res.data.dataRole;
+				this.IsAdminGroup = res.data.IsAdminGroup;
+			  }
 			if (!this.CheckRoles(3)) {
 				this.isAssignforme = true;
 			}
@@ -517,6 +520,7 @@ export class WorkKanBanComponent implements OnInit {
 	}
 
 	CheckRoles(roleID: number) {
+		if(this.IsAdminGroup) return true;
 		var x = this.list_role.find(x => x.id_row == this.ID_Project);
 		if (x) {
 			if (x.admin == true) {
@@ -539,6 +543,7 @@ export class WorkKanBanComponent implements OnInit {
 		}
 	}
 	CheckRoleskeypermit(key) {
+		if(this.IsAdminGroup) return true;
 		var x = this.list_role.find(x => x.id_row == this.ID_Project);
 		if (x) {
 			if (x.admin == true) {

@@ -31,6 +31,10 @@ export class ListDepartmentService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_department + '/Insert', item, { headers: httpHeaders });
 	}
+	InsertQuickFolder(item): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.post<any>(API_department + '/Insert-quick-folder', item, { headers: httpHeaders });
+	}
 	UpdateTemplateCenter(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_Template + '/update-template-center', item, { headers: httpHeaders });

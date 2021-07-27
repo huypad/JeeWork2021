@@ -35,12 +35,27 @@
                 </div>
                 
                 <div class="row">
-                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <div class="col-md-12 kt--margin-bottom-10-mobile" *ngIf="isUpdate">
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="id_project_team" class="require"
-                                (selectionChange)="LoadUser($event.value)" required [disabled]="isUpdate"
+                                required [disabled]="isUpdate"
                                 (selectionChange)="BindList($event.value)"
                                 placeholder="{{ 'topic.projectteam' | translate}}">
+                                <mat-option>
+                                    <ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
+                                        [noEntriesFoundLabel]="''">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
+                                    <span style="color: black;">{{ user.title }}</span>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-12 kt--margin-bottom-10-mobile" *ngIf="!isUpdate">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <mat-select formControlName="id_project_team" class="require" required [disabled]="isUpdate"
+                            multiple placeholder="{{ 'topic.projectteam' | translate}}">
                                 <mat-option>
                                     <ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
                                         [noEntriesFoundLabel]="''">
@@ -78,9 +93,9 @@
                     </div>
                 </div>
 
-                <div class="row align-items-center">
+                <!-- <div class="row align-items-center">
                     <small class="text-muted col-12" translate="work.chonduantruockhigiaoviec"></small>
-                </div>
+                </div> -->
                 <div class="row">
                     <div class="col-md-12 row kt--margin-bottom-10-mobile">
                         <span style="padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{

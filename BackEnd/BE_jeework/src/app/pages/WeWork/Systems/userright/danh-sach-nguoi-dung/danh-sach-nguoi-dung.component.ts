@@ -82,9 +82,9 @@ export class DanhSachNguoiDungComponent implements OnInit {
 		this.item = this.data._item; 
 		// this.dataSource = new UserRightDataSource(this.userRightService);
 		// this.dataSource.entitySubject.subscribe(res => this.productsResult = res);
-		// this.dataSource1.paginatorTotal$.subscribe(res => this.paginatorNew.total = res);
 		this.dataSource1 = new UserRightDataSource(this.userRightService);
 		this.dataSource1.entitySubject.subscribe(res => this.productsResult = res);
+		this.dataSource1.paginatorTotal$.subscribe(res => this.paginatorNew.total = res);
 		this.loadDataList();
 	}
 	//---------------------------------------------------------

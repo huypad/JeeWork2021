@@ -1,3 +1,4 @@
+import { CreatQuickFolderComponent } from './List-department/creat-quick-folder/creat-quick-folder.component';
 import { AutomationService } from './automation/automation.service';
 import { TemplateCenterService } from './template-center/template-center.service';
 import { CRUDTableModule } from './../../_metronic/shared/crud-table/crud-table.module';
@@ -287,6 +288,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 	entryComponents: [
 		DepartmentEditComponent,
 		DepartmentEditNewComponent,
+		CreatQuickFolderComponent,
 		ProjectTeamEditComponent,
 		WorkEditComponent,
 		WorkDetailComponent,
@@ -354,6 +356,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		RepeatedListComponent,
 		DepartmentEditComponent,
 		DepartmentEditNewComponent,
+		CreatQuickFolderComponent,
 		ProjectTeamEditComponent,
 		WorkEditComponent,
 		WorkDetailComponent,
@@ -471,6 +474,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		ImageControlModule,
 		DepartmentEditComponent,
 		DepartmentEditNewComponent,
+		CreatQuickFolderComponent,
 		ProjectTeamEditComponent,
 		WorkEditComponent,
 		WorkDetailComponent,

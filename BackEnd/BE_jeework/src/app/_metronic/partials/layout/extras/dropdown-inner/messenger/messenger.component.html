@@ -1,0 +1,200 @@
+<!-- called in app.component.html -->
+<style>
+    .displayNameGroup{
+        padding-top: 10px;
+    }
+    .displayDanhBa
+    {
+        padding-top: 10px;
+    }
+</style>
+<div class="card friend-list">
+  
+    <div style="padding: 0 0 0 20px;
+    "  class="card-header">
+        <!-- <div style="display: flex; align-items: center;">
+            <h4 class="text-primary">Messages</h4>
+            <button  [routerLink]="['/Messages']"  mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+                <mat-icon>fullscreen</mat-icon>
+              </button>
+           
+        </div> -->
+    
+        <div style="display: flex; align-items: center; flex-direction: row-reverse;">
+
+       
+        
+          <button   matTooltip="Tạo Nhóm Chat" style="padding: 5px;" (click)="CreaterGroupChat()" style="margin-top: -7px;" mat-icon-button aria-label="Example icon-button with a heart icon">
+            <mat-icon >group_add</mat-icon>
+          </button>
+
+          <button  matTooltip="Chat User" style="padding: 5px;" (click)="CreaterUserChat()" style="margin-top: -7px;" mat-icon-button aria-label="Example icon-button with a heart icon">
+            <mat-icon>person_add</mat-icon>
+          </button>
+      	
+    </div>
+    </div>
+    <perfect-scrollbar style="height: auto;position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+    <div *ngFor="let item of lstContact | filter: searchText; let i = index">
+        <ul *ngIf="!item.isGroup" id="contact" style="padding-left: 0px;">
+        
+            <li class="pd-contact" *ngFor="let user of  item.InfoGroupUser" (click)="selectUser(item)">
+                <div class="d-flex">
+                    <div  style="position: relative;margin-right: 10px;">
+                        <span *ngIf="item.Active;then online;else offline">
+
+                        </span>
+                        <ng-template #online>
+
+
+                            <div class="">
+
+                                <span *ngIf="user.Avatar==='';then e1; else e2"></span>
+                                <ng-template #e2>
+                                    <div class="image online">
+                                        <span *ngIf="item.Active" class="contact-status online"></span>
+                                        <ngx-avatar [size]="45" src="{{user.Avatar}}">
+                                        </ngx-avatar>
+                                        <!-- <img src="{{user.Avatar}}"  class="rounded-circle img-person" alt="" /> -->
+                                        <!-- <img   src="{{user.Avatar}}" alt="" class="rounded-circle img-person">  -->
+                                   
+
+                                    </div>
+                                </ng-template>
+
+                                <ng-template #e1>
+                                    <div class="image online">
+                                        <span *ngIf="item.Active" class="contact-status online"></span>
+                                        <img class="rounded-circle img-person" src="./assets/user.png">
+
+                                    </div>
+                                </ng-template>
+
+                            </div>
+                        </ng-template>
+
+                        <ng-template #offline>
+
+                            <div class="">
+
+                                <span *ngIf="user.Avatar==='';then e1; else e2"></span>
+                                <ng-template #e2>
+                                    <div class="image">
+                                        <ngx-avatar [size]="45" src="{{user.Avatar}}">
+                                        </ngx-avatar>
+                                        <!-- <img   src="{{user.Avatar}}" alt="" class="rounded-circle img-person">  -->
+
+                                    </div>
+                                </ng-template>
+
+                                <ng-template #e1>
+                                    <div class="image">
+                                        <img class="rounded-circle img-person" src="./assets/user.png">
+
+                                    </div>
+                                </ng-template>
+
+                            </div>
+                        </ng-template>
+                        <!-- <img *ngIf="user.Avatar==''" src="{{item.photoUrl || './assets/user.png'}}" alt="" class="rounded-circle img-person">
+                        <img   src="{{user.Avatar}}" alt="" class="rounded-circle img-person"> -->
+                        <span class="badge label-u label-danger" *ngIf="item.unReadMessageCount > 0">{{item.unReadMessageCount}}</span>
+                    </div>
+                    <div>
+                       
+                        <span class="displayName">{{user.Fullname}}</span>
+                        <div style="    color: #ABABAB;
+                        font-size: 12px;" *ngFor="let lastmess of item.LastMess">
+                           
+                            <span *ngIf="lastmess.Username===userCurrent">Bạn:</span>
+                            <span *ngIf="lastmess.Username!=userCurrent">{{lastmess.InfoUser[0].Fullname}}:</span>
+                        <span *ngIf="lastmess.Content_mess.length>10"> {{lastmess.Content_mess| slice:0:15}}...</span>
+                        <span *ngIf="lastmess.Content_mess.length<10"> {{lastmess.Content_mess}}</span>
+                        </div>
+                        <!-- <div *ngIf="item.Active" class="label text-success">Online</div>
+                        <div *ngIf="!item.Active">Offline</div> -->
+                    
+                    </div>
+                    <div style="padding-left: 10px;"> 
+
+                   
+                    <button style="    display: flex;
+                    width: 30px;
+                    height: 30px;
+                    padding: 0;
+                    align-items: center;
+                    justify-content: center;" *ngIf="item.UnreadMess>0" mat-mini-fab color="warn" aria-label="Example icon button with a plus one icon">
+                        {{item.UnreadMess}}
+                      </button>
+                    </div>
+                    <!-- <span style="float: right;"  matBadge="2" matBadgeColor="warn">{{item.UnreadMess}}</span> -->
+
+                </div>
+            </li>            
+        </ul>
+      
+        <ul *ngIf="item.isGroup" id="contact" style="padding-left: 0px;">
+        
+            <li class="pd-contact"  (click)="selectUser(item)">
+                <div class="d-flex">
+                    <div  style="position: relative; margin-right: 10px;">
+                        <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" />
+                        <span class="badge label-u label-danger" *ngIf="item.unReadMessageCount > 0">{{item.unReadMessageCount}}</span>
+                    </div>
+                    <div>
+                        <span class="displayNameGroup">{{item.GroupName}}</span>
+
+                        <div style="    color: #ABABAB;
+                        font-size: 12px;" *ngFor="let lastmess of item.LastMess">
+                           
+                            <span *ngIf="lastmess.Username===userCurrent">Bạn:</span>
+                            <span *ngIf="lastmess.Username!=userCurrent">{{lastmess.InfoUser[0].Fullname}}:</span>
+                          
+                        <span *ngIf="lastmess.Content_mess.length>10"> {{lastmess.Content_mess| slice:0:15}}...</span>
+                        <span *ngIf="lastmess.Content_mess.length<10"> {{lastmess.Content_mess}}</span>
+                        </div>
+                    </div>
+
+                    
+                </div>
+              
+                
+            </li>            
+        </ul>
+    </div>
+   </perfect-scrollbar>
+  
+    <!-- <div >
+
+        <div class="card-header">
+            
+            <h4 class="text-primary">Danh Bạ</h4>
+            <div class="form-group has-search">
+                <span class="fa fa-search form-control-feedback"></span>
+                <input   [formControl]="searchControl"  type="text" class="form-control" placeholder="Search">
+              </div>
+        </div>
+        <perfect-scrollbar style="height: 250px;position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+          
+        <div *ngFor="let db of filteredGroups |async">
+            <ul id="contact" style="padding-left: 0px;">
+            
+                <li class="pd-contact" (click)="CreateConverSation(db)">
+                    <div class="d-flex">
+                        <div class="mr" style="position: relative;">
+                            <img *ngIf="db.Avatar==''" src="./assets/user.png" alt="" class="rounded-circle img-person">
+                            <img  src="{{db.Avatar}}" alt="" class="rounded-circle img-person">
+                        </div>
+                        <div>
+                            <div class="displayDanhBa">{{db.FullName}}</div>
+                        </div>
+                    </div>
+                </li>            
+            </ul>
+          
+
+        </div>
+    </perfect-scrollbar>
+    </div> -->
+    
+</div>

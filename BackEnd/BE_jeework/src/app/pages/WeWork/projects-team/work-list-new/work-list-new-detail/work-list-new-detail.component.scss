@@ -1060,3 +1060,34 @@ div.cu-avatar {
         }
     }
 }
+
+.checklist2-bubble {
+    transition: border-color .2s cubic-bezier(.785,.135,.15,.86) 0s;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #c1c1c1;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 4px;
+    flex-shrink: 0;
+    align-self: start;
+    position: relative;
+    top: 4px;
+    fill:white;
+    margin-right: 10px;
+}
+
+.item-checked{
+    .checklist2-bubble {
+        animation: checklistPulse .4s linear both;
+        background: #67cb48;
+        border-color: #67cb48;
+    }
+    .check-list-item--title{
+        text-decoration-line: line-through;
+    }
+}
+

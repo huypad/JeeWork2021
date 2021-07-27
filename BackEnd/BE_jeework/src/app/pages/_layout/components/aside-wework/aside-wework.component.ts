@@ -1,3 +1,4 @@
+import { CreatQuickFolderComponent } from './../../../WeWork/List-department/creat-quick-folder/creat-quick-folder.component';
 import { AutomationComponent } from './../../../WeWork/automation/automation.component';
 import { TemplateCenterComponent } from "./../../../WeWork/template-center/template-center.component";
 import { TemplateCenterUpdateComponent } from "./../../../WeWork/template-center/template-center-update/template-center-update.component";
@@ -818,6 +819,24 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     ObjectModels.clear(); // Set all defaults fields
     ObjectModels.ParentID = item.id;
     this.Update(ObjectModels);
+  }
+  AddQuickFolder(item) {
+    const _saveMessage = this.translate.instant("GeneralKey.themthanhcong");
+    const dialogRef = this.dialog.open(CreatQuickFolderComponent, {
+      // minHeight: '50vh',
+      data: { item },
+      minWidth: "650px",
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      if (!res) {
+        return;
+      } else {
+        // this.ngOnInit();
+        this.layoutUtilsService.showError(_saveMessage);
+        location.reload();
+        // this.changeDetectorRefs.detectChanges();
+      }
+    });
   }
 
   Update(_item: DepartmentModel) {

@@ -106,14 +106,21 @@ namespace API_JeeWork2021.Classes
                 List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
                 foreach(var item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
                 {
-                    string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
-                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration,item);
-                    foreach(var account in DataAccount)
+                    try
                     {
-                        GetSoluongCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                        GetSoluongCongviecQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                        GetSoluongCongviecHethanTrongngay(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                        GetSoluongDuAnQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                        string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
+                        List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
+                        foreach (var account in DataAccount)
+                        {
+                            GetSoluongCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                            GetSoluongCongviecQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                            GetSoluongCongviecHethanTrongngay(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                            GetSoluongDuAnQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                        }
+                    }
+                    catch
+                    {
+                        continue;
                     }
 
                 }

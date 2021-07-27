@@ -123,12 +123,14 @@ input[type=text] {
     color: var(--theme-main-color);
 }
 
-input[type=email]:focus,
-input[type=number]:focus,
-input[type=password]:focus,
-input[type=search]:focus,
-input[type=text]:focus {
-    outline: none;
+.focus-none{
+    input[type=email]:focus,
+    input[type=number]:focus,
+    input[type=password]:focus,
+    input[type=search]:focus,
+    input[type=text]:focus {
+        outline: none;
+    }
 }
 
 .cu-search__input:focus {

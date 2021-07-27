@@ -74,7 +74,7 @@ import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     WorkService,
     CommonService,
     WeWorkService,
-    SubheaderService
+    SubheaderService,
   ],
   entryComponents: [
     QuickStatusComponent

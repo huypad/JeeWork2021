@@ -60,6 +60,7 @@ export class ProjectsTeamComponent implements OnInit {
 		cursor: "pointer"
 	};
 	isShowaddview = false;
+	IsAdminGroup = false;
 	constructor(
 		public _Services: ProjectsTeamService,
 		private changeDetectorRefs: ChangeDetectorRef,
@@ -105,8 +106,10 @@ export class ProjectsTeamComponent implements OnInit {
 		}
 
 		this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-			if (res)
-				this.list_role = res.data;
+			if (res && res.status ==1) {
+				this.list_role = res.data.dataRole;
+				this.IsAdminGroup = res.data.IsAdminGroup;
+			  }
 		});
 
 		this.activatedRoute.params.subscribe(params => {
@@ -124,6 +127,7 @@ export class ProjectsTeamComponent implements OnInit {
 	}
 
 	CheckRoles(roleID: number) {
+		if(this.IsAdminGroup) return true;
 		var x = this.list_role.find(x => x.id_row == this.ID_Project);
 		if (x) {
 			if (x.admin == true) {

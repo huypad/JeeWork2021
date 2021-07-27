@@ -1,3 +1,6 @@
+import { MessengerComponent } from './dropdown-inner/messenger/messenger.component';
+import { ChatBoxComponent } from './dropdown-inner/chat-box/chat-box.component';
+import { CreateConvesationGroupComponent } from './create-convesation-group/create-convesation-group.component';
 import { WeWorkModule } from "./../../../../pages/WeWork/wework.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -25,13 +28,26 @@ import { AvatarModule } from "ngx-avatar";
 import { SocketioService } from "src/app/modules/auth/_services/socketio.service";
 import { TranslationModule } from "src/app/modules/i18n/translation.module";
 import { MatTooltipModule } from "@angular/material/tooltip";
-
+import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FilterPipe } from './filter,pipe';
+import { CreateConversationUserComponent } from './create-conversation-user/create-conversation-user.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NgxAutoScrollModule } from 'ngx-auto-scroll';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
 };
 
 @NgModule({
   declarations: [
+    CreateConversationUserComponent,
+    FilterPipe,
     SearchDropdownInnerComponent,
     NotificationsDropdownInnerComponent,
     QuickActionsDropdownInnerComponent,
@@ -46,18 +62,29 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     UserOffcanvasComponent,
     ScrollTopComponent,
     ToolbarComponent,
+    CreateConvesationGroupComponent,
+    ChatBoxComponent,
+    MessengerComponent
   ],
   imports: [
+    // npm lại nó mới ăn cái thư viện ở module ko pk sao luôn
+    NgxAutoScrollModule,ScrollingModule,CommonModule,MatSnackBarModule,MatDialogModule,
     CommonModule,
     InlineSVGModule,
     PerfectScrollbarModule,
     CoreModule,
+    FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     WeWorkModule,
     AvatarModule,
     TranslationModule, 
-    MatTooltipModule
-
+    MatTooltipModule,
+    CollapseModule,
+    MatFormFieldModule,
+    MatChipsModule,
+    MatAutocompleteModule,
+    MatInputModule ,
   ],
   providers: [
     {
@@ -66,6 +93,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     },
     SocketioService,
   ],
+  entryComponents: [CreateConvesationGroupComponent,CreateConversationUserComponent],
   exports: [
     SearchDropdownInnerComponent,
     NotificationsDropdownInnerComponent,
@@ -80,6 +108,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     UserOffcanvasComponent,
     ToolbarComponent,
     ScrollTopComponent,
+    CreateConvesationGroupComponent,
+    ChatBoxComponent,
+    MessengerComponent
   ],
 })
 export class ExtrasModule {}

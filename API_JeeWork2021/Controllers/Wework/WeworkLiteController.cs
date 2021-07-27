@@ -1311,7 +1311,7 @@ and IdKH={loginData.CustomerID} )";
                     //Check CustommerID có template chưa nếu chưa thì thêm vào
                     cnn.BeginTransaction();
                     #region ktra k có thì thêm mới danh sách template cho kh mới
-                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID).ToString());
+                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and is_template_center =0 and CustomerID = " + loginData.CustomerID).ToString());
                     if (soluong == 0)
                     {
                         DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list where is_template_center <>1 and disabled = 0");
@@ -2802,7 +2802,7 @@ where Disabled = 0";
             SqlConditions conds = new SqlConditions();
             conds.Add("id_user", info.UserID);
             conds.Add("idkh", info.UserID);
-            string where_string = "de.Disabled = 0 and idkh = "+info.CustomerID+"";
+            string where_string = "de.Disabled = 0 and idkh = " + info.CustomerID + "";
             #region Trả dữ liệu về backend để hiển thị lên giao diện
             string sqlq = @$"select de.*, '' as NguoiTao,'' as TenNguoiTao, '' as NguoiSua,'' as TenNguoiSua 
                                     from we_department de (admin)";
@@ -2811,10 +2811,10 @@ where Disabled = 0";
                 sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
                     "where de.Disabled = 0 and (do.id_user = " + info.UserID + " " +
                     "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                    "where p1.disabled = 0 and id_user = " + info.UserID + ")) and "+ where_string + "");
+                    "where p1.disabled = 0 and id_user = " + info.UserID + ")) and " + where_string + "");
             }
             else
-                sqlq = sqlq.Replace("(admin)", " where "+ where_string + "");
+                sqlq = sqlq.Replace("(admin)", " where " + where_string + "");
             #endregion
             DataTable dt = cnn.CreateDataTable(sqlq, conds);
             List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).Distinct().ToList();
@@ -3543,22 +3543,33 @@ where Disabled = 0";
         }
 
         // áp dụng cho các trường hợp chưa có space nào
-        public static bool init_space(DpsConnection cnn, UserJWT loginData, long RequestID, out string error)
+        public static bool init_space(DpsConnection cnn, UserJWT loginData, GenerateProjectAutoModel data, out string error)
         {
             error = "";
             Hashtable val = new Hashtable();
             Insert_Template(cnn, loginData.CustomerID.ToString());
-            string max_template = cnn.ExecuteScalar("select top 1 (id_row) " +
-                "from we_template_customer " +
-                "where Disabled = 0 and (is_template_center = 0 or is_template_center is null) " +
-                "and CustomerID =" + loginData.CustomerID + "").ToString();
-            val.Add("title", "Phòng ban theo yêu cầu " + RequestID);
+            string max_template = "";
+            if (data.id_department == 0)
+            {
+                max_template = cnn.ExecuteScalar("select top 1 (id_row) " +
+                    "from we_template_customer " +
+                    "where Disabled = 0 and (is_template_center = 0 or is_template_center is null) " +
+                    "and customerID =" + loginData.CustomerID + "").ToString();
+            }
+            else
+                max_template = cnn.ExecuteScalar("select templateid from we_department " +
+                    "where disabled = 0 and id_row ="+data.id_department+"").ToString();
+            val.Add("title", "Phòng ban theo yêu cầu " + data.meetingid);
             val.Add("id_cocau", 0);
-            val.Add("IdKH", loginData.CustomerID);
-            val.Add("CreatedDate", DateTime.Now);
-            val.Add("CreatedBy", loginData.UserID);
+            val.Add("idkh", loginData.CustomerID);
+            val.Add("createddate", DateTime.Now);
+            val.Add("createdby", loginData.UserID);
             val.Add("IsDataStaff_HR", 0);
-            val.Add("TemplateID", max_template);
+            val.Add("templateid", max_template);
+            if (data.meetingid > 0)
+            {
+                val.Add("phanloaiid", 1);
+            }
             cnn.BeginTransaction();
             if (cnn.Insert(val, "we_department") != 1)
             {

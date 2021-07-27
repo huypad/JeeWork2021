@@ -139,8 +139,8 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     this.id_project_team = +this.item.id_project_team;
     if (this.id_project_team > 0) {
       this.isUpdate = true;
-      this.LoadUser(this.id_project_team);
     }
+    this.LoadUser();
     this.txt_repeat_day = this.item.repeated_day;
     this.Is_duplicate = this.item.IsCopy;
     this.createForm();
@@ -286,9 +286,8 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     });
     this.Change_frequency(this._data._item.frequency);
   }
-  LoadUser(id_projectteam) {
+  LoadUser() {
     const filter: any = {};
-    filter.id_project_team = id_projectteam;
     this.weworkService.list_account(filter).subscribe((res) => {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
@@ -345,6 +344,9 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
         this.item.deadline == null ? "" : this.item.deadline,
       ],
     });
+    if(this.id_project_team == 0){
+      this.itemForm.controls["id_project_team"].setValue([]);
+    }
     // this.itemForm.controls["id_project_team"].markAsTouched();
     // this.itemForm.controls["id_group"].markAsTouched();
     // this.itemForm.controls["frequency"].markAsTouched();
@@ -574,8 +576,6 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
   }
   BindList(id_project: any) {
     this.weworkService.lite_workgroup(id_project).subscribe((res) => {
-      this.changeDetectorRefs.detectChanges();
-
       if (res && res.status === 1) {
         this.listGroup = res.data;
         this.changeDetectorRefs.detectChanges();
@@ -642,11 +642,13 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     _item.id_row = this.item.id_row;
     _item.title = controls["title"].value;
     _item.description = controls["description"].value;
-    _item.id_project_team = controls["id_project_team"].value;
-    // _item.id_group = controls['id_group'].value == "null" ? "0" : controls['id_group'].value;
-    // _item.assign = controls['assign'].value;// chỉ lưu id
     _item.frequency = controls["frequency"].value;
     _item.deadline = +controls["deadline"].value>0?controls["deadline"].value:"0";
+    if(this.isUpdate){
+      _item.id_project_team = controls["id_project_team"].value;
+    }else{
+      _item.id_project_team = controls["id_project_team"].value.join();
+    }
 
     if (!this.show_frequency)
       _item.repeated_day = controls["repeated_day"].value;

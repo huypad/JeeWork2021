@@ -1,0 +1,34 @@
+<!-- 
+ <span class="fa fa-search form-control-feedback"></span> -->
+ <input  [formControl]="searchControl"  type="text" class="form-control" placeholder="Search">
+<div  style=" max-height:40vh; position: relative;"  [perfectScrollbar]="{wheelPropagation: false}">
+                                        
+                                        
+    <div  *ngFor="let item of filteredGroups | async;let vi=index">
+    
+        <div class="kt-notification__item-details list home-links" style="display: flex;align-items: center;">
+           
+           <div (click)="CreateConverSation(item)"  class="li" style="    border-radius: 5px;
+           width: 95%;
+       ">
+    
+        
+            <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
+            <ng-template #e2>
+              <img class="avatar" src="{{item.Avatar}}">
+    
+            </ng-template>
+    
+            <ng-template #e1>
+    
+              <img class="avatar" src="./assets/user.png">
+    
+            </ng-template>
+            <span  style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
+                {{item.FullName}}
+            </span>
+           
+        </div>
+        </div>
+        </div>
+   </div>

@@ -76,6 +76,7 @@
                 <jeecomment-reaction-content
                   [objectID]="objectID"
                   [commentID]="commentID"
+                  (changeValue)="ChangeValue()"
                   [replyCommentID]="replyCommentID"
                   [userOldReaction]="comment.UserReaction"
                 ></jeecomment-reaction-content>
@@ -134,6 +135,7 @@
         [isFocus$]="isFocus$$"
         *ngIf="(showEnterComment$.asObservable() | async) && lstObjectID.length < 3"
         [objectID]="objectID"
+        (valuecomment)="showFullComment()"
         [commentID]="commentID" >
       </jeecomment-enter-comment-content>
     </ng-container>
