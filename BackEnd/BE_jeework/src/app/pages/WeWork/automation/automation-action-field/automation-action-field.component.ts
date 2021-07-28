@@ -151,9 +151,11 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.checked = 0;
     this.value = {};
-    if(this.dataAction.data_actions && this.dataAction.data_actions[0]){
-      this.data_actions = this.dataAction.data_actions[0];
-      this.MapvalueEdit();
+    if(this.dataAction){
+      if(this.dataAction.data_actions && this.dataAction.data_actions[0]){
+        this.data_actions = this.dataAction.data_actions[0];
+        this.MapvalueEdit();
+      }
     }
     this.LoadDataStatus();
     this.valueout.emit(this.value);
@@ -164,6 +166,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     switch (this.Actionid) {
       case 1: // assign
         {
+          this.MapUser();
         }
         break;
       case 2: // 2 = task ; 3 = subtask ;
@@ -245,6 +248,24 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     }
   }
 
+  MapUser(){
+    if(this.listUser && this.listUser.length > 0){
+      this.dataAction.data_actions.forEach(element => {
+        var listUser = element.value.split(',');
+        listUser.forEach(UserID => {
+          var x = this.listUser.find(x=>x.id_nv == UserID);
+          if(x){
+            this.ItemSelectedAssign(x,element.actionid);
+          }
+        });
+      });
+      
+    }else{
+      setTimeout(() => {
+        this.MapUser();
+      }, 500);
+    }
+  }
   LoadStatusTask() {
     if(!this.value.status) return;
     if (!(this.value.status.id_row > 0) || this.listStatus.length == 0) return;

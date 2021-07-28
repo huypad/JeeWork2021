@@ -1291,26 +1291,11 @@ export class WorkListNewDetailComponent implements OnInit {
     event.stopPropagation();
   }
 
-  ItemSelected(val: any) {
-    // this.data.DATA.assign = val;
-    // var model = new UpdateWorkModel();
-    // model.id_row = this.item.id_row;
-    // model.key = 'assign';
-    // model.value = val.id_nv;
-    // this._service.UpdateByKey(model).subscribe(res => {
-    // 	this.changeDetectorRefs.detectChanges();
-    // 	if (res && res.status == 1) {
-    // 		this.layoutUtilsService.showActionNotification(this.translate.instant('GeneralKey.capnhatthanhcong'), MessageType.Read, 4000, true, false, 3000, 'top', 1);
-    // 	}
-    // 	else
-    // 		this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 3000, 'top', 0);
-
-    // });
-
-    // ItemSelected(val: any, task) { // chọn item
-    // 	this.UpdateByKey(task, 'assign', val.id_nv);
-    //   }
+  ItemSelected(val: any) { 
     this.UpdateByKeyNew(this.item, "assign", val.id_nv);
+  }
+  ItemFollower(val: any) { 
+    this.UpdateByKeyNew(this.item, "follower", val.id_nv);
   }
 
   ItemSelectedSubtask(val, node) {
@@ -1339,11 +1324,11 @@ export class WorkListNewDetailComponent implements OnInit {
     );
   }
   updateDueDate(event) {
-    var date = event.value;
+    var date = moment(event.value).format("MM/DD/YYYY");
     this.UpdateByKeyNew(
       this.item,
-      "deadline",
-      moment(date).format("MM/DD/YYYY HH:mm")
+      "deadline", 
+      moment(date + ' 23:59').format("MM/DD/YYYY HH:mm")
     );
   }
 

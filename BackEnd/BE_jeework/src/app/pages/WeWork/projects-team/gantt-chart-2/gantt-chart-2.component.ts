@@ -445,7 +445,8 @@ export class GanttChart2Component implements OnInit {
 	}
 
 	onClick123(val = ''){
-
+		return;
+		// không setup update trạng thái
 		const dialogRef = this.dialog.open(QuickStatusComponent, {
 			width: '300px',
 			data: this.status_dynamic,

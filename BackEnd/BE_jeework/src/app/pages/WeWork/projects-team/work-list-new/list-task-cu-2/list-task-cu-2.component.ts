@@ -228,14 +228,23 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
         })
       }
     } else {
-      this._service.MyListNew(queryParams1).subscribe(res => {
+      // this._service.MyListNew(queryParams1).subscribe(res => {
+      //   this.layoutUtilsService.OffWaitingDiv();
+      //   if (res && res.status == 1) {
+      //     this.DanhsSachCongViec = res.data;
+      //       this.filterDanhSach();
+      //       this.DanhsSachCongViec.forEach(element => {
+      //         this.getChildTask(element.id);
+      //       });
+      //       this.changeDetectorRefs.detectChanges();
+      //     // this.ProjectTeam = res.data
+      //   }
+      // })
+      this._service.ListByManageCU(queryParams1).subscribe(res => {
         this.layoutUtilsService.OffWaitingDiv();
         if (res && res.status == 1) {
           this.DanhsSachCongViec = res.data;
             this.filterDanhSach();
-            this.DanhsSachCongViec.forEach(element => {
-              this.getChildTask(element.id);
-            });
             this.changeDetectorRefs.detectChanges();
           // this.ProjectTeam = res.data
         }
@@ -273,6 +282,19 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
         this.changeDetectorRefs.detectChanges();
       }
     });
+  }
+
+  IsAdmin(id_project_team){
+    if(this.IsAdminGroup) return true;
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == id_project_team);
+      if (x) {
+        if (x.admin == true) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   CheckRoles(roleID: number, id_project_team) {
@@ -749,11 +771,20 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
 
 
   UpdateStatus(task, status) {
-    if (+task.status == +status.id_row) {
-      // 
-    } else {
-      this.UpdateByKey(task, 'status', status.id_row);
-    }
+    if (+task.status == +status.id_row) return; 
+    if(this.IsAdmin(task.id_project_team)){
+      this.UpdateByKey(task, "status", status.id_row);
+    }else{
+      if(status.Follower){
+        if(status.Follower == this.UserID){
+          this.UpdateByKey(task, "status", status.id_row);
+        }else{
+          this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
+        }
+      }else{
+        this.UpdateByKey(task, "status", status.id_row);
+      }
+    }  
   }
   UpdateByKey(task, key, value) {
     const item = new UpdateWorkModel();

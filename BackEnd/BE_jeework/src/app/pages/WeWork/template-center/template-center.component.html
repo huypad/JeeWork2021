@@ -356,7 +356,7 @@
                     <div class="cu-template-center-selected-template__info-use-template"
                         (click)="NextStep();LoadInfoStep3()"> {{ 'template.usetemp' | translate }}
                     </div>
-                    <div disabled
+                    <div *ngIf="TemplateDetail.istemplatelist"
                         class="cu-template-center-selected-template__info-use-template cu-template-center-selected-template__info-use-template-clickup "
                         (click)="add_template_library()" >
                         {{ 'template.addtolib' | translate }}

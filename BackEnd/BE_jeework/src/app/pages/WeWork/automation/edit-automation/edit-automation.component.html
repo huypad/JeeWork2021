@@ -30,7 +30,7 @@
                     </app-automation-trigger-state-condition>
                 </div>
 
-                <div class="cu-edit-automation__container-body-add">
+                <div class="cu-edit-automation__container-body-add" *ngIf="false">
                     <div icon="cu2-plus" class="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="svg-sprite-cu2-plus">
                             <path
@@ -59,35 +59,37 @@
                         <div class="cu-edit-automation__container-body-title-text-bot"> thực hiện những điều sau </div>
                     </div>
                 </div>
-                <div class="cdk-drag cu-edit-automation__container-body-actions cdk-drag-disabled">
-                    <div
-                        class="cu-edit-automation__container-body-actions-top cu-edit-automation__container-body-actions-top_has-inputs">
-                        <mat-form-field class="w-100" appearance="fill">
-                            <mat-label>Lựa chọn hành động</mat-label>
-                            <mat-select [(ngModel)]="Actionid">
-                                <mat-option *ngFor="let item of ListAction" [disabled]="item.disabled" [value]="item.rowid"> {{item.actionname}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
+                <ng-container *ngFor="let item of listActions;let i = index">
+                    <div class="cdk-drag cu-edit-automation__container-body-actions cdk-drag-disabled">
+                        <div
+                            class="cu-edit-automation__container-body-actions-top cu-edit-automation__container-body-actions-top_has-inputs">
+                            <mat-form-field class="w-100" appearance="fill">
+                                <mat-label>Lựa chọn hành động</mat-label>
+                                <mat-select [(ngModel)]="item.Actionid">
+                                    <mat-option *ngFor="let item of ListAction" [disabled]="item.disabled" [value]="item.rowid"> {{item.actionname}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <app-automation-action-field [ID_department]="ID_department" [ID_projectteam]="ID_projectteam"
+                        [dataAction]="item.dataEdit" [Actionid]="item.Actionid" (valueout)="GetvalueAction($event,i)"></app-automation-action-field>
                     </div>
-                    <app-automation-action-field [ID_department]="ID_department" [ID_projectteam]="ID_projectteam"
-                    [dataAction]="dataEdit" [Actionid]="Actionid" (valueout)="GetvalueAction($event)"></app-automation-action-field>
-                </div>
+                </ng-container>
+                
 
-
-                <div class="cu-edit-automation__container-body-add">
-                    <div icon="cu2-plus" class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="svg-sprite-cu2-plus">
-                            <path
-                                d="M416 208H272V64a32 32 0 00-32-32h-32a32 32 0 00-32 32v144H32a32 32 0 00-32 32v32a32 32 0 0032 32h144v144a32 32 0 0032 32h32a32 32 0 0032-32V304h144a32 32 0 0032-32v-32a32 32 0 00-32-32z"
-                                stroke="transparent"></path>
-                        </svg>
-
-                    </div>{{'GeneralKey.addaction' | translate}}
-
-                </div>
-
-
+                <ng-container *ngIf="!(this.dataEdit.rowid > 0)">
+                    <div class="cu-edit-automation__container-body-add" (click)="loadAction()">
+                        <div icon="cu2-plus" class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="svg-sprite-cu2-plus">
+                                <path
+                                    d="M416 208H272V64a32 32 0 00-32-32h-32a32 32 0 00-32 32v144H32a32 32 0 00-32 32v32a32 32 0 0032 32h144v144a32 32 0 0032 32h32a32 32 0 0032-32V304h144a32 32 0 0032-32v-32a32 32 0 00-32-32z"
+                                    stroke="transparent"></path>
+                            </svg>
+    
+                        </div>{{'GeneralKey.addaction' | translate}}
+    
+                    </div>
+                </ng-container>
             </div>
         </div>
         <div class="cu-edit-automation__container-body-arrow">
@@ -125,7 +127,7 @@
 
 
 
-                <div class="cu-automation-label__strong"> {{ getTitleAction() }} </div>
+                <div class="cu-automation-label__strong"> {{ getListTitleAction() }} </div>
 
             </div>
             <div class="cu-automation-label__additional">
@@ -136,7 +138,9 @@
             <!-- <button class="cu-edit-automation__container-footer-button create" (click)="OnSubmit()">Create
 
                     </button> -->
-            <button mat-raised-button ><span translate="GeneralKey.cancel" (click)="close(true)" ></span></button>&nbsp;&nbsp;
+            <button mat-raised-button *ngIf="isBack"><span translate="GeneralKey.cancel" (click)="close()" ></span></button>
+            <button mat-raised-button *ngIf="!isBack"><span translate="GeneralKey.cancel" (click)="close(true)" ></span></button>
+            &nbsp;&nbsp;
             <button mat-raised-button class="jee_btn-addclose" (click)="OnSubmit(true)" ><span
                     translate="GeneralKey.luudong"></span></button>&nbsp;&nbsp;
             <button type="button" mat-raised-button class="btn-luutieptuc" (click)="OnSubmit()" 

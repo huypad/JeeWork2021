@@ -1,6 +1,7 @@
 import { SubheaderService } from './../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { ProjectsTeamService } from './../WeWork/projects-team/Services/department-and-project.service';
 import { AuxiliaryRouterComponent } from './auxiliary-router.component';
+import { AuxiliaryRouterJWComponent } from './auxiliary-router-jw.component';
 import { WeWorkModule } from './../WeWork/wework.module';
 import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
@@ -18,6 +19,10 @@ const routes: Routes = [
 	{
 		path: 'task/:id',
 		component: AuxiliaryRouterComponent,
+	},
+	{
+		path: 'detail/:id',
+		component: AuxiliaryRouterJWComponent,
 	}
 ];
 
@@ -40,6 +45,6 @@ const routes: Routes = [
 	providers: [ ProjectsTeamService,
 		SubheaderService ],
 	entryComponents: [ ],
-	declarations: [AuxiliaryRouterComponent ]
+	declarations: [AuxiliaryRouterComponent,AuxiliaryRouterJWComponent ]
 })
 export class AuxiliaryRouterModule { }

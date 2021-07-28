@@ -172,6 +172,10 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     // }
   }
 
+  LoadMenu(){
+    this.menuAsideService.loadMenu();
+  }
+
   private getLogo() {
     // if (this.brandSkin === 'light') {
     //   return 'https://share-devgcs.basecdn.net/apps/wework.png';
@@ -197,7 +201,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   Create(_item: ProjectTeamModel) {
     this._Services.InsertFasttProjectTeam(_item).subscribe((res) => {
       if (res && res.status == 1) {
-        location.reload();
+        // location.reload();
+        this.LoadMenu();
+
       } else {
         this.layoutUtilsService.showActionNotification(
           res.error.message,
@@ -594,11 +600,15 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             1
           );
           if (ID_Project == this.router.url.split("/")[2]) {
-            this.router.navigate(["/wework/projects"]).then(() => {
-              window.location.reload();
-            });
+            this.LoadMenu();
+            this.router.navigate(["/wework/projects"]);
+            // .then(() => {
+            //   window.location.reload();
+            // });
           } else {
-            location.reload();
+            // location.reload();
+          this.LoadMenu();
+
           }
         } else {
           this.layoutUtilsService.showActionNotification(
@@ -651,7 +661,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           if (!res) {
             return;
           } else {
-            this.ngOnInit();
+            // this.ngOnInit();
+            this.LoadMenu();
             this.layoutUtilsService.showActionNotification(
               _saveMessage,
               _messageType,
@@ -709,7 +720,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             "top",
             1
           );
-          location.reload();
+          // location.reload();
+          this.LoadMenu();
         } else {
           this.layoutUtilsService.showActionNotification(
             res.error.message,
@@ -833,7 +845,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       } else {
         // this.ngOnInit();
         this.layoutUtilsService.showError(_saveMessage);
-        location.reload();
+          this.LoadMenu();
+        // location.reload();
         // this.changeDetectorRefs.detectChanges();
       }
     });
@@ -868,7 +881,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           true,
           false
         );
-        location.reload();
+          this.LoadMenu();
+        // location.reload();
         // this.changeDetectorRefs.detectChanges();
       }
     });
@@ -914,7 +928,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           if (!res) {
             return;
           } else {
-            location.reload();
+          this.LoadMenu();
+          // location.reload();
           }
         });
         this.changeDetectorRefs.detectChanges();

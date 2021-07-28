@@ -311,7 +311,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
           );
           this.chatBoxUsers.push(u);
         } else {
-          this.chatBoxUsers.push(new UserChatBox(user, 300 + 325));
+          this.chatBoxUsers.push(new UserChatBox(user, 100 + 325));
         }
         localStorage.setItem("chatboxusers", JSON.stringify(this.chatBoxUsers));
         break;

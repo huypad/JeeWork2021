@@ -68,13 +68,13 @@
                     </div>
                 </div>
             </div>
-            <div class="cu-edit-automation__container-header-exit">
+            <div class="cu-edit-automation__container-header-exit" (click)="this.dialogRef.close();">
                 <div icon="cu2-close" class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="svg-sprite-cu2-close"><path d="M502.43 55.57l-446.9 446.9a31.97 31.97 0 01-45.25 0 31.97 31.97 0 010-45.26l446.9-446.9a31.97 31.97 0 0145.25 0 31.97 31.97 0 010 45.26z"></path><path d="M457.17 502.47L10.28 55.57a31.97 31.97 0 010-45.25 31.97 31.97 0 0145.25 0l446.9 446.89a31.97 31.97 0 010 45.26 31.97 31.97 0 01-45.26 0z"></path></svg>
                 </div>
             </div>
         </div>
-        <app-edit-automation class="cu-automation-page-edit__container w-100" [ID_department]="ID_department"
+        <app-edit-automation class="cu-automation-page-edit__container w-100" [ID_department]="ID_department" [isBack]="true"
             [ID_projectteam]="ID_projectteam" [dataEdit]="dataEdit" (eventClose)="Close($event)">  
         </app-edit-automation>
     </div>

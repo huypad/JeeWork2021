@@ -1174,13 +1174,36 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.selection = new SelectionModel<WorkModel>(true, []);
   }
 
-  UpdateStatus(task, status) {
-    if (+task.status == +status.id_row) {
-      //
-    } else {
-      this.UpdateByKey(task, "status", status.id_row);
+  IsAdmin(){
+    if(this.IsAdminGroup) return true;
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == this.ID_Project);
+      if (x) {
+        if (x.admin == true) {
+          return true;
+        }
+      }
     }
+    return false;
   }
+
+  UpdateStatus(task, status) {
+    if (+task.status == +status.id_row) return; 
+    if(this.IsAdmin()){
+      this.UpdateByKey(task, "status", status.id_row);
+    }else{
+      if(status.Follower){
+        if(status.Follower == this.UserID){
+          this.UpdateByKey(task, "status", status.id_row);
+        }else{
+          this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
+        }
+      }else{
+        this.UpdateByKey(task, "status", status.id_row);
+      }
+    } 
+  }
+
   UpdateByKey(task, key, value) {
     const item = new UpdateWorkModel();
     item.id_row = task.id_row;
@@ -1424,6 +1447,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
   // nhóm status
   UpdateStatuslist(status) {
+    if(this.IsAdmin()){
+    }else{
+      if(status.Follower){
+        if(status.Follower != this.UserID){
+          this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
+        } 
+      }
+    } 
+
     this.selection.selected.forEach((element) => {
       this.UpdateByKey(element, "status", status.id_row);
       // this.UpdateByKey(task, 'status', status.id_row);

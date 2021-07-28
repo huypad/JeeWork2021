@@ -33,6 +33,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   @Input() ID_projectteam: number = 0;
   @Input() ID_department: number = 0;
   @Input() dataEdit: any = {};
+  @Input() isBack: boolean = false;
   @Output() eventClose = new EventEmitter<any>();
   @ViewChild("popoverStatus", { static: true })
   popoverStatus: PopoverContentComponent;
@@ -44,6 +45,8 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   ListAction: any = [];
   valueAction: any = [];
   valueEvent: any = [];
+  listActions: any = [];
+  idAction = 0;
   constructor(
     private layoutUtilsService: LayoutUtilsService,
     private projectsTeamService: ProjectsTeamService,
@@ -57,13 +60,22 @@ export class EditAutomationComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.LoadListAutomation();
+    this.loadAction();
   }
 
   ngOnChanges(): void {
     console.log("data nhận để map: ", this.dataEdit);
+    console.log('listAction:',this.listActions)
     if (this.dataEdit.rowid > 0) {
       this.Eventid = this.dataEdit.eventid;
       this.Actionid = this.dataEdit.actionid;
+      setTimeout(() => {
+        if(this.listActions[0]){
+          this.listActions[0].Actionid = this.Actionid;
+          this.listActions[0].dataEdit = this.dataEdit;
+          console.log("Map xong: ", this.listActions);
+        }
+      }, 100);
     }
   }
   LoadListAutomation() {
@@ -98,257 +110,264 @@ export class EditAutomationComponent implements OnInit, OnChanges {
     }
     return "";
   }
-  getTitleAction() {
-    if (this.Actionid > 0) {
-      var x = this.ListAction.find((x) => x.rowid == this.Actionid);
+  getTitleAction(Actionid) {
+    if (Actionid > 0) {
+      var x = this.ListAction.find((x) => x.rowid == Actionid);
       if (x) {
         return x.actionname;
       }
     }
     return "";
-  }
-
-  OnSubmit(isclose = false) {
-    // console.log("Event: ", this.valueEvent);
-    // console.log("Action: ", this.valueAction);
-    // console.log("ID_projectteam: ", this.ID_projectteam);
-    // console.log("ID_department: ", this.ID_department);
-
-    const _item = new AutomationListModel();
-    _item.clear();
-    if (this.dataEdit.rowid > 0) {
-      _item.rowid = this.dataEdit.rowid;
+  } 
+  getListTitleAction() {
+    var lst = [];
+    this.listActions.forEach(element => {
+      lst.push(this.getTitleAction(element.Actionid));
+    });
+    if (lst.length > 0) {
+      return lst.join('\r\n');
     }
-    _item.title =
-      "Khi " + this.getTitleTrigger() + " thì " + this.getTitleAction();
-    _item.departmentid = "" + this.ID_department;
-    _item.eventid = this.Eventid;
-    _item.actionid = this.Actionid;
-    _item.status = "1";
-    // Event ID
-    if (this.Eventid == 6 || this.Eventid == 5) {
-      // assign // 56609,17198
-      var listID = [];
-      if(this.valueEvent.ItemSelected){
-        this.valueEvent.ItemSelected.forEach((element) => {
-          listID.push(element.id_nv);
-        });
-        _item.condition = listID.join();
-      }else{
-        _item.condition = 'any';
+    return "";
+  } 
+  OnSubmit(isclose = false) { 
+    console.log('Show data',this.listActions)
+    const ListAuto = new Array<AutomationListModel>();
+    this.listActions.forEach(element => {
+      const _item = new AutomationListModel();
+      _item.clear();
+      if (this.dataEdit.rowid > 0) {
+        _item.rowid = this.dataEdit.rowid;
       }
-    } else if (this.Eventid == 1) {
-      // status // Lưu Condition theo định dang From:x,y;To:z,k. Trong đó x,y,z,k là statusid (để trống là any)
-      var listfrom = [];
-      if(this.valueEvent.from && this.valueEvent.from.length > 0){
-        this.valueEvent.from.forEach((element) => {
-          listfrom.push(element.id_row);
-        });
-      }else{
-        listfrom.push('any');
-      }
-      var listto = [];
-      if(this.valueEvent.to && this.valueEvent.to.length > 0){
-        this.valueEvent.to.forEach((element) => {
-          listto.push(element.id_row);
-        });
-      }else{
-        listto.push('any');
-      }
-      _item.condition = "From:" + listfrom.join() + ";To:" + listto.join();
-    } else if (this.Eventid == 2) {
-      // priority // Lưu Condition theo định dang From:x,y;To:z,k. Trong đó x,y,z,k là statusid (để trống là any)
-      if(!this.valueEvent.from) this.valueEvent.from = 'any';
-      if(!this.valueEvent.to) this.valueEvent.to = 'any';
-      _item.condition =
-        "From:" + this.valueEvent.from + ";To:" + this.valueEvent.to;
-    } else {
-      // các trường hợp còn lại
-    }
-    // Action ID
-    switch (this.Actionid) {
-      case 1: // assign
-        {
-          const subaction = new Array<Automation_SubAction_Model>();
-          if (
-            this.valueAction.ItemSelectedAssign &&
-            this.valueAction.ItemSelectedAssign.length > 0
-          ) {
-            // Assign subaction 1
-            var listID = [];
-            this.valueAction.ItemSelectedAssign.forEach((element) => {
-              listID.push(element.id_nv);
-            });
-            const itemsub = new Automation_SubAction_Model();
-            itemsub.clear();
-            // itemsub.autoid =
-            itemsub.subactionid = "1";
-            itemsub.value = listID.join();
-            subaction.push(itemsub);
-          }
-          if (
-            this.valueAction.ItemRemoveAssign &&
-            this.valueAction.ItemRemoveAssign.length > 0
-          ) {
-            // RemoveAssign subaction 2
-            var listID = [];
-            this.valueAction.ItemRemoveAssign.forEach((element) => {
-              listID.push(element.id_nv);
-            });
-            const itemsub = new Automation_SubAction_Model();
-            itemsub.clear();
-            // itemsub.autoid =
-            itemsub.subactionid = "2";
-            itemsub.value = listID.join();
-            subaction.push(itemsub);
-          }
-          if (
-            this.valueAction.ItemReassign &&
-            this.valueAction.ItemReassign.length > 0
-          ) {
-            // Reassign subaction 4
-            var listID = [];
-            this.valueAction.ItemReassign.forEach((element) => {
-              listID.push(element.id_nv);
-            });
-            const itemsub = new Automation_SubAction_Model();
-            itemsub.clear();
-            itemsub.subactionid = "4";
-            itemsub.value = listID.join();
-            subaction.push(itemsub);
-          }
-          if (this.valueAction.removeall) {
-            // Remove all subaction 3
-            const itemsub = new Automation_SubAction_Model();
-            itemsub.clear();
-            // itemsub.autoid =
-            itemsub.subactionid = "3";
-            itemsub.value = "true";
-            subaction.push(itemsub);
-          }
-          _item.subaction = subaction;
+      _item.title =
+        "Khi " + this.getTitleTrigger() + " thì " + this.getTitleAction(element.Actionid);
+      _item.departmentid = "" + this.ID_department;
+      _item.eventid = this.Eventid;
+      _item.actionid = element.Actionid;
+      _item.status = "1";
+      // Event ID
+      if (this.Eventid == 6 || this.Eventid == 5) {
+        // assign // 56609,17198
+        var listID = [];
+        if(this.valueEvent.ItemSelected){
+          this.valueEvent.ItemSelected.forEach((element) => {
+            listID.push(element.id_nv);
+          });
+          _item.condition = listID.join();
+        }else{
+          _item.condition = 'any';
         }
-        break;
-      case 2: // 2 = task ; 3 = subtask ;
-      case 3:
-        {
-          const task = new Auto_Task_Model();
-          task.clear();
-          if(this.valueAction.taskid>0){
-            task.id_row = this.valueAction.taskid;
+      } else if (this.Eventid == 1) {
+        // status // Lưu Condition theo định dang From:x,y;To:z,k. Trong đó x,y,z,k là statusid (để trống là any)
+        var listfrom = [];
+        if(this.valueEvent.from && this.valueEvent.from.length > 0){
+          this.valueEvent.from.forEach((element) => {
+            listfrom.push(element.id_row);
+          });
+        }else{
+          listfrom.push('any');
+        }
+        var listto = [];
+        if(this.valueEvent.to && this.valueEvent.to.length > 0){
+          this.valueEvent.to.forEach((element) => {
+            listto.push(element.id_row);
+          });
+        }else{
+          listto.push('any');
+        }
+        _item.condition = "From:" + listfrom.join() + ";To:" + listto.join();
+      } else if (this.Eventid == 2) {
+        // priority // Lưu Condition theo định dang From:x,y;To:z,k. Trong đó x,y,z,k là statusid (để trống là any)
+        if(!this.valueEvent.from) this.valueEvent.from = 'any';
+        if(!this.valueEvent.to) this.valueEvent.to = 'any';
+        _item.condition =
+          "From:" + this.valueEvent.from + ";To:" + this.valueEvent.to;
+      } else {
+        // các trường hợp còn lại
+      }
+      // Action ID
+      switch (element.Actionid) {
+        case 1: // assign
+          {
+            const subaction = new Array<Automation_SubAction_Model>();
+            if (
+              element.data.ItemSelectedAssign &&
+              element.data.ItemSelectedAssign.length > 0
+            ) {
+              // Assign subaction 1
+              var listID = [];
+              element.data.ItemSelectedAssign.forEach((element) => {
+                listID.push(element.id_nv);
+              });
+              const itemsub = new Automation_SubAction_Model();
+              itemsub.clear();
+              // itemsub.autoid =
+              itemsub.subactionid = "1";
+              itemsub.value = listID.join();
+              subaction.push(itemsub);
+            }
+            if (
+              element.data.ItemRemoveAssign &&
+              element.data.ItemRemoveAssign.length > 0
+            ) {
+              // RemoveAssign subaction 2
+              var listID = [];
+              element.data.ItemRemoveAssign.forEach((element) => {
+                listID.push(element.id_nv);
+              });
+              const itemsub = new Automation_SubAction_Model();
+              itemsub.clear();
+              // itemsub.autoid =
+              itemsub.subactionid = "2";
+              itemsub.value = listID.join();
+              subaction.push(itemsub);
+            }
+            if (
+              element.data.ItemReassign &&
+              element.data.ItemReassign.length > 0
+            ) {
+              // Reassign subaction 4
+              var listID = [];
+              element.data.ItemReassign.forEach((element) => {
+                listID.push(element.id_nv);
+              });
+              const itemsub = new Automation_SubAction_Model();
+              itemsub.clear();
+              itemsub.subactionid = "4";
+              itemsub.value = listID.join();
+              subaction.push(itemsub);
+            }
+            if (element.data.removeall) {
+              // Remove all subaction 3
+              const itemsub = new Automation_SubAction_Model();
+              itemsub.clear();
+              // itemsub.autoid =
+              itemsub.subactionid = "3";
+              itemsub.value = "true";
+              subaction.push(itemsub);
+            }
+            _item.subaction = subaction;
           }
-          if (this.valueAction.taskname) {
-            task.title = this.valueAction.taskname;
-          } else {
-            this.layoutUtilsService.showError(
-              "Tên công việc không được để trống."
-            );
-            return;
-          }
-          if (this.Actionid == 3) {
-            if (this.valueAction.id_task) {
-              task.id_parent = this.valueAction.id_task;
+          break;
+        case 2: // 2 = task ; 3 = subtask ;
+        case 3:
+          {
+            const task = new Auto_Task_Model();
+            task.clear();
+            if(element.data.taskid>0){
+              task.id_row = element.data.taskid;
+            }
+            if (element.data.taskname) {
+              task.title = element.data.taskname;
             } else {
               this.layoutUtilsService.showError(
-                "Bắt buộc nhập công việc thiết lập công việc con."
+                "Tên công việc không được để trống."
               );
               return;
             }
+            if (this.Actionid == 3) {
+              if (element.data.id_task) {
+                task.id_parent = element.data.id_task;
+              } else {
+                this.layoutUtilsService.showError(
+                  "Bắt buộc nhập công việc thiết lập công việc con."
+                );
+                return;
+              }
+            }
+            task.id_project_team = element.data.id_project_team
+              ? element.data.id_project_team
+              : 0;
+            task.priority = element.data.to ? element.data.to : 0;
+            if (element.data.startdatetype) {
+              task.startdate_type = element.data.startdatetype;
+              if (+element.data.startdatetype == 3) {
+                task.start_date = this.f_convertDate(
+                  element.data.startdateValue
+                );
+              } else {
+                task.start_date = element.data.startdateValue
+                  ? element.data.startdateValue
+                  : 0;
+              }
+            }
+            if (element.data.duedatetype) {
+              task.deadline_type = element.data.duedatetype;
+              if (+element.data.duedatetype == 3) {
+                task.deadline = this.f_convertDate(element.data.duedateValue);
+              } else {
+                task.deadline = element.data.duedateValue
+                  ? element.data.duedateValue
+                  : 0;
+              }
+            }
+            if (element.data.status)
+              task.status = element.data.status.id_row;
+            const listUser = new Array<WorkUserModel>();
+            if (
+              element.data.ItemSelectedAssign &&
+              element.data.ItemSelectedAssign.length > 0
+            ) {
+              element.data.ItemSelectedAssign.forEach((element) => {
+                const workuser = new WorkUserModel();
+                workuser.clear();
+                workuser.loai = 1;
+                workuser.id_user = element.id_nv;
+                // if(task.id_row > 0)
+                // workuser.id_work = task.id_row;
+                listUser.push(workuser);
+              });
+              task.users = listUser;
+            }
+
+            _item.task = new Array<Auto_Task_Model>();
+            _item.task.push(task);
           }
-          task.id_project_team = this.valueAction.id_project_team
-            ? this.valueAction.id_project_team
-            : 0;
-          task.priority = this.valueAction.to ? this.valueAction.to : 0;
-          if (this.valueAction.startdatetype) {
-            task.startdate_type = this.valueAction.startdatetype;
-            if (+this.valueAction.startdatetype == 3) {
-              task.start_date = this.f_convertDate(
-                this.valueAction.startdateValue
-              );
-            } else {
-              task.start_date = this.valueAction.startdateValue
-                ? this.valueAction.startdateValue
-                : 0;
+          break;
+        case 6: //
+        case 13:
+        case 14:
+          {
+            _item.data = "" + element.data.id_project_team;
+          }
+          break;
+        case 4: //comment
+          {
+            _item.data = element.data.data;
+          }
+          break;
+        case 9:
+          {
+            if (element.data.checked) {
+              _item.data = element.data.checked.id_row;
             }
           }
-          if (this.valueAction.duedatetype) {
-            task.deadline_type = this.valueAction.duedatetype;
-            if (+this.valueAction.duedatetype == 3) {
-              task.deadline = this.f_convertDate(this.valueAction.duedateValue);
-            } else {
-              task.deadline = this.valueAction.duedateValue
-                ? this.valueAction.duedateValue
-                : 0;
+          break;
+        case 10:
+          {
+            _item.data = "" + element.data.to;
+          }
+          break;
+        case 11:
+        case 12:
+          {
+            if(+element.data.datetype == 1){ 
+              _item.data = element.data.datetype + ";" + element.data.dateValue;
+            }else if(+element.data.datetype == 2){
+              _item.data = element.data.datetype + ";0";
+            }else{
+              _item.data = element.data.datetype + ";" + this.f_convertDate(element.data.dateValue);
             }
+            console.log('datetime data:',_item.data)
           }
-          if (this.valueAction.status)
-            task.status = this.valueAction.status.id_row;
-          const listUser = new Array<WorkUserModel>();
-          if (
-            this.valueAction.ItemSelectedAssign &&
-            this.valueAction.ItemSelectedAssign.length > 0
-          ) {
-            this.valueAction.ItemSelectedAssign.forEach((element) => {
-              const workuser = new WorkUserModel();
-              workuser.clear();
-              workuser.loai = 1;
-              workuser.id_user = element.id_nv;
-              // if(task.id_row > 0)
-              // workuser.id_work = task.id_row;
-              listUser.push(workuser);
-            });
-            task.users = listUser;
-          }
+          break;
+      }
+      ListAuto.push(_item);
+    });
 
-          _item.task = new Array<Auto_Task_Model>();
-          _item.task.push(task);
-        }
-        break;
-      case 6: //
-      case 13:
-      case 14:
-        {
-          _item.data = "" + this.valueAction.id_project_team;
-        }
-        break;
-      case 4: //comment
-        {
-          _item.data = this.valueAction.data;
-        }
-        break;
-      case 9:
-        {
-          if (this.valueAction.checked) {
-            _item.data = this.valueAction.checked.id_row;
-          }
-        }
-        break;
-      case 10:
-        {
-          _item.data = "" + this.valueAction.to;
-        }
-        break;
-      case 11:
-      case 12:
-        {
-          if(+this.valueAction.datetype == 1){
-            _item.data = this.valueAction.datetype + ";" + this.valueAction.dateValue;
-          }else if(+this.valueAction.datetype == 2){
-            _item.data = this.valueAction.datetype + ";0";
-          }else{
-            _item.data = this.valueAction.datetype + ";" + this.f_convertDate(this.valueAction.dateValue);
-          }
-          console.log('datetime data:',_item.data)
-        }
-        break;
-    }
-
-    console.log("Automation: ", _item);
-
-    if(_item.rowid>0) {
-      this.UpdateAuto(_item,isclose);
+    if(ListAuto[0].rowid>0) {
+      this.UpdateAuto(ListAuto[0],isclose);
     }else{
-      this.CreateAuto(_item,isclose);
+      this.CreateAuto(ListAuto,isclose);
     };
     
   }
@@ -376,9 +395,10 @@ export class EditAutomationComponent implements OnInit, OnChanges {
     });
   }
 
-  GetvalueAction($event) {
+  GetvalueAction($event,index) {
     this.valueAction = $event;
-    console.log(this.valueAction);
+    this.listActions[index].data = this.valueAction;
+    console.log(this.listActions);
   }
 
   GetvalueEvent($event) {
@@ -401,5 +421,9 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   close(value = false) {
     console.log('output:',value);
     this.eventClose.emit(value);
+  }
+  loadAction(){ 
+    this.listActions.push({id:this.idAction});
+    this.idAction ++; 
   }
 }

@@ -4,9 +4,12 @@ $font-color-header: black;
 $hover-color: #f2f2f2;
 $background-comment: white;
 
-.card-body {
-  padding: 0px 10px 20px 10px;
+app-jee-comment{
+  .card-body {
+    padding: 0px 10px 20px 10px;
+  }
 }
+
 
 .comment-container {
   ul {

@@ -49,7 +49,7 @@ export class AutomationTabManageComponent implements OnInit {
     if(this.ID_department > 0) filter.departmentid = this.ID_department;
     return filter;
   }
-  UpdateAutomation(item){
+  UpdateAutomation(item = null){
     console.log(item);
     this.selectedItem.emit(item);
   }

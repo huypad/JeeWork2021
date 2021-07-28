@@ -1,3 +1,4 @@
+import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { DepartmentEditNewComponent } from './../../List-department/department-edit-new/department-edit-new.component';
 import { SubheaderService } from './../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
@@ -50,6 +51,7 @@ export class ProjectsTeamListComponent implements OnInit {
 		private activatedRoute: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		public commonService: CommonService,
+		public menuAsideService: MenuAsideService,
 		// private dynamicSearchFormService: DynamicSearchFormService,
 		) { }
 
@@ -108,6 +110,7 @@ export class ProjectsTeamListComponent implements OnInit {
 			}
 			else {
 				this.loadDataList();
+				this.menuAsideService.loadMenu();
 			}
 		});
 	}

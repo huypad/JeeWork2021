@@ -205,7 +205,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     conds1.Add("w_user.Disabled", 0);
                                     string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as color, '' as Follower,'' as Description
                                                     from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
-                                                    where (where)";
+                                                    where w_user.id_user in ({listID}) and (where)";
                                     dt_filter_tmp = cnn.CreateDataTable(select_user, "(where)", conds1);
                                     #region Map info account từ JeeAccount
 
@@ -2348,6 +2348,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     SqlConditions conds1 = new SqlConditions();
                     conds1 = new SqlConditions();
                     conds1.Add("w_user.Disabled", 0);
+                    conds1.Add("loai", 1);
                     string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as image, id_work
                                                     from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
                                                     where (where)";
@@ -3738,6 +3739,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 {
                                     if (!string.IsNullOrEmpty(dt_infowork.Rows[0]["deadline"].ToString()))
                                     {
+                                        var end = DateTime.Parse(dt_infowork.Rows[0]["deadline"].ToString());
+                                        var start = DateTime.Parse(values.ToString());
                                         if (values > DateTime.Parse(dt_infowork.Rows[0]["deadline"].ToString()))
                                         {
                                             return JsonResultCommon.Custom("Ngày bắt đầu nhỏ hơn hạn chót");
@@ -3787,7 +3790,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         if (data.key == "title")
                         {
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, ConnectionString))
+                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
@@ -3838,7 +3841,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         if (data.key == "deadline")
                         {
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, ConnectionString))
+                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where)", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
@@ -3907,7 +3910,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             if (dt_user.Rows.Count > 0)
                             {
                                 #region Check dự án đó có gửi gửi mail khi cập nhật tình trạng hay không
-                                if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_status", false, ConnectionString))
+                                if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_status", false, ConnectionString))
                                 {
                                     if (data.IsStaff)
                                     {
@@ -4046,10 +4049,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 }
 
                                 #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                                if (WeworkLiteController.CheckNotify_ByConditions(data.id_row, "email_update_work", false, ConnectionString))
-                                {
-                                    if (data.IsStaff) // Trường hợp Case update về giá trị NULL thì không gửi email (Người nhận = null nên gửi không được)
-                                    {
+                                if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                                { 
                                         var users = new List<long> { long.Parse(data.value.ToString()) };
                                         WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier);
                                         #region Notify assign
@@ -4066,7 +4067,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             notify_model.TitleLanguageKey = "ww_assign";
                                             notify_model.ReplaceData = has_replace;
                                             notify_model.To_Link_MobileApp = "";
-                                            notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                                            notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                                             try
                                             {
                                                 if (notify_model != null)
@@ -4084,8 +4085,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
                                             }
                                         }
-                                        #endregion
-                                    }
+                                        #endregion 
                                 }
                                 #endregion
 
@@ -4468,25 +4468,25 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     int total = temp.Count();
                     if (total == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
-                    if (query.more)
-                    {
-                        query.page = 1;
-                        query.record = total;
-                    }
-                    pageModel.TotalCount = total;
-                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
-                    pageModel.Size = query.record;
-                    pageModel.Page = query.page;
-                    var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
+                    //if (query.more)
+                    //{
+                    //    query.page = 1;
+                    //    query.record = total;
+                    //}
+                    //pageModel.TotalCount = total;
+                    //pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    //pageModel.Size = query.record;
+                    //pageModel.Page = query.page;
+                    //var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
-                    var Children = from rr in dtNew
+                    var Children = from rr in temp
                                    select new
                                    {
                                        id_row = rr["id_row"],
                                        start = rr["start_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["start_date"]) : "",
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
                                        title = rr["title"],
-                                       classNames = "success",
+                                       classNames = "",
                                        //imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };

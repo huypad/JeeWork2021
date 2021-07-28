@@ -2363,7 +2363,7 @@ where TemplateID = {item["id_row"]}  and IsDefault = 1";
             {
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    cond.Add("id_project_team", id_project);
+                    cond.Add("id_row", id_project);
                     cond.Add("disabled", 0);
                     //Kiểm tra trạng thái dừng nhắc nhở trước
                     sqlq = "select stop_reminder from we_project_team where (where)";

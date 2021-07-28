@@ -243,7 +243,7 @@
                                                             <span class=" text-uppercase" style="padding-right: 5px;">
                                                                 {{status.statusname?status.statusname:'Chưa giao việc'}}
                                                             </span>
-                                                            <div class="cu-action-header d-none" *ngIf="CheckRoles(15)">
+                                                            <div class="cu-action-header d-none" *ngIf="CheckRoles(15) && IsAdmin()">
                                                                 <i class="fas fa-pencil-alt" matTooltipPosition="above"
                                                                     *ngIf="isUpdateStatusname(status.id_row)"
                                                                     (click)="chinhsuanoidung(status)"

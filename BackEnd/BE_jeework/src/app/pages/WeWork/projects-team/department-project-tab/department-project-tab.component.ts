@@ -1,3 +1,4 @@
+import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { ListDepartmentService } from './../../List-department/Services/List-department.service';
 import { SortState } from "./../../../../_metronic/shared/crud-table/models/sort.model";
 import { PaginatorState } from "./../../../../_metronic/shared/crud-table/models/paginator.model";
@@ -87,7 +88,8 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     public commonService: CommonService,
     public WeWorkService: WeWorkService,
     private translate: TranslateService,
-    private tokenStorage: TokenStorage
+    private tokenStorage: TokenStorage,
+    public menuAsideService: MenuAsideService,
   ) {}
   ngOnInit() {
     var path = this.router.url;
@@ -315,7 +317,8 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
       if (!res) {
         return;
       } else {
-        this.ngOnInit();
+        this.loadDataList();
+        this.menuAsideService.loadMenu();
         // this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false, 3000, 'top', 1);
         this.changeDetectorRefs.detectChanges();
       }

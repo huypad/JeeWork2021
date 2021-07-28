@@ -220,7 +220,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("add-automation")]
         [HttpPost]
-        public async Task<object> Add_Automation(AutomationListModel data)
+        public async Task<object> Add_Automation(List<AutomationListModel> data)
         {
             string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -228,10 +228,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
+
                 string strRe = "";
                 string error = "";
-                if (string.IsNullOrEmpty(data.title))
-                    strRe += (strRe == "" ? "" : ",") + "tên chức năng thực thi tự động";
+                //if (string.IsNullOrEmpty(data.title))
+                //    strRe += (strRe == "" ? "" : ",") + "tên chức năng thực thi tự động";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
@@ -239,129 +240,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     cnn.BeginTransaction();
 
-                    long iduser = loginData.UserID;
-                    long idk = loginData.CustomerID;
-                    Hashtable val = new Hashtable();
-                    val.Add("title", data.title);
-                    if (!string.IsNullOrEmpty(data.description))
-                        val.Add("description", data.description);
-                    else
-                        val.Add("description", DBNull.Value);
-
-                    if (!string.IsNullOrEmpty(data.departmentid))
-                        val.Add("departmentid", data.departmentid);
-                    else
-                        val.Add("departmentid", DBNull.Value);
-
-                    if (!string.IsNullOrEmpty(data.listid))
-                        val.Add("listid", data.listid);
-                    else
-                        val.Add("listid", DBNull.Value);
-                    val.Add("createddate", DateTime.Now);
-                    val.Add("createdby", iduser);
-                    val.Add("status", 1);
-                    // event
-                    val.Add("eventid", data.eventid);
-                    if (!string.IsNullOrEmpty(data.condition))
-                        val.Add("condition", data.condition);
-                    else
-                        val.Add("condition", DBNull.Value);
-                    // action
-                    val.Add("actionid", data.actionid);
-                    if (!string.IsNullOrEmpty(data.data))
-                        val.Add("data", data.data);
-                    else
-                        val.Add("data", DBNull.Value);
-                    string strCheck = "select count(*) from automationlist where disabled=0 and title=@name";
-                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.title } }).ToString()) > 0)
+                    foreach (var item in data)
                     {
-                        return JsonResultCommon.Custom("Chức năng tự động đã tồn tại trong danh sách");
-                    }
-                    if (cnn.Insert(val, "automationlist") != 1)
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    }
-                    long max_auto = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('automationlist')").ToString());
-                    if (data.subaction != null)
-                    {
-                        Hashtable has = new Hashtable();
-                        foreach (var sub in data.subaction)
+                        bool isInsert = insertAutomation(item, loginData, cnn, out error);
+                        if(!isInsert || !string.IsNullOrEmpty(error))
                         {
-                            has["autoid"] = max_auto;
-                            has["subactionid"] = sub.subactionid;
-                            has["value"] = sub.value;
-                            if (cnn.Insert(has, "automation_subaction") != 1)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
+                            return JsonResultCommon.Custom(error);
                         }
                     }
-                    if (data.task != null)
-                    {
-                        Hashtable has = new Hashtable();
-                        has["autoid"] = max_auto;
-                        foreach (var _t in data.task)
-                        {
-                            has["title"] = _t.title;
-                            if(!string.IsNullOrEmpty(_t.description))
-                                has["description"] = _t.description;
-                            has["id_project_team"] = _t.id_project_team;
-                            has["id_group"] = _t.id_group;
-                            has["deadline"] = _t.deadline;
-                            if (_t.id_parent > 0)
-                                has["id_parent"] = _t.id_parent;
-                            //else
-                            //    has["id_parent"] = DBNull.Value;
-                            has["start_date"] = _t.start_date;
-                            has["status"] = _t.status;
-                            has["startdate_type"] = _t.startdate_type;
-                            has["deadline_type"] = _t.deadline_type;
-                            has["priority"] = _t.priority;
-                            if (cnn.Insert(has, "automation_task") != 1)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
-                            long max_task = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('automation_task')").ToString());
-                            if (_t.users != null)
-                            {
-                                Hashtable val1 = new Hashtable();
-                                val1["taskid"] = max_task;
-                                foreach (var user in _t.users)
-                                {
-                                    val1["id_user"] = user.id_user;
-                                    val1["loai"] = user.loai;
-                                    if (cnn.Insert(val1, "automation_task_user") != 1)
-                                    {
-                                        cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                    }
-                                }
-                            }
-                            if (_t.tags != null)
-                            {
-                                Hashtable val1 = new Hashtable();
-                                val1["taskid"] = max_task;
-                                val1.Add("createddate", DateTime.Now);
-                                foreach (var _tag in _t.tags)
-                                {
-                                    val1["tagid"] = _tag.id_tag;
-                                    if (cnn.Insert(val1, "automation_task_tag") != 1)
-                                    {
-                                        cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 52, max_auto, iduser, data.title))
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    }
+                    
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -928,5 +815,141 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                 return result;
             }
         }
+        private bool insertAutomation(AutomationListModel data, UserJWT loginData, DpsConnection cnn, out string error)
+        {
+            error = "";
+            long iduser = loginData.UserID;
+            long idk = loginData.CustomerID;
+            Hashtable val = new Hashtable();
+            val.Add("title", data.title);
+            if (!string.IsNullOrEmpty(data.description))
+                val.Add("description", data.description);
+            else
+                val.Add("description", DBNull.Value);
+
+            if (!string.IsNullOrEmpty(data.departmentid))
+                val.Add("departmentid", data.departmentid);
+            else
+                val.Add("departmentid", DBNull.Value);
+
+            if (!string.IsNullOrEmpty(data.listid))
+                val.Add("listid", data.listid);
+            else
+                val.Add("listid", DBNull.Value);
+            val.Add("createddate", DateTime.Now);
+            val.Add("createdby", iduser);
+            val.Add("status", 1);
+            // event
+            val.Add("eventid", data.eventid);
+            if (!string.IsNullOrEmpty(data.condition))
+                val.Add("condition", data.condition);
+            else
+                val.Add("condition", DBNull.Value);
+            // action
+            val.Add("actionid", data.actionid);
+            if (!string.IsNullOrEmpty(data.data))
+                val.Add("data", data.data);
+            else
+                val.Add("data", DBNull.Value);
+            //string strCheck = "select count(*) from automationlist where disabled=0 and title=@name";
+            //if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.title } }).ToString()) > 0)
+            //{
+            //    error = "Chức năng tự động đã tồn tại trong danh sách";
+            //    return false;
+            //}
+            if (cnn.Insert(val, "automationlist") != 1)
+            {
+                cnn.RollbackTransaction();
+                error = "Lỗi truy xuất dữ liệu";
+                return false;
+            }
+            long max_auto = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('automationlist')").ToString());
+            if (data.subaction != null)
+            {
+                Hashtable has = new Hashtable();
+                foreach (var sub in data.subaction)
+                {
+                    has["autoid"] = max_auto;
+                    has["subactionid"] = sub.subactionid;
+                    has["value"] = sub.value;
+                    if (cnn.Insert(has, "automation_subaction") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        error = "Lỗi truy xuất dữ liệu";
+                        return false;
+                    }
+                }
+            }
+            if (data.task != null)
+            {
+                Hashtable has = new Hashtable();
+                has["autoid"] = max_auto;
+                foreach (var _t in data.task)
+                {
+                    has["title"] = _t.title;
+                    if (!string.IsNullOrEmpty(_t.description))
+                        has["description"] = _t.description;
+                    has["id_project_team"] = _t.id_project_team;
+                    has["id_group"] = _t.id_group;
+                    has["deadline"] = _t.deadline;
+                    if (_t.id_parent > 0)
+                        has["id_parent"] = _t.id_parent;
+                    //else
+                    //    has["id_parent"] = DBNull.Value;
+                    has["start_date"] = _t.start_date;
+                    has["status"] = _t.status;
+                    has["startdate_type"] = _t.startdate_type;
+                    has["deadline_type"] = _t.deadline_type;
+                    has["priority"] = _t.priority;
+                    if (cnn.Insert(has, "automation_task") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        error = "Lỗi truy xuất dữ liệu";
+                        return false;
+                    }
+                    long max_task = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('automation_task')").ToString());
+                    if (_t.users != null)
+                    {
+                        Hashtable val1 = new Hashtable();
+                        val1["taskid"] = max_task;
+                        foreach (var user in _t.users)
+                        {
+                            val1["id_user"] = user.id_user;
+                            val1["loai"] = user.loai;
+                            if (cnn.Insert(val1, "automation_task_user") != 1)
+                            {
+                                cnn.RollbackTransaction();
+                                error = "Lỗi truy xuất dữ liệu";
+                                return false;
+                            }
+                        }
+                    }
+                    if (_t.tags != null)
+                    {
+                        Hashtable val1 = new Hashtable();
+                        val1["taskid"] = max_task;
+                        val1.Add("createddate", DateTime.Now);
+                        foreach (var _tag in _t.tags)
+                        {
+                            val1["tagid"] = _tag.id_tag;
+                            if (cnn.Insert(val1, "automation_task_tag") != 1)
+                            {
+                                cnn.RollbackTransaction();
+                                error = "Lỗi truy xuất dữ liệu";
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 52, max_auto, iduser, data.title))
+            {
+                cnn.RollbackTransaction();
+                error = "Lỗi truy xuất dữ liệu";
+                return false;
+            }
+            return true;
+        }
+
     }
 }

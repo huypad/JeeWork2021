@@ -126,8 +126,10 @@ export class AutomationComponent implements OnInit {
   }
 
   EditItem(value){
-    this.isEditAuto = true;
-    this.dataEdit = value;
+      this.isEditAuto = true;
+    if(value){
+      this.dataEdit = value;
+    }
   }
   Close(event){ 
     console.log('ev:',event);

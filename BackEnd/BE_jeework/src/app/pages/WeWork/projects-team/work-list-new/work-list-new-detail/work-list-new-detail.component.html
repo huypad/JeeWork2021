@@ -58,86 +58,15 @@
                         </div>
                     </div>
 
-                    <div class="cu-task-row-assignee pd-r-10">
-
+                    <div class="cu-task-row-assignee pd-r-10"> 
                         <ng-container *ngIf="CheckRoles(14);else norole14">
-                            <ng-container *ngFor="let us of item.User;let index = index">
-                                <div *ngIf="index < 3" class="cu-user-group position-relative"
-                                    style="justify-content: flex-end;">
-                                    <i class="far fa-times-circle url view-hover text-dark bg-white"
-                                        style="position: absolute;top:0;right:0;border-radius: 50%;"
-                                        (click)="ItemSelected(us)"></i>
-                                    <kt-avatar-user [matMenuTriggerFor]="assign1" [image]="us.image" size="26"
-                                        [name]="us.hoten">
-                                    </kt-avatar-user>
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="item.User && item.User.length > 3">
-
-                                <div class="m--img-rounded m--marginless m--img-centered background url"
-                                    [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
-                                    <div class="user w-100"
-                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
-                                        [ngStyle]="{'font-size.px': 15}">
-                                        +{{item.User.length-3}}
-                                    </div>
-                                </div>
-                                <mat-menu #menu1="matMenu">
-                                    <div *ngFor="let user of item.User;let index = index"
-                                        style="justify-content: flex-end;">
-                                        <ng-container *ngIf="index > 2">
-                                            <div class="position-relative">
-                                                <i class="fas fa-times scale-hover-02 url"
-                                                    style="position: absolute;top:0;right:0"
-                                                    (click)="ItemSelected(user)"></i>
-                                                <div class="row" [matMenuTriggerFor]="assign1"
-                                                    (click)="$event.stopPropagation()">
-                                                    <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
-                                                        [showFull]="true" [info]="'@' + user.username">
-                                                    </kt-avatar-user>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </mat-menu>
-                            </ng-container>
+                            <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
+                            </kt-avatar-list-users>
                         </ng-container>
                         <ng-template #norole14>
-                            <ng-container *ngFor="let us of item.User;let index = index">
-                                <div *ngIf="index < 3" class="cu-user-group position-relative"
-                                    style="justify-content: flex-end;">
-                                    <kt-avatar-user [image]="us.image" size="26" [name]="us.hoten">
-                                    </kt-avatar-user>
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="item.User && item.User.length > 3">
-
-                                <div class="m--img-rounded m--marginless m--img-centered background url"
-                                    [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 30,'height.px':30}">
-                                    <div class="user w-100"
-                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
-                                        [ngStyle]="{'font-size.px': 15}">
-                                        +{{item.User.length-3}}
-                                    </div>
-                                </div>
-                                <mat-menu #menu1="matMenu">
-                                    <div *ngFor="let user of item.User;let index = index"
-                                        style="justify-content: flex-end;">
-                                        <ng-container *ngIf="index > 2">
-                                            <div class="position-relative">
-                                                <div class="row" (click)="$event.stopPropagation()">
-                                                    <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
-                                                        [showFull]="true" [info]="'@' + user.username">
-                                                    </kt-avatar-user>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </mat-menu>
-                            </ng-container>
-                        </ng-template>
-
-
+                            <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
+                            </kt-avatar-list-users>
+                        </ng-template> 
 
                         <div class="cu-user-group" *ngIf="CheckRoles(14)">
                             <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print"
@@ -156,6 +85,39 @@
                             <div class="page-work-detail">
                                 <kt-choose-users [options]="options_assign" (IsSearch)="stopPropagation($event)"
                                     (ItemSelected)="ItemSelected($event)">
+                                </kt-choose-users>
+                            </div>
+                        </mat-menu>
+
+                    </div>
+                    <div class="cu-task-row-assignee pd-r-10"> 
+                        Theo dõi:
+                        <ng-container *ngIf="CheckRoles(14);else norole14">
+                            <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
+                            </kt-avatar-list-users> 
+                        </ng-container>
+                        <ng-template #norole14>
+                            <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
+                            </kt-avatar-list-users> 
+                        </ng-template> 
+
+                        <div class="cu-user-group" *ngIf="CheckRoles(14)">
+                            <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print"
+                                matTooltipPosition="above" matTooltip="{{item.assign?item.assign.hoten:'Người theo dõi'}}">
+                                <div
+                                    class="cu-avatar cu-avatar-border cu-avatar_lg cu-avatar_transparent cu-avatar__assign-mono cu-avatar_30">
+                                    <div class="cu-user-group__icon-mono">
+                                        <button class="btn -hover text-muted" [matMenuTriggerFor]="follower">
+                                            <i class="fas fa-user-plus pd-0" style="font-size: 13px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <mat-menu #follower="matMenu">
+                            <div class="page-work-detail">
+                                <kt-choose-users [options]="options_assign" (IsSearch)="stopPropagation($event)"
+                                    (ItemSelected)="ItemFollower($event)">
                                 </kt-choose-users>
                             </div>
                         </mat-menu>
@@ -327,7 +289,7 @@
 
                                             <div class="row" style="margin-bottom: 20px!important;">
                                                 <input [(ngModel)]="item.title" type="text" class="form-control"
-                                                    [disabled]="!CheckRoles(7)" (keyup.enter)="UpdateTitle()"
+                                                    [disabled]="!CheckRoles(7)"
                                                     (focus)="setTextinput(item.title)" (focusout)="UpdateTitle()"
                                                     style="font-size: 24px;">
                                             </div>
@@ -335,7 +297,7 @@
                                             <div class="row" style="margin-bottom: 20px!important;">
                                                 <textarea placeholder="{{ 'work.description' | translate}}"
                                                     id="txtdescription" [value]="item.description"
-                                                    [disabled]="!CheckRoles(9)" (keyup.enter)="UpdateDescription()"
+                                                    [disabled]="!CheckRoles(9)"
                                                     (focusout)="UpdateDescription()" class="form-control"
                                                     rows="10"></textarea>
                                             </div>

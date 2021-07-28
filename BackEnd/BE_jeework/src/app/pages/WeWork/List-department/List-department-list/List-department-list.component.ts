@@ -1,3 +1,5 @@
+import { DepartmentEditNewComponent } from './../department-edit-new/department-edit-new.component';
+import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -75,6 +77,7 @@ export class ListDepartmentListComponent implements OnInit {
 		public tokenStorage: TokenStorage,
 		public danhMucChungService: DanhMucChungService,
 		public commonService: CommonService,
+		public menuAsideService: MenuAsideService,
 	) { }
 
 	/** LOAD DATA */
@@ -185,16 +188,17 @@ export class ListDepartmentListComponent implements OnInit {
 		ObjectModels.clear(); // Set all defaults fields
 		if(ID_Department > 0){
 			ObjectModels.RowID = ID_Department;
+			this.Update(ObjectModels);
+		}else{
+			this.Create(ObjectModels);
 		}
-		this.Update(ObjectModels);
 	}
 	applyFilter(text: string) {
 
 		this.loadDataList();
 		// this.dataSource4.filter = filterValue.trim().toLowerCase();
 	}
-	loadDataList() {
-
+	loadDataList() { 
 		const queryParams = new QueryParamsModelNew(
 			this.filterConfiguration(),
 			'',
@@ -227,6 +231,26 @@ export class ListDepartmentListComponent implements OnInit {
 			}
 			else {
 				this.loadDataList();
+				this.menuAsideService.loadMenu();
+				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+				this.changeDetectorRefs.detectChanges();
+			}
+		});
+	}
+	Create(_item: DepartmentModel) {
+		let saveMessageTranslateParam = '';
+		saveMessageTranslateParam += _item.RowID > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
+		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+		const _messageType = _item.RowID > 0 ? MessageType.Update : MessageType.Create;
+		
+		const dialogRef = this.dialog.open(DepartmentEditNewComponent, { data: { _item, _IsEdit: _item.IsEdit } });
+		dialogRef.afterClosed().subscribe(res => {
+			if (!res) {
+				return;
+			}
+			else {
+				this.loadDataList();
+				this.menuAsideService.loadMenu();
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				this.changeDetectorRefs.detectChanges();
 			}
@@ -247,7 +271,8 @@ export class ListDepartmentListComponent implements OnInit {
 			this.thongTinCaNhanService.Delete_Dept(ID_Department).subscribe(res => {
 				if (res && res.status === 1) {
 					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
-					this.ngOnInit();
+					this.menuAsideService.loadMenu();
+					this.ngOnInit(); 
 				}
 				else {
 					this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
