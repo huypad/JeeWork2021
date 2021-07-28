@@ -1138,8 +1138,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     else
                         departmentid = dt_check.Rows[0]["id_row"].ToString();
                     data.id_department = long.Parse(departmentid);
-                    long iduser = loginData.UserID;
-                    long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
                     val.Add("id_department", departmentid);
@@ -1165,7 +1163,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val = new Hashtable();
                     val["id_project_team"] = idc;
                     val["createddate"] = DateTime.Now;
-                    val["createdby"] = iduser;
+                    val["createdby"] = loginData.UserID;
                     foreach (var owner in data.Users)
                     {
                         val["id_user"] = owner.id_user;
@@ -1212,7 +1210,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #endregion
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser, data.title))
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, loginData.UserID, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1220,7 +1218,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     cnn.EndTransaction();
                     data.listid = idc;
                     Hashtable has_replace = new Hashtable();
-                    var users_admin = new List<long> { iduser };
+                    var users_admin = new List<long> { loginData.UserID };
                     WeworkLiteController.mailthongbao(idc, users_admin, 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
                     #region Notify thiết lập vai trò admin
                     for (int i = 0; i < users_admin.Count; i++)
