@@ -1,0 +1,31 @@
+<kt-portlet-header [sticky]="true" [title]="'Danh sách thư mục'" [class]="'kt-portlet__head--lg'" >
+    <ng-container ktPortletTools>
+    </ng-container>
+</kt-portlet-header>
+<!-- MATERIAL TABLE | Binded to datasources -->
+<div class="mat-table__wrapper">
+    <!-- Checkbox Column -->
+    <table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" >
+        <ng-container matColumnDef="Tenthumuc">
+            <th mat-header-cell *matHeaderCellDef class="stt-cell">Tên thư mục</th>
+            <td mat-cell *matCellDef="let item">
+                {{item.title}}
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="Ngaytao">
+            <th mat-header-cell *matHeaderCellDef > Ngày tạo </th>
+            <td mat-cell *matCellDef="let item">
+                {{item.CreatedDate}}
+            </td>
+        </ng-container>
+        <!-- <ng-container matColumnDef="Locked">
+            <th mat-header-cell *matHeaderCellDef>Tình trạng</th>
+            <td mat-cell *matCellDef="let item">
+                
+            </td>
+        </ng-container>  -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" style="cursor:pointer"
+            [ngClass]="{'row-selected':selected.id_row==row.id_row}" (click)="view(row)"></tr>
+    </table>
+</div>

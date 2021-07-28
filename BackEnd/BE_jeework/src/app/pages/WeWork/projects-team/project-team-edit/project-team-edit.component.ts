@@ -394,9 +394,10 @@ export class ProjectTeamEditComponent implements OnInit {
 		this.loadingAfterSubmit = true;
 		this.viewLoading = true;
 		this.disabledBtn = true;
+		this.layoutUtilsService.showWaitingDiv();
 		this._service.UpdateProjectTeam(_item).subscribe(res => {
 			this.disabledBtn = false;
-			this.changeDetectorRefs.detectChanges();
+			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status === 1) {
 				this.dialogRef.close({
 					_item
@@ -413,9 +414,10 @@ export class ProjectTeamEditComponent implements OnInit {
 	Create(_item: ProjectTeamModel, withBack: boolean) {
 		this.loadingAfterSubmit = true;
 		this.disabledBtn = true;
+		this.layoutUtilsService.showWaitingDiv();
 		this._service.InsertProjectTeam(_item).subscribe(res => {
 			this.disabledBtn = false;
-			this.changeDetectorRefs.detectChanges();
+			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status == 1) {
 				if (withBack == true) {
 					this.dialogRef.close({

@@ -1,3 +1,4 @@
+import { ListDepartmentService } from './../../List-department/Services/List-department.service';
 import { SortState } from "./../../../../_metronic/shared/crud-table/models/sort.model";
 import { PaginatorState } from "./../../../../_metronic/shared/crud-table/models/paginator.model";
 import { CommonService } from "./../../../../_metronic/jeework_old/core/services/common.service";
@@ -78,6 +79,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     public deptService: ProjectsTeamService,
     private danhMucService: DanhMucChungService,
     public dialog: MatDialog,
+		public _deptServices: ListDepartmentService,
     private route: ActivatedRoute,
     private router: Router,
     private changeDetectorRefs: ChangeDetectorRef,
@@ -92,6 +94,10 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     if (path) {
       var arr = path.split("/");
       if (arr.length > 2) this.Id_Department = +arr[2];
+    }
+
+    if(this.Id_Department > 0){
+      this.LoadDataFolder();
     }
     this.tokenStorage.getPageSize().subscribe((res) => {
       this.pageSize = +res;
@@ -354,5 +360,36 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
 
   paginate(paginator: PaginatorState) {
     this.loadDataList();
+  }
+
+  dataFolder:any = [];
+  loadListfolder = false;
+  LoadDataFolder(){
+    this._deptServices.DeptDetail(this.Id_Department).subscribe(res => {
+      if (res && res.status == 1) {
+        if(!res.data.ParentID){
+          this.dataFolder = res.data.data_folder;
+          var itemhientai = {
+            CreatedBy: 56609,
+            CreatedDate: res.data.CreatedDate,
+            id_row: res.data.id_row,
+            parentid: res.data.ParentID,
+            templateid: 22,
+            title: 'Dự án trực tiếp của phòng ban',
+          }
+          this.dataFolder.unshift(itemhientai)
+          this.loadListfolder = true;
+          console.log(this.dataFolder) 
+          this.changeDetectorRefs.detectChanges();
+        }
+        
+      }
+    })
+  }
+
+  ReloadList(event){
+    this.Id_Department = event;
+    console.log('id folder',this.Id_Department);
+    this.loadDataList(); 
   }
 }

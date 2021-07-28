@@ -290,7 +290,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     var data = (from r in ds.Tables[0].AsEnumerable()
-                                where DBNull.Value.Equals(r["parentid"])
+                                where (DBNull.Value.Equals(r["parentid"]) || ds.Tables[0].Rows.Count == 1)
                                 select new
                                 {
                                     id_row = r["id_row"],

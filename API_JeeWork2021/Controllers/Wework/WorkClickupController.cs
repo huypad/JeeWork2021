@@ -4717,14 +4717,14 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 _new[8] = dr["end_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", dr["end_date"]);
                 _new[9] = dr["description"];
                 string s = "";
-                if (dr["is_htquahan"].ToString() == "1")
-                    s = "Hoàn thành quá hạn";
-                if (dr["is_htdunghan"].ToString() == "1")
-                    s = "Hoàn thành";
-                if (dr["is_danglam"].ToString() == "1")
-                    s = "Đang làm";
-                if (dr["is_quahan"].ToString() == "1")
-                    s = "Quá hạn";
+                //if (dr["is_htquahan"].ToString() == "1")
+                //    s = "Hoàn thành quá hạn";
+                //if (dr["is_htdunghan"].ToString() == "1")
+                //    s = "Hoàn thành";
+                //if (dr["is_danglam"].ToString() == "1")
+                //    s = "Đang làm";
+                //if (dr["is_quahan"].ToString() == "1")
+                //    s = "Quá hạn";
                 _new[10] = s;//s == "1" ? "Đang làm" : (s == "2" ? "Hoàn thành" : "Chờ review");
                 _new[11] = dr["result"];
                 _new[12] = dr["milestone"];

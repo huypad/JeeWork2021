@@ -1113,16 +1113,17 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     if (data.templateid > 0)
                     {
                         string sql_insert = "";
-                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, templateID, customerid)
-                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
+                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, templateID, customerid,is_template_center)
+                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1 from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
                         cnn.ExecuteNonQuery(sql_insert);
                         if (cnn.LastError != null)
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
+                        long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString());
                         sqlcond = new SqlConditions();
-                        sqlcond.Add("id_row", data.templateid);
+                        sqlcond.Add("id_row",idc);
                         sqlcond.Add("disabled", 0);
                         sqlcond.Add("is_template_center", 1);
                         s = "select * from we_template_customer where (where)";
@@ -1134,7 +1135,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         // xóa tv k có trong danhsach => ktra tv có chưa > chưa thì insert
                         if (ids != "")//xóa thành viên
                         {
-                            string strDel = "update we_template_library set disabled=1, updateddate=getdate(), updatedby=" + iduser + " where disabled=0 and id_template=" + data.templateid + " and id_user not in (" + ids + ")";
+                            string strDel = "update we_template_library set disabled=1, updateddate=getdate(), updatedby=" + iduser + " where disabled=0 and id_template=" + idc + " and id_user not in (" + ids + ")";
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
@@ -1142,14 +1143,14 @@ from we_template_library where disabled = 0 and id_template = " + id;
                             }
                         }
                         Hashtable val1 = new Hashtable();
-                        val1["id_template"] = data.templateid;
+                        val1["id_template"] = idc;
                         val1["createddate"] = DateTime.Now;
                         val1["createdby"] = iduser;
                         foreach (var owner in data.list_share)
                         {
                             if (owner.id_row == 0)
                             {
-                                bool HasItem = long.Parse(cnn.ExecuteScalar($"select count(*) from we_template_library where disabled = 0 and id_template = {data.templateid} and id_user = {owner.id_user}").ToString()) > 0;
+                                bool HasItem = long.Parse(cnn.ExecuteScalar($"select count(*) from we_template_library where disabled = 0 and id_template = {idc} and id_user = {owner.id_user}").ToString()) > 0;
                                 if (!HasItem)
                                 {
                                     val1["id_user"] = owner.id_user;
@@ -1161,7 +1162,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                                 }
                             }
                         }
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 46, data.templateid, iduser))
+                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 46, idc, iduser))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);

@@ -1,3 +1,4 @@
+import { DanhsachthumucComponent } from './projects-team/danhsachthumuc/danhsachthumuc.component';
 import { CreatQuickFolderComponent } from './List-department/creat-quick-folder/creat-quick-folder.component';
 import { AutomationService } from './automation/automation.service';
 import { TemplateCenterService } from './template-center/template-center.service';
@@ -351,6 +352,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		EditAutomationComponent,
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
+		DanhsachthumucComponent,
 	],
 	declarations: [
 		RepeatedListComponent,
@@ -427,7 +429,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
 		AutomationLabelComponent,
-
+		DanhsachthumucComponent
 	],
 	exports: [
 		JeeCommentModule,
@@ -542,7 +544,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		EditAutomationComponent,
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
-
+		DanhsachthumucComponent
 	]
 })
 export class WeWorkModule { }

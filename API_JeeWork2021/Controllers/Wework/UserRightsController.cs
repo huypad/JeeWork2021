@@ -789,6 +789,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
                             { "Tenquyen", "Tenquyen"},
+                            { "Id_Quyen", "Id_permit"},
                         };
                 if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                 {

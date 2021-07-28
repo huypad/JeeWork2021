@@ -26,6 +26,7 @@ import {
 import { type } from "node:os";
 import {
   ListFieldModel,
+  TempalteUserModel,
   TemplateCenterModel,
 } from "./template-model/template.model";
 
@@ -53,6 +54,7 @@ export class TemplateCenterComponent implements OnInit {
   infoStep3: any = {};
   start_date = "";
   end_date = "";
+  UserID = localStorage.getItem("idUser");
   constructor(
     public dialogRef: MatDialogRef<TemplateCenterComponent>,
     private layoutUtilsService: LayoutUtilsService,
@@ -563,26 +565,10 @@ export class TemplateCenterComponent implements OnInit {
       name: "Danh sách",
       id: "3",
       countitem: 15,
-    },
-    // {
-    //   checked:false,
-    //   name:'Task',
-    //   countitem: 0,
-    // },
-    // {
-    //   checked:false,
-    //   name:'Doc',
-    //   countitem: 40,
-    // },
-    // {
-    //   checked:false,
-    //   name:'View',
-    //   countitem: 0,
-    // },
+    }, 
   ];
   Levels = [
-    //1 - Beginner, 2 - Intermediate, 3 - Advanced
-    {
+     {
       checked: false,
       name: "Cơ bản",
       id: "1",
@@ -601,4 +587,27 @@ export class TemplateCenterComponent implements OnInit {
       countitem: 17,
     },
   ];
+
+  add_template_library(){
+    const user = new TempalteUserModel();
+    user.clear();
+    user.id_row = 0;
+    user.id_template = this.TemplateDetail.id_row;
+    user.id_user = +this.UserID;
+    
+    console.log(this.TemplateDetail);
+    console.log(new Array<TempalteUserModel>(user));
+    var object = {
+      templateid:this.TemplateDetail.id_row,
+      list_share:new Array<TempalteUserModel>(user),
+    }
+    this.templatecenterService.add_template_library(object).subscribe( res => {
+      if(res && res.status ==1){
+        console.log(res);
+        this.layoutUtilsService.showInfo('thêm vào thư viện thành công');
+      }else{
+        this.layoutUtilsService.showError(res.error.message);
+      }
+    });
+  }
 }

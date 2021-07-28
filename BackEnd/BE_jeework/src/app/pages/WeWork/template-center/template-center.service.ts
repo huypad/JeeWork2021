@@ -56,4 +56,9 @@ export class TemplateCenterService {
     return this.http.post<any>(API_Template + `/save-image?istemplatelist=${istemplatelist}`,file,
       { headers: httpHeaders });
   }
+  add_template_library(data): Observable<any> {
+    const httpHeaders = this.httpUtils.getHTTPHeaders();
+    return this.http.post<any>(API_Template + `/add-template-library`,data,
+      { headers: httpHeaders });
+  }
 }

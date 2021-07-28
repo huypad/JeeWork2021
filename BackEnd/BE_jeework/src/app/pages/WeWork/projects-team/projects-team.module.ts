@@ -41,7 +41,6 @@ import { MatChipsModule } from "@angular/material/chips";
 import { NgDragDropModule } from "ng-drag-drop";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-// import { CommonService } from '../../_core/services/common.service';
 @NgModule({
   imports: [
     CommonModule,
@@ -77,7 +76,7 @@ import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     SubheaderService,
   ],
   entryComponents: [
-    QuickStatusComponent
+    QuickStatusComponent,
   ],
   declarations: [
     ProjectsTeamComponent,
@@ -88,7 +87,7 @@ import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     // GSTCComponent,
     WorkPeriodComponent,
     ClickOutsideDirective,
-    QuickStatusComponent
+    QuickStatusComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
