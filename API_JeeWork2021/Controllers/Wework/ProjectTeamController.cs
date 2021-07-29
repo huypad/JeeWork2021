@@ -1179,8 +1179,8 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     string sql_insert = "";
-                    var list_roles = new List<long> { 1 };
-                    if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, ConnectionString))
+                    var list_roles = new List<long> { 1,11 };
+                    if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, cnn))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1425,12 +1425,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    var list_roles = new List<long> { 1 };
-                    if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, ConnectionString))
+                    var list_roles = new List<long> { 1,11 };
+                    if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, cnn))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-
                     }
                     #region Khởi tạo view mặc định
                     if (!WeworkLiteController.Init_DefaultView_Project(idc, cnn))

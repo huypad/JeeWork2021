@@ -1935,7 +1935,6 @@ where TemplateID = {item["id_row"]}  and IsDefault = 1";
                 data = action,
             };
             logger.LogDebug(JsonConvert.SerializeObject(d2));
-
             Hashtable val = new Hashtable();
             val["id_action"] = id_action;
             val["object_id"] = object_id;
@@ -1950,7 +1949,40 @@ where TemplateID = {item["id_row"]}  and IsDefault = 1";
                 val["newvalue"] = DBNull.Value;
             else
                 val["newvalue"] = _new;
-            return cnn.Insert(val, "we_log") == 1;
+            if (cnn.Insert(val, "we_log") == 1)
+            {
+                if (id_action == 39)
+                {
+                    return count_comment(object_id, cnn, true);
+                }
+            }
+            return true;
+            //return cnn.Insert(val, "we_log") == 1;
+        }
+        public static bool count_comment(long work_id, DpsConnection cnn, bool is_add_comment)
+        {
+            long num_comment = 0;
+            SqlConditions cond = new SqlConditions();
+            cond.Add("disabled", 0);
+            cond.Add("id_row", work_id);
+            object present = cnn.ExecuteScalar("select num_comment from we_work where disabled = @disabled and id_row=@id_row", cond);
+            if (string.IsNullOrEmpty(present.ToString()))
+                present = 0;
+            else
+                num_comment = long.Parse(present.ToString());
+            if (is_add_comment)
+                num_comment = num_comment + 1;
+            else
+                num_comment = num_comment - 1;
+            if (num_comment < 0)
+                num_comment = 0;
+            Hashtable val = new Hashtable();
+            val["num_comment"] = num_comment;
+            if (cnn.Update(val, cond, "we_work") != 1)
+            {
+                return false;
+            }
+            return true;
         }
         /// <summary>
         /// test kafka
@@ -2423,40 +2455,37 @@ where Disabled = 0";
             #endregion
             return dt;
         }
-        public static bool Init_RoleDefault(long projectid, List<long> list_roles, string ConnectionString)
+        public static bool Init_RoleDefault(long projectid, List<long> list_roles, DpsConnection cnn)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            string role = "";
+            for (int i = 0; i < list_roles.Count; i++)
             {
-                string role = "";
-                for (int i = 0; i < list_roles.Count; i++)
+                Hashtable has = new Hashtable();
+                has.Add("id_project_team", projectid);
+                has.Add("id_role", list_roles[i].ToString());
+                has.Add("admin", 0);
+                has.Add("member", 1);
+                has.Add("customer", 0);
+                DataTable dt_role = new DataTable();
+                role = "select * " +
+                    "from we_project_role where id_project_team = " + projectid + " " +
+                    "and member = 1 and id_role = " + list_roles[i].ToString() + "";
+                dt_role = cnn.CreateDataTable(role);
+                if (dt_role.Rows.Count <= 0)
                 {
-                    Hashtable has = new Hashtable();
-                    has.Add("id_project_team", projectid);
-                    has.Add("id_role", list_roles[i].ToString());
-                    has.Add("admin", 0);
-                    has.Add("member", 1);
-                    has.Add("customer", 0);
-                    DataTable dt_role = new DataTable();
-                    role = "select * " +
-                        "from we_project_role where id_project_team = " + projectid + " " +
-                        "and member = 1 and id_role = " + list_roles[i].ToString() + "";
-                    dt_role = cnn.CreateDataTable(role);
-                    if (dt_role.Rows.Count <= 0)
+                    cnn.BeginTransaction();
+                    if (cnn.Insert(has, "we_project_role") != 1)
                     {
-                        cnn.BeginTransaction();
-                        if (cnn.Insert(has, "we_project_role") != 1)
-                        {
-                            cnn.RollbackTransaction();
-                            return false;
-                        }
+                        cnn.RollbackTransaction();
+                        return false;
                     }
-                    cnn.EndTransaction();
-                    return true;
                 }
+                cnn.EndTransaction();
                 return true;
             }
+            return true;
         }
         /// <summary>
         /// Khởi tạo View cho project
@@ -3274,6 +3303,13 @@ where Disabled = 0";
                 error = cnn.LastError.Message;
                 return false;
             }
+            var list_roles = new List<long> { 1, 11 };
+            if (!Init_RoleDefault(template.ObjectTypesID, list_roles, cnn))
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message;
+                return false;
+            }
             if (template.is_views) // Nếu có chọn tạo view mẫu thì tạo cho người ta
             {
                 if (!init_view_by_project(cnn, template.viewid, template.ObjectTypesID, loginData, out error))
@@ -3558,7 +3594,7 @@ where Disabled = 0";
             }
             else
                 max_template = cnn.ExecuteScalar("select templateid from we_department " +
-                    "where disabled = 0 and id_row ="+data.id_department+"").ToString();
+                    "where disabled = 0 and id_row =" + data.id_department + "").ToString();
             val.Add("title", "Phòng ban theo yêu cầu " + data.meetingid);
             val.Add("id_cocau", 0);
             val.Add("idkh", loginData.CustomerID);
