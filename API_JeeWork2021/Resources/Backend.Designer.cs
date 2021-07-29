@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace JeeWork_Core2021.Resources {
+namespace API_JeeWork2021.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace JeeWork_Core2021.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JeeWork_Core2021.Resources.Backend", typeof(Backend).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("API_JeeWork2021.Resources.Backend", typeof(Backend).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

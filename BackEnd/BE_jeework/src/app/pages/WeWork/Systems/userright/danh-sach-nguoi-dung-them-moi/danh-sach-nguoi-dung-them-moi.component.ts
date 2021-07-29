@@ -183,7 +183,6 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 
 	  
   sortField(column: string) {
-    console.log(column);
     const sorting = this.sorting;
     const isActiveColumn = sorting.column === column;
     if (!isActiveColumn) {

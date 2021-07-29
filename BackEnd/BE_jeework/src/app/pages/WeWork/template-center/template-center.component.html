@@ -1,4 +1,4 @@
-<div id="template-center">
+<div class="focus-none" id="template-center">
     <div class="template-center-header">
         <div class="cu-template-center-header__back" (click)="PrevStep()">
             <div icon="cu2-arrow-left2" class="icon">
@@ -163,9 +163,15 @@
                     </div>
                 </div>
                 <mat-menu #menu="matMenu" xPosition="before">
+                    <mat-form-field class="mat-form-field-fluid " (click)="$event.stopPropagation()">
+                        <input matInput [formControl]="userFilterCtrl"
+                            placeholder="{{ 'GeneralKey.nhapdetimkiem' | translate}}" autocomplete="off" />
+                        <mat-icon matPrefix> search</mat-icon>
+                    </mat-form-field>
                     <div class="view-mat-menu" (click)="$event.stopPropagation();">
                         <mat-checkbox [(ngModel)]="item.isdefault" (change)="LoadTC()"
-                            *ngFor="let item of TemplateTypes" class="w-100 hide-more-text text-dark">{{item.title}}
+                            *ngFor="let item of filteredUsecase | async" class="w-100 hide-more-text text-dark">
+                            {{item.title}}
                         </mat-checkbox>
                     </div>
                 </mat-menu>
@@ -176,7 +182,8 @@
 
                 <div class="cu-template-center-main__section">
                     <div class="cu-template-center-main__section-header">
-                        <div class="cu-template-center-main__section-header-text"> {{ 'template.maucongviecduocsudung'|translate }} </div>
+                        <div class="cu-template-center-main__section-header-text"> {{
+                            'template.maucongviecduocsudung'|translate }} </div>
                         <div class="cu-template-center-main__section-header-line"></div>
                     </div>
 
@@ -198,9 +205,11 @@
                                 </div>
                             </div>
 
-                            <div class="cu-template-center-main__row" [ngClass]="{'cu-template-center-main__row-expanded': Template.expanded}">
+                            <div class="cu-template-center-main__row"
+                                [ngClass]="{'cu-template-center-main__row-expanded': Template.expanded}">
                                 <ng-container *ngFor="let item of Template.Data_Templates">
-                                    <div class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
+                                    <div
+                                        class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
                                         <div class="cu-template-center-template__container"
                                             (click)="SelectedTemplate(item)">
                                             <div class="cu-template-center-template__cu-icon">
@@ -316,8 +325,7 @@
                 <div class="cu-template-center-selected-template__image-cover " (click)="inputIcon.click()"
                     style="background-image: url(&quot;{{TemplateDetail.img_temp}}&quot;);">
                 </div>
-                <input type="file" hidden accept=".png, .jpg, .jpeg" #inputIcon
-							(change)="onSelectFile($event)" />
+                <input type="file" hidden accept=".png, .jpg, .jpeg" #inputIcon (change)="onSelectFile($event)" />
             </div>
             <div class="cu-template-center-selected-template__info">
                 <div class="cu-template-center-selected-template__info-top">
@@ -358,9 +366,14 @@
                     </div>
                     <div *ngIf="TemplateDetail.istemplatelist"
                         class="cu-template-center-selected-template__info-use-template cu-template-center-selected-template__info-use-template-clickup "
-                        (click)="add_template_library()" >
+                        (click)="add_template_library()">
                         {{ 'template.addtolib' | translate }}
                     </div>
+                    <div *ngIf="!TemplateDetail.istemplatelist"
+                        class="cu-template-center-selected-template__info-use-template cu-template-center-selected-template__info-use-template-clickup "
+                        (click)="delete_library()" style="color:red!important">
+                        {{ 'template.deletelib' | translate }}
+                    </div> 
                 </div>
             </div>
         </div>

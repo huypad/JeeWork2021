@@ -164,7 +164,6 @@ export class WorkListNewDetailComponent implements OnInit {
   /** LOAD DATA */
   ngOnInit() {
     this.data = this.datalog;
-    console.log(this.data,'dataaaaaa')
     if(this.data && this.data.notback){
       this.isback = false;
     }
@@ -214,7 +213,6 @@ export class WorkListNewDetailComponent implements OnInit {
     this.LoadChecklist();
   }
   LoadLog(){
-    console.log('log log')
      //get LogDetailCU
      this.ProjectsTeamService.LogDetailCU(this.DataID).subscribe((res) => {
       if (res && res.status === 1) {
@@ -1560,7 +1558,6 @@ export class WorkListNewDetailComponent implements OnInit {
     }
   }
   CheckedChecklist(items){
-    console.log(items.id_row);
     this._service.CheckedItem(items.id_row).subscribe((res) => {
       if (res && res.status === 1) {
         items.checked = !items.checked; 

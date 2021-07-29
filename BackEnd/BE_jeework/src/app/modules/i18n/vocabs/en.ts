@@ -379,6 +379,7 @@ export const locale = {
 		//==================== Dùng trong templateCenter
 		template: {
 			addtolib: "Add to Library",
+			deletelib: "Delete template",
 			automations: "Automations",
 			cancel:'Cancel',
 			chooseadate: "Choose a date",

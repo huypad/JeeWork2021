@@ -158,7 +158,6 @@ export class GroupNameListComponent implements OnInit {
     this.loadDataList();
   }
   sortField(column: string) {
-    console.log(column);
     const sorting = this.sorting;
     const isActiveColumn = sorting.column === column;
     if (!isActiveColumn) {

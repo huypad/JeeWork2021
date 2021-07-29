@@ -10,7 +10,13 @@
     flex-grow: 0;
     flex-shrink: 0;
 }
-
+input[type=email]:focus,
+    input[type=number]:focus,
+    input[type=password]:focus,
+    input[type=search]:focus,
+    input[type=text]:focus {
+        outline: none;
+    }
 #template-center {
     display: flex;
     flex-direction: column;

@@ -47,7 +47,7 @@ namespace JeeWork_Core2021.Controller
         }
         public static string GetBackendMessage(string errorCode, string space = "", string language = "vi")
         {
-            var resourceManager = new ResourceManager(typeof(JeeWork_Core2021.Resources.Backend));
+            var resourceManager = new ResourceManager(typeof(API_JeeWork2021.Resources.Backend));
             return GetErrorDescription(resourceManager, errorCode, space, language);
         }
     }

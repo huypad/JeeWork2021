@@ -21,7 +21,6 @@ export class CreatQuickFolderComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('data folder quick:' , this.data);  
   }
   close() {
 		this.dialogRef.close();
@@ -39,12 +38,12 @@ export class CreatQuickFolderComponent implements OnInit {
 	}
   Create(_item) { 
     this.viewLoading = true;
+    this.layoutUtilsService.showWaitingDiv();
 		this._Services.InsertQuickFolder(_item).subscribe((res) => {
-			if (res && res.status === 1) {
+    this.layoutUtilsService.OffWaitingDiv();
+    if (res && res.status === 1) {
 				this.layoutUtilsService.showInfo('Thêm thành công');
-        setTimeout(() => {
-          window.location.reload();
-        }, 50);
+        this.dialogRef.close(res);
 			} else {
 				this.viewLoading = false;
 				this.layoutUtilsService.showError(res.error.message);

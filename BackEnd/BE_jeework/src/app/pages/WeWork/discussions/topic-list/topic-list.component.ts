@@ -118,7 +118,6 @@ export class TopicListComponent {
     this.data = [];
     this._services.findListTopic(queryParams).subscribe((res) => {
       if (res && res.status === 1) {
-        console.log(this.data);
         this.data = res.data;
       }
       this.changeDetectorRefs.detectChanges();

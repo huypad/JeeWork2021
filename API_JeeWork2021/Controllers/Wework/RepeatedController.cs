@@ -16,6 +16,7 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using DPSinfra.Notifier;
 using Microsoft.Extensions.Logging;
+using JeeWork_Core2021.Controller;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -976,6 +977,9 @@ from we_repeated_Task task where task.Disabled=0";
                                                     notify_model.From_IDNV = loginData.UserID.ToString();
                                                     notify_model.To_IDNV = users[i].ToString();
                                                     notify_model.TitleLanguageKey = "ww_themmoicongviec";
+                                                    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
+                                                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", row["tencongviec"].ToString());
                                                     notify_model.ReplaceData = has_replace;
                                                     notify_model.To_Link_MobileApp = "";
                                                     notify_model.To_Link_WebApp = "/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";

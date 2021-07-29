@@ -50,7 +50,6 @@ export class AutomationTabManageComponent implements OnInit {
     return filter;
   }
   UpdateAutomation(item = null){
-    console.log(item);
     this.selectedItem.emit(item);
   }
   Update(item){

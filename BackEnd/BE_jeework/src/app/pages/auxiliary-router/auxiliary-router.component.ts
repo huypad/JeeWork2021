@@ -21,7 +21,6 @@ export class AuxiliaryRouterComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
 			var ID = params.id;
-      console.log(params,'data router')
       this.LoadDetailTask(ID);
       // setTimeout(() => {
       //   this.close();
@@ -40,7 +39,6 @@ export class AuxiliaryRouterComponent implements OnInit {
 
   close() {
     // this.router.navigate([{ outlets: { aux: null } }])
-    console.log('123')
     this.router.navigate(['', {outlets: {auxName: null}}]);
   }
 

@@ -54,7 +54,6 @@ export class UyquyenComponent implements OnInit {
 
   ngOnInit(): void {
     this.UserID = +this.router.url.split("/")[2];
-    console.log(this.UserID);
 
     this.tokenStorage.getPageSize().subscribe((res) => {
       this.pageSize = +res;
@@ -132,7 +131,6 @@ export class UyquyenComponent implements OnInit {
   }
 
   sortField(column: string) {
-    console.log(column);
     const sorting = this.sorting;
     const isActiveColumn = sorting.column === column;
     if (!isActiveColumn) {
@@ -146,7 +144,6 @@ export class UyquyenComponent implements OnInit {
   }
 
   uyquyen(item) {
-    console.log(item);
     // this.service.DetailUQ(item.id_row).subscribe(res => {
 		// 	console.log(res);
 		// });

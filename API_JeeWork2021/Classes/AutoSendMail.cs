@@ -2,6 +2,7 @@
 using DPSinfra.ConnectionCache;
 using DPSinfra.Notifier;
 using DpsLibs.Data;
+using JeeWork_Core2021.Controller;
 using JeeWork_Core2021.Controllers.Wework;
 using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -260,7 +261,9 @@ namespace JeeWork_Core2021.Classes
                                         notify_model.AppCode = "WW";
                                         notify_model.From_IDNV = "";
                                         notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = "ww_themmoicongviec";
+                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
+                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", row["tencongviec"].ToString());
                                         notify_model.ReplaceData = has_replace;
                                         notify_model.To_Link_MobileApp = "";
                                         notify_model.To_Link_WebApp = "/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";
@@ -326,7 +329,9 @@ namespace JeeWork_Core2021.Classes
                             notify_model.AppCode = "WW";
                             notify_model.From_IDNV = "";
                             notify_model.To_IDNV = users[i].ToString();
-                            notify_model.TitleLanguageKey = "ww_themmoicongviec";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", _item["title"].ToString());
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.To_Link_WebApp = "/tasks";

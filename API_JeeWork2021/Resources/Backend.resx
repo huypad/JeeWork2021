@@ -121,7 +121,7 @@
     <value>$nguoigui$ đã thiết lập vai trò của bạn trong $project_team$ là admin</value>
   </data>
   <data name="ww_assign" xml:space="preserve">
-    <value>$nguoigui$ đã assign công việc $tencongviec$ cho bạn</value>
+    <value>$nguoigui$ đã giao công việc $tencongviec$ cho bạn</value>
   </data>
   <data name="ww_capnhattrangthaicongviec_done" xml:space="preserve">
     <value>$nguoigui$ đã cập nhật trạng thái công việc $tencongviec$</value>

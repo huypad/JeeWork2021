@@ -102,11 +102,9 @@ export class DepartmentEditComponent implements OnInit {
     if (this.item.RowID > 0) {
       this._Services.DeptDetail(this.item.RowID).subscribe((res) => {
         if (res && res.status == 1) {
-          console.log(res.data);
           this.item = res.data;
           this.list_Owners = res.data.Owners;
           this.selectedUser = this.item.Owners;
-          console.log(this.selectedUser);
           this.createForm();
           this.changeDetectorRefs.detectChanges();
         }
@@ -369,7 +367,6 @@ export class DepartmentEditComponent implements OnInit {
   }
   ItemselectedUser(data) {
     this.IsChangeUser = true;
-    console.log(this.selectedUser);
 
     var index = this.selectedUser.findIndex((x) => x.id_nv == data.id_nv);
 

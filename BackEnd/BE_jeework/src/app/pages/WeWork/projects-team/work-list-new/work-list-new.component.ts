@@ -261,7 +261,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {}
   LoadData() {
-    console.log("time start 1:", new Date());
     this.clearList();
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
@@ -283,7 +282,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
     //get data work binding data
     this._service.GetDataWorkCU(queryParams).subscribe((res) => {
-      console.log("data-work", res);
       this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status === 1) {
         this.data = res.data;
@@ -434,7 +432,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   listStatus: any = [];
   LoadListStatus() {
-    console.log("time start 2 (map) :", new Date());
     this.listFilter.forEach((val) => {
       val.data = [];
     });
@@ -507,7 +504,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       });
     });
     this.listStatus = this.listFilter;
-    console.log("time end 2(map) :", new Date());
   }
 
   drop1(event: CdkDragDrop<string[]>) {
@@ -1650,7 +1646,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
   chinhsuaNhomCV(item) {
-    console.log(item);
     let saveMessageTranslateParam = "";
     var _item = new WorkGroupModel();
     _item.clear();

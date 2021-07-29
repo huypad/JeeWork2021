@@ -337,7 +337,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   }
 
   UpdateTemplate(value,itemMenu) {
-    console.log(itemMenu);
     const item = itemMenu;
     const dialogRef = this.dialog.open(TemplateCenterUpdateComponent, {
       data: { item, buocthuchien: value },
@@ -415,6 +414,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       if (!res) {
         return;
       } else {
+        this.menuAsideService.loadMenu();
       }
     });
   }
@@ -844,8 +844,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         return;
       } else {
         // this.ngOnInit();
-        this.layoutUtilsService.showError(_saveMessage);
-          this.LoadMenu();
+        this.layoutUtilsService.showInfo(_saveMessage);
+          this.menuAsideService.loadMenu();
         // location.reload();
         // this.changeDetectorRefs.detectChanges();
       }
@@ -973,7 +973,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   }
 
   AddAutomation(itemMenu){
-    console.log(itemMenu);
     const item = itemMenu;
     const dialogRef = this.dialog.open(AutomationComponent, {
       data: { item },

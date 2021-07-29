@@ -105,7 +105,6 @@ export class MilestoneDetailComponent {
 	LoadMilestone_Detail() {
 		this._deptServices.Get_MilestoneDetail(this.ID_milestone).subscribe(res => {
 			if (res && res.status == 1) {
-				console.log(res.data)
 				this.item = res.data;
 				this.CountByMucTieu = this.item.CountByMucTieu;
 				this.Count = this.item.Count;

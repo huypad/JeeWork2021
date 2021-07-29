@@ -329,7 +329,6 @@ export class GanttChart2Component implements OnInit {
 		var query = new QueryParamsModelNew({ "id_project_team": this.ID_Project });
 		query.more = true;
 		this._service.findGantt(query).subscribe(res => {
-			console.log(res);
 			if (res && res.status == 1) {
 				rows = res.data.rows.reduce(function (result, row, index, array) {
 					result[row.id] = row; //a, b, c
@@ -348,7 +347,6 @@ export class GanttChart2Component implements OnInit {
 			this.gstcState.update('config', config => {
 				return config;
 			});
-			console.log(this.gstcState);
 
 			this.changeDetectorRefs.detectChanges();
 		})
@@ -475,7 +473,6 @@ export class GanttChart2Component implements OnInit {
 	}
 
 	Viewdetail(value){
-		console.log(value)
 		var item :any = {};
 		item.id_row = value.replace("W","");
 		item.id_project_team = this.ID_Project;
@@ -493,7 +490,6 @@ export class GanttChart2Component implements OnInit {
 	}
 
 	  test(){
-		console.log("testing");
 	  }
 
 	updateView(value){

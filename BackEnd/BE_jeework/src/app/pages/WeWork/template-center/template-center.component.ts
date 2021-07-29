@@ -1,3 +1,5 @@
+import { ReplaySubject } from 'rxjs';
+import { FormControl } from '@angular/forms';
 import { FileUploadModel } from './../discussions/Model/Topic.model';
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
 import { ProjectTeamUserModel } from "./../projects-team/Model/department-and-project.model";
@@ -37,6 +39,8 @@ import {
 })
 export class TemplateCenterComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
+	public userFilterCtrl: FormControl = new FormControl();
+	public filteredUsecase: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   ItemParentID: any = {};
   ParentName = "Chọn vị trí lưu";
   buocthuchien = 1;
@@ -67,10 +71,16 @@ export class TemplateCenterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.userFilterCtrl.valueChanges
+			.pipe()
+			.subscribe(() => {
+				this.filterUsers();
+			});
     //load type
     this.templatecenterService.getTemplateTypes().subscribe((res) => {
       if (res && res.status == 1) {
         this.TemplateTypes = res.data;
+        this.filterUsers();
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
@@ -135,6 +145,7 @@ export class TemplateCenterComponent implements OnInit {
       });
   }
   getTooltipStatus(status) {
+    if(!status.status_list) return;
     var text = "Nhóm" + status.title + ": ";
     status.status_list.forEach((element) => {
       text += element.statusname + ", ";
@@ -477,7 +488,6 @@ export class TemplateCenterComponent implements OnInit {
 			reader.readAsDataURL(filesAmount);
 		}
     setTimeout(() => {
-      console.log(file);
       this.templatecenterService.UpdateFileTemplate(file,this.TemplateDetail.istemplatelist).subscribe((res) => {
         this.disabledBtn = false;
         this.changeDetectorRefs.detectChanges();
@@ -595,19 +605,43 @@ export class TemplateCenterComponent implements OnInit {
     user.id_template = this.TemplateDetail.id_row;
     user.id_user = +this.UserID;
     
-    console.log(this.TemplateDetail);
-    console.log(new Array<TempalteUserModel>(user));
     var object = {
       templateid:this.TemplateDetail.id_row,
       list_share:new Array<TempalteUserModel>(user),
     }
     this.templatecenterService.add_template_library(object).subscribe( res => {
       if(res && res.status ==1){
-        console.log(res);
         this.layoutUtilsService.showInfo('thêm vào thư viện thành công');
       }else{
         this.layoutUtilsService.showError(res.error.message);
       }
     });
   }
+  delete_library(){ 
+    this.templatecenterService.delete_library(this.TemplateDetail.id_row).subscribe( res => {
+      if(res && res.status ==1){
+        this.buocthuchien = 1;
+        this.LoadTC();
+      }else{
+        this.layoutUtilsService.showError(res.error.message);
+      }
+    });
+  }
+  protected filterUsers() {
+		if (!this.TemplateTypes) {
+			return;
+		}
+
+		let search = this.userFilterCtrl.value;
+		if (!search) {
+			this.filteredUsecase.next(this.TemplateTypes.slice());
+			return;
+		} else {
+			search = search.toLowerCase();
+		}
+		// filter the banks
+		this.filteredUsecase.next(
+      this.TemplateTypes.filter(bank => bank.title.toLowerCase().indexOf(search) > -1)
+    );
+	}
 }

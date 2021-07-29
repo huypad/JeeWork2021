@@ -110,7 +110,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
         .subscribe((res) => {
           if (res && res.status == 1) {
             this.ListTaskParent = res.data;            
-            console.log('parent: ',this.ListTaskParent);
             this.changeDetectorRefs.detectChanges();
           } else {
             this.layoutUtilsService.showError(res.error.message);
@@ -135,7 +134,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
         .subscribe((res) => {
           if (res && res.status == 1) {
             this.ListTaskParent = res.data;
-            console.log('parent: ',this.ListTaskParent);
             this.changeDetectorRefs.detectChanges();
           } else {
             this.layoutUtilsService.showError(res.error.message);
@@ -145,7 +143,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   }
 
   selectedParent(value) {
-    console.log(value);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -239,7 +236,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       case 11:
       case 12:
         {
-          console.log(this.data_actions.value);
           var list = this.data_actions.value.split(';');
           this.value.datetype=list[0];
           this.value.dateValue=list[1];
@@ -401,7 +397,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
 
   UpdateStatus(status) {
     this.value.status = status;
-    console.log(this.value.status);
   }
   checked = 0;
   SelectedStatus(status) {

@@ -66,7 +66,6 @@ export class AuthorizeEditComponent implements OnInit {
 
 		this.weworkService.lite_project_team_byuser().subscribe(res => {
 			if (res && res.status === 1) {
-				console.log(res.data);
 				this.ds_project = res.data
 				// this.changeDetectorRefs.detectChanges();
 			}else {
@@ -76,11 +75,9 @@ export class AuthorizeEditComponent implements OnInit {
 	}
 	LoadDetail(id){
 		this._service.DetailUQ(id).subscribe(res => {
-			console.log(res);
 		});
 	}
 	checkProject(value){
-		console.log(value);
 	}
 	setUpDropSearchNhanVien() {
 		this.bankFilterCtrl.setValue('');
@@ -180,7 +177,6 @@ export class AuthorizeEditComponent implements OnInit {
 		}
 		const updatedegree = this.prepare();
 		if(!updatedegree) return;
-		console.log(updatedegree)
 		if (updatedegree.id_row > 0) {
 			this.Update(updatedegree, withBack);
 		} else {

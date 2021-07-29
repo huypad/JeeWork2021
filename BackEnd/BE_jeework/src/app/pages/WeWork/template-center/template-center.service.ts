@@ -61,4 +61,9 @@ export class TemplateCenterService {
     return this.http.post<any>(API_Template + `/add-template-library`,data,
       { headers: httpHeaders });
   }
+  delete_library(id): Observable<any> {
+    const httpHeaders = this.httpUtils.getHTTPHeaders();
+    return this.http.get<any>(API_Template + `/delete-library/${id}`,
+      { headers: httpHeaders });
+  }
 }

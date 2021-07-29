@@ -14,7 +14,6 @@ export class QuickStatusComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.data,'data')
   }
 
   onNoClick(): void {

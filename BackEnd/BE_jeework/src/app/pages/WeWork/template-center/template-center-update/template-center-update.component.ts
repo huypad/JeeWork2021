@@ -89,7 +89,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
     this.LoadTC();
   }
   LoadDetailChoose() {
-    console.log(this.data);
     this.id_save_as = this.data.item.id;
     this.TemplateDetail.share_with = 1;
     this.TemplateDetail.types = this.data.item.type;
@@ -167,7 +166,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
       .getListTemplateUser(queryParams)
       .subscribe((res) => {
         if (res && res.status == 1) {
-          console.log(res.data);
           this.ListTemplateUser = res.data;
           this.changeDetectorRefs.detectChanges();
         } else {
@@ -219,12 +217,10 @@ export class TemplateCenterUpdateComponent implements OnInit {
     this.share_with = value;
   }
   UpdateTemplate(item) {
-    console.log(item);
     this.ItemSelect = item;
   }
   NextStep() {
     this.IsSaveAs = false;
-    console.log(this.ItemSelect);
     if (!(this.ItemSelect.id_row > 0)) return;
     this.templatecenterService
       .getDetailTemplate(this.ItemSelect.id_row)
@@ -233,7 +229,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
           this.TemplateDetail = res.data;
           this.share_with = this.TemplateDetail.share_with;
           this.listUserSelected = this.TemplateDetail.list_share;
-          console.log("detail:", this.TemplateDetail);
           this.buocthuchien = 1;
         } else {
           this.layoutUtilsService.showError(res.error.message);
@@ -370,7 +365,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
     TCinsert.list_share = listShare;
     TCinsert.save_as_id = "" + this.id_save_as;
 
-    console.log(TCinsert);
     this.UpdateTemplateCenter(TCinsert);
   }
   DataSaveAs() {
@@ -478,7 +472,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
 
     
     if (this.listStatus && this.listStatus.length > 0) {
-      console.log(this.listStatus,'12345')
       if(this.TemplateDetail.types == 1 || this.TemplateDetail.types == 2){
         this.listStatus.forEach(element => {
           const status = new StatusListModel();
@@ -511,7 +504,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
       }
     }
 
-    console.log(TCinsert);
 
     this.SaveAsTemplateCenter(TCinsert);
   }

@@ -207,7 +207,6 @@ export class WorkCalendarComponent implements OnInit {
               this.WorkCalendarService.getEvents(queryParams).subscribe(
                 (res) => {
                   this.lstEvent = [];
-                  console.log(res)
                   if (res.data && res.status == 1) {
                     this.lstEvent = res.data;
                     successCallback(res.data);

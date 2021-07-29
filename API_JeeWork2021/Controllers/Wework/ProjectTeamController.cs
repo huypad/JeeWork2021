@@ -24,6 +24,7 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Logging;
 using API_JeeWork2021.Classes;
 using DPSinfra.Kafka;
+using JeeWork_Core2021.Controller;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -1019,9 +1020,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
-                        //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", "");
-                        //notify_model.TitleLanguageKey = "ww_thietlapvaitroadmin";
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.ComponentName = "";
@@ -1057,6 +1058,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.ComponentName = "";
@@ -1230,8 +1234,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users_admin[i].ToString();
-                        notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
-                        //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", "Cuộc họp");
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.ComponentName = "";
@@ -1269,7 +1274,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = users_member[i].ToString();
-                            notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.ComponentName = "";
@@ -1474,8 +1481,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users_admin[i].ToString();
-                        notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
-                        //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.ComponentName = "";
@@ -1513,7 +1521,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = users_member[i].ToString();
-                            notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.ComponentName = "";
@@ -1680,7 +1690,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
-                            NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                            //NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
                         }
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
@@ -1699,6 +1709,13 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+                    foreach (var owner in data.Users)
+                    {
+                        if (owner.id_row == 0)
+                        { 
+                            NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                        }
+                    }
                     WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList(), 6, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
@@ -1713,7 +1730,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
@@ -1749,7 +1768,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.ComponentName = "";
@@ -1800,7 +1821,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 notify_model.AppCode = "WORK";
                                 notify_model.From_IDNV = loginData.UserID.ToString();
                                 notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                                notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                                 notify_model.ReplaceData = has_replace;
                                 notify_model.To_Link_MobileApp = "";
                                 notify_model.ComponentName = "";
@@ -2518,8 +2541,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                            notify_model.TitleLanguageKey = "Thiết lập vai trò admin";
-                            //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.ComponentName = "";
@@ -2557,7 +2581,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                            notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.ComponentName = "";
@@ -2709,7 +2735,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = users[i].ToString();
-                        notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", projectname.ToString());
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
                         notify_model.ComponentName = "";

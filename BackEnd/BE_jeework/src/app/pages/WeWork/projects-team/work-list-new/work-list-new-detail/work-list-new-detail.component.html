@@ -59,14 +59,17 @@
                     </div>
 
                     <div class="cu-task-row-assignee pd-r-10"> 
-                        <ng-container *ngIf="CheckRoles(14);else norole14">
-                            <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
-                            </kt-avatar-list-users>
+                        <ng-container *ngIf="item.User">
+                            <ng-container *ngIf="CheckRoles(14);else norole14">
+                                <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
+                                </kt-avatar-list-users>
+                            </ng-container>
+                            <ng-template #norole14>
+                                <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
+                                </kt-avatar-list-users>
+                            </ng-template> 
                         </ng-container>
-                        <ng-template #norole14>
-                            <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
-                            </kt-avatar-list-users>
-                        </ng-template> 
+                        
 
                         <div class="cu-user-group" *ngIf="CheckRoles(14)">
                             <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print"
@@ -91,15 +94,18 @@
 
                     </div>
                     <div class="cu-task-row-assignee pd-r-10"> 
-                        Theo dõi:
-                        <ng-container *ngIf="CheckRoles(14);else norole14">
-                            <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
-                            </kt-avatar-list-users> 
+                        <ng-container *ngIf="item.Followers">
+                            Theo dõi:
+                            <ng-container *ngIf="CheckRoles(14);else norole14">
+                                <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
+                                </kt-avatar-list-users> 
+                            </ng-container>
+                            <ng-template #norole14>
+                                <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
+                                </kt-avatar-list-users> 
+                            </ng-template> 
                         </ng-container>
-                        <ng-template #norole14>
-                            <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
-                            </kt-avatar-list-users> 
-                        </ng-template> 
+                        
 
                         <div class="cu-user-group" *ngIf="CheckRoles(14)">
                             <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print"
@@ -107,14 +113,14 @@
                                 <div
                                     class="cu-avatar cu-avatar-border cu-avatar_lg cu-avatar_transparent cu-avatar__assign-mono cu-avatar_30">
                                     <div class="cu-user-group__icon-mono">
-                                        <button class="btn -hover text-muted" [matMenuTriggerFor]="follower">
+                                        <button class="btn -hover text-muted" [matMenuTriggerFor]="follower1">
                                             <i class="fas fa-user-plus pd-0" style="font-size: 13px;"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <mat-menu #follower="matMenu">
+                        <mat-menu #follower1="matMenu">
                             <div class="page-work-detail">
                                 <kt-choose-users [options]="options_assign" (IsSearch)="stopPropagation($event)"
                                     (ItemSelected)="ItemFollower($event)">

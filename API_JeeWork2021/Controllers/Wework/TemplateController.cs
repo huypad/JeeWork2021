@@ -1083,7 +1083,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
         }
         /// <summary>
-        /// add user vào template library
+        /// add template library
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -1170,6 +1170,49 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// delete template library
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("delete-library/{id}")]
+        [HttpGet]
+        public async Task<BaseModel<object>> delete_library(long id)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                Hashtable val = new Hashtable();
+                SqlConditions sqlcond = new SqlConditions();
+                long iduser = loginData.UserID;
+                long idk = loginData.CustomerID; 
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    cnn.BeginTransaction();
+                    string sqlu = "update we_template_customer set disabled = 1 where id_row = "+id;
+                    if(cnn.ExecuteNonQuery(sqlu) != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 46, id, iduser))
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    } 
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(id);
                 }
             }
             catch (Exception ex)

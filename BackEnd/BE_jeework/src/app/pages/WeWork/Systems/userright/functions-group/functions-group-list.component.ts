@@ -108,8 +108,8 @@ export class FunctionsGroupListComponent implements OnInit {
 		else {
 			this.Title = this.data._item.HoTen;
 			this.ColumnKey = 'username';
-			this.ValueKey = this.data._item.TenDangNhap;
-		}
+			this.ValueKey = this.data._item.Username;
+		} 
 		
 		// this.dataSource.paginatorTotal$.subscribe(res => this.paginatorNew.total = res)
 		this.dataSource = new UserRightDataSource(this.userRightService);
@@ -165,7 +165,6 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	  
   sortField(column: string) {
-    console.log(column);
     const sorting = this.sorting;
     const isActiveColumn = sorting.column === column;
     if (!isActiveColumn) {

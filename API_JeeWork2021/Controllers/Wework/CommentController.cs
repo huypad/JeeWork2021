@@ -15,6 +15,7 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using DPSinfra.Notifier;
+using JeeWork_Core2021.Controller;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -406,10 +407,11 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                             has_replace1 = new Hashtable();
                             has_replace1.Add("nguoigui", loginData.Username);
                             //has_replace.Add("project_team", data.title);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = nguoitao.ToString();
-                            notify_model.TitleLanguageKey = "ww_replaycomment";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_replaycomment", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.ReplaceData = has_replace1;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.To_Link_WebApp = "/tasks/detail/" + data.object_id;
@@ -445,10 +447,12 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             //has_replace.Add("project_team", data.title);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_nv.ToString();
                             notify_model.TitleLanguageKey = "ww_comment";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_comment", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.To_Link_WebApp = "/tasks/detail/" + data.object_id;
@@ -631,10 +635,12 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             //has_replace.Add("project_team", data.title);
-                            notify_model.AppCode = "WW";
+                            notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = data.Users[i].id_nv.ToString();
                             notify_model.TitleLanguageKey = "ww_comment";
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_comment", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = "";
                             notify_model.To_Link_WebApp = "/tasks/detail/" + data.object_id;

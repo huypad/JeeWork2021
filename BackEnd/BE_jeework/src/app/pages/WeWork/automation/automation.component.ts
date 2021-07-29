@@ -44,7 +44,6 @@ export class AutomationComponent implements OnInit {
     this.LoadTeam();
   }
   LoadTeam() {
-    console.log(this.data.item);
     if (this.data.item.type == 1 || this.data.item.type == 2) {
       // department or folder
       this.departmentServices.DeptDetail(this.data.item.id).subscribe((res) => {
@@ -100,10 +99,7 @@ export class AutomationComponent implements OnInit {
           }
         });
     }
-
-    setTimeout(() => {
-      console.log(this.locationtitle);
-    }, 3000);
+ 
   }
 
   getTitleEdit(){
@@ -132,7 +128,6 @@ export class AutomationComponent implements OnInit {
     }
   }
   Close(event){ 
-    console.log('ev:',event);
     this.isEditAuto = false;
     if(event){
       this.dialogRef.close();

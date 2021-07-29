@@ -47,7 +47,6 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     private socketService: SocketioService,
     ) {
     this.user$ = this.auth.getAuthFromLocalStorage(); 
-    console.log(this.user$);
   }
 
   ngOnInit(): void {

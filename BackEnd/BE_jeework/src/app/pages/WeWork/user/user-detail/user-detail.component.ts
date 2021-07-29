@@ -195,7 +195,6 @@ export class UserDetailComponent implements OnInit {
 			if (res && res.status === 1) {
 
 				this.list_authorize = res.data;
-				console.log(res.data);
 				if(this.list_authorize && this.list_authorize[0])
 					this.UserID_authorize = this.list_authorize[0].id_user;
 			}

@@ -148,7 +148,6 @@ export class RepeatedListComponent implements OnInit {
 							}
 							this.listData_week = listRepeat.filter(x => x.frequency == 1);
 							this.listData_month = listRepeat.filter(x => x.frequency == 2);
-							console.log(this.listData_week);
 							this.item = listRepeat;
 							this._HasItem = listRepeat.length > 0 ? true : false;
 						}

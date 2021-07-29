@@ -10,6 +10,14 @@
     background-color: #2b343b
 }
 
+input[type=email]:focus,
+input[type=number]:focus,
+input[type=password]:focus,
+input[type=search]:focus,
+input[type=text]:focus {
+    outline: none;
+}
+
 .cu-template-center-save-template {
     display: flex;
     justify-content: center;
@@ -1048,6 +1056,7 @@
     margin-bottom: 20px;
     cursor: pointer
 }
+
 .cu-template-center__radio-item__user {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -5049,6 +5058,7 @@
     position: relative;
     cursor: pointer
 }
+
 .cu2-space-row__item_1 {
     display: flex;
     align-items: center;
@@ -5058,6 +5068,7 @@
     position: relative;
     cursor: pointer
 }
+
 .cu2-space-row__item_2 {
     display: flex;
     align-items: center;
@@ -6047,14 +6058,14 @@
     fill: #fff
 }
 
-.add-user{
+.add-user {
     padding: 2px;
     border: 1px dashed gray;
     border-radius: 50%;
 }
 
-kt-avatar-list-users{
-    .user{
+kt-avatar-list-users {
+    .user {
         background: rgba(0, 0, 0, 0.6);
     }
 }

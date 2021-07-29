@@ -64,8 +64,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    console.log("data nhận để map: ", this.dataEdit);
-    console.log('listAction:',this.listActions)
     if (this.dataEdit.rowid > 0) {
       this.Eventid = this.dataEdit.eventid;
       this.Actionid = this.dataEdit.actionid;
@@ -73,7 +71,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         if(this.listActions[0]){
           this.listActions[0].Actionid = this.Actionid;
           this.listActions[0].dataEdit = this.dataEdit;
-          console.log("Map xong: ", this.listActions);
         }
       }, 100);
     }
@@ -130,7 +127,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
     return "";
   } 
   OnSubmit(isclose = false) { 
-    console.log('Show data',this.listActions)
     const ListAuto = new Array<AutomationListModel>();
     this.listActions.forEach(element => {
       const _item = new AutomationListModel();
@@ -357,7 +353,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
             }else{
               _item.data = element.data.datetype + ";" + this.f_convertDate(element.data.dateValue);
             }
-            console.log('datetime data:',_item.data)
           }
           break;
       }
@@ -375,7 +370,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   CreateAuto(_item,isclose){
     this.automationService.InsertAutomation(_item).subscribe((res) => {
       if (res && res.status == 1) {
-        console.log(res);
         this.layoutUtilsService.showActionNotification("Thêm mới thành công");
         this.eventClose.emit(isclose)
       } else {
@@ -386,7 +380,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   UpdateAuto(_item,isclose){
     this.automationService.UpdateAutomation(_item).subscribe((res) => {
       if (res && res.status == 1) {
-        console.log(res);
         this.layoutUtilsService.showActionNotification("Thêm mới thành công");
         this.eventClose.emit(isclose)
       } else {
@@ -398,12 +391,10 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   GetvalueAction($event,index) {
     this.valueAction = $event;
     this.listActions[index].data = this.valueAction;
-    console.log(this.listActions);
   }
 
   GetvalueEvent($event) {
     this.valueEvent = $event;
-    console.log(this.valueEvent);
   }
 
   f_convertDate(v: any = "") {
@@ -419,7 +410,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   }
 
   close(value = false) {
-    console.log('output:',value);
     this.eventClose.emit(value);
   }
   loadAction(){ 

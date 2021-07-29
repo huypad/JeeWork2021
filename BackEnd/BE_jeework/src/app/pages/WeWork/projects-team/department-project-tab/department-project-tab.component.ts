@@ -382,7 +382,6 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
           }
           this.dataFolder.unshift(itemhientai)
           this.loadListfolder = true;
-          console.log(this.dataFolder) 
           this.changeDetectorRefs.detectChanges();
         }
         
@@ -392,7 +391,6 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
 
   ReloadList(event){
     this.Id_Department = event;
-    console.log('id folder',this.Id_Department);
     this.loadDataList(); 
   }
 }

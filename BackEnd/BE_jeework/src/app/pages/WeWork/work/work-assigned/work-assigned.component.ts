@@ -51,7 +51,6 @@ export class WorkAssignedComponent implements OnInit {
   ngOnInit() {
     this.options = this.data.item;
     this.ID_Project = this.data.ID_Project;
-    console.log(this.ID_Project);
     this.userFilterCtrl.valueChanges.pipe().subscribe(() => {
       this.filterUsers();
     });

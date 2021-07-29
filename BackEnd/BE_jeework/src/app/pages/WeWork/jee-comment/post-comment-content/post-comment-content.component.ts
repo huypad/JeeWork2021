@@ -194,7 +194,6 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
   }
 
   ChangeValue(){
-    console.log('log middle')
     this.changeValue.emit(true);
   }
 }

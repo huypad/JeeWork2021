@@ -22,6 +22,5 @@ export class DanhsachthumucComponent implements OnInit {
   view(row){
     this.selected = row;
     this.ChangeFolder.emit(row.id_row);
-    console.log(row);
   }
 }

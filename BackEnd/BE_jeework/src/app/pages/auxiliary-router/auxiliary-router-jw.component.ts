@@ -20,7 +20,6 @@ export class AuxiliaryRouterJWComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
 			var ID = params.id;
-      console.log(params,'data router')
       this.LoadDetailTask(ID); 
 		});
   }
@@ -35,7 +34,6 @@ export class AuxiliaryRouterJWComponent implements OnInit {
   }
 
   close() { 
-    console.log('123')
     this.router.navigate(['', {outlets: {auxName: null}}]);
   } 
   openDialogJW(item){

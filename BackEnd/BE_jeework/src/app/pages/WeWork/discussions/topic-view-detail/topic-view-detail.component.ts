@@ -164,7 +164,6 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
           setTimeout(() => {
             this.topicObjectID$.next(res);
           }, 50);
-          console.log('object :',this.topicObjectID$);
         }),
         catchError((err) => {
           console.log(err);

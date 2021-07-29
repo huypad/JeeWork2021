@@ -98,7 +98,6 @@ export class AutomationTriggerStateConditionComponent
     this.valueout.emit(this.value);
   }
   MapvalueEdit() {
-    console.log(this.data_condition, "datacondition");
     switch (this.Eventid) {
       case 1: // thay đổi trạng thái
         {

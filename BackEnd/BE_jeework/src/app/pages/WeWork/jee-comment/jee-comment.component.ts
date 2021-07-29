@@ -201,7 +201,6 @@ export class JeeCommentComponent implements OnInit {
   }
 
   updateLengCreate(currentLength: number, lengthLstCreate: number) {
-    console.log(currentLength, lengthLstCreate);
     currentLength = currentLength + lengthLstCreate;
   }
 
@@ -384,7 +383,6 @@ export class JeeCommentComponent implements OnInit {
   }
 
   GetValueComment(event){
-    console.log('nhan value cuoi');
     this.getShowTopic();
   }
 }

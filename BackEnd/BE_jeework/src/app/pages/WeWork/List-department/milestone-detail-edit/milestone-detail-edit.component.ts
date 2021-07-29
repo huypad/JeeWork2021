@@ -55,7 +55,6 @@ export class milestoneDetailEditComponent implements OnInit {
 		if(this.data.reloadPage){
 			this.reloadPage = this.data.reloadPage;
 		}
-		console.log(this.item);
 		if (this.data._item) {
 			if (this.item.id_row > 0) {
 				this.viewLoading = true;
