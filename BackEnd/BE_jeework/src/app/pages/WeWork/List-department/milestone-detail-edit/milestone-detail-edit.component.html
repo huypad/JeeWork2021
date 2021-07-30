@@ -26,7 +26,7 @@
 				</div>
 				<div class="col-md-12 m--margin-bottom-10-mobile">
 					<mat-form-field class="mat-form-field-fluid">
-						<input matInput [matDatepicker]="dp1" placeholder="{{ 'department.milestonedate' | translate}}"
+						<input matInput [matDatepicker]="dp1" placeholder="{{ 'department.milestonedate' | translate}}" readonly
 							required formControlName="milestonedate" class="require">
 						<mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
 						<mat-datepicker #dp1></mat-datepicker>

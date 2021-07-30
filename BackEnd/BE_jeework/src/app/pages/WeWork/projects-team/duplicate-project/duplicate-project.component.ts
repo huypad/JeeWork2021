@@ -1,3 +1,4 @@
+import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import {
   LayoutUtilsService,
   MessageType,
@@ -75,7 +76,7 @@ export class DuplicateProjectComponent implements OnInit {
     private _service: ProjectsTeamService,
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
-    private danhMucChungService: DanhMucChungService,
+    private menuAsideService: MenuAsideService,
     public weworkService: WeWorkService,
     private router: Router
   ) {}
@@ -200,8 +201,8 @@ export class DuplicateProjectComponent implements OnInit {
     this.viewLoading = true;
     this.disabledBtn = true;
     this._service.Duplicate(_item).subscribe((res) => {
-      this.disabledBtn = false;
-      this.changeDetectorRefs.detectChanges();
+      this.disabledBtn = false; 
+      this.menuAsideService.loadMenu()
       if (res && res.status === 1) {
         window.location.reload();
         if (withBack == true) {
@@ -244,9 +245,9 @@ export class DuplicateProjectComponent implements OnInit {
     this.disabledBtn = true;
     this._service.Duplicate(_item).subscribe((res) => {
       this.disabledBtn = false;
+      this.menuAsideService.loadMenu()
       this.changeDetectorRefs.detectChanges();
-      if (res && res.status === 1) {
-        window.location.reload();
+      if (res && res.status === 1) { 
         if (withBack == true) {
           this.dialogRef.close({
             _item,

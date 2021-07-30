@@ -39,6 +39,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
   TemplateDetail: any = [];
   share_with = 1;
   id_save_as = 0;
+  keyword = "";
   IsSaveAs = true;
   UserID = localStorage.getItem("idUser");
   constructor(
@@ -148,6 +149,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
   filterConfiguration(): any {
     const filter: any = {};
     if (this.CreatedBy.id_nv > 0) filter.collect_by = this.CreatedBy.id_nv;
+    filter.keyword = this.keyword;
     return filter;
   }
   close(){
@@ -230,6 +232,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           this.share_with = this.TemplateDetail.share_with;
           this.listUserSelected = this.TemplateDetail.list_share;
           this.buocthuchien = 1;
+          this.LoadDatafield();
         } else {
           this.layoutUtilsService.showError(res.error.message);
         }
@@ -506,6 +509,26 @@ export class TemplateCenterUpdateComponent implements OnInit {
 
 
     this.SaveAsTemplateCenter(TCinsert);
+  }
+
+  LoadDatafield(){
+    // this.ListField.filter((item) => item.checked)
+    if(this.ListField.length == this.TemplateDetail.data_fields.length){
+      this.importall = true;
+    }else{
+      this.importall = false;
+      var i = 0;
+      this.ListField.forEach((element) => {
+        var x = this.TemplateDetail.data_fields.find(x=> x.id_field == element.id_field);
+        console.log(i,':',x);
+        i++;
+        if(x){
+          element.checked = true;
+        }else{
+          element.checked = false;
+        }
+      });
+    }
   }
 
   UpdateTemplateCenter(TCinsert) {

@@ -146,7 +146,7 @@ export class JeeCommentService {
               // init ListUserCommentInfo
               const item = new UserCommentInfo();
               item.Username = element.Username;
-              item.AvartarImgURL = element.AvartarImgURL;
+              item.AvartarImgURL = element.AvartarImgURL?element.AvartarImgURL:'https://cdn.jee.vn/jee-account/images/avatars/default2.png';
               item.PhoneNumber = element.PhoneNumber;
               item.Email = element.Email;
               item.Jobtitle = element.Jobtitle;

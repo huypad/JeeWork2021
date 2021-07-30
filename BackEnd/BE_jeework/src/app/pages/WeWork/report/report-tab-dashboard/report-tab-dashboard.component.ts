@@ -65,15 +65,17 @@ export class ReportTabDashboardComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
       if (params.id) {
+        console.log('change data router')
         this.ID_department = +params.id;
         this.DontChange = true;
         this.filter_dept.id_row = this.ID_department.toString();
         // this.LoadData();
+        
+        this.LoadData();
       }
       else {
       }
     });
-    this.LoadData();
   }
 
   Filter(item) {

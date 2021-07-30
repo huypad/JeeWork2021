@@ -286,7 +286,7 @@
                                 </use>
                             </svg>
 
-                        </div><input type="text" placeholder="{{ 'template.search' | translate }}...">
+                        </div><input type="text" [(ngModel)]="keyword" (keyup.enter)="LoadTC()" placeholder="{{ 'template.search' | translate }}...">
 
                     </div>
                     <div class="cu-user-list-dropdown url">
@@ -328,55 +328,29 @@
                         </div>
                     </div>
                 </div>
-                <div class="cu-template-center-update-template__body">
-                    <ng-container *ngFor="let item of ListTemplateUser">
-                        <div class="cu-template-center-update-template__item"
-                            [ngClass]="{'cu-template-center-update-template__item-active': item.id_row == ItemSelect.id_row}"
-                            (click)="UpdateTemplate(item)">
-                            <div
-                                class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
-                                <div class="icon">
-                                    <img [src]="getIconTemplate(item.types)" width="24"  alt="">
-                                    <!-- <svg class="ng-star-inserted">
-                                        <use
-                                            xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
-                                        </use>
-                                    </svg> -->
-
+                <div class="h-100 overflow-auto" style="padding-bottom: 30px;">
+                    <div class="cu-template-center-update-template__body">
+                        <ng-container *ngFor="let item of ListTemplateUser">
+                            <div class="cu-template-center-update-template__item"
+                                [ngClass]="{'cu-template-center-update-template__item-active': item.id_row == ItemSelect.id_row}"
+                                (click)="UpdateTemplate(item)">
+                                <div
+                                    class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
+                                    <div class="icon">
+                                        <img [src]="getIconTemplate(item.types)" width="24"  alt="">
+                                        <!-- <svg class="ng-star-inserted">
+                                            <use
+                                                xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
+                                            </use>
+                                        </svg> -->
+    
+                                    </div>
                                 </div>
+                                <div class="cu-template-center-update-template__item-text"> {{item.title}} </div>
                             </div>
-                            <div class="cu-template-center-update-template__item-text"> {{item.title}} </div>
-                        </div>
-                    </ng-container>
-
-                    <!-- <div
-                        class="cu-template-center-update-template__item cu-template-center-update-template__item-active">
-                        <div
-                            class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
-                            <div class="icon"><svg class="ng-star-inserted">
-                                    <use
-                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
-                                    </use>
-                                </svg>
-                                
-                            </div>
-                        </div>
-                        <div class="cu-template-center-update-template__item-text"> Project Management </div>
+                        </ng-container>
+    
                     </div>
-                    <div class="cu-template-center-update-template__item">
-                        <div
-                            class="cu-template-center-update-template__type cu-template-center-update-template__type-folder">
-                            <div class="icon"><svg class="ng-star-inserted">
-                                    <use
-                                        xlink:href="https://app.clickup.com/map.db66d4b82ff82e16bfb9.svg#svg-sprite-template-type-folder">
-                                    </use>
-                                </svg>
-                                
-                            </div>
-                        </div>
-                        <div class="cu-template-center-update-template__item-text"> TL7 </div>
-                    </div> -->
-
                 </div>
             </div>
             <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
@@ -397,12 +371,10 @@
                     </svg>
                     </div> {{ 'GeneralKey.saveastemplate' | translate }} 
                 </ng-container>
-                
-
             </div>
             <div class="cu-template-center-update-template__footer-buttons">
                 <div
-                    class="cu-template-center-update-template__footer-button cu-template-center-update-template__footer-button-cancel">
+                    class="cu-template-center-update-template__footer-button cu-template-center-update-template__footer-button-cancel" (click)="close()">
                     {{ 'template.cancel' | translate }} </div>
                 <div class="cu-template-center-update-template__footer-button" (click)="NextStep()"
                     [ngClass]="{'cu-template-center-update-template__footer-button-disabled': !(ItemSelect.id_row > 0)}">

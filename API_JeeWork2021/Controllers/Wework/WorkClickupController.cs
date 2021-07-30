@@ -3147,7 +3147,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", data.title);
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = "";
-                        notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                        notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                         try
                         {
                             if (notify_model != null)
@@ -3827,7 +3827,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                             notify_model.ReplaceData = has_replace;
                                             notify_model.To_Link_MobileApp = "";
-                                            notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                                            notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                                             try
                                             {
                                                 if (notify_model != null)
@@ -3880,7 +3880,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                             notify_model.ReplaceData = has_replace;
                                             notify_model.To_Link_MobileApp = "";
-                                            notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                                            notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                                             try
                                             {
                                                 if (notify_model != null)
@@ -3949,7 +3949,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                                 notify_model.ReplaceData = has_replace;
                                                 notify_model.To_Link_MobileApp = "";
-                                                notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                                                notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                                                 try
                                                 {
                                                     if (notify_model != null)
@@ -3988,7 +3988,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                                 notify_model.ReplaceData = has_replace;
                                                 notify_model.To_Link_MobileApp = "";
-                                                notify_model.To_Link_WebApp = "/tasks/detail/" + data.id_row + "";
+                                                notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                                                 try
                                                 {
                                                     if (notify_model != null)

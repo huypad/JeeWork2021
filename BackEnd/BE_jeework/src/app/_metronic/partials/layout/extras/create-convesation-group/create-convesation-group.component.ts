@@ -195,7 +195,7 @@ addTagName(item: any) {
       // debugger
       //	const filterValue = value.toLowerCase();
       const filterValue = this._normalizeValue(value);
-      return this.itemuser.filter(state => this._normalizeValue(state.Username).includes(filterValue));
+      return this.itemuser.filter(state => this._normalizeValue(state.Fullname).includes(filterValue));
     }
     
     loadTT() {

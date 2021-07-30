@@ -208,9 +208,7 @@ export class milestoneDetailEditComponent implements OnInit {
 		this.ObjectService.InsertMilestone(_item).subscribe(res => {
 			this.disabledBtn = false;
 			if (res && res.status === 1) {
-				if(this.reloadPage){
-					location.reload();
-				}
+				this.dialogRef.close(_item);
 			}
 			else {
 				this.viewLoading = false;

@@ -16,6 +16,7 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using DPSinfra.Notifier;
 using Microsoft.Extensions.Logging;
+using JeeWork_Core2021.Controller;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -44,6 +45,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             _notifier = notifier; 
             _logger = logger;
         }
+        APIModel.Models.Notify Knoti;
         /// <summary>
         /// 
         /// </summary>
@@ -455,7 +457,40 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     data.id_row = idc;
                     cnn.EndTransaction();
-
+                    #region Notify assign
+                    Hashtable has_replace = new Hashtable();
+                    foreach(var item in data.Users)
+                    {
+                        NotifyModel notify_model = new NotifyModel();
+                        has_replace = new Hashtable();
+                        notify_model.AppCode = "WORK";
+                        notify_model.From_IDNV = loginData.UserID.ToString();
+                        notify_model.To_IDNV = item.id_user.ToString();
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thaoluan", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = "";
+                        notify_model.To_Link_WebApp = "/wework/discussions/" + idc;
+                        try
+                        {
+                            if (notify_model != null)
+                            {
+                                Knoti = new APIModel.Models.Notify();
+                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                            }
+                        }
+                        catch
+                        { }
+                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                        if (DataAccount == null)
+                            return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info is not null)
+                        {
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
+                        }
+                    }
+                    #endregion
                     if (data.email)
                     WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier);
                     data.id_row = idc;

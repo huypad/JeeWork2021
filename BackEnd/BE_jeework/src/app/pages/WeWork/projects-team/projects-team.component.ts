@@ -1,3 +1,4 @@
+import { MenuAsideService } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { MenuPhanQuyenServices } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { CommonService } from './../../../_metronic/jeework_old/core/services/common.service';
@@ -69,6 +70,7 @@ export class ProjectsTeamComponent implements OnInit {
 		private layoutUtilsService: LayoutUtilsService,
 		public dialog: MatDialog,
 		private activatedRoute: ActivatedRoute,
+		public menuAsideService: MenuAsideService,
 		public WeWorkService: WeWorkService,
 		private menuServices: MenuPhanQuyenServices,
 		private DocumentsService: DocumentsService,
@@ -466,6 +468,7 @@ export class ProjectsTeamComponent implements OnInit {
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				this.router.navigateByUrl("/project/" + this.ID_Project).then(() => {
 					this.LoadData();
+					this.menuAsideService.loadMenu()
 				});
 			}
 		});
@@ -539,6 +542,7 @@ export class ProjectsTeamComponent implements OnInit {
 			}
 			else {
 				this.ngOnInit();
+				this.menuAsideService.loadMenu();
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				// this.changeDetectorRefs.detectChanges();
 			}
@@ -584,6 +588,7 @@ export class ProjectsTeamComponent implements OnInit {
 				if (res && res.status === 1) {
 					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
 					let _backUrl = `wework/projects`;
+					this.menuAsideService.loadMenu()
 					this.router.navigateByUrl(_backUrl);
 				}
 				else {

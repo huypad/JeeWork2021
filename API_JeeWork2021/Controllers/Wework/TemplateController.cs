@@ -748,8 +748,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 "order by is_default desc";
                     sqlq += @$";select id_field, fieldname, title, type, position, isdefault, typeid
                             from we_fields 
-                            where isNewField = 1 and IsDel = 0 and isvisible = 0 
-                            and id_field in (" + field_id + ") " +
+                            where IsDel = 0 and id_field in (" + field_id + ") " +
                             "order by position, title";
                     sqlq += @$";select id_row, title, description, locked, array_status 
                                 from we_status_group 
@@ -916,6 +915,11 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     long group_id = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_status_group").ToString());
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
+                    string x = string.Join(",", data.list_field_name.Select(x => x.id_field));
+                    if (!string.IsNullOrEmpty(x))
+                    {
+                        data.field_id = x;
+                    }
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
                     if (!string.IsNullOrEmpty(data.description))

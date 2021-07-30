@@ -204,6 +204,9 @@ export class TemplateCenterComponent implements OnInit {
       .subscribe((res) => {
         if (res && res.status == 1) {
           this.TemplateDetail = res.data;
+          if(!istemplatelist){
+            this.LoadDatafield();
+          }
         }
       });
   }
@@ -626,6 +629,25 @@ export class TemplateCenterComponent implements OnInit {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
+  }
+  LoadDatafield(){
+    // this.ListField.filter((item) => item.checked)
+    if(this.ListField.length == this.TemplateDetail.data_fields.length){
+      this.importall = true;
+    }else{
+      this.importall = false;
+      var i = 0;
+      this.ListField.forEach((element) => {
+        var x = this.TemplateDetail.data_fields.find(x=> x.id_field == element.id_field);
+        console.log(i,':',x);
+        i++;
+        if(x){
+          element.checked = true;
+        }else{
+          element.checked = false;
+        }
+      });
+    }
   }
   protected filterUsers() {
 		if (!this.TemplateTypes) {

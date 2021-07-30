@@ -4,7 +4,7 @@ import { MessageType, LayoutUtilsService } from './../../../../_metronic/jeework
 import { milestoneDetailEditComponent } from './../milestone-detail-edit/milestone-detail-edit.component';
 import { MilestoneModel } from './../../projects-team/Model/department-and-project.model';
 import { WeWorkService } from './../../services/wework.services';
-import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, Input, SimpleChange } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, Input, SimpleChange, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -49,6 +49,7 @@ export class TabMucTieuComponent implements OnInit{
 	customStyle:any = {};
 	// ID_QuyTrinh: number = 10003;
 	// TenQuyTrinh: string = 'Pad Trần Văn';
+	Id_Department: any=0;
 	@Input() ID_QuyTrinh: any=0;
 	@Input() TenQuyTrinh: any;
 	@Input() WorkID: any;
@@ -60,6 +61,7 @@ export class TabMucTieuComponent implements OnInit{
 		public dialog: MatDialog,
 		private router: Router,
 		private route: ActivatedRoute,
+		private changeDetectorRefs: ChangeDetectorRef,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		private tokenStorage: TokenStorage,) { }
@@ -69,9 +71,15 @@ export class TabMucTieuComponent implements OnInit{
 		var path = this.router.url;
 		if (path) {
 			var arr = path.split('/');
-			if (arr.length > 2)
+			if (arr.length > 2){
 				this.ID_QuyTrinh = +arr[2];
+				this.Id_Department = +arr[2];
+
+			}
 		}
+		if(this.Id_Department > 0){
+			this.LoadDataFolder();
+		  }
 		this.Load();
 		setTimeout(() => {
 			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
@@ -112,7 +120,6 @@ export class TabMucTieuComponent implements OnInit{
 		);
 		this.dataSource.loadListMilestone(queryParams);
 		this.dataSource.entitySubject.subscribe(res => {
-
 			if (res.length > 0) {
 
 			}
@@ -341,11 +348,40 @@ export class TabMucTieuComponent implements OnInit{
 				return;
 			}
 			else {
-				this.ngOnInit();
+				this.loadDataList();
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				// this.changeDetectorRefs.detectChanges();
 			}
 		});
 	}
 
+	dataFolder:any = [];
+	loadListfolder = false;
+	LoadDataFolder(){
+	  this.deptService.DeptDetail(this.Id_Department).subscribe(res => {
+		if (res && res.status == 1) {
+		  if(!res.data.ParentID){
+			this.dataFolder = res.data.data_folder;
+			var itemhientai = {
+			  CreatedBy: res.data.CreatedBy,
+			  CreatedDate: res.data.CreatedDate,
+			  id_row: res.data.id_row,
+			  parentid: res.data.ParentID,
+			  templateid: res.data.templateid,
+			  title: 'Dự án trực tiếp của phòng ban',
+			}
+			this.dataFolder.unshift(itemhientai)
+			this.loadListfolder = true;
+			this.changeDetectorRefs.detectChanges();
+		  }
+		  
+		}
+	  })
+	}
+
+	ReloadList(event){
+		this.Id_Department = event;
+		this.ID_QuyTrinh = event;
+		this.loadDataList(); 
+	}
 }

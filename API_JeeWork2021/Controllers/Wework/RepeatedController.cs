@@ -981,8 +981,10 @@ from we_repeated_Task task where task.Disabled=0";
                                                     notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                                     notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", row["tencongviec"].ToString());
                                                     notify_model.ReplaceData = has_replace;
+                                                    notify_model.Component = "";
+                                                    notify_model.ComponentName = "";
                                                     notify_model.To_Link_MobileApp = "";
-                                                    notify_model.To_Link_WebApp = "/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";
+                                                    notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + int.Parse(row["id_work"].ToString()) + ")";  //"/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";
                                                     try
                                                     {
                                                         if (notify_model != null)
@@ -993,6 +995,12 @@ from we_repeated_Task task where task.Disabled=0";
                                                     }
                                                     catch
                                                     { }
+
+                                                    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                                    if (info is not null)
+                                                    {
+                                                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
+                                                    }
                                                 }
                                                 #endregion
                                             }
@@ -1033,6 +1041,11 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 val = new Hashtable();
                 val.Add("title", dr["title"].ToString());
+                if (!string.IsNullOrEmpty(dr["deadline"].ToString()))
+                {
+                    DateTime deadline = ngaybatdau.AddHours(long.Parse(dr["deadline"].ToString()));
+                    val.Add("deadline", deadline);
+                }    
                 if (string.IsNullOrEmpty(dr["description"].ToString()))
                     val.Add("description", "");
                 else
