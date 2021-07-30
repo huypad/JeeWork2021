@@ -111,8 +111,8 @@ namespace JeeWork_Core2021.Classes
                 List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
                 if (DanhSachCustomer != null)
                 {
-                    long CustomerID = 25; // để test
-                    //foreach(long CustomerID in DanhSachCustomer)
+                    //long CustomerID = 25; // để test
+                    foreach (long CustomerID in DanhSachCustomer)
                     {
                         try
                         {
