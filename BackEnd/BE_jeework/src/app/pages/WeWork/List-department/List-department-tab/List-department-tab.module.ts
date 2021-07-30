@@ -18,6 +18,7 @@ import { WeWorkModule } from '../../wework.module';
 import { DepartmentProjectTabComponent } from '../../projects-team/department-project-tab/department-project-tab.component';
 import { ReportService } from '../../report/report.service';
 import { ReportTabDashboardComponent } from '../../report/report-tab-dashboard/report-tab-dashboard.component';
+import { ReportTabComponent } from './report-tab/report-tab.component';
 const routes: Routes = [
 	{
 		path: '',
@@ -41,7 +42,8 @@ const routes: Routes = [
 			},
 			{
 				path: 'report/:id',
-				component: ReportTabDashboardComponent,
+				component: ReportTabComponent,
+				// component: ReportTabDashboardComponent,
 			}
 		]
 	}
@@ -74,6 +76,7 @@ const routes: Routes = [
 		DepartmentTabComponent,
 		TabMucTieuComponent,
 		MilestoneDetailComponent,
+		ReportTabComponent,
 	]
 })
 export class DepartmentTabModule { }

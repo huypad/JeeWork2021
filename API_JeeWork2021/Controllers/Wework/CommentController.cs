@@ -534,6 +534,45 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
 
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.ThanhCong();
+                    #endregion
+                    #region kiểm tra comment gửi thông báo cho người liên quan
+                    if (data.object_type == 1)
+                    {
+                        string sqlu = "select distinct id_user from we_work_user where (where) and id_user<>"+loginData.UserID;
+                        DataTable dtu = cnn.CreateDataTable(sqlu, "(where)", new SqlConditions() { { "Disabled", 0 }, { "id_work", data.object_id } });
+                        if (dtu.Rows.Count > 0)
+                        { 
+                            #region Notify assign
+                            Hashtable has_replace = new Hashtable();
+                            foreach (DataRow item in dtu.Rows)
+                            {
+                                NotifyModel notify_model = new NotifyModel();
+                                has_replace = new Hashtable();
+                                notify_model.AppCode = "WORK";
+                                notify_model.From_IDNV = loginData.UserID.ToString();
+                                notify_model.To_IDNV = item["id_user"].ToString();
+                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_comment", "", "vi");
+                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                notify_model.ReplaceData = has_replace;
+                                notify_model.To_Link_MobileApp = "";
+                                notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.object_id + ")"; 
+
+                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                if (info is not null)
+                                {
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+
+                    #endregion
+
                     return JsonResultCommon.ThanhCong();
                 }
             }

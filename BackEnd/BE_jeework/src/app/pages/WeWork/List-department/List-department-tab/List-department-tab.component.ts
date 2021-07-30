@@ -1,3 +1,4 @@
+import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { ProjectTeamEditComponent } from './../../projects-team/project-team-edit/project-team-edit.component';
 import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
 import { milestoneDetailEditComponent } from './../milestone-detail-edit/milestone-detail-edit.component';
@@ -48,6 +49,7 @@ export class DepartmentTabComponent implements OnInit {
 		private translate: TranslateService,
 		public subheaderService: SubheaderService,
 		private activatedRoute: ActivatedRoute,
+		public menuAsideService: MenuAsideService,
 		private changeDetectorRefs: ChangeDetectorRef,
 		public WeWorkService: WeWorkService,
 		// private dynamicSearchFormService: DynamicSearchFormService,
@@ -94,6 +96,7 @@ export class DepartmentTabComponent implements OnInit {
 				if (res && res.status === 1) {
 					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
 					let _backUrl = `depts`;
+					this.menuAsideService.loadMenu();
 					this.router.navigateByUrl(_backUrl);
 				}
 				else {
@@ -128,6 +131,7 @@ export class DepartmentTabComponent implements OnInit {
 			}
 			else {
 				this.ngOnInit();
+				this.menuAsideService.loadMenu();
 				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				this.changeDetectorRefs.detectChanges();
 			}
