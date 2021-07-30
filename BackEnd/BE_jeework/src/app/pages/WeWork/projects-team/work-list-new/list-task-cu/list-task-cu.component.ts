@@ -291,9 +291,16 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         if(roleID == 3 || roleID == 4){
           if(x.isuyquyen) 
             return true;
+        } 
+        if(roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13){
+          if (x.Roles.find((r) => r.id_role == 15)) return false;
         }
-        if (x.Roles.find(r => r.id_role == 15))
-          return false;
+        if(roleID == 10){
+          if (x.Roles.find((r) => r.id_role == 16)) return false;
+        }
+        if(roleID == 4 || roleID == 14){
+          if (x.Roles.find((r) => r.id_role == 17)) return false;
+        }
         var r = x.Roles.find(r => r.id_role == roleID);
         if (r) {
           return true;
@@ -318,6 +325,15 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         if(key == 'id_nv'){
           if(x.isuyquyen) 
             return true;
+        } 
+        if(key == "title" || key == "description" || key == "status" || key == "checklist" || key == "delete"){
+          if (x.Roles.find((r) => r.id_role == 15)) return false;
+        }
+        if(key == "deadline"){
+          if (x.Roles.find((r) => r.id_role == 16)) return false;
+        }
+        if(key == "id_nv" || key == "assign"){
+          if (x.Roles.find((r) => r.id_role == 17)) return false;
         }
         var r = x.Roles.find(r => r.keypermit == key);
         if (r) {

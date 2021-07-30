@@ -132,11 +132,13 @@ export class WorkListNewDetailComponent implements OnInit {
   );
   isback = true;
   objectID: string;
+  Comment: string = "";
   showCommentDefault?: boolean;
   number: number;
   public lstObjectID: string[] = [];
 	isReset: any;
   IsAdminGroup = false;
+  require_evaluate = false;
   constructor(
     private _service: WorkService,
     private el: ElementRef,
@@ -170,6 +172,12 @@ export class WorkListNewDetailComponent implements OnInit {
     this.DataID = this.data.id_row;
     this.Id_project_team = this.data.id_project_team;
     this.UserInfo = JSON.parse(localStorage.getItem("UserInfo"));
+    this.ProjectsTeamService.DeptDetail(this.Id_project_team).subscribe((res) => {
+      if(res && res.status == 1){
+        console.log(res.data);
+        this.require_evaluate = res.data.require_evaluate;
+      }
+    })
     this.LoadData();
     this.LoadChecklist();
     this.LoadObjectID();
@@ -250,10 +258,14 @@ export class WorkListNewDetailComponent implements OnInit {
         this.options_assign = this.getOptions_Assign();
       });
     }, 500);
+    this.layoutUtilsService.showWaitingDiv();
     this.ProjectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
+      this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status == 1) {
         this.item = res.data;
         this.changeDetectorRefs.detectChanges();
+      }else{
+        this.layoutUtilsService.showError(res.error.message);
       }
     });
     this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
@@ -281,15 +293,43 @@ export class WorkListNewDetailComponent implements OnInit {
       }
     });
   }
-
+  IsAdmin(){
+    if(this.IsAdminGroup) return true;
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
+      if (x) {
+        if (x.admin == true) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  HasupdateResult(){
+    if(this.IsAdmin()) return true;
+    if(this.require_evaluate) return true;
+    if(this.item.Followers){
+      var x = this.item.Followers.find(x=>x.id_nv == this.UserID);
+      if(x) return true;
+    }
+    return false
+  }
   CheckRoles(roleID: number) {
     if(this.IsAdminGroup) return true;
     var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
     if (x) {
       if (x.admin == true) {
         return true;
-      } else {
-        if (x.Roles.find((r) => r.id_role == 15)) return false;
+      } else { 
+        if(roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13){
+          if (x.Roles.find((r) => r.id_role == 15)) return false;
+        }
+        if(roleID == 10){
+          if (x.Roles.find((r) => r.id_role == 16)) return false;
+        }
+        if(roleID == 4 || roleID == 14){
+          if (x.Roles.find((r) => r.id_role == 17)) return false;
+        }
         var r = x.Roles.find((r) => r.id_role == roleID);
         if (r) {
           return true;
@@ -308,6 +348,17 @@ export class WorkListNewDetailComponent implements OnInit {
       if (x.admin == true) {
         return true;
       } else {
+        
+        if(key == "title" || key == "description" || key == "status" || key == "checklist" || key == "delete"){
+          if (x.Roles.find((r) => r.id_role == 15)) return false;
+        }
+        if(key == "deadline"){
+          if (x.Roles.find((r) => r.id_role == 16)) return false;
+        }
+        if(key == "id_nv" || key == "assign"){
+          if (x.Roles.find((r) => r.id_role == 17)) return false;
+        }
+
         var r = x.Roles.find((r) => r.keypermit == key);
         if (r) {
           return true;
@@ -430,25 +481,15 @@ export class WorkListNewDetailComponent implements OnInit {
     return filter;
   }
   //type=1: comment, type=2: reply
-  CommentInsert(e: any, Parent: number, ind: number, type: number) {
-    // var objSave: any = {};
-    // objSave.comment = e;
-    // objSave.id_parent = Parent;
-    // objSave.object_type = this.Loai;
-    // objSave.object_id = this.Id;
-    // if (type == 1) { objSave.Attachment = this.AttachFileComment; }
-    // else { objSave.Attachments = this.ListAttachFile[ind]; }
-    // this.service.getDSYKienInsert(objSave).subscribe(res => {
-    // 	if (type == 1) { this.Comment = ''; this.AttachFileComment = []; }
-    // 	else {
-    // 		// var el = document.getElementById("CommentRep" + ind) as HTMLElement;
-    // 		// el.setAttribute('value', '');
-    // 		(<HTMLInputElement>document.getElementById("CommentRep" + ind)).value = "";
-    // 		this.ListAttachFile[ind] = [];
-    // 	}
-    // 	this.changeDetectorRefs.detectChanges();
-    // 	//this.getDSYKien();
-    // });
+  UpdateResult(value) {
+    var ele = <HTMLInputElement>document.getElementById("txtresult");
+    if (
+      ele.value.toString().trim() != this.item.result.toString().trim()
+    ) {
+      this.item.description = ele.value;
+      this.UpdateByKeyNew(this.item, "result", this.item.description);
+    }
+    this.Update_Result()
   }
   formatLabel(value: number) {
     if (value >= 1000) {
@@ -1602,4 +1643,5 @@ export class WorkListNewDetailComponent implements OnInit {
       });
     }
   }
+
 }

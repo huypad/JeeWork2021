@@ -57,7 +57,7 @@
 						</mat-select>
 					</mat-form-field>
 				</div>
-				<div class="col-md-12">
+				<!-- <div class="col-md-12">
 					<span [translate]="'projects.tuychon'"></span>
 				</div>
 				<div class="col-md-12 m--margin-bottom-10-mobile">
@@ -71,7 +71,7 @@
 							</mat-option>
 						</mat-select>
 					</mat-form-field>
-				</div>
+				</div> -->
 				<div class="col-md-12 m--margin-bottom-10-mobile">
 					<mat-form-field class="mat-form-field-fluid">
 						<mat-select formControlName="allow_estimate_time">
@@ -122,12 +122,13 @@
 								<span translate="projects.khongyeucau"></span>
 							</mat-option>
 							<mat-option [value]="true">
-								<span translate="projects.yeucaudanhgia"></span>
+								<!-- <span translate="projects.yeucaudanhgia"></span> -->
+								<span translate="projects.evaluate_by_assignner"></span>
 							</mat-option>
 						</mat-select>
 					</mat-form-field>
 				</div>
-				<div class="col-md-12 m--margin-bottom-10-mobile"
+				<!-- <div class="col-md-12 m--margin-bottom-10-mobile"
 					[hidden]="!itemForm.controls['require_evaluate'].value">
 					<mat-form-field class="mat-form-field-fluid">
 						<mat-select formControlName="evaluate_by_assignner">
@@ -139,7 +140,7 @@
 							</mat-option>
 						</mat-select>
 					</mat-form-field>
-				</div>
+				</div> -->
 			</div>
 			<div class="row">
 				<div class="col-md-12">

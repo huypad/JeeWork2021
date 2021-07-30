@@ -24,7 +24,7 @@
                             <th class="text-left">{{'projects.phanquyen' | translate }}</th>
                             <th>{{'projects.admin' | translate }}</th>
                             <th>{{'projects.member' | translate }}</th>
-                            <th>{{'projects.customer' | translate }}</th>
+                            <!-- <th>{{'projects.customer' | translate }}</th> -->
                         </tr>
                         <tr *ngFor="let item1 of group.roles" class="role">
                             <td class="text-left">
@@ -43,10 +43,10 @@
                                 <mat-checkbox [(ngModel)]="item1['member']" (click)="update($event,item1.id_row,'member')">
                                 </mat-checkbox>
                             </td>
-                            <td>
+                            <!-- <td>
                                 <mat-checkbox [(ngModel)]="item1['customer']" (click)="update($event,item1.id_row,'customer')">
                                 </mat-checkbox>
-                            </td>
+                            </td> -->
                         </tr>
                     </table>
                 </div>

@@ -234,7 +234,7 @@ export class SettingComponent {
 			allow_percent_done: [this.item.allow_percent_done],
 			allow_estimate_time: [this.item.allow_estimate_time],
 			require_evaluate: [this.item.require_evaluate],
-			evaluate_by_assignner: [this.item.evaluate_by_assignner],
+			// evaluate_by_assignner: [this.item.evaluate_by_assignner],
 			locked: [this.item.locked],
 			default_view: [this.item.default_view],
 			period_type: [this.item.period_type],
@@ -270,9 +270,9 @@ export class SettingComponent {
 				_item.locked = controls["locked"].value;
 				_item.status = controls["status"].value;
 				_item.require_evaluate = controls["require_evaluate"].value;
-				if (_item.require_evaluate)
-					_item.evaluate_by_assignner =
-						controls["evaluate_by_assignner"].value;
+				// if (_item.require_evaluate)
+				// 	_item.evaluate_by_assignner =
+				// 		controls["evaluate_by_assignner"].value;
 				_item.start_date = this.f_convertDate(this.item.start_date);
 				_item.end_date = this.f_convertDate(this.item.end_date);
 				if (this.icon.strBase64) {

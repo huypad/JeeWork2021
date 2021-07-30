@@ -754,6 +754,104 @@
                                                     </span>
                                                 </table>
                                             </div>
+                                            <div class="row align-items-center" style="padding-top: 20px;">
+                                                <table style="width: 100%;">
+                                                    <tr>
+                                                        <td style="width: 50%;">
+                                                            <div class="title">
+                                                                <span translate="work.ketquacongviec"></span>
+                                                            </div>
+                                                        </td>
+                                                        
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 100%;" colspan="2" class="color-tieude">
+                                                            <div class="row" *ngIf="!IsShow_Result">
+                                                                <span>{{item.result}}</span>
+                                                            </div>
+                                                            <div class="row" *ngIf="IsShow_Result">
+                                                                <table style="width: 100%;">
+                                                                    <tr>
+                                                                        <td colspan="2" style="width: 100%">
+                                                                            <mat-form-field class="mat-form-field-fluid">
+                                                                                <textarea matInput
+                                                                                    placeholder="{{ 'work.capnhatketquacongviec' | translate }}"
+                                                                                    [value]="item.result" id="txtresult" rows="3"> 
+                                                                            </textarea> </mat-form-field>
+                                                                        </td>
+                                                                    </tr>
+                        
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 100%;" colspan="2" class="color-tieude">
+                                                            <div class="row comment-box" style="margin-bottom: 10px;"
+                                                                *ngIf="item.Attachments_Result?item.Attachments_Result.length>0:false">
+                                                                <div class="col-md-12 kt-margin-bottom-10-mobile"
+                                                                    *ngFor="let att2 of item.Attachments_Result;">
+                                                                    <div class="attach-item show-action">
+                                                                        <div class="attach-item-icon">
+                                                                            <img src="{{att2.icon}}" />
+                                                                        </div>
+                                                                        <div class="attach-item-name">
+                                                                            <p>{{att2.filename}}</p>
+                                                                        </div>
+                                                                        <div class="attach-item-del">
+                        
+                                                                            <a class="text-success" 
+                                                                                matTooltip="Preview">
+                                                                                <i class="far fa-eye"></i>
+                                                                            </a>
+                        
+                                                                            <a class=" text-primary" 
+                                                                                matTooltip="Download">
+                                                                                <i class="fas fa-download"></i>
+                                                                            </a>
+                        
+                                                                            <a class=" text-danger" 
+                                                                                matTooltip="Xóa File">
+                                                                                <i class="fas fa-trash-alt"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                        
+                                                    <tr *ngIf="IsShow_Result">
+                                                        <td colspan="2" style="width: 100%">
+                                                            <div *ngIf="item.result.length>0">
+                                                                <button mat-raised-button class="jee_btn-addcontinue"  (click)="UpdateResult(item.result)">
+                                                                    <span translate="GeneralKey.luu"></span>
+                                                                </button>
+                                                                <button class="btn d-inline" (click)="Update_Result()">
+                                                                    <i class="las la-close"></i>
+                                                                    <span translate="GeneralKey.cancel"> </span>
+                                                                </button>
+                                                                <br />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="HasupdateResult()">
+                                                        <td colspan="2" style="width: 100%">
+                                                            <a class="action" (click)="Update_Result()"> 
+                                                                <span translate="work.capnhatketquacongviec"></span>
+                                                            </a>&nbsp;&nbsp;or
+                                                            <input #resultInput hidden="true" type="file" onclick="this.value=null"
+                                                                (change)="save_file_Direct($event, '11')" />
+                        
+                                                            <a class="action" (click)="resultInput.click()"
+                                                                matTooltip="{{ 'work.uploadfile' | translate }}">
+                                                                <span translate="work.themtailieu"></span>
+                                                                <i class="las la-upload"></i>&nbsp;
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </div>
                                     </ng-container>
                                 </kt-portlet>

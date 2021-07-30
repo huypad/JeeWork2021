@@ -2475,15 +2475,11 @@ where Disabled = 0";
                 dt_role = cnn.CreateDataTable(role);
                 if (dt_role.Rows.Count <= 0)
                 {
-                    cnn.BeginTransaction();
                     if (cnn.Insert(has, "we_project_role") != 1)
                     {
-                        cnn.RollbackTransaction();
                         return false;
                     }
                 }
-                cnn.EndTransaction();
-                return true;
             }
             return true;
         }
@@ -2533,10 +2529,8 @@ where Disabled = 0";
                             has.Add("default_view", item["is_default"].ToString());
                             has.Add("createddate", DateTime.Now);
                             has.Add("createdby", 0);
-                            conn.BeginTransaction();
                             if (conn.Insert(has, "we_projects_view") != 1)
                             {
-                                conn.RollbackTransaction();
                                 return false;
                             }
                         }
@@ -2555,15 +2549,13 @@ where Disabled = 0";
                             has.Add("id_department", 0);
                             has.Add("createddate", DateTime.Now);
                             has.Add("createdby", 0);
-                            conn.BeginTransaction();
                             if (conn.Insert(has, "we_projects_view") != 1)
                             {
-                                conn.RollbackTransaction();
                                 return false;
                             }
                         }
                     }
-                    conn.EndTransaction();
+                    return true;
                 }
             }
             return true;
@@ -2611,12 +2603,10 @@ where Disabled = 0";
                         has.Add("IsNewField", 0);
                         if (conn.Insert(has, "we_fields_project_team") != 1)
                         {
-                            conn.RollbackTransaction();
                             return false;
                         }
                     }
                 }
-                conn.EndTransaction();
             }
             return true;
         }
@@ -2664,12 +2654,10 @@ where Disabled = 0";
                         val1.Add("createdby", loginData.UserID);
                         if (conn.Insert(val1, "we_status") != 1)
                         {
-                            conn.RollbackTransaction();
                             return false;
                         }
                     }
                 }
-                conn.EndTransaction();
             }
             return true;
         }

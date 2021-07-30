@@ -2352,7 +2352,7 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     conds1 = new SqlConditions();
                     conds1.Add("w_user.Disabled", 0);
                     conds1.Add("loai", 1);
-                    string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as image, id_work
+                    string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as image,'' as username,'' as tenchucdanh,'' as mobile, id_work
                                                     from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
                                                     where (where)";
                     User = cnn.CreateDataTable(select_user, "(where)", conds1);
@@ -2364,6 +2364,9 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                         {
                             item["hoten"] = info.FullName;
                             item["image"] = info.AvartarImgURL;
+                            item["username"] = info.Username;
+                            item["tenchucdanh"] = info.Jobtitle;
+                            item["mobile"] = info.PhoneNumber;
                         }
                     }
                     #endregion
@@ -2407,15 +2410,16 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     NguoiSua = r["NguoiSua"],
                                     NguoiGiao = r["NguoiGiao"],
                                     clickup_prioritize = r["clickup_prioritize"],
+                                    result = r["result"],
                                     User = from us in User.AsEnumerable()
                                            where r["id_row"].Equals(us["id_work"])
                                            select new
                                            {
                                                id_nv = us["id_user"],
                                                hoten = us["hoten"],
-                                               //username = us["username"],
-                                               //tenchucdanh = us["tenchucdanh"],
-                                               //mobile = us["mobile"],
+                                               username = us["username"],
+                                               tenchucdanh = us["tenchucdanh"],
+                                               mobile = us["mobile"],
                                                image = us["image"],
                                                //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, us["id_user"].ToString(), _hostingEnvironment.ContentRootPath),
                                            },
@@ -4082,6 +4086,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         notify_model.From_IDNV = loginData.UserID.ToString();
                                         notify_model.To_IDNV = users[i].ToString();
                                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_assign", "", "vi");
+                                        if(data.key == "follower")
+                                        {
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_follower", "", "vi");
+                                        }
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                         notify_model.ReplaceData = has_replace;
