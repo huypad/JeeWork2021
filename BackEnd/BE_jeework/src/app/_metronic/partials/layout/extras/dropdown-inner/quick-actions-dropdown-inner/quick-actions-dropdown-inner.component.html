@@ -25,8 +25,9 @@
   }
 </style>
 
-<div class="container">
+<div class="container d-block">
   <div class="item" *ngFor="let app of listApp">
+    <ng-container *ngIf="app.IsShowApp">
       <div class="d-block py-5 px-5 text-center" style="height: 80px;">
           <div *ngIf="app.Icon == '' || app.Icon == null">
               <a class="d-block rectangle" href="{{app.BackendURL}}" target="_blank"></a>
@@ -37,6 +38,7 @@
               </a>
           </div>
       </div>
-      <div class=" text">{{app.AppName}}</div>
+      <div class=" text" style="height: 30px;">{{app.AppName}}</div>
+    </ng-container> 
   </div>
 </div>

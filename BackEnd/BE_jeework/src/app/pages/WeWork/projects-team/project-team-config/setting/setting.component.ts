@@ -483,7 +483,7 @@ export class SettingComponent {
 		);
 	}
 	chooseFile() {
-		let f = document.getElementById("inputIcon");
+		let f = document.getElementById("inputIconst");
 		f.click();
 	}
 	onSelectFile(event) {

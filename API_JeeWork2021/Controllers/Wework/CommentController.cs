@@ -542,6 +542,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                     #region kiểm tra comment gửi thông báo cho người liên quan
                     if (data.object_type == 1)
                     {
+                        WeworkLiteController.count_comment(data.object_id, cnn, true);
                         string sqlu = "select distinct id_user from we_work_user where (where) and id_user<>"+loginData.UserID;
                         DataTable dtu = cnn.CreateDataTable(sqlu, "(where)", new SqlConditions() { { "Disabled", 0 }, { "id_work", data.object_id } });
                         if (dtu.Rows.Count > 0)

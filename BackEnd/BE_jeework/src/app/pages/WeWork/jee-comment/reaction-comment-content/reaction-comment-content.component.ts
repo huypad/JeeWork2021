@@ -38,6 +38,7 @@ export class JeeCommentReactionContentComponent implements OnInit {
     this.userReaction = react;
     const model = this.prepareModel();
     this.postReactionComment(model);
+    this.changeValue.emit(true);
   }
 
   postReactionComment(model: ReactionCommentModel) {
@@ -45,7 +46,6 @@ export class JeeCommentReactionContentComponent implements OnInit {
     this.service.postReactionCommentModel(model).pipe(
       tap(
         (res) => {
-          this.changeValue.emit(true);
           setTimeout(() => {
             this._isLoading$.next(false);
           }, 1000);

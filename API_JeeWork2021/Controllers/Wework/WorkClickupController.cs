@@ -1080,7 +1080,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value);
-                    DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).CopyToDataTable();
+                    //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).CopyToDataTable();
                     dtNew = dtNew.Concat(dtChild);
                     var Children = from rr in dtG.AsEnumerable()
                                    select new
@@ -4086,6 +4086,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         if (data.key == "follower")
                                         {
                                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_follower", "", "vi");
+                                        }
+                                        if (!isAssign)
+                                        {
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoaassign", "", "vi");
+                                            if (data.key == "follower")
+                                            {
+                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoafollower", "", "vi");
+                                            }
                                         }
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);

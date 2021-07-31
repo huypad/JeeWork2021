@@ -383,6 +383,8 @@ export class JeeCommentComponent implements OnInit {
   }
 
   GetValueComment(event){
+    console.log('thay đổi comment/reaction')
+    this.getShowChangeTopic();
     this.getShowTopic();
   }
 }

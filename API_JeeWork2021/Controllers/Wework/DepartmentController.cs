@@ -508,6 +508,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     else
                     {
                         data.templatecenter.ObjectTypesID = long.Parse(idc);
+                        //string sql_insert = $@"insert into we_department_owner (id_department,id_user,CreatedDate,CreatedBy,Type)
+                        //                    select id_department,id_user,GETDATE(),"+loginData.UserID+ ",Type from we_department_owner where id_department = " + data.templatecenter.id_reference+ "";
+                        //cnn.ExecuteNonQuery(sql_insert);
+                        //if (cnn.LastError != null)
+                        //{
+                        //    cnn.RollbackTransaction();
+                        //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        //}
                         if (!WeworkLiteController.init_template_center(cnn, data.templatecenter, loginData))
                         {
                             cnn.RollbackTransaction();

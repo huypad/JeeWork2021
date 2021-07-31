@@ -823,17 +823,15 @@
                                                     </tr>
                         
                                                     <tr *ngIf="IsShow_Result">
-                                                        <td colspan="2" style="width: 100%">
-                                                            <div *ngIf="item.result.length>0">
-                                                                <button mat-raised-button class="jee_btn-addcontinue"  (click)="UpdateResult(item.result)">
-                                                                    <span translate="GeneralKey.luu"></span>
-                                                                </button>
-                                                                <button class="btn d-inline" (click)="Update_Result()">
-                                                                    <i class="las la-close"></i>
-                                                                    <span translate="GeneralKey.cancel"> </span>
-                                                                </button>
-                                                                <br />
-                                                            </div>
+                                                        <td colspan="2" style="width: 100%"> 
+                                                            <button mat-raised-button class="jee_btn-addcontinue"  (click)="UpdateResult(item.result)">
+                                                                <span translate="GeneralKey.luu"></span>
+                                                            </button>
+                                                            <button class="btn d-inline" (click)="Update_Result()">
+                                                                <i class="las la-close"></i>
+                                                                <span translate="GeneralKey.cancel"> </span>
+                                                            </button>
+                                                            <br /> 
                                                         </td>
                                                     </tr>
                                                     <tr *ngIf="HasupdateResult()">
@@ -878,22 +876,27 @@
                                 <div class="task-history-item">
                                     <ng-container *ngIf="log.id_action != 39;else comment">
                                         <div class="task-history-item__content row">
-                                            <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} từ &nbsp;
-                                            <ng-container *ngIf="log.colorold">
-                                                <div class="point" style="margin: auto 5px;"
-                                                    [ngStyle]="{'backgroundColor': log.colorold}"></div>
+                                            <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} 
+                                            
+                                            <ng-container *ngIf="log.id_action != 1">
+                                                từ &nbsp;
+                                                <ng-container *ngIf="log.colorold">
+                                                    <div class="point" style="margin: auto 5px;"
+                                                        [ngStyle]="{'backgroundColor': log.colorold}"></div>
+                                                </ng-container>
+                                                <span style="font-weight: 600;">
+                                                    {{log.oldvalue}}
+                                                </span>
+                                                &nbsp; thành &nbsp;
+                                                <ng-container *ngIf="log.colornew">
+                                                    <div class="point" style="margin: auto 5px;"
+                                                        [ngStyle]="{'backgroundColor': log.colornew}"></div>
+                                                </ng-container>
+                                                <span style="font-weight: 600;">
+                                                    {{log.newvalue}}
+                                                </span>
                                             </ng-container>
-                                            <span style="font-weight: 600;">
-                                                {{log.oldvalue}}
-                                            </span>
-                                            &nbsp; thành &nbsp;
-                                            <ng-container *ngIf="log.colornew">
-                                                <div class="point" style="margin: auto 5px;"
-                                                    [ngStyle]="{'backgroundColor': log.colornew}"></div>
-                                            </ng-container>
-                                            <span style="font-weight: 600;">
-                                                {{log.newvalue}}
-                                            </span>
+                                            
                                         </div>
                                         <div class="task-history-item__date">
                                             {{log.CreatedDate}}

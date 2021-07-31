@@ -297,7 +297,7 @@ export class TemplateCenterComponent implements OnInit {
       }
     }
     // kiểm tra custom item
-    TCinsert.is_customitems = this.importall;
+    TCinsert.is_customitems = this.importall; 
     TCinsert.list_field_name = [];
     if (!this.importall) {
       const listcustomitems = this.ListField.filter((item) => item.checked);
@@ -316,7 +316,7 @@ export class TemplateCenterComponent implements OnInit {
         if (element.typeid) cus_it.typeid = element.typeid;
         TCinsert.list_field_name.push(cus_it);
       });
-    } else {
+    } else { 
       this.ListField.forEach((element) => {
         const cus_it = new ListFieldModel();
         cus_it.clear();
@@ -334,26 +334,26 @@ export class TemplateCenterComponent implements OnInit {
       });
     } //ListField
 
-    if (
-      this.TemplateDetail.data_fields &&
-      this.TemplateDetail.data_fields.length > 0
-    ) {
-      this.TemplateDetail.data_fields.forEach((element) => {
-        const cus_it = new ListFieldModel();
-        cus_it.clear();
-        cus_it.fieldname = element.fieldname;
-        cus_it.id_field = element.id_field;
-        cus_it.isnewfield = true;
-        cus_it.isdefault = element.isdefault;
-        cus_it.position = element.position;
-        cus_it.title = element.title;
-        if (element.isvisible) cus_it.isvisible = element.isvisible;
-        if (element.note) cus_it.note = element.note;
-        if (element.type) cus_it.type = element.type;
-        if (element.typeid) cus_it.typeid = element.typeid;
-        TCinsert.list_field_name.push(cus_it);
-      });
-    }
+    // if (
+    //   this.TemplateDetail.data_fields &&
+    //   this.TemplateDetail.data_fields.length > 0
+    // ) {
+    //   this.TemplateDetail.data_fields.forEach((element) => {
+    //     const cus_it = new ListFieldModel();
+    //     cus_it.clear();
+    //     cus_it.fieldname = element.fieldname;
+    //     cus_it.id_field = element.id_field;
+    //     cus_it.isnewfield = true;
+    //     cus_it.isdefault = element.isdefault;
+    //     cus_it.position = element.position;
+    //     cus_it.title = element.title;
+    //     if (element.isvisible) cus_it.isvisible = element.isvisible;
+    //     if (element.note) cus_it.note = element.note;
+    //     if (element.type) cus_it.type = element.type;
+    //     if (element.typeid) cus_it.typeid = element.typeid;
+    //     TCinsert.list_field_name.push(cus_it);
+    //   });
+    // }
 
     //ListField new
     // kiểm tra project date

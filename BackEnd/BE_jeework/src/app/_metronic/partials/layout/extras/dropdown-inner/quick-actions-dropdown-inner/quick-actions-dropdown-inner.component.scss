@@ -1,0 +1,43 @@
+.container {
+    padding: 0;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .item {
+    width: 32%;
+    padding: 4% 4%;
+    display: inline-grid;;
+  }
+
+@media screen and (max-width: 1400px) and (min-height: 400px) {
+    .container {
+        height: calc(100vh  - 95px);
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (max-width: 1600px) and (min-height: 400px) {
+    .container {
+        height: calc(100vh  - 95px);
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (min-width: 1600px) and (min-height: 400px) {
+    .container {
+        height: calc(100vh  - 95px);
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (max-width: 1300px) and (min-height: 400px) {
+    .container {
+        height: calc(100vh  - 95px);
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}

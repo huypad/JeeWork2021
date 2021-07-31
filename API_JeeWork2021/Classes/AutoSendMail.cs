@@ -37,7 +37,7 @@ namespace JeeWork_Core2021.Classes
             Timer5Minute = new System.Timers.Timer(300000);
             Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
             //10p chạy 1 lần - 600000
-            TimerSendNotify = new System.Timers.Timer(60000);
+            TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendNotify_Elapsed);
             //60p chạy 1 lần
             TimerAutoUpdate = new System.Timers.Timer(3600000);
@@ -111,7 +111,7 @@ namespace JeeWork_Core2021.Classes
                 List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
                 if (DanhSachCustomer != null)
                 {
-                    //long CustomerID = 25; // để test
+                    //long CustomerID = 1119; // để test
                     foreach (long CustomerID in DanhSachCustomer)
                     {
                         try
@@ -119,16 +119,16 @@ namespace JeeWork_Core2021.Classes
                             string _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
                             using (DpsConnection cnnWW = new DpsConnection(_connection))
                             {
-                                WeworkLiteController.Insert_Template(cnnWW, CustomerID.ToString());
-                                EveryDayForceRun(cnnWW, CustomerID.ToString());
-                                EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
                                 ThongBaoSapHetHan(cnnWW, CustomerID.ToString());
                                 ThongBaoHetHan(cnnWW, CustomerID.ToString());
+                                EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
+                                EveryDayForceRun(cnnWW, CustomerID.ToString());
+                                WeworkLiteController.Insert_Template(cnnWW, CustomerID.ToString());
                             }
                         }
                         catch (Exception ex)
                         {
-
+                            continue;
                         }
                     }
                 }
@@ -137,7 +137,6 @@ namespace JeeWork_Core2021.Classes
             catch (Exception ex)
             {
             }
-
         }
         void TimerAutoUpdate_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -162,146 +161,149 @@ namespace JeeWork_Core2021.Classes
             APIModel.Models.Notify Knoti;
             string select = "select id_row, title, frequency, repeated_day, id_project_team, id_group" +
                             ",deadline, start_date, end_date" +
-                            ",description, assign, Locked, CreatedDate, CreatedBy" +
-                            ",Disabled, UpdatedDate, UpdatedBy, last_run, run_by " +
-                            "from we_repeated where Disabled = 0 and locked = 0";
+                            ",description, assign, locked, createdDate, createdby" +
+                            ",disabled, updatedDate, updatedBy, last_run, run_by " +
+                            "from we_repeated where disabled = 0 and locked = 0 and customerid = " + CustemerID + "";
             DataTable dt = cnn.CreateDataTable(select);
             bool IsCreateAuto = false;
-
-            foreach (DataRow _item in dt.Rows)
+            if (dt.Rows.Count > 0)
             {
-                try
+                foreach (DataRow _item in dt.Rows)
                 {
-                    DayOfWeek date = new DayOfWeek();
-                    DateTime time = DateTime.UtcNow;
-                    double loai = double.Parse(_item["frequency"].ToString());
-                    string[] repeated_day = _item["repeated_day"].ToString().Split(',');
-                    foreach (string day in repeated_day)
+                    try
                     {
-                        try
+                        DayOfWeek date = new DayOfWeek();
+                        DateTime time = DateTime.UtcNow;
+                        double loai = double.Parse(_item["frequency"].ToString());
+                        string[] repeated_day = _item["repeated_day"].ToString().Split(',');
+                        foreach (string day in repeated_day)
                         {
-                            DateTime WeekdayCurrent = new DateTime();
-                            if (loai == 1) // Nếu báo cáo theo hàng tuần
-                            {
-                                date = Common.GetDayOfWeekDay(day);
-                                WeekdayCurrent = Common.StartOfWeek(time, date); // Lấy ra ngày (Param: thứ) của tuần hiện tại
-                                if (WeekdayCurrent < DateTime.UtcNow) // Nếu WeekdayCurrent nhỏ hơn ngày hiện tại, thì tạo dữ liệu cho thứ của tuần tiếp theo
-                                {
-                                    try
-                                    {
-                                        WeekdayCurrent = WeekdayCurrent.AddDays(7);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                    }
-                                }
-                            }
-                            if (loai == 2) // Báo cáo theo tháng
-                            {
-                                // Ngày lặp lại = ngày truyền vào của tháng và năm đó
-                                WeekdayCurrent = new DateTime(DateTime.Now.Year, DateTime.Now.Month, int.Parse(day));
-                                if (WeekdayCurrent < DateTime.UtcNow) // Nếu WeekdayCurrent nhỏ hơn ngày hiện tại, thì tạo dữ liệu cho thứ của tuần tiếp theo
-                                {
-                                    try
-                                    {
-                                        WeekdayCurrent = WeekdayCurrent.AddMonths(1);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                    }
-                                }
-                            }
-                            DateTime ngaybd = (DateTime)_item["start_date"];
-                            DateTime ngaykt = (DateTime)_item["end_date"];
-                            // Kiểm tra ngày lấy được có nằm trong khoảng time lặp lại không
                             try
                             {
-                                if (WeekdayCurrent >= ngaybd && WeekdayCurrent <= ngaykt)
+                                DateTime WeekdayCurrent = new DateTime();
+                                if (loai == 1) // Nếu báo cáo theo hàng tuần
                                 {
-                                    // Kiểm tra đã có dữ liệu repeated chưa
-                                    SqlConditions cond = new SqlConditions();
-                                    cond.Add("start_date", WeekdayCurrent);
-                                    cond.Add("id_repeated", _item["id_row"]);
-                                    cond.Add("Disabled", 0);
-                                    DataTable dt_repeated_work = cnn.CreateDataTable("select * from we_work where (where)", "(where)", cond);
-                                    if (dt_repeated_work.Rows.Count == 0)
-                                        IsCreateAuto = true;
+                                    date = Common.GetDayOfWeekDay(day);
+                                    WeekdayCurrent = Common.StartOfWeek(time, date); // Lấy ra ngày (Param: thứ) của tuần hiện tại
+                                    if (WeekdayCurrent < DateTime.UtcNow) // Nếu WeekdayCurrent nhỏ hơn ngày hiện tại, thì tạo dữ liệu cho thứ của tuần tiếp theo
+                                    {
+                                        try
+                                        {
+                                            WeekdayCurrent = WeekdayCurrent.AddDays(7);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                        }
+                                    }
+                                }
+                                if (loai == 2) // Báo cáo theo tháng
+                                {
+                                    // Ngày lặp lại = ngày truyền vào của tháng và năm đó
+                                    WeekdayCurrent = new DateTime(DateTime.Now.Year, DateTime.Now.Month, int.Parse(day));
+                                    if (WeekdayCurrent < DateTime.UtcNow) // Nếu WeekdayCurrent nhỏ hơn ngày hiện tại, thì tạo dữ liệu cho thứ của tuần tiếp theo
+                                    {
+                                        try
+                                        {
+                                            WeekdayCurrent = WeekdayCurrent.AddMonths(1);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                        }
+                                    }
+                                }
+                                DateTime ngaybd = (DateTime)_item["start_date"];
+                                DateTime ngaykt = (DateTime)_item["end_date"];
+                                // Kiểm tra ngày lấy được có nằm trong khoảng time lặp lại không
+                                try
+                                {
+                                    if (WeekdayCurrent >= ngaybd && WeekdayCurrent <= ngaykt)
+                                    {
+                                        // Kiểm tra đã có dữ liệu repeated chưa
+                                        SqlConditions cond = new SqlConditions();
+                                        cond.Add("start_date", WeekdayCurrent);
+                                        cond.Add("id_repeated", _item["id_row"]);
+                                        cond.Add("Disabled", 0);
+                                        DataTable dt_repeated_work = cnn.CreateDataTable("select * from we_work where (where)", "(where)", cond);
+                                        if (dt_repeated_work.Rows.Count == 0)
+                                            IsCreateAuto = true;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                }
+                                // Tạo công việc
+                                if (IsCreateAuto)
+                                {
+                                    bool result = RepeatedController.WeWork_CreateTaskAuto(dt, cnn, "0", WeekdayCurrent);
+                                    if (result) // Gửi mail & notify
+                                    {
+                                        // Update lại thông tin ForceRun
+                                        Hashtable has = new Hashtable();
+                                        SqlConditions conds = new SqlConditions();
+                                        conds.Add("id_row", _item["id_row"].ToString());
+                                        has.Add("last_run", DateTime.Now);
+                                        has.Add("run_by", 0);
+                                        cnn.Update(has, conds, "we_repeated");
+                                        string sql_new = "select we_work_user.*, we_work.title as tencongviec " +
+                                            "from we_work join we_work_user on we_work_user.id_work = we_work.id_row " +
+                                            "where we_work.disabled = 0 and id_repeated is not null";
+                                        DataTable dt_New_Data = cnn.CreateDataTable(sql_new);
+                                        if (dt_New_Data.Rows.Count > 0)
+                                        {
+                                            foreach (DataRow row in dt_New_Data.Rows)
+                                            {
+                                                var users = new List<long> { long.Parse(row["id_user"].ToString()) };
+                                                UserJWT loginData = new UserJWT();
+                                                loginData.CustomerID = int.Parse(CustemerID);
+                                                loginData.LastName = "Hệ thống";
+                                                loginData.UserID = 0;
+                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier);
+                                                #region Notify thêm mới công việc
+                                                Hashtable has_replace = new Hashtable();
+                                                for (int i = 0; i < users.Count; i++)
+                                                {
+                                                    NotifyModel notify_model = new NotifyModel();
+                                                    has_replace = new Hashtable();
+                                                    has_replace.Add("nguoigui", "Hệ thống");
+                                                    has_replace.Add("tencongviec", row["tencongviec"]);
+                                                    notify_model.AppCode = "WW";
+                                                    notify_model.From_IDNV = "";
+                                                    notify_model.To_IDNV = users[i].ToString();
+                                                    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
+                                                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", row["tencongviec"].ToString());
+                                                    notify_model.ReplaceData = has_replace;
+                                                    notify_model.To_Link_MobileApp = "";
+                                                    notify_model.To_Link_WebApp = "/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";
+                                                    try
+                                                    {
+                                                        if (notify_model != null)
+                                                        {
+                                                            Knoti = new APIModel.Models.Notify();
+                                                            bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                                        }
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                    }
+                                                }
+                                                #endregion
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             catch (Exception ex)
                             {
                             }
-                            // Tạo công việc
-                            if (IsCreateAuto)
-                            {
-                                bool result = RepeatedController.WeWork_CreateTaskAuto(dt, cnn, "0", WeekdayCurrent);
-                                if (result) // Gửi mail & notify
-                                {
-                                    // Update lại thông tin ForceRun
-                                    Hashtable has = new Hashtable();
-                                    SqlConditions conds = new SqlConditions();
-                                    conds.Add("id_row", _item["id_row"].ToString());
-                                    has.Add("last_run", DateTime.Now);
-                                    has.Add("run_by", 0);
-                                    cnn.Update(has, conds, "we_repeated");
-                                    string sql_new = "select we_work_user.*, we_work.title as tencongviec " +
-                                        "from we_work join we_work_user on we_work_user.id_work = we_work.id_row " +
-                                        "where we_work.disabled = 0 and id_repeated is not null";
-                                    DataTable dt_New_Data = cnn.CreateDataTable(sql_new);
-                                    if (dt_New_Data.Rows.Count > 0)
-                                    {
-                                        foreach (DataRow row in dt_New_Data.Rows)
-                                        {
-                                            var users = new List<long> { long.Parse(row["id_user"].ToString()) };
-                                            UserJWT loginData = new UserJWT();
-                                            loginData.CustomerID = int.Parse(CustemerID);
-                                            loginData.LastName = "Hệ thống";
-                                            loginData.UserID = 0;
-                                            WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier);
-                                            #region Notify thêm mới công việc
-                                            Hashtable has_replace = new Hashtable();
-                                            for (int i = 0; i < users.Count; i++)
-                                            {
-                                                NotifyModel notify_model = new NotifyModel();
-                                                has_replace = new Hashtable();
-                                                has_replace.Add("nguoigui", "Hệ thống");
-                                                has_replace.Add("tencongviec", row["tencongviec"]);
-                                                notify_model.AppCode = "WW";
-                                                notify_model.From_IDNV = "";
-                                                notify_model.To_IDNV = users[i].ToString();
-                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", row["tencongviec"].ToString());
-                                                notify_model.ReplaceData = has_replace;
-                                                notify_model.To_Link_MobileApp = "";
-                                                notify_model.To_Link_WebApp = "/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";
-                                                try
-                                                {
-                                                    if (notify_model != null)
-                                                    {
-                                                        Knoti = new APIModel.Models.Notify();
-                                                        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                                    }
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                }
-                                            }
-                                            #endregion
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
                         }
                     }
-                }
-                catch (Exception ex)
-                {
+                    catch (Exception ex)
+                    {
+                    }
                 }
             }
+
         }
         // Update tình trạng và gửi email của những công việc trễ hạn
         private void EveryDay_UpdateLate(DpsConnection cnn, string CustemerID)

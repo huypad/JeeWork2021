@@ -1061,6 +1061,15 @@ from we_repeated_Task task where task.Disabled=0";
                 val.Add("CreatedBy", runby);
                 val.Add("id_repeated", dr["id_row"].ToString());
                 val.Add("start_date", ngaybatdau);
+                DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
+                    if (RowStatus.Length > 0)
+                    {
+                        val.Add("status", RowStatus[0]["id_row"]);
+                    }
+                }
                 cnn.BeginTransaction();
                 if (cnn.Insert(val, "we_work") != 1)
                 {

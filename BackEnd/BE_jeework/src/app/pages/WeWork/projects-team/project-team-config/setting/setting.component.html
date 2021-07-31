@@ -20,7 +20,7 @@
 						{{'GeneralKey.chinhsua'|translate}}
 						{{ (IsProject?'projects.project':'projects.team') |translate}}
 					</h5>
-				</div>
+				</div> 
 			</div>
 			<div class="row">
 				<div class="col-md-12 kt--margin-bottom-10-mobile">
@@ -29,7 +29,7 @@
 						<img alt="" class="m--img-rounded m--marginless m--img-centered"
 							style="height: 50px; width: 50px; max-width: inherit !important; border-radius: 50%;"
 							src="{{icon.src?icon.src:icon.base64Str}}" matSuffix (click)="chooseFile()">
-						<input type="file" hidden accept=".png, .jpg, .jpeg" id="inputIcon"
+						<input type="file" hidden accept=".png, .jpg, .jpeg" id="inputIconst"
 							(change)="onSelectFile($event)" />
 					</mat-form-field>
 				</div>

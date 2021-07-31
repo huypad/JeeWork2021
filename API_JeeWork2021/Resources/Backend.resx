@@ -156,7 +156,13 @@
   <data name="ww_thongbaowework" xml:space="preserve">
     <value>Thông báo JeeWork</value>
   </data>
+  <data name="ww_xoaassign" xml:space="preserve">
+    <value>$nguoigui$ đã xóa bạn khỏi công việc $tencongviec$</value>
+  </data>
   <data name="ww_xoacongviec" xml:space="preserve">
     <value>$nguoigui$ đã xóa công việc $tencongviec$</value>
+  </data>
+  <data name="ww_xoafollower" xml:space="preserve">
+    <value>$nguoigui$ đã xóa bạn theo dõi công việc $tencongviec$</value>
   </data>
 </root>
