@@ -232,7 +232,7 @@ export class SettingComponent {
 			status: [this.item.status],
 			color: [this.item.color],
 			allow_percent_done: [this.item.allow_percent_done],
-			allow_estimate_time: [this.item.allow_estimate_time],
+			// allow_estimate_time: [this.item.allow_estimate_time],
 			require_evaluate: [this.item.require_evaluate],
 			// evaluate_by_assignner: [this.item.evaluate_by_assignner],
 			locked: [this.item.locked],
@@ -265,8 +265,8 @@ export class SettingComponent {
 				_item.description = controls["description"].value;
 				_item.loai = controls["loai"].value;
 				_item.allow_percent_done = controls["allow_percent_done"].value;
-				_item.allow_estimate_time =
-					controls["allow_estimate_time"].value;
+				// _item.allow_estimate_time =
+				// 	controls["allow_estimate_time"].value;
 				_item.locked = controls["locked"].value;
 				_item.status = controls["status"].value;
 				_item.require_evaluate = controls["require_evaluate"].value;

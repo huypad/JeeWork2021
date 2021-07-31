@@ -74,6 +74,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         }
       }, 100);
     }
+    this.LoadListAutomation();
   }
   LoadListAutomation() {
     this.automationService.getAutomationEventlist().subscribe((res) => {
@@ -90,9 +91,10 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         if (!this.dataEdit.actionid) this.Actionid = this.ListAction[9].rowid;
         if(this.ID_projectteam == 0) {
           this.ListAction.forEach(element => {
-            if(element.rowid==7) element.disabled=true;
+            if(element.rowid==7 || element.rowid==15) element.disabled=true;
           })
         }
+        this.changeDetectorRefs.detectChanges();
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
@@ -241,6 +243,44 @@ export class EditAutomationComponent implements OnInit, OnChanges {
               itemsub.value = "true";
               subaction.push(itemsub);
             }
+            _item.subaction = subaction;
+          }
+          break;
+        case 7: // Change tags
+          {
+            const subaction = new Array<Automation_SubAction_Model>();
+            if (
+              element.data.Tags &&
+              element.data.Tags.length > 0
+            ) {
+              // Assign subaction 1
+              var listID = [];
+              element.data.Tags.forEach((element) => {
+                listID.push(element.id_row);
+              });
+              const itemsub = new Automation_SubAction_Model();
+              itemsub.clear();
+              // itemsub.autoid =
+              itemsub.subactionid = "5";
+              itemsub.value = listID.join();
+              subaction.push(itemsub);
+            }
+            if (
+              element.data.Tags2 &&
+              element.data.Tags2.length > 0
+            ) {
+              // RemoveAssign subaction 2
+              var listID = [];
+              element.data.Tags2.forEach((element) => {
+                listID.push(element.id_nv);
+              });
+              const itemsub = new Automation_SubAction_Model();
+              itemsub.clear();
+              // itemsub.autoid =
+              itemsub.subactionid = "6";
+              itemsub.value = listID.join();
+              subaction.push(itemsub);
+            } 
             _item.subaction = subaction;
           }
           break;

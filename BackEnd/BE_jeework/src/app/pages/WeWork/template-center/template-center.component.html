@@ -197,10 +197,10 @@
                                 </div>
                                 <div class="cu-template-center-main__row-controls"
                                     *ngIf="Template.Data_Templates.length > 3"
-                                    (click)="Template.expanded = !Template.expanded">
+                                    (click)="Template.expandeduser = !Template.expandeduser">
                                     <div
                                         class="cu-template-center-main__row-controls-more cu-template-center-main__row-controls-more-no-border">
-                                        {{ 'template.' + (Template.expanded?'collapse':'seeall') | translate}}
+                                        {{ 'template.' + (Template.expandeduser?'collapse':'seeall') | translate}}
                                     </div>
                                 </div>
                             </div>

@@ -1117,8 +1117,8 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     if (data.templateid > 0)
                     {
                         string sql_insert = "";
-                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, templateID, customerid,is_template_center)
-                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1 from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
+                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, templateID, customerid,is_template_center,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id)
+                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
                         cnn.ExecuteNonQuery(sql_insert);
                         if (cnn.LastError != null)
                         {

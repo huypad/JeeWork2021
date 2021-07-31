@@ -202,11 +202,15 @@ export class WorkService {
 		//	})
 		//);
 	}
-	DownloadFileImport(): Observable<any> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
+	DownloadFileImport() {
 		const url = `${API_work}/DownloadFileImport`;
-		return this.http.get<any>(url, { headers: httpHeaders });
+		return url;
 	}
+	// DownloadFileImport(): Observable<any> {
+	// 	const httpHeaders = this.httpUtils.getHTTPHeaders();
+	// 	const url = `${API_work}/DownloadFileImport`;
+	// 	return this.http.get<any>(url, { headers: httpHeaders });
+	// }
 
 	findData(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();

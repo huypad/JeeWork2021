@@ -52,6 +52,15 @@ export class AutomationTabManageComponent implements OnInit {
   UpdateAutomation(item = null){
     this.selectedItem.emit(item);
   }
+  Delete(item){
+    this.automationService.DeleteAutomation(item.rowid).subscribe( res => {
+      if(res && res.status ==1){
+        this.ngOnInit();
+      }else{
+        this.layoutUtilsService.showError(res.error.message);
+      }
+    })
+  }
   Update(item){
     if(item.status==1){
       item.status = 0;

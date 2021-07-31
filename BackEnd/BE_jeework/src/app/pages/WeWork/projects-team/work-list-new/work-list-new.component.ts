@@ -360,12 +360,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
 
-  StatusTodo() {
-    var x = this.status_dynamic.find((x) => x.IsToDo == true);
+  Statusdefault() {
+    var x = this.status_dynamic.find((x) => (x.isdefault == true && x.IsToDo == false && x.IsFinal == false && x.IsDeadline == false));
     if (x) {
       return x.id_row;
     }
-    return;
+    return 0;
   }
 
   GetDataNewField(id_work, id_field, isDropdown = false, getColor = false) {

@@ -556,7 +556,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 
                                     join we_department d on d.id_row = p.id_department
-                                    where id_user = { IDNV } and d.IdKH = { loginData.CustomerID}";
+                                    where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { IDNV } and d.IdKH = { loginData.CustomerID}";
                     if (isManage)
                     {
                         strG = @"select distinct p.id_row, p.title from we_project_team_user u
@@ -1371,8 +1371,6 @@ where act.object_type = 1 and view_detail=1 and l.CreatedBy in ({listID}) and l.
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
-
                     string CustemerID = loginData.CustomerID.ToString();
                     string filesave = "", filename = "";
                     if (!UploadHelper.UploadFile(data.File, data.FileName, "/AttWork/", _hostingEnvironment.ContentRootPath, ref filename, _configuration))
@@ -1412,225 +1410,224 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         }
                         #endregion
                         cnn.Disconnect();
-                    }
-                    DataTable dtPK = new DataTable();
-                    dtPK.Columns.Add(new DataColumn() { ColumnName = "id_row" });
-                    dtPK.Columns.Add(new DataColumn() { ColumnName = "title" });
-                    dtPK.Columns.Add(new DataColumn() { ColumnName = "table" });//T:tag, M:milestone
-                    dtPK.Columns.Add(new DataColumn() { ColumnName = "stt" });//stt tạm
-                    dtPK.Clear();
+                        DataTable dtPK = new DataTable();
+                        dtPK.Columns.Add(new DataColumn() { ColumnName = "id_row" });
+                        dtPK.Columns.Add(new DataColumn() { ColumnName = "title" });
+                        dtPK.Columns.Add(new DataColumn() { ColumnName = "table" });//T:tag, M:milestone
+                        dtPK.Columns.Add(new DataColumn() { ColumnName = "stt" });//stt tạm
+                        dtPK.Clear();
 
-                    DataTable dtMapU = new DataTable();
-                    dtMapU.Columns.Add(new DataColumn() { ColumnName = "id_work" });
-                    dtMapU.Columns.Add(new DataColumn() { ColumnName = "id_user" });
-                    dtMapU.Columns.Add(new DataColumn() { ColumnName = "loai" });
-                    dtMapU.Columns.Add(new DataColumn() { ColumnName = "createdby" });
-                    dtMapU.Clear();
+                        DataTable dtMapU = new DataTable();
+                        dtMapU.Columns.Add(new DataColumn() { ColumnName = "id_work" });
+                        dtMapU.Columns.Add(new DataColumn() { ColumnName = "id_user" });
+                        dtMapU.Columns.Add(new DataColumn() { ColumnName = "loai" });
+                        dtMapU.Columns.Add(new DataColumn() { ColumnName = "createdby" });
+                        dtMapU.Clear();
 
-                    DataTable dtMapT = new DataTable();
-                    dtMapT.Columns.Add(new DataColumn() { ColumnName = "id_work" });
-                    dtMapT.Columns.Add(new DataColumn() { ColumnName = "id_tag" });
-                    dtMapT.Clear();
+                        DataTable dtMapT = new DataTable();
+                        dtMapT.Columns.Add(new DataColumn() { ColumnName = "id_work" });
+                        dtMapT.Columns.Add(new DataColumn() { ColumnName = "id_tag" });
+                        dtMapT.Clear();
 
-                    var asG = ds.Tables[0].AsEnumerable();
-                    var asU = ds.Tables[1].AsEnumerable();
-                    var asT = ds.Tables[2].AsEnumerable();
-                    var asM = ds.Tables[3].AsEnumerable();
-                    DataTable dtW = ds.Tables[4].Clone();
-                    dtW.Columns["id_milestone"].DataType = typeof(String);
-                    dtW.Columns["id_group"].DataType = typeof(String);
-                    List<ReviewModel> review = new List<ReviewModel>();
-                    if (dt.Rows.Count > 0)
-                    {
-                        DataTable dtP = dt.Clone();
-                        dtP.Columns.Add(new DataColumn() { ColumnName = "milestone" });
-                        dtP.Columns.Add(new DataColumn() { ColumnName = "id_tags" });
-                        dtP.Columns.Add(new DataColumn() { ColumnName = "note" });
-                        dtP.Columns.Add(new DataColumn() { ColumnName = "error" });
-                        dtP.Columns.Add(new DataColumn() { ColumnName = "id_parent" });
-                        string s = "#";
-                        List<string> parents = new List<string>() { };
-                        var group = new
+                        var asG = ds.Tables[0].AsEnumerable();
+                        var asU = ds.Tables[1].AsEnumerable();
+                        var asT = ds.Tables[2].AsEnumerable();
+                        var asM = ds.Tables[3].AsEnumerable();
+                        DataTable dtW = ds.Tables[4].Clone();
+                        dtW.Columns["id_milestone"].DataType = typeof(String);
+                        dtW.Columns["id_group"].DataType = typeof(String);
+                        List<ReviewModel> review = new List<ReviewModel>();
+                        if (dt.Rows.Count > 0)
                         {
-                            id_row = "",
-                            title = "",
-                        };
-                        bool firstR = false;
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            DataRow drW = dtW.NewRow();
-                            DataRow dr = dt.Rows[i];
-                            if (dr["STT"].ToString() == "")//group
+                            DataTable dtP = dt.Clone();
+                            dtP.Columns.Add(new DataColumn() { ColumnName = "milestone" });
+                            dtP.Columns.Add(new DataColumn() { ColumnName = "id_tags" });
+                            dtP.Columns.Add(new DataColumn() { ColumnName = "note" });
+                            dtP.Columns.Add(new DataColumn() { ColumnName = "error" });
+                            dtP.Columns.Add(new DataColumn() { ColumnName = "id_parent" });
+                            string s = "#";
+                            List<string> parents = new List<string>() { };
+                            var group = new
                             {
-                                //var find = asG.Where(x => x["title"].ToString() == dr[1].ToString()).FirstOrDefault();
-                                //if (find == null)
-                                //{
-                                //    int stt = dtPK.Rows.Count + 1;
-                                //    dtPK.Rows.Add(new object[] { 0, dr[1].ToString(), "we_group", stt });
-                                //    group = new
-                                //    {
-                                //        id_row = "stt_" + stt,
-                                //        title = dr[1].ToString(),
-                                //    };
-                                //}
-                                //else
-                                //{
-                                //    group = new
-                                //    {
-                                //        id_row = find["id_row"].ToString(),
-                                //        title = dr[1].ToString(),
-                                //    };
-                                //}
-                                firstR = true;
-                                continue;
-                            }
-                            if (firstR && dr[1].ToString().Contains("#"))
-                                return JsonResultCommon.Custom("Công việc đầu tiên không được là công việc con");
-                            firstR = false;
-                            var arr = dr.ItemArray.ToList();
-                            string id_milestone = "";
-                            string id_tags = "";
-                            #region check data
-                            string n = "";
-                            if (dr["Mục tiêu"].ToString() != "")
+                                id_row = "",
+                                title = "",
+                            };
+                            bool firstR = false;
+                            for (int i = 0; i < dt.Rows.Count; i++)
                             {
-                                var f = asM.Where(x => x["title"].ToString() == dr["Mục tiêu"].ToString()).FirstOrDefault();
-                                if (f != null)
+                                DataRow drW = dtW.NewRow();
+                                DataRow dr = dt.Rows[i];
+                                if (dr["STT"].ToString() == "")//group
                                 {
-                                    id_milestone = f["id_row"].ToString();
-                                    drW["id_milestone"] = id_milestone;
+                                    //var find = asG.Where(x => x["title"].ToString() == dr[1].ToString()).FirstOrDefault();
+                                    //if (find == null)
+                                    //{
+                                    //    int stt = dtPK.Rows.Count + 1;
+                                    //    dtPK.Rows.Add(new object[] { 0, dr[1].ToString(), "we_group", stt });
+                                    //    group = new
+                                    //    {
+                                    //        id_row = "stt_" + stt,
+                                    //        title = dr[1].ToString(),
+                                    //    };
+                                    //}
+                                    //else
+                                    //{
+                                    //    group = new
+                                    //    {
+                                    //        id_row = find["id_row"].ToString(),
+                                    //        title = dr[1].ToString(),
+                                    //    };
+                                    //}
+                                    firstR = true;
+                                    continue;
                                 }
-                                else
+                                if (firstR && dr[1].ToString().Contains("#"))
+                                    return JsonResultCommon.Custom("Công việc đầu tiên không được là công việc con");
+                                firstR = false;
+                                var arr = dr.ItemArray.ToList();
+                                string id_milestone = "";
+                                string id_tags = "";
+                                #region check data
+                                string n = "";
+                                if (dr["Mục tiêu"].ToString() != "")
                                 {
-                                    n += "Mục tiêu sẽ được thêm mới; ";
-                                    f = dtPK.AsEnumerable().Where(x => x["table"].ToString() == "we_milestone" && x["title"].ToString() == dr["Mục tiêu"].ToString()).FirstOrDefault();
-                                    if (f == null)
-                                    {
-                                        int stt = dtPK.Rows.Count + 1;
-                                        dtPK.Rows.Add(new object[] { 0, dr["Mục tiêu"].ToString(), "we_milestone", stt });
-                                        drW["id_milestone"] = "stt_" + stt;
-                                    }
-                                    else
-                                    {
-                                        drW["id_milestone"] = "stt_" + f["stt"].ToString();
-                                    }
-                                }
-                            }
-
-
-                            if (dr["Tags"].ToString() != "")
-                            {
-                                var splt = dr["Tags"].ToString().Split(',');
-                                string tttt = "";
-                                foreach (string tag in splt)
-                                {
-                                    var f = asT.Where(x => x["title"].ToString() == tag).FirstOrDefault();
+                                    var f = asM.Where(x => x["title"].ToString() == dr["Mục tiêu"].ToString()).FirstOrDefault();
                                     if (f != null)
                                     {
-                                        id_tags += f["id_row"].ToString();
-                                        dtMapT.Rows.Add(new object[] { dr["STT"].ToString(), f["id_row"] });
+                                        id_milestone = f["id_row"].ToString();
+                                        drW["id_milestone"] = id_milestone;
                                     }
                                     else
                                     {
-                                        tttt += tag + ",";
-                                        f = dtPK.AsEnumerable().Where(x => x["table"].ToString() == "we_tag" && x["title"].ToString() == tag).FirstOrDefault();
+                                        n += "Mục tiêu sẽ được thêm mới; ";
+                                        f = dtPK.AsEnumerable().Where(x => x["table"].ToString() == "we_milestone" && x["title"].ToString() == dr["Mục tiêu"].ToString()).FirstOrDefault();
                                         if (f == null)
                                         {
                                             int stt = dtPK.Rows.Count + 1;
-                                            dtPK.Rows.Add(new object[] { 0, tag, "we_tag", stt });
-                                            dtMapT.Rows.Add(new object[] { dr["STT"].ToString(), stt });
+                                            dtPK.Rows.Add(new object[] { 0, dr["Mục tiêu"].ToString(), "we_milestone", stt });
+                                            drW["id_milestone"] = "stt_" + stt;
+                                        }
+                                        else
+                                        {
+                                            drW["id_milestone"] = "stt_" + f["stt"].ToString();
                                         }
                                     }
                                 }
-                                if (tttt != "")
-                                    n += "Tag " + tttt.Remove(tttt.Length - 1) + " sẽ được thêm mới; ";
-                            }
-                            string e = "";
-                            if (dr["Tên công việc"].ToString() == "")
-                                e += "Tên công việc là bắt buộc;";
-                            else
-                                drW["title"] = dr["Tên công việc"].ToString();
-                            if (dr["Mô tả công việc"].ToString() != "")
-                                drW["description"] = dr["Mô tả công việc"].ToString();
-                            if (dr["Ưu tiên (urgent)"].ToString() != "")
-                                drW["urgent"] = dr["Ưu tiên (urgent)"].ToString() == "Yes";
-                            else
-                                drW["urgent"] = false;
-                            //if ((dr["Người giao"].ToString() != "" && dr["Người thực hiện"].ToString() == "") || (dr["Người giao"].ToString() == "" && dr["Người thực hiện"].ToString() != ""))
-                            //{
-                            //    e +="Có người giao phải có người thực hie; ";
-                            //}    
-                            long nguoigiao = loginData.UserID;
-                            if (dr["Người giao"].ToString() != "")
-                            {
-                                var f = asU.Where(x => x["username"].ToString() == dr["Người giao"].ToString()).FirstOrDefault();
-                                if (f == null)
-                                    e += "Người giao không đúng; ";
-                                else
-                                    nguoigiao = long.Parse(f["id_user"].ToString());
-                            }
-                            else
-                            {
-                                if (dr["Người thực hiện"].ToString() != "")
+
+
+                                if (dr["Tags"].ToString() != "")
                                 {
-                                    //dr["Người giao"] = loginData.UserName;
-                                    n += "Người import sẽ là người giao;";
-                                }
-                            }
-                            if (dr["Người thực hiện"].ToString() != "")
-                            {
-                                var f = asU.Where(x => x["username"].ToString() == dr["Người thực hiện"].ToString()).FirstOrDefault();
-                                if (f == null)
-                                    e += "Người thực hiện không đúng; ";
-                                else
-                                {
-                                    dtMapU.Rows.Add(new object[] { dr["STT"].ToString(), f["id_user"], 1, nguoigiao });
-                                }
-                            }
-                            if (dr["Người theo dõi"].ToString() != "")
-                            {
-                                var count = dr["Tags"].ToString().Split(',').Length;
-                                var f = asU.Where(x => dr["Người theo dõi"].ToString().Contains(x["username"].ToString()));
-                                if (f == null || f.Count() != count)
-                                    e += "Người theo dõi không đúng; ";
-                                else
-                                {
-                                    foreach (var u in f)
+                                    var splt = dr["Tags"].ToString().Split(',');
+                                    string tttt = "";
+                                    foreach (string tag in splt)
                                     {
-                                        dtMapU.Rows.Add(new object[] { dr["STT"].ToString(), u["id_user"], 2, nguoigiao });
+                                        var f = asT.Where(x => x["title"].ToString() == tag).FirstOrDefault();
+                                        if (f != null)
+                                        {
+                                            id_tags += f["id_row"].ToString();
+                                            dtMapT.Rows.Add(new object[] { dr["STT"].ToString(), f["id_row"] });
+                                        }
+                                        else
+                                        {
+                                            tttt += tag + ",";
+                                            f = dtPK.AsEnumerable().Where(x => x["table"].ToString() == "we_tag" && x["title"].ToString() == tag).FirstOrDefault();
+                                            if (f == null)
+                                            {
+                                                int stt = dtPK.Rows.Count + 1;
+                                                dtPK.Rows.Add(new object[] { 0, tag, "we_tag", stt });
+                                                dtMapT.Rows.Add(new object[] { dr["STT"].ToString(), stt });
+                                            }
+                                        }
+                                    }
+                                    if (tttt != "")
+                                        n += "Tag " + tttt.Remove(tttt.Length - 1) + " sẽ được thêm mới; ";
+                                }
+                                string e = "";
+                                if (dr["Tên công việc"].ToString() == "")
+                                    e += "Tên công việc là bắt buộc;";
+                                else
+                                    drW["title"] = dr["Tên công việc"].ToString();
+                                if (dr["Mô tả công việc"].ToString() != "")
+                                    drW["description"] = dr["Mô tả công việc"].ToString();
+                                if (dr["Ưu tiên (urgent)"].ToString() != "")
+                                    drW["urgent"] = dr["Ưu tiên (urgent)"].ToString() == "Yes";
+                                else
+                                    drW["urgent"] = false;
+                                //if ((dr["Người giao"].ToString() != "" && dr["Người thực hiện"].ToString() == "") || (dr["Người giao"].ToString() == "" && dr["Người thực hiện"].ToString() != ""))
+                                //{
+                                //    e +="Có người giao phải có người thực hie; ";
+                                //}    
+                                long nguoigiao = loginData.UserID;
+                                if (dr["Người giao"].ToString() != "")
+                                {
+                                    var f = asU.Where(x => x["username"].ToString() == dr["Người giao"].ToString()).FirstOrDefault();
+                                    if (f == null)
+                                        e += "Người giao không đúng; ";
+                                    else
+                                        nguoigiao = long.Parse(f["id_user"].ToString());
+                                }
+                                else
+                                {
+                                    if (dr["Người thực hiện"].ToString() != "")
+                                    {
+                                        //dr["Người giao"] = loginData.UserName;
+                                        n += "Người import sẽ là người giao;";
                                     }
                                 }
-                            }
-                            if (dr["Ngày bắt đầu"].ToString() != "")
-                            {
-                                DateTime d = DateTime.MinValue;
-                                bool from1 = DateTime.TryParseExact(dr["Ngày bắt đầu"].ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
-                                if (!from1)
-                                    e += "Ngày bắt đầu không hợp lệ; ";
-                                else
-                                    drW["start_date"] = d;
-                            }
-                            if (dr["Hoàn thành thực tế"].ToString() != "")
-                            {
-                                DateTime d = DateTime.MinValue;
-                                bool from1 = DateTime.TryParseExact(dr["Hoàn thành thực tế"].ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
-                                if (!from1)
-                                    e += "Ngày hoàn thành thực tế không hợp lệ; ";
-                                else
-                                    drW["end_date"] = d;
-                            }
-                            if (dr["Deadline"].ToString() != "")
-                            {
-                                DateTime d = DateTime.MinValue;
-                                bool from1 = DateTime.TryParseExact(dr["Deadline"].ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
-                                if (!from1)
-                                    e += "Deadline không hợp lệ; ";
-                                else
-                                    drW["deadline"] = d;
-                            }
+                                if (dr["Người thực hiện"].ToString() != "")
+                                {
+                                    var f = asU.Where(x => x["username"].ToString() == dr["Người thực hiện"].ToString()).FirstOrDefault();
+                                    if (f == null)
+                                        e += "Người thực hiện không đúng; ";
+                                    else
+                                    {
+                                        dtMapU.Rows.Add(new object[] { dr["STT"].ToString(), f["id_user"], 1, nguoigiao });
+                                    }
+                                }
+                                if (dr["Người theo dõi"].ToString() != "")
+                                {
+                                    var count = dr["Tags"].ToString().Split(',').Length;
+                                    var f = asU.Where(x => dr["Người theo dõi"].ToString().Contains(x["username"].ToString()));
+                                    if (f == null || f.Count() != count)
+                                        e += "Người theo dõi không đúng; ";
+                                    else
+                                    {
+                                        foreach (var u in f)
+                                        {
+                                            dtMapU.Rows.Add(new object[] { dr["STT"].ToString(), u["id_user"], 2, nguoigiao });
+                                        }
+                                    }
+                                }
+                                if (dr["Ngày bắt đầu"].ToString() != "")
+                                {
+                                    DateTime d = DateTime.MinValue;
+                                    bool from1 = DateTime.TryParseExact(dr["Ngày bắt đầu"].ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
+                                    if (!from1)
+                                        e += "Ngày bắt đầu không hợp lệ; ";
+                                    else
+                                        drW["start_date"] = d;
+                                }
+                                if (dr["Hoàn thành thực tế"].ToString() != "")
+                                {
+                                    DateTime d = DateTime.MinValue;
+                                    bool from1 = DateTime.TryParseExact(dr["Hoàn thành thực tế"].ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
+                                    if (!from1)
+                                        e += "Ngày hoàn thành thực tế không hợp lệ; ";
+                                    else
+                                        drW["end_date"] = d;
+                                }
+                                if (dr["Deadline"].ToString() != "")
+                                {
+                                    DateTime d = DateTime.MinValue;
+                                    bool from1 = DateTime.TryParseExact(dr["Deadline"].ToString(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
+                                    if (!from1)
+                                        e += "Deadline không hợp lệ; ";
+                                    else
+                                        drW["deadline"] = d;
+                                }
 
-                            if (dr["Trạng thái"].ToString() != "")
-                            {
+                                if (dr["Trạng thái"].ToString() != "")
+                                {
 
                             }
                             else
@@ -1710,16 +1707,16 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         }
                     }
 
-                    data_import.dtPK = dtPK;
-                    data_import.dtW = dtW;
-                    data_import.dtUser = dtMapU;
-                    data_import.dtTag = dtMapT;
-                    if (data.Review)
-                    {
-                        return JsonResultCommon.ThanhCong(review);
+                        data_import.dtPK = dtPK;
+                        data_import.dtW = dtW;
+                        data_import.dtUser = dtMapU;
+                        data_import.dtTag = dtMapT;
+                        if (data.Review)
+                        {
+                            return JsonResultCommon.ThanhCong(review);
+                        }
                     }
                 }
-
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     int dem = 0;
@@ -2818,7 +2815,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         val.Add("status", data.status);
                     else // Trường hợp người dùng không chọn status thì lấy status mặc định của ProjectTeam
                     {
-                        DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), ConnectionString);
+                        DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                         if (dt.Rows.Count > 0)
                         {
                             DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
@@ -4086,7 +4083,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         notify_model.From_IDNV = loginData.UserID.ToString();
                                         notify_model.To_IDNV = users[i].ToString();
                                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_assign", "", "vi");
-                                        if(data.key == "follower")
+                                        if (data.key == "follower")
                                         {
                                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_follower", "", "vi");
                                         }
@@ -5316,7 +5313,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 {
                     select_user += " and id_work in (select id_row from we_work where id_project_team = " + id + ")";
                 }
-                dt_status = WeworkLiteController.StatusDynamic(long.Parse(id.ToString()), DataAccount, ConnectString);
+                dt_status = WeworkLiteController.StatusDynamic(long.Parse(id.ToString()), DataAccount, cnn);
                 User = cnn.CreateDataTable(select_user, "(where)", conds1);
                 int _a = User.Rows.Count;
                 #region Map info account từ JeeAccount

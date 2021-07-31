@@ -33,7 +33,7 @@ export class ReportTabComponent implements OnInit {
 	  this._deptServices.DeptDetail(this.Id_Department).subscribe(res => {
 		if (res && res.status == 1) {
 		  if(!res.data.ParentID){
-			this.dataFolder = res.data.data_folder;
+			this.dataFolder = res.data.data_folder; 
 			var itemhientai = {
 			  CreatedBy: res.data.CreatedBy,
 			  CreatedDate: res.data.CreatedDate,

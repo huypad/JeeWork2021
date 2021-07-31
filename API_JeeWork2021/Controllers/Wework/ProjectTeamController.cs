@@ -3397,13 +3397,17 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             #endregion
 
             DataRow values = dtFind.Rows[0];
-            #region Map info account từ JeeAccount
-            var info = DataAccount.Where(x => values["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-            if (info != null)
+            if (dt.Columns.Contains("id_nv"))
             {
-                values["hoten"] = info.FullName;
+                #region Map info account từ JeeAccount
+                var info = DataAccount.Where(x => values["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                if (info != null)
+                {
+                    values["hoten"] = info.FullName;
+                }
+                #endregion
             }
-            #endregion
+
             foreach (DataRow dr in dtKey.Rows)
             {
                 string f = "";

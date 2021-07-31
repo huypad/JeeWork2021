@@ -34,6 +34,11 @@ export class AutomationService {
       return this.http.get<any>(API_Auto + '/get-automation-list',
         { headers: httpHeaders , params: httpParams});
     }
+    DeleteAutomation(id): Observable<any> { 
+      const httpHeaders = this.httpUtils.getHTTPHeaders();
+      return this.http.get<any>(API_Auto + '/delete/'+id,
+        { headers: httpHeaders});
+    }
     InsertAutomation(data): Observable<any> {
       const httpHeaders = this.httpUtils.getHTTPHeaders();
       return this.http.post<any>(API_Auto + '/add-automation',data,

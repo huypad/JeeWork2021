@@ -797,22 +797,23 @@
                                                                         </div>
                                                                         <div class="attach-item-name">
                                                                             <p>{{att2.filename}}</p>
-                                                                        </div>
+                                                                        </div> 
                                                                         <div class="attach-item-del">
-                        
-                                                                            <a class="text-success" 
+                                                                            <a class="url" (click)="preview(att2.path)"
                                                                                 matTooltip="Preview">
-                                                                                <i class="far fa-eye"></i>
+                                                                                <i class="far fa-eye text-success"></i>
                                                                             </a>
-                        
-                                                                            <a class=" text-primary" 
+                                                                            <a class="url"
+                                                                                (click)="DownloadFile(att2.path)"
                                                                                 matTooltip="Download">
-                                                                                <i class="fas fa-download"></i>
+                                                                                <i
+                                                                                    class="fas fa-download text-primary"></i>
                                                                             </a>
-                        
-                                                                            <a class=" text-danger" 
+                                                                            <a class="url" *ngIf="HasupdateResult()"
+                                                                                (click)="Delete_File(att2.id_row)"
                                                                                 matTooltip="Xóa File">
-                                                                                <i class="fas fa-trash-alt"></i>
+                                                                                <i
+                                                                                    class="fas fa-trash-alt  text-danger"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>

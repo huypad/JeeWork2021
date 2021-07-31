@@ -838,15 +838,29 @@ export class WorkListNewDetailComponent implements OnInit {
   //update by key click up
 
   UpdateStatus(task, status) {
-    if (task.status == +status.id_row) {
-      //
-    } else {
-      // var taskupdate = new WorkModel();
-      // taskupdate = task;
-      // task.status = status.id_row
-      // this.UpdateTask(task);
-      this.UpdateByKeyNew(task, "status", status.id_row);
-    }
+    if (+task.status == +status.id_row) return; 
+    if(this.IsAdmin()){
+      this.UpdateByKey(task, "status", status.id_row);
+    }else{
+      if(status.Follower){
+        if(status.Follower == this.UserID){
+          this.UpdateByKey(task, "status", status.id_row);
+        }else{
+          this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
+        }
+      }else{
+        this.UpdateByKey(task, "status", status.id_row);
+      }
+    } 
+    // if (task.status == +status.id_row) {
+    //   //
+    // } else {
+    //   // var taskupdate = new WorkModel();
+    //   // taskupdate = task;
+    //   // task.status = status.id_row
+    //   // this.UpdateTask(task);
+    //   this.UpdateByKeyNew(task, "status", status.id_row);
+    // }
   }
 
   UpdateTitle() {

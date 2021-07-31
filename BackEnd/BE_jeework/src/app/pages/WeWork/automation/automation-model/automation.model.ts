@@ -49,7 +49,10 @@ export class Automation_SubAction_Model {
 	subactionid: string;
 	value: string;
 	clear() {
-        
+        this.rowid = 0;
+        this.autoid = "";
+        this.subactionid = "";
+        this.value = "";
 	}
 }
 /**public class Auto_Task_Model

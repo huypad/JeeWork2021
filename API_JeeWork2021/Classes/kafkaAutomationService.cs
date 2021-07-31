@@ -104,15 +104,14 @@ namespace API_JeeWork2021.Classes
                         switch (actionid)
                         {
                             case 1:
+                            case 7:
                                 DataTable dt_sub = cnn.CreateDataTable(@"select sub.rowid, autoid, subactionid, value,sublist.TableName from automation_subaction sub
 join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where autoid =" + autoid + "");
                                 if (dt_sub.Rows.Count > 0)
                                 {
                                     process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn);
                                 }
-                                break;
-                            case 7:
-                                break;
+                                break; 
                             case 4: // comment 
                                 insertComment(data.userid,data_auto, get_list_id(dt_execute), cnn);
                                 break;
@@ -293,7 +292,54 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                             break;
                         case 3: // Xóa tất cả người hiện tại -- id_work=$objectid$,loai=1
                         case 5: // Thêm tag (we_work_tag)
+                            foreach(var item in values)
+                            {
+                                for (int i = 0; i < listTask.Length; i++)
+                                {
+                                    var f = cnn.ExecuteScalar("select count(*) from we_work_tag where disabled=0 and id_work=" + listTask[i] + " and id_tag=" + item);
+                                    Hashtable val2 = new Hashtable();
+                                    if (int.Parse(f.ToString()) > 0) // Tag đã có => Delete
+                                    { }
+                                    else
+                                    {
+                                        val2 = new Hashtable();
+                                        val2["id_work"] = listTask[i];
+                                        val2["CreatedDate"] = DateTime.Now;
+                                        val2["CreatedBy"] = 0;
+                                        val2["id_tag"] = item;
+                                        if (cnn.Insert(val2, "we_work_tag") != 1)
+                                        {
+                                            cnn.RollbackTransaction();
+                                            return false;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
                         case 6: // Xóa tag
+                            foreach (var item in values)
+                            {
+                                for (int i = 0; i < listTask.Length; i++)
+                                {
+                                    var f = cnn.ExecuteScalar("select count(*) from we_work_tag where disabled=0 and id_work=" + listTask[i] + " and id_tag=" + item);
+                                    Hashtable val2 = new Hashtable();
+                                    if (int.Parse(f.ToString()) > 0) // Tag đã có => Delete
+                                    {
+                                        val2 = new Hashtable();
+                                        val2["UpdatedDate"] = DateTime.Now;
+                                        val2["UpdatedBy"] = 0;
+                                        val2["Disabled"] = 1;
+                                        SqlConditions cond = new SqlConditions();
+                                        cond.Add("id_work", listTask[i]);
+                                        cond.Add("id_tag", item);
+                                        if (cnn.Update(val2, cond, "we_work_tag") <= 0)
+                                        {
+                                            cnn.RollbackTransaction();
+                                            return false;
+                                        }
+                                    }
+                                }
+                            }
                             break;
                         default:
                             break;

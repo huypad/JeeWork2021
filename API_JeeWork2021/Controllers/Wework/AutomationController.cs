@@ -258,6 +258,43 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("delete/{id}")]
+        [HttpGet]
+        public async Task<object> DeleteAutomation(long id)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            { 
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    cnn.BeginTransaction();
+
+                    string sqlu = "update AutomationList set Disabled = 1 where RowID = " + id;
+                    if(cnn.ExecuteNonQuery(sqlu) != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    
+                    
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(id);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
 
         /// <summary>
         /// 
@@ -666,7 +703,7 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                     case 7:
                         foreach (DataRow item in dt.Rows)
                         {
-                            result.Add(new { id = item["rowid"], value = item["Value"], actionid = actionid });
+                            result.Add(new { id = item["rowid"], value = item["Value"], actionid = item["subactionid"] });
                         }
                         break;
                     case 4:

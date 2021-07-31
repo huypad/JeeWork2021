@@ -57,6 +57,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     private templatecenterService: TemplateCenterService,
     private translateService: TranslateService,
     private departmentServices: ListDepartmentService,
+    private weworkService: WeWorkService,
     private automationService: AutomationService,
     private changeDetectorRefs: ChangeDetectorRef,
     private weWorkService: WeWorkService
@@ -156,6 +157,9 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     }
     this.LoadDataStatus();
     this.valueout.emit(this.value);
+    if(this.ID_projectteam>0){
+      this.mark_tag(this.ID_projectteam);
+    }
   }
   MapvalueEdit() {
 
@@ -164,6 +168,11 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       case 1: // assign
         {
           this.MapUser();
+        }
+        break;
+      case 7: // assign
+        {
+          this.MapTags();
         }
         break;
       case 2: // 2 = task ; 3 = subtask ;
@@ -259,6 +268,24 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     }else{
       setTimeout(() => {
         this.MapUser();
+      }, 500);
+    }
+  }
+  MapTags(){
+    if(this.list_Tag && this.list_Tag.length > 0){
+      this.dataAction.data_actions.forEach(element => {
+        var listTag = element.value.split(',');
+        listTag.forEach(id_row => {
+          var x = this.list_Tag.find(x=>x.id_row == id_row);
+          if(x){
+            this.SelectedTag(x,element.actionid);
+          }
+        });
+      });
+      
+    }else{
+      setTimeout(() => {
+        this.MapTags();
       }, 500);
     }
   }
@@ -402,5 +429,53 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   SelectedStatus(status) {
     this.value.checked = status;
     this.checked = status.value;
+  }
+
+  stopPropagation(event) {
+    event.stopPropagation();
+  }
+
+  //load task
+  list_Tag: any = [];
+  project_team: any = "";
+  mark_tag(Id_project_team) {
+    this.weworkService.lite_tag(Id_project_team).subscribe((res) => {
+      this.changeDetectorRefs.detectChanges();
+      if (res && res.status === 1) {
+        this.list_Tag = res.data;
+        this.changeDetectorRefs.detectChanges();
+      }
+    });
+    this.item1 = {
+      id_row:1,
+      id_project_team:this.ID_projectteam,
+    }
+    this.item2 = {
+      id_row:2,
+      id_project_team:this.ID_projectteam,
+    }
+  }
+  item1 :any = [];
+  item2 :any = [];
+  SelectedTag(value,loai = 5){
+    if(loai==5){
+      if(!this.value.Tags) this.value.Tags = [];
+      var index = this.value.Tags.findIndex(x => x.id_row == value.id_row);
+      if(index >= 0){
+        this.value.Tags.splice(index,1);
+      }
+      else{
+        this.value.Tags.push(value);
+      }
+    }else{
+      if(!this.value.Tags2) this.value.Tags2 = [];
+      var index = this.value.Tags2.findIndex(x => x.id_row == value.id_row); 
+      if(index >= 0){
+        this.value.Tags2.splice(index,1);
+      }
+      else{
+        this.value.Tags2.push(value);
+      } 
+    }
   }
 }

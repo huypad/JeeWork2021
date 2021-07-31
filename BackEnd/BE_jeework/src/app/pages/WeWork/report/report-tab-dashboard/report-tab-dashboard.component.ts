@@ -1,3 +1,4 @@
+import { ListDepartmentService } from './../../List-department/Services/List-department.service';
 import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { environment } from 'src/environments/environment';
@@ -36,6 +37,7 @@ export class ReportTabDashboardComponent implements OnInit {
     private detectChange: ChangeDetectorRef,
     private translate: TranslateService,
     private layoutUtilsService: LayoutUtilsService,
+    private _deptServices: ListDepartmentService,
     public weworkService: WeWorkService,
     private activatedRoute: ActivatedRoute,
     // private TongHopHieuQuaTuyenDungService:TongHopHieuQuaTuyenDungService
@@ -55,8 +57,7 @@ export class ReportTabDashboardComponent implements OnInit {
     this.column_sort = this.sortField[0];
   }
 
-  DontChange = false
-  // filter header
+  DontChange = false 
   selectedDate = {
     startDate: new Date('09/01/2020'),
     endDate: new Date('09/30/2020'),
@@ -76,6 +77,7 @@ export class ReportTabDashboardComponent implements OnInit {
       else {
       }
     });
+    this.LoadDatafilter();
   }
 
   Filter(item) {
@@ -166,15 +168,19 @@ export class ReportTabDashboardComponent implements OnInit {
     // },
   ]
 
-  NameDept = (id) => {
+  NameDept(id) {
     var title = this.translate.instant('filter.tatcaphongban');
-    if (this.list_department) {
-      this.list_department.forEach(res => {
-        if (res.id_row == id) {
-          title = res.title
-        }
-      })
+    var x = this.list_department.find(x=>x.id_row == id);
+    if(x){
+      return x.title;
     }
+    // if (this.list_department) {
+    //   this.list_department.forEach(res => {
+    //     if (res.id_row == id) {
+    //       return res.title;
+    //     }
+    //   })
+    // }
     return title
   }
 
@@ -202,7 +208,6 @@ export class ReportTabDashboardComponent implements OnInit {
     this.getReportToDepartments();
     this.getCacConSoThongKe();
     this.getEisenhower();
-    this.LoadDatafilter();
     setTimeout(() => {
       this.layoutUtilsService.OffWaitingDiv();
     }, 500);
@@ -211,11 +216,13 @@ export class ReportTabDashboardComponent implements OnInit {
   LoadDatafilter() {
     this.weworkService.lite_department_byuser().subscribe(res => {
       if (res && res.status === 1) {
-        this.list_department = res.data;
-        this.list_department.unshift({
-          title: this.translate.instant('filter.tatcaphongban'),
-          id_row: ''
-        })
+          this.list_department = res.data;
+          this.list_department.unshift({
+            title: this.translate.instant('filter.tatcaphongban'),
+            id_row: ''
+          })
+          if(this.ID_department > 0)
+          this.LoadDataFolder();
       };
       this.detectChange.detectChanges();
     });
@@ -989,6 +996,32 @@ export class ReportTabDashboardComponent implements OnInit {
     })
   }
 
+  dataFolder:any = [];
+  loadListfolder:any = false;
+	LoadDataFolder(){
+	  this._deptServices.DeptDetail(this.ID_department).subscribe(res => {
+		if (res && res.status == 1) {
+		  if(!res.data.ParentID){
+			this.dataFolder = res.data.data_folder; 
+			var itemhientai = {
+			  CreatedBy: res.data.CreatedBy,
+			  CreatedDate: res.data.CreatedDate,
+			  id_row: res.data.id_row,
+			  parentid: res.data.ParentID,
+			  templateid: res.data.templateid,
+			  title: 'Dự án trực tiếp của phòng ban',
+			}
+			this.dataFolder.unshift(itemhientai)
+			this.loadListfolder = true;
+      console.log(this.list_department);
+      this.list_department = this.dataFolder;
+      this.DontChange = false;
+			this.detectChange.detectChanges();
+		  }
+		  
+		}
+	  })
+	}
 
 
 }

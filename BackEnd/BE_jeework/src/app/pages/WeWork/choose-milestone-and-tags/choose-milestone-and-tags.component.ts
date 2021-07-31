@@ -38,6 +38,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	@Input() id_project_Team;
 	@Input() project_team?: string = "";
 	@Input() Id_key?: number = 0;
+	@Input() auto = false;
 	@Input() Loai?: string = "startdate";
 	public filtered: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
 	public FilterCtrl: FormControl = new FormControl();
@@ -100,6 +101,10 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	}
 
 	selected(id_milestone) {
+		if(this.auto){
+			this.ItemSelected.emit(id_milestone);
+			return;
+		}
 		this.model = new UpdateWorkModel();
 		this.model.id_row = this.Id;
 		this.model.key = this.Loai;

@@ -19,7 +19,7 @@
     <div class="cu-automation-tab-manage__item-section">
         <div class="cu-automation-tab-manage__item-edit">
                 <mat-icon class="text-dark url" (click)="UpdateAutomation(item)" matTooltip="Chỉnh sửa hành động">edit</mat-icon>
-                <mat-icon mat-icon-button class="url" color="warn" matTooltip="Xóa hành động">delete</mat-icon>
+                <mat-icon mat-icon-button class="url" (click)="Delete(item)" color="warn" matTooltip="Xóa hành động">delete</mat-icon>
                 
             <mat-slide-toggle [checked]="item.status==1" (click)="Update(item)"></mat-slide-toggle>
 

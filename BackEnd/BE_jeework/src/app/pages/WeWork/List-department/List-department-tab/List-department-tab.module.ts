@@ -42,8 +42,8 @@ const routes: Routes = [
 			},
 			{
 				path: 'report/:id',
-				component: ReportTabComponent,
-				// component: ReportTabDashboardComponent,
+				// component: ReportTabComponent,
+				component: ReportTabDashboardComponent,
 			}
 		]
 	}

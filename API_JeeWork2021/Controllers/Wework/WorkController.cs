@@ -2382,10 +2382,10 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         [HttpGet]
         public IActionResult DownloadFileImport()
         {
-            string Token = Common.GetHeader(Request);
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return Unauthorized();
+            //string Token = Common.GetHeader(Request);
+            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            //if (loginData == null)
+            //    return Unauthorized();
             ErrorModel error = new ErrorModel();
             SqlConditions Conds = new SqlConditions();
             DataTable dt = new DataTable();
@@ -2400,7 +2400,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             }
             catch (Exception ex)
             {
-                return BadRequest(JsonResultCommon.Exception(_logger, ex, _config, loginData));
+                return BadRequest(JsonResultCommon.Exception(_logger, ex, _config, null));
             }
         }
         public static DataImportModel data_import = new DataImportModel();

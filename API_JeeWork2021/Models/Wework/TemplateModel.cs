@@ -52,6 +52,7 @@ namespace JeeWork_Core2021.Models
         public DateTime end_date { get; set; }
         public string sample_id { get; set; } // Link với table we_sample_data để lấy bộ dữ liệu mẫu tương ứng với template (áp dụng is_template_center = 1)
         public string save_as_id { get; set; } // Dùng để lưu ngược lại từ space/folder/list về lại template, id link với các table phụ thuộc vào types
+        public long id_reference { get; set; } // levels = 1,2 lấy id_row trong we_department, level = 3 we_project_team, level = 4 we_work
 
     }
     public class ListFieldModel

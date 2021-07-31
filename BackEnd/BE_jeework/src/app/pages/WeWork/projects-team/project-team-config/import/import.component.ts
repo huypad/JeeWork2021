@@ -79,10 +79,11 @@ export class ImportComponent {
 	}
 
 	download() {
-		this._service.DownloadFileImport().subscribe(res => {
-			if (res && res.status == 1)
-				window.open(res.file);
-		});
+		window.open(this._service.DownloadFileImport());
+		// this._service.DownloadFileImport().subscribe(res => {
+		// 	if (res && res.status == 1)
+		// 		window.open(res.file);
+		// });
 	}
 	Import(preview: boolean = false) {
 		if (!this.Image) {

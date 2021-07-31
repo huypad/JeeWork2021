@@ -2643,6 +2643,10 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             DataTable dt = cnn.CreateDataTable(sql);
             List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
             string ids = string.Join(",", nvs);
+            if (string.IsNullOrEmpty(ids))
+            {
+                return "0";
+            }
             return ids;
         }
 
