@@ -1632,7 +1632,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             }
                             else
                             {
-                                DataTable table = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), ConnectionString);
+                                DataTable table = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                                 if (dt.Rows.Count > 0)
                                 {
                                     DataRow[] RowStatus = table.Select("IsDefault = 1 and IsFinal = 0");

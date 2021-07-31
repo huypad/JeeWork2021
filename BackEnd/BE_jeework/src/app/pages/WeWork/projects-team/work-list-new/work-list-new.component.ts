@@ -164,8 +164,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   ngOnInit() {
     var today = new Date();
     this.filterDay = {
-      endDate: new Date(today.setDate(today.getDate() + 1)),
-      startDate: new Date(today.setDate(1)),
+      endDate: new Date(today.setMonth(today.getMonth() + 2)),
+      startDate: new Date(today.setMonth(today.getMonth()-3)),
     };
 
     this.column_sort = this.sortField[0];
