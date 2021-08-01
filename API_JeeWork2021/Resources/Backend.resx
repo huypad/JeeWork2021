@@ -123,6 +123,9 @@
   <data name="ww_assign" xml:space="preserve">
     <value>$nguoigui$ đã giao công việc $tencongviec$ cho bạn</value>
   </data>
+  <data name="ww_capnhattrangthaicongviec" xml:space="preserve">
+    <value>$nguoigui$ đã cập nhật trạng thái $trangthai$ cho công việc $tencongviec$</value>
+  </data>
   <data name="ww_capnhattrangthaicongviec_done" xml:space="preserve">
     <value>$nguoigui$ đã cập nhật trạng thái công việc $tencongviec$</value>
   </data>

@@ -91,7 +91,7 @@
             </li>
             <li>
               <span>
-                {{ comment.DateCreated | date: 'dd/MM/yyyy hh:mm:ss' }}
+                {{ comment.DateCreated | date: 'dd/MM/yyyy HH:mm:ss' }}
               </span>
             </li>
             <li *ngIf="comment.IsEdit">
@@ -132,6 +132,7 @@
       >
       </jeecomment-post-comment-content>
       <jeecomment-enter-comment-content
+        [showonpopup]="showonpopup"
         [isFocus$]="isFocus$$"
         *ngIf="(showEnterComment$.asObservable() | async) && lstObjectID.length < 3"
         [objectID]="objectID"

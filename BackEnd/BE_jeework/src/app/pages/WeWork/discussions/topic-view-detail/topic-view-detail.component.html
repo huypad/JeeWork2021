@@ -56,7 +56,7 @@
                                 <span style="font-size:10pt; color: #666;" *ngIf="item.NguoiTao">
                                     {{ 'workprocess.taoboi' | translate}} {{item.NguoiTao.hoten}} {{ 'workprocess.luc' |
                                     translate}}
-                                    {{item.CreatedDate}}
+                                    {{item.CreatedDate  | timezone}}
                                 </span>
                             </div>
                             <div>
@@ -174,21 +174,20 @@
                                                 [showFull]="true" [info]="'@' + topic.username">
                                             </kt-avatar-user>
                                             <hr>
-                                            <div class="row url">
-        
+                                            <!-- <div class="row url"> 
                                                 <div class="col-md-12">
                                                     <mat-icon style="color: rgb(99, 99, 233);">reply</mat-icon><span
                                                         style="color: #111;"> {{ 'topic.xemthongtin' | translate }} </span>
                                                 </div>
-                                            </div>
-                                            <div class="row url">
+                                            </div> -->
+                                            <!-- <div class="row url">
                                                 <div class="col-md-12">
                                                     <mat-icon style="color: green;">forum</mat-icon><span style="color: #111;">
                                                         {{ 'topic.nhantinvoi' | translate }}
                                                         {{topic.hoten}}
                                                     </span>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="row url">
                                                 <div class="col-md-12">
                                                     <mat-icon style="color: red;">block</mat-icon><span

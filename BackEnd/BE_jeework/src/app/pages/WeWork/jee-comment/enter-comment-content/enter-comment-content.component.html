@@ -18,7 +18,7 @@
       >
       </textarea>
       <ul class="comment-icon">
-        <li class="icon">
+        <li class="icon" *ngIf="!showonpopup">
           <span>
             <div (click)="toggleEmojiPicker()" role="button" tabindex="0"><i id="emotion-icon"></i></div>
           </span>

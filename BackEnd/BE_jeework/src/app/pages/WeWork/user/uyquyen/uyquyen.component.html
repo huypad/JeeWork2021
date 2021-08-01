@@ -1,16 +1,6 @@
 <kt-portlet>
-    <kt-portlet-header [sticky]="true" title="{{'wuser.list'|translate}}" [class]="'kt-portlet__head--lg'">
+    <kt-portlet-header [sticky]="true" title="{{'wuser.list_uyquyen'|translate}}" [class]="'kt-portlet__head--lg'">
         <ng-container ktPortletTools>
-            <!-- <div class="search-box">
-                <div class="search">
-                    <div class="input">
-                        <span class="las la-search url" (click)="loadDataList()"
-                            style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
-                        <input type="text" [(ngModel)]="keyword" (keyup.enter)="loadDataList()"
-                            placeholder="{{ 'wuser.timkiemnhanh' | translate }}" style="overflow: hidden;" #tenphongban>
-                    </div>
-                </div>
-            </div> -->
             <button class="btn jee_btn-duyet" (click)="uyquyen(false)"> Thêm mới </button>
         </ng-container>
     </kt-portlet-header>
@@ -21,8 +11,8 @@
                 <ng-container matColumnDef="hoten">
                     <th mat-header-cell *matHeaderCellDef style="justify-content: center">
                         <span translate="wuser.hoten" class="text-uppercase"></span> &nbsp;
-                        <app-sort-icon column="hoten" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+                        <app-sort-icon column="hoten" [activeColumn]="sorting.column"
+                            [activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
                     </th>
                     <td mat-cell *matCellDef="let item" style="justify-content: center;">
                         <div style="display:flex">
@@ -38,7 +28,7 @@
                                 </ng-template>
                             </div>
                             <div>
-                                <div><a [routerLink]="['./',item.id_nv]">{{ item.hoten }}</a></div>
+                                <div><a>{{ item.hoten }}</a></div>
                                 <span style="color: #888">{{ item.tenchucdanh }}</span>
                             </div>
                         </div>
@@ -49,20 +39,27 @@
                         <span translate="wuser.listproject" class="text-uppercase"></span>
                     </th>
                     <td mat-cell *matCellDef="let item" style="justify-content: center">
-                        <ng-container *ngIf="item.is_all_project;else duan">
-                            Tất cả dự án
-                        </ng-container>
-                        <ng-template #duan>
-                            {{item.list_project}}
-                        </ng-template>
+                        <div style="font-size: 14px;color: black; line-height: 2;" *ngFor="let pr of item.data_project">
+                            <span>
+                                {{pr.title}}
+                            </span>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="thoigian">
                     <th mat-header-cell *matHeaderCellDef style="justify-content: center">
                         <span translate="wuser.thoigianuyquyen" class="text-uppercase"></span>
                     </th>
-                    <td mat-cell *matCellDef="let item" style="justify-content: center">                        
+                    <td mat-cell *matCellDef="let item" style="justify-content: center">
                         {{item.start_date | date :'dd/MM/yyyy'}} - {{item.end_date | date :'dd/MM/yyyy'}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="createddate">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center">
+                        <span translate="GeneralKey.ngaytao" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center">
+                        {{item.createddate  | timezone}}
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="actions">
@@ -71,6 +68,9 @@
                     <td mat-cell *matCellDef="let item" style="justify-content: center">
                         <button (click)="uyquyen(item)" mat-icon-button color="primary" matTooltip="Chỉnh sửa">
                             <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button (click)="xoauyquyen(item)" mat-icon-button color="warn" matTooltip="Xóa">
+                            <mat-icon>delete</mat-icon>
                         </button>
                     </td>
                 </ng-container>
@@ -82,7 +82,7 @@
             <div class="mat-table__message" *ngIf="!dataSource.hasItems">
                 <span translate="GeneralKey.khongcodulieu"></span>
             </div>
-        </div> 
+        </div>
         <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;"
             [paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)">
         </app-paginator>

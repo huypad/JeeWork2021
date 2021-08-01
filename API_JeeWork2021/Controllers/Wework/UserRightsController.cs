@@ -429,7 +429,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("id_group", data.ID_Nhom);
                     // kiểm tra account đã có trong tab_Account
                     Conds = new SqlConditions();
-                    Conds.Add("username", data.UserName);
+                    //Conds.Add("username", data.UserName);
 
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
@@ -446,8 +446,38 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                }
+                    #region update customdata
+                    Conds.Add("Username", data.UserName);
+                    string sqlq = $@"select distinct id_permit from tbl_Account_Permit where Username = @Username
+                                    UNION
+                                    select distinct id_permit from tbl_Group_Permit g 
+                                    join tbl_group_account g_a  on g.id_group=g_a.id_group 
+                                    where Username = @Username";
+                    DataTable dt = cnn.CreateDataTable(sqlq, Conds);
+                    string role = "";
+                    foreach (DataRow vr in dt.Rows)
+                    {
+                        role += (vr["id_permit"] + ",");
+                    }
+                    role = role.Substring(0, role.Length - 1);
+                    ObjCustomData objCustomData = new ObjCustomData();
+                    objCustomData.userId = Common.getIDUserbyUserName(data.UserName, HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
+                    objCustomData.updateField = "jee-work";
+                    var datas = new
+                    {
+                        WeWorkRoles = role
+                    };
+                    objCustomData.fieldValue = datas;
 
+                    var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                    if (dataJA == null)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.ThatBai("Lỗi cập nhật quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                    }
+                    cnn.EndTransaction();
+                    #endregion
+                }
                 return JsonResultCommon.ThanhCong(data);
             }
             catch (Exception ex)
@@ -500,6 +530,40 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region update customdata
+                    Conds = new SqlConditions();
+                    Conds.Add("Username", data.UserName);
+                    string sqlq = $@"select distinct id_permit from tbl_Account_Permit where Username = @Username
+                                    UNION
+                                    select distinct id_permit  from tbl_Group_Permit g 
+                                    join tbl_Group_Account g_a  on g.id_group=g_a.id_group 
+                                    where Username = @Username";
+                    DataTable dts = cnn.CreateDataTable(sqlq, Conds);
+                    string role = "";
+                    foreach (DataRow vr in dts.Rows)
+                    {
+                        role += (vr["id_permit"] + ",");
+                    }
+                    if (role != "") { role = role.Substring(0, role.Length - 1); }
+
+                    ObjCustomData objCustomData = new ObjCustomData();
+                    objCustomData.userId = Common.getIDUserbyUserName(data.UserName, HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
+                    objCustomData.updateField = "jee-work";
+                    var datas = new
+                    {
+                        WeWorkRoles = role
+                    };
+                    objCustomData.fieldValue = datas;
+
+                    var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                    if (dataJA == null)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.ThatBai("Lỗi cập nhật dữ liệu quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                    }
+                    cnn.EndTransaction();
+
+                    #endregion
                 }
                 return JsonResultCommon.ThanhCong(data);
             }
@@ -855,7 +919,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         Conds.Add("Username", query.filter["username"]);
                         DataTable permit_group = cnn.CreateDataTable($@"select g.id_permit, g.Edit 
                                                                 from tbl_Group_Permit g 
-                                                                join {_config.HRCatalog}.dbo.tbl_Group_Account g_a 
+                                                                join tbl_Group_Account g_a 
                                                                 on g.id_group=g_a.id_group 
                                                                 where (where)", "(where)", Conds);
                         foreach (DataRow dr in dt.Rows)
@@ -979,6 +1043,79 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
+                    #region update customdata
+
+                    if (ColumnKey == "username")
+                    {
+                        Conds = new SqlConditions();
+                        Conds.Add("Username", arr_data[0].ID);
+                        string sqlq = $@"select distinct id_permit from tbl_Account_Permit where Username = @Username
+                                    UNION
+                                    select distinct id_permit  from tbl_Group_Permit g join tbl_Group_Account g_a on g.id_group=g_a.id_group 
+                                    where Username = @Username";
+                        DataTable dts = cnn.CreateDataTable(sqlq, Conds);
+                        string role = "";
+                        foreach (DataRow vr in dts.Rows)
+                        {
+                            role += (vr["id_permit"] + ",");
+                        }
+                        role = role.Substring(0, role.Length - 1);
+                        ObjCustomData objCustomData = new ObjCustomData();
+                        objCustomData.userId = Common.getIDUserbyUserName(arr_data[0].ID.ToString(), HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
+                        objCustomData.updateField = "jee-work";
+                        var datas = new
+                        {
+                            WeWorkRoles = role
+                        };
+                        objCustomData.fieldValue = datas;
+
+                        var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                        if (dataJA == null)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.ThatBai("Lỗi cập nhật nhóm quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                        }
+                    }
+                    else
+                    {
+                        string sqlquyen = @$"select * from Tbl_Group_Account where Id_group = {arr_data[0].ID}";
+                        DataTable dtquyen = cnn.CreateDataTable(sqlquyen, Conds);
+                        foreach (DataRow vts in dtquyen.Rows)
+                        {
+                            Conds = new SqlConditions();
+                            Conds.Add("Username", vts["Username"]);
+                            string sqlq = $@"select distinct id_permit from tbl_account_permit where Username = @Username
+                                    UNION
+                                    select distinct id_permit  from tbl_Group_Permit g 
+                                    join tbl_Group_Account g_a 
+                                    on g.id_group=g_a.id_group 
+                                    where Username = @Username";
+                            DataTable dts = cnn.CreateDataTable(sqlq, Conds);
+                            string role = "";
+                            foreach (DataRow vr in dts.Rows)
+                            {
+                                role += (vr["id_permit"] + ",");
+                            }
+                            role = role.Substring(0, role.Length - 1);
+                            ObjCustomData objCustomData = new ObjCustomData();
+                            objCustomData.userId = Common.getIDUserbyUserName(vts["Username"].ToString(), HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
+                            objCustomData.updateField = "jee-work";
+                            var datas = new
+                            {
+                                WeWorkRoles = role
+                            };
+                            objCustomData.fieldValue = datas;
+
+                            var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                            if (dataJA == null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.ThatBai("Lỗi cập nhật username vào nhóm lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                            }
+                        }
+                    }
+
+                    #endregion
                     LogContent += " của nhóm " + arr_data[0].Ten + "(" + arr_data[0].ID + ")";
                     cnn.EndTransaction();
                     cnn.Disconnect();

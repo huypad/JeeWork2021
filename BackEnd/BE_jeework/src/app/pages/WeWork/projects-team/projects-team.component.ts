@@ -105,6 +105,8 @@ export class ProjectsTeamComponent implements OnInit {
 			var arr = path.split('/');
 			if (arr.length > 3)
 				this.activeLink = arr[3];
+			if(this.activeLink == 'clickup'||this.activeLink == 'board'||this.activeLink == 'gantt'||this.activeLink == 'calendar')
+				this.activeLink ='home';
 		}
 
 		this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
@@ -123,9 +125,18 @@ export class ProjectsTeamComponent implements OnInit {
 				var arr = path.split('/');
 				if (arr.length > 3)
 					this.activeLink = arr[3] + (arr[4] ? '/' + arr[4] : '');
+				if(this.activeLink == 'clickup'||this.activeLink == 'board'||this.activeLink == 'gantt'||this.activeLink == 'calendar')
+					this.activeLink ='home';
 			}
 		});
 
+	}
+
+	SelectedView(view){
+		// TabName=view.view_name_new;click('home');linkTo(view.link)
+		this.TabName = view.view_name_new;
+		this.click('home');
+		this.linkTo(view.link);
 	}
 
 	CheckRoles(roleID: number) {
@@ -440,7 +451,7 @@ export class ProjectsTeamComponent implements OnInit {
 	}
 
 	click(link) {
-		this.TabName = '';
+		// this.TabName = '';
 		this.activeLink = link;
 		this.ShowFull = true;
 		// this.changeDetectorRefs.detectChanges();

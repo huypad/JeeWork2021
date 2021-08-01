@@ -11,6 +11,8 @@ using System.Collections.Specialized;
 using System.Data.OleDb;
 using System.Collections.Generic;
 using Microsoft.Net.Http.Headers;
+using RestSharp;
+using Newtonsoft.Json;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -769,6 +771,69 @@ namespace JeeWork_Core2021.Classes
                 //}
             }
             return Mess;
+        }
+        public static string getIDUserbyUserName(string username, IHeaderDictionary pHeader, string URL)
+        {
+            string userID = "";
+            #region Lấy danh sách nhân viên từ JeeAccount
+            var dataJA = GetEmployeeByJA(pHeader, URL);
+            if (dataJA == null)
+                return "";
+            foreach (var str in dataJA)
+            {
+                if (username.Equals(str.Username))
+                {
+                    userID = str.UserId.ToString();
+                }
+            }
+            #endregion
+            return userID;
+        }
+        public static List<AccUsernameModel> GetEmployeeByJA(IHeaderDictionary pHeader, string URL)
+        {
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+            IHeaderDictionary _d = pHeader;
+            string _bearer_token;
+            _bearer_token = _d[HeaderNames.Authorization].ToString();
+            string link_api = URL + @$"/api/accountmanagement/usernamesByCustermerID";
+            var client = new RestClient(link_api);
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("Authorization", _bearer_token);
+            IRestResponse response = client.Execute(request);
+            var model = JsonConvert.DeserializeObject<BaseModel<List<AccUsernameModel>>>(response.Content);
+            if (model == null)
+            {
+                return null;
+            }
+            return model.data;
+        }
+        public static object UpdateCustomData(IHeaderDictionary pHeader, string URL, ObjCustomData objCustomData)
+        {
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+            IHeaderDictionary _d = pHeader;
+            string _bearer_token;
+            _bearer_token = _d[HeaderNames.Authorization].ToString();
+            var content = new ObjCustomData
+            {
+                userId = objCustomData.userId.ToString(),
+                updateField = objCustomData.updateField,
+                fieldValue = objCustomData.fieldValue,
+            };
+            object stringContent = JsonConvert.SerializeObject(content);
+            string link_api = URL + @$"/api/accountmanagement/UppdateCustomData";
+            var client = new RestClient(link_api);
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Authorization", _bearer_token);
+            request.AddJsonBody(stringContent);
+            IRestResponse response = client.Execute(request);
+            var model = JsonConvert.DeserializeObject<ResultModel>(response.Content);
+            if (model == null)
+            {
+                return null;
+            }
+            return model.data;
         }
     }
 }

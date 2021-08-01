@@ -300,7 +300,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     #region Ủy quyền giao việc
                     string sqluq = $@"or we_project_team_user.id_user in (select createdby from we_authorize
-                                        where id_user = {loginData.UserID} and Disabled = 0)";
+                                        where id_user = {loginData.UserID} and Disabled = 0 and start_date <= GETDATE() and end_date >= GETDATE())";
                     #endregion
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");

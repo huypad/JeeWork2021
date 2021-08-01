@@ -113,12 +113,21 @@ export class AuthorizeEditComponent implements OnInit {
 		// 	state.name.toLowerCase().indexOf(name.toLowerCase()) === 0);
 	}
 	createForm() {
+		var x = [];
+		if(this.item.list_project){
+			this.item.list_project.split(',').forEach(y=>{
+				x.push(+y);
+			})
+				console.log(x);
+			
+		}
 		this.itemForm = this.fb.group({
 			id_user: [''+this.item.id_user, Validators.required],
 			start: [this.item.start_date , Validators.required],
 			end: [ this.item.end_date , Validators.required],
-			list_project: [this.item.list_project?this.item.list_project.split(','):''],
+			list_project: [x],
 		});
+		this.changeDetectorRefs.detectChanges();
 		// this.itemForm.controls["id_user"].markAsTouched();
 	}
 

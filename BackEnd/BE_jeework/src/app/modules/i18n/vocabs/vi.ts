@@ -187,13 +187,13 @@ export const locale = {
     },
     GeneralKey: {
       // a
-      automation:"Tự động hóa",
-      activeautomation:"Giao thức đang kích hoạt",
-      addcondition:"Thêm điều kiện",
-      addaction:"Thêm hành động",
+      automation: "Tự động hóa",
+      activeautomation: "Giao thức đang kích hoạt",
+      addcondition: "Thêm điều kiện",
+      addaction: "Thêm hành động",
       //b
-      browse:'Duyệt qua',
-      manage:'Quản lý',
+      browse: 'Duyệt qua',
+      manage: 'Quản lý',
       boqua: "Bỏ qua",
       bancochacchanmuonxoakhong: "Bạn có chắc muốn xóa dữ liệu này không?",
       browsetemplate: 'Các mẫu có sẵn',
@@ -839,10 +839,10 @@ export const locale = {
         "Bạn có chắc muốn xoá dự án này? Các công việc/nhóm công việc liên quan cũng sẽ bị xoá và KHÔNG THỂ khôi phục.",
       congvieccuatoi: "Công việc của tôi",
       congviecdangdanhbang: "Theo dạng bảng - Board",
-      congviecdangdanhsach: "Theo danh sách - List",
+      congviecdangdanhsach: "Danh sách",
       congviecdangperiod: "Theo dòng chảy công việc - Period",
       congviecdangstream: "Theo luồng công việc - Stream",
-      clickup: "Theo danh sách - List",
+      clickup: "Danh sách",
       lichbieu: "Theo lịch biểu - Calendar google",
       gantt: "Theo biểu đồ Gantt",
       covagiulaihanhoanthanh:
@@ -956,7 +956,7 @@ export const locale = {
       hangthang: "Hàng tháng",
       hangtuan: "Hàng tuần",
       mausachienthi: "Màu sắc hiển thị",
-      default_view: "Giao diện hiển thị mặc định",
+      default_view: "Chế độ xem đang bật",
       thaotaccongviec: "Các thao tác liên quan đến công việc",
       email_assign_work: "Thông báo giao việc (gửi đến người được giao)",
       email_update_work: "Thông báo khi công việc được chỉnh sửa",
@@ -996,14 +996,14 @@ export const locale = {
       taonhanh: 'Tạo nhanh',
       nhaptenduan: "Nhập tên dự án",
       documents: "Tài liệu",
-      themview: "Thêm dạng hiển thị",
+      themview: "Thêm chế độ xem",
       templatedangsudung: "Mẫu đang sử dụng",
     },
     notify: {
       thongbaochuyentrang: "Thông báo chuyển trang",
       bancomuonchuyendentrang: "Bạn có muốn chuyển đến trang ",
       dangchuyentrang: "Đang chuyển trang",
-      chuanhapduthongtinbatbuoc: "Chưa nhập đủ trường thông tin bắt buộc!",
+      chuanhapduthongtinbatbuoc: "Chưa nhập đủ trường thông tin bắt buộc",
       filedatontai: "File đã tồn tại",
       vuilongchonthanhvien: "Vui lòng chọn thành viên",
       vuilongchonfiledulieu: "Vui lòng chọn file dữ liệu",
@@ -1114,7 +1114,7 @@ export const locale = {
       thanh: "thành",
       luc: "lúc",
       hoac: "hoặc",
-      logdetail: "LOG DETAIL",
+      logdetail: "Chi tiết log",
       chonduan: "Chọn dự án",
       tatcaphongban: "Tất cả phòng ban",
       tatcacongviec: "Tất cả công việc",
@@ -1397,6 +1397,7 @@ export const locale = {
       xoacot: "Xóa cột",
     },
     wuser: {
+      list_uyquyen: "Danh sách thành viên ủy quyền giao việc",
       list: "Danh sách thành viên",
       timkiemnhanh: "Tìm kiếm thành viên",
       hoten: "Họ và tên",
@@ -1426,6 +1427,9 @@ export const locale = {
       chonnguoireviewer: "Chọn người reviewer",
       tonghopsapxeptheo: "Sorted by",
       tonghoptheo: "Tổng hợp theo",
+      tatcaduan: "Tất cả dự án",
+      listproject: "Danh sách dự án",
+      thoigianuyquyen: "Thời gian ủy quyền",
     },
     mystaff: {
       duanteam: "DỰ ÁN & TEAM",
@@ -1546,7 +1550,7 @@ export const locale = {
       danhsachmuctieu: "Danh sách mục tiêu",
       baocaotheodanhsachmuctieu: "Báo cáo theo danh sách mục tiêu",
       phongbanhoatdong: "Phòng ban hoạt động",
-      clicktoupdate: "Click to updates",
+      clicktoupdate: "Điều kiện ngày",
     },
     repeated: {
       tansuatlaplai: "Tần suất lặp lại",
@@ -1990,7 +1994,7 @@ export const locale = {
     },
     Common: {
       user_hello: 'Xin chào, ',
-			notify_titile: 'Thông báo',
+      notify_titile: 'Thông báo',
     }
   },
 };

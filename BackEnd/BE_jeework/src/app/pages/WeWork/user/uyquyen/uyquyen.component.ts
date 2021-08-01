@@ -27,7 +27,7 @@ export class UyquyenComponent implements OnInit {
   UserID = 0;
   // Table fields
   dataSource: UyQuyenDataSource;
-  displayedColumns = ["hoten", "listproject", "thoigian", "actions"];
+  displayedColumns = ["hoten", "listproject", "thoigian", "createddate", "actions"];
   sorting: SortState = new SortState();
 
   // Selection
@@ -50,7 +50,7 @@ export class UyquyenComponent implements OnInit {
     private translate: TranslateService,
     private tokenStorage: TokenStorage,
     public WeWorkService: WeWorkService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.UserID = +this.router.url.split("/")[2];
@@ -145,27 +145,38 @@ export class UyquyenComponent implements OnInit {
 
   uyquyen(item) {
     // this.service.DetailUQ(item.id_row).subscribe(res => {
-		// 	console.log(res);
-		// });
-		let saveMessageTranslateParam = '';
-		var _item = new AuthorizeModel();
-		_item.clear();
-    if(item)
-		  _item = item;
-		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
-		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-		const dialogRef = this.dialog.open(AuthorizeEditComponent, { data: { _item } });
-		dialogRef.afterClosed().subscribe(res => {
-			if (!res) {
-				this.ngOnInit();
-			}
-			else {
-				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
-				this.ngOnInit();
-			}
-		});
-	}
-
+    // 	console.log(res);
+    // });
+    let saveMessageTranslateParam = '';
+    var _item = new AuthorizeModel();
+    _item.clear();
+    if (item)
+      _item = item;
+    saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
+    const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+    const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
+    const dialogRef = this.dialog.open(AuthorizeEditComponent, { data: { _item } });
+    dialogRef.afterClosed().subscribe(res => {
+      if (!res) {
+        this.ngOnInit();
+      }
+      else {
+        this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+        this.ngOnInit();
+      }
+    });
+  }
+  xoauyquyen(item) {
+    this.layoutUtilsService.showWaitingDiv();
+    this.service.delete(item.id_row).subscribe(res => {
+      this.layoutUtilsService.OffWaitingDiv();
+      if (res && res.status === 1) {
+        this.loadDataList();
+      }
+      else {
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+      }
+    });
+  }
 
 }

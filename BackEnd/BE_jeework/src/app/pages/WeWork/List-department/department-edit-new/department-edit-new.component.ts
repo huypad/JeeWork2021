@@ -140,8 +140,8 @@ export class DepartmentEditNewComponent implements OnInit {
 				this.listUser = res.data;
 				if (!this.IsUpdate) {
 					var index = this.listUser.find((x) => x.id_nv == this.UserId);
-					index.type = 1;
 					if (index) {
+						index.type = 1;
 						this.list_Owners.push(index);
 					}
 				}

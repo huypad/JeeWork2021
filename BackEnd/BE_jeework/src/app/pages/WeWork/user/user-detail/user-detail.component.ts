@@ -53,6 +53,7 @@ export class UserDetailComponent implements OnInit {
   UserID_authorize: number = 0;
   customStyle: any = {};
   keyword: string = "";
+  activelink = 'user';
   constructor(
     public _Services: UserService,
     private changeDetect: ChangeDetectorRef,
@@ -72,7 +73,11 @@ export class UserDetailComponent implements OnInit {
   }
   ngOnInit() {
     let id: any;
-
+    this.router.url.split("/").forEach(element => {
+      if(element == 'uyquyen'){
+        this.activelink = 'uyquyen';
+      }
+    })
     this.activatedRoute.params.subscribe((res) => {
       var now = moment();
       this.DenNgay = now;

@@ -182,6 +182,7 @@ import { AutomationTabManageComponent } from './automation/automation-tab-manage
 import { AutomationLabelComponent } from './automation/automation-label/automation-label.component';
 import { JeeCommentModule } from './jee-comment/jee-comment.module';
 import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu-2/list-task-cu-2.component';
+import { ApplicationPipesModule } from './pipe/pipe.module';
 @NgModule({
 	imports: [
 		JeeCommentModule, 
@@ -247,7 +248,8 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		AvatarModule,
 		FullCalendarModule,
 		CRUDTableModule,
-		NgxPrintModule
+		NgxPrintModule,
+		ApplicationPipesModule
 	],
 	providers: [
 		{ provide: MAT_DATE_LOCALE, useValue: 'vi' },
@@ -284,7 +286,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		AttachmentService,
 		DynamicFormService,
 		TemplateCenterService,
-		AutomationService
+		AutomationService,
 	],
 	entryComponents: [
 		DepartmentEditComponent,
@@ -429,7 +431,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
 		AutomationLabelComponent,
-		DanhsachthumucComponent
+		DanhsachthumucComponent,
 	],
 	exports: [
 		JeeCommentModule,
@@ -544,7 +546,8 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 		EditAutomationComponent,
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
-		DanhsachthumucComponent
+		DanhsachthumucComponent,
+		ApplicationPipesModule
 	]
 })
 export class WeWorkModule { }

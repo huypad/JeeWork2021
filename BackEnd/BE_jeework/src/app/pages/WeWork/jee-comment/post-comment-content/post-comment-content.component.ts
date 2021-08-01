@@ -42,6 +42,7 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
   commentID: string = '';
   replyCommentID: string = '';
   @Input() comment?: CommentDTO;
+  @Input() showonpopup: boolean = false;
   @Input() showCommentDefault?: boolean;
   @Input() isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   @Output() isFocus = new EventEmitter<any>();

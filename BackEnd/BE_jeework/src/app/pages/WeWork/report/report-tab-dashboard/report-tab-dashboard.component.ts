@@ -46,11 +46,11 @@ export class ReportTabDashboardComponent implements OnInit {
       title: this.translate.instant('filter.tatcaphongban'),
       id_row: ''
     }
-
     var today = new Date();
+    var start_date = new Date();
     this.selectedDate = {
-      endDate: new Date(today.setDate(today.getDate() + 1)),
-      startDate: new Date(today.setDate(1)),
+      endDate: new Date(today.setMonth(today.getMonth() + 1)),
+      startDate: new Date(start_date.setMonth(start_date.getMonth() - 5)),
     }
     this.filterCVC = this._filterCV[0];
     this.trangthai = this._filterTT[0];
@@ -66,17 +66,17 @@ export class ReportTabDashboardComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
       if (params.id) {
-        console.log('change data router')
         this.ID_department = +params.id;
         this.DontChange = true;
         this.filter_dept.id_row = this.ID_department.toString();
         // this.LoadData();
         
-        this.LoadData();
       }
       else {
       }
     });
+    
+    this.LoadData();
     this.LoadDatafilter();
   }
 

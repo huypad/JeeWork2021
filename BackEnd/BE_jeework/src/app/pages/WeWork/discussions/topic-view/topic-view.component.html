@@ -35,9 +35,9 @@
                             class="kt-badge kt-badge--inline kt-badge--pill kt-badge--{{getItemCss()}} kt-badge--wide">{{item.project_team}}</span>
                         <span style="font-size: 11px; color: #dbaa07"> | {{item.NguoiTao.hoten}}</span><span style="color: #aaa; font-family: inherit;
 							font-size: inherit;"> | {{ 'filter.datao' | translate }}
-                            {{item.CreatedDate}}</span><span *ngIf="item.UpdatedDate" style="color: #aaa; font-family: inherit;
+                            {{ item.CreatedDate | timezone }}</span><span *ngIf="item.UpdatedDate" style="color: #aaa; font-family: inherit;
 							font-size: inherit;"> | {{ 'filter.capnhatcuoi' | translate }}
-                            {{item.UpdatedDate}}</span>
+                            {{item.UpdatedDate | timezone}}</span>
                     </div>
                     <div *ngIf="!(selectedId > 0)" class="position-star m--margin-bottom-10-mobile">
                         <button [ngStyle]="{'color': item.favourite=='1'?'#FFD000':'#ebedf2'}" mat-icon-button

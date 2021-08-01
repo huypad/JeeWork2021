@@ -7,6 +7,14 @@
     {
         padding-top: 10px;
     }
+    .avatar-group
+  {
+    display: flex;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    flex-wrap: wrap;
+  }
 </style>
 <div class="card friend-list">
   
@@ -47,57 +55,28 @@
                         <ng-template #online>
 
 
-                            <div class="">
-
-                                <span *ngIf="user.Avatar==='';then e1; else e2"></span>
-                                <ng-template #e2>
-                                    <div class="image online">
-                                        <span *ngIf="item.Active" class="contact-status online"></span>
-                                        <ngx-avatar [size]="45" src="{{user.Avatar}}">
-                                        </ngx-avatar>
-                                        <!-- <img src="{{user.Avatar}}"  class="rounded-circle img-person" alt="" /> -->
-                                        <!-- <img   src="{{user.Avatar}}" alt="" class="rounded-circle img-person">  -->
-                                   
-
-                                    </div>
-                                </ng-template>
-
-                                <ng-template #e1>
-                                    <div class="image online">
-                                        <span *ngIf="item.Active" class="contact-status online"></span>
-                                        <img class="rounded-circle img-person" src="./assets/user.png">
-
-                                    </div>
-                                </ng-template>
+                            <div class="online">
+                                <ngx-avatar [size]="45" src="{{user.Avatar}}">
+                                </ngx-avatar>
+                                <ngx-avatar [size]="45" [name]="user.Fullname.slice(0, 1)" bgColor="{{ user.BgColor }}" *ngIf="!user.Avatar"></ngx-avatar>
+                               
 
                             </div>
                         </ng-template>
 
                         <ng-template #offline>
 
-                            <div class="">
+                            <div class="offline">
 
-                                <span *ngIf="user.Avatar==='';then e1; else e2"></span>
-                                <ng-template #e2>
-                                    <div class="image">
-                                        <ngx-avatar [size]="45" src="{{user.Avatar}}">
-                                        </ngx-avatar>
-                                        <!-- <img   src="{{user.Avatar}}" alt="" class="rounded-circle img-person">  -->
 
-                                    </div>
-                                </ng-template>
 
-                                <ng-template #e1>
-                                    <div class="image">
-                                        <img class="rounded-circle img-person" src="./assets/user.png">
-
-                                    </div>
-                                </ng-template>
-
+                                <ngx-avatar [size]="45" src="{{user.Avatar}}">
+                                </ngx-avatar>
+                                <ngx-avatar [size]="45" [name]="user.Fullname.slice(0, 1)" bgColor="{{ user.BgColor }}" *ngIf="!user.Avatar"></ngx-avatar>
+                             
                             </div>
                         </ng-template>
-                        <!-- <img *ngIf="user.Avatar==''" src="{{item.photoUrl || './assets/user.png'}}" alt="" class="rounded-circle img-person">
-                        <img   src="{{user.Avatar}}" alt="" class="rounded-circle img-person"> -->
+                      
                         <span class="badge label-u label-danger" *ngIf="item.unReadMessageCount > 0">{{item.unReadMessageCount}}</span>
                     </div>
                     <div>
@@ -107,7 +86,7 @@
                         font-size: 12px;" *ngFor="let lastmess of item.LastMess">
                            
                             <span *ngIf="lastmess.Username===userCurrent">Bạn:</span>
-                            <span *ngIf="lastmess.Username!=userCurrent">{{lastmess.InfoUser[0].Fullname}}:</span>
+                            <span *ngIf="lastmess.Username!=userCurrent && lastmess.InfoUser[0]">{{lastmess.InfoUser[0].Fullname}}:</span>
                         <span *ngIf="lastmess.Content_mess.length>10"> {{lastmess.Content_mess| slice:0:15}}...</span>
                         <span *ngIf="lastmess.Content_mess.length<10"> {{lastmess.Content_mess}}</span>
                         </div>
@@ -138,7 +117,21 @@
             <li class="pd-contact"  (click)="selectUser(item)">
                 <div class="d-flex">
                     <div  style="position: relative; margin-right: 10px;">
-                        <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" />
+                        <div class="avatar-group">
+                            <div *ngFor="let mb of item.ListMember | slice:0:4;let i=index">
+                          
+                            <div *ngFor="let it of mb.InfoMemberUser ">
+                              <div  *ngIf="i>=0&&i<3" >
+                                <ngx-avatar [size]="25" [name]="it.Fullname.slice(0, 1)" bgColor="{{ it.BgColor }}" *ngIf="!it.Avatar"></ngx-avatar>
+                                <ngx-avatar [size]="25" src="{{ it.Avatar }}" *ngIf="it.Avatar"></ngx-avatar>
+                               
+                              </div>
+                              <ngx-avatar *ngIf="i==3&&item.ListMember.length>=4" [size]="25" name="{{item.ListMember.length-3}}" bgColor="#ad3838" ></ngx-avatar>
+                             
+                          </div>
+                        </div>
+                      </div>
+                        <!-- <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" /> -->
                         <span class="badge label-u label-danger" *ngIf="item.unReadMessageCount > 0">{{item.unReadMessageCount}}</span>
                     </div>
                     <div>
@@ -148,7 +141,7 @@
                         font-size: 12px;" *ngFor="let lastmess of item.LastMess">
                            
                             <span *ngIf="lastmess.Username===userCurrent">Bạn:</span>
-                            <span *ngIf="lastmess.Username!=userCurrent">{{lastmess.InfoUser[0].Fullname}}:</span>
+                            <span *ngIf="lastmess.Username!=userCurrent && lastmess.InfoUser[0]">{{lastmess.InfoUser[0].Fullname}}:</span>
                           
                         <span *ngIf="lastmess.Content_mess.length>10"> {{lastmess.Content_mess| slice:0:15}}...</span>
                         <span *ngIf="lastmess.Content_mess.length<10"> {{lastmess.Content_mess}}</span>
@@ -164,37 +157,8 @@
     </div>
    </perfect-scrollbar>
   
-    <!-- <div >
-
-        <div class="card-header">
-            
-            <h4 class="text-primary">Danh Bạ</h4>
-            <div class="form-group has-search">
-                <span class="fa fa-search form-control-feedback"></span>
-                <input   [formControl]="searchControl"  type="text" class="form-control" placeholder="Search">
-              </div>
-        </div>
-        <perfect-scrollbar style="height: 250px;position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
-          
-        <div *ngFor="let db of filteredGroups |async">
-            <ul id="contact" style="padding-left: 0px;">
-            
-                <li class="pd-contact" (click)="CreateConverSation(db)">
-                    <div class="d-flex">
-                        <div class="mr" style="position: relative;">
-                            <img *ngIf="db.Avatar==''" src="./assets/user.png" alt="" class="rounded-circle img-person">
-                            <img  src="{{db.Avatar}}" alt="" class="rounded-circle img-person">
-                        </div>
-                        <div>
-                            <div class="displayDanhBa">{{db.FullName}}</div>
-                        </div>
-                    </div>
-                </li>            
-            </ul>
-          
-
-        </div>
-    </perfect-scrollbar>
-    </div> -->
+  
     
 </div>
+
+<app-toolbar></app-toolbar>

@@ -56,9 +56,10 @@ export class ReportByProjectComponent implements OnInit {
     }
 
     var today = new Date();
+    var start_date = new Date();
     this.selectedDate = {
-      endDate: new Date(today.setDate(today.getDate() + 1)),
-      startDate: new Date(today.setDate(1)),
+      endDate: new Date(today.setMonth(today.getMonth() + 1)),
+      startDate: new Date(start_date.setMonth(start_date.getMonth() - 5)),
     }
     this.filterCVC = this._filterCV[0];
     this.trangthai = {

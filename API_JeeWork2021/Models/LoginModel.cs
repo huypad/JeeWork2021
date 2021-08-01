@@ -192,15 +192,29 @@ namespace JeeWork_Core2021.Models
         public string Jobtitle { get; set; }
         public string Department { get; set; }
         public string AvartarImgURL { get; set; }
+        public string Avatar { get; set; }
         public string PhoneNumber { get; set; }
         public long CustomerID { get; set; }
         public string Email { get; set; }
         public bool isAdmin { get; set; }
+        public string NgaySinh { get; set; }
+        public string BgColor { get; set; }
     }
     public class ObjCustomData
     {
         public string userId { get; set; }
         public string updateField { get; set; }
         public object fieldValue { get; set; }
+    }
+    public class AccountManagementDTO : AccUsernameModel
+    {
+        public int JobtitleID { get; set; }
+        public int DepartmentID { get; set; }
+        public bool IsActive { get; set; }
+        public string DirectManagerUsername { get; set; }
+        public long DirectManagerUserID { get; set; }
+        public string DirectManager { get; set; }
+        public bool IsAdmin { get; set; }
+        public string Note { get; set; }
     }
 }

@@ -7,21 +7,40 @@
                         <i class="fas fa-filter"
                             style="padding: 5px; border: 1px solid #ccc; border-radius: 50%;vertical-align: text-bottom;"></i>
                         &nbsp;
-                        <span style="font-size: 20px;font-weight: 500;">{{ 'summary.boloctuychinh' | translate }}:
-                            <span class="-hover url" [popover]="myPopover" [popoverOnHover]="true"
-                                [popoverCloseOnMouseOutside]="true"> {{showTitleFilter(idFilter)}} </span>
+                        <span style="font-size: 20px;font-weight: 500;">{{ 'summary.boloctuychinh' | translate }}: 
+                            <span class="-hover url"  [matMenuTriggerFor]="menu" > {{showTitleFilter(idFilter)}} </span>
                         </span>
+                        <!-- <span style="font-size: 20px;font-weight: 500;"
+                            [popover]="myPopover"
+                            [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true"
+                            >{{ 'summary.boloctuychinhpopover' | translate }}: 
+                            <span class="-hover url"> {{showTitleFilter(idFilter)}} </span>
+                        </span> -->
                     </div>
-                    <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom"
-                        style="z-index: 999999999;">
+                    <mat-menu #menu="matMenu">  
                         <ng-container *ngFor="let f of danhsachboloc">
-                            <a (click)="ChangeFilter(f.id_row)">{{f.title}}</a>
+                            <button mat-menu-item (click)="ChangeFilter(f.id_row)">{{f.title}}</button>
                         </ng-container>
-                        <a style="border-top:solid 1px #eee" href="javascript:;" (click)="UpdateFilter()">{{
-                            'work.suaboloctuychinhhientai' | translate }}</a>
-                        <a style="border-top:solid 1px #eee" href="javascript:;" (click)="addFilter()">{{
-                            'work.themboloctuychinh' | translate }}</a>
-                    </popover-content>
+                        <hr>
+                        <button mat-menu-item  (click)="UpdateFilter()">
+                            {{ 'work.suaboloctuychinhhientai' | translate }}
+                        </button>
+                        <button mat-menu-item (click)="addFilter()">
+                            {{ 'work.themboloctuychinh' | translate }}
+                        </button>
+                    </mat-menu>
+                    <!-- <div class="popover-menu"> 
+                        <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom"
+                            style="z-index: 999999999;">
+                            <ng-container *ngFor="let f of danhsachboloc">
+                                <a (click)="ChangeFilter(f.id_row)">{{f.title}}</a>
+                            </ng-container>
+                            <a style="border-top:solid 1px #eee" href="javascript:;" (click)="UpdateFilter()">{{
+                                'work.suaboloctuychinhhientai' | translate }}</a>
+                            <a style="border-top:solid 1px #eee" href="javascript:;" (click)="addFilter()">{{
+                                'work.themboloctuychinh' | translate }}</a>
+                        </popover-content>
+                    </div> -->
                 </ng-container>
                 <ng-template #normal>
                     <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
@@ -262,12 +281,15 @@
                                                                                 <i class="fas fa-pencil-alt"
                                                                                     (click)="editTitle(node.id_row)"
                                                                                     matTooltip="{{ 'work.renametask' | translate }}"></i>
-                                                                                <!-- <i class="fas fa-tasks"
+                                                                                <i class="fas fa-tasks"
+                                                                                    *ngIf="node.Childs.length == 0"
                                                                                     (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
+                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i>
                                                                                 <i class="fas fa-tags"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
-                                                                                    [matMenuTriggerFor]="selecedtag"></i>
+                                                                                    [matMenuTriggerFor]="selecedtag"
+                                                                                    (menuOpened)="node.showtag = true"
+                                                                                    (menuClosed)="node.showtag = false" ></i>
                                                                             </span>
                                                                         </span>
 
@@ -278,14 +300,16 @@
                                                                         </ng-container>
 
                                                                         <mat-menu #selecedtag="matMenu">
-                                                                            <kt-choose-milestone-and-tags
-                                                                                [options]="list_Tag"
-                                                                                [project_team]="project_team"
-                                                                                [id_project_Team]="node.id_project_team"
-                                                                                [Id]="node.id_row" [Id_key]="9"
-                                                                                [Loai]="'Tags'"
-                                                                                (ItemSelected)="ReloadData($event)">
-                                                                            </kt-choose-milestone-and-tags>
+                                                                            <ng-container *ngIf="node.showtag">
+                                                                                <kt-choose-milestone-and-tags (click)="$event.stopPropagation()"
+                                                                                    [options]="list_Tag"
+                                                                                    [project_team]="project_team"
+                                                                                    [id_project_Team]="node.id_project_team"
+                                                                                    [Id]="node.id_row" [Id_key]="9"
+                                                                                    [Loai]="'Tags'"
+                                                                                    (ItemSelected)="ReloadData($event)">   
+                                                                                </kt-choose-milestone-and-tags>
+                                                                            </ng-container>
                                                                         </mat-menu>
 
                                                                     </ng-container>
@@ -343,8 +367,8 @@
                                                                 <ng-container
                                                                     *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                                                     <span class="hide-more-text item-field"
-                                                                        matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}">
-                                                                        {{node[item.fieldname] | date:'dd/MM/yyyy'}}
+                                                                        matTooltip="{{node[item.fieldname]  | timezone}}">
+                                                                        {{node[item.fieldname] | timezone}}
                                                                     </span>
                                                                 </ng-container>
                                                                 <ng-template #selectedDate>
@@ -555,27 +579,25 @@
                                                                             <ng-container
                                                                                 *ngIf="item.fieldname != 'clickup_prioritize';else prioritize">
                                                                                 <ng-template #comments>
-                                                                                    <span
-                                                                                        [matMenuTriggerFor]="commentsmenu"><i
+                                                                                    <span (menuOpened)="node.showcomment = true"
+                                                                                    (menuClosed)="node.showcomment = false"
+                                                                                    [matMenuTriggerFor]="commentsmenu"><i
                                                                                             class="far fa-comment-dots"></i>
                                                                                         {{node[item.fieldname]}}</span>
                                                                                     <mat-menu #commentsmenu="matMenu">
                                                                                         <div (click)="$event.stopPropagation()"
                                                                                             style="max-height:600px;min-width: 500px;min-height: 300px;">
-                                                                                            <!-- <kt-comment
-                                                                                                [Id]="node.id_row"
-                                                                                                [Loai]="1">
-                                                                                            </kt-comment> -->
-                                                                                            <div *ngIf="node.id_row"
+                                                                                            <div *ngIf="node.id_row && node.showcomment"
                                                                                                 class="card card-custom">
                                                                                                 <app-jee-comment
+                                                                                                    [showonpopup]="true"
                                                                                                     [showCommentDefault]="true"
                                                                                                     [componentName]="getComponentName(node.id_row)">
                                                                                                 </app-jee-comment>
                                                                                             </div>
                                                                                         </div>
                                                                                     </mat-menu>
-                                                                                </ng-template>
+                                                                                </ng-template> 
                                                                                 <ng-container
                                                                                     *ngIf="item.fieldname != 'comments';else comments">
                                                                                     <ng-container

@@ -604,9 +604,8 @@
                                                                         *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                                                         <div class="item-field">
                                                                             <span class="hide-more-text"
-                                                                                matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}">
-                                                                                {{node[item.fieldname] |
-                                                                                date:'dd/MM/yyyy'}}
+                                                                                matTooltip="{{node[item.fieldname] | timezone}}">
+                                                                                {{node[item.fieldname] | timezone }}
                                                                             </span>
                                                                         </div>
                                                                     </ng-container>
@@ -837,6 +836,7 @@
                                                                                                 <ng-container
                                                                                                     *ngIf="node.id_row && node.showcomment">
                                                                                                     <app-jee-comment
+                                                                                                        [showonpopup]="true"
                                                                                                         [showCommentDefault]="true"
                                                                                                         [componentName]="getComponentName(node.id_row)">
                                                                                                     </app-jee-comment>

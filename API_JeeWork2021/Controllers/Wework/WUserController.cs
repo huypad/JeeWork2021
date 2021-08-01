@@ -138,14 +138,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     email = r["Email"],
                                     tenchucdanh = r["Jobtitle"],
                                     image = r["AvartarImgURL"],
-                                    //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
-                                    //manangers = getMananger(r.Jobtitle, ds, domain, loginData.CustomerID),
                                     manangers = ""
                                 });
                     //var list = data.Skip((query.page - 1) * query.record).Take(query.record).ToList();
                     if (query.sortField == "hoten")
                     {
-                        if(query.sortOrder == "asc")
+                        if (query.sortOrder == "asc")
                         {
                             data = data.OrderBy(x => x.hoten);
                         }
@@ -159,10 +157,10 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-        
+
         /// <summary>
         ///  Danh sách ủy quyền
         /// </summary>
@@ -204,22 +202,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string keywork = "";
                 if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                     dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
-                //if (query.filter != null && query.filter.keys != null)
-                //{
-                //    if (query.filter.keys.Contains("keyword") && !string.IsNullOrEmpty(query.filter["keyword"]))
-                //    {
-                //        dieukien_where += " and (hoten like N'%@keyword%' ')";
-                //        dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
-                //        keywork = query.filter["keyword"];
-                //    }
-                //}
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sqlq = $@"select *,'' as hoten,'' as image,'' as tenchucdanh from we_authorize where Disabled = 0 and CreatedBy = {loginData.UserID}";
+                    string sqlq = $@"select id_row, id_user, createddate, createdby, disabled
+                                    , updatedDate, updatedby, is_all_project, list_project, start_date, end_date
+                                    ,'' as hoten,'' as image,'' as tenchucdanh 
+                                    from we_authorize 
+                                    where disabled = 0 and createdby = {loginData.UserID}";
                     DataTable dt = cnn.CreateDataTable(sqlq);
-
                     #region Map info account từ JeeAccount
                     foreach (DataRow item in dt.Rows)
                     {
@@ -232,20 +224,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #endregion
-                    //DataTable dt = new DataTable();
-                    //dt.Columns.Add("UserId");
-                    //dt.Columns.Add("FullName");
-                    //dt.Columns.Add("Username");
-                    //dt.Columns.Add("PhoneNumber");
-                    //dt.Columns.Add("Email");
-                    //dt.Columns.Add("Jobtitle");
-                    //dt.Columns.Add("AvartarImgURL");
-                    //int total = DataAccount.Count;
-                    //if (total == 0)
-                    //    return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
-                    //foreach (AccUsernameModel acc in DataAccount)
-                    //    dt.Rows.Add(acc.UserId, acc.FullName, acc.Username, acc.PhoneNumber, acc.Email, acc.Jobtitle, acc.AvartarImgURL);
-                    //total = dt.Rows.Count;
                     int total = dt.Rows.Count;
                     var temp = dt.AsEnumerable();
                     pageModel.TotalCount = total;
@@ -258,7 +236,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         query.record = pageModel.TotalCount;
                     }
                     // Phân trang
-                    //dt = temp.Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
                     var data = (from r in dt.AsEnumerable()
                                 select new
                                 {
@@ -272,11 +249,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     list_project = r["list_project"],
                                     start_date = r["start_date"],
                                     end_date = r["end_date"],
+                                    createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["createddate"]),
+                                    data_project = get_list_project(r["list_project"].ToString(), (bool)r["is_all_project"], loginData, ConnectionString),
                                 });
-                    //var list = data.Skip((query.page - 1) * query.record).Take(query.record).ToList();
                     if (query.sortField == "hoten")
                     {
-                        if(query.sortOrder == "asc")
+                        if (query.sortOrder == "asc")
                         {
                             data = data.OrderBy(x => x.hoten);
                         }
@@ -290,7 +268,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -357,7 +335,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -424,7 +402,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (infoAccount == null)
                         return JsonResultCommon.KhongTonTai();
@@ -528,7 +506,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("ListAuthorize")]
@@ -580,7 +558,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
 "order by " + dieukienSort;
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     #region Map info account từ JeeAccount
@@ -635,7 +613,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("Authorize")]
@@ -649,7 +627,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
             try
             {
                 string strRe = "";
-                if (data.id_user < 0)
+                if (data.id_user <= 0)
                     strRe += (strRe == "" ? "" : ",") + "thông tin người ủy quyền";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
@@ -667,28 +645,35 @@ and authorize.Createdby =" + loginData.UserID + " " +
                     cond.Add("to", data.end_date);
                     #region kiểm tra có ủy quyền cho ai chưa
                     string sql = $@"select * from we_authorize where Disabled = 0 and CreatedBy = {loginData.UserID}
-and ( (start_date >= @from and start_date <= @to ) or (end_date >= @from and end_date <= @to ) ) ";
-                    DataTable dt = cnn.CreateDataTable(sql,cond);
+and ( (start_date <= @from and end_date >= @from ) or (start_date <= @to and end_date >= @to ) )  ";
+                    DataTable dt = cnn.CreateDataTable(sql, cond);
                     int tong = dt.Rows.Count;
-                    var temp = dt.AsEnumerable().Where(x => x["is_all_project"].ToString().Equals("1")).CopyToDataTable();
-                    if(temp.Rows.Count > 0)
-                        return JsonResultCommon.Custom("Khoảng thời gian và dự án không phù hợp!");
-                    temp = dt.AsEnumerable().Where(x => x["is_all_project"].ToString().Equals("0")).CopyToDataTable();
-                    if (temp.Rows.Count > 0)
+                    if (tong > 0)
                     {
-                        if(data.is_all_project)
+                        if (data.is_all_project)
                             return JsonResultCommon.Custom("Khoảng thời gian và dự án không phù hợp!");
-                        //else
-                        //{
-                        //    List<int> listproject = data.list_project.Split(',').Select(Int32.Parse).ToList();
-                        //    foreach (DataRow item in temp.Rows)
-                        //    {
-                        //        List<int> listpro = item["list_project"].ToString().Split(',').Select(Int32.Parse).ToList();
-                        //        List<int> New2 = listproject.Concat(listpro).ToList();
+                        if (dt.AsEnumerable().Where(x => x["is_all_project"].ToString().Equals("1")).Count() > 0)
+                        {
+                            return JsonResultCommon.Custom("Khoảng thời gian và dự án không phù hợp!");
+                        }
+                        if (dt.Rows.Count > 0)
+                        {
+                            List<string> list1 = data.list_project.Split(",").ToList();
+                            foreach (DataRow item in dt.Rows)
+                            {
 
-                        //    }
-                        //}
-                    }    
+                                List<string> list2 = item["list_project"].ToString().Split(",").ToList();
+                                foreach (var id in list1)
+                                {
+                                    var x = list2.Contains(id);
+                                    if (x)
+                                    {
+                                        return JsonResultCommon.Custom("Khoảng thời gian và dự án không phù hợp!");
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     //if(dt.AsEnumerable > 0)
 
@@ -708,7 +693,7 @@ and ( (start_date >= @from and start_date <= @to ) or (end_date >= @from and end
                     if (cnn.Insert(val, "we_authorize") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu authorize: User được ủy quyền=" + data.id_user + ", Người ủy quyền=" + data.CreatedBy;
@@ -721,7 +706,38 @@ and ( (start_date >= @from and start_date <= @to ) or (end_date >= @from and end
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        [Route("delete/{id}")]
+        [HttpGet]
+        public async Task<object> Delete(long id)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+
+
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+
+                    cnn.BeginTransaction();
+                    if (cnn.ExecuteNonQuery("update we_authorize set disabled = 1 where id_row = " + id) != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(id);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -758,7 +774,7 @@ and ( (start_date >= @from and start_date <= @to ) or (end_date >= @from and end
                                    congviecphutrach = NhacNho.GetSoluongCongviecUser(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
                                    congviecquahan = NhacNho.GetSoluongCongviecQuaHan(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
                                    congviechethantrongngay = NhacNho.GetSoluongCongviecHethanTrongngay(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   duanquahan = NhacNho.GetSoluongDuAnQuaHan(r.UserId,r.CustomerID, ConnectionString, _configuration, _producer),
+                                   duanquahan = NhacNho.GetSoluongDuAnQuaHan(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -788,5 +804,41 @@ and ( (start_date >= @from and start_date <= @to ) or (end_date >= @from and end
         //        return JsonResultCommon.Custom(ex.Message);
         //    }
         //}
+
+
+        private object get_list_project(string list_project, bool is_all, UserJWT loginData, string ConnectionString)
+        {
+            DataTable dt = new DataTable();
+
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, locked 
+                                    from we_project_team p
+                                    join we_department d on d.id_row = p.id_department
+                                    join we_project_team_user u on u.id_project_team = p.id_row
+                                     where u.Disabled = 0 and id_user = " + loginData.UserID + " " +
+                                        "and p.Disabled = 0  and d.disabled = 0 " +
+                                        "and idkh=" + loginData.CustomerID + " (list) order by title";
+                if (is_all) // Lấy tất cả dự án của user
+                {
+                    sql = sql.Replace("(list)", "");
+                }
+                else
+                    sql = sql.Replace("(list)", " and p.id_row in (" + list_project + ") ");
+                dt = cnn.CreateDataTable(sql);
+            }
+            var re = from r in dt.AsEnumerable()
+                     select new
+                     {
+                         id_row = r["id_row"],
+                         title = r["title"],
+                         start_date = string.Format("{0:dd/MM/yyyy HH:mm}", r["start_date"]),
+                         end_date = string.Format("{0:dd/MM/yyyy HH:mm}", r["end_date"]),
+                         status = r["status"],
+                         color = r["color"],
+                         locked = r["locked"],
+                     };
+            return re;
+        }
     }
 }

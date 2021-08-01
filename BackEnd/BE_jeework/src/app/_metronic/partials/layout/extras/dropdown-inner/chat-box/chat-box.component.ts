@@ -10,6 +10,7 @@ import { Message } from 'src/app/modules/my-chat/models/message';
 import { DOCUMENT } from '@angular/common';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 const   HOST_JEEChat=environment.HOST_JEECHAT;
+
 @Component({
   selector: 'app-chat-box',
   templateUrl: './chat-box.component.html',
@@ -18,8 +19,8 @@ const   HOST_JEEChat=environment.HOST_JEECHAT;
   providers: [MessageService]//separate services independently for every component
 })
 export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
-  @Input() user: any;
   hostjeechat:string=HOST_JEEChat;
+  @Input() user: any;
   messageContent: string;
   //@ViewChild('ChatBox', { static: true }) element: ElementRef;
   userCurrent: string;

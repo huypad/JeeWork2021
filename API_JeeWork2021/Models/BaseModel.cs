@@ -145,4 +145,10 @@ namespace JeeWork_Core2021.Models
         public string Username { get; set; }
         public string Action { get; set; }
     }
+    public class ResultModel
+    {
+        public int status { get; set; }
+        public object data { get; set; }
+        public ErrorModel error { get; set; }
+    }
 }

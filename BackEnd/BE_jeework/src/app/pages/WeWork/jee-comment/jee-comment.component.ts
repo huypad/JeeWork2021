@@ -44,6 +44,7 @@ export class JeeCommentComponent implements OnInit {
     return this._errorMessage$.asObservable();
   }
 
+  
   item: TopicCommentDTO;
   hiddenLike: boolean = true;
   hiddenShare: boolean = true;
@@ -63,6 +64,7 @@ export class JeeCommentComponent implements OnInit {
   @Input() showCommentDefault?: boolean;
   @Input() number: number;
   @Input() componentName: string;
+  @Input() showonpopup: boolean = false;
   public lstObjectID: string[] = [];
 
   //demo
@@ -93,16 +95,16 @@ export class JeeCommentComponent implements OnInit {
       this.ShowSpinner$.next(true);
       if (this.objectID) {
         this.getShowTopic();
-        // const source = interval(1000);
-        // source.pipe(takeUntil(this.onDestroy)).subscribe(() => {
-        //   if (
-        //     this._errorMessage$.value == "" &&
-        //     this.isScrolledViewElement() &&
-        //     this._isLoading$.value === false
-        //   ) {
-        //     this.getShowChangeTopic();
-        //   }
-        // });
+        const source = interval(1000);
+        source.pipe(takeUntil(this.onDestroy)).subscribe(() => {
+          if (
+            this._errorMessage$.value == "" &&
+            this.isScrolledViewElement() &&
+            this._isLoading$.value === false
+          ) {
+            this.getShowChangeTopic();
+          }
+        });
       } else {
         this.ShowSpinner$.next(false);
         this.isFirstTime = false;

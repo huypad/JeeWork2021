@@ -32,12 +32,12 @@
           </div>
         </div>
         <ng-container *ngFor="let comment of item.Comments">
-          <jeecomment-post-comment-content (changeValue)="GetValueComment($event)" [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID" [comment]="comment">
+          <jeecomment-post-comment-content [showonpopup]="showonpopup" (changeValue)="GetValueComment($event)" [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID" [comment]="comment">
           </jeecomment-post-comment-content>
         </ng-container>
       </ng-container>
       <ng-container *ngIf="(errorMessage$ | async) === ''">
-        <jeecomment-enter-comment-content *ngIf="!isFirstTime" (valuecomment)="getShowChangeTopic()" [objectID]="objectID"> </jeecomment-enter-comment-content>
+        <jeecomment-enter-comment-content *ngIf="!isFirstTime" [showonpopup]="showonpopup" (valuecomment)="getShowChangeTopic()" [objectID]="objectID"> </jeecomment-enter-comment-content>
       </ng-container>
     </div>
   </ng-template>

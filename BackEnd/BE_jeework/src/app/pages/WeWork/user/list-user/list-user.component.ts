@@ -31,7 +31,7 @@ import { UserDataSource } from '../data-sources/user.datasource';
 export class ListUserComponent implements OnInit, OnChanges {
 	// Table fields
 	dataSource: UserDataSource;
-	displayedColumns = ['hoten', 'email', 'manangers', 'actions'];
+	displayedColumns = ['hoten', 'email', 'actions'];
 	sorting: SortState = new SortState() ;
 	
 	// Selection

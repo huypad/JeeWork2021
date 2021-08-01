@@ -25,7 +25,7 @@ import { DOCUMENT, DatePipe } from '@angular/common';
 import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
-import * as moment  from 'moment';
+import * as moment from 'moment';
 import { of, ReplaySubject } from 'rxjs';
 import {
   catchError,
@@ -40,7 +40,7 @@ import {
   templateUrl: './list-task-cu-2.component.html',
   styleUrls: ['./list-task-cu-2.component.scss']
 })
-export class ListTaskCUComponent2 implements OnInit,OnChanges {
+export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   @Input() ID_Project: number = 1;
   @Input() ID_NV: number = 0;
@@ -88,10 +88,10 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   private readonly componentName: string = "kt-task_";
   public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
-      startDate: new Date('09/01/2020'),
-      endDate: new Date('09/30/2020'),
-    }
-    public column_sort: any = [];
+    startDate: new Date('09/01/2020'),
+    endDate: new Date('09/30/2020'),
+  }
+  public column_sort: any = [];
   constructor(
     @Inject(DOCUMENT) private document: Document,// multi level
     private _service: ProjectsTeamService,
@@ -117,17 +117,23 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     this.list_priority = this.weworkService.list_priority;
     this.UserID = +localStorage.getItem("idUser");
   }
+  send_date = new Date();
 
+  formattedDate: any;
   ngOnInit() {
     // get filter groupby
     this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
 
     var today = new Date();
+    var start_date = new Date();
     this.filterDay = {
-      endDate: new Date(today.setMonth(today.getMonth() + 2)),
-      startDate: new Date(today.setMonth(today.getMonth()-3)),
+      endDate: new Date(today.setMonth(today.getMonth() + 1)),
+      startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
     };
+    // this.send_date.setMonth(this.send_date.getMonth() + 3);
+    // this.formattedDate = this.send_date.toISOString().slice(0, 10);
+    // console.log(this.formattedDate);
     this.column_sort = this.sortField[0];
     this.route.params.subscribe(res => {
       if (this.selectedTab == 2) {
@@ -140,7 +146,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     this.selection = new SelectionModel<WorkModel>(true, []);
 
     this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-      if (res && res.status ==1) {
+      if (res && res.status == 1) {
         this.list_role = res.data.dataRole;
         this.IsAdminGroup = res.data.IsAdminGroup;
       }
@@ -162,7 +168,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   }
 
   ngOnChanges() {
-    if(this.detailWork > 0){
+    if (this.detailWork > 0) {
       this._service.WorkDetail(this.detailWork).subscribe(res => {
         if (res && res.status == 1) {
           const item = res.data;
@@ -172,7 +178,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
             height: '90vh',
             data: item
           });
-      
+
           dialogRef.afterClosed().subscribe(() => {
             this.detailWork = 0;
           });
@@ -244,8 +250,8 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
         this.layoutUtilsService.OffWaitingDiv();
         if (res && res.status == 1) {
           this.DanhsSachCongViec = res.data;
-            this.filterDanhSach();
-            this.changeDetectorRefs.detectChanges();
+          this.filterDanhSach();
+          this.changeDetectorRefs.detectChanges();
           // this.ProjectTeam = res.data
         }
       })
@@ -284,8 +290,8 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     });
   }
 
-  IsAdmin(id_project_team){
-    if(this.IsAdminGroup) return true;
+  IsAdmin(id_project_team) {
+    if (this.IsAdminGroup) return true;
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == id_project_team);
       if (x) {
@@ -298,24 +304,24 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   }
 
   CheckRoles(roleID: number, id_project_team) {
-    if(this.IsAdminGroup) return true;
+    if (this.IsAdminGroup) return true;
     var x = this.list_role.find(x => x.id_row == id_project_team);
     if (x) {
       if (x.admin == true) {
         return true;
       }
       else {
-        if(roleID == 3 || roleID == 4){
-          if(x.isuyquyen) 
+        if (roleID == 3 || roleID == 4) {
+          if (x.isuyquyen)
             return true;
-        } 
-        if(roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13){
+        }
+        if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
           if (x.Roles.find((r) => r.id_role == 15)) return false;
         }
-        if(roleID == 10){
+        if (roleID == 10) {
           if (x.Roles.find((r) => r.id_role == 16)) return false;
         }
-        if(roleID == 4 || roleID == 14){
+        if (roleID == 4 || roleID == 14) {
           if (x.Roles.find((r) => r.id_role == 17)) return false;
         }
         var r = x.Roles.find(r => r.id_role == roleID);
@@ -332,25 +338,25 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     }
   }
   CheckRoleskeypermit(key, id_project_team) {
-    if(this.IsAdminGroup) return true;
+    if (this.IsAdminGroup) return true;
     var x = this.list_role.find(x => x.id_row == id_project_team);
     if (x) {
       if (x.admin == true) {
         return true;
       }
       else {
-        if(key == 'id_nv'){
-          if(x.isuyquyen) 
+        if (key == 'id_nv') {
+          if (x.isuyquyen)
             return true;
         }
-        
-        if(key == "title" || key == "description" || key == "status" || key == "checklist" || key == "delete"){
+
+        if (key == "title" || key == "description" || key == "status" || key == "checklist" || key == "delete") {
           if (x.Roles.find((r) => r.id_role == 15)) return false;
         }
-        if(key == "deadline"){
+        if (key == "deadline") {
           if (x.Roles.find((r) => r.id_role == 16)) return false;
         }
-        if(key == "id_nv" || key == "assign"){
+        if (key == "id_nv" || key == "assign") {
           if (x.Roles.find((r) => r.id_role == 17)) return false;
         }
 
@@ -415,9 +421,9 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
     filter.collect_by = this.column_sort.value;
-    if(this.getMystaff)
+    if (this.getMystaff)
       filter.isManage = true;
-    if(this.selectedTab == 3){
+    if (this.selectedTab == 3) {
       filter.following = true;
     }
     if (this.idFilter > 0) {
@@ -425,15 +431,15 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     }
     return filter;
   }
-  
+
   reloadData = false;
   protected filterDanhSach() {
     this.filteredDanhSachCongViec.next(
       this.DanhsSachCongViec
     );
   }
-  
-  ChangeData(){
+
+  ChangeData() {
     this.LoadSampleList()
   }
   getColorStatus(id_project_team, val) {
@@ -474,15 +480,15 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
         this.listField = res.data;
         //xóa title khỏi cột
 
-        var colDelete = ['title','id_row','id_parent'];
+        var colDelete = ['title', 'id_row', 'id_parent'];
         colDelete.forEach(element => {
           var indextt = this.listField.findIndex(x => x.fieldname == element);
           if (indextt >= 0)
             this.listField.splice(indextt, 1)
-        }); 
+        });
         this.changeDetectorRefs.detectChanges();
       }
-      else{
+      else {
         this.layoutUtilsService.showInfo(res.error.message);
       }
     })
@@ -598,28 +604,28 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
   Assign: any = [];
   // Assign
   ItemSelected(val: any, task) { // chọn item
-    if(val.id_user){
+    if (val.id_user) {
       val.id_nv = val.id_user;
     }
     this.UpdateByKey(task, 'assign', val.id_nv);
   }
   listUser: any[];
   LoadListAccount() {
-    const filter: any = {}; 
+    const filter: any = {};
     this.weworkService.list_account(filter).subscribe(res => {
       if (res && res.status === 1) {
         this.listUser = res.data;
-         this.changeDetectorRefs.detectChanges();
+        this.changeDetectorRefs.detectChanges();
       };
       this.options_assign = this.getOptions_Assign();
     });
   }
-  loadOptionprojectteam(node){
+  loadOptionprojectteam(node) {
     var id_project_team = node.id_project_team;
     this.LoadUserByProject(id_project_team);
   }
   LoadUserByProject(id_project_team) {
-    const filter: any = {}; 
+    const filter: any = {};
     filter.id_project_team = id_project_team;
     this.weworkService.list_account(filter).subscribe(res => {
       if (res && res.status === 1) {
@@ -758,22 +764,22 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
 
   CreateTask(val) {
     var x = this.newtask;
-		this.CloseAddnewTask(true);
-		setTimeout(() => {
-			this.newtask = x;
-		}, 1000);
+    this.CloseAddnewTask(true);
+    setTimeout(() => {
+      this.newtask = x;
+    }, 1000);
     this._service.InsertTask(val).subscribe(res => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
         // this.LoadSampleList();
         this.getChildTask(val.id_project_team);
       }
-      else{
+      else {
         this.layoutUtilsService.showError(res.error.message)
       }
     })
   }
-  LoadFilterTask(){
+  LoadFilterTask() {
     this.DanhsSachCongViec.forEach(element => {
       this.getChildTask(element.id);
     });
@@ -789,20 +795,20 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
 
 
   UpdateStatus(task, status) {
-    if (+task.status == +status.id_row) return; 
-    if(this.IsAdmin(task.id_project_team)){
+    if (+task.status == +status.id_row) return;
+    if (this.IsAdmin(task.id_project_team)) {
       this.UpdateByKey(task, "status", status.id_row);
-    }else{
-      if(status.Follower){
-        if(status.Follower == this.UserID){
+    } else {
+      if (status.Follower) {
+        if (status.Follower == this.UserID) {
           this.UpdateByKey(task, "status", status.id_row);
-        }else{
+        } else {
           this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
         }
-      }else{
+      } else {
         this.UpdateByKey(task, "status", status.id_row);
       }
-    }  
+    }
   }
   UpdateByKey(task, key, value) {
     const item = new UpdateWorkModel();
@@ -815,7 +821,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     this._service._UpdateByKey(item).subscribe(res => {
       if (res && res.status == 1) {
         this.LoadSampleList();
-      }else {
+      } else {
         this.LoadSampleList();
         this.layoutUtilsService.showError(res.error.message);
       }
@@ -923,10 +929,10 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     var item = this.options_assign;
     const dialogRef = this.dialog.open(WorkAssignedComponent, {
       width: '500px',
-      data: { item,ID_Project : node.id_project_team }
+      data: { item, ID_Project: node.id_project_team }
     });
     dialogRef.afterClosed().subscribe(res => {
-      if(res){
+      if (res) {
         this.UpdateByKey(node, 'assign', res.id_nv);
       }
     });
@@ -1001,7 +1007,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     });
   }
 
-  ReloadData(event,id_project_Team) {
+  ReloadData(event, id_project_Team) {
     // this.ngOnInit();
     this.getChildTask(id_project_Team);
   }
@@ -1075,7 +1081,7 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     if (link) {
       tmp_height += 45;
     }
-    
+
     return tmp_height;
   }
 
@@ -1108,10 +1114,10 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     return '';
   }
 
-  Nguoitaocv(id){
-    if(this.listUser){
-      var x = this.listUser.find(x=>x.id_nv == id);
-      if(x){
+  Nguoitaocv(id) {
+    if (this.listUser) {
+      var x = this.listUser.find(x => x.id_nv == id);
+      if (x) {
         return x;
       }
     }
@@ -1140,43 +1146,43 @@ export class ListTaskCUComponent2 implements OnInit,OnChanges {
     }
   }
 
-  TaskinProject:any = {};
-  LoadingTask:any = {};
-  TaskProject(id){
-    if(this.TaskinProject[id]){
-    }else{
+  TaskinProject: any = {};
+  LoadingTask: any = {};
+  TaskProject(id) {
+    if (this.TaskinProject[id]) {
+    } else {
       this.getChildTask(id);
     }
     return this.TaskinProject[id];
   }
-  getChildTask(id){
-      const queryParams1 = new QueryParamsModelNew(
-        this.filterConfigurationMywork(),
-        '',
-        '',
-        0,
-        50,
-        true
-      );
-      this._service.TaskinProject(queryParams1,id).pipe(
-        tap((res) => {
-          if (res && res.status == 1) {
-              this.TaskinProject[id] = res.data['data'];
-              this.changeDetectorRefs.detectChanges();
-            }
-        }),
-        catchError((err) => {
-          console.log(err);
-          return of();
-        }),
-        finalize(() => {}),
-        share()
-      )
+  getChildTask(id) {
+    const queryParams1 = new QueryParamsModelNew(
+      this.filterConfigurationMywork(),
+      '',
+      '',
+      0,
+      50,
+      true
+    );
+    this._service.TaskinProject(queryParams1, id).pipe(
+      tap((res) => {
+        if (res && res.status == 1) {
+          this.TaskinProject[id] = res.data['data'];
+          this.changeDetectorRefs.detectChanges();
+        }
+      }),
+      catchError((err) => {
+        console.log(err);
+        return of();
+      }),
+      finalize(() => { }),
+      share()
+    )
       .subscribe();
   }
 
   changeRoute(id) {
-    this.router.navigate(['', { outlets: { auxName: 'aux/task/'+id }, }])
+    this.router.navigate(['', { outlets: { auxName: 'aux/task/' + id }, }])
   }
 
 }

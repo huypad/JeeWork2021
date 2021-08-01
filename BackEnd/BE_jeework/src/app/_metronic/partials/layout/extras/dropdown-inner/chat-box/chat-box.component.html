@@ -7,13 +7,24 @@
     {
         padding: 1.25rem !important;
     }
+    .avatar-group
+  {
+    display: flex;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    flex-wrap: wrap;
+  }
 </style>
 <div [ngClass]="getClass()" id="{{user.user.IdGroup}}" class="card chat-box">
     <div style="padding: 5px;" *ngIf="!user.user.isGroup" class="card-header">
         <div class="d-flex" *ngFor="let item of user.user.InfoGroupUser">
             <div class="mr">
-                <img *ngIf="item.Avatar==''" src="./assets/user.png" alt="" class="rounded-circle img-person">
-                <img src="{{item.Avatar}}" alt="" class="rounded-circle img-person">
+               
+                <ngx-avatar [size]="45" src="{{item.Avatar}}">
+                </ngx-avatar>
+                <ngx-avatar [size]="45" [name]="item.Fullname.slice(0, 1)" bgColor="{{ item.BgColor }}" *ngIf="!item.Avatar"></ngx-avatar>
+
             </div>
             <div style="padding-left: 10px;">
              
@@ -51,24 +62,39 @@
 
     <div  style="padding: 5px;" *ngIf="user.user.isGroup" class="card-header">
         <div class="d-flex">
-            <!-- chỗ này là avatar group nhầm em chưa cập nhật -->
-            <div class="mr">     <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" /></div>
+            <div class="avatar-group">
+                <div *ngFor="let mb of user.user.ListMember | slice:0:4;let i=index">
+              
+                <div *ngFor="let it of mb.InfoMemberUser ">
+                  <div  *ngIf="i>=0&&i<3" >
+                    <ngx-avatar [size]="25" [name]="it.Fullname.slice(0, 1)" bgColor="{{ it.BgColor }}" *ngIf="!it.Avatar"></ngx-avatar>
+                    <ngx-avatar [size]="25" src="{{ it.Avatar }}" *ngIf="it.Avatar"></ngx-avatar>
+                   
+                  </div>
+                  <ngx-avatar *ngIf="i==3&&user.user.ListMember.length>=4" [size]="25" name="{{user.user.ListMember.length-3}}" bgColor="#ad3838" ></ngx-avatar>
+                 
+              </div>
+            </div>
+          </div>
+            <!-- <div class="mr">     <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" /></div> -->
             <div style=" display: flex;
-            align-items: center;">
+          flex-direction: column;padding-left: 5px;">
               
                 <span *ngIf="user.user.GroupName.lenght>0;then show1;else show2">
 
                 </span>
                 <ng-template #show1>
-                    <a  href="/" class="text-primary" style="text-decoration: none;">{{user.user.GroupName}}
+                    <span  href="/"  style="text-decoration: none;font-weight: bold;">{{user.user.GroupName}}
                   
-                    </a>
+                    </span>
+                    <span>{{user.user.ListMember.length}} Thành viên</span>
                 </ng-template>
                 <ng-template #show2>
-                    <a   href="/" class="text-primary" style="text-decoration: none;
+                    <span   href="/" style="text-decoration: none; font-weight: bold;
                        ">{{user.user.GroupName| slice:0:15 }}
                   
-                    </a>
+                    </span>
+                    <span>{{user.user.ListMember.length}} Thành viên</span>
                 </ng-template>
                
                 <!-- <div class="text-muted">{{user.lastActive}}</div> -->
@@ -98,8 +124,9 @@
                             <div *ngFor="let info of  message.InfoUser">
                                 <ngx-avatar [size]="20" src="{{info.Avatar}}">
                                 </ngx-avatar>
-                                <ngx-avatar  *ngIf="info.Avatar==''" [size]="20" src="./assets/user.png">
-                                </ngx-avatar>
+                                <ngx-avatar [size]="20" [name]="info.Fullname.slice(0, 1)" bgColor="{{ info.BgColor }}" *ngIf="!info.Avatar"></ngx-avatar>
+                              
+                              
                             </div>
                         </div>
                         
@@ -135,3 +162,4 @@
     </div>
     
 </div>
+

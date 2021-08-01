@@ -103,4 +103,8 @@ export class UserService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API + '/Authorize', item, { headers: httpHeaders });
 	}
+	delete(id): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API + '/delete/'+id , { headers: httpHeaders });
+	}
 }

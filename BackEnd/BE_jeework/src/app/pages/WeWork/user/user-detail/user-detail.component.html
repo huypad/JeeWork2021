@@ -133,8 +133,8 @@
                                             <span>{{hoten}}</span>
                                         </div>
                                         <nav mat-tab-nav-bar *ngIf="selectedItem==undefined">
-                                            <a mat-tab-link [routerLink]="['/users/',UserID]"
-                                                [active]="true">{{'wuser.congviecduocgiao' | translate}}</a>
+                                            <a mat-tab-link [routerLink]="['/users/',UserID]" [active]="activelink == 'user'"
+                                             (click)="activelink='user'" >{{'wuser.congviecduocgiao' | translate}}</a>
                                             <a mat-tab-link (click)="printme.click()" href="javascript:;">{{'wuser.in' | translate}}</a>
                                                 <button class="d-none" #printme [useExistingCss]="true"
                                                 printSectionId="print-section"
@@ -143,6 +143,8 @@
                                                 (click)="export()">{{'wuser.export' | translate}}</a>
                                                 <!-- (click)="uyquyen()" -->
                                             <a *ngIf="Is_authorize" mat-tab-link href="javascript:;" [routerLink]="['/users/',UserID,'uyquyen']"
+                                                [active]="activelink == 'uyquyen'"
+                                                (click)="activelink='uyquyen'" 
                                                 >{{'wuser.uyquyen' | translate}}</a>
                                         </nav>
                                     </div>

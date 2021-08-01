@@ -130,9 +130,10 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     this.filter_subtask = this.listFilter_Subtask[0];
 
     var today = new Date();
+    var start_date = new Date();
     this.filterDay = {
-      endDate: new Date(today.setMonth(today.getMonth() + 2)),
-      startDate: new Date(today.setMonth(today.getMonth()-3)),
+      endDate: new Date(today.setMonth(today.getMonth() + 1)),
+      startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
     };
     this.column_sort = this.sortField[0];
     this.route.params.subscribe(res => {
@@ -242,7 +243,6 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
           this.DanhsSachCongViec = res.data;
             this.filterDanhSach();
             this.changeDetectorRefs.detectChanges();
-          // this.ProjectTeam = res.data
         }
       })
     }

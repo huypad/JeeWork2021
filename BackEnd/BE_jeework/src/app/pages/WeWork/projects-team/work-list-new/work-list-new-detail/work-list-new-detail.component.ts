@@ -181,10 +181,7 @@ export class WorkListNewDetailComponent implements OnInit {
     this.LoadData();
     this.LoadChecklist();
     this.LoadObjectID();
-
-    // this.isReset = setInterval(() => {
-		// 	this.resetComment();
-		// }, 1000);
+ 
   }
 
   OnChanges() {
@@ -851,22 +848,21 @@ export class WorkListNewDetailComponent implements OnInit {
       }else{
         this.UpdateByKey(task, "status", status.id_row);
       }
-    } 
-    // if (task.status == +status.id_row) {
-    //   //
-    // } else {
-    //   // var taskupdate = new WorkModel();
-    //   // taskupdate = task;
-    //   // task.status = status.id_row
-    //   // this.UpdateTask(task);
-    //   this.UpdateByKeyNew(task, "status", status.id_row);
-    // }
+    }  
   }
 
-  UpdateTitle() {
-    if (this.valueFocus.trim() != this.item.title.trim()) {
+  UpdateTitle() { 
+    var ele = <HTMLInputElement>document.getElementById("txttitle");
+    if(ele.value.toString().trim() == ''){
+      this.layoutUtilsService.showError('Tên công việc không được trống');
+      ele.value = this.item.title;
+      return;
+    }
+    if (
+      ele.value.toString().trim() != this.item.title.toString().trim()
+    ) {
+      this.item.title = ele.value;
       this.UpdateByKeyNew(this.item, "title", this.item.title);
-      this.setTextinput(this.item.title);
     }
   }
   UpdateDescription() {
@@ -1423,7 +1419,6 @@ export class WorkListNewDetailComponent implements OnInit {
       if (res && res.status == 1) {
         this.LoadData();
         this.changeDetectorRefs.detectChanges();
-        // this.layoutUtilsService.showActionNotification(this.translate.instant('work.dachon'), MessageType.Read, 1000, false, false, 3000, 'top', 1);
       } else {
         this.layoutUtilsService.showActionNotification(
           res.error.message,
@@ -1452,11 +1447,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.LoadData();
       }
     });
-  }
-
-  setTextinput(val) {
-    this.valueFocus = val;
-  }
+  } 
 
   trackByFn(index, item) {
     return item.id_row;
@@ -1466,8 +1457,12 @@ export class WorkListNewDetailComponent implements OnInit {
     window.open(link);
   }
 
-  preview(link) {
-    this.layoutUtilsService.ViewDoc(link);
+  preview(file) {
+    if(file.isImage){
+      this.DownloadFile(file.path)
+    }else{
+      this.layoutUtilsService.ViewDoc(file.path);
+    }
   }
 
   UpdateStatus_dynamic(_item, user) {

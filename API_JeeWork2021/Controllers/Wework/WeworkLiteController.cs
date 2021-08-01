@@ -1939,6 +1939,7 @@ where TemplateID = {item["id_row"]}  and IsDefault = 1";
             val["id_action"] = id_action;
             val["object_id"] = object_id;
             val["CreatedBy"] = id_user;
+            val["CreatedDate"] = DateTime.Now;
             if (!string.IsNullOrEmpty(log_content))
                 val["log_content"] = log_content;
             if (_old == null)
@@ -1992,6 +1993,75 @@ where TemplateID = {item["id_row"]}  and IsDefault = 1";
             string topic = _iconfig.GetValue<string>("KafkaConfig:topicProduceByAccount");
             _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
             return "Oke";
+        }
+
+
+        [HttpGet]
+        [Route("roles-by-project")]
+        public object GetRoleWeWork(string id_project_team)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+            {
+                return JsonResultCommon.DangNhap();
+            }
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection Conn = new DpsConnection(ConnectionString))
+                {
+                    bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID);
+                    string sqlq = "";
+                    sqlq = "select *,  Iif( we_project_team_user.admin = 1 and id_user <> " + loginData.UserID + ",1,0 ) as isuyquyen " +
+                        " from we_project_team join we_project_team_user " +
+                        "on we_project_team.id_row = we_project_team_user.id_project_team " +
+                        "where we_project_team.disabled = 0 " +
+                        "and we_project_team_user.disabled = 0 " +
+                        "and locked = 0 " +
+                        "and id_user = " + loginData.UserID + $" " +
+                        $"or id_user in (select CreatedBy from we_authorize where id_user = {loginData.UserID} and disabled =0);";
+
+                    sqlq += @"select we_project_role.id_row,id_project_team,id_role, admin, member,customer, KeyPermit 
+                            from we_project_role join we_role on we_role.id_row = we_project_role.id_role
+                            where member = 1 and we_role.Disabled = 0";
+                    DataSet ds = Conn.CreateDataSet(sqlq);
+                    DataTable dt_Project = Conn.CreateDataTable(sqlq);
+                    if (Conn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, Conn.LastError, _config, loginData, ControllerContext);
+                    DataTable dt = ds.Tables[0];
+                    if (dt.Rows.Count == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>());
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   is_admin_app = IsAdmin,
+                                   id_row = r["id_row"],
+                                   id_user = r["title"],
+                                   admin_project = int.Parse(r["isuyquyen"].ToString()) == 1 ? 0 : r["admin"],
+                                   admin = int.Parse(r["isuyquyen"].ToString()) == 1 ? 0 : r["admin"],
+                                   isuyquyen = r["isuyquyen"],
+                                   id_department = r["id_department"],
+                                   locked = r["locked"],
+                                   roles = from u in ds.Tables[1].AsEnumerable()
+                                           where u["id_project_team"].ToString() == r["id_row"].ToString()
+                                           select new
+                                           {
+                                               id_row = u["id_row"],
+                                               id_project_team = u["id_project_team"],
+                                               id_role = u["id_role"],
+                                               admin = u["admin"],
+                                               member = u["member"],
+                                               keypermit = u["KeyPermit"],
+                                           },
+                               };
+                    var dataNew = new { dataRole = data, IsAdminGroup = IsAdmin };
+                    return JsonResultCommon.ThanhCong(dataNew);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
         }
 
         [HttpGet]
@@ -2849,6 +2919,27 @@ where Disabled = 0";
             IRestResponse response = client.Execute(request);
             var model = JsonConvert.DeserializeObject<BaseModel<List<AccUsernameModel>>>(response.Content);
             if (model != null && model.status == 1)
+            {
+                return model.data;
+            }
+            else
+                return null;
+        }
+        public static List<AccountManagementDTO> GetListAccountManagement(IHeaderDictionary pHeader, IConfiguration _configuration)
+        {
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+            IHeaderDictionary _d = pHeader;
+            string _bearer_token;
+            _bearer_token = _d[HeaderNames.Authorization].ToString();
+            string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
+            string link_api = API_Account + "/api/accountmanagement/GetListAccountManagement";
+            var client = new RestClient(link_api);
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("Authorization", _bearer_token);
+            IRestResponse response = client.Execute(request);
+            var model = JsonConvert.DeserializeObject<BaseModel<List<AccountManagementDTO>>>(response.Content);
+            if (model != null)
             {
                 return model.data;
             }

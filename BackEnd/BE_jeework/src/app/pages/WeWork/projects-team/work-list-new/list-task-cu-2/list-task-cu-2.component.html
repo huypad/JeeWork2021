@@ -351,8 +351,8 @@
                                                                 <ng-container
                                                                     *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                                                     <span class="hide-more-text item-field"
-                                                                        matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}">
-                                                                        {{node[item.fieldname] | date:'dd/MM/yyyy'}}
+                                                                        matTooltip="{{node[item.fieldname] | timezone}}">
+                                                                        {{node[item.fieldname] | timezone}}
                                                                     </span>
                                                                 </ng-container>
                                                                 <ng-template #selectedDate>
@@ -574,6 +574,7 @@
                                                                                             <div *ngIf="node.id_row && node.showcomment"
                                                                                                 class="card card-custom">
                                                                                                 <app-jee-comment
+                                                                                                    [showonpopup]="true"
                                                                                                     [showCommentDefault]="true"
                                                                                                     [componentName]="getComponentName(node.id_row)">
                                                                                                 </app-jee-comment>

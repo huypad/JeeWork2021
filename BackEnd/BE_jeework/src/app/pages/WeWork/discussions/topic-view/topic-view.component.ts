@@ -20,6 +20,7 @@ import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_ser
 import { WorkEditDialogComponent } from '../../work/work-edit-dialog/work-edit-dialog.component';
 import { ViewTopicDetailComponent } from '../topic-view-detail/topic-view-detail.component';
 import { DiscussionsService } from '../discussions.service';
+import * as moment from 'moment';
 @Component({
 	selector: 'kt-topic-view',
 	templateUrl: './topic-view.component.html',
@@ -200,5 +201,9 @@ export class TopicViewComponent {
 				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 3000, 'top', 0);
 
 		});
+	}
+
+	convertDate(d:any){ 
+		return moment(d + 'z').format("DD/MM/YYYY HH:mm");
 	}
 }

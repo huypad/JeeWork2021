@@ -1,3 +1,4 @@
+import { TimezonePipe } from './../pipe/timezone.pipe';
 import { DynamicFormService } from './../../dynamic-form/dynamic-form.service';
 import { PartialsModule } from './../../../_metronic/jeework_old/partials/partials.module';
 import { NgModule } from '@angular/core';
@@ -64,7 +65,8 @@ const routes: Routes = [
 	providers: [
 		DiscussionsService,
 		AttachmentService,
-		DynamicFormService
+		DynamicFormService,
+		// TimezonePipe
 	],
 	entryComponents: [
 		TopicViewComponent,
@@ -74,7 +76,8 @@ const routes: Routes = [
 		DiscussionsComponent,
 		TopicListComponent,
 		TopicViewComponent,
-		ViewTopicDetailComponent,
+		ViewTopicDetailComponent,  
+		// TimezonePipe
 	],
 	exports: [
 		TopicViewComponent

@@ -210,7 +210,7 @@
                                     <span translate="filter.ngaytao"></span>
                                 </div>
                                 <div class="cu-task-info__value">
-                                    {{item.CreatedDate}}
+                                    {{item.CreatedDate | timezone}}
                                 </div>
                             </div>
                         </div>
@@ -294,9 +294,8 @@
                                             </div>
 
                                             <div class="row" style="margin-bottom: 20px!important;">
-                                                <input [(ngModel)]="item.title" type="text" class="form-control"
-                                                    [disabled]="!CheckRoles(7)"
-                                                    (focus)="setTextinput(item.title)" (focusout)="UpdateTitle()"
+                                                <input id="txttitle" [value]="item.title" type="text" class="form-control"
+                                                    [disabled]="!CheckRoles(7)" (focusout)="UpdateTitle()"
                                                     style="font-size: 24px;">
                                             </div>
 
@@ -645,7 +644,7 @@
 
                                                                             <div class="action-time">
                                                                                 <span style="color: #111;">
-                                                                                    {{items.CreatedDate }}
+                                                                                    {{items.CreatedDate | timezone}}
                                                                                 </span>
                                                                             </div>
 
@@ -726,7 +725,7 @@
                                                                             <p>{{att2.filename}}</p>
                                                                         </div>
                                                                         <div class="attach-item-del">
-                                                                            <a class="url" (click)="preview(att2.path)"
+                                                                            <a class="url" (click)="preview(att2)"
                                                                                 matTooltip="Preview">
                                                                                 <i class="far fa-eye text-success"></i>
                                                                             </a>
@@ -799,7 +798,7 @@
                                                                             <p>{{att2.filename}}</p>
                                                                         </div> 
                                                                         <div class="attach-item-del">
-                                                                            <a class="url" (click)="preview(att2.path)"
+                                                                            <a class="url" (click)="preview(att2)"
                                                                                 matTooltip="Preview">
                                                                                 <i class="far fa-eye text-success"></i>
                                                                             </a>
@@ -879,38 +878,35 @@
                                             <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} 
                                             
                                             <ng-container *ngIf="log.id_action != 1">
-                                                từ &nbsp;
-                                                <ng-container *ngIf="log.colorold">
-                                                    <div class="point" style="margin: auto 5px;"
-                                                        [ngStyle]="{'backgroundColor': log.colorold}"></div>
+                                                <ng-container *ngIf="log.oldvalue">
+                                                    từ &nbsp;
+                                                    <ng-container *ngIf="log.colorold">
+                                                        <div class="point" style="margin: auto 5px;"
+                                                            [ngStyle]="{'backgroundColor': log.colorold}"></div>
+                                                    </ng-container>
+                                                    <span style="font-weight: 600;">
+                                                        {{log.oldvalue}}
+                                                    </span> &nbsp;
                                                 </ng-container>
-                                                <span style="font-weight: 600;">
-                                                    {{log.oldvalue}}
-                                                </span>
-                                                &nbsp; thành &nbsp;
-                                                <ng-container *ngIf="log.colornew">
-                                                    <div class="point" style="margin: auto 5px;"
-                                                        [ngStyle]="{'backgroundColor': log.colornew}"></div>
+                                                <ng-container *ngIf="log.newvalue">
+                                                    thành &nbsp;
+                                                    <ng-container *ngIf="log.colornew">
+                                                        <div class="point" style="margin: auto 5px;"
+                                                            [ngStyle]="{'backgroundColor': log.colornew}"></div>
+                                                    </ng-container>
+                                                    <span style="font-weight: 600;">
+                                                        {{log.newvalue}}
+                                                    </span>
                                                 </ng-container>
-                                                <span style="font-weight: 600;">
-                                                    {{log.newvalue}}
-                                                </span>
                                             </ng-container>
                                             
                                         </div>
                                         <div class="task-history-item__date">
-                                            {{log.CreatedDate}}
+                                            {{log.CreatedDate | timezone}}
                                         </div>
                                     </ng-container>
-                                    <ng-template #comment>
-                                        <!-- <kt-comment-new class="w-100" [Id]="item.id_row" [id_comment]="log.newvalue"
-                                            [Loai]="1"></kt-comment-new> -->
-                                        <ng-container *ngIf="LoadComment(log.newvalue)">
-                                            <!-- <app-jee-comment class="w-100" style="padding-top: 5px;" 
-                                                [showCommentDefault]="true"
-                                                [componentName]="getComponentName()"
-                                            >
-                                            </app-jee-comment> -->
+                                    <ng-template #comment> 
+                                        <ng-container *ngIf="LoadComment(log.newvalue)"> 
                                             <jeecomment-post-comment-content class="w-100"
                                                 [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID"
                                                 [comment]="LoadComment(log.newvalue)">
@@ -922,15 +918,8 @@
                         </div>
                     </div>
                     <div class="task-column__footer second cu-hidden-print ng-tns-c150-53 ng-star-inserted">
-                        <div class="task-comment pd-0 border-top">
-                            <!-- <kt-view-comment class="w-100" style="padding-top: 5px;" (refesh)="Refesh($event)" [Id]="item.id_row" [Loai]="1">
-                            </kt-view-comment> -->
-                            <ng-container *ngIf="this.objectID">
-                                <!-- <app-jee-comment class="w-100" style="padding-top: 5px;" 
-                                    [showCommentDefault]="true"
-                                    [componentName]="getComponentName()"
-                                >
-                                </app-jee-comment> -->
+                        <div class="task-comment pd-0 border-top"> 
+                            <ng-container *ngIf="this.objectID"> 
                                 <jeecomment-enter-comment-content (valuecomment)="LoadLog()" class="w-100"
                                     [objectID]="this.objectID"> </jeecomment-enter-comment-content>
                             </ng-container>

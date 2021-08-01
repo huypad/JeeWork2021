@@ -13,15 +13,18 @@
        ">
     
         
+    
             <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
             <ng-template #e2>
-              <img class="avatar" src="{{item.Avatar}}">
+              <ngx-avatar [size]="45" src="{{item.Avatar}}">
+              </ngx-avatar>
+             
     
             </ng-template>
     
             <ng-template #e1>
-    
-              <img class="avatar" src="./assets/user.png">
+              <ngx-avatar [size]="45" src="./assets/user.png">
+              </ngx-avatar>
     
             </ng-template>
             <span  style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">

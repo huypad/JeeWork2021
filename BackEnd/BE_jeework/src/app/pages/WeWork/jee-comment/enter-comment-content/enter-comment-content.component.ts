@@ -21,6 +21,7 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
   @Input() commentID: string = '';
   @Input() replyCommentID: string = '';
   @Input() isEdit?: boolean = false;
+  @Input() showonpopup: boolean = false;
   @Input() isFocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   @Output() valuecomment = new EventEmitter<string>();
   showPopupEmoji: boolean;
