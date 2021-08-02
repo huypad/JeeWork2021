@@ -41,8 +41,7 @@
                                     <div class="point" [ngStyle]="{'backgroundColor': status.color}">
                                     </div>
                                 </div>
-                                {{status.statusname}} {{status.hoten_Follower==null?
-                                '':'('+status.hoten_Follower+')'}}
+                                {{status.statusname}} {{status.hoten_Follower? '('+status.hoten_Follower+')':''}}
                             </div>
                         </button>
                     </mat-menu>

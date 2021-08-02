@@ -35,7 +35,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
-        string HRCatalog = JeeWorkConstant.getConfig("JeeWorkConfig:HRCatalog");
         public static DataImportModel data_import = new DataImportModel();
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
@@ -915,7 +914,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    strW += FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"]);
+                    strW += FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"], DataAccount);
 
                     DataSet ds = getWork(cnn, query, long.Parse(query.filter["id_nv"]), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)

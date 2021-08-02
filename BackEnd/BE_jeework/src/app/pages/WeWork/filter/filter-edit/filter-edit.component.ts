@@ -80,6 +80,7 @@ export class filterEditComponent implements OnInit {
 									// this.listColumn[index].StrTitle = title.title + ' ' + item.operator + ' ' + item.value;
 									this.listColumn.push({
 										StrTitle: title.title + ' ' + item.operator + ' ' + item.value,
+										getTitleCol: title.title + ' ' + this.codeReplace(item.operator) + ' ' + this.getNamevalue(title.options,item.value),
 										title: title.title,
 										operator: item.operator,
 										value: item.value,
@@ -106,6 +107,16 @@ export class filterEditComponent implements OnInit {
 			this.viewLoading = false;
 		}
 		this.createForm();
+	}
+ 
+	getNamevalue(item,id){
+		if(item){
+			var x = item.find(x => x.id == id);
+			if(x){
+				return x.title;
+			}
+		}
+		return id;
 	}
 	createForm() {
 		this.itemForm = this.fb.group({
@@ -348,6 +359,10 @@ export class filterEditComponent implements OnInit {
 			if (operators || operators != undefined) {
 				_filter.operator = operators.id;
 			}
+			else{
+				this.layoutUtilsService.showError('Chưa chọn điều kiện');
+				return;
+			}
 			if (key.loai == 1) {
 				let options = this.list_options.find(x => x.id == this.filter_options);
 				if (options || operators != undefined) {
@@ -361,10 +376,15 @@ export class filterEditComponent implements OnInit {
 				}
 				else {
 					const controls = this.itemForm.controls;
-					_filter.value = this.datepipe.transform(controls['time'].value, 'MM/dd/yyyy');
+ 					_filter.value = this.datepipe.transform(controls['time'].value, 'yyyy-MM-dd');
 				}
 			}
+			if(!_filter.value){
+				this.layoutUtilsService.showError('Chưa chọn giá trị');
+				return;
+			}
 			_filter.StrTitle = key.title + ' ' + _filter.operator + ' ' + _filter.value;
+			_filter.getTitleCol = key.title + ' ' + this.codeReplace(_filter.operator) + ' ' + this.getNamevalue(key.options,_filter.value);
 			var check = this.listColumn.find(x=>x.StrTitle == _filter.StrTitle);
 			if(check){
 				this.layoutUtilsService.showActionNotification('Dữ liệu bị trùng');
@@ -378,6 +398,14 @@ export class filterEditComponent implements OnInit {
 	}
 	updateChanges() {
 		this.onChange(this.listColumn);
+	}
+
+	codeReplace(code){
+		if(code){
+			var txt = code.replace("like", ":");
+			return txt;
+		}
+		return code;
 	}
 
 	onChange: (_: any) => void = (_: any) => { };

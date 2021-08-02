@@ -566,7 +566,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    string dieukien_where = FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"]);
+                    string dieukien_where = FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"],null);
                     //if (string.IsNullOrEmpty(dieukien_where))
                     //    return JsonResultCommon.KhongTonTai("Filter");
                     DataSet ds = getWork(cnn, query, loginData.UserID, dieukien_where);

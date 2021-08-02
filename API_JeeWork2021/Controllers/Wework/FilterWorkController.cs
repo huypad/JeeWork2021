@@ -102,7 +102,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    id_row = r["id_row"],
                                    title = r["title"],
                                    loai = r["loai"],
-                                   operators = getOperator(r["loai"].ToString()),
+                                   operators = getOperatorVi(r["loai"].ToString()),
                                    options = getOption(r["sql"].ToString(), loginData.CustomerID)
                                };
                     return JsonResultCommon.ThanhCong(data);
@@ -313,6 +313,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                         }
                     }
+                    else
+                    {
+                        string strDel = "delete we_filter_detail where id_filter=" + data.id_row ;
+                        if (cnn.ExecuteNonQuery(strDel) < 0)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
                     Hashtable val1 = new Hashtable();
                     val1["id_filter"] = data.id_row;
                     foreach (var key in data.details)
@@ -406,7 +415,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="iduser">current user</param>
         /// <param name="id_filter">id_row of filter</param>
         /// <returns>condition string or empty string if filter is not exist</returns>
-        public static string genStringWhere(DpsConnection cnn, long iduser, string id_filter)
+        public static string genStringWhere(DpsConnection cnn, long iduser, string id_filter, List<AccUsernameModel> DataAccount)
         {
             string re = "";
             string sql = @"select k.*, d.value as fvalue, d.operator from we_filter f join we_filter_detail d  on f.id_row=d.id_filter
@@ -430,10 +439,30 @@ where f.disabled=0 and f.createdby=" + iduser + " and f.id_row = " + id_filter;
                     }
                     if (id_row == "12")//tag
                     {
-                        re += @" and w.id_row in (select distinct id_work from we_filter_tag wt 
+                        re += @" and w.id_row in (select distinct id_work from we_work_tag wt 
 join we_tag t on t.id_row = wt.id_tag
 join we_project_team_user u on t.id_project_team = u.id_project_team
 where wt.disabled = 0 and t.disabled = 0 and id_user = @iduser and t.title like '%" + dr["fvalue"].ToString() + "%')";
+                        continue;
+                    }
+                    
+                    if (id_row == "13" || id_row == "14")//tag
+                    {
+                        
+                        var info = DataAccount.Where(x => x.FullName.ToString().ToLower().Contains(dr["fvalue"].ToString().ToLower())).Select(x => x.UserId.ToString()).ToList();
+                        string ids = string.Join(",", info);
+                        if (string.IsNullOrEmpty(ids))
+                        {
+                            ids = "0";
+                        }
+                        if(id_row == "13")
+                        {
+                            re += @$" and w.id_nv in ({ids})";
+                        }
+                        else if(id_row == "16")
+                        {
+                            re += @$" and w.nguoigiao in ({ids})";
+                        }
                         continue;
                     }
 
@@ -447,9 +476,26 @@ where wt.disabled = 0 and t.disabled = 0 and id_user = @iduser and t.title like 
                         {
                             //3,5,7 kiểu datetime
                             if (id_row == "3" || id_row == "5" || id_row == "7")
-                                re += string.Format(" and {0}{1}'{2}'", dr["value"], dr["operator"], dr["fvalue"]);
+                            {
+                                if (dr["operator"].ToString() == "=")
+                                {
+                                    //re += string.Format(" and {0}'{2}'", dr["value"], dr["operator"], dr["fvalue"])
+                                    re += string.Format(" and {0} > '{1}' and  {0} < DATEADD(day, 1, '{1}')", dr["value"], dr["fvalue"]);
+                                }
+                                else
+                                {
+                                    re += string.Format(" and {0}{1}'{2}'", dr["value"], dr["operator"], dr["fvalue"]);
+                                }
+                            }
+                            else if (id_row == "4" || id_row == "6" || id_row == "8")
+                            {
+                                re += string.Format(dr["value"].ToString(), dr["fvalue"]);
+                            }
                             else
+                            {
                                 re += string.Format(" and {0}{1}{2}", dr["value"], dr["operator"], dr["fvalue"]);
+                            }
+                                
                         }
                     }
                 }
@@ -493,6 +539,26 @@ where wt.disabled = 0 and t.disabled = 0 and id_user = @iduser and t.title like 
                     break;
                 default:
                     re.Add(new { id = "=", title = "Match" });
+                    break;
+            }
+            return re;
+        }
+        private object getOperatorVi(string v)
+        {
+            List<object> re = new List<object>();
+            switch (v)
+            {
+                case "2":
+                    re.Add(new { id = "like", title = "Có" });
+                    break;
+                case "3":
+                    re.Add(new { id = "=", title = "Bằng" });
+                    re.Add(new { id = "<>", title = "Khác" });
+                    re.Add(new { id = ">", title = "Lớn hơn" });
+                    re.Add(new { id = "<", title = "Nhỏ hơn" });
+                    break;
+                default:
+                    re.Add(new { id = "=", title = "Bằng" });
                     break;
             }
             return re;

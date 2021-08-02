@@ -72,13 +72,28 @@
 					</button>
 				</div>
 			</div>
-			<div style="display: flex;" *ngFor="let list of listColumn;  let i = index">
+			<!-- <div style="display: flex;" *ngFor="let list of listColumn;  let i = index">
 				<div class="text-center" style="width:50px">
 					<i class="fa fa-plus"></i>&nbsp;
 				</div>
 				<div style="flex-grow: 1;">
 					<input matInput [(ngModel)]="listColumn[i].StrTitle" readonly [ngModelOptions]="{standalone: true}"
 						placeholder="{{ 'filter.select' | translate}}">
+				</div>
+				<div class="text-right" style="width:100px">
+					<button mat-icon-button color="warn" type="button" (click)="remove(i)">
+						<mat-icon style="display: table-caption;">clear</mat-icon>
+					</button>
+				</div>
+			</div>
+			<hr> -->
+			<small class="text-muted pl-7 pb-2">* Thời gian được định dạng năm - tháng - ngày (YMD)</small>
+			<div style="display: flex;" *ngFor="let list of listColumn;  let i = index">
+				<div class="text-center" style="width:50px">
+					<i class="fa fa-plus"></i>&nbsp;
+				</div>
+				<div style="flex-grow: 1;">
+					<p> {{ list.getTitleCol }}</p>
 				</div>
 				<div class="text-right" style="width:100px">
 					<button mat-icon-button color="warn" type="button" (click)="remove(i)">

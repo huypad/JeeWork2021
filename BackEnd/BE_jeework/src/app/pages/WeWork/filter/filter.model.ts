@@ -28,6 +28,7 @@ export class FilterDetailModel extends BaseModel {
 	value: string;
 	title: string;
 	StrTitle: string;
+	getTitleCol: string;
 	clear() {
 		this.id_row = 0;
 		this.id_key = 0;
@@ -35,5 +36,6 @@ export class FilterDetailModel extends BaseModel {
 		this.value = '';
 		this.title = '';
 		this.StrTitle = '';
+		this.getTitleCol = '';
 	}
 }

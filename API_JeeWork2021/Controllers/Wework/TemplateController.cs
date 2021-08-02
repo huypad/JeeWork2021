@@ -1020,6 +1020,11 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     string s = "";
                     if (data.id_row > 0)
                     {
+                        string x = string.Join(",", data.list_field_name.Select(x => x.id_field));
+                        if (!string.IsNullOrEmpty(x))
+                        {
+                            data.field_id = x;
+                        }
                         sqlcond = new SqlConditions();
                         sqlcond.Add("id_row", data.id_row);
                         sqlcond.Add("disabled", 0);

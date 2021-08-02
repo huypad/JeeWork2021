@@ -160,7 +160,7 @@
     </span>
 
     <!-- Tạo mới space -->
-    <div *ngIf="item.id_phanloai == 0 && commonService.CheckRole_WeWork(3501).length>0" class="hover-to-show" style="text-align:right">
+    <div *ngIf="item.id_phanloai == 0 && commonService.CheckRole_WeWork(3501).length>0" class="hover-to-show icon-add" style="text-align:right">
         <button mat-icon-button [matMenuTriggerFor]="menu" class="bolder">
             <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
         </button>
@@ -252,7 +252,8 @@
     </div>
 
     <ng-container  *ngIf="item.id_phanloai > 0 && commonService.CheckRole_WeWork(3402).length>0">
-        <div style="text-align:right" class="hover-to-show">
+        <!-- *ngIf="item.id_phanloai > 0 && commonService.CheckRole_WeWork(3402).length>0" -->
+        <div style="text-align:right" class="hover-to-show icon-menu">
             <button mat-icon-button [matMenuTriggerFor]="belowMenu" class="bolder">
                 <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
             </button>
@@ -289,10 +290,10 @@
     
         </div>
         <i matTooltip="{{'projects.themnhanhduan' | translate}}" matTooltipPosition="above" *ngIf="item.IsFolder;else IsFolder"
-            class="align-items-center d-flex las la-plus-circle hover-to-show" style="font-size: 15px;" (click)="QuickInsert = item.id"></i>
+            class="align-items-center d-flex las la-plus-circle hover-to-show icon-add" style="font-size: 20px;padding: 10px;" (click)="QuickInsert = item.id"></i>
         <ng-template #IsFolder>
             <i [matMenuTriggerFor]="folder" matTooltipPosition="above"
-            class="align-items-center d-flex las la-plus-circle hover-to-show" style="font-size: 15px;"></i>
+            class="align-items-center d-flex las la-plus-circle hover-to-show icon-add" style="font-size: 20px;padding: 10px;"></i>
                 <mat-menu #folder="matMenu" yPosition="below"> 
                     <button (click)="QuickInsert = item.id" mat-menu-item><span translate="projects.themnhanhduan"></span></button>
                     <button (click)="AddQuickFolder(item)" mat-menu-item><span translate="projects.themnhanhfolder"></span></button> 

@@ -1,27 +1,52 @@
 :host {
-    .aside {
-      height: 100%;
-  
-      .aside-menu {
-        margin: 0;
-      }
-    }
-      .menu-text {
-      white-space: nowrap;
-    }
-  }
-  .hover-to-show{
-    opacity: 0;
-  }
-  .hover-action{
-    &:hover{
-      .hover-to-show{
-        opacity: 1;
-      }
+  .aside {
+    height: 100%;
+
+    .aside-menu {
+      margin: 0;
     }
   }
 
-.box-icon{
+  .menu-text {
+    white-space: nowrap;
+  }
+}
+
+.hover-to-show {
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  top:5px;
+}
+.icon-menu{
+  right: 60px;
+  &:hover {
+    background: #80808059;
+    border-radius: 50%;
+  }
+  
+}
+.icon-add{
+  right: 30px;
+  &:hover {
+    background: #80808059;
+    border-radius: 50%;
+  }
+}
+.hover-action {
+  &:hover {
+    .hover-to-show {
+      opacity: 1;
+    }
+  }
+  .icon-add{
+    .icon-menu{
+      right: 60px;
+    }
+  }
+}
+
+.box-icon {
   width: 22px;
   height: 23px;
   display: flex;
@@ -32,4 +57,3 @@
   border: 1px solid;
   border-radius: 5px;
 }
-  

@@ -114,7 +114,6 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
-
         [Route("my-milestone")]
         [HttpGet]
         public object MyMilestone()
@@ -129,7 +128,6 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     string list_Complete = "";
@@ -139,7 +137,6 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                     string list_Todo = "";
                     list_Todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo");
                     #endregion
-
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -152,7 +149,6 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"  select m.*, m.person_in_charge as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh,
 coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m 
@@ -375,7 +371,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
-
         [Route("follow-topic")]
         [HttpGet]
         public object FollowTopic(long id)
@@ -420,7 +415,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
-
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, value ? 28 : 27, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
@@ -435,40 +429,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
-
-        [Route("my-staff")]
-        [HttpGet]
-        public object MyStaff()
-        {
-            string Token = Common.GetHeader(Request);
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
-                {
-                    DataTable dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten...
-                    var data = from r in dt.AsEnumerable()
-                               select new
-                               {
-                                   id_nv = r["id_nv"],
-                                   hoten = r["hoten"],
-                                   tenchucdanh = r["tenchucdanh"],
-                                   //username = r["username"],
-                                   //mobile = r["mobile"],
-                                   image = r["image"],
-                               };
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
-            }
-        }
-
         [Route("my-staff-overview")]
         [HttpGet]
         public object MyStaffOverview([FromQuery] QueryParams query)
@@ -490,7 +450,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         string keyword = query.filter["id_project_team"];
@@ -499,7 +458,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                     if (nvs.Count == 0)
                         return JsonResultCommon.ThanhCong(nvs);
-
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -508,7 +466,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     string collect_by = "CreatedDate";
                     if (!string.IsNullOrEmpty(query.filter["collect_by"]))
                         collect_by = collect[query.filter["collect_by"]];
-
                     #region filter thời gian , keyword
                     SqlConditions cond = new SqlConditions();
                     string strW = "";
@@ -552,10 +509,10 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         sortField = sortableFields[query.sortField];
                     string ids = string.Join(",", nvs);
                     string sql = @"select count(distinct p.id_row) as dem,id_user from we_project_team p 
-join we_project_team_user u on p.id_row=u.id_project_team 
-where p.disabled=0 and u.disabled=0 and u.id_user in (" + ids + ")" + strWP + " group by u.id_user";
-                    sql += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan from v_wework_new w where id_nv in (" + ids + ")" + strW;
+                                join we_project_team_user u on p.id_row=u.id_project_team 
+                                where p.disabled=0 and u.disabled=0 and u.id_user in (" + ids + ")" + strWP + " group by u.id_user";
+                                sql += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
+                                iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan from v_wework_new w where id_nv in (" + ids + ")" + strW;
                     DataSet ds = cnn.CreateDataSet(sql, cond);
                     var asP = ds.Tables[0].AsEnumerable();
                     DataTable dtW = ds.Tables[1];
