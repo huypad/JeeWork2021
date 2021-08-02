@@ -36,15 +36,16 @@
 						</div>
 						<div>
 							<a class="title url" (click)="Viewdetail(item)">
+								{{ 'work.tencongviec' | translate }}:
 								<span>{{item.title}}</span>
 							</a>
 						</div>
-						<div>
+						<!-- <div>
 							<span style="font-size: 14px; color: #aaa;">
 								[{{item.project_team}}] - <span translate="workprocess.taoboi"></span>
 								{{item.Activities[0].NguoiTao.hoten}}
 							</span>
-						</div>
+						</div> -->
 					</div>
 					<div *ngFor="let active of item.Activities">
 						<div class="row">
@@ -55,14 +56,15 @@
 								</div>
 								<div style="flex-grow: 1 !important;">
 									<a>
-										<span
-											style="font-size: 14px; color: rgb(5, 62, 146);">{{item.project_team}}</span>
+										<span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
 										- <span
 											style="cursor: pointer; font-size:12pt; color: black;">{{getActionActivities(active)}}</span>&nbsp;
-										<span
-											style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
-										<span
-											style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
+										<ng-container *ngIf="active.oldvalue">
+											<span style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
+										</ng-container>
+										<ng-container *ngIf="active.newvalue">
+											<span style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
+										</ng-container>
 										<span style="font-size: 14px; color: #aaa;">{{active.CreatedDate}}</span>
 									</a>
 									<br>

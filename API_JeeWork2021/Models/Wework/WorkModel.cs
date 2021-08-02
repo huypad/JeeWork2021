@@ -75,6 +75,9 @@ namespace JeeWork_Core2021.Models
                     case "Attachments_result": return 13;
                     case "result": return 14;
                     case "assign": return 15;
+                    case "follower": return 56;
+                    case "deleteassign": return 55;
+                    case "deletefollower": return 57;
                     case "description": return 16;
                     case "title": return 17;
                     case "subtasks": return 40;

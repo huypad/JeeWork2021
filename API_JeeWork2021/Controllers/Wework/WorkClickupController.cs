@@ -1977,23 +1977,7 @@ where act.object_type = 1 and view_detail=1  and l.CreatedBy in ({listID}) and l
                     DataTable dt = new DataTable();
                     dt = cnn.CreateDataTable(sql);
                     if (dt == null || cnn.LastError != null)
-                        return JsonResultCommon.KhongTonTai("Công việc");
-                    #region Map info account từ JeeAccount
-                    foreach (DataRow item in dt.Rows)
-                    {
-                        var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
-                        if (info != null)
-                        {
-                            item["hoten"] = info.FullName;
-                            item["mobile"] = info.PhoneNumber;
-                            item["Username"] = info.Username;
-                            item["Email"] = info.Email;
-                            item["image"] = info.AvartarImgURL;
-                            item["Tenchucdanh"] = info.Jobtitle;
-                        }
-                    }
-                    #endregion
+                        return JsonResultCommon.KhongTonTai("Công việc"); 
                     foreach (DataRow item in dt.Rows)
                     {
                         if (item["sql"] != DBNull.Value)
@@ -2006,6 +1990,14 @@ where act.object_type = 1 and view_detail=1  and l.CreatedBy in ({listID}) and l
                                 item["ColorStatus_Old"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
                                 item["ColorStatus_New"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
                             }
+                            if (int.Parse(item["id_action"].ToString()) == 9) // Đối với tag gắn title
+                            {
+                                if (temp.Rows.Count > 0)
+                                    item["action"] = item["action"].ToString().Replace("{0}", temp.Rows[0]["title"].ToString());
+                                else 
+                                    item["action"] = item["action"].ToString().Replace("{0}", ""); 
+                            }
+                            
                             item["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             item["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         }
@@ -2017,6 +2009,33 @@ where act.object_type = 1 and view_detail=1  and l.CreatedBy in ({listID}) and l
                             if (item["newvalue"] != DBNull.Value)
                                 item["newvalue"] = string.Format(f, DateTime.Parse(item["newvalue"].ToString()));
                         }
+
+                        #region Map info account từ JeeAccount 
+                        var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["mobile"] = info.PhoneNumber;
+                            item["Username"] = info.Username;
+                            item["Email"] = info.Email;
+                            item["image"] = info.AvartarImgURL;
+                            item["Tenchucdanh"] = info.Jobtitle;
+                        }
+
+                        if (item["id_action"].ToString().Equals("15") || item["id_action"].ToString().Equals("55") || item["id_action"].ToString().Equals("56") || item["id_action"].ToString().Equals("57"))
+                        {
+                            var infoUser = DataAccount.Where(x => item["newvalue"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (infoUser != null)
+                            {
+                                item["action"] = item["action"].ToString().Replace("{0}", infoUser.FullName);
+                                item["action_en"] = item["action_en"].ToString().Replace("{0}", infoUser.FullName);
+                            }
+                            item["oldvalue"] = DBNull.Value;
+                            item["newvalue"] = DBNull.Value;
+
+                        }
+                        #endregion
                     }
                     var data = (from r in dt.AsEnumerable()
                                 select new
@@ -2240,17 +2259,17 @@ iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) a
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao,'' as NguoiSua from v_wework_new w 
 left join we_work_favourite fa on fa.id_work=w.id_row and fa.createdby=6 and fa.disabled=0
-where  w.id_row= " + id + " or id_parent=" + id;
+where w.CreatedBy in ({listID}) and w.id_row= " + id + " or id_parent=" + id;
                     //tag
                     sqlq += @";select a.title, a.id_row, a.color 
                     from we_tag a join we_work_tag b on a.id_row=b.id_tag 
                     where a.disabled=0 and b.disabled = 0 and id_work = " + id;
                     //người theo dõi
                     sqlq += @$";select id_work,id_user as id_nv,'' as hoten,''as mobile,''as username,''as email,''as image,''as tenchucdanh from we_work_user u 
-where u.disabled = 0 and u.loai = 2 and id_work=" + id;
+where u.disabled = 0 and u.id_user in ({listID}) and u.loai = 2 and id_work=" + id;
                     //attachment
                     sqlq += @$";select a.*, '' as username from we_attachment a
-where Disabled=0 and object_type in (1,11) and object_id=" + id;
+where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and object_id=" + id;
                     // Quá trình xử lý
                     sqlq += @$";select process.*, '' as hoten, StatusName, we_status.Position, we_status.color
 from we_work_process process
@@ -2977,7 +2996,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("tencongviec", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
@@ -3141,7 +3160,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
                         has_replace.Add("tencongviec", data.title);
-                        notify_model.AppCode = "WW";
+                        notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
                         notify_model.To_IDNV = data.Users[i].id_user.ToString();
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuacongviec", "", "vi");
@@ -3538,6 +3557,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 return JsonResultCommon.DangNhap();
             try
             {
+                int id_log_action = data.id_log_action;
                 string log_content = "";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -3818,7 +3838,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             has_replace = new Hashtable();
                                             has_replace.Add("nguoigui", loginData.Username);
                                             has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WW";
+                                            notify_model.AppCode = "WORK";
                                             notify_model.From_IDNV = loginData.UserID.ToString();
                                             notify_model.To_IDNV = users[i].ToString();
 
@@ -3827,6 +3847,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                             notify_model.ReplaceData = has_replace;
                                             notify_model.To_Link_MobileApp = "";
+                                            notify_model.Component = "";
+                                            notify_model.ComponentName= "";
                                             notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.id_row + ")";
                                             try
                                             {
@@ -3869,7 +3891,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             has_replace = new Hashtable();
                                             has_replace.Add("nguoigui", loginData.Username);
                                             has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WW";
+                                            notify_model.AppCode = "WORK";
                                             notify_model.From_IDNV = loginData.UserID.ToString();
                                             notify_model.To_IDNV = users[i].ToString();
                                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuadeadline", "", "vi");
@@ -3936,7 +3958,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             has_replace = new Hashtable();
                                             has_replace.Add("nguoigui", loginData.Username);
                                             has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WW";
+                                            notify_model.AppCode = "WORK";
                                             notify_model.From_IDNV = loginData.UserID.ToString();
                                             notify_model.To_IDNV = users[i].ToString();
                                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhattrangthaicongviec", "", "vi");
@@ -4083,11 +4105,17 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 else
                                 {
                                     postauto.eventid = 6;
+                                    if (data.key == "assign")
+                                        id_log_action = 55;
+                                    if (data.key == "follower")
+                                        id_log_action = 57;
+
+                                } 
+                                postauto.data_input += data.value; 
+                                if (data.key == "assign")
+                                {
+                                    Automation.SendAutomation(postauto, _configuration, _producer);
                                 }
-                                //postauto.data_input = "any";
-                                postauto.data_input += data.value; // giá trị mới
-                                //postauto.data_input = datapost;
-                                Automation.SendAutomation(postauto, _configuration, _producer);
                                 #endregion
                             } //data.key == "assign"
 
@@ -4152,18 +4180,18 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
 
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    if (data.id_log_action > 0)
+                    if (id_log_action > 0)
                     {
                         bool re = true;
                         if (data.key != "Tags" && data.key != "Attachments")
                         {
                             string temp = data.key;
-                            if (temp == "assign")
+                            if (temp == "assign" || temp == "follower")
                                 temp = "id_nv";
-                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, data.id_log_action, data.id_row, iduser, log_content, old.Rows[0][temp], data.value);
+                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, data.id_row, iduser, log_content, old.Rows[0][temp], data.value);
                         }
                         else
-                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, data.id_log_action, data.id_row, iduser, log_content);
+                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, data.id_row, iduser, log_content, null, data.value);
                         if (!re)
                         {
                             cnn.RollbackTransaction();
@@ -4351,7 +4379,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 has_replace = new Hashtable();
                                 has_replace.Add("nguoigui", loginData.Username);
                                 has_replace.Add("tencongviec", workname);
-                                notify_model.AppCode = "WW";
+                                notify_model.AppCode = "WORK";
                                 notify_model.From_IDNV = loginData.UserID.ToString();
                                 notify_model.To_IDNV = users[i].ToString();
                                 notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoacongviec", "", "vi");

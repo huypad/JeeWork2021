@@ -158,9 +158,9 @@
                     <div class="cu-task-row-assignee">
                         <i *ngIf="CheckRoles(18)" class="fas fa-cog url -hover"
                             [ngStyle]="{'color': item.id_milestone > 0?'#0d6efd':'#6c757d'}" style="font-size: 18px;"
-                            [matMenuTriggerFor]="tag"></i> &nbsp;
+                            [matMenuTriggerFor]="mileston"></i> &nbsp;
                         {{item.milestone}}
-                        <mat-menu #tag="matMenu">
+                        <mat-menu #mileston="matMenu">
                             <kt-choose-milestone-and-tags [options]="list_milestone" [project_team]="project_team"
                                 [id_project_Team]="Id_project_team" [Id]="item.id_row" [Id_key]="9"
                                 [Loai]="'id_milestone'" (ItemSelected)="ReloadData($event)">
@@ -877,7 +877,7 @@
                                         <div class="task-history-item__content row">
                                             <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} 
                                             
-                                            <ng-container *ngIf="log.id_action != 1">
+                                            <ng-container *ngIf="log.id_action != 1 && log.id_action != 9">
                                                 <ng-container *ngIf="log.oldvalue">
                                                     từ &nbsp;
                                                     <ng-container *ngIf="log.colorold">

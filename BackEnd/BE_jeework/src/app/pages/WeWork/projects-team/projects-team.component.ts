@@ -1,3 +1,4 @@
+import { filter } from 'rxjs/operators';
 import { MenuAsideService } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { MenuPhanQuyenServices } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
@@ -62,6 +63,7 @@ export class ProjectsTeamComponent implements OnInit {
 	};
 	isShowaddview = false;
 	IsAdminGroup = false;
+	roles :any = [];
 	constructor(
 		public _Services: ProjectsTeamService,
 		private changeDetectorRefs: ChangeDetectorRef,
@@ -129,7 +131,15 @@ export class ProjectsTeamComponent implements OnInit {
 					this.activeLink ='home';
 			}
 		});
-
+		this._Services.ListRole(this.ID_Project).subscribe(res => {
+			this.layoutUtilsService.OffWaitingDiv();
+			if (res && res.status == 1) {
+				this.roles = res.data;
+			}
+			else
+				this.layoutUtilsService.showError(res.error.message);
+			this.changeDetectorRefs.detectChanges();
+		});
 	}
 
 	SelectedView(view){
@@ -137,6 +147,34 @@ export class ProjectsTeamComponent implements OnInit {
 		this.TabName = view.view_name_new;
 		this.click('home');
 		this.linkTo(view.link);
+	}
+
+	IsAdmin(){
+		if(this.IsAdminGroup) return true;
+		if (this.list_role) {
+		  var x = this.list_role.find((x) => x.id_row == this.ID_Project);
+		  console.log('roles',x);
+		  if (x) {
+			if (x.admin == true) {
+			  return true;
+			}
+		  }
+		}
+		return false;
+	  }
+	infoUser(){
+		if(this.IsAdmin()) return "Bạn là quản trị viên của dự án";
+		else{
+			var txt = "Bạn là thành viên tham gia dự án" + '\n';
+			this.roles.forEach(element => {
+				// if(element.nhom != "group3"){
+					element.roles.filter(x=>x.member).map(r=>txt += r.description + '\n');
+				// }else{
+
+				// }
+			});
+			return txt;
+		}
 	}
 
 	CheckRoles(roleID: number) {

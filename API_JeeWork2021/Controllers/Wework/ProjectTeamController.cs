@@ -3040,14 +3040,40 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     {
                         if (dr["sql"] != DBNull.Value)
                         {
-                            sql_query = dr["sql"].ToString();
-                            sql_query = sql_query.Replace("$DB_HR$", _config.HRCatalog);
+                            sql_query = dr["sql"].ToString(); 
                             DataTable dt_temp = cnn.CreateDataTable(sql_query, new SqlConditions() { { "old", dr["oldvalue"] }, { "new", dr["newvalue"] } });
                             if (dt_temp == null)
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
+
+                            if (int.Parse(dr["id_action"].ToString()) == 9) // Đối với tag gắn title
+                            {
+                                if (dt_temp.Rows.Count > 0)
+                                    dr["action"] = dr["action"].ToString().Replace("{0}", dt_temp.Rows[0]["title"].ToString());
+                                else
+                                    dr["action"] = dr["action"].ToString().Replace("{0}", "");
+                            }
                         }
+
+                        #region Map info account từ JeeAccount  
+                        if (dr["id_action"].ToString().Equals("15") || dr["id_action"].ToString().Equals("55") || dr["id_action"].ToString().Equals("56") || dr["id_action"].ToString().Equals("57"))
+                        {
+                            var value = dr["newvalue"];
+                            var action = dr["id_action"];
+                            var infoUser = DataAccount.Where(x => dr["newvalue"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (infoUser != null)
+                            {
+                                dr["action"] = dr["action"].ToString().Replace("{0}", infoUser.FullName);
+                                dr["action_en"] = dr["action_en"].ToString().Replace("{0}", infoUser.FullName);
+
+                            }
+
+                            dr["oldvalue"] = DBNull.Value;
+                            dr["newvalue"] = DBNull.Value;
+
+                        }
+                        #endregion
                     }
                     int total = dt.Rows.Count;
                     if (query.more)

@@ -65,11 +65,12 @@ export class ListActivitiesComponent {
 
 	getActionActivities(value) {
 		var text = '';
-		if (this.language == 'vi')
-			text = value.action;
-		else
-			text = value.action_en;
-		// language=='vi'?act.action:act.
+		
+		text = value.action;
+		// if (this.language == 'vi')
+		// 	text = value.action;
+		// else
+		// 	text = value.action_en; 
 		if(text){
 			return text.replace("{0}","");
 		}
@@ -83,6 +84,7 @@ export class ListActivitiesComponent {
 		this.activatedRoute.params.subscribe(params => {
 			this.ID_QuyTrinh = +params.id;
 			this.ID_milestone = +params.id_milestone;
+			console.log('params:',params)
 		});
 		// if (changes['ID_QuyTrinh']) {
 		this.loadDataList();
@@ -121,8 +123,6 @@ export class ListActivitiesComponent {
 					if (resultFromServer.status == 1) {
 						if (resultFromServer.data.length > 0) {
 							this.ListData = resultFromServer.data;
-							if ('' + this.id_project_team != 'NaN')
-								this.ListData = this.ListData.filter(x => x.id_project_team == this.id_project_team);
 						}
 						else {
 							this.ListData = [];
@@ -139,6 +139,7 @@ export class ListActivitiesComponent {
 	filterConfiguration(): any {
 		const filter: any = {};
 		filter.keyword = this.keyword.nativeElement.value;
+		filter.id_project_team = this.id_project_team;
 		return filter;
 	} 
 

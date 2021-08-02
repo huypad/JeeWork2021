@@ -51,17 +51,20 @@
                                         *ngIf="commonService.CheckRole_WeWork(3501).length>0" #trigger="matMenuTrigger">
                                         <mat-icon class="example-tab-icon">keyboard_arrow_down</mat-icon>
                                     </button>
-                                    <!-- <button mat-icon-button matTooltip="info">
+                                    <!-- <button mat-icon-button *ngIf="this.IsAdmin()" matTooltip="{{infoUser()}}">
+                                        <mat-icon>info</mat-icon>
+                                    </button>
+                                    <button mat-icon-button *ngIf="!this.IsAdmin()" [matMenuTriggerFor]="menuProject" matTooltip="{{infoUser()}}">
                                         <mat-icon>info</mat-icon>
                                     </button> -->
                                 </a>
-                                <a mat-tab-link *ngIf="!(commonService.CheckRole_WeWork(3501).length>0)"
+                                <!-- <a mat-tab-link *ngIf="!(commonService.CheckRole_WeWork(3501).length>0)"
                                     href="javascript:;" [active]="activeLink == 'project'">
                                     <h5 style="padding-top: 5px; color: #48465b; color: green; font-weight: bold;">
                                         {{item.title}}
                                     </h5>
                                     <mat-icon style="height: 20px;" color="warn" *ngIf="item.locked">lock</mat-icon>
-                                </a>
+                                </a> -->
                                 <mat-menu style="justify-content: flex-start !important" #menuProject="matMenu">
                                     <button mat-menu-item [matMenuTriggerFor]="recent1" color="accent">
                                         <mat-icon style="color:rgb(235, 166, 19);">create</mat-icon>
