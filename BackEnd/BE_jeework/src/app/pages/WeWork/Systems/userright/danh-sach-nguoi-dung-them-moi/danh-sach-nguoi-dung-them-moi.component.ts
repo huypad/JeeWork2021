@@ -72,8 +72,6 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 		private danhMucChungService: DanhMucChungService,
 		public dialog: MatDialog,
 		public datepipe: DatePipe,
-		private route: ActivatedRoute,
-		private itemFB: FormBuilder,
 		public subheaderService: SubheaderService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,

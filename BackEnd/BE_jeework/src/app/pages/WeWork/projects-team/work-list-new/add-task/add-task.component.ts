@@ -13,13 +13,13 @@ import { ProjectsTeamService } from './../../Services/department-and-project.ser
 import { DOCUMENT, DatePipe } from '@angular/common';
 import { WorkModel, UserInfoModel } from './../../../work/work.model';
 import { Component, OnInit, Input, Inject, ChangeDetectorRef, EventEmitter, Output, AfterViewInit } from '@angular/core';
-import * as moment  from 'moment';
+import * as moment from 'moment';
 @Component({
   selector: 'kt-add-task',
   templateUrl: './add-task.component.html',
   styleUrls: ['./add-task.component.scss']
 })
-export class AddTaskComponent implements OnInit,AfterViewInit  {
+export class AddTaskComponent implements OnInit, AfterViewInit {
 
   @Input() ID_Project: number = 0;
   @Input() showIconclose: boolean = true;
@@ -38,7 +38,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
   Tags: any = [];
   list_priority: any = [];
   isError = false;
-  
+
   constructor(
     @Inject(DOCUMENT) private document: Document,// multi level
     private _service: ProjectsTeamService,
@@ -59,7 +59,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
   }
 
   ngOnInit() {
- 
+
     this.LoadData();
   }
 
@@ -68,7 +68,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
     var idname = "addnewtask";
     let ele = (<HTMLInputElement>document.getElementById(idname));
 
-		setTimeout(() => {
+    setTimeout(() => {
       ele.focus();
     }, 10);
 
@@ -88,7 +88,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
         this.status = this.item.id_row;
       }
     }
-    else if (this.nhom == 'assignee'){
+    else if (this.nhom == 'assignee') {
       if (this.loai == 'task') {
         this.id_nv_selected = this.item.id_row;
       }
@@ -97,7 +97,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
       }
 
     }
-    else if (this.nhom == 'groupwork'){
+    else if (this.nhom == 'groupwork') {
       if (this.loai == 'task') {
         this.id_group = this.item.id_row;
       }
@@ -107,13 +107,13 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
     }
     this.LoadListAccount();
   }
-  getAssignees(){
+  getAssignees() {
     return this.Assign;
   }
-  getFollowers(){
+  getFollowers() {
     return this.Followers;
   }
-  
+
 
   ResetData() {
     this.title = "";
@@ -161,7 +161,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
             this.Assign.push(x);
           }
         }
-      this.changeDetectorRefs.detectChanges();
+        this.changeDetectorRefs.detectChanges();
       };
       this.options_assign = this.getOptions_Assign();
     });
@@ -199,21 +199,21 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
     });
   }
 
-  ItemSelected(val: any,loai) {
-    if(loai == 1){
-      var index = this.Assign.findIndex(x=> x.id_nv == val.id_nv)
-      if(index < 0){
+  ItemSelected(val: any, loai) {
+    if (loai == 1) {
+      var index = this.Assign.findIndex(x => x.id_nv == val.id_nv)
+      if (index < 0) {
         this.Assign.push(val);
-      }else{
-        this.Assign.splice(index,1);
+      } else {
+        this.Assign.splice(index, 1);
       }
     }
-    else{
-      var index = this.Followers.findIndex(x=> x.id_nv == val.id_nv)
-      if(index < 0){
+    else {
+      var index = this.Followers.findIndex(x => x.id_nv == val.id_nv)
+      if (index < 0) {
         this.Followers.push(val);
-      }else{
-        this.Followers.splice(index,1);
+      } else {
+        this.Followers.splice(index, 1);
       }
     }
   }
@@ -234,7 +234,7 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
     }
   }
 
-  AssignInsert(id_nv,loai) {
+  AssignInsert(id_nv, loai) {
     var NV = new UserInfoModel();
     NV.id_user = id_nv;
     NV.loai = loai;
@@ -256,15 +256,15 @@ export class AddTaskComponent implements OnInit,AfterViewInit  {
     task.Users = [];
     task.id_group = this.id_group;
     this.Assign.forEach(element => {
-      var assign = this.AssignInsert(element.id_nv,1);
+      var assign = this.AssignInsert(element.id_nv, 1);
       task.Users.push(assign);
     });
     this.changeDetectorRefs.detectChanges();
     this.Followers.forEach(element => {
-      var follower = this.AssignInsert(element.id_nv,2);
+      var follower = this.AssignInsert(element.id_nv, 2);
       task.Users.push(follower);
     });
-    
+
     //  const start = moment()
     const start = moment();
     if (moment(this.selectedDate.startDate).format('MM/DD/YYYY') != "Invalid date")

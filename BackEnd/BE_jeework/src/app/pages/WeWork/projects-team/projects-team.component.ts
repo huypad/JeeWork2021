@@ -345,6 +345,8 @@ export class ProjectsTeamComponent implements OnInit {
 				} else
 					this.ShowFull = true;
 				// 		}
+			}else{
+				this.router.navigate(['']);
 			}
 		});
 

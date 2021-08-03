@@ -5,12 +5,12 @@
                 *ngFor="let item of data">
                 <div class="row">
                     <div class="hoatdong-header avartar m--margin-bottom-10-mobile" style="margin-top:10px">
-                        
+
                         <ngx-avatar size="{{selectedId > 0?28:48}}" matTooltip="{{item.NguoiTao.hoten}}"
                             src="{{item.NguoiTao.image}}" *ngIf="item.NguoiTao.image;else bindText">
                         </ngx-avatar>
                         <ng-template #bindText>
-                            <ngx-avatar textSizeRatio="2.5" matTooltip="{{item.NguoiTao.hoten}}" 
+                            <ngx-avatar textSizeRatio="2.5" matTooltip="{{item.NguoiTao.hoten}}"
                                 size="{{selectedId > 0?28:48}}" [name]="WeWorkService.getNameUser(item.NguoiTao.hoten)"
                                 bgColor="{{WeWorkService.getColorNameUser(item.NguoiTao.hoten)}}">
                             </ngx-avatar>
@@ -20,7 +20,7 @@
                         <div class="url" (click)="selected(item)">
                             <span class="title">{{item.title}}</span>
                         </div>
-                        
+
                         <div [innerHtml]="item.description" class="clear-margin-p text-2-line"
                             style="font-size:10pt; color: #666;"></div>
                     </div>
@@ -46,7 +46,7 @@
                         </button>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </kt-portlet-body>

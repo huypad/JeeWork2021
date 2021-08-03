@@ -4,7 +4,7 @@ import { element } from 'protractor';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange, EventEmitter, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import { MatPaginator , PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
@@ -12,7 +12,7 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { fromEvent, merge, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
@@ -52,7 +52,6 @@ export class TopicViewComponent {
 	@ViewChild("keyword", { static: true }) keyword: ElementRef;
 	id_project_team: number = 0;
 	constructor(public _services: DiscussionsService,
-		private danhMucService: DanhMucChungService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
 		private layoutUtilsService: LayoutUtilsService,
@@ -203,7 +202,7 @@ export class TopicViewComponent {
 		});
 	}
 
-	convertDate(d:any){ 
+	convertDate(d: any) {
 		return moment(d + 'z').format("DD/MM/YYYY HH:mm");
 	}
 }

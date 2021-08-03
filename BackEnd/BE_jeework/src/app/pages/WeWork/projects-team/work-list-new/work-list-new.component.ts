@@ -5,7 +5,6 @@ import {
 } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { SubheaderService } from "./../../../../_metronic/partials/layout/subheader/_services/subheader.service";
 import { TokenStorage } from "./../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
-import { DanhMucChungService } from "./../../../../_metronic/jeework_old/core/services/danhmuc.service";
 import { QueryParamsModelNew } from "./../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
 import { MenuPhanQuyenServices } from "./../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
 import { AttachmentService } from "./../../services/attachment.service";
@@ -148,7 +147,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     private translate: TranslateService,
     public datepipe: DatePipe,
     private tokenStorage: TokenStorage,
-    private danhMucChungService: DanhMucChungService,
     private WeWorkService: WeWorkService,
     private menuServices: MenuPhanQuyenServices,
     private overlayContainer: OverlayContainer,

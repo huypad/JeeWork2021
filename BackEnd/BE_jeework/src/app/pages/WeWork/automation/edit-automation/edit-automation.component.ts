@@ -49,14 +49,10 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   idAction = 0;
   constructor(
     private layoutUtilsService: LayoutUtilsService,
-    private projectsTeamService: ProjectsTeamService,
-    private templatecenterService: TemplateCenterService,
-    private translateService: TranslateService,
-    private departmentServices: ListDepartmentService,
     private changeDetectorRefs: ChangeDetectorRef,
     private automationService: AutomationService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.LoadListAutomation();
@@ -68,7 +64,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       this.Eventid = this.dataEdit.eventid;
       this.Actionid = this.dataEdit.actionid;
       setTimeout(() => {
-        if(this.listActions[0]){
+        if (this.listActions[0]) {
           this.listActions[0].Actionid = this.Actionid;
           this.listActions[0].dataEdit = this.dataEdit;
         }
@@ -89,9 +85,9 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.ListAction = res.data;
         if (!this.dataEdit.actionid) this.Actionid = this.ListAction[9].rowid;
-        if(this.ID_projectteam == 0) {
+        if (this.ID_projectteam == 0) {
           this.ListAction.forEach(element => {
-            if(element.rowid==7 || element.rowid==15) element.disabled=true;
+            if (element.rowid == 7 || element.rowid == 15) element.disabled = true;
           })
         }
         this.changeDetectorRefs.detectChanges();
@@ -117,7 +113,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       }
     }
     return "";
-  } 
+  }
   getListTitleAction() {
     var lst = [];
     this.listActions.forEach(element => {
@@ -127,8 +123,8 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       return lst.join('\r\n');
     }
     return "";
-  } 
-  OnSubmit(isclose = false) { 
+  }
+  OnSubmit(isclose = false) {
     const ListAuto = new Array<AutomationListModel>();
     this.listActions.forEach(element => {
       const _item = new AutomationListModel();
@@ -146,37 +142,37 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       if (this.Eventid == 6 || this.Eventid == 5) {
         // assign // 56609,17198
         var listID = [];
-        if(this.valueEvent.ItemSelected){
+        if (this.valueEvent.ItemSelected) {
           this.valueEvent.ItemSelected.forEach((element) => {
             listID.push(element.id_nv);
           });
           _item.condition = listID.join();
-        }else{
+        } else {
           _item.condition = 'any';
         }
       } else if (this.Eventid == 1) {
         // status // Lưu Condition theo định dang From:x,y;To:z,k. Trong đó x,y,z,k là statusid (để trống là any)
         var listfrom = [];
-        if(this.valueEvent.from && this.valueEvent.from.length > 0){
+        if (this.valueEvent.from && this.valueEvent.from.length > 0) {
           this.valueEvent.from.forEach((element) => {
             listfrom.push(element.id_row);
           });
-        }else{
+        } else {
           listfrom.push('any');
         }
         var listto = [];
-        if(this.valueEvent.to && this.valueEvent.to.length > 0){
+        if (this.valueEvent.to && this.valueEvent.to.length > 0) {
           this.valueEvent.to.forEach((element) => {
             listto.push(element.id_row);
           });
-        }else{
+        } else {
           listto.push('any');
         }
         _item.condition = "From:" + listfrom.join() + ";To:" + listto.join();
       } else if (this.Eventid == 2) {
         // priority // Lưu Condition theo định dang From:x,y;To:z,k. Trong đó x,y,z,k là statusid (để trống là any)
-        if(!this.valueEvent.from) this.valueEvent.from = 'any';
-        if(!this.valueEvent.to) this.valueEvent.to = 'any';
+        if (!this.valueEvent.from) this.valueEvent.from = 'any';
+        if (!this.valueEvent.to) this.valueEvent.to = 'any';
         _item.condition =
           "From:" + this.valueEvent.from + ";To:" + this.valueEvent.to;
       } else {
@@ -280,7 +276,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
               itemsub.subactionid = "6";
               itemsub.value = listID.join();
               subaction.push(itemsub);
-            } 
+            }
             _item.subaction = subaction;
           }
           break;
@@ -289,7 +285,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
           {
             const task = new Auto_Task_Model();
             task.clear();
-            if(element.data.taskid>0){
+            if (element.data.taskid > 0) {
               task.id_row = element.data.taskid;
             }
             if (element.data.taskname) {
@@ -386,11 +382,11 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         case 11:
         case 12:
           {
-            if(+element.data.datetype == 1){ 
+            if (+element.data.datetype == 1) {
               _item.data = element.data.datetype + ";" + element.data.dateValue;
-            }else if(+element.data.datetype == 2){
+            } else if (+element.data.datetype == 2) {
               _item.data = element.data.datetype + ";0";
-            }else{
+            } else {
               _item.data = element.data.datetype + ";" + this.f_convertDate(element.data.dateValue);
             }
           }
@@ -399,15 +395,15 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       ListAuto.push(_item);
     });
 
-    if(ListAuto[0].rowid>0) {
-      this.UpdateAuto(ListAuto[0],isclose);
-    }else{
-      this.CreateAuto(ListAuto,isclose);
+    if (ListAuto[0].rowid > 0) {
+      this.UpdateAuto(ListAuto[0], isclose);
+    } else {
+      this.CreateAuto(ListAuto, isclose);
     };
-    
+
   }
 
-  CreateAuto(_item,isclose){
+  CreateAuto(_item, isclose) {
     this.automationService.InsertAutomation(_item).subscribe((res) => {
       if (res && res.status == 1) {
         this.layoutUtilsService.showActionNotification("Thêm mới thành công");
@@ -417,7 +413,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       }
     });
   }
-  UpdateAuto(_item,isclose){
+  UpdateAuto(_item, isclose) {
     this.automationService.UpdateAutomation(_item).subscribe((res) => {
       if (res && res.status == 1) {
         this.layoutUtilsService.showActionNotification("Thêm mới thành công");
@@ -428,7 +424,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
     });
   }
 
-  GetvalueAction($event,index) {
+  GetvalueAction($event, index) {
     this.valueAction = $event;
     this.listActions[index].data = this.valueAction;
   }
@@ -452,8 +448,8 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   close(value = false) {
     this.eventClose.emit(value);
   }
-  loadAction(){ 
-    this.listActions.push({id:this.idAction});
-    this.idAction ++; 
+  loadAction() {
+    this.listActions.push({ id: this.idAction });
+    this.idAction++;
   }
 }

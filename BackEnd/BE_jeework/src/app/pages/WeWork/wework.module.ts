@@ -17,7 +17,7 @@ import { DanhMucChungService } from './../../_metronic/jeework_old/core/services
 import { HttpUtilsService } from './../../_metronic/jeework_old/core/utils/http-utils.service';
 import { DeleteEntityDialogComponent } from './../../_metronic/jeework_old/_shared/delete-entity-dialog/delete-entity-dialog.component';
 import { MatRadioModule } from '@angular/material/radio';
-import { MAT_DATE_FORMATS,DateAdapter } from '@angular/material/core';
+import { MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 
 //
 import { ProjectTeamEditStatusComponent } from './projects-team/project-team-edit-status/project-team-edit-status.component';
@@ -110,7 +110,7 @@ import { ChartsModule } from 'ng2-charts';
 import { AttachmentService } from './services/attachment.service';
 import { AvatarModule } from "ngx-avatar";
 import { CommentNewComponent } from './projects-team/work-list-new/comment-new/comment-new.component';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 import { ColorPicker2Component } from './color-picker2/color-picker2.component';
 import { AvatarUserComponent } from './custom-avatar/avatar-user/avatar-user.component';
 import { AvatarListUsersComponent } from './custom-avatar/avatar-list-users/avatar-list-users.component';
@@ -127,15 +127,15 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { CoreModule } from '../../_metronic/core';
 import { GeneralModule } from '../../_metronic/partials/content/general/general.module';
 import {
-  MatRippleModule,
-  MatNativeDateModule,
-  MAT_DATE_LOCALE,
+	MatRippleModule,
+	MatNativeDateModule,
+	MAT_DATE_LOCALE,
 } from '@angular/material/core';
 import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatIconRegistry, MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import {NgxPrintModule} from 'ngx-print';
+import { NgxPrintModule } from 'ngx-print';
 
 
 // Data table
@@ -165,9 +165,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSortModule } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {
-  MatBottomSheetModule,
-  MatBottomSheetRef,
-  MAT_BOTTOM_SHEET_DATA,
+	MatBottomSheetModule,
+	MatBottomSheetRef,
+	MAT_BOTTOM_SHEET_DATA,
 } from '@angular/material/bottom-sheet';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
@@ -185,7 +185,7 @@ import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu
 import { ApplicationPipesModule } from './pipe/pipe.module';
 @NgModule({
 	imports: [
-		JeeCommentModule, 
+		JeeCommentModule,
 		MatFormFieldModule,
 		CommonModule,
 		HttpClientModule,
@@ -302,7 +302,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		PeriodViewComponent,
 		DepartmentProjectTabComponent,
 		WorkEditDialogComponent,
-		CommentComponent,CommentNewComponent,
+		CommentComponent, CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
 		milestoneDetailEditComponent,
@@ -329,7 +329,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		WorkListNewComponent,
 		DuplicateTaskNewComponent,
 		AddStatusComponent,
-		AddTaskComponent,ColorPicker2Component,
+		AddTaskComponent, ColorPicker2Component,
 		ClosedProjectComponent,
 		DuplicateProjectComponent,
 		DeleteEntityDialogComponent,
@@ -371,7 +371,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		PeriodViewComponent,
 		DepartmentProjectTabComponent,
 		WorkEditDialogComponent,
-		CommentComponent,CommentNewComponent,
+		CommentComponent, CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
 		ChooseUsersComponent,
@@ -489,7 +489,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		PeriodViewComponent,
 		DepartmentProjectTabComponent,
 		WorkEditDialogComponent,
-		CommentComponent,CommentNewComponent,
+		CommentComponent, CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
 		ChooseUsersComponent,
@@ -521,7 +521,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		WorkListNewComponent,
 		AddTaskComponent,
 		AddStatusComponent,
-		DuplicateTaskNewComponent,ColorPicker2Component,
+		DuplicateTaskNewComponent, ColorPicker2Component,
 		ClosedProjectComponent,
 		DuplicateProjectComponent,
 		DeleteEntityDialogComponent,

@@ -1,5 +1,4 @@
 import { TokenStorage } from "./../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
-import { DanhMucChungService } from "./../../../../_metronic/jeework_old/core/services/danhmuc.service";
 import { tinyMCE } from "src/app/_metronic/jeework_old/components/tinyMCE";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
@@ -99,10 +98,9 @@ export class TopicEditComponent implements OnInit {
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
     private tokenStorage: TokenStorage,
-    private danhMucChungService: DanhMucChungService,
     public weworkService: WeWorkService,
     private router: Router
-  ) {}
+  ) { }
   /** LOAD DATA */
   ngOnInit() {
     this.title = this.translate.instant("GeneralKey.choncocautochuc") + "";
@@ -313,7 +311,7 @@ export class TopicEditComponent implements OnInit {
               false
             )
             .afterDismissed()
-            .subscribe((tt) => {});
+            .subscribe((tt) => { });
           // this.focusInput.nativeElement.focus();
         }
       } else {
@@ -363,27 +361,27 @@ export class TopicEditComponent implements OnInit {
 
   close() {
     const _title = this.translate.instant('GeneralKey.xacnhanthoat');
-		const _description = this.translate.instant('GeneralKey.bancomuonthoat');
-		const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
-		const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
-		if(this.isChangeData()){
-			const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
-			dialogRef.afterClosed().subscribe(res => {
-				if (!res) {
-					return;
-				}
-				this.dialogRef.close();
-			});
-		} else this.dialogRef.close();
+    const _description = this.translate.instant('GeneralKey.bancomuonthoat');
+    const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
+    const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
+    if (this.isChangeData()) {
+      const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
+      dialogRef.afterClosed().subscribe(res => {
+        if (!res) {
+          return;
+        }
+        this.dialogRef.close();
+      });
+    } else this.dialogRef.close();
   }
-  isChangeData(){
-		const val1 = this.prepare();
-		if(val1.title != this.item.title) return true;
-		if(val1.email != this.item.email+"") return true;
-		if(val1.id_project_team != this.item.id_project_team) return true;
-		if(val1.description != this.item.description) return true;
-		return false;
-	}
+  isChangeData() {
+    const val1 = this.prepare();
+    if (val1.title != this.item.title) return true;
+    if (val1.email != this.item.email + "") return true;
+    if (val1.id_project_team != this.item.id_project_team) return true;
+    if (val1.description != this.item.description) return true;
+    return false;
+  }
   reset() {
     this.item = Object.assign({}, this.item);
     this.createForm();
@@ -407,6 +405,6 @@ export class TopicEditComponent implements OnInit {
   }
 
   stopPropagation(event) {
-	  event.stopPropagation();
+    event.stopPropagation();
   }
 }

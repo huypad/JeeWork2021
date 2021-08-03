@@ -1,21 +1,4 @@
 import { WorkTagModel, WorkUserModel } from './../../work/work.model';
-/*
-    public class Auto_Task_TagModel
-    {
-        public long id_row { get; set; }
-        public long id_work { get; set; }
-        public long id_tag { get; set; }
-    }
-    public class Auto_Task_UserModel
-    {
-        public long id_row { get; set; }
-        public long id_work { get; set; }
-        public long id_user { get; set; }
-        public int loai { get; set; }//1: assign, 2 follow
-
-    }
-*/
-
 export class AutomationListModel {
 	rowid: number;
 	title: string;

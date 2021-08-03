@@ -21,8 +21,8 @@ import {
 	FormGroup,
 	Validators,
 	FormControl,
-} from "@angular/forms"; 
- import { TranslateService } from "@ngx-translate/core";
+} from "@angular/forms";
+import { TranslateService } from "@ngx-translate/core";
 import { ReplaySubject, BehaviorSubject } from "rxjs";
 import { Router } from "@angular/router";
 import { ListDepartmentService } from "../Services/List-department.service";
@@ -80,11 +80,11 @@ export class DepartmentEditNewComponent implements OnInit {
 	IsDataStaff_HR = false;
 	ReUpdated = false;
 	UserId: any = 0;
-	listSTT :any = [];
-	listDefaultView :any = [];
-	IsUpdate :any;
+	listSTT: any = [];
+	listDefaultView: any = [];
+	IsUpdate: any;
 
-	formData:any;
+	formData: any;
 	public defaultColors: string[] = [
 		'rgb(187, 181, 181)',
 		'rgb(29, 126, 236)',
@@ -125,7 +125,7 @@ export class DepartmentEditNewComponent implements OnInit {
 	/** LOAD DATA */
 	ngOnInit() {
 		this.IsUpdate = this.data.IsUpdate;
-		if(this.IsUpdate){
+		if (this.IsUpdate) {
 			this.step = 5;
 			this.isComplete = true;
 		}
@@ -146,7 +146,7 @@ export class DepartmentEditNewComponent implements OnInit {
 					}
 				}
 			}
-			else{
+			else {
 			}
 			this.options = this.getOptions();
 		});
@@ -163,7 +163,7 @@ export class DepartmentEditNewComponent implements OnInit {
 								this.list_Owners = res.data.Owners;
 								this.LoadDetail(res.data);
 								this.createForm();
-							}else{
+							} else {
 								this.layoutUtilsService.showError(res.error.message);
 							}
 						});
@@ -173,9 +173,9 @@ export class DepartmentEditNewComponent implements OnInit {
 				} else {
 					this.viewLoading = false;
 					this.createForm();
-					
-					this.listDefaultView.forEach(x=>{
-						if(x.is_default){
+
+					this.listDefaultView.forEach(x => {
+						if (x.is_default) {
 							x.isCheck = true;
 						}
 					});
@@ -190,38 +190,38 @@ export class DepartmentEditNewComponent implements OnInit {
 		this.getTreeValue();
 		// this.focusInput.nativeElement.focus();
 	}
-	LoadListSTT(){
-		var x = this.litsTemplateDemo.find(x=>x.id_row == this.TempSelected);
-		if(x){
+	LoadListSTT() {
+		var x = this.litsTemplateDemo.find(x => x.id_row == this.TempSelected);
+		if (x) {
 			this.listSTT = x.status;
 		}
 	}
 
-	LoadDetail(item){
-		if(item.Template[0] && item.Template[0].TemplateID){
+	LoadDetail(item) {
+		if (item.Template[0] && item.Template[0].TemplateID) {
 			this.TempSelected = item.Template[0].TemplateID;
 		}
 		setTimeout(() => {
 			this.LoadListSTT();
 		}, 1000);
-		this.listDefaultView.forEach(x=>{
+		this.listDefaultView.forEach(x => {
 			var isCheck = item.DefaultView.find(view => view.viewid == x.id_row);
-			if(isCheck || x.is_default){
+			if (isCheck || x.is_default) {
 				x.isCheck = true;
 			}
-			else{
+			else {
 				x.isCheck = false;
 			}
 		});
 	}
 
-	LoadDataTemp(){
+	LoadDataTemp() {
 		//load lại
 		this.weworkService.ListTemplateByCustomer().subscribe((res) => {
 			if (res && res.status === 1) {
 				this.litsTemplateDemo = res.data;
-				this.litsTemplateDemo.sort( (a, b) => (a.IsTodo === b.IsTodo) ? -1 : 1 );  // isTodo true lên trước
-				if(this.TempSelected == 0)
+				this.litsTemplateDemo.sort((a, b) => (a.IsTodo === b.IsTodo) ? -1 : 1);  // isTodo true lên trước
+				if (this.TempSelected == 0)
 					this.TempSelected = this.litsTemplateDemo[0].id_row;
 				this.LoadListSTT();
 			}
@@ -237,12 +237,12 @@ export class DepartmentEditNewComponent implements OnInit {
 	};
 
 	isCompleteStep1() {
-		if(this.itemFormGroup){
+		if (this.itemFormGroup) {
 			const controls = this.itemFormGroup.controls;
 			if (this.itemFormGroup.invalid) {
 				Object.keys(controls).forEach((controlName) =>
 					controls[controlName].markAsTouched()
-				); 
+				);
 				this.hasFormErrors = true;
 				return true;
 			}
@@ -253,7 +253,7 @@ export class DepartmentEditNewComponent implements OnInit {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -266,7 +266,7 @@ export class DepartmentEditNewComponent implements OnInit {
 		});
 	}
 	GetValueNode(val: any) {
-		if(!val){
+		if (!val) {
 			return;
 		}
 		this.ID_Struct = val.RowID;
@@ -299,7 +299,7 @@ export class DepartmentEditNewComponent implements OnInit {
 			return result;
 		}
 		result = this.translate.instant("department.chinhsua");
-		if(this.item.ParentID>0){
+		if (this.item.ParentID > 0) {
 			result = this.translate.instant("department.chinhsuafolder");
 		}
 		return result;
@@ -309,8 +309,8 @@ export class DepartmentEditNewComponent implements OnInit {
 		const controls = this.itemFormGroup.controls;
 		const _item = new DepartmentModel();
 		_item.id_row = this.item.id_row;
-		_item.ParentID = this.item.ParentID?this.item.ParentID:0;
-		_item.id_cocau = controls["dept_name"].value?controls["dept_name"].value:0;
+		_item.ParentID = this.item.ParentID ? this.item.ParentID : 0;
+		_item.id_cocau = controls["dept_name"].value ? controls["dept_name"].value : 0;
 		_item.title = controls["title"].value;
 		_item.Owners = [];
 
@@ -318,7 +318,7 @@ export class DepartmentEditNewComponent implements OnInit {
 			const ct = new DepartmentOwnerModel();
 			if (item.id_row == undefined) item.id_row = 0;
 			ct.id_row = item.id_row;
-			ct.id_department = this.item.id_row?this.item.id_row:0;
+			ct.id_department = this.item.id_row ? this.item.id_row : 0;
 			ct.id_user = item.id_nv;
 			ct.type = item.type;
 			_item.Owners.push(ct);
@@ -327,12 +327,12 @@ export class DepartmentEditNewComponent implements OnInit {
 		_item.IsDataStaff_HR = this.IsDataStaff_HR;
 		_item.ReUpdated = this.ReUpdated;
 		_item.DefaultView = [];
-		this.listDefaultView.filter(x=>x.isCheck==true).map((item, index) => {
+		this.listDefaultView.filter(x => x.isCheck == true).map((item, index) => {
 			const ct = new DepartmentViewModel();
 			if (item.id_row == undefined) item.id_row = 0;
 			ct.id_row = item.id_row;
-			ct.id_department = this.item.id_row?this.item.id_row:0;
-			ct.viewid = item.view_id?item.view_id:0;
+			ct.id_department = this.item.id_row ? this.item.id_row : 0;
+			ct.viewid = item.view_id ? item.view_id : 0;
 			ct.is_default = item.is_default;
 			_item.DefaultView.push(ct);
 		});
@@ -364,20 +364,20 @@ export class DepartmentEditNewComponent implements OnInit {
 			this.Create(updatedegree, withBack);
 		}
 	}
-	AddTemplate(){
+	AddTemplate() {
 		const item = "Danh sách giao diện template";
 		const dialogRef = this.dialog.open(TemplateCenterComponent, {
 			data: { item },
-			width:'50vw',
-			height:'95vh'
-		  });
-		  dialogRef.afterClosed().subscribe((res) => {
+			width: '50vw',
+			height: '95vh'
+		});
+		dialogRef.afterClosed().subscribe((res) => {
 			if (!res) {
-			  return;
+				return;
 			} else {
-			  this.changeDetectorRefs.detectChanges();
+				this.changeDetectorRefs.detectChanges();
 			}
-		  });
+		});
 	}
 	Update(_item: DepartmentModel, withBack: boolean) {
 		this.loadingAfterSubmit = true;
@@ -406,7 +406,7 @@ export class DepartmentEditNewComponent implements OnInit {
 							false
 						)
 						.afterDismissed()
-						.subscribe((tt) => {});
+						.subscribe((tt) => { });
 					// this.focusInput.nativeElement.focus();
 				}
 			} else {
@@ -461,7 +461,7 @@ export class DepartmentEditNewComponent implements OnInit {
 		const _description = this.translate.instant('GeneralKey.bancomuonthoat');
 		const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
 		const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
-		if(this.isChangeData()){
+		if (this.isChangeData()) {
 			const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
 			dialogRef.afterClosed().subscribe(res => {
 				if (!res) {
@@ -471,10 +471,10 @@ export class DepartmentEditNewComponent implements OnInit {
 			});
 		} else this.dialogRef.close();
 	}
-	isChangeData(){
+	isChangeData() {
 		const val1 = this.prepare();
-		if(val1.title != this.item.title) return true;
-		if(this.item.RowID > 0 && val1.Owners != this.item.Owners) return true;
+		if (val1.title != this.item.title) return true;
+		if (this.item.RowID > 0 && val1.Owners != this.item.Owners) return true;
 		return false;
 	}
 	reset() {
@@ -541,14 +541,14 @@ export class DepartmentEditNewComponent implements OnInit {
 			(x) => x.id_nv == data.id_nv
 		);
 
-		if(index >= 0){    
-			if(type == this.list_Owners[index].type){
+		if (index >= 0) {
+			if (type == this.list_Owners[index].type) {
 				this.list_Owners.splice(index, 1);
-			}else{
+			} else {
 				this.list_Owners[index].type = type;
 			}
 		}
-		else{
+		else {
 			data.type = type;
 			this.list_Owners.push(data);
 		}
@@ -578,16 +578,16 @@ export class DepartmentEditNewComponent implements OnInit {
 		// }
 	}
 
-	getlist_Assign(){
-		var x = this.list_Owners.filter(x=>x.type==2);
-		if(x){
+	getlist_Assign() {
+		var x = this.list_Owners.filter(x => x.type == 2);
+		if (x) {
 			return x;
 		}
 		return x;
 	}
-	getlist_Owners(){
-		var x = this.list_Owners.filter(x=>x.type==1);
-		if(x){
+	getlist_Owners() {
+		var x = this.list_Owners.filter(x => x.type == 1);
+		if (x) {
 			return x;
 		}
 		return x;
@@ -598,50 +598,50 @@ export class DepartmentEditNewComponent implements OnInit {
 	}
 
 	Next() {
-		if(this.isComplete){
+		if (this.isComplete) {
 			this.step = 5;
 		}
-		else{
+		else {
 			this.step += 1;
 		}
 	}
 	Pre() {
-		if(this.isComplete){
+		if (this.isComplete) {
 			this.step = 5;
 		}
-		else{
+		else {
 			this.step -= 1;
 		}
 	}
 
-	viewDetail(val){
+	viewDetail(val) {
 		this.step = val;
 	}
 
 	idfocus = 0;
-	sttFocus(value){
+	sttFocus(value) {
 		this.idfocus = value;
 	}
-	sttFocusout(value,status){
+	sttFocusout(value, status) {
 		this.idfocus = 0;
-		if(!value){
+		if (!value) {
 			return;
 		}
 		const _item = new UpdateQuickModel();
 		_item.clear();
 		_item.id_row = status.id_row;
 		_item.columname = "StatusName";
-		_item.values  = value;
+		_item.values = value;
 		_item.id_template = this.TempSelected;
 		this.UpdateQuick(_item);
 	}
-	ChangeColor(value,status){
+	ChangeColor(value, status) {
 
 		const _item = new UpdateQuickModel();
 		_item.clear();
 		_item.id_row = status.id_row;
 		_item.columname = "color";
-		_item.values  = value;
+		_item.values = value;
 		_item.id_template = this.TempSelected;
 		this.UpdateQuick(_item);
 	}
@@ -656,14 +656,14 @@ export class DepartmentEditNewComponent implements OnInit {
 	isAddStatus = false;
 	TempSelected = 0;
 
-	addTemplate(){
+	addTemplate() {
 		this.isAddTemplate = true;
 	}
 
-	focusOutTemp(value,temp,isUpdate=false){
-		if(isUpdate){
+	focusOutTemp(value, temp, isUpdate = false) {
+		if (isUpdate) {
 			this.updateTemp = 0;
-			if(!value){
+			if (!value) {
 				return;
 			}
 			temp.title = value;
@@ -671,20 +671,20 @@ export class DepartmentEditNewComponent implements OnInit {
 			_item.clear();
 			_item.id_row = temp.id_row;
 			_item.columname = "title";
-			_item.values  = value;
+			_item.values = value;
 			_item.istemplate = true;
 			this.UpdateQuick(_item);
 		}
-		else{
+		else {
 			this.isAddTemplate = false;
-			if(!value){
+			if (!value) {
 				return;
 			}
 			const _item = new UpdateQuickModel();
 			_item.clear();
 			_item.id_row = 0;
 			_item.columname = "title";
-			_item.values  = value;
+			_item.values = value;
 			_item.istemplate = true;
 			this.UpdateQuick(_item);
 
@@ -692,40 +692,40 @@ export class DepartmentEditNewComponent implements OnInit {
 
 	}
 
-	UpdateQuick(item){
+	UpdateQuick(item) {
 		this._Services.Update_Quick_Template(item).subscribe(res => {
-			if(res && res.status ==1){
-				this.LoadDataTemp();				
+			if (res && res.status == 1) {
+				this.LoadDataTemp();
 			}
 		})
 	}
 
-	Delete_Templete(id,isDelStatus){
-		this._Services.Delete_Templete(id,isDelStatus).subscribe(res => {
-			if(res && res.status ==1){
-				this.LoadDataTemp();				
+	Delete_Templete(id, isDelStatus) {
+		this._Services.Delete_Templete(id, isDelStatus).subscribe(res => {
+			if (res && res.status == 1) {
+				this.LoadDataTemp();
 			}
 		})
 	}
 
 
 
-	focusOutSTT(value){
+	focusOutSTT(value) {
 		this.isAddStatus = false;
-		if(!value){
+		if (!value) {
 			return;
 		}
 		const _item = new UpdateQuickModel();
 		_item.clear();
 		_item.id_row = 0;
 		_item.columname = "StatusName";
-		_item.values  = value;
+		_item.values = value;
 		_item.istemplate = false;
 		_item.id_template = this.TempSelected;
 		this.UpdateQuick(_item);
 	}
 
-	SubmitData(){
+	SubmitData() {
 		const controls = this.itemFormGroup.controls;
 		if (this.itemFormGroup.invalid) {
 			Object.keys(controls).forEach((controlName) =>
@@ -748,10 +748,10 @@ export class DepartmentEditNewComponent implements OnInit {
 
 
 	@HostListener('document:keydown', ['$event'])
-    onKeydownHandler1(event: KeyboardEvent) {
-      if (event.keyCode == 27)//phím ESC
-      {
-        
-      }
-    }
+	onKeydownHandler1(event: KeyboardEvent) {
+		if (event.keyCode == 27)//phím ESC
+		{
+
+		}
+	}
 }

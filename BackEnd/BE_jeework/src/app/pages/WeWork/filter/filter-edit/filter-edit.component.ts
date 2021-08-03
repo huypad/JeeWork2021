@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { WeWorkService } from '../../services/wework.services';
+import { WeWorkService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
 import { FilterModel, FilterDetailModel } from '../filter.model';
 import { filterService } from '../filter.service';

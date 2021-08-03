@@ -1,6 +1,6 @@
 import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
- import { WeWorkService } from "./../../../services/wework.services";
+import { WeWorkService } from "./../../../services/wework.services";
 import { DialogData } from "./../../../report/report-tab-dashboard/report-tab-dashboard.component";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Component, OnInit, Inject } from "@angular/core";
@@ -37,7 +37,7 @@ export class AddNewFieldsComponent implements OnInit {
 		public LayoutUtilsService: LayoutUtilsService,
 		public _service: ProjectsTeamService,
 		@Inject(MAT_DIALOG_DATA) public _data: DialogData
-	) {}
+	) { }
 
 	ngOnInit() {
 		this.data = this._data;
@@ -47,7 +47,6 @@ export class AddNewFieldsComponent implements OnInit {
 				this.selectedCol(this.data);
 			}
 		});
-
 		if (this.data.id_row > 0) {
 			this._service
 				.Detail_column_new_field(this.data.id_row)
@@ -58,7 +57,7 @@ export class AddNewFieldsComponent implements OnInit {
 						this.LayoutUtilsService.showError(res.error.message);
 					}
 				});
-		}else{
+		} else {
 			this.addRow();
 		}
 	}
@@ -83,7 +82,7 @@ export class AddNewFieldsComponent implements OnInit {
 	addRow() {
 		const option = new OptionsModel();
 		option.Color = this.RandomColor();
-		if(this.data.id_row >0){
+		if (this.data.id_row > 0) {
 			option.FieldID = this.data.id_row;
 		}
 		this.listOptions.push(option);
@@ -92,7 +91,7 @@ export class AddNewFieldsComponent implements OnInit {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 	RandomColor() {
-		var idrandom = this.randomInteger(0,this.defaultColors.length-1);
+		var idrandom = this.randomInteger(0, this.defaultColors.length - 1);
 		return this.defaultColors[idrandom];
 	}
 	Submit() {
@@ -126,7 +125,7 @@ export class AddNewFieldsComponent implements OnInit {
 				// this.LoadData();
 				this.dialogRef.close(this.data);
 			}
-			else{
+			else {
 				this.LayoutUtilsService.showError(res.error.message);
 			}
 		});
@@ -137,7 +136,7 @@ export class AddNewFieldsComponent implements OnInit {
 			if (res && res.status == 1) {
 				// this.LoadData();
 				this.dialogRef.close(this.data);
-			}else{
+			} else {
 				this.LayoutUtilsService.showError(res.error.message);
 			}
 		});

@@ -332,29 +332,7 @@ export class TemplateCenterComponent implements OnInit {
         if (element.typeid) cus_it.typeid = element.typeid;
         TCinsert.list_field_name.push(cus_it);
       });
-    } //ListField
-
-    // if (
-    //   this.TemplateDetail.data_fields &&
-    //   this.TemplateDetail.data_fields.length > 0
-    // ) {
-    //   this.TemplateDetail.data_fields.forEach((element) => {
-    //     const cus_it = new ListFieldModel();
-    //     cus_it.clear();
-    //     cus_it.fieldname = element.fieldname;
-    //     cus_it.id_field = element.id_field;
-    //     cus_it.isnewfield = true;
-    //     cus_it.isdefault = element.isdefault;
-    //     cus_it.position = element.position;
-    //     cus_it.title = element.title;
-    //     if (element.isvisible) cus_it.isvisible = element.isvisible;
-    //     if (element.note) cus_it.note = element.note;
-    //     if (element.type) cus_it.type = element.type;
-    //     if (element.typeid) cus_it.typeid = element.typeid;
-    //     TCinsert.list_field_name.push(cus_it);
-    //   });
-    // }
-
+    }  
     //ListField new
     // kiểm tra project date
     TCinsert.is_projectdates = this.ProjectDatesDefault;
@@ -365,6 +343,12 @@ export class TemplateCenterComponent implements OnInit {
       if (this.end_date) {
         TCinsert.end_date = this.f_convertDate(this.end_date);
       }
+    }
+
+    if(!this.TemplateDetail.istemplatelist)
+    { 
+      this.SudungMau(TCinsert);
+      return;
     }
 
     if (TCinsert.types == 3) {
@@ -420,6 +404,21 @@ export class TemplateCenterComponent implements OnInit {
     }
     // this.Create(_item, false);
   }
+  SudungMau(_item: TemplateCenterModel) {
+    this.disabledBtn = true;
+    this.templatecenterService.Sudungmau(_item).subscribe((res) => {
+      this.disabledBtn = false;
+      this.changeDetectorRefs.detectChanges();
+      if (res && res.status === 1) {
+        this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+        setTimeout(() => {
+          window.location.reload();
+        }, 10);
+      } else {
+        this.layoutUtilsService.showError(res.error.message);
+      }
+    });
+  } 
   disabledBtn = false;
   Create(_item: DepartmentModel, withBack: boolean) {
     this.disabledBtn = true;

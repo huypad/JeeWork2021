@@ -980,6 +980,14 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+
+                    #region insert data vào bảng tạm
+                    if(!InsertDataToTemp(idc,data.types,long.Parse(data.save_as_id),loginData.UserID,cnn,out error))
+                    {
+                        return JsonResultCommon.Custom(error);
+                    }
+                    #endregion
+
                     data.id_row = idc;
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -990,6 +998,87 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("use-template")]
+        [HttpPost]
+        public async Task<object> SudungTemplate(TemplateCenterModel data)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                long datatemplatecemter = data.id_row;
+                string strRe = "";
+                string error = "";
+                if (string.IsNullOrEmpty(data.title))
+                    strRe += (strRe == "" ? "" : ",") + "tên mẫu";
+                if (strRe != "")
+                    return JsonResultCommon.BatBuoc(strRe);
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    cnn.BeginTransaction();
+
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+                    string x = string.Join(",", data.list_field_name.Select(x => x.id_field));
+                    if (!string.IsNullOrEmpty(x))
+                    {
+                        data.field_id = x;
+                    }
+                    Hashtable val = new Hashtable();
+                    val.Add("title", data.title); 
+                    val.Add("customerid", loginData.CustomerID);
+                    val.Add("createddate", DateTime.Now);
+                    val.Add("createdby", iduser);
+                    val.Add("isdefault", 0);
+                    val.Add("is_template_center", 1);
+                    val.Add("types", data.types);
+                    val.Add("levels", data.levels);
+                    val.Add("template_typeid", 1); // lấy mặc định trong we_template_types
+                    if (!string.IsNullOrEmpty(data.viewid))
+                        val.Add("viewid", data.viewid);
+                    else
+                        val.Add("viewid", DBNull.Value);
+                    if (!string.IsNullOrEmpty(data.field_id))
+                        val.Add("field_id", data.field_id);
+                    else
+                        val.Add("field_id", DBNull.Value);
+                     
+                    // flow -> insert vào mẫu tạm xong lấy dữ liệu trong mẫu tạm đi insert
+                    if (cnn.Insert(val, "we_template_customer_temp") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
+
+                    //select save_as_id from we_template_customer where id_row =
+                    #region insert Bảng tạm về data
+                    if (!InsertTempToData(idc, data.types, datatemplatecemter, data.title, data.ParentID, data.field_id, loginData.UserID,cnn, out error))
+                    {
+                        return JsonResultCommon.Custom(error);
+                    }
+                    #endregion
+
+                    data.id_row = idc;
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
         /// <summary>
         /// Cập nhật template center
         /// </summary>
@@ -1243,7 +1332,232 @@ from we_template_library where disabled = 0 and id_template = " + id;
             else
                 return new DataTable();
         }
-         /// <summary>
+
+        /// <summary>
+        /// insert data chính thức vào bảng tạm
+        /// </summary>
+        /// <param name="id_temp_center"></param>
+        /// <param name="type"></param>
+        /// <param name="idmau"></param>
+        /// <param name="UserID"></param>
+        /// <param name="cnn"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        private bool InsertDataToTemp(long id_temp_center, long type, long idmau, long UserID,DpsConnection cnn ,out string error)
+        {
+            error = "";
+            // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
+            if(type == 1) // phòng ban
+            {
+                long idc = InserDepartmentToTemp(id_temp_center, idmau, UserID, 0, cnn, out error);
+                if (idc <= 0)
+                {
+                    return false;
+                }
+                // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
+                string sqlf = "select * from we_department where  Disabled = 0 and  ParentID = " + idmau;
+                DataTable datafolder = cnn.CreateDataTable(sqlf);
+                if(datafolder.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in datafolder.Rows)
+                    {
+                        long idfolder = long.Parse(dr["id_row"].ToString());
+                        long idfoldertemp = InserDepartmentToTemp(id_temp_center, idfolder, UserID, idc, cnn, out error);
+                        if (idfolder <= 0)
+                        {
+                            return false;
+                        } 
+                    }
+                }
+            }
+            else if (type == 2) // thư mục -- idfolder cũng là idparent 
+            {
+                long idc = InserDepartmentToTemp(id_temp_center, idmau, UserID, idmau, cnn, out error);
+                if (idc <= 0)
+                {
+                    return false;
+                }
+            }
+            else if (type == 3) // phòng ban -- id_project cũng là id_department
+            {
+                if (!InsertProjectToTemp(id_temp_center, idmau, UserID, idmau, cnn, out error))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        private long InserDepartmentToTemp(long id_temp_center,  long idmau, long UserID,long idparent, DpsConnection cnn, out string error)
+        {
+            // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
+            error = "";
+            string sql = "exec [DuplicateDepartmentToTemp] @id_temp_center,@id ,@UserID,@idparent";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_temp_center", id_temp_center);
+            conds.Add("id", idmau);
+            conds.Add("UserID", UserID);
+            conds.Add("idparent", idparent);
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message.ToString();
+                return 0;
+            }
+            long idc = long.Parse(dt.Rows[0]["id_row"].ToString());
+            string sqlp = "select * from we_project_team where  Disabled = 0 and id_department = " + idmau;
+            DataTable dataprojectteam = cnn.CreateDataTable(sqlp);
+            if (dataprojectteam.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dataprojectteam.Rows)
+                {
+                   long idproject = long.Parse(dr["id_row"].ToString());
+                   if(!InsertProjectToTemp(id_temp_center, idproject, UserID, idc, cnn, out error))
+                    {
+                        return 0;
+                    }
+                }
+            }
+            return idc;
+        }
+        private bool InsertProjectToTemp(long id_temp_center, long idprojectteam, long UserID, long id_department, DpsConnection cnn, out string error)
+        {
+            error = "";
+            string sql = "exec [SaveAsTemplate] @id_temp_center,@id ,@UserID,@id_department";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_temp_center", id_temp_center);
+            conds.Add("id", idprojectteam);
+            conds.Add("UserID", UserID);
+            conds.Add("id_department", id_department);
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message.ToString();
+                return false;
+            }
+            return true; 
+        }
+        
+        /// <summary>
+        /// insert data bảng tạm về chính thức
+        /// </summary>
+        /// <param name="id_temp"></param>
+        /// <param name="type"></param>
+        /// <param name="idmau"></param>
+        /// <param name="UserID"></param>
+        /// <param name="cnn"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        private bool InsertTempToData(long id_temp, long type, long datatemplatecemter, string title,long ParentID, string field_id, long UserID, DpsConnection cnn ,out string error)
+        {
+            error = "";
+            // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
+            if(type == 1) // phòng ban
+            {
+                long idmau = long.Parse(cnn.ExecuteScalar($"select id_row from we_department_temp where id_temp_center = {datatemplatecemter} and parentid is null").ToString());
+                long idc = InsertTepmToDepartment(id_temp, idmau, title, ParentID, field_id, UserID, cnn, out error);
+                if (idc <= 0)
+                {
+                    return false;
+                }
+                // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
+                string sqlf = "select * from we_department_temp where  Disabled = 0 and  ParentID = " + idmau;
+                DataTable datafolder = cnn.CreateDataTable(sqlf);
+                if(datafolder.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in datafolder.Rows)
+                    {
+                        long idfolder = long.Parse(dr["id_row"].ToString());
+                        string titlef = dr["title"].ToString();
+                        long idfoldertemp = InsertTepmToDepartment(id_temp, idfolder, titlef, idc, field_id,UserID, cnn, out error);
+                        if (idfolder <= 0)
+                        {
+                            return false;
+                        } 
+                    }
+                }
+            }
+            else if (type == 2) // thư mục -- idfolder  
+            {
+                long idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_department_temp where id_temp_center = {datatemplatecemter}").ToString());
+                long idc = InsertTepmToDepartment(id_temp, idmau, title, ParentID, field_id, UserID, cnn, out error);
+                if (idc <= 0)
+                {
+                    return false;
+                }
+            }
+            else if (type == 3) // phòng ban  
+            {
+                long idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_department_temp where id_temp_center = {datatemplatecemter}").ToString());
+                if (!InsertTempToProject(id_temp, idmau, title, ParentID, field_id, UserID, cnn, out error))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        private long InsertTepmToDepartment(long id_temp,  long idmau, string title, long idparent, string field_id, long UserID, DpsConnection cnn, out string error)
+        {
+            // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
+            error = "";
+            string sql = "exec [DuplicateTempToDepartment] @id_temp,@id ,@title,@idparent, @CreatedBy, @CreatedDate";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_temp", id_temp);
+            conds.Add("id", idmau);
+            conds.Add("title", title);
+            conds.Add("idparent", idparent);
+            conds.Add("CreatedBy", UserID);
+            conds.Add("CreatedDate", DateTime.Now);
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message.ToString();
+                return 0;
+            }
+            long idc = long.Parse(dt.Rows[0]["id_row"].ToString());
+            string sqlp = "select * from we_project_team_temp where  Disabled = 0 and id_department = " + idmau;
+            DataTable dataprojectteam = cnn.CreateDataTable(sqlp);
+            if (dataprojectteam.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dataprojectteam.Rows)
+                {
+                   long idproject = long.Parse(dr["id_row"].ToString());
+                    string titlep = dr["title"].ToString();
+                    if (!InsertTempToProject(id_temp, idproject, titlep, idc, field_id, UserID, cnn, out error))
+                    {
+                        return 0;
+                    }
+                }
+            }
+            return idc;
+        }
+        private bool InsertTempToProject(long id_temp, long idprojectteam, string title, long id_department, string field_id, long UserID, DpsConnection cnn, out string error)
+        {
+            error = "";
+            string sql = "exec [DuplicateTempToProjectTeam] @id_temp,@id ,@title,@id_department, @CreatedBy, @CreatedDate, @field_id";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_temp", id_temp);
+            conds.Add("id", idprojectteam);
+            conds.Add("title", title);
+            conds.Add("id_department", id_department);
+            conds.Add("field_id", field_id);
+            conds.Add("CreatedBy", UserID);
+            conds.Add("CreatedDate", DateTime.Now);
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
+            {
+                cnn.RollbackTransaction();
+                error = cnn.LastError.Message.ToString();
+                return false;
+            }
+            return true; 
+        }
+        
+        
+        
+        /// <summary>
         /// add user vào template library
         /// </summary>
         /// <param name="data"></param>

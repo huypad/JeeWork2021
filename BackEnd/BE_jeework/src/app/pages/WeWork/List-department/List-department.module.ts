@@ -10,7 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ListDepartmentComponent } from './List-department.component';
 import { ListDepartmentService } from './Services/List-department.service';
 import { WeWorkModule } from '../wework.module';
-import { ListDepartmentListComponent } from './List-department-list/List-department-list.component'; 
+import { ListDepartmentListComponent } from './List-department-list/List-department-list.component';
 const routes: Routes = [
 	{
 		path: '',
@@ -33,7 +33,7 @@ const routes: Routes = [
 	imports: [
 		CommonModule,
 		HttpClientModule,
-		 PartialsModule,
+		PartialsModule,
 		RouterModule.forChild(routes),
 		FormsModule,
 		ReactiveFormsModule,

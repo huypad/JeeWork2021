@@ -40,12 +40,10 @@ const routes: Routes = [
 		ReactiveFormsModule,
 		TranslateModule.forChild(),
 		WeWorkModule,
-		// TagInputModule,
 		AngularMultiSelectModule,
 		MatDatepickerModule,
 		MatExpansionModule,
 		DynamicComponentModule,
-		// JeeHRSubModule
 	],
 	providers: [
 		ActivitiesService,

@@ -15,29 +15,25 @@ import { AutomationListModel } from '../automation-model/automation.model';
   styleUrls: ['./automation-tab-manage.component.scss']
 })
 export class AutomationTabManageComponent implements OnInit {
-  @Input() vitri :any = "";
-  listAutomation:any = [];
+  @Input() vitri: any = "";
+  listAutomation: any = [];
   @Input() ID_projectteam: number = 0;
   @Input() ID_department: number = 0;
   @Output() selectedItem = new EventEmitter<any>();
 
   constructor(
-    private automationService:AutomationService,
+    private automationService: AutomationService,
     private layoutUtilsService: LayoutUtilsService,
-    private projectsTeamService: ProjectsTeamService,
-    private templatecenterService: TemplateCenterService,
-    private translateService: TranslateService,
-    private departmentServices: ListDepartmentService,
     private changeDetectorRefs: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
     const query = new QueryParamsModel(this.filterConfiguration());
-    this.automationService.getAutomationList(query).subscribe( res => {
-      if(res && res.status ==1){
+    this.automationService.getAutomationList(query).subscribe(res => {
+      if (res && res.status == 1) {
         this.listAutomation = res.data;
         this.changeDetectorRefs.detectChanges();
-      }else{
+      } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     })
@@ -45,26 +41,26 @@ export class AutomationTabManageComponent implements OnInit {
 
   filterConfiguration(): any {
     const filter: any = {};
-    if(this.ID_projectteam > 0)filter.listid = this.ID_projectteam;//assignee
-    if(this.ID_department > 0) filter.departmentid = this.ID_department;
+    if (this.ID_projectteam > 0) filter.listid = this.ID_projectteam;//assignee
+    if (this.ID_department > 0) filter.departmentid = this.ID_department;
     return filter;
   }
-  UpdateAutomation(item = null){
+  UpdateAutomation(item = null) {
     this.selectedItem.emit(item);
   }
-  Delete(item){
-    this.automationService.DeleteAutomation(item.rowid).subscribe( res => {
-      if(res && res.status ==1){
+  Delete(item) {
+    this.automationService.DeleteAutomation(item.rowid).subscribe(res => {
+      if (res && res.status == 1) {
         this.ngOnInit();
-      }else{
+      } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     })
   }
-  Update(item){
-    if(item.status==1){
+  Update(item) {
+    if (item.status == 1) {
       item.status = 0;
-    }else{
+    } else {
       item.status = 1;
     }
     this.automationService.UpdateStatusAutomation(item.rowid).subscribe((res) => {
@@ -78,8 +74,8 @@ export class AutomationTabManageComponent implements OnInit {
     });
   }
 
-  getAutomationActive(){
-    var x = this.listAutomation.filter(x=>x.status==1);
+  getAutomationActive() {
+    var x = this.listAutomation.filter(x => x.status == 1);
     return x.length;
   }
 }

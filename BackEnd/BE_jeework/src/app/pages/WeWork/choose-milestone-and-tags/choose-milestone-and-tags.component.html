@@ -6,9 +6,10 @@
 		</ng-template>
 	</div>
 	<div class="users-container" *ngIf="options">
-		<ng-container  *ngFor="let item of list">
-			
-			<button class="d-block border-bottom" *ngIf="item.id_row" (click)="selected(item)" mat-menu-item type="button" [ngStyle]="{'color': item.color}">
+		<ng-container *ngFor="let item of list">
+
+			<button class="d-block border-bottom" *ngIf="item.id_row" (click)="selected(item)" mat-menu-item
+				type="button" [ngStyle]="{'color': item.color}">
 				<!-- <mat-icon *ngIf="item.checked" class="text-success mg-0">check</mat-icon> -->
 				<div class="row">
 					<div class="cu-task-row-status1" *ngIf="Loai=='Tags'" style="width:20px;padding-right:5px">
@@ -24,16 +25,17 @@
 		matTooltip="{{ 'department.createmilestone' | translate }}" color="primary" type="button">
 		<mat-icon>add</mat-icon><span translate="department.createmilestone"></span>
 	</button>
-	<button *ngIf="Loai=='Tags'" (click)="createTags();stopPropagation($event)" class="btn btn-outline-success w-100 pd-5" style="margin-top: 10px;"
+	<button *ngIf="Loai=='Tags'" (click)="createTags();stopPropagation($event)"
+		class="btn btn-outline-success w-100 pd-5" style="margin-top: 10px;"
 		matTooltip="{{ 'work.themnhanhnhanmoi' | translate }}" color="primary" type="button">
-		<i class="fas fa-plus"></i> 
+		<i class="fas fa-plus"></i>
 		<span translate="work.themnhanhnhanmoi"></span>
 	</button>
 </div>
 
 <style>
 	.point {
-    width: 10px;
-    height: 10px;
-}
+		width: 10px;
+		height: 10px;
+	}
 </style>

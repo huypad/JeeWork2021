@@ -23,17 +23,17 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 	styleUrls: ["./list-documents.component.scss"],
 })
 export class ListDocumentsComponent implements OnInit {
-	
+
 	// dataSource: DocumentDataSource;
 	dataSource: any = [];
 	loadingSubject = new BehaviorSubject<boolean>(false);
 	loading1$ = this.loadingSubject.asObservable();
 	id_project_team = 0;
-	keyword="";
+	keyword = "";
 	pageSize: number;
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	@ViewChild(MatSort, { static: true }) sort: MatSort;
-	documentResult:any = [];
+	documentResult: any = [];
 	constructor(
 		private DocumentsService: DocumentsService,
 		private activatedRoute: ActivatedRoute,
@@ -43,7 +43,7 @@ export class ListDocumentsComponent implements OnInit {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private _attservice: AttachmentService,
 		private tokenStorage: TokenStorage,
-	) {}
+	) { }
 
 	ngOnInit() {
 		var arr = this.router.url.split("/");
@@ -52,33 +52,6 @@ export class ListDocumentsComponent implements OnInit {
 		this.tokenStorage.getPageSize().subscribe(res => {
 			this.pageSize = +res;
 		});
-		// If the user changes the sort order, reset back to the first page.
-		// this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-
-		// /* Data load will be triggered in two cases:
-		// - when a pagination event occurs => this.paginator.page
-		// - when a sort event occurs => this.sort.sortChange
-		// **/
-		// merge(this.sort.sortChange, this.paginator.page)
-		// 	.pipe(
-		// 		tap(() => {
-		// 			this.loadDataList();
-		// 		})
-		// 	)
-		// 	.subscribe();
-		// // Init DataSource
-		// this.dataSource = new DocumentDataSource(this.DocumentsService);
-
-		// this.dataSource.entitySubject.subscribe(res => this.documentResult = res);
-		// // this.layoutUtilsService2.setUpPaginationLabels(this.paginator);
-		// // this.loadDataList();
-
-		
-
-		// this.activatedRoute.params.subscribe((params) => {
-		// 	this.loadDataList();
-		// });
-
 		this.LoadData();
 	}
 	displayedColumns = ["filename", "lichsu", "size", "action"];
@@ -115,7 +88,7 @@ export class ListDocumentsComponent implements OnInit {
 			this.paginator.pageIndex,
 			this.paginator.pageSize
 		);
-		
+
 		this.dataSource.loadListDocument(queryParams);
 
 		setTimeout(x => {
@@ -210,7 +183,7 @@ export class ListDocumentsComponent implements OnInit {
 							false
 						)
 							.afterDismissed()
-							.subscribe((tt) => {});
+							.subscribe((tt) => { });
 					} else {
 						this.LayoutUtilsService.showActionNotification(
 							res.error.message,

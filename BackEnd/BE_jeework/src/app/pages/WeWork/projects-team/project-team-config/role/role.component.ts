@@ -44,7 +44,7 @@ export class RoleComponent {
 		});
 	}
 
-	update(event, id_row, key, val:any = []): any {
+	update(event, id_row, key, val: any = []): any {
 		event.preventDefault();
 		this.layoutUtilsService.showWaitingDiv();
 		this._service.UpdateRole(this.id_project_team, key, id_row).subscribe(res => {

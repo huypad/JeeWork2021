@@ -9,7 +9,7 @@ import { Observable, BehaviorSubject, Subscription, ReplaySubject } from 'rxjs';
 // Service
 //Models
 
-import * as moment  from 'moment';
+import * as moment from 'moment';
 import { WeWorkService } from '../services/wework.services';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';

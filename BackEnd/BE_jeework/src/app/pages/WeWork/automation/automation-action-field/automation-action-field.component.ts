@@ -55,8 +55,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     private layoutUtilsService: LayoutUtilsService,
     private projectsTeamService: ProjectsTeamService,
     private templatecenterService: TemplateCenterService,
-    private translateService: TranslateService,
-    private departmentServices: ListDepartmentService,
     private weworkService: WeWorkService,
     private automationService: AutomationService,
     private changeDetectorRefs: ChangeDetectorRef,
@@ -66,7 +64,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    
+
     // list Status all
     this.LoadDataStatus();
     // list account user
@@ -110,7 +108,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
         .ListTaskParent(this.ID_projectteam, false)
         .subscribe((res) => {
           if (res && res.status == 1) {
-            this.ListTaskParent = res.data;            
+            this.ListTaskParent = res.data;
             this.changeDetectorRefs.detectChanges();
           } else {
             this.layoutUtilsService.showError(res.error.message);
@@ -149,15 +147,15 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.checked = 0;
     this.value = {};
-    if(this.dataAction){
-      if(this.dataAction.data_actions && this.dataAction.data_actions[0]){
+    if (this.dataAction) {
+      if (this.dataAction.data_actions && this.dataAction.data_actions[0]) {
         this.data_actions = this.dataAction.data_actions[0];
         this.MapvalueEdit();
       }
     }
     this.LoadDataStatus();
     this.valueout.emit(this.value);
-    if(this.ID_projectteam>0){
+    if (this.ID_projectteam > 0) {
       this.mark_tag(this.ID_projectteam);
     }
   }
@@ -198,18 +196,18 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             this.LoadStatusTask();
             //priority
             this.value.to = dataTask.priority;
-            if(+dataTask.deadline_type > 0){
+            if (+dataTask.deadline_type > 0) {
               this.value.startdatetype = +dataTask.deadline_type;
               this.value.startdateValue = dataTask.deadline;
             }
-            if(+dataTask.startdate_type > 0){
+            if (+dataTask.startdate_type > 0) {
               this.value.startdatetype = +dataTask.startdate_type;
               this.value.startdateValue = dataTask.start_date;
             }
-            if(dataTask.users && dataTask.users.length > 0){
+            if (dataTask.users && dataTask.users.length > 0) {
               dataTask.users.forEach(element => {
                 element.id_nv = element.id_user;
-                this.ItemSelectedAssign(element,1)
+                this.ItemSelectedAssign(element, 1)
               });
             }
           }
@@ -246,51 +244,51 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       case 12:
         {
           var list = this.data_actions.value.split(';');
-          this.value.datetype=list[0];
-          this.value.dateValue=list[1];
+          this.value.datetype = list[0];
+          this.value.dateValue = list[1];
         }
         break;
     }
   }
 
-  MapUser(){
-    if(this.listUser && this.listUser.length > 0){
+  MapUser() {
+    if (this.listUser && this.listUser.length > 0) {
       this.dataAction.data_actions.forEach(element => {
         var listUser = element.value.split(',');
         listUser.forEach(UserID => {
-          var x = this.listUser.find(x=>x.id_nv == UserID);
-          if(x){
-            this.ItemSelectedAssign(x,element.actionid);
+          var x = this.listUser.find(x => x.id_nv == UserID);
+          if (x) {
+            this.ItemSelectedAssign(x, element.actionid);
           }
         });
       });
-      
-    }else{
+
+    } else {
       setTimeout(() => {
         this.MapUser();
       }, 500);
     }
   }
-  MapTags(){
-    if(this.list_Tag && this.list_Tag.length > 0){
+  MapTags() {
+    if (this.list_Tag && this.list_Tag.length > 0) {
       this.dataAction.data_actions.forEach(element => {
         var listTag = element.value.split(',');
         listTag.forEach(id_row => {
-          var x = this.list_Tag.find(x=>x.id_row == id_row);
-          if(x){
-            this.SelectedTag(x,element.actionid);
+          var x = this.list_Tag.find(x => x.id_row == id_row);
+          if (x) {
+            this.SelectedTag(x, element.actionid);
           }
         });
       });
-      
-    }else{
+
+    } else {
       setTimeout(() => {
         this.MapTags();
       }, 500);
     }
   }
   LoadStatusTask() {
-    if(!this.value.status) return;
+    if (!this.value.status) return;
     if (!(this.value.status.id_row > 0) || this.listStatus.length == 0) return;
 
     var item = this.listStatus.find(
@@ -447,35 +445,35 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       }
     });
     this.item1 = {
-      id_row:1,
-      id_project_team:this.ID_projectteam,
+      id_row: 1,
+      id_project_team: this.ID_projectteam,
     }
     this.item2 = {
-      id_row:2,
-      id_project_team:this.ID_projectteam,
+      id_row: 2,
+      id_project_team: this.ID_projectteam,
     }
   }
-  item1 :any = [];
-  item2 :any = [];
-  SelectedTag(value,loai = 5){
-    if(loai==5){
-      if(!this.value.Tags) this.value.Tags = [];
+  item1: any = [];
+  item2: any = [];
+  SelectedTag(value, loai = 5) {
+    if (loai == 5) {
+      if (!this.value.Tags) this.value.Tags = [];
       var index = this.value.Tags.findIndex(x => x.id_row == value.id_row);
-      if(index >= 0){
-        this.value.Tags.splice(index,1);
+      if (index >= 0) {
+        this.value.Tags.splice(index, 1);
       }
-      else{
+      else {
         this.value.Tags.push(value);
       }
-    }else{
-      if(!this.value.Tags2) this.value.Tags2 = [];
-      var index = this.value.Tags2.findIndex(x => x.id_row == value.id_row); 
-      if(index >= 0){
-        this.value.Tags2.splice(index,1);
+    } else {
+      if (!this.value.Tags2) this.value.Tags2 = [];
+      var index = this.value.Tags2.findIndex(x => x.id_row == value.id_row);
+      if (index >= 0) {
+        this.value.Tags2.splice(index, 1);
       }
-      else{
+      else {
         this.value.Tags2.push(value);
-      } 
+      }
     }
   }
 }

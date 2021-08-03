@@ -91,6 +91,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
   }
   LoadDetailChoose() {
     this.id_save_as = this.data.item.id;
+    console.log(this.id_save_as);
     this.TemplateDetail.share_with = 1;
     this.TemplateDetail.types = this.data.item.type;
     if (this.data.item.type == 1 || this.data.item.type == 2) {

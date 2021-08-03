@@ -16,7 +16,8 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ListDepartmentService } from '../Services/List-department.service';
 import { DatePipe } from '@angular/common';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { SubheaderService } from './../../../../_metronic/partials/layout/subheader/_services/subheader.service';
 
 import { DepartmentEditComponent } from '../List-department-edit/List-department-edit.component';

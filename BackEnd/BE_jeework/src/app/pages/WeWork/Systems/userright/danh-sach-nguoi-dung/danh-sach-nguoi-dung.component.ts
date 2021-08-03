@@ -13,7 +13,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
-import { tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { fromEvent, merge, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services

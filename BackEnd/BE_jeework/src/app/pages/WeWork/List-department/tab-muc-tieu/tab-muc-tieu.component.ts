@@ -30,7 +30,7 @@ import { ListDepartmentService } from '../Services/List-department.service';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class TabMucTieuComponent implements OnInit{
+export class TabMucTieuComponent implements OnInit {
 	// Table fields
 	dataSource: DepartmentDataSource;
 	// displayedColumns = ['TaskName', 'ProcessName', 'Description', 'CreatedBy', 'CreatedDate', 'DownFile', 'actions'];
@@ -42,15 +42,15 @@ export class TabMucTieuComponent implements OnInit{
 	selection = new SelectionModel<DepartmentModel>(true, []);
 	productsResult: DepartmentModel[] = [];
 	showTruyCapNhanh: boolean = true;
-  sorting: SortState = new SortState();
-  //=================PageSize Table=====================
+	sorting: SortState = new SortState();
+	//=================PageSize Table=====================
 	paginatorNew: PaginatorState = new PaginatorState();
 	pageSize: number;
-	customStyle:any = {};
+	customStyle: any = {};
 	// ID_QuyTrinh: number = 10003;
 	// TenQuyTrinh: string = 'Pad Trần Văn';
-	Id_Department: any=0;
-	@Input() ID_QuyTrinh: any=0;
+	Id_Department: any = 0;
+	@Input() ID_QuyTrinh: any = 0;
 	@Input() TenQuyTrinh: any;
 	@Input() WorkID: any;
 	@Input() Values: any;
@@ -71,15 +71,15 @@ export class TabMucTieuComponent implements OnInit{
 		var path = this.router.url;
 		if (path) {
 			var arr = path.split('/');
-			if (arr.length > 2){
+			if (arr.length > 2) {
 				this.ID_QuyTrinh = +arr[2];
 				this.Id_Department = +arr[2];
 
 			}
 		}
-		if(this.Id_Department > 0){
+		if (this.Id_Department > 0) {
 			this.LoadDataFolder();
-		  }
+		}
 		this.Load();
 		setTimeout(() => {
 			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
@@ -91,7 +91,7 @@ export class TabMucTieuComponent implements OnInit{
 			this.pageSize = +res;
 		});
 		// If the user changes the sort order, reset back to the first page.
-		
+
 		this.dataSource = new DepartmentDataSource(this.deptService);
 		let queryParams = new QueryParamsModelNew({});
 
@@ -159,23 +159,23 @@ export class TabMucTieuComponent implements OnInit{
 		}
 	}
 
-	
+
 
 	paginate(paginator: PaginatorState) {
 		this.loadDataList();
-	  }
-	  sortField(column: string) {
+	}
+	sortField(column: string) {
 		const sorting = this.sorting;
 		const isActiveColumn = sorting.column === column;
 		if (!isActiveColumn) {
-		  sorting.column = column;
-		  sorting.direction = "asc";
+			sorting.column = column;
+			sorting.direction = "asc";
 		} else {
-		  sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
+			sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
 		}
 		// this.paginatorNew.page = 1;
 		this.loadDataList();
-	  }
+	}
 	getItemStatusString(status: number = 0): string {
 		switch (status) {
 			case 0:
@@ -332,11 +332,11 @@ export class TabMucTieuComponent implements OnInit{
 
 
 	AddMileston() {
-		
+
 
 		let saveMessageTranslateParam = '';
 		var _item = new MilestoneModel;
-		_item.clear(); 
+		_item.clear();
 		_item.id_department = this.ID_QuyTrinh;
 		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
@@ -355,33 +355,33 @@ export class TabMucTieuComponent implements OnInit{
 		});
 	}
 
-	dataFolder:any = [];
+	dataFolder: any = [];
 	loadListfolder = false;
-	LoadDataFolder(){
-	  this.deptService.DeptDetail(this.Id_Department).subscribe(res => {
-		if (res && res.status == 1) {
-		  if(!res.data.ParentID){
-			this.dataFolder = res.data.data_folder;
-			var itemhientai = {
-			  CreatedBy: res.data.CreatedBy,
-			  CreatedDate: res.data.CreatedDate,
-			  id_row: res.data.id_row,
-			  parentid: res.data.ParentID,
-			  templateid: res.data.templateid,
-			  title: 'Dự án trực tiếp của phòng ban',
+	LoadDataFolder() {
+		this.deptService.DeptDetail(this.Id_Department).subscribe(res => {
+			if (res && res.status == 1) {
+				if (!res.data.ParentID) {
+					this.dataFolder = res.data.data_folder;
+					var itemhientai = {
+						CreatedBy: res.data.CreatedBy,
+						CreatedDate: res.data.CreatedDate,
+						id_row: res.data.id_row,
+						parentid: res.data.ParentID,
+						templateid: res.data.templateid,
+						title: 'Dự án trực tiếp của phòng ban',
+					}
+					this.dataFolder.unshift(itemhientai)
+					this.loadListfolder = true;
+					this.changeDetectorRefs.detectChanges();
+				}
+
 			}
-			this.dataFolder.unshift(itemhientai)
-			this.loadListfolder = true;
-			this.changeDetectorRefs.detectChanges();
-		  }
-		  
-		}
-	  })
+		})
 	}
 
-	ReloadList(event){
+	ReloadList(event) {
 		this.Id_Department = event;
 		this.ID_QuyTrinh = event;
-		this.loadDataList(); 
+		this.loadDataList();
 	}
 }

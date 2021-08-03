@@ -15,7 +15,7 @@ import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatProgressBarModule } from '@angular/material/progress-bar';import { DynamicComponentModule } from 'dps-lib';
+import { MatProgressBarModule } from '@angular/material/progress-bar'; import { DynamicComponentModule } from 'dps-lib';
 // import { JeeHRSubModule } from '../../../JeeHRSub.module';
 import { AllProjectTeamComponent } from './all-project-team.component';
 import { AllProjectTeamRoutingModule } from './all-project-team-routing.module';

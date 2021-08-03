@@ -25,7 +25,8 @@
                 <div class="cu-status-filter">
                     <div cudropdown="" class="cu-dropdown_left cu-dropdown">
                         <div class="cu-status-filter__toggle cu-dropdown__toggle">
-                            <div *ngIf="!this.value.checked" class="cu-status-filter__value"> {{'GeneralKey.chon' | translate}} </div>
+                            <div *ngIf="!this.value.checked" class="cu-status-filter__value"> {{'GeneralKey.chon' |
+                                translate}} </div>
                             <ng-container *ngIf="this.value.checked">
                                 <div class="row">
                                     <div class="cu-task-row-status1" style="width:20px;padding-right:5px">
@@ -202,8 +203,9 @@
 
     <div _ngcontent-gxg-c554="" class="cu-automation-task-helper__container">
         <div _ngcontent-gxg-c554="" class="cu-automation-task-helper">
-            <div _ngcontent-gxg-c554="" class="cu-automation-task-helper__container"> Nếu <span _ngcontent-gxg-c554="" class="cu-automation-task-helper__action"> người được giao việc </span>
-               không có quyền trong công việc thì được bỏ qua. </div>
+            <div _ngcontent-gxg-c554="" class="cu-automation-task-helper__container"> Nếu <span _ngcontent-gxg-c554=""
+                    class="cu-automation-task-helper__action"> người được giao việc </span>
+                không có quyền trong công việc thì được bỏ qua. </div>
         </div>
     </div>
 
@@ -253,56 +255,46 @@
         <div class="cu-edit-automation__container-body-actions-label">{{'tags.themtag'|translate}}:
         </div>
         <div class="row">
-            <div class="border-tag url" style="margin: 0 5px;"
-                [matMenuTriggerFor]="tag"
+            <div class="border-tag url" style="margin: 0 5px;" [matMenuTriggerFor]="tag"
                 matTooltip="{{ 'work.chinhsuatag' | translate}}">
                 <i class="fas fa-tags"></i>
-            </div> 
+            </div>
 
             <ng-container *ngFor="let tag of value.Tags">
-                <kt-cu-tag [node]="item1" [tag]="tag" [detail]="true"
-                    (RemoveTag)="SelectedTag(tag)">
+                <kt-cu-tag [node]="item1" [tag]="tag" [detail]="true" (RemoveTag)="SelectedTag(tag)">
                 </kt-cu-tag>
             </ng-container>
 
             <mat-menu #tag="matMenu">
-                <kt-choose-milestone-and-tags [options]="list_Tag"
-                    [project_team]="''" [auto]='true'
-                    (Noclick)="stopPropagation($event)"
-                    [id_project_Team]="ID_projectteam" [Id]="0"
-                    [Id_key]="9" [Loai]="'Tags'"
-                    (ItemSelected)="SelectedTag($event)">
+                <kt-choose-milestone-and-tags [options]="list_Tag" [project_team]="''" [auto]='true'
+                    (Noclick)="stopPropagation($event)" [id_project_Team]="ID_projectteam" [Id]="0" [Id_key]="9"
+                    [Loai]="'Tags'" (ItemSelected)="SelectedTag($event)">
                 </kt-choose-milestone-and-tags>
             </mat-menu>
         </div>
-    </div> 
+    </div>
     <div class="cu-edit-automation__container-body-actions-row">
         <div class="cu-edit-automation__container-body-actions-label">{{'tags.xoatag'|translate}}:
             <div class="row">
-                <div class="border-tag url" style="margin: 0 5px;" 
-                    [matMenuTriggerFor]="tag2"
+                <div class="border-tag url" style="margin: 0 5px;" [matMenuTriggerFor]="tag2"
                     matTooltip="{{ 'work.chinhsuatag' | translate}}">
                     <i class="fas fa-tags"></i>
-                </div> 
-    
+                </div>
+
                 <ng-container *ngFor="let tag of value.Tags2">
-                    <kt-cu-tag [node]="item2" [tag]="tag" [detail]="true"
-                        (RemoveTag)="SelectedTag(tag,6)">
+                    <kt-cu-tag [node]="item2" [tag]="tag" [detail]="true" (RemoveTag)="SelectedTag(tag,6)">
                     </kt-cu-tag>
                 </ng-container>
-    
+
                 <mat-menu #tag2="matMenu">
-                    <kt-choose-milestone-and-tags [options]="list_Tag"
-                        [project_team]="''" [auto]='true'
-                        (Noclick)="stopPropagation($event)"
-                        [id_project_Team]="ID_projectteam" [Id]="0"
-                        [Id_key]="9" [Loai]="'Tags'"
-                        (ItemSelected)="SelectedTag($event,6)">
+                    <kt-choose-milestone-and-tags [options]="list_Tag" [project_team]="''" [auto]='true'
+                        (Noclick)="stopPropagation($event)" [id_project_Team]="ID_projectteam" [Id]="0" [Id_key]="9"
+                        [Loai]="'Tags'" (ItemSelected)="SelectedTag($event,6)">
                     </kt-choose-milestone-and-tags>
                 </mat-menu>
             </div>
         </div>
-    </div> 
+    </div>
 
 </ng-template>
 
@@ -574,13 +566,15 @@
         </div>
     </div>
 
-    
+
     <ng-container *ngIf="Actionid==2">
         <ng-container [ngTemplateOutlet]="movetolist"></ng-container>
     </ng-container>
 
-    <div class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
-        <div class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Status ">
+    <div
+        class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
+        <div
+            class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Status ">
             {{ 'GeneralKey.trangthai' | translate }}:
         </div>
 
@@ -863,8 +857,10 @@
                         <div class="cu-edit-automation-dropdown__value">
 
                             <em class="">
-                                <ng-container *ngIf="value.title_project_team">{{value.title_project_team}}</ng-container>
-                                <ng-container *ngIf="!value.title_project_team">{{'filter.chonduan'|translate}}</ng-container>
+                                <ng-container *ngIf="value.title_project_team">{{value.title_project_team}}
+                                </ng-container>
+                                <ng-container *ngIf="!value.title_project_team">{{'filter.chonduan'|translate}}
+                                </ng-container>
                             </em>
 
 
@@ -966,7 +962,7 @@
             <!-- {{ Actionid==11?'filter.ngayketthuc':'filter.ngaybatdau' | translate }} -->
             <ng-container *ngIf="Actionid==11">{{'filter.ngayketthuc' | translate }}</ng-container>
             <ng-container *ngIf="Actionid!=11">{{'filter.ngaybatdau' | translate }}</ng-container>
-            
+
         </div>
         <div class="Date cu-automation-field-value_stretch cu-automation-field-value_stretch_Due">
             <div class="cu-automation-field-value cu-automation-field-value_stretch">
@@ -1133,8 +1129,13 @@
                                         [ngClass]="{'selectedProject': task.id_row == value.id_task}"
                                         class="cu2-space-row__item_2 cu2-space-row__item_expanded"
                                         (click)="SelectedTask(task);SelectedProject(project);menuTrigger.closeMenu();">
-                                        <div class="cu-project-avatar_20 cu-project-avatar" matTooltip="{{task.StatusName}}" [ngStyle]="{'fill': task.color}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path d="M24 3c0-1.657-1.343-3-3-3h-18c-1.657 0-3 1.343-3 3v18c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-18z"/></svg>
+                                        <div class="cu-project-avatar_20 cu-project-avatar"
+                                            matTooltip="{{task.StatusName}}" [ngStyle]="{'fill': task.color}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                viewBox="0 0 24 24">
+                                                <path
+                                                    d="M24 3c0-1.657-1.343-3-3-3h-18c-1.657 0-3 1.343-3 3v18c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-18z" />
+                                            </svg>
                                         </div>
                                         &nbsp;
                                         <div matTooltipShowDelay="300" matTooltip="{{task.title}}"
@@ -1166,9 +1167,13 @@
                             <div *ngFor="let task of project.dataTask"
                                 [ngClass]="{'selectedProject': task.id_row == value.id_task}"
                                 class="cu2-space-row__item_2 cu2-space-row__item_expanded"
-                                (click)="SelectedTask(task);SelectedProject(project);menuTrigger.closeMenu();" >
-                                <div class="cu-project-avatar_20 cu-project-avatar" matTooltip="{{task.StatusName}}" [ngStyle]="{'fill': task.color}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path d="M24 3c0-1.657-1.343-3-3-3h-18c-1.657 0-3 1.343-3 3v18c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-18z"/></svg>
+                                (click)="SelectedTask(task);SelectedProject(project);menuTrigger.closeMenu();">
+                                <div class="cu-project-avatar_20 cu-project-avatar" matTooltip="{{task.StatusName}}"
+                                    [ngStyle]="{'fill': task.color}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
+                                        <path
+                                            d="M24 3c0-1.657-1.343-3-3-3h-18c-1.657 0-3 1.343-3 3v18c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-18z" />
+                                    </svg>
                                 </div>
                                 &nbsp;
                                 <div matTooltipShowDelay="300" matTooltip="{{task.title}}"

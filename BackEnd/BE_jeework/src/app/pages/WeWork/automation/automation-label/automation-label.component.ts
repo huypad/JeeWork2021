@@ -6,8 +6,8 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./automation-label.component.scss']
 })
 export class AutomationLabelComponent implements OnInit {
-  @Input() row: number = 1; 
-  @Input() value: any = []; 
+  @Input() row: number = 1;
+  @Input() value: any = [];
   editdesc = false;
   constructor() { }
 

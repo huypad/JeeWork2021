@@ -64,7 +64,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
   ];
   // @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   //@ViewChild(MatSort, { static: true }) sort: MatSort;
-  sorting: SortState = new SortState() ;
+  sorting: SortState = new SortState();
   // Filter fields
   listchucdanh: any[] = [];
   // Selection
@@ -80,7 +80,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     public deptService: ProjectsTeamService,
     private danhMucService: DanhMucChungService,
     public dialog: MatDialog,
-		public _deptServices: ListDepartmentService,
+    public _deptServices: ListDepartmentService,
     private route: ActivatedRoute,
     private router: Router,
     private changeDetectorRefs: ChangeDetectorRef,
@@ -90,7 +90,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     private translate: TranslateService,
     private tokenStorage: TokenStorage,
     public menuAsideService: MenuAsideService,
-  ) {}
+  ) { }
   ngOnInit() {
     var path = this.router.url;
     if (path) {
@@ -98,7 +98,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
       if (arr.length > 2) this.Id_Department = +arr[2];
     }
 
-    if(this.Id_Department > 0){
+    if (this.Id_Department > 0) {
       this.LoadDataFolder();
     }
     this.tokenStorage.getPageSize().subscribe((res) => {
@@ -118,8 +118,8 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     });
 
     setTimeout(() => {
-			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
-		}, 10000);
+      this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+    }, 10000);
   }
 
   ngOnChanges() {
@@ -165,8 +165,8 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     } else {
       sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
     }
-	// this.paginatorNew.page = 1;
-	this.loadDataList();
+    // this.paginatorNew.page = 1;
+    this.loadDataList();
   }
   loadPage() {
     var arrayData = [];
@@ -177,8 +177,8 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
       if (totalRecord > 0) {
         const queryParams1 = new QueryParamsModelNew(
           this.filterConfiguration(),
-		  this.sorting.direction,
-		  this.sorting.column,
+          this.sorting.direction,
+          this.sorting.column,
           this.paginatorNew.page - 1,
           this.paginatorNew.pageSize
         );
@@ -188,8 +188,8 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
       } else {
         const queryParams1 = new QueryParamsModelNew(
           this.filterConfiguration(),
-		  this.sorting.direction,
-		  this.sorting.column,
+          this.sorting.direction,
+          this.sorting.column,
           (this.paginatorNew.page = 0),
           this.paginatorNew.pageSize
         );
@@ -253,7 +253,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     this.Update(ProcessWorkModels);
   }
 
-  Update(_item: DepartmentModel) {}
+  Update(_item: DepartmentModel) { }
   getHeight(): any {
     let obj = window.location.href.split("/").find((x) => x == "wework");
     let tmp_height = 0;
@@ -365,12 +365,12 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     this.loadDataList();
   }
 
-  dataFolder:any = [];
+  dataFolder: any = [];
   loadListfolder = false;
-  LoadDataFolder(){
+  LoadDataFolder() {
     this._deptServices.DeptDetail(this.Id_Department).subscribe(res => {
       if (res && res.status == 1) {
-        if(!res.data.ParentID){
+        if (!res.data.ParentID) {
           this.dataFolder = res.data.data_folder;
           var itemhientai = {
             CreatedBy: 56609,
@@ -384,13 +384,13 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
           this.loadListfolder = true;
           this.changeDetectorRefs.detectChanges();
         }
-        
+
       }
     })
   }
 
-  ReloadList(event){
+  ReloadList(event) {
     this.Id_Department = event;
-    this.loadDataList(); 
+    this.loadDataList();
   }
 }

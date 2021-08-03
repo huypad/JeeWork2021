@@ -11,15 +11,13 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { fromEvent, merge, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { LogActivitiesComponent } from '../log-activities/log-activities.component';
 import { ActivitiesService } from '../activities.service';
-
-
 
 @Component({
 	selector: 'kt-list-activities',
@@ -65,12 +63,7 @@ export class ListActivitiesComponent {
 
 	getActionActivities(value) {
 		var text = '';
-		
 		text = value.action;
-		// if (this.language == 'vi')
-		// 	text = value.action;
-		// else
-		// 	text = value.action_en; 
 		if(text){
 			return text.replace("{0}","");
 		}
@@ -86,9 +79,7 @@ export class ListActivitiesComponent {
 			this.ID_milestone = +params.id_milestone;
 			console.log('params:',params)
 		});
-		// if (changes['ID_QuyTrinh']) {
 		this.loadDataList();
-		// }
 	}
 	/** LOAD DATA */
 

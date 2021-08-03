@@ -69,8 +69,6 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
   oldItem: TopicModel;
   item_User: TopicUserModel;
   item_file: FileUploadModel;
-  // itemHD: HopDongModel;
-  // oldItemHD: HopDongModel;
   selectedTab: number = 0;
   ID_NV: string = "";
   ListDSHopDong: any[] = [];
@@ -97,12 +95,9 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
   private readonly componentName = "kt-topic_";
   private readonly onDestroy = new Subject<void>();
   //========================================================
-
   constructor(
     private _service: DiscussionsService,
-    private danhMucService: DanhMucChungService,
     public dialog: MatDialog,
-    private route: ActivatedRoute,
     public commentService: CommentService,
     private _attservice: AttachmentService,
     public subheaderService: SubheaderService,

@@ -1,16 +1,16 @@
-import { LayoutUtilsService,MessageType } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
- 
+import { LayoutUtilsService, MessageType } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
+
 // Angular
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, Input, Output, EventEmitter, ViewEncapsulation, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 // Material
-import { MatDialog} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 // RxJS
 import { Observable, BehaviorSubject, Subscription, ReplaySubject } from 'rxjs';
 // NGRX
 //Models
 
-import * as moment  from 'moment';
+import * as moment from 'moment';
 import { WeWorkService } from '../services/wework.services';
 import { ListDepartmentService } from '../List-department/Services/List-department.service';
 import { UpdateWorkModel } from '../work/work.model';
@@ -56,7 +56,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		private deptmentServices: ListDepartmentService,
 		private translate: TranslateService,
 		private changeDetectorRefs: ChangeDetectorRef
-	) {}
+	) { }
 
 	/**
 	 * On init
@@ -101,7 +101,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	}
 
 	selected(id_milestone) {
-		if(this.auto){
+		if (this.auto) {
 			this.ItemSelected.emit(id_milestone);
 			return;
 		}
@@ -132,7 +132,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		this.changeDetectorRefs.detectChanges();
 	}
 
-	createmilestone() {}
+	createmilestone() { }
 	Update() {
 		this.item_mile.id_project_team = this.id_project_Team;
 		let saveMessageTranslateParam = "";
@@ -150,7 +150,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 			_item.id_row > 0 ? MessageType.Update : MessageType.Create;
 		const reloadPage = false;
 		const dialogRef = this.dialog.open(milestoneDetailEditComponent, {
-			data: { _item,reloadPage },
+			data: { _item, reloadPage },
 		});
 		dialogRef.afterClosed().subscribe((res) => {
 			if (!res) {

@@ -79,7 +79,7 @@ export class DuplicateProjectComponent implements OnInit {
     private menuAsideService: MenuAsideService,
     public weworkService: WeWorkService,
     private router: Router
-  ) {}
+  ) { }
   /** LOAD DATA */
   ngOnInit() {
     this.title =
@@ -103,7 +103,7 @@ export class DuplicateProjectComponent implements OnInit {
     this.createForm();
     this.itemForm.controls["title"].setValue(this.title);
   }
-  onSearchChange(searchValue: string): void {}
+  onSearchChange(searchValue: string): void { }
   createForm() {
     this.itemForm = this.fb.group({
       title: [this.item1.title, Validators.required],
@@ -201,7 +201,7 @@ export class DuplicateProjectComponent implements OnInit {
     this.viewLoading = true;
     this.disabledBtn = true;
     this._service.Duplicate(_item).subscribe((res) => {
-      this.disabledBtn = false; 
+      this.disabledBtn = false;
       this.menuAsideService.loadMenu()
       if (res && res.status === 1) {
         window.location.reload();
@@ -223,7 +223,7 @@ export class DuplicateProjectComponent implements OnInit {
               false
             )
             .afterDismissed()
-            .subscribe((tt) => {});
+            .subscribe((tt) => { });
           // this.focusInput.nativeElement.focus();
         }
       } else {
@@ -247,7 +247,7 @@ export class DuplicateProjectComponent implements OnInit {
       this.disabledBtn = false;
       this.menuAsideService.loadMenu()
       this.changeDetectorRefs.detectChanges();
-      if (res && res.status === 1) { 
+      if (res && res.status === 1) {
         if (withBack == true) {
           this.dialogRef.close({
             _item,

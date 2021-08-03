@@ -42,7 +42,6 @@ export class ProjectsTeamListComponent implements OnInit {
 	ShowHead = false;
 	constructor(
 		public _services: ProjectsTeamService,
-		private danhMucService: DanhMucChungService,
 		public dialog: MatDialog,
 		private router: Router,
 		private layoutUtilsService: LayoutUtilsService,

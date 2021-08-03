@@ -89,7 +89,6 @@ export class FunctionsGroupListComponent implements OnInit {
 	constructor(public dialogRef: MatDialogRef<FunctionsGroupListComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		public userRightService: PermissionService,
-		private danhMucService: DanhMucChungService,
 		private layoutUtilsService: LayoutUtilsService,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private translate: TranslateService,) { }

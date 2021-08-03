@@ -167,7 +167,7 @@ export class AddStatusComponent implements OnInit {
 		this.icon = {};
 		if (this.item.icon)
 			this.icon.src = this.item.icon;
-		else{
+		else {
 			this.icon.src = "https://img.icons8.com/fluent/48/000000/add-image.png";
 		}
 		this.itemForm = this.fb.group({
@@ -485,13 +485,13 @@ export class AddStatusComponent implements OnInit {
 		this.hasFormErrors = false;
 	}
 	close(type) {
-		if(type == 2){
-			var text = "/project/"+this.ProjectID+"/settings/acl";
+		if (type == 2) {
+			var text = "/project/" + this.ProjectID + "/settings/acl";
 			this.router.navigateByUrl(text).then(() => {
 				this.dialogRef.close();
 			})
-		}else{
-			var text = "/project/"+this.ProjectID;
+		} else {
+			var text = "/project/" + this.ProjectID;
 			this.router.navigateByUrl(text).then(() => {
 				this.dialogRef.close();
 			})

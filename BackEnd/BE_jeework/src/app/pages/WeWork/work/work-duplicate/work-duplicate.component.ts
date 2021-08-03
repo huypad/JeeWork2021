@@ -81,7 +81,6 @@ export class DuplicateWorkComponent implements OnInit {
     private _service: WorkService,
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
-    private danhMucChungService: DanhMucChungService,
     public weworkService: WeWorkService,
     private router: Router
   ) {}

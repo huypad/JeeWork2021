@@ -6,8 +6,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { WeWorkService } from '../../services/wework.services';
+import { WeWorkService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
 import { ActivitiesService } from '../activities.service';
 
@@ -20,7 +19,6 @@ export class LogActivitiesComponent implements OnInit {
 	hasFormErrors: boolean = false;
 	viewLoading: boolean = false;
 	loadingAfterSubmit: boolean = false;
-	// @ViewChild("focusInput", { static: true }) focusInput: ElementRef;
 	disabledBtn: boolean = false;
 	IsEdit: boolean;
 	IsProject: boolean;
@@ -42,9 +40,7 @@ export class LogActivitiesComponent implements OnInit {
 		private fb: FormBuilder,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private _Logservice: ActivitiesService,
-		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		private danhMucChungService: DanhMucChungService,
 		public weworkService: WeWorkService,
 		private router: Router,) { }
 	/** LOAD DATA */
@@ -62,7 +58,6 @@ export class LogActivitiesComponent implements OnInit {
 	/** UI */
 	getTitle(): string {
 		let result = this.translate.instant('filter.logdetail');
-
 		return result;
 	}
 	/** ACTIONS */
