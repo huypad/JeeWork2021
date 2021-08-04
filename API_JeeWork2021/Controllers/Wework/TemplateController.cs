@@ -715,7 +715,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select id_row, title, description, createddate, createdby
+                    string sqlq = @$"select id_row, title, description, createddate, createdby,addtolibrary,save_as_id
                                     , isdefault, color, id_department, templateid, customerid
                                     , is_template_center, types, levels, viewid, group_statusid 
                                     , template_typeid, img_temp, field_id, share_with, sample_id
@@ -723,7 +723,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     where is_template_center = 1 and id_row=" + id;
                     if (istemplatelist)
                     {
-                        sqlq = @$"select id_row, title, description, createddate, createdby
+                        sqlq = @$"select id_row, title, description, createddate, createdby,'' as addtolibrary,save_as_id
                                     , isdefault, color, '' as id_department, '' as templateid, '{loginData.CustomerID}' as customerid
                                     , is_template_center, types, levels, viewid, group_statusid 
                                     , template_typeid, img_temp, field_id, share_with, sample_id
@@ -809,6 +809,8 @@ from we_template_library where disabled = 0 and id_template = " + id;
                                     field_id = r["field_id"],
                                     share_with = r["share_with"],
                                     sample_id = r["sample_id"],
+                                    addtolibrary = r["addtolibrary"],
+                                    save_as_id = r["save_as_id"],
                                     istemplatelist = istemplatelist,
                                     data_views = from rr in ds.Tables[1].AsEnumerable()
                                                  select new
@@ -1006,7 +1008,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <returns></returns>
         [Route("use-template")]
         [HttpPost]
-        public async Task<object> SudungTemplate(TemplateCenterModel data)
+        public async Task<object> SudungTemplate(TemplateCenterModel data,bool istemplatelist)
         {
             string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -1014,7 +1016,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 return JsonResultCommon.DangNhap();
             try
             {
-                long datatemplatecemter = data.id_row;
                 string strRe = "";
                 string error = "";
                 if (string.IsNullOrEmpty(data.title))
@@ -1062,7 +1063,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
 
                     //select save_as_id from we_template_customer where id_row =
                     #region insert Bảng tạm về data
-                    if (!InsertTempToData(idc, data.types, datatemplatecemter, data.title, data.ParentID, data.field_id, loginData.UserID,cnn, out error))
+                    if (!InsertTempToData(idc, data, loginData, istemplatelist,cnn, out error))
                     {
                         return JsonResultCommon.Custom(error);
                     }
@@ -1211,8 +1212,8 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     if (data.templateid > 0)
                     {
                         string sql_insert = "";
-                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, templateID, customerid,is_template_center,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id)
-                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
+                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, save_as_id, customerid,is_template_center,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id,addtolibrary)
+                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id,1 from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
                         cnn.ExecuteNonQuery(sql_insert);
                         if (cnn.LastError != null)
                         {
@@ -1438,7 +1439,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             return true; 
         }
-        
+
         /// <summary>
         /// insert data bảng tạm về chính thức
         /// </summary>
@@ -1449,14 +1450,22 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <param name="cnn"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private bool InsertTempToData(long id_temp, long type, long datatemplatecemter, string title,long ParentID, string field_id, long UserID, DpsConnection cnn ,out string error)
+        private bool InsertTempToData(long id_temp, TemplateCenterModel data, UserJWT loginData, bool istemplatelist,DpsConnection cnn ,out string error)
         {
             error = "";
-            // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
-            if(type == 1) // phòng ban
+            long idmau = 0;
+            string field = "id_temp_center";
+            long datatemplatecemter = data.id_row;
+            if (istemplatelist)
             {
-                long idmau = long.Parse(cnn.ExecuteScalar($"select id_row from we_department_temp where id_temp_center = {datatemplatecemter} and parentid is null").ToString());
-                long idc = InsertTepmToDepartment(id_temp, idmau, title, ParentID, field_id, UserID, cnn, out error);
+                field = "id_template_list";
+            }
+            // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
+            if (data.types == 1) // phòng ban
+            {
+                
+                idmau = long.Parse(cnn.ExecuteScalar($"select id_row from we_department_temp where {field} = {datatemplatecemter} and parentid is null").ToString());
+                long idc = InsertTepmToDepartment(id_temp, idmau, data.title, data.ParentID, data.field_id, loginData, cnn, out error);
                 if (idc <= 0)
                 {
                     return false;
@@ -1470,7 +1479,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     {
                         long idfolder = long.Parse(dr["id_row"].ToString());
                         string titlef = dr["title"].ToString();
-                        long idfoldertemp = InsertTepmToDepartment(id_temp, idfolder, titlef, idc, field_id,UserID, cnn, out error);
+                        long idfoldertemp = InsertTepmToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
                         if (idfolder <= 0)
                         {
                             return false;
@@ -1478,37 +1487,38 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     }
                 }
             }
-            else if (type == 2) // thư mục -- idfolder  
+            else if (data.types == 2) // thư mục -- idfolder  
             {
-                long idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_department_temp where id_temp_center = {datatemplatecemter}").ToString());
-                long idc = InsertTepmToDepartment(id_temp, idmau, title, ParentID, field_id, UserID, cnn, out error);
+                idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_department_temp where {field} = {datatemplatecemter}").ToString());
+                long idc = InsertTepmToDepartment(id_temp, idmau, data.title, data.ParentID, data.field_id, loginData, cnn, out error);
                 if (idc <= 0)
                 {
                     return false;
                 }
             }
-            else if (type == 3) // phòng ban  
+            else if (data.types == 3) // phòng ban  
             {
-                long idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_department_temp where id_temp_center = {datatemplatecemter}").ToString());
-                if (!InsertTempToProject(id_temp, idmau, title, ParentID, field_id, UserID, cnn, out error))
+                idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_project_team_temp where {field} = {datatemplatecemter}").ToString());
+                if (!InsertTempToProject(id_temp, idmau, data.title, data.ParentID, cnn, out error))
                 {
                     return false;
                 }
             }
             return true;
         }
-        private long InsertTepmToDepartment(long id_temp,  long idmau, string title, long idparent, string field_id, long UserID, DpsConnection cnn, out string error)
+        private long InsertTepmToDepartment(long id_temp,  long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, out string error)
         {
             // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
             error = "";
-            string sql = "exec [DuplicateTempToDepartment] @id_temp,@id ,@title,@idparent, @CreatedBy, @CreatedDate";
+            string sql = "exec [DuplicateTempToDepartment] @id_temp,@id ,@title,@idparent, @CreatedBy, @CreatedDate,@IDKH";
             SqlConditions conds = new SqlConditions();
             conds.Add("id_temp", id_temp);
             conds.Add("id", idmau);
             conds.Add("title", title);
             conds.Add("idparent", idparent);
-            conds.Add("CreatedBy", UserID);
+            conds.Add("CreatedBy", loginData.UserID);
             conds.Add("CreatedDate", DateTime.Now);
+            conds.Add("IDKH", loginData.CustomerID);
             DataTable dt = cnn.CreateDataTable(sql, conds);
             if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
             {
@@ -1525,7 +1535,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 {
                    long idproject = long.Parse(dr["id_row"].ToString());
                     string titlep = dr["title"].ToString();
-                    if (!InsertTempToProject(id_temp, idproject, titlep, idc, field_id, UserID, cnn, out error))
+                    if (!InsertTempToProject(id_temp, idproject, titlep, idc, cnn, out error))
                     {
                         return 0;
                     }
@@ -1533,18 +1543,15 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             return idc;
         }
-        private bool InsertTempToProject(long id_temp, long idprojectteam, string title, long id_department, string field_id, long UserID, DpsConnection cnn, out string error)
+        private bool InsertTempToProject(long id_temp, long idprojectteam, string title, long id_department, DpsConnection cnn, out string error)
         {
             error = "";
-            string sql = "exec [DuplicateTempToProjectTeam] @id_temp,@id ,@title,@id_department, @CreatedBy, @CreatedDate, @field_id";
+            string sql = "exec [DuplicateTempToProjectTeam] @id_temp,@id ,@title,@id_department ";
             SqlConditions conds = new SqlConditions();
             conds.Add("id_temp", id_temp);
             conds.Add("id", idprojectteam);
             conds.Add("title", title);
             conds.Add("id_department", id_department);
-            conds.Add("field_id", field_id);
-            conds.Add("CreatedBy", UserID);
-            conds.Add("CreatedDate", DateTime.Now);
             DataTable dt = cnn.CreateDataTable(sql, conds);
             if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
             {

@@ -61,9 +61,9 @@ export class TemplateCenterService {
     return this.http.post<any>(API_Template + `/add-template-library`,data,
       { headers: httpHeaders });
   }
-  Sudungmau(data): Observable<any> {
+  Sudungmau(data,istemplatelist): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
-    return this.http.post<any>(API_Template + `/use-template`,data,
+    return this.http.post<any>(API_Template + `/use-template?istemplatelist=${istemplatelist}`,data,
       { headers: httpHeaders });
   }
   delete_library(id): Observable<any> {

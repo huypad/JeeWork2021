@@ -75,22 +75,7 @@ namespace JeeWork_Core2021.ConsumerServices
         public void getMessInit(string message)
         {
             try
-            {
-                //string roles = "";
-                //string topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
-                //var data = JsonConvert.DeserializeObject<messageJeeAcount>(message);
-                //string conn = _cache.GetConnectionString(data.CustomerID);
-                //List<string> roles_ad = ConsumerHelper.getRolesAdmin(conn);
-                //Console.WriteLine("====================");
-                //Console.WriteLine(message);
-                //var d1 = new GeneralLog()
-                //{
-                //    name = "jee-work",
-                //    data = message,
-                //    message = "jeeplatform.initialization"
-                //};
-                //_logger.LogTrace(JsonConvert.SerializeObject(d1));
-                //Console.WriteLine("====================");
+            { 
 
                 mess = message; //test để biết có nhận message từ topic ko
                 var kq = JsonConvert.DeserializeObject<InitMessage>(message);

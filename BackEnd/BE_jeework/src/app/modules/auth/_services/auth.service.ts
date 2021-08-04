@@ -111,8 +111,8 @@ export class AuthService implements OnDestroy {
             }
           },
           (error) => {
-            // localStorage.removeItem(this.authLocalStorageToken);
-            // this.logout();
+            localStorage.removeItem(this.authLocalStorageToken);
+            this.logout();
           }
         );
       }
@@ -160,7 +160,7 @@ export class AuthService implements OnDestroy {
   }
 
   logout() {
-    // localStorage.removeItem(this.authLocalStorageToken);
+    localStorage.removeItem(this.authLocalStorageToken);
     let url = redirectUrl + document.location.protocol + '//' + document.location.hostname + ':' + document.location.port;
     window.location.href = url;
   }

@@ -43,6 +43,7 @@ export class TemplateCenterComponent implements OnInit {
 	public filteredUsecase: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   ItemParentID: any = {};
   ParentName = "Chọn vị trí lưu";
+  isAddsuccess = false;
   buocthuchien = 1;
   isAddTask = true;
   AllView = true;
@@ -272,8 +273,12 @@ export class TemplateCenterComponent implements OnInit {
     if (titleTemplate) {
       TCinsert.title = titleTemplate;
     } else {
-      this.layoutUtilsService.showError("Tên Template Center là bắt buộc");
-      return;
+      TCinsert.title = this.TemplateDetail.title;
+
+      if(!TCinsert.title){
+        this.layoutUtilsService.showError("Tên Template Center là bắt buộc");
+        return;
+      }
     }
     // kiểm tra chọn parent
     if (this.TemplateDetail.types > 1) {
@@ -345,68 +350,79 @@ export class TemplateCenterComponent implements OnInit {
       }
     }
 
-    if(!this.TemplateDetail.istemplatelist)
-    { 
-      this.SudungMau(TCinsert);
-      return;
+    var istemplatelist  = this.TemplateDetail.istemplatelist
+    if(this.TemplateDetail.addtolibrary){
+      istemplatelist = true;
+      TCinsert.id_row = this.TemplateDetail.save_as_id;
     }
 
-    if (TCinsert.types == 3) {
-      const _item = new ProjectTeamModel();
-      _item.templatecenter = TCinsert;
-      _item.id_department = "" + TCinsert.ParentID;
-      _item.title = TCinsert.title;
-      _item.description = this.TemplateDetail.description?this.TemplateDetail.description:'';
-      _item.loai = "1";
-      _item.is_project = true;
-      const ct = new ProjectTeamUserModel();
-      ct.clear();
-      ct.id_user = +localStorage.getItem("idUser");
-      ct.admin = true;
-      _item.Users.push(ct);
-      // if ( this.TemplateDetail.data_views && this.TemplateDetail.data_views.length > 0 ) {
-      //   this.TemplateDetail.data_views.map((item, index) => {
-      //     const dv = new DepartmentViewModel();
-      //     dv.clear();
-      //     dv.viewid = item.id_row;
-      //     dv.is_default = item.is_default;
-      //     _item.DefaultView.push(dv);
-      //   });
-      // }
+    setTimeout(() => {
+      this.SudungMau(TCinsert,istemplatelist);
+    }, 5);
+      // return;
 
-      this.CreateProject(_item, false);
-    } else {
-      const _item = new DepartmentModel();
-      _item.clear();
-      _item.templatecenter = TCinsert;
-      _item.ParentID = TCinsert.ParentID;
-      _item.title = TCinsert.title;
-      _item.Owners = [];
-      const ct = new DepartmentOwnerModel();
-      ct.clear();
-      ct.id_user = +localStorage.getItem("idUser");
-      _item.Owners.push(ct);
-      _item.DefaultView = [];
-      if (
-        this.TemplateDetail.data_views &&
-        this.TemplateDetail.data_views.length > 0
-      ) {
-        this.TemplateDetail.data_views.map((item, index) => {
-          const dv = new DepartmentViewModel();
-          dv.clear();
-          dv.viewid = item.id_row;
-          dv.is_default = item.is_default;
-          _item.DefaultView.push(dv);
-        });
-      }
-      _item.TemplateID = TCinsert.templateid;
-      this.Create(_item, false);
-    }
-    // this.Create(_item, false);
+    // if(!this.TemplateDetail.istemplatelist)
+    // { 
+    //   this.SudungMau(TCinsert,this.TemplateDetail.istemplatelist);
+    //   return;
+    // }
+
+    // if (TCinsert.types == 3) {
+    //   const _item = new ProjectTeamModel();
+    //   _item.templatecenter = TCinsert;
+    //   _item.id_department = "" + TCinsert.ParentID;
+    //   _item.title = TCinsert.title;
+    //   _item.description = this.TemplateDetail.description?this.TemplateDetail.description:'';
+    //   _item.loai = "1";
+    //   _item.is_project = true;
+    //   const ct = new ProjectTeamUserModel();
+    //   ct.clear();
+    //   ct.id_user = +localStorage.getItem("idUser");
+    //   ct.admin = true;
+    //   _item.Users.push(ct);
+    //   // if ( this.TemplateDetail.data_views && this.TemplateDetail.data_views.length > 0 ) {
+    //   //   this.TemplateDetail.data_views.map((item, index) => {
+    //   //     const dv = new DepartmentViewModel();
+    //   //     dv.clear();
+    //   //     dv.viewid = item.id_row;
+    //   //     dv.is_default = item.is_default;
+    //   //     _item.DefaultView.push(dv);
+    //   //   });
+    //   // }
+
+    //   this.CreateProject(_item, false);
+    // } else {
+    //   const _item = new DepartmentModel();
+    //   _item.clear();
+    //   _item.templatecenter = TCinsert;
+    //   _item.ParentID = TCinsert.ParentID;
+    //   _item.title = TCinsert.title;
+    //   _item.Owners = [];
+    //   const ct = new DepartmentOwnerModel();
+    //   ct.clear();
+    //   ct.id_user = +localStorage.getItem("idUser");
+    //   _item.Owners.push(ct);
+    //   _item.DefaultView = [];
+    //   if (
+    //     this.TemplateDetail.data_views &&
+    //     this.TemplateDetail.data_views.length > 0
+    //   ) {
+    //     this.TemplateDetail.data_views.map((item, index) => {
+    //       const dv = new DepartmentViewModel();
+    //       dv.clear();
+    //       dv.viewid = item.id_row;
+    //       dv.is_default = item.is_default;
+    //       _item.DefaultView.push(dv);
+    //     });
+    //   }
+    //   _item.TemplateID = TCinsert.templateid;
+    //   this.Create(_item, false);
+    // }
+    // // this.Create(_item, false);
   }
-  SudungMau(_item: TemplateCenterModel) {
+  SudungMau(_item: TemplateCenterModel,istemplatelist) {
     this.disabledBtn = true;
-    this.templatecenterService.Sudungmau(_item).subscribe((res) => {
+    this.templatecenterService.Sudungmau(_item,istemplatelist).subscribe((res) => {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
@@ -614,6 +630,7 @@ export class TemplateCenterComponent implements OnInit {
     this.templatecenterService.add_template_library(object).subscribe( res => {
       if(res && res.status ==1){
         this.layoutUtilsService.showInfo('thêm vào thư viện thành công');
+        this.isAddsuccess = true;
       }else{
         this.layoutUtilsService.showError(res.error.message);
       }

@@ -3854,7 +3854,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 if (notify_model != null)
                                                 {
                                                     Knoti = new APIModel.Models.Notify();
-                                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                                    //bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                                 }
                                             }
                                             catch

@@ -200,13 +200,13 @@
                                     (click)="Template.expandeduser = !Template.expandeduser">
                                     <div
                                         class="cu-template-center-main__row-controls-more cu-template-center-main__row-controls-more-no-border">
-                                        {{ 'template.' + (Template.expandeduser?'collapse':'seeall') | translate}}
+                                        {{ 'template.' + (!Template.expandeduser?'collapse':'seeall') | translate}}
                                     </div>
                                 </div>
                             </div>
 
                             <div class="cu-template-center-main__row"
-                                [ngClass]="{'cu-template-center-main__row-expanded': Template.expandeduser}">
+                                [ngClass]="{'cu-template-center-main__row-expanded': !Template.expandeduser}">
                                 <ng-container *ngFor="let item of Template.Data_Templates">
                                     <div
                                         class="cu-template-center-template cu-template-center-template__clickup getTemplateCenterTemplate(item)">
@@ -364,7 +364,7 @@
                     <div class="cu-template-center-selected-template__info-use-template"
                         (click)="NextStep();LoadInfoStep3()"> {{ 'template.usetemp' | translate }}
                     </div>
-                    <div *ngIf="TemplateDetail.istemplatelist"
+                    <div *ngIf="TemplateDetail.istemplatelist && !isAddsuccess"
                         class="cu-template-center-selected-template__info-use-template cu-template-center-selected-template__info-use-template-clickup "
                         (click)="add_template_library()">
                         {{ 'template.addtolib' | translate }}
@@ -528,7 +528,7 @@
                         {{infoStep3.name}}
                     </div>
                     <div class="cu-template-center__option-input ng-untouched ng-pristine ng-valid">
-                        <input id="titleTemplate" type="text" placeholder="{{infoStep3.inputname}}">
+                        <input id="titleTemplate" type="text" placeholder="{{ TemplateDetail.title }}">
                     </div>
                 </div>
 
