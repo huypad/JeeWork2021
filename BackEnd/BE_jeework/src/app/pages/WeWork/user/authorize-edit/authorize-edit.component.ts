@@ -118,7 +118,6 @@ export class AuthorizeEditComponent implements OnInit {
 			this.item.list_project.split(',').forEach(y=>{
 				x.push(+y);
 			})
-				console.log(x);
 			
 		}
 		this.itemForm = this.fb.group({

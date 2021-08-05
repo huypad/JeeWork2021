@@ -967,15 +967,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
-                    if (data.templatecenter != null)
-                    {
-                        data.templatecenter.ObjectTypesID = idc;
-                        if (!WeworkLiteController.init_template_center(cnn, data.templatecenter, loginData))
-                        {
-                            cnn.RollbackTransaction();
-                            return false;
-                        }
-                    }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();

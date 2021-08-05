@@ -136,7 +136,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                         and IdKH = {loginData.CustomerID} (admin_group) ";
                         if (!CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID))
                         {
-                            sql_space =  sql_space.Replace("(admin_group)", where_department);
+                            sql_space = sql_space.Replace("(admin_group)", where_department);
                             sql_folder = sql_folder.Replace("(admin_group)", where_department);
                             sql_project = sql_project.Replace("(admin_group)", "join we_project_team_user " +
                             "on we_project_team_user.id_project_team = p.id_row " +
@@ -148,7 +148,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             sql_space = sql_space.Replace("(admin_group)", "");
                             sql_folder = sql_folder.Replace("(admin_group)", "");
                             sql_project = sql_project.Replace("(admin_group)", " where ");
-                        }    
+                        }
                         dt_space = Conn.CreateDataTable(sql_space);
                         dt_project = Conn.CreateDataTable(sql_project);
                         dt_folder = Conn.CreateDataTable(sql_folder);
@@ -212,30 +212,30 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                             Is_Project = r2["is_project"],
                                                             type = 3,
                                                         },
-                                                folder = from r3 in dt_folder.AsEnumerable()
-                                                               where r3["ParentID"].ToString() == r["id_row"].ToString()
-                                                               select new
-                                                               {
-                                                                   RowID = r3["id_row"],
-                                                                   Title = r3["title"],
-                                                                   Icon = "flaticon-folder",
-                                                                   Priority = r3["priority"],
-                                                                   type = 2,
-                                                                   IsFolder = true,
-                                                                   list = from r4 in dt_project.AsEnumerable()
-                                                                          where r4["id_department"].ToString() == r3["id_row"].ToString()
-                                                                          select new
-                                                                          {
-                                                                              ID_Row = r4["id_row"],
-                                                                              Title = r4["Title"],
-                                                                              Locked = r4["Locked"],
-                                                                              Color = r4["Color"],
-                                                                              Status = r4["Status"],
-                                                                              Default_View = r4["Default_View"],
-                                                                              type = 3,
-                                                                              Is_Project = r4["is_project"],
-                                                                          },
-                                                               },
+                                                 folder = from r3 in dt_folder.AsEnumerable()
+                                                          where r3["ParentID"].ToString() == r["id_row"].ToString()
+                                                          select new
+                                                          {
+                                                              RowID = r3["id_row"],
+                                                              Title = r3["title"],
+                                                              Icon = "flaticon-folder",
+                                                              Priority = r3["priority"],
+                                                              type = 2,
+                                                              IsFolder = true,
+                                                              list = from r4 in dt_project.AsEnumerable()
+                                                                     where r4["id_department"].ToString() == r3["id_row"].ToString()
+                                                                     select new
+                                                                     {
+                                                                         ID_Row = r4["id_row"],
+                                                                         Title = r4["Title"],
+                                                                         Locked = r4["Locked"],
+                                                                         Color = r4["Color"],
+                                                                         Status = r4["Status"],
+                                                                         Default_View = r4["Default_View"],
+                                                                         type = 3,
+                                                                         Is_Project = r4["is_project"],
+                                                                     },
+                                                          },
                                              };
                             return JsonResultCommon.ThanhCong(new
                             {
@@ -265,7 +265,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
         }
         [HttpGet]
         [Route("GetRoleWeWork")]
-        public object GetRoleWeWork(string id_nv) 
+        public object GetRoleWeWork(string id_nv)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -279,7 +279,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                 using (DpsConnection Conn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";
-                    sqlq = "select *,  Iif( we_project_team_user.admin = 1 and id_user <> "+loginData.UserID+",1,0 ) as isuyquyen " +
+                    sqlq = "select *, Iif( we_project_team_user.admin = 1 and id_user <> " + loginData.UserID + ",1,0 ) as isuyquyen " +
                         " from we_project_team join we_project_team_user " +
                         "on we_project_team.id_row = we_project_team_user.id_project_team " +
                         "where we_project_team.disabled = 0 and we_project_team_user.disabled = 0 " +
@@ -292,31 +292,29 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     if (Conn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, Conn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
-                    if (dt.Rows.Count == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
-                    bool IsAdmin = CheckGroupAdministrator(loginData.Username,Conn,loginData.CustomerID);
-                    var data = from r in dt.AsEnumerable()
-                               select new
-                               {
-                                   id_row = r["id_row"],
-                                   id_user = r["title"],
-                                   admin = int.Parse(r["isuyquyen"].ToString()) == 1?0:r["admin"],
-                                   isuyquyen = r["isuyquyen"],
-                                   id_department = r["id_department"],
-                                   locked = r["locked"],
-                                   Roles = from u in ds.Tables[1].AsEnumerable()
-                                           where u["id_project_team"].ToString() == r["id_row"].ToString()
-                                           select new
-                                           {
-                                               id_row = u["id_row"],
-                                               id_project_team = u["id_project_team"],
-                                               id_role = u["id_role"],
-                                               admin = u["admin"],
-                                               member = u["member"],
-                                               keypermit = u["KeyPermit"],
-                                           },
-                               };
-                    var dataNew = new { dataRole = data, IsAdminGroup = IsAdmin};
+                    bool IsAdmin = CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID);
+                    var data = dt.Rows.Count > 0 ? from r in dt.AsEnumerable()
+                                                   select new
+                                                   {
+                                                       id_row = r["id_row"],
+                                                       id_user = r["title"],
+                                                       admin = int.Parse(r["isuyquyen"].ToString()) == 1 ? 0 : r["admin"],
+                                                       isuyquyen = r["isuyquyen"],
+                                                       id_department = r["id_department"],
+                                                       locked = r["locked"],
+                                                       Roles = from u in ds.Tables[1].AsEnumerable()
+                                                               where u["id_project_team"].ToString() == r["id_row"].ToString()
+                                                               select new
+                                                               {
+                                                                   id_row = u["id_row"],
+                                                                   id_project_team = u["id_project_team"],
+                                                                   id_role = u["id_role"],
+                                                                   admin = u["admin"],
+                                                                   member = u["member"],
+                                                                   keypermit = u["KeyPermit"],
+                                                               },
+                                                   } : null;
+                    var dataNew = new { dataRole = data, IsAdminGroup = IsAdmin };
                     return JsonResultCommon.ThanhCong(dataNew);
                 }
             }
@@ -347,60 +345,6 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                 return false;
             }
         }
-        //public static bool ListRole(long id_project)
-        //{
-        //    BaseModel<object> model = new BaseModel<object>();
-        //    PageModel pageModel = new PageModel();
-        //    ErrorModel error = new ErrorModel();
-        //    DataTable dt_role = new DataTable();
-        //    DataTable dt_checkuser = new DataTable();
-        //    string sqlq = "";
-        //    SqlConditions cond = new SqlConditions();
-        //    try
-        //    {
-        //        using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
-        //        {
-        //            cond.Add("id_project_team", id_project);
-        //            cond.Add("id_user", user);
-        //            cond.Add("admin", 1);
-        //            cond.Add("disabled", 0);
-        //            string sql_user = "";
-        //            #region Check user admin trong project trước
-        //            sql_user = "select * from we_project_team_user where (where)";
-        //            dt_checkuser = cnn.CreateDataTable(sql_user, "(where)", cond);
-        //            if (dt_checkuser.Rows.Count > 0) // thuộc project, có trong dự án và là admin
-        //                return true; // Đối với admin mặc định là có quyền
-        //            #endregion
-        //            #region Check user thành viên trong project
-        //            else
-        //            {
-        //                cond.Remove(cond["admin"]);
-        //                dt_checkuser = cnn.CreateDataTable(sql_user, "(where)", cond);
-        //                if (dt_checkuser.Rows.Count > 0) // có user trong dự án và là thành viên
-        //                {
-        //                    #region Check các quyền của project
-        //                    cond.Remove(cond["id_user"]);
-        //                    cond.Remove(cond["disabled"]);
-        //                    cond.Add("id_role", role);
-        //                    cond.Add("member", 1);
-        //                    sqlq = "select id_row, id_project_team, id_role, admin, member, customer from we_project_role where (where)";
-        //                    dt_role = cnn.CreateDataTable(sqlq, "(where)", cond);
-        //                    if (dt_role.Rows.Count > 0)
-        //                        return true;
-        //                    else
-        //                        return false;
-        //                    #endregion
-        //                }
-        //                #endregion
-        //                else // User không có trong dự án đó
-        //                    return false;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return false;
-        //    }
-        //}
+
     }
 }

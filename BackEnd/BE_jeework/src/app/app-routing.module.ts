@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
+import { AppCustomPreloader } from './app-routing-loader';
 import { AuthGuard } from './modules/auth/_services/auth.guard';
 
 export const routes: Routes = [
@@ -18,7 +19,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () =>
       import('./pages/layout.module').then((m) => m.LayoutModule),
+    data: { preload: true }
   },
+
   {
     path: "aux",
     outlet: 'auxName',
@@ -28,7 +31,14 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  // imports: [RouterModule.forRoot(routes)],
+  // exports: [RouterModule],
+  imports: [
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: AppCustomPreloader
+    })
+  ],
   exports: [RouterModule],
+  providers: [AppCustomPreloader]
 })
 export class AppRoutingModule { }

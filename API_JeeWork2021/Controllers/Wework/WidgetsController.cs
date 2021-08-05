@@ -674,7 +674,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     // Phân trang
                     int total = temp.Count();
                     if (total == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
+                        return JsonResultCommon.KhongCoDuLieu();
                     if (query.more)
                     {
                         query.page = 1;
@@ -872,7 +872,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
                     if (DataStaff == null)
-                        return JsonResultCommon.ThanhCong(new List<string>());
+                        return JsonResultCommon.KhongCoDuLieu();
                     List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
                     string listIDNV = string.Join(",", nvs);
 
@@ -1381,7 +1381,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     // Phân trang
                     int total = tmp.Rows.Count;
                     if (total == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
+                        return JsonResultCommon.KhongCoDuLieu();
                     if (query.more)
                     {
                         query.page = 1;

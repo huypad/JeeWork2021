@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="filter -menu-op cot-20">
-                    <div [matMenuTriggerFor]="department" matTooltip="{{'report.clicktoupdate'|translate}}" *ngIf="!DontChange">
+                    <div [matMenuTriggerFor]="department" *ngIf="!DontChange">
                         <em> {{filter_dept.title}} </em>
                         <i class="fas fa-chevron-down"></i>
                     </div>
@@ -289,7 +289,7 @@
                     <div class="card line-3">
                         <div class="card-header bg-white">
                             <b translate="report.baocaochitiettheothanhvien"></b>
-                            <span (click)="ExportExcel('member')" *ngIf="Staff.length != 0"
+                            <span (click)="ExportReportExcel('member')" *ngIf="Staff.length > 0"
                                 class="url -hover float-right export-excel"><i class="fas fa-download"></i> 
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
@@ -419,7 +419,7 @@
                                 <span translate="report.phongban">
                                 </span>
                             </b>
-                            <span (click)="ExportExcel('project')" *ngIf="ProjectTeam.length != 0"
+                            <span (click)="ExportReportExcel('project')" *ngIf="ProjectTeam.length != 0"
                                 class="url -hover float-right export-excel"> <i class="fas fa-download"></i> 
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
@@ -519,7 +519,7 @@
                                     <div class="col-6" style="padding-top: 20px;">
                                         <span style="font-size:24px;color:black" class="d-block">
                                             {{ReportToDepartments.num_work?ReportToDepartments.num_work:'0'}} </span>
-                                        <span class="d-block text-uppercase" translate="report.phongbanhoatdong"></span>
+                                        <span class="d-block text-uppercase" translate="report.congviectrongphongban"></span>
                                         <span>
                                             <b> {{ReportToDepartments.hoanthanh?ReportToDepartments.hoanthanh:'0'}}</b>
                                             <span class="text-lowercase" translate="filter.hoanthanh"></span> - 
@@ -536,7 +536,7 @@
                     <div class="card line-3">
                         <div class="card-header bg-white">
                             <b  translate="report.baocaotheodepartment"></b>
-                            <span (click)="ExportExcel('department')" *ngIf="Department.length != 0"
+                            <span (click)="ExportReportExcel('department')" *ngIf="Department.length != 0"
                                 class="url -hover float-right export-excel"> <i class="fas fa-download"></i> 
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
@@ -612,7 +612,7 @@
                 </div>
             </div>
         </div>
-
+<!-- 
         <div class="rp-title">
             <span class="text-uppercase" translate="report.baocaotheodanhsachmuctieu">
             </span>
@@ -691,7 +691,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="rp-title">
             <span class="text-uppercase" translate="report.cacbaocaochuyensaukhac"></span>

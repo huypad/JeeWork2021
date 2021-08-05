@@ -37,7 +37,7 @@ namespace JeeWork_Core2021.Classes
             Timer5Minute = new System.Timers.Timer(300000);
             Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
             //10p chạy 1 lần - 600000
-            TimerSendNotify = new System.Timers.Timer(600000);
+            TimerSendNotify = new System.Timers.Timer(60000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendNotify_Elapsed);
             //60p chạy 1 lần
             TimerAutoUpdate = new System.Timers.Timer(3600000);
@@ -128,7 +128,7 @@ namespace JeeWork_Core2021.Classes
                         }
                         catch (Exception ex)
                         {
-                            continue;
+                            //continue;
                         }
                     }
                 }

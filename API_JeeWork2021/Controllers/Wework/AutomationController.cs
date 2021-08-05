@@ -656,22 +656,6 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-        
-        
-        private DataTable dtChildren(string array_status, DpsConnection cnn)
-        {
-            DataTable result = new DataTable();
-            string sqlq = "select id_row, statusname, isdefault, color, position, isfinal, isdeadline, istodo " +
-                "from we_status_list " +
-                "where Disabled = 0 and isdefault = 1 and id_row in (" + array_status + ")" +
-                "order by position, statusname";
-            result = cnn.CreateDataTable(sqlq);
-            if (result.Rows.Count > 0)
-
-                return result;
-            else
-                return new DataTable();
-        }
         private object auto_get_action(long autoid, UserJWT loginData, List<AccUsernameModel> DataAccount)
         {
             List<object> result = new List<object>();

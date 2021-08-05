@@ -1,21 +1,40 @@
-import { CommentDTO, QueryFilterComment, ReturnFilterComment } from './../jee-comment.model';
-import { BehaviorSubject, interval, of, Subject } from 'rxjs';
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, EventEmitter, Output, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { JeeCommentService } from '../jee-comment.service';
-import { catchError, finalize, takeUntil, tap, share, switchMap } from 'rxjs/operators';
+import {
+  CommentDTO,
+  QueryFilterComment,
+  ReturnFilterComment,
+} from "./../jee-comment.model";
+import { BehaviorSubject, interval, of, Subject } from "rxjs";
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  EventEmitter,
+  Output,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from "@angular/core";
+import { JeeCommentService } from "../jee-comment.service";
+import {
+  catchError,
+  finalize,
+  takeUntil,
+  tap,
+  share,
+  switchMap,
+} from "rxjs/operators";
 
 @Component({
-  selector: 'jeecomment-post-comment-content',
-  templateUrl: 'post-comment-content.component.html',
-  styleUrls: ['post-comment-content.component.scss'],
+  selector: "jeecomment-post-comment-content",
+  templateUrl: "post-comment-content.component.html",
+  styleUrls: ["post-comment-content.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-
 })
-
 export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
-
   private readonly onDestroy = new Subject<void>();
-  private _errorMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>("");
   private _isLoading$ = new BehaviorSubject<boolean>(false);
   get isLoading$() {
     return this._isLoading$.asObservable();
@@ -26,29 +45,41 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
 
   isFirstTime: boolean = true;
   showSpinner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  showEnterComment$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  ClickShowReply$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showEnterComment$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  );
+  ClickShowReply$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  );
   isFocus$$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   ShowFilter$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  ShowSpinnerViewMore$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  ShowSpinnerViewMore$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  );
 
   //filter
   filterViewLengthComment: number = 10;
-  filterDate: Date = new Date();;
+  filterDate: Date = new Date();
 
   @Input() inputLstObjectID: string[];
   public lstObjectID: string[] = [];
-  objectID: string = '';
-  commentID: string = '';
-  replyCommentID: string = '';
+  objectID: string = "";
+  commentID: string = "";
+  replyCommentID: string = "";
   @Input() comment?: CommentDTO;
   @Input() showonpopup: boolean = false;
   @Input() showCommentDefault?: boolean;
-  @Input() isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  @Input() isDeteachChange$?: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
   @Output() isFocus = new EventEmitter<any>();
   @Output() changeValue = new EventEmitter<any>();
-  isDeteachChangeComment$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  constructor(public service: JeeCommentService, public cd: ChangeDetectorRef, private elementRef: ElementRef) { }
+  isDeteachChangeComment$?: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  constructor(
+    public service: JeeCommentService,
+    public cd: ChangeDetectorRef,
+    private elementRef: ElementRef
+  ) {}
 
   ngOnInit() {
     if (this.isDeteachChange$) {
@@ -60,7 +91,8 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
               this.isDeteachChange$.next(false);
               this.isDeteachChangeComment$.next(true);
             }
-          }))
+          })
+        )
         .subscribe();
     }
     if (this.inputLstObjectID.length == 1) {
@@ -94,12 +126,14 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
   }
 
   showEnterComment() {
-    this.ClickShowReply$.next(true);
-    if (this.replyCommentID === '') {
-      this.showEnterComment$.next(true);
+    if (this.inputLstObjectID.length <= 1) {
+      this.ClickShowReply$.next(true);
+      if (this.replyCommentID === "") {
+        this.showEnterComment$.next(true);
+      }
+      this.isFocus.emit(true);
+      this.clickButtonShowReply();
     }
-    this.isFocus.emit(true);
-    this.clickButtonShowReply();
   }
 
   clickButtonShowReply() {
@@ -112,47 +146,57 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
       } else {
         this.showSpinner$.next(false);
         this.isFirstTime = false;
-      };
+      }
     }
   }
 
   showFullComment() {
-    this.service.showFullComment(this.objectID, this.commentID, this.filter()).pipe(
-      tap((CommentDTO: CommentDTO) => {
-        if (this.isFirstTime) {
-          this.comment.Replies = CommentDTO.Replies;
-          if (this.comment.ViewLengthComment < CommentDTO.TotalLengthComment) {
-            this.ShowFilter$.next(true);
+    this.service
+      .showFullComment(this.objectID, this.commentID, this.filter())
+      .pipe(
+        tap((CommentDTO: CommentDTO) => {
+          if (this.isFirstTime) {
+            this.comment.Replies = CommentDTO.Replies;
+            if (
+              this.comment.ViewLengthComment < CommentDTO.TotalLengthComment
+            ) {
+              this.ShowFilter$.next(true);
+            } else {
+              this.ShowFilter$.next(false);
+            }
           } else {
-            this.ShowFilter$.next(false);
+            this.pushItemIndex(this.comment.Replies, CommentDTO.Replies);
+            this.comment.ViewLengthComment = CommentDTO.ViewLengthComment;
+            this.comment.TotalLengthComment = CommentDTO.TotalLengthComment;
           }
-        } else {
-          this.pushItemIndex(this.comment.Replies, CommentDTO.Replies);
-          this.comment.ViewLengthComment = CommentDTO.ViewLengthComment;
-          this.comment.TotalLengthComment = CommentDTO.TotalLengthComment;
-        }
-      }),
-      catchError(err => {
-        console.log(err);
-        this._errorMessage$.next(err);
-        return of();
-      }),
-      finalize(() => {
-        if (this.isFirstTime) {
-          this.showSpinner$.next(false);
-          this.isFirstTime = false;
-        }
-        this._isLoading$.next(false);
-        this.cd.detectChanges();
-      }),
-      takeUntil(this.onDestroy),
-      share())
+        }),
+        catchError((err) => {
+          console.log(err);
+          this._errorMessage$.next(err);
+          return of();
+        }),
+        finalize(() => {
+          if (this.isFirstTime) {
+            this.showSpinner$.next(false);
+            this.isFirstTime = false;
+          }
+          this._isLoading$.next(false);
+          this.cd.detectChanges();
+        }),
+        takeUntil(this.onDestroy),
+        share()
+      )
       .subscribe();
   }
 
-  pushItemIndex(lstCommentDTO_current: CommentDTO[], lstCommentDTO_new: CommentDTO[]) {
+  pushItemIndex(
+    lstCommentDTO_current: CommentDTO[],
+    lstCommentDTO_new: CommentDTO[]
+  ) {
     lstCommentDTO_new.forEach((comment, pos) => {
-      const index = lstCommentDTO_current.findIndex(item => item.Id === comment.Id);
+      const index = lstCommentDTO_current.findIndex(
+        (item) => item.Id === comment.Id
+      );
       if (index === -1) {
         lstCommentDTO_current.splice(pos, 0, comment);
       }
@@ -183,18 +227,18 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
     }, 750);
   }
 
-  @ViewChild('videoPlayer') videoplayer: ElementRef;
+  @ViewChild("videoPlayer") videoplayer: ElementRef;
   toggleVideo() {
     this.videoplayer.nativeElement.play();
   }
 
   isScrolledViewElement() {
     const rect = this.elementRef.nativeElement.getBoundingClientRect();
-    const isVisible = rect.top < window.innerHeight && rect.bottom >= 0
+    const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
     return isVisible;
   }
 
-  ChangeValue(){
+  ChangeValue() {
     this.changeValue.emit(true);
   }
 }

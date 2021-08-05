@@ -1,32 +1,54 @@
-import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
-import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import { MessageType, LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { filterEditComponent } from './../../../filter/filter-edit/filter-edit.component';
-import { workAddFollowersComponent } from './../../../work/work-add-followers/work-add-followers.component';
-import { WorkEditDialogComponent } from './../../../work/work-edit-dialog/work-edit-dialog.component';
-import { WorkAssignedComponent } from './../../../work/work-assigned/work-assigned.component';
-import { DuplicateWorkComponent } from './../../../work/work-duplicate/work-duplicate.component';
-import { DuplicateTaskNewComponent } from './../duplicate-task-new/duplicate-task-new.component';
-import { WorkListNewDetailComponent } from './../work-list-new-detail/work-list-new-detail.component';
-import { DialogSelectdayComponent } from './../../../report/dialog-selectday/dialog-selectday.component';
-import { WorkModel, UserInfoModel, UpdateWorkModel, WorkDuplicateModel, FilterModel } from './../../../work/work.model';
-import { SelectionModel } from '@angular/cdk/collections';
-import { WeWorkService } from './../../../services/wework.services';
-import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { Router, ActivatedRoute } from '@angular/router';
-import { WorkService } from './../../../work/work.service';
-import { ProjectsTeamService } from './../../Services/department-and-project.service';
-import { DOCUMENT, DatePipe } from '@angular/common';
-import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
-import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
-import * as moment from 'moment';
-import { of, ReplaySubject } from 'rxjs';
+import { SubheaderService } from "./../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service";
+import { TokenStorage } from "./../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
+import { DanhMucChungService } from "./../../../../../_metronic/jeework_old/core/services/danhmuc.service";
+import { MenuPhanQuyenServices } from "./../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
+import {
+  MessageType,
+  LayoutUtilsService,
+} from "./../../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { QueryParamsModelNew } from "./../../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
+import { filterEditComponent } from "./../../../filter/filter-edit/filter-edit.component";
+import { workAddFollowersComponent } from "./../../../work/work-add-followers/work-add-followers.component";
+import { WorkEditDialogComponent } from "./../../../work/work-edit-dialog/work-edit-dialog.component";
+import { WorkAssignedComponent } from "./../../../work/work-assigned/work-assigned.component";
+import { DuplicateWorkComponent } from "./../../../work/work-duplicate/work-duplicate.component";
+import { DuplicateTaskNewComponent } from "./../duplicate-task-new/duplicate-task-new.component";
+import { WorkListNewDetailComponent } from "./../work-list-new-detail/work-list-new-detail.component";
+import { DialogSelectdayComponent } from "./../../../report/dialog-selectday/dialog-selectday.component";
+import {
+  WorkModel,
+  UserInfoModel,
+  UpdateWorkModel,
+  WorkDuplicateModel,
+  FilterModel,
+} from "./../../../work/work.model";
+import { SelectionModel } from "@angular/cdk/collections";
+import { WeWorkService } from "./../../../services/wework.services";
+import { TranslateService } from "@ngx-translate/core";
+import { FormBuilder } from "@angular/forms";
+import { MatDialog } from "@angular/material/dialog";
+import { Router, ActivatedRoute } from "@angular/router";
+import { WorkService } from "./../../../work/work.service";
+import { ProjectsTeamService } from "./../../Services/department-and-project.service";
+import { DOCUMENT, DatePipe } from "@angular/common";
+import { DrapDropItem, ColumnWorkModel } from "./../drap-drop-item.model";
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  CdkDropList,
+  CdkDragStart,
+} from "@angular/cdk/drag-drop";
+import {
+  Component,
+  OnInit,
+  Input,
+  Inject,
+  ChangeDetectorRef,
+  ViewChild,
+  OnChanges,
+} from "@angular/core";
+import * as moment from "moment";
+import { of, ReplaySubject } from "rxjs";
 import {
   catchError,
   finalize,
@@ -36,12 +58,11 @@ import {
   switchMap,
 } from "rxjs/operators";
 @Component({
-  selector: 'kt-list-task-cu-2',
-  templateUrl: './list-task-cu-2.component.html',
-  styleUrls: ['./list-task-cu-2.component.scss']
+  selector: "kt-list-task-cu-2",
+  templateUrl: "./list-task-cu-2.component.html",
+  styleUrls: ["./list-task-cu-2.component.scss"],
 })
 export class ListTaskCUComponent2 implements OnInit, OnChanges {
-
   @Input() ID_Project: number = 1;
   @Input() ID_NV: number = 0;
   @Input() selectedTab: number = 0;
@@ -65,7 +86,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   filter_subtask: any = [];
   danhsachboloc: any = [];
   Assign_me = -1;
-  keyword: string = '';
+  keyword: string = "";
   // view setting
   tasklocation = true;
   showsubtask = true;
@@ -86,14 +107,16 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   ProjectTeam: any = {};
   IsAdminGroup = false;
   private readonly componentName: string = "kt-task_";
-  public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+  public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<
+    any[]
+  >(1);
   filterDay = {
-    startDate: new Date('09/01/2020'),
-    endDate: new Date('09/30/2020'),
-  }
+    startDate: new Date("09/01/2020"),
+    endDate: new Date("09/30/2020"),
+  };
   public column_sort: any = [];
   constructor(
-    @Inject(DOCUMENT) private document: Document,// multi level
+    @Inject(DOCUMENT) private document: Document, // multi level
     private _service: ProjectsTeamService,
     private WorkService: WorkService,
     private router: Router,
@@ -122,7 +145,9 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   formattedDate: any;
   ngOnInit() {
     // get filter groupby
-    this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
+    this.filter_groupby = this.getMystaff
+      ? this.listFilter_Groupby[1]
+      : this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
 
     var today = new Date();
@@ -133,24 +158,21 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     };
     // this.send_date.setMonth(this.send_date.getMonth() + 3);
     // this.formattedDate = this.send_date.toISOString().slice(0, 10);
-    // console.log(this.formattedDate);
     this.column_sort = this.sortField[0];
-    this.route.params.subscribe(res => {
+    this.route.params.subscribe((res) => {
       if (this.selectedTab == 2) {
-        if (res && res.id)
-          this.idFilter = res.id
+        if (res && res.id) this.idFilter = res.id;
       }
       this.DanhsSachCongViec = [];
       this.LoadSampleList();
     });
     this.selection = new SelectionModel<WorkModel>(true, []);
 
-    this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
+    this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
       if (res && res.status == 1) {
         this.list_role = res.data.dataRole;
         this.IsAdminGroup = res.data.IsAdminGroup;
       }
-
     });
 
     this.GetField();
@@ -159,24 +181,24 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     this.LoadListAccount();
     this.LoadDetailProject();
 
-    this.weworkService.ListAllStatusDynamic().subscribe(res => {
+    this.weworkService.ListAllStatusDynamic().subscribe((res) => {
       if (res && res.status === 1) {
         this.ListAllStatusDynamic = res.data;
         this.changeDetectorRefs.detectChanges();
-      };
-    })
+      }
+    });
   }
 
   ngOnChanges() {
     if (this.detailWork > 0) {
-      this._service.WorkDetail(this.detailWork).subscribe(res => {
+      this._service.WorkDetail(this.detailWork).subscribe((res) => {
         if (res && res.status == 1) {
           const item = res.data;
 
           const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-            width: '90vw',
-            height: '90vh',
-            data: item
+            width: "90vw",
+            height: "90vh",
+            data: item,
           });
 
           dialogRef.afterClosed().subscribe(() => {
@@ -189,19 +211,19 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   DanhsSachCongViec: any = [];
   LoadSampleList() {
-    this.clearList()
+    this.clearList();
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration2(),
-      '',
-      '',
+      "",
+      "",
       0,
       50,
       true
     );
     const queryParams1 = new QueryParamsModelNew(
       this.filterConfigurationMywork(),
-      '',
-      '',
+      "",
+      "",
       0,
       50,
       true
@@ -210,7 +232,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     // this.DanhsSachCongViec = [];
     if (!this.getMystaff) {
       if (this.selectedTab == 2) {
-        this._service.ListByFilter(queryParams).subscribe(res => {
+        this._service.ListByFilter(queryParams).subscribe((res) => {
           this.layoutUtilsService.OffWaitingDiv();
           if (res && res.status == 1) {
             this.DanhsSachCongViec = res.data;
@@ -218,20 +240,20 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
             this.changeDetectorRefs.detectChanges();
             // this.ProjectTeam = res.data
           }
-        })
+        });
       } else {
-        this._service.MyListNew(queryParams1).subscribe(res => {
+        this._service.MyListNew(queryParams1).subscribe((res) => {
           this.layoutUtilsService.OffWaitingDiv();
           if (res && res.status == 1) {
             this.DanhsSachCongViec = res.data;
             this.filterDanhSach();
-            this.DanhsSachCongViec.forEach(element => {
+            this.DanhsSachCongViec.forEach((element) => {
               this.getChildTask(element.id);
             });
             this.changeDetectorRefs.detectChanges();
             // this.ProjectTeam = res.data
           }
-        })
+        });
       }
     } else {
       // this._service.MyListNew(queryParams1).subscribe(res => {
@@ -246,7 +268,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
       //     // this.ProjectTeam = res.data
       //   }
       // })
-      this._service.ListByManageCU(queryParams1).subscribe(res => {
+      this._service.ListByManageCU(queryParams1).subscribe((res) => {
         this.layoutUtilsService.OffWaitingDiv();
         if (res && res.status == 1) {
           this.DanhsSachCongViec = res.data;
@@ -254,19 +276,19 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
           this.changeDetectorRefs.detectChanges();
           // this.ProjectTeam = res.data
         }
-      })
+      });
     }
   }
 
   unique(arr) {
-    var formArr = arr.sort()
-    var newArr = [formArr[0]]
+    var formArr = arr.sort();
+    var newArr = [formArr[0]];
     for (let i = 1; i < formArr.length; i++) {
       if (formArr[i] !== formArr[i - 1]) {
-        newArr.push(formArr[i])
+        newArr.push(formArr[i]);
       }
     }
-    return newArr
+    return newArr;
   }
 
   clearList() {
@@ -274,15 +296,15 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
 
   LoadDetailProject() {
-    this._service.DeptDetail(this.ID_Project).subscribe(res => {
+    this._service.DeptDetail(this.ID_Project).subscribe((res) => {
       if (res && res.status == 1) {
-        this.ProjectTeam = res.data
+        this.ProjectTeam = res.data;
       }
-    })
+    });
   }
 
   LoadFilter() {
-    this.WorkService.Filter().subscribe(res => {
+    this.WorkService.Filter().subscribe((res) => {
       if (res && res.status === 1) {
         this.danhsachboloc = res.data;
         this.changeDetectorRefs.detectChanges();
@@ -305,87 +327,95 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   CheckRoles(roleID: number, id_project_team) {
     if (this.IsAdminGroup) return true;
-    var x = this.list_role.find(x => x.id_row == id_project_team);
-    if (x) {
-      if (x.admin == true) {
-        return true;
-      }
-      else {
-        if (roleID == 3 || roleID == 4) {
-          if (x.isuyquyen)
-            return true;
-        }
-        if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
-          if (x.Roles.find((r) => r.id_role == 15)) return false;
-        }
-        if (roleID == 10) {
-          if (x.Roles.find((r) => r.id_role == 16)) return false;
-        }
-        if (roleID == 4 || roleID == 14) {
-          if (x.Roles.find((r) => r.id_role == 17)) return false;
-        }
-        var r = x.Roles.find(r => r.id_role == roleID);
-        if (r) {
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == id_project_team);
+      if (x) {
+        if (x.admin == true) {
           return true;
+        } else {
+          if (roleID == 3 || roleID == 4) {
+            if (x.isuyquyen) return true;
+          }
+          if (
+            roleID == 7 ||
+            roleID == 9 ||
+            roleID == 11 ||
+            roleID == 12 ||
+            roleID == 13
+          ) {
+            if (x.Roles.find((r) => r.id_role == 15)) return false;
+          }
+          if (roleID == 10) {
+            if (x.Roles.find((r) => r.id_role == 16)) return false;
+          }
+          if (roleID == 4 || roleID == 14) {
+            if (x.Roles.find((r) => r.id_role == 17)) return false;
+          }
+          var r = x.Roles.find((r) => r.id_role == roleID);
+          if (r) {
+            return true;
+          } else {
+            return false;
+          }
         }
-        else {
-          return false;
-        }
+      } else {
+        return false;
       }
     }
-    else {
-      return false;
-    }
+    return false;
   }
   CheckRoleskeypermit(key, id_project_team) {
     if (this.IsAdminGroup) return true;
-    var x = this.list_role.find(x => x.id_row == id_project_team);
-    if (x) {
-      if (x.admin == true) {
-        return true;
-      }
-      else {
-        if (key == 'id_nv') {
-          if (x.isuyquyen)
-            return true;
-        }
-
-        if (key == "title" || key == "description" || key == "status" || key == "checklist" || key == "delete") {
-          if (x.Roles.find((r) => r.id_role == 15)) return false;
-        }
-        if (key == "deadline") {
-          if (x.Roles.find((r) => r.id_role == 16)) return false;
-        }
-        if (key == "id_nv" || key == "assign") {
-          if (x.Roles.find((r) => r.id_role == 17)) return false;
-        }
-
-        var r = x.Roles.find(r => r.keypermit == key);
-        if (r) {
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == id_project_team);
+      if (x) {
+        if (x.admin == true) {
           return true;
+        } else {
+          if (key == "id_nv") {
+            if (x.isuyquyen) return true;
+          }
+
+          if (
+            key == "title" ||
+            key == "description" ||
+            key == "status" ||
+            key == "checklist" ||
+            key == "delete"
+          ) {
+            if (x.Roles.find((r) => r.id_role == 15)) return false;
+          }
+          if (key == "deadline") {
+            if (x.Roles.find((r) => r.id_role == 16)) return false;
+          }
+          if (key == "id_nv" || key == "assign") {
+            if (x.Roles.find((r) => r.id_role == 17)) return false;
+          }
+
+          var r = x.Roles.find((r) => r.keypermit == key);
+          if (r) {
+            return true;
+          } else {
+            return false;
+          }
         }
-        else {
-          return false;
-        }
+      } else {
+        return false;
       }
     }
-    else {
-      return false;
-    }
+    return false;
   }
   /** SELECTION */
   CheckedNode(check: any, arr_model: any) {
-    let checked = this.selection.selected.find(x => x.id_row === arr_model.id_row);
+    let checked = this.selection.selected.find(
+      (x) => x.id_row === arr_model.id_row
+    );
     const index = this.selection.selected.indexOf(arr_model, 0);
-    if (!checked && check.checked)
-      this.selection.selected.push(arr_model);
-    else
-      this.selection.selected.splice(index, 1);
+    if (!checked && check.checked) this.selection.selected.push(arr_model);
+    else this.selection.selected.splice(index, 1);
   }
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-
-  }
+  masterToggle() {}
 
   SelectedField(item) {
     this.column_sort = item;
@@ -395,13 +425,13 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   filterConfiguration(): any {
     const filter: any = {};
     filter.id_project_team = this.ID_Project;
-    filter.groupby = 'status';//assignee
+    filter.groupby = "status"; //assignee
     filter.keyword = this.keyword;
     return filter;
   }
   filterConfiguration2(): any {
     const filter: any = {};
-    filter.groupby = this.filter_groupby.value;//assignee
+    filter.groupby = this.filter_groupby.value; //assignee
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = 1;
@@ -413,16 +443,15 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   filterConfigurationMywork(): any {
     const filter: any = {};
-    filter.groupby = this.filter_groupby.value;//assignee
+    filter.groupby = this.filter_groupby.value; //assignee
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = 1;
     filter.workother = this.viewTaskOrder;
-    filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
-    filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
+    filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
+    filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
     filter.collect_by = this.column_sort.value;
-    if (this.getMystaff)
-      filter.isManage = true;
+    if (this.getMystaff) filter.isManage = true;
     if (this.selectedTab == 3) {
       filter.following = true;
     }
@@ -434,64 +463,59 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   reloadData = false;
   protected filterDanhSach() {
-    this.filteredDanhSachCongViec.next(
-      this.DanhsSachCongViec
-    );
+    this.filteredDanhSachCongViec.next(this.DanhsSachCongViec);
   }
 
   ChangeData() {
-    this.LoadSampleList()
+    this.LoadSampleList();
   }
   getColorStatus(id_project_team, val) {
-    var item = this.ListAllStatusDynamic.find(x => +x.id_row == id_project_team);
+    var item = this.ListAllStatusDynamic.find(
+      (x) => +x.id_row == id_project_team
+    );
     var index;
     if (item) {
-      index = item.status.find(x => x.id_row == val);
+      index = item.status.find((x) => x.id_row == val);
     }
     if (index) {
       return index.color;
-    }
-    else
-      return 'gray';
+    } else return "gray";
   }
   getTasklocation(id_project_team) {
-    var item = this.ListAllStatusDynamic.find(x => +x.id_row == id_project_team);
+    var item = this.ListAllStatusDynamic.find(
+      (x) => +x.id_row == id_project_team
+    );
     if (item) {
       return item.title;
-    }
-    else
-      return '';
+    } else return "";
   }
 
   getListStatus(team) {
     if (this.ListAllStatusDynamic) {
-      var item = this.ListAllStatusDynamic.find(x => +x.id_row == team);
-      if (item)
-        return item.status;
+      var item = this.ListAllStatusDynamic.find((x) => +x.id_row == team);
+      if (item) return item.status;
     }
     return [];
   }
 
   listField: any = [];
   GetField() {
-    const queryParams = '?id_project_team=0&isnewfield=false';
-    this.weworkService.GetListField(queryParams).subscribe(res => {
+    const queryParams = "?id_project_team=0&isnewfield=false";
+    this.weworkService.GetListField(queryParams).subscribe((res) => {
       if (res && res.status === 1) {
         this.listField = res.data;
         //xóa title khỏi cột
 
-        var colDelete = ['title', 'id_row', 'id_parent'];
-        colDelete.forEach(element => {
-          var indextt = this.listField.findIndex(x => x.fieldname == element);
-          if (indextt >= 0)
-            this.listField.splice(indextt, 1)
+        var colDelete = ["title", "id_row", "id_parent"];
+        colDelete.forEach((element) => {
+          var indextt = this.listField.findIndex((x) => x.fieldname == element);
+          if (indextt >= 0) this.listField.splice(indextt, 1);
         });
         this.changeDetectorRefs.detectChanges();
-      }
-      else {
+      } else {
         this.layoutUtilsService.showInfo(res.error.message);
       }
-    })
+    });
   }
 
   isItemFinal(id) {
@@ -500,7 +524,6 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     }
     return false;
   }
-
 
   AddnewTask(val, task = false) {
     if (task) {
@@ -513,17 +536,16 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
   editTitle(val) {
     this.isEdittitle = val;
-    var ele = (<HTMLInputElement>document.getElementById("task" + val));
+    var ele = <HTMLInputElement>document.getElementById("task" + val);
     setTimeout(() => {
       ele.focus();
     }, 50);
   }
   focusOutFunction(node) {
     this.isEdittitle = -1;
-    this.UpdateByKey(node, 'title', node.title)
+    this.UpdateByKey(node, "title", node.title);
   }
-  focusFunction(val) {
-  }
+  focusFunction(val) {}
   CloseAddnewTask(val) {
     if (val) {
       this.addNodeitem = 0;
@@ -531,7 +553,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     }
   }
 
-  taskinsert = new WorkModel()
+  taskinsert = new WorkModel();
   AddTask(item) {
     // WorkModel
 
@@ -545,20 +567,25 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
       task.Users.push(assign);
     }
     const start = moment();
-    if (moment(this.selectedDate.startDate).format('MM/DD/YYYY') != "Invalid date")
-      task.start_date = moment(this.selectedDate.startDate).format('MM/DD/YYYY');
-    if (moment(this.selectedDate.endDate).format('MM/DD/YYYY') != "Invalid date") {
-      task.end_date = moment(this.selectedDate.endDate).format('MM/DD/YYYY');
-      task.deadline = moment(this.selectedDate.endDate).format('MM/DD/YYYY');
+    if (
+      moment(this.selectedDate.startDate).format("MM/DD/YYYY") != "Invalid date"
+    )
+      task.start_date = moment(this.selectedDate.startDate).format(
+        "MM/DD/YYYY"
+      );
+    if (
+      moment(this.selectedDate.endDate).format("MM/DD/YYYY") != "Invalid date"
+    ) {
+      task.end_date = moment(this.selectedDate.endDate).format("MM/DD/YYYY");
+      task.deadline = moment(this.selectedDate.endDate).format("MM/DD/YYYY");
     }
 
-    this._service.InsertTask(task).subscribe(res => {
+    this._service.InsertTask(task).subscribe((res) => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
         this.LoadSampleList();
       }
-    })
-
+    });
   }
 
   AssignInsert(assign) {
@@ -570,15 +597,17 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
 
   bindStatus(id_project_team, val) {
-    var item = this.ListAllStatusDynamic.find(x => +x.id_row == id_project_team);
+    var item = this.ListAllStatusDynamic.find(
+      (x) => +x.id_row == id_project_team
+    );
     var index;
     if (item) {
-      index = item.status.find(x => x.id_row == val);
+      index = item.status.find((x) => x.id_row == val);
     }
     if (index) {
       return index.statusname;
     }
-    return this.translate.instant('GeneralKey.chuagantinhtrang');
+    return this.translate.instant("GeneralKey.chuagantinhtrang");
   }
 
   clickOutside() {
@@ -588,7 +617,6 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
   cot = 1;
   Themcot() {
-
     this.ListColumns.push({
       fieldname: "cot" + this.cot,
       isbatbuoc: true,
@@ -596,27 +624,27 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
       isvisible: false,
       position: this.ListColumns.length,
       title: "Cột" + this.cot,
-      type: null
-    })
+      type: null,
+    });
     this.cot++;
-
   }
   Assign: any = [];
   // Assign
-  ItemSelected(val: any, task) { // chọn item
+  ItemSelected(val: any, task) {
+    // chọn item
     if (val.id_user) {
       val.id_nv = val.id_user;
     }
-    this.UpdateByKey(task, 'assign', val.id_nv);
+    this.UpdateByKey(task, "assign", val.id_nv);
   }
   listUser: any[];
   LoadListAccount() {
     const filter: any = {};
-    this.weworkService.list_account(filter).subscribe(res => {
+    this.weworkService.list_account(filter).subscribe((res) => {
       if (res && res.status === 1) {
         this.listUser = res.data;
         this.changeDetectorRefs.detectChanges();
-      };
+      }
       this.options_assign = this.getOptions_Assign();
     });
   }
@@ -627,13 +655,13 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   LoadUserByProject(id_project_team) {
     const filter: any = {};
     filter.id_project_team = id_project_team;
-    this.weworkService.list_account(filter).subscribe(res => {
+    this.weworkService.list_account(filter).subscribe((res) => {
       if (res && res.status === 1) {
         this.listUser = res.data;
         this.options_assign = this.getOptions_Assign();
         // this.setUpDropSearchNhanVien();
         this.changeDetectorRefs.detectChanges();
-      };
+      }
     });
   }
   stopPropagation(event) {
@@ -642,39 +670,39 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   getOptions_Assign() {
     var options_assign: any = {
       showSearch: true,
-      keyword: '',
+      keyword: "",
       data: this.listUser,
     };
     return options_assign;
   }
 
   selectedDate: any = {
-    startDate: '',
-    endDate: '',
+    startDate: "",
+    endDate: "",
   };
   Selectdate() {
     const dialogRef = this.dialog.open(DialogSelectdayComponent, {
-      width: '500px',
-      data: this.selectedDate
+      width: "500px",
+      data: this.selectedDate,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result != undefined) {
-        this.selectedDate.startDate = new Date(result.startDate)
-        this.selectedDate.endDate = new Date(result.endDate)
+        this.selectedDate.startDate = new Date(result.startDate);
+        this.selectedDate.endDate = new Date(result.endDate);
       }
     });
   }
   SelectFilterDate() {
     const dialogRef = this.dialog.open(DialogSelectdayComponent, {
-      width: '500px',
-      data: this.filterDay
+      width: "500px",
+      data: this.filterDay,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result != undefined) {
-        this.filterDay.startDate = new Date(result.startDate)
-        this.filterDay.endDate = new Date(result.endDate)
+        this.filterDay.startDate = new Date(result.startDate);
+        this.filterDay.endDate = new Date(result.endDate);
         this.LoadSampleList();
       }
     });
@@ -682,12 +710,12 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   ViewDetai(item) {
     // this.router.navigate(['', { outlets: { auxName: 'aux/task/'+item.id_row }, }]);
     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-      width: '90vw',
-      height: '90vh',
-      data: item
+      width: "90vw",
+      height: "90vh",
+      data: item,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       this.LoadSampleList();
       if (result != undefined) {
       }
@@ -697,28 +725,33 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   f_convertDate(v: any) {
     if (v != "" && v != undefined) {
       let a = new Date(v);
-      return ("0" + (a.getDate())).slice(-2) + "/" + ("0" + (a.getMonth() + 1)).slice(-2) + "/" + a.getFullYear();
+      return (
+        ("0" + a.getDate()).slice(-2) +
+        "/" +
+        ("0" + (a.getMonth() + 1)).slice(-2) +
+        "/" +
+        a.getFullYear()
+      );
     }
   }
   viewdate() {
-    if (this.selectedDate.startDate == '' && this.selectedDate.endDate == '') {
-      return 'Set due date'
-    }
-    else {
+    if (this.selectedDate.startDate == "" && this.selectedDate.endDate == "") {
+      return "Set due date";
+    } else {
       var start = this.f_convertDate(this.selectedDate.startDate);
       var end = this.f_convertDate(this.selectedDate.endDate);
-      return start + ' - ' + end
+      return start + " - " + end;
     }
   }
 
   listFilter_Groupby = [
     {
-      title: 'Project',
-      value: 'project'
+      title: "Project",
+      value: "project",
     },
     {
-      title: 'Assignee',
-      value: 'member'
+      title: "Assignee",
+      value: "member",
     },
     // {
     //   title: 'Priority',
@@ -732,20 +765,19 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   listFilter_Subtask = [
     {
-      title: 'showtask',
-      showvalue: 'showtask',
-      value: 'hide',
+      title: "showtask",
+      showvalue: "showtask",
+      value: "hide",
     },
     {
-      title: 'expandall',
-      showvalue: 'expandall',
-      value: 'show',
+      title: "expandall",
+      showvalue: "expandall",
+      value: "show",
     },
-  ]
+  ];
 
   ExpandNode(node) {
-    if (this.filter_subtask.value == 'show')
-      return;
+    if (this.filter_subtask.value == "show") return;
     else {
       node.isExpanded = !node.isExpanded;
     }
@@ -756,11 +788,10 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
   LoadClosedTask(val) {
     if (this.showclosedtask) {
-      return val.filter(x => x.status != this.ItemFinal);
+      return val.filter((x) => x.status != this.ItemFinal);
     }
     return val;
   }
-
 
   CreateTask(val) {
     var x = this.newtask;
@@ -768,31 +799,29 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     setTimeout(() => {
       this.newtask = x;
     }, 1000);
-    this._service.InsertTask(val).subscribe(res => {
+    this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
         // this.LoadSampleList();
         this.getChildTask(val.id_project_team);
+      } else {
+        this.layoutUtilsService.showError(res.error.message);
       }
-      else {
-        this.layoutUtilsService.showError(res.error.message)
-      }
-    })
+    });
   }
   LoadFilterTask() {
-    this.DanhsSachCongViec.forEach(element => {
+    this.DanhsSachCongViec.forEach((element) => {
       this.getChildTask(element.id);
     });
   }
 
   DeleteTask(task) {
-    this._service.DeleteTask(task.id_row).subscribe(res => {
+    this._service.DeleteTask(task.id_row).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadSampleList();
       }
-    })
+    });
   }
-
 
   UpdateStatus(task, status) {
     if (+task.status == +status.id_row) return;
@@ -803,7 +832,9 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
         if (status.Follower == this.UserID) {
           this.UpdateByKey(task, "status", status.id_row);
         } else {
-          this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
+          this.layoutUtilsService.showError(
+            "Không có quyền thay đổi trạng thái"
+          );
         }
       } else {
         this.UpdateByKey(task, "status", status.id_row);
@@ -818,32 +849,31 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     if (task.id_nv > 0) {
       item.IsStaff = true;
     }
-    this._service._UpdateByKey(item).subscribe(res => {
+    this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadSampleList();
       } else {
         this.LoadSampleList();
         this.layoutUtilsService.showError(res.error.message);
       }
-    })
-
+    });
   }
   colorName: string = "";
   GetColorName(val) {
     // name
-    this.WeWorkService.getColorName(val).subscribe(res => {
+    this.WeWorkService.getColorName(val).subscribe((res) => {
       this.colorName = res.data.Color;
       return this.colorName;
-    })
+    });
   }
 
   getTenAssign(val) {
-    var list = val.split(' ');
+    var list = val.split(" ");
     return list[list.length - 1];
   }
 
   updateDate(task, date, field) {
-    this.UpdateByKey(task, field, moment(date).format('MM/DD/YYYY HH:mm'));
+    this.UpdateByKey(task, field, moment(date).format("MM/DD/YYYY HH:mm"));
   }
 
   updatePriority(task, field, value) {
@@ -851,11 +881,11 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
 
   UpdateTask(task) {
-    this._service.UpdateTask(task.id_row).subscribe(res => {
+    this._service.UpdateTask(task.id_row).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadSampleList();
       }
-    })
+    });
   }
 
   DeleteByKey(task, field) {
@@ -863,7 +893,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
   getAssignee(id_nv) {
     if (+id_nv > 0 && this.listUser) {
-      var assign = this.listUser.find(x => x.id_nv == id_nv);
+      var assign = this.listUser.find((x) => x.id_nv == id_nv);
       if (assign) {
         return assign;
       }
@@ -873,9 +903,8 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
 
   getPriority(id) {
-    var item = this.list_priority.find(x => x.value == id)
-    if (item)
-      return item;
+    var item = this.list_priority.find((x) => x.value == id);
+    if (item) return item;
     return id;
   }
   duplicateNew(node, type) {
@@ -883,14 +912,13 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
   Update_duplicateNew(_item: WorkDuplicateModel, type) {
     const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
-      width: '40vw',
-      minHeight: '60vh',
-      data: { _item, type }
+      width: "40vw",
+      minHeight: "60vh",
+      data: { _item, type },
     });
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
-      }
-      else {
+      } else {
         this.LoadSampleList();
       }
     });
@@ -904,17 +932,24 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     this.Update_duplicate(model);
   }
   Update_duplicate(_item: WorkDuplicateModel) {
-    let saveMessageTranslateParam = '';
-    saveMessageTranslateParam += 'JeeHR.themthanhcong';
+    let saveMessageTranslateParam = "";
+    saveMessageTranslateParam += "JeeHR.themthanhcong";
     const _saveMessage = this.translate.instant(saveMessageTranslateParam);
     const _messageType = MessageType.Create;
-    const dialogRef = this.dialog.open(DuplicateWorkComponent, { data: { _item } });
-    dialogRef.afterClosed().subscribe(res => {
+    const dialogRef = this.dialog.open(DuplicateWorkComponent, {
+      data: { _item },
+    });
+    dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
         this.ngOnInit();
-      }
-      else {
-        this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+      } else {
+        this.layoutUtilsService.showActionNotification(
+          _saveMessage,
+          _messageType,
+          4000,
+          true,
+          false
+        );
         this.ngOnInit();
       }
     });
@@ -928,57 +963,81 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     this.loadOptionprojectteam(node);
     var item = this.options_assign;
     const dialogRef = this.dialog.open(WorkAssignedComponent, {
-      width: '500px',
-      data: { item, ID_Project: node.id_project_team }
+      width: "500px",
+      data: { item, ID_Project: node.id_project_team },
     });
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       if (res) {
-        this.UpdateByKey(node, 'assign', res.id_nv);
+        this.UpdateByKey(node, "assign", res.id_nv);
       }
     });
   }
   Update_work(_item: WorkModel) {
-    let saveMessageTranslateParam = '';
+    let saveMessageTranslateParam = "";
     // _item = this.detail;
-    saveMessageTranslateParam += _item.id_row > 0 ? 'JeeHR.capnhatthanhcong' : 'JeeHR.themthanhcong';
+    saveMessageTranslateParam +=
+      _item.id_row > 0 ? "JeeHR.capnhatthanhcong" : "JeeHR.themthanhcong";
     const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-    const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(WorkEditDialogComponent, { data: { _item } });
-    dialogRef.afterClosed().subscribe(res => {
+    const _messageType =
+      _item.id_row > 0 ? MessageType.Update : MessageType.Create;
+    const dialogRef = this.dialog.open(WorkEditDialogComponent, {
+      data: { _item },
+    });
+    dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
         this.ngOnInit();
-      }
-      else {
-        this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+      } else {
+        this.layoutUtilsService.showActionNotification(
+          _saveMessage,
+          _messageType,
+          4000,
+          true,
+          false
+        );
         this.ngOnInit();
       }
     });
   }
   Add_followers() {
-    let saveMessageTranslateParam = '';
+    let saveMessageTranslateParam = "";
     var _item = new WorkModel();
     // _item = this.detail;
-    saveMessageTranslateParam += _item.id_row > 0 ? 'JeeHR.capnhatthanhcong' : 'JeeHR.themthanhcong';
+    saveMessageTranslateParam +=
+      _item.id_row > 0 ? "JeeHR.capnhatthanhcong" : "JeeHR.themthanhcong";
     const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-    const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(workAddFollowersComponent, { data: { _item } });
-    dialogRef.afterClosed().subscribe(res => {
+    const _messageType =
+      _item.id_row > 0 ? MessageType.Update : MessageType.Create;
+    const dialogRef = this.dialog.open(workAddFollowersComponent, {
+      data: { _item },
+    });
+    dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
         this.ngOnInit();
-      }
-      else {
-        this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+      } else {
+        this.layoutUtilsService.showActionNotification(
+          _saveMessage,
+          _messageType,
+          4000,
+          true,
+          false
+        );
         this.ngOnInit();
       }
     });
   }
   Delete() {
-    const _title = this.translate.instant('JeeHR.xoa');
-    const _description = this.translate.instant('JeeHR.bancochacchanmuonxoakhong');
-    const _waitDesciption = this.translate.instant('JeeHR.dulieudangduocxoa');
-    const _deleteMessage = this.translate.instant('JeeHR.xoathanhcong');
-    const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
-    dialogRef.afterClosed().subscribe(res => {
+    const _title = this.translate.instant("JeeHR.xoa");
+    const _description = this.translate.instant(
+      "JeeHR.bancochacchanmuonxoakhong"
+    );
+    const _waitDesciption = this.translate.instant("JeeHR.dulieudangduocxoa");
+    const _deleteMessage = this.translate.instant("JeeHR.xoathanhcong");
+    const dialogRef = this.layoutUtilsService.deleteElement(
+      _title,
+      _description,
+      _waitDesciption
+    );
+    dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
         return;
       }
@@ -986,24 +1045,41 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
 
   Create(_item: WorkDuplicateModel) {
-    this._service.DuplicateCU(_item).subscribe(res => {
+    this._service.DuplicateCU(_item).subscribe((res) => {
       if (res && res.status === 1) {
-        this.layoutUtilsService.showActionNotification('Nhân bản thành công', MessageType.Read, 3000, true, false, 3000, 'top', 1);
-      }
-      else {
-        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+        this.layoutUtilsService.showActionNotification(
+          "Nhân bản thành công",
+          MessageType.Read,
+          3000,
+          true,
+          false,
+          3000,
+          "top",
+          1
+        );
+      } else {
+        this.layoutUtilsService.showActionNotification(
+          res.error.message,
+          MessageType.Read,
+          9999999999,
+          true,
+          false,
+          3000,
+          "top",
+          0
+        );
       }
     });
   }
 
   list_Tag: any = [];
-  project_team: any = '';
+  project_team: any = "";
   mark_tag() {
-    this.weworkService.lite_tag(this.ID_Project).subscribe(res => {
+    this.weworkService.lite_tag(this.ID_Project).subscribe((res) => {
       if (res && res.status === 1) {
         this.list_Tag = res.data;
         this.changeDetectorRefs.detectChanges();
-      };
+      }
     });
   }
 
@@ -1015,34 +1091,41 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   RemoveTag(tag, item) {
     const model = new UpdateWorkModel();
     model.id_row = item.id_row;
-    model.key = 'Tags';
+    model.key = "Tags";
     model.value = tag.id_row;
-    this.WorkService.UpdateByKey(model).subscribe(res => {
+    this.WorkService.UpdateByKey(model).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadSampleList();
         // this.layoutUtilsService.showActionNotification(this.translate.instant('work.dachon'), MessageType.Read, 1000, false, false, 3000, 'top', 1);
-      }
-      else {
-        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+      } else {
+        this.layoutUtilsService.showActionNotification(
+          res.error.message,
+          MessageType.Read,
+          9999999999,
+          true,
+          false,
+          3000,
+          "top",
+          0
+        );
       }
     });
   }
   showTitleFilter(id) {
     if (this.idFilter > 0) {
-      var x = this.danhsachboloc.find(x => x.id_row == id)
+      var x = this.danhsachboloc.find((x) => x.id_row == id);
       if (x) {
         return x.title;
-      }
-      else {
-        return 'Không tìm thấy bộ lọc';
+      } else {
+        return "Không tìm thấy bộ lọc";
       }
     } else {
-      return 'Bộ lọc không hợp lệ';
+      return "Bộ lọc không hợp lệ";
     }
   }
 
   ChangeFilter(item) {
-    const url = 'tasks/filter/' + item;
+    const url = "tasks/filter/" + item;
     this.router.navigateByUrl(url);
   }
   UpdateFilter() {
@@ -1057,18 +1140,29 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     this.Update(model);
   }
   Update(_item: FilterModel) {
-    let saveMessageTranslateParam = '';
-    saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
+    let saveMessageTranslateParam = "";
+    saveMessageTranslateParam +=
+      _item.id_row > 0
+        ? "GeneralKey.capnhatthanhcong"
+        : "GeneralKey.themthanhcong";
     const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-    const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(filterEditComponent, { data: { _item } });
-    dialogRef.afterClosed().subscribe(res => {
+    const _messageType =
+      _item.id_row > 0 ? MessageType.Update : MessageType.Create;
+    const dialogRef = this.dialog.open(filterEditComponent, {
+      data: { _item },
+    });
+    dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
         return;
-      }
-      else {
+      } else {
         this.ngOnInit();
-        this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+        this.layoutUtilsService.showActionNotification(
+          _saveMessage,
+          _messageType,
+          4000,
+          true,
+          false
+        );
         // this.changeDetect.detectChanges();
       }
     });
@@ -1077,7 +1171,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   getHeight() {
     let tmp_height = 0;
     tmp_height = window.innerHeight - 155 - this.tokenStorage.getHeightHeader();
-    var link = this.router.url.split('/').find(x => x == 'tasks');
+    var link = this.router.url.split("/").find((x) => x == "tasks");
     if (link) {
       tmp_height += 45;
     }
@@ -1086,37 +1180,35 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   }
 
   IsaddTask() {
-    if (this.getMystaff && this.filter_groupby.value == 'member') {
+    if (this.getMystaff && this.filter_groupby.value == "member") {
       return false;
     }
     return true;
   }
 
-
   trackByFn(index, item) {
     return item.id_row;
   }
   getNhom() {
-    if (this.filter_groupby.value == 'member') {
-      return 'assignee';
+    if (this.filter_groupby.value == "member") {
+      return "assignee";
     }
-    return 'status';
+    return "status";
   }
-  logItem(node) {
-  }
+  logItem(node) {}
 
   getDeadline(fieldname, date) {
-    if (fieldname == 'deadline') {
+    if (fieldname == "deadline") {
       if (new Date(date) < new Date())
         // return 'text-danger'
-        return 'red-color'
+        return "red-color";
     }
-    return '';
+    return "";
   }
 
   Nguoitaocv(id) {
     if (this.listUser) {
-      var x = this.listUser.find(x => x.id_nv == id);
+      var x = this.listUser.find((x) => x.id_nv == id);
       if (x) {
         return x;
       }
@@ -1126,18 +1218,18 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   sortField = [
     {
-      title: this.translate.instant('day.theongaytao'),
-      value: 'CreatedDate',
+      title: this.translate.instant("day.theongaytao"),
+      value: "CreatedDate",
     },
     {
-      title: this.translate.instant('day.theothoihan'),
-      value: 'Deadline',
+      title: this.translate.instant("day.theothoihan"),
+      value: "Deadline",
     },
     {
-      title: this.translate.instant('day.theongaybatdau'),
-      value: 'StartDate',
+      title: this.translate.instant("day.theongaybatdau"),
+      value: "StartDate",
     },
-  ]
+  ];
   getComponentName(id_row) {
     if (id_row) {
       return this.componentName + id_row;
@@ -1158,31 +1250,32 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   getChildTask(id) {
     const queryParams1 = new QueryParamsModelNew(
       this.filterConfigurationMywork(),
-      '',
-      '',
+      "",
+      "",
       0,
       50,
       true
     );
-    this._service.TaskinProject(queryParams1, id).pipe(
-      tap((res) => {
-        if (res && res.status == 1) {
-          this.TaskinProject[id] = res.data['data'];
-          this.changeDetectorRefs.detectChanges();
-        }
-      }),
-      catchError((err) => {
-        console.log(err);
-        return of();
-      }),
-      finalize(() => { }),
-      share()
-    )
+    this._service
+      .TaskinProject(queryParams1, id)
+      .pipe(
+        tap((res) => {
+          if (res && res.status == 1) {
+            this.TaskinProject[id] = res.data["data"];
+            this.changeDetectorRefs.detectChanges();
+          }
+        }),
+        catchError((err) => {
+          console.log(err);
+          return of();
+        }),
+        finalize(() => {}),
+        share()
+      )
       .subscribe();
   }
 
   changeRoute(id) {
-    this.router.navigate(['', { outlets: { auxName: 'aux/task/' + id }, }])
+    this.router.navigate(["", { outlets: { auxName: "aux/task/" + id } }]);
   }
-
 }

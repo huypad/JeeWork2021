@@ -24,8 +24,8 @@
                             <nav mat-tab-nav-bar>
                                 <a mat-tab-link [routerLink]="['./projects']" (click)="click('projects')"
                                     [active]="activeLink == 'projects'">{{'department.project' | translate}}</a>
-                                <a mat-tab-link [routerLink]="['./milestones']" (click)="click('milestones')"
-                                    [active]="activeLink == 'milestones'">{{'department.muctieu' | translate}}</a>
+                                <!-- <a mat-tab-link [routerLink]="['./milestones']" (click)="click('milestones')"
+                                    [active]="activeLink == 'milestones'">{{'department.muctieu' | translate}}</a> -->
                                 <a *ngIf="commonService.CheckRole_WeWork(3403).length>0" mat-tab-link
                                     [routerLink]="['./report/', this.ID_Department]" (click)="click('report')"
                                     [active]="activeLink == 'report'">{{'GeneralKey.report' | translate}}</a>

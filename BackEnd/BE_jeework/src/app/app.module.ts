@@ -80,7 +80,7 @@ function appInitializer(authService: AuthService) {
     AppRoutingModule,
     InlineSVGModule.forRoot(),
     NgbModule,
-    WeWorkModule,
+    // WeWorkModule,
     MatTooltipModule,
     MatMenuModule,
     MatIconModule,

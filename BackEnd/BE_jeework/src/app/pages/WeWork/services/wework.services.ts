@@ -125,6 +125,10 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/get-color-name?name=${name}`, { headers: httpHeaders });
 	}
+	getRolesByProjects(id_project_team): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API_Lite + `/roles-by-project?id_project_team=${id_project_team}`, { headers: httpHeaders });
+	}
 	GetListField(filter: any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-field${filter}`, { headers: httpHeaders });

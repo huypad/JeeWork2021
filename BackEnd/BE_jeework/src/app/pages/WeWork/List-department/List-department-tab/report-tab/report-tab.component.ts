@@ -54,8 +54,6 @@ export class ReportTabComponent implements OnInit {
 		return window.innerHeight - 114 - this.tokenStorage.getHeightHeader();
   }
 	ReloadList(event){
-    // console.log(event);
-    // if(event == this.Id_Department) return;
     this.router.navigate([`/depts/${this.Id_Department}/report/${event}`]);
 	}
 

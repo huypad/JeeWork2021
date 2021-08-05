@@ -175,9 +175,7 @@ export class FunctionsGroupListComponent implements OnInit {
     // this.paginatorNew.page = 1;
     this.loadDataList();
   }
-
 	//chọn nhân viên
-
 	onAlertClose($event) {
 		this.hasFormErrors = false;
 	}

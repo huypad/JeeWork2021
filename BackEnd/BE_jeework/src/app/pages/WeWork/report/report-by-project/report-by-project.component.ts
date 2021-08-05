@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
 import { ReportProjectService } from './../report-project.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ChartModal } from './../modal/report.modal';
+import { BaoCaoThongKeModel, ChartModal } from './../modal/report.modal';
 import { ReportService } from './../report.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeDetectorRef, Component, OnInit, Type } from '@angular/core';
@@ -41,6 +41,7 @@ export class ReportByProjectComponent implements OnInit {
   constructor(
     public dialog: MatDialog,
     public reportService: ReportProjectService,
+    public _reportService: ReportService,
     public ProjectsTeamService: ProjectsTeamService,
     private detectChange: ChangeDetectorRef,
     private translate: TranslateService,
@@ -834,6 +835,58 @@ export class ReportByProjectComponent implements OnInit {
       }
       this.detectChange.detectChanges();
     })
+  }
+  ExportReportExcel(filename: string) {
+    const list = new Array<BaoCaoThongKeModel>();
+    if(filename == 'member'){
+      this.Staff.forEach(i=>{
+        const item = new BaoCaoThongKeModel(
+          i.hoten,
+          i.hoanthanh,
+          i.ht_quahan,
+          i.quahan,
+          i.danglam,
+          i.dangdanhgia
+        );
+        list.push(item);
+      });
+    }
+    else if(filename == 'project'){
+      this.ProjectTeam.forEach(i=>{
+        const item = new BaoCaoThongKeModel(
+          i.title,
+          i.num_work,
+          i.hoanthanh,
+          i.quahan,
+          i.danglam,
+          i.dangdanhgia
+        );
+        list.push(item);
+      });
+    }
+    else{
+      this.Department.forEach(i=>{
+        const item = new BaoCaoThongKeModel(
+          i.title,
+          i.num_work,
+          i.hoanthanh,
+          i.quahan,
+          i.danglam,
+          i.dangdanhgia
+        );
+        list.push(item);
+      });
+    }
+    this._reportService.ExportReportExcel(list,filename).subscribe( (res) => {
+      const linkSource = `data:application/octet-stream;base64,${res.data.FileContents}`;
+				const downloadLink = document.createElement("a");
+				const fileName = res.data.FileDownloadName;
+
+				downloadLink.href = linkSource;
+				downloadLink.download = fileName;
+				downloadLink.click();
+    });
+    
   }
   ExportExcel(filename: string) {
     var linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;

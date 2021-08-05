@@ -655,7 +655,6 @@ export class TemplateCenterComponent implements OnInit {
       var i = 0;
       this.ListField.forEach((element) => {
         var x = this.TemplateDetail.data_fields.find(x=> x.id_field == element.id_field);
-        console.log(i,':',x);
         i++;
         if(x){
           element.checked = true;

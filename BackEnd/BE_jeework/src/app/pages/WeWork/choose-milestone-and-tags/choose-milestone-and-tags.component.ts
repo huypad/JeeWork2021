@@ -1,7 +1,9 @@
+import { values } from 'lodash';
+import { TagsService } from './../tags/tags.service';
 import { LayoutUtilsService, MessageType } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
 
 // Angular
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, Input, Output, EventEmitter, ViewEncapsulation, OnChanges } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, Input, Output, EventEmitter, ViewEncapsulation, OnChanges, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 // Material
 import { MatDialog } from '@angular/material/dialog';
@@ -40,6 +42,8 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	@Input() Id_key?: number = 0;
 	@Input() auto = false;
 	@Input() Loai?: string = "startdate";
+	@ViewChild('input',{static:true}) input: ElementRef;
+	colorNew = "rgb(255, 0, 0)";
 	public filtered: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
 	public FilterCtrl: FormControl = new FormControl();
 	model: UpdateWorkModel;
@@ -53,6 +57,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		private layoutUtilsService: LayoutUtilsService,
 		public weworkService: WeWorkService,
 		private _service: WorkService,
+		private TagsService: TagsService,
 		private deptmentServices: ListDepartmentService,
 		private translate: TranslateService,
 		private changeDetectorRefs: ChangeDetectorRef
@@ -194,6 +199,39 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 				this.LoadTag();
 				// this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
 				// this.changeDetectorRefs.detectChanges();
+			}
+		});
+	}
+
+	Create() {
+		if(!this.input.nativeElement.value || this.input.nativeElement.value == ''){
+			return;
+		}
+		const ObjectModels = new TagsModel();
+		ObjectModels.clear();
+		ObjectModels.id_project_team = this.id_project_Team;
+		ObjectModels.title = this.input.nativeElement.value;
+		ObjectModels.color = this.colorNew;
+		this.TagsService.Insert(ObjectModels).subscribe(res => {
+			this.changeDetectorRefs.detectChanges();
+			if (res && res.status === 1) {
+				this.input.nativeElement.value = "";
+				this.LoadTag();
+				this.selected(res.data);
+			}
+			else {
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+			}
+		});
+	}
+	Delete(id) { 
+		this.TagsService.Delete(id).subscribe(res => {
+			if (res && res.status === 1) {
+				this.ItemSelected.emit(true);
+				this.LoadTag();
+			}
+			else {
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
 			}
 		});
 	}

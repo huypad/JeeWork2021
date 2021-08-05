@@ -1236,7 +1236,7 @@ export const locale = {
       chinhsuatag: "Chỉnh sửa nhãn",
       danhsachcacngay: "Danh sách ngày, cách nhau bằng dấu phẩy",
       chonduantruockhigiaoviec: "Chọn dự án trước khi giao việc",
-      danhsachcankiemtra: "DANH SÁCH CẦN KIỂM TRA",
+      danhsachcankiemtra: "DANH SÁCH CHECKLIST",
       danhsachnhan: "Danh sách nhãn",
       datthoihanchocongviec: "Đặt thời hạn cho công việc",
       deadline: "Hạn chót",
@@ -1273,7 +1273,7 @@ export const locale = {
       thanhvienthuchien: "Thành viên thực hiện",
       themboloctuychinh: "Thêm bộ lọc tùy chỉnh",
       suaboloctuychinhhientai: "Cập nhật bộ lọc tùy chỉnh hiện tại",
-      themchecklist: "Thêm danh sách công việc cụ thể (Check list)",
+      themchecklist: "Thêm mới", // Thêm danh sách công việc cụ thể (Check list)
       themmoicongviec: "Thêm mới công việc",
       themnhanhnhanmoi: "Thêm nhanh nhãn mới",
       themnhieunguoitheodoi: "Thêm nhiều người theo dõi",
@@ -1521,6 +1521,7 @@ export const locale = {
       danhsachmuctieu: "Danh sách mục tiêu",
       baocaotheodanhsachmuctieu: "Báo cáo theo danh sách mục tiêu",
       phongbanhoatdong: "Phòng ban hoạt động",
+      congviectrongphongban: "Công việc trong phòng ban",
       clicktoupdate: "Điều kiện ngày",
     },
     repeated: {

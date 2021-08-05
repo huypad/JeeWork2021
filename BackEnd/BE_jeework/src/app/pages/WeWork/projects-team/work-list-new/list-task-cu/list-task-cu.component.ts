@@ -316,6 +316,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   }
   CheckRoleskeypermit(key, id_project_team) {
     if(this.IsAdminGroup) return true;
+    if (this.list_role) {
     var x = this.list_role.find(x => x.id_row == id_project_team);
     if (x) {
       if (x.admin == true) {
@@ -347,6 +348,8 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     else {
       return false;
     }
+    }
+      return false;
   }
   /** SELECTION */
   CheckedNode(check: any, arr_model: any) {

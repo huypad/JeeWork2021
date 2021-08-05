@@ -100,7 +100,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         has["CreatedBy"] = iduser;
                         foreach (var item in data.Status)
                         {
-                            string position = cnn.ExecuteScalar("select Max(position) from we_Template_Status where TemplateID =" + idc + "").ToString();
+                            string position = cnn.ExecuteScalar("select Max(position) from we_template_status where TemplateID =" + idc + "").ToString();
                             if (position == null)
                                 position = "4";
                             has["StatusName"] = item.StatusName;
@@ -111,7 +111,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             has["IsFinal"] = 0;
                             has["IsDeadline"] = 0;
                             has["IsTodo"] = 0;
-                            if (cnn.Insert(has, "we_Template_Status") != 1)
+                            if (cnn.Insert(has, "we_template_status") != 1)
                             {
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -219,7 +219,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 has["IsFinal"] = 0;
                                 has["IsDeadline"] = 0;
                                 has["IsTodo"] = 0;
-                                has["Type"] = 1;
+                                has["Type"] = item.Type;
                                 has["IsDefault"] = 0;
                                 has["CreatedDate"] = DateTime.Now;
                                 has["CreatedBy"] = iduser;
@@ -376,7 +376,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             else
                                 return JsonResultCommon.Custom("Tình trạng đã tồn tại trong danh sách");
                         }
-
                     }
                     val.Add(data.columname, data.values);
                     string s = "";
@@ -431,7 +430,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             string sql_insert = "";
                             sql_insert = $@"insert into we_Template_Status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
                             "select id_Row, " + idc + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                            "from we_Status_List where Disabled = 0 and IsDefault = 1 and group_id = 1";
+                            "from we_Status_List where disabled = 0 and group_id = 1";
                             cnn.ExecuteNonQuery(sql_insert);
                         }
                         if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 45, data.id_row, iduser))
@@ -908,11 +907,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom(error);
                     }
-                    if (!WeworkLiteController.init_status_group(cnn, data, loginData, out error))
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Custom(error);
-                    }
+                    
                     long sampleid = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_sample_data where parentid is null").ToString());
                     long group_id = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_status_group").ToString());
                     long iduser = loginData.UserID;

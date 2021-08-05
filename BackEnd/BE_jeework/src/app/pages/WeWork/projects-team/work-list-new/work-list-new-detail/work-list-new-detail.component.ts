@@ -138,6 +138,7 @@ export class WorkListNewDetailComponent implements OnInit {
   public lstObjectID: string[] = [];
   isReset: any;
   IsAdminGroup = false;
+  loadTags = false;
   require_evaluate = false;
   constructor(
     private _service: WorkService,
@@ -172,16 +173,16 @@ export class WorkListNewDetailComponent implements OnInit {
     this.DataID = this.data.id_row;
     this.Id_project_team = this.data.id_project_team;
     this.UserInfo = JSON.parse(localStorage.getItem("UserInfo"));
-    this.ProjectsTeamService.DeptDetail(this.Id_project_team).subscribe((res) => {
-      if (res && res.status == 1) {
-        console.log(res.data);
-        this.require_evaluate = res.data.require_evaluate;
+    this.ProjectsTeamService.DeptDetail(this.Id_project_team).subscribe(
+      (res) => {
+        if (res && res.status == 1) {
+          this.require_evaluate = res.data.require_evaluate;
+        }
       }
-    })
+    );
     this.LoadData();
     this.LoadChecklist();
     this.LoadObjectID();
-
   }
 
   OnChanges() {
@@ -279,7 +280,6 @@ export class WorkListNewDetailComponent implements OnInit {
         this.list_role = res.data.dataRole;
         this.IsAdminGroup = res.data.IsAdminGroup;
       }
-
     });
 
     this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
@@ -306,66 +306,83 @@ export class WorkListNewDetailComponent implements OnInit {
     if (this.IsAdmin()) return true;
     if (this.require_evaluate) return true;
     if (this.item.Followers) {
-      var x = this.item.Followers.find(x => x.id_nv == this.UserID);
+      var x = this.item.Followers.find((x) => x.id_nv == this.UserID);
       if (x) return true;
     }
-    return false
+    return false;
   }
   CheckRoles(roleID: number) {
     if (this.IsAdminGroup) return true;
-    var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
-    if (x) {
-      if (x.admin == true) {
-        return true;
-      } else {
-        if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
-          if (x.Roles.find((r) => r.id_role == 15)) return false;
-        }
-        if (roleID == 10) {
-          if (x.Roles.find((r) => r.id_role == 16)) return false;
-        }
-        if (roleID == 4 || roleID == 14) {
-          if (x.Roles.find((r) => r.id_role == 17)) return false;
-        }
-        var r = x.Roles.find((r) => r.id_role == roleID);
-        if (r) {
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
+      if (x) {
+        if (x.admin == true) {
           return true;
         } else {
-          return false;
+          if (
+            roleID == 7 ||
+            roleID == 9 ||
+            roleID == 11 ||
+            roleID == 12 ||
+            roleID == 13
+          ) {
+            if (x.Roles.find((r) => r.id_role == 15)) return false;
+          }
+          if (roleID == 10) {
+            if (x.Roles.find((r) => r.id_role == 16)) return false;
+          }
+          if (roleID == 4 || roleID == 14) {
+            if (x.Roles.find((r) => r.id_role == 17)) return false;
+          }
+          var r = x.Roles.find((r) => r.id_role == roleID);
+          if (r) {
+            return true;
+          } else {
+            return false;
+          }
         }
+      } else {
+        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
   CheckRoleskeypermit(key) {
     if (this.IsAdminGroup) return true;
-    var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
-    if (x) {
-      if (x.admin == true) {
-        return true;
-      } else {
-
-        if (key == "title" || key == "description" || key == "status" || key == "checklist" || key == "delete") {
-          if (x.Roles.find((r) => r.id_role == 15)) return false;
-        }
-        if (key == "deadline") {
-          if (x.Roles.find((r) => r.id_role == 16)) return false;
-        }
-        if (key == "id_nv" || key == "assign") {
-          if (x.Roles.find((r) => r.id_role == 17)) return false;
-        }
-
-        var r = x.Roles.find((r) => r.keypermit == key);
-        if (r) {
+    if (this.list_role) {
+      var x = this.list_role.find((x) => x.id_row == this.Id_project_team);
+      if (x) {
+        if (x.admin == true) {
           return true;
         } else {
-          return false;
+          if (
+            key == "title" ||
+            key == "description" ||
+            key == "status" ||
+            key == "checklist" ||
+            key == "delete"
+          ) {
+            if (x.Roles.find((r) => r.id_role == 15)) return false;
+          }
+          if (key == "deadline") {
+            if (x.Roles.find((r) => r.id_role == 16)) return false;
+          }
+          if (key == "id_nv" || key == "assign") {
+            if (x.Roles.find((r) => r.id_role == 17)) return false;
+          }
+
+          var r = x.Roles.find((r) => r.keypermit == key);
+          if (r) {
+            return true;
+          } else {
+            return false;
+          }
         }
+      } else {
+        return false;
       }
-    } else {
-      return false;
     }
+    return false;
   }
 
   getKeyword_Assign() {
@@ -479,14 +496,8 @@ export class WorkListNewDetailComponent implements OnInit {
   }
   //type=1: comment, type=2: reply
   UpdateResult(value) {
-    var ele = <HTMLInputElement>document.getElementById("txtresult");
-    if (
-      ele.value.toString().trim() != this.item.result.toString().trim()
-    ) {
-      this.item.description = ele.value;
-      this.UpdateByKeyNew(this.item, "result", this.item.description);
-    }
-    this.Update_Result()
+    this.UpdateByKeyNew(this.item, "result", value);
+    this.Update_Result();
   }
   formatLabel(value: number) {
     if (value >= 1000) {
@@ -843,7 +854,9 @@ export class WorkListNewDetailComponent implements OnInit {
         if (status.Follower == this.UserID) {
           this.UpdateByKeyNew(task, "status", status.id_row);
         } else {
-          this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
+          this.layoutUtilsService.showError(
+            "Không có quyền thay đổi trạng thái"
+          );
         }
       } else {
         this.UpdateByKeyNew(task, "status", status.id_row);
@@ -853,14 +866,12 @@ export class WorkListNewDetailComponent implements OnInit {
 
   UpdateTitle() {
     var ele = <HTMLInputElement>document.getElementById("txttitle");
-    if (ele.value.toString().trim() == '') {
-      this.layoutUtilsService.showError('Tên công việc không được trống');
+    if (ele.value.toString().trim() == "") {
+      this.layoutUtilsService.showError("Tên công việc không được trống");
       ele.value = this.item.title;
       return;
     }
-    if (
-      ele.value.toString().trim() != this.item.title.toString().trim()
-    ) {
+    if (ele.value.toString().trim() != this.item.title.toString().trim()) {
       this.item.title = ele.value;
       this.UpdateByKeyNew(this.item, "title", this.item.title);
     }
@@ -1230,7 +1241,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 false
               )
               .afterDismissed()
-              .subscribe((tt) => { });
+              .subscribe((tt) => {});
             this.LoadData();
           } else {
             this.layoutUtilsService.showActionNotification(
@@ -1365,19 +1376,17 @@ export class WorkListNewDetailComponent implements OnInit {
   }
 
   updateStartDate(event) {
-    var date = event.value;
     this.UpdateByKeyNew(
       this.item,
       "start_date",
-      moment(date).format("MM/DD/YYYY HH:mm")
+      moment(event).format("MM/DD/YYYY HH:mm")
     );
   }
   updateDueDate(event) {
-    var date = moment(event.value).format("MM/DD/YYYY");
     this.UpdateByKeyNew(
       this.item,
       "deadline",
-      moment(date + ' 23:59').format("MM/DD/YYYY HH:mm")
+      moment(event).format("MM/DD/YYYY HH:mm")
     );
   }
 
@@ -1459,7 +1468,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
   preview(file) {
     if (file.isImage) {
-      this.DownloadFile(file.path)
+      this.DownloadFile(file.path);
     } else {
       this.layoutUtilsService.ViewDoc(file.path);
     }
@@ -1533,10 +1542,9 @@ export class WorkListNewDetailComponent implements OnInit {
             // this.LoadFullcomment();
           }),
           catchError((err) => {
-            console.log(err);
             return of();
           }),
-          finalize(() => { }),
+          finalize(() => {}),
           share()
         )
         .subscribe();
@@ -1550,13 +1558,11 @@ export class WorkListNewDetailComponent implements OnInit {
     )
       .pipe(
         tap((res) => {
-          // console.log("abc", res);
         }),
         catchError((err) => {
-          console.log(err);
           return of();
         }),
-        finalize(() => { }),
+        finalize(() => {}),
         share()
       )
       .subscribe();
@@ -1587,11 +1593,9 @@ export class WorkListNewDetailComponent implements OnInit {
               }
             }),
             catchError((err) => {
-              // this.IsLoading[id_topic] = false;
-              console.log(err);
               return of();
             }),
-            finalize(() => { }),
+            finalize(() => {}),
             share()
           )
           .subscribe();
@@ -1629,7 +1633,7 @@ export class WorkListNewDetailComponent implements OnInit {
   resetComment() {
     var listSub = Object.keys(this.ListChild);
     if (listSub) {
-      listSub.forEach(element => {
+      listSub.forEach((element) => {
         if (this.objectID) {
           this.JeeCommentService.showFullComment(
             this.objectID,
@@ -1641,10 +1645,9 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.ListChild[element] = res;
               }),
               catchError((err) => {
-                console.log(err);
                 return of();
               }),
-              finalize(() => { }),
+              finalize(() => {}),
               share()
             )
             .subscribe();
@@ -1652,5 +1655,4 @@ export class WorkListNewDetailComponent implements OnInit {
       });
     }
   }
-
 }

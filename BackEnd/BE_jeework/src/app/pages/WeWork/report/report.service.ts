@@ -183,4 +183,11 @@ export class ReportService {
 			params: httpParams
 		});
 	}
+	ExportReportExcel(item,fileName): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = this.RootURL + 'ExportReportExcel?FileName='+fileName;
+		return this.http.post<QueryResultsModel>(url, item,{
+			headers: httpHeaders
+		});
+	}
 }

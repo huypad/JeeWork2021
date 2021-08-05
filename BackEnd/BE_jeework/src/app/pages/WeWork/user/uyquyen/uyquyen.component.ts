@@ -143,10 +143,7 @@ export class UyquyenComponent implements OnInit {
     this.loadDataList();
   }
 
-  uyquyen(item) {
-    // this.service.DetailUQ(item.id_row).subscribe(res => {
-    // 	console.log(res);
-    // });
+  uyquyen(item) { 
     let saveMessageTranslateParam = '';
     var _item = new AuthorizeModel();
     _item.clear();

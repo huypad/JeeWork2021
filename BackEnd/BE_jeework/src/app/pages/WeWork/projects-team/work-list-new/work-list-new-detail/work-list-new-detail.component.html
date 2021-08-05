@@ -154,7 +154,7 @@
                         </mat-menu>
                     </div>
                     <!-- set muc tiêu -->
-                    <div class="cu-task-row-assignee">
+                    <!-- <div class="cu-task-row-assignee">
                         <i *ngIf="CheckRoles(18)" class="fas fa-cog url -hover"
                             [ngStyle]="{'color': item.id_milestone > 0?'#0d6efd':'#6c757d'}" style="font-size: 18px;"
                             [matMenuTriggerFor]="mileston"></i> &nbsp;
@@ -165,7 +165,7 @@
                                 [Loai]="'id_milestone'" (ItemSelected)="ReloadData($event)">
                             </kt-choose-milestone-and-tags>
                         </mat-menu>
-                    </div>
+                    </div> -->
                     <!-- hiển thị người đang theo dõi -->
                     <div class="cu-task-row-assignee">
                         <ng-container *ngFor="let status of this.item.Process">
@@ -226,25 +226,35 @@
                                     {{item.start_date?item.start_date:'Chưa có ngày bắt đầu'}}
                                 </div>
                             </div>
-                            <input matInput [value]="getDate(item.start_date)" (dateChange)="updateStartDate($event)"
-                                [matDatepicker]="pickerstart" class="date-picker">
-                            <mat-datepicker #pickerstart></mat-datepicker>
+                            <input matInput readonly
+                                [(ngModel)]="item.start_date"
+                                (ngModelChange)="updateStartDate(item.start_date)"
+                                style="opacity: 0;"
+                                class="date-picker position-picker"
+                                [owlDateTime]="pickerstart"
+                                [owlDateTimeTrigger]="pickerstart">
+                            <owl-date-time #pickerstart></owl-date-time>
                         </div>
                         <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
                             <div class="position-relative">
                                 <div class="cu-task-info__key">
                                     <span translate="filter.deadline"></span>
                                 </div>
-                                <div class="cu-task-info__value url" (click)="picker.open()" *ngIf="CheckRoles(10)">
+                                <div class="cu-task-info__value url" (click)="dt1.open()" *ngIf="CheckRoles(10)">
                                     {{item.deadline?item.deadline:'Thêm hạn chót'}}
                                 </div>
                                 <div class="cu-task-info__value" *ngIf="!CheckRoles(10)">
                                     {{item.deadline?item.deadline:'Chưa có hạn chót'}}
                                 </div>
                             </div>
-                            <input matInput [value]="getDate(item.deadline)" (dateChange)="updateDueDate($event)"
-                                [matDatepicker]="picker" class="date-picker">
-                            <mat-datepicker #picker></mat-datepicker>
+                            <input matInput readonly
+                                [(ngModel)]="item.deadline"
+                                (ngModelChange)="updateDueDate(item.deadline)"
+                                style="opacity: 0;"
+                                class="date-picker position-picker"
+                                [owlDateTime]="dt1"
+                                [owlDateTimeTrigger]="dt1">
+                            <owl-date-time #dt1></owl-date-time>
                         </div>
 
                         <div style="position: relative; display: flex; flex-grow: 1;"> </div>
@@ -267,6 +277,8 @@
                                             <div class="row" style="margin-bottom: 10px!important;">
                                                 <div class="border-tag url" *ngIf="CheckRoles(15)"
                                                     [matMenuTriggerFor]="tag"
+                                                    (menuOpened)="loadTags = true"
+                                                    (menuClosed)="loadTags = false"
                                                     matTooltip="{{ 'work.chinhsuatag' | translate}}">
                                                     <i class="fas fa-tags"></i>
                                                 </div>
@@ -282,13 +294,16 @@
                                                 </ng-container>
 
                                                 <mat-menu #tag="matMenu">
-                                                    <kt-choose-milestone-and-tags [options]="list_Tag"
+                                                    <ng-container *ngIf="loadTags">
+                                                        <kt-choose-milestone-and-tags [options]="list_Tag"
                                                         [project_team]="project_team"
                                                         (Noclick)="stopPropagation($event)"
                                                         [id_project_Team]="Id_project_team" [Id]="item.id_row"
                                                         [Id_key]="9" [Loai]="'Tags'"
                                                         (ItemSelected)="ReloadDatas($event)">
                                                     </kt-choose-milestone-and-tags>
+                                                    </ng-container>
+                                                    
                                                 </mat-menu>
                                             </div>
 
@@ -516,7 +531,10 @@
                                                     <span translate="work.danhsachcankiemtra"></span>
                                                     <a class="action float-right" (click)="Update_CheckList()"
                                                         *ngIf="CheckRoles(12)">
-                                                        <span translate="work.themchecklist"></span>
+                                                        <!-- <span translate="work.themchecklist"></span> -->
+                                                        <button mat-icon-button>
+                                                            <mat-icon>add</mat-icon>
+                                                        </button>
                                                     </a>
                                                 </div>
                                                 <div class="row" *ngIf="IsShow_CheckList">
@@ -555,15 +573,16 @@
                                                                         class=" {{item.isExpanded?'fas fa-caret-right':'fas fa-sort-down'}} "></i>
                                                                     {{item.title}}
                                                                 </div>
-                                                                <div class="title-checklist-right"
-                                                                    *ngIf="CheckRoles(12)">
-                                                                    <a class="action"
-                                                                        (click)="item.isUpdate=!item.isUpdate">
-                                                                        <span translate="GeneralKey.chinhsua"></span>
-                                                                    </a>&nbsp;&nbsp;
-                                                                    <a class="action" (click)="Delete_CheckList(item)">
-                                                                        <span translate="GeneralKey.xoa"></span>
-                                                                    </a>
+                                                                <div class="title-checklist-right" style="color: rgb(181,181,195);"
+                                                                    *ngIf="CheckRoles(12)"> 
+                                                                    <span  cdkFocusInitial (click)="item.isUpdate=!item.isUpdate"
+                                                                        matTooltip="{{ 'GeneralKey.capnhat' | translate }}">
+                                                                        <mat-icon>create</mat-icon>
+                                                                    </span>
+                                                                    <span  cdkFocusInitial (click)="Delete_CheckList(item)"
+                                                                        matTooltip="{{ 'GeneralKey.xoa' | translate }}">
+                                                                        <mat-icon>delete</mat-icon>
+                                                                    </span>
                                                                 </div>
                                                             </ng-container>
                                                             <ng-template #isUpdate>
@@ -627,14 +646,12 @@
                                                                         <div class="check-list-item--action">
                                                                             <div class="action-active"
                                                                                 *ngIf="CheckRoles(12)">
-                                                                                <span class="update"
-                                                                                    (click)="items.updateChild=true"
+                                                                                <span  (click)="items.updateChild=true"
                                                                                     cdkFocusInitial
                                                                                     matTooltip="{{ 'GeneralKey.capnhat' | translate }}">
                                                                                     <mat-icon>create</mat-icon>
                                                                                 </span>
-                                                                                <span class="delete"
-                                                                                    (click)="DeleteItem(items)"
+                                                                                <span  (click)="DeleteItem(items)"
                                                                                     cdkFocusInitial
                                                                                     matTooltip="{{ 'GeneralKey.xoa' | translate }}">
                                                                                     <mat-icon>delete</mat-icon>
@@ -726,19 +743,19 @@
                                                                         <div class="attach-item-del">
                                                                             <a class="url" (click)="preview(att2)"
                                                                                 matTooltip="Preview">
-                                                                                <i class="far fa-eye text-success"></i>
+                                                                                <i class="far fa-eye"></i>
                                                                             </a>
                                                                             <a class="url"
                                                                                 (click)="DownloadFile(att2.path)"
                                                                                 matTooltip="Download">
                                                                                 <i
-                                                                                    class="fas fa-download text-primary"></i>
+                                                                                    class="fas fa-download"></i>
                                                                             </a>
                                                                             <a class="url"
                                                                                 (click)="Delete_File(att2.id_row)"
                                                                                 matTooltip="Xóa File">
                                                                                 <i
-                                                                                    class="fas fa-trash-alt  text-danger"></i>
+                                                                                    class="fas fa-trash-alt"></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -774,7 +791,7 @@
                                                                             <mat-form-field class="mat-form-field-fluid">
                                                                                 <textarea matInput
                                                                                     placeholder="{{ 'work.capnhatketquacongviec' | translate }}"
-                                                                                    [value]="item.result" id="txtresult" rows="3"> 
+                                                                                    [(ngModel)]="item.result" rows="3"> 
                                                                             </textarea> </mat-form-field>
                                                                         </td>
                                                                     </tr>
@@ -799,19 +816,17 @@
                                                                         <div class="attach-item-del">
                                                                             <a class="url" (click)="preview(att2)"
                                                                                 matTooltip="Preview">
-                                                                                <i class="far fa-eye text-success"></i>
+                                                                                <i class="far fa-eye"></i>
                                                                             </a>
                                                                             <a class="url"
                                                                                 (click)="DownloadFile(att2.path)"
                                                                                 matTooltip="Download">
-                                                                                <i
-                                                                                    class="fas fa-download text-primary"></i>
+                                                                                <i class="fas fa-download "></i>
                                                                             </a>
                                                                             <a class="url" *ngIf="HasupdateResult()"
                                                                                 (click)="Delete_File(att2.id_row)"
                                                                                 matTooltip="Xóa File">
-                                                                                <i
-                                                                                    class="fas fa-trash-alt  text-danger"></i>
+                                                                                <i class="fas fa-trash-alt "></i>
                                                                             </a>
                                                                         </div>
                                                                     </div>
@@ -832,21 +847,22 @@
                                                             <br /> 
                                                         </td>
                                                     </tr>
-                                                    <tr *ngIf="HasupdateResult()">
+                                                    <!-- <tr *ngIf="HasupdateResult()">
                                                         <td colspan="2" style="width: 100%">
                                                             <a class="action" (click)="Update_Result()"> 
                                                                 <span translate="work.capnhatketquacongviec"></span>
-                                                            </a>&nbsp;&nbsp;or
+                                                            </a>&nbsp;&nbsp;
+                                                            hoặc
                                                             <input #resultInput hidden="true" type="file" onclick="this.value=null"
                                                                 (change)="save_file_Direct($event, '11')" />
                         
                                                             <a class="action" (click)="resultInput.click()"
                                                                 matTooltip="{{ 'work.uploadfile' | translate }}">
                                                                 <span translate="work.themtailieu"></span>
-                                                                <i class="las la-upload"></i>&nbsp;
+                                                                <i class="las la-paperclip"></i> &nbsp;
                                                             </a>
                                                         </td>
-                                                    </tr>
+                                                    </tr> -->
                                                 </table>
                                             </div>
                                         </div>
@@ -857,12 +873,47 @@
                         </div>
                     </div>
                     <div class="task-column__footer cu-hidden-print ng-tns-c150-53 ng-star-inserted">
-                        <div class="task-uploader border-top url text-primary" style="font-size: 16px;
+                        <!-- <div class="task-uploader border-top url " style="font-size: 16px;
                                     font-style: italic; font-weight: 600; color: gray;"
                             (click)="CheckRoles(15)?csvInput.click():''">
-                            <i class="fas fa-cloud-upload-alt text-primary"
-                                style="font-size: 24px; padding: 0 10px;"></i><span translate="work.attachfile"></span>
-                        </div>
+                            <i class="fas fa-cloud-upload-alt " style="font-size: 24px; padding: 0 10px;"></i><span translate="work.attachfile"></span>
+                        </div> -->
+                        <div class="task-uploader border-top url " style="font-size: 16px;
+                                    font-style: italic; font-weight: 600;" >
+                            <ng-container *ngIf="HasupdateResult()">
+                                <div class="text-center">
+                                    <span class="action url" (click)="Update_Result()" style="color:#34960d"> 
+                                        <span translate="work.capnhatketquacongviec"></span>
+                                    </span>&nbsp;
+                                    <span class="text-muted" style="font-weight: 400;">
+                                        hoặc
+                                    </span>
+                                    &nbsp;
+                                    <input #resultInput hidden="true" type="file" onclick="this.value=null"
+                                        (change)="save_file_Direct($event, '11')" />
+    
+                                    <span class="action url" style="color:#34960d" (click)="resultInput.click()"
+                                        matTooltip="{{ 'work.uploadfile' | translate }}">
+                                        <span translate="work.themtailieu"></span>
+                                        <i class="las la-paperclip"></i> &nbsp;
+                                    </span>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="!HasupdateResult()">
+                                <div class="text-center text-muted" matTooltip="Bạn không có quyền cập nhập kết quả">
+                                    <span class="action"> 
+                                        <span translate="work.capnhatketquacongviec"></span>
+                                    </span>&nbsp;&nbsp;
+                                    <span class="text-muted" style="font-weight: 400;">
+                                        hoặc
+                                    </span>
+                                    <span class="action" >
+                                        <span translate="work.themtailieu"></span>
+                                        <i class="las la-paperclip"></i> &nbsp;
+                                    </span>
+                                </div>
+                            </ng-container>
+                        </div> 
                     </div>
 
                 </div>

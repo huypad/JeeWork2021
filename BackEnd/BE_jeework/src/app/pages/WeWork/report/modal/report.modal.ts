@@ -13,10 +13,34 @@ export class ChartModal{
   }
 }
 
-// MuctieuDepartment = {
-//   legend:false,
-//   label:[],
-//   datasets:[],
-//   chartType:'pie',
-//   color: [],
+// public class BaoCaoThongKe
+// {
+//     public string Ten { get; set; }
+//     public string col1 { get; set; }
+//     public string col2 { get; set; }
+//     public string col3 { get; set; }
+//     public string col4 { get; set; }
+//     public string col5 { get; set; }
 // }
+export class BaoCaoThongKeModel {
+  Ten: string;
+  col1: string;
+  col2: string;
+  col3: string;
+  col4: string;
+  col5: string;
+  constructor(
+    Ten: string = '0',
+		col1: string = '0',
+		col2: string = '0',
+		col3: string = '0',
+		col4: string = '0',
+		col5: string = '0') {
+		this.Ten = Ten;
+		this.col1 = col1;
+		this.col2 = col2;
+		this.col3 = col3;
+		this.col4 = col4;
+		this.col5 = col5;
+	}
+}

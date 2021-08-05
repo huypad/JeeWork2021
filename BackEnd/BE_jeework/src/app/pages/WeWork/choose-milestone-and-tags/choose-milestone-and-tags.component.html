@@ -1,3 +1,38 @@
+<style>
+	.status-input{
+		display: flex;
+		margin: 3px 0 5px 0; 
+	}
+	.status-input .box-color{
+		width: 15px;
+		height: 15px;
+		background-color: red;
+		margin: auto;
+		margin-right: 5px;
+		cursor: pointer;
+	}
+	.status-input input{
+		width: 100%;
+		border:none;
+	}
+	.status-input .input input:focus{
+		border:none;
+		outline: none;
+		border-bottom: 1px solid gray;
+	}
+	.status-input .input{
+		flex-grow: 1;
+		
+	}
+	.status-input .action-input{
+		min-width: 20px;
+	}
+	.delete-tag{
+		position: absolute;
+		right: 0;
+		top: 5px;
+	}
+</style>
 <div class="choose-users-box mg-0">
 	<div class="border-bottom" style="padding: 10px 0; font-size: 15px;font-weight: 500;color:#42b814;">
 		<span *ngIf="Loai=='Tags';else milestone" translate="work.selectedtag"></span>
@@ -17,6 +52,7 @@
 						</div>
 					</div>
 					<span>{{item.title}}</span>
+					<mat-icon (click)="stopPropagation($event)" matTooltip="Xóa thẻ khỏi dự án" class="delete-tag" (click)="Delete(item.id_row)" *ngIf="Loai=='Tags'" >close</mat-icon>
 				</div>
 			</button>
 		</ng-container>
@@ -25,12 +61,25 @@
 		matTooltip="{{ 'department.createmilestone' | translate }}" color="primary" type="button">
 		<mat-icon>add</mat-icon><span translate="department.createmilestone"></span>
 	</button>
-	<button *ngIf="Loai=='Tags'" (click)="createTags();stopPropagation($event)"
+	<!-- <button *ngIf="Loai=='Tags'" (click)="createTags();stopPropagation($event)"
 		class="btn btn-outline-success w-100 pd-5" style="margin-top: 10px;"
 		matTooltip="{{ 'work.themnhanhnhanmoi' | translate }}" color="primary" type="button">
 		<i class="fas fa-plus"></i>
 		<span translate="work.themnhanhnhanmoi"></span>
-	</button>
+	</button> -->
+	<div class="status-input col-12 form-control" (click)="stopPropagation($event)">
+		<mat-menu #color="matMenu" yPosition="above" xPosition="after">
+			<kt-color-picker2 [selected]="'red'" (click)="stopPropagation($event)" (ItemSelected)="colorNew = $event">
+			</kt-color-picker2>
+		</mat-menu>
+		<button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+			[matMenuTriggerFor]="color"></button>
+		<div class="box-color"(click)="changeColor.click();" [ngStyle]="{'backgroundColor': colorNew }">
+		</div>
+		<div class="input">
+			<input type="text" placeholder="Nhấn enter để lưu" #input (keyup.enter)="Create()" class="">
+		</div>
+	</div>
 </div>
 
 <style>

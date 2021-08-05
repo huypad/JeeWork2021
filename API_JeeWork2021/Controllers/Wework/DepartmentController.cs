@@ -290,7 +290,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     var data = (from r in ds.Tables[0].AsEnumerable()
-                                where (DBNull.Value.Equals(r["parentid"]) || r["id_row"].ToString()== id.ToString())
+                                where (DBNull.Value.Equals(r["parentid"]) || r["id_row"].ToString() == id.ToString())
                                 select new
                                 {
                                     id_row = r["id_row"],
@@ -439,87 +439,68 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //LogContent = LogEditContent = "Thêm mới dữ liệu department: title=" + data.title + ", id_cocau=" + data.id_cocau;
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
-                    if (data.templatecenter == null)
+
+                    if (data.DefaultView != null)
                     {
-                        if (data.DefaultView != null)
+                        Hashtable val1 = new Hashtable();
+                        val1["id_department"] = idc;
+                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedBy"] = iduser;
+                        foreach (var view in data.DefaultView)
                         {
-                            Hashtable val1 = new Hashtable();
-                            val1["id_department"] = idc;
-                            val1["CreatedDate"] = DateTime.Now;
-                            val1["CreatedBy"] = iduser;
-                            foreach (var view in data.DefaultView)
+                            val1["viewid"] = view.id_row;
+                            val1["is_default"] = view.is_default;
+                            if (cnn.Insert(val1, "we_department_view") != 1)
                             {
-                                val1["viewid"] = view.id_row;
-                                val1["is_default"] = view.is_default;
-                                if (cnn.Insert(val1, "we_department_view") != 1)
-                                {
-                                    cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                }
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
-                        if (data.Owners != null)
+                    }
+                    if (data.Owners != null)
+                    {
+                        Hashtable val1 = new Hashtable();
+                        val1["id_department"] = idc;
+                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedBy"] = iduser;
+                        foreach (var owner in data.Owners)
                         {
-                            Hashtable val1 = new Hashtable();
-                            val1["id_department"] = idc;
-                            val1["CreatedDate"] = DateTime.Now;
-                            val1["CreatedBy"] = iduser;
-                            foreach (var owner in data.Owners)
+                            val1["id_user"] = owner.id_user;
+                            val1["type"] = owner.type;
+                            if (cnn.Insert(val1, "we_department_owner") != 1)
                             {
-                                val1["id_user"] = owner.id_user;
-                                val1["type"] = owner.type;
-                                if (cnn.Insert(val1, "we_department_owner") != 1)
-                                {
-                                    cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                }
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
-                        if (data.ReUpdated)
+                    }
+                    if (data.ReUpdated)
+                    {
+                        if (data.IsDataStaff_HR)
                         {
-                            if (data.IsDataStaff_HR)
+                            DataTable dt_Staff_HR = WeworkLiteController.List_Account_HR(data.id_cocau, HttpContext.Request.Headers, _configuration);
+                            if (dt_Staff_HR.Rows.Count > 0)
                             {
-                                DataTable dt_Staff_HR = WeworkLiteController.List_Account_HR(data.id_cocau, HttpContext.Request.Headers, _configuration);
-                                if (dt_Staff_HR.Rows.Count > 0)
+                                foreach (DataRow users in dt_Staff_HR.Rows)
                                 {
-                                    foreach (DataRow users in dt_Staff_HR.Rows)
+                                    string sql_cmd = "select id_user from we_department_owner where type = 2 and id_department = " + data.id_row + " and id_user = " + users["Id_NV"].ToString() + " and Disabled = 0";
+                                    string getValue = cnn.ExecuteScalar(sql_cmd).ToString();
+                                    if (getValue == null)
                                     {
-                                        string sql_cmd = "select id_user from we_department_owner where type = 2 and id_department = " + data.id_row + " and id_user = " + users["Id_NV"].ToString() + " and Disabled = 0";
-                                        string getValue = cnn.ExecuteScalar(sql_cmd).ToString();
-                                        if (getValue == null)
+                                        Hashtable has = new Hashtable();
+                                        has["id_department"] = idc;
+                                        has["CreatedDate"] = DateTime.Now;
+                                        has["CreatedBy"] = iduser;
+                                        has["id_user"] = users["Id_NV"].ToString();
+                                        has["type"] = 2;
+                                        if (cnn.Insert(has, "we_department_owner") != 1)
                                         {
-                                            Hashtable has = new Hashtable();
-                                            has["id_department"] = idc;
-                                            has["CreatedDate"] = DateTime.Now;
-                                            has["CreatedBy"] = iduser;
-                                            has["id_user"] = users["Id_NV"].ToString();
-                                            has["type"] = 2;
-                                            if (cnn.Insert(has, "we_department_owner") != 1)
-                                            {
-                                                cnn.RollbackTransaction();
-                                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                            }
+                                            cnn.RollbackTransaction();
+                                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                         }
                                     }
                                 }
                             }
-                        }
-                    }
-                    else
-                    {
-                        data.templatecenter.ObjectTypesID = long.Parse(idc);
-                        //string sql_insert = $@"insert into we_department_owner (id_department,id_user,CreatedDate,CreatedBy,Type)
-                        //                    select id_department,id_user,GETDATE(),"+loginData.UserID+ ",Type from we_department_owner where id_department = " + data.templatecenter.id_reference+ "";
-                        //cnn.ExecuteNonQuery(sql_insert);
-                        //if (cnn.LastError != null)
-                        //{
-                        //    cnn.RollbackTransaction();
-                        //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                        //}
-                        if (!WeworkLiteController.init_template_center(cnn, data.templatecenter, loginData))
-                        {
-                            cnn.RollbackTransaction();
-                            return false;
                         }
                     }
                     cnn.EndTransaction();
@@ -532,7 +513,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-/// <param name="data"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
         /// 
         [CusAuthorize(Roles = "3402")]
@@ -548,7 +529,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 string strRe = "";
                 if (string.IsNullOrEmpty(data.title))
-                    strRe += (strRe == "" ? "" : ",") + "tên thư mục"; 
+                    strRe += (strRe == "" ? "" : ",") + "tên thư mục";
                 if (strRe != "")
                 {
                     return JsonResultCommon.BatBuoc(strRe);
@@ -597,7 +578,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                               FROM [dbo].[we_department] where id_row = @ParentID";
 
                     cnn.BeginTransaction();
-                    if (cnn.ExecuteNonQuery(sqlq,conds) != 1)
+                    if (cnn.ExecuteNonQuery(sqlq, conds) != 1)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -608,14 +589,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqlv = @"select * from we_department_view where id_department = " + data.ParentID;
                     List<long> listView = new List<long>();
                     DataTable dtv = cnn.CreateDataTable(sqlv);
-                    if(dtv.Rows.Count == 0)
+                    if (dtv.Rows.Count == 0)
                     {
                         long viewdf = long.Parse(cnn.ExecuteScalar("select id_row from we_default_views where is_default = 1").ToString());
                         listView.Add(viewdf);
                     }
                     else
                     {
-                        foreach(DataRow item in dtv.Rows)
+                        foreach (DataRow item in dtv.Rows)
                         {
                             listView.Add(long.Parse(item["viewid"].ToString()));
                         }

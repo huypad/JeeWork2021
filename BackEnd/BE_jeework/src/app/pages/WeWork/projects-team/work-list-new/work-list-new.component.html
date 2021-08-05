@@ -522,10 +522,6 @@
                                                                                         d="M2 3.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h2.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V5.95A2.5 2.5 0 012 3.5zM4.5 2a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 9a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm0-10a.5.5 0 01.5.5V3h1.5a.5.5 0 010 1H13v1.5a.5.5 0 01-1 0V4h-1.5a.5.5 0 010-1H12V1.5a.5.5 0 01.5-.5z">
                                                                                     </path>
                                                                                 </svg>
-                                                                                <!-- <i class="fas fa-tasks"
-                                                                                    *ngIf="!(node.id_parent>0) && node.DataChildren.length == 0"
-                                                                                    (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
                                                                                 <mat-menu #tag="matMenu">
                                                                                     <ng-container *ngIf="node.showtag">
                                                                                         <kt-choose-milestone-and-tags
@@ -826,9 +822,9 @@
                                                                                             [matMenuTriggerFor]="commentsmenu"
                                                                                             (menuOpened)="node.showcomment = true"
                                                                                             (menuClosed)="node.showcomment = false">
-                                                                                            <i
-                                                                                                class="far fa-comment-dots"></i>
-                                                                                            {{node[item.fieldname]}}</span>
+                                                                                            <i class="far fa-comment-dots"></i>
+                                                                                            {{node[item.fieldname]>0?node[item.fieldname]:''}}
+                                                                                        </span>
                                                                                         <mat-menu
                                                                                             #commentsmenu="matMenu">
                                                                                             <div (click)="$event.stopPropagation()"

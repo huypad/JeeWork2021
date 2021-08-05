@@ -19,6 +19,10 @@ using Microsoft.AspNetCore.Http;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -2629,6 +2633,190 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             this.Response.Headers.Add("X-Filename", fileName);
             this.Response.Headers.Add("Access-Control-Expose-Headers", "X-Filename");
             return new FileContentResult(bytearr, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        [Route("ExportReportExcel")]
+        [HttpPost]
+        public BaseModel<object>  ExportReportExcel([FromBody] List<BaoCaoThongKe> data, string FileName)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            List<BaoCaoThongKe> ListDetail = data;
+            string Tenfile = "";
+            string TenBC = "";
+            try
+            {
+                if(FileName == "member")
+                {
+                    Tenfile = "THANHVIEN";
+                    TenBC = "THEO THÀNH VIÊN";
+                }else if(FileName == "project")
+                {
+                    Tenfile = "DUAN";
+                    TenBC = "THEO DỰ ÁN";
+                }
+                else
+                {
+                    Tenfile = "PHONGBAN";
+                    TenBC = "PHÒNG BAN";
+                }
+
+                if (ListDetail != null && ListDetail.Count > 0)
+                {
+                    using (MemoryStream mem = new MemoryStream())
+                    {
+                        using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(mem, SpreadsheetDocumentType.Workbook))
+                        {
+                            WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
+                            workbookPart.Workbook = new Workbook();
+                            DocumentFormat.OpenXml.Spreadsheet.Sheets sheets1 = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+                            #region
+
+                            WorksheetPart worksheetPart_K = workbookPart.AddNewPart<WorksheetPart>();
+                            worksheetPart_K.Worksheet = new Worksheet();
+
+
+                            MergeCells mergeCells_K = new MergeCells();
+
+                            // Adding style
+                            WorkbookStylesPart stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                            ExportExcelHelper excelHelper = new ExportExcelHelper();
+                            stylePart.Stylesheet = excelHelper.GenerateStylesheet();
+                            stylePart.Stylesheet.Save();
+
+
+                            SheetData sheetData_K = new SheetData();
+
+                            //DocumentFormat.OpenXml.Spreadsheet.Sheets sheets1_K = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+
+                            Sheet sheet_K = new Sheet();
+                            sheet_K.Id = spreadsheet.WorkbookPart.GetIdOfPart(worksheetPart_K);
+                            sheet_K.SheetId = 2; //sheet Id, anything but unique
+                            sheet_K.Name = "THỐNG KÊ CHI TIẾT";
+                            sheets1.Append(sheet_K);
+
+
+                            DocumentFormat.OpenXml.Spreadsheet.Row rowTitle_Null = new DocumentFormat.OpenXml.Spreadsheet.Row();
+
+                            DocumentFormat.OpenXml.Spreadsheet.Cell dataCellnd_Null = new DocumentFormat.OpenXml.Spreadsheet.Cell();
+                            dataCellnd_Null.CellReference = "A1";
+                            dataCellnd_Null.DataType = CellValues.String;
+                            dataCellnd_Null.StyleIndex = 8;
+                            CellValue cellValue_Null = new CellValue();
+                            cellValue_Null.Text = ("THỐNG KÊ CHI TIẾT " + TenBC);//"BÁO CÁO TỔNG HỢP TÌNH HÌNH XỬ LÝ CÔNG VIỆC";
+                            dataCellnd_Null.Append(cellValue_Null);
+                            rowTitle_Null.RowIndex = 1;
+                            rowTitle_Null.AppendChild(dataCellnd_Null);
+                            sheetData_K.AppendChild(rowTitle_Null);
+
+
+                            Row rowTitle2 = new Row();
+                            Cell dataCellnd2 = new Cell();
+                            dataCellnd2.CellReference = "A3";
+                            dataCellnd2.DataType = CellValues.String;
+                            dataCellnd2.StyleIndex = 10;
+                            CellValue cellValue2 = new CellValue();
+                            cellValue2.Text = "Tổng số dữ liệu: " + data.Count.ToString();
+                            dataCellnd2.Append(cellValue2);
+                            rowTitle2.RowIndex = 3;
+                            rowTitle2.AppendChild(dataCellnd2);
+                            sheetData_K.AppendChild(rowTitle2);
+
+                            MergeCells mergeCells_Null = new MergeCells();
+
+                            //append a MergeCell to the mergeCells for each set of merged cells
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A1:G1") });
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A2:G2") });
+                            //mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A3:H3") });
+
+                            // Constructing header
+                            DocumentFormat.OpenXml.Spreadsheet.Row row_K = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            row_K.RowIndex = (uint)5;
+                            if (FileName == "member")
+                            {
+                                row_K.Append(
+                                  excelHelper.ConstructCell("STT", CellValues.String, 2),
+                                  excelHelper.ConstructCell("THÀNH VIÊN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
+                                  excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
+                               );
+                            }
+                            else
+                            {
+                                row_K.Append(
+                                excelHelper.ConstructCell("STT", CellValues.String, 2),
+                                  excelHelper.ConstructCell("PHÒNG BAN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
+                                  excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
+                                 );
+                            } 
+
+                            sheetData_K.AppendChild(row_K);
+                            int stt = 1;
+                            foreach (var item in ListDetail)
+                            {
+                                row_K = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                                //row.RowIndex = (uint)i + 3; //RowIndex must be start with 1, since i = 0
+                                row_K.RowIndex = (uint)(ListDetail.IndexOf(item) + 6); //RowIndex must be start with 1, since i = 0, khúc này là dòng sẽ insert vào Excel
+
+                                row_K.Append(
+                                excelHelper.ConstructCell(stt++.ToString(), CellValues.Number, 9),
+                                    excelHelper.ConstructCell(item.Ten, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col1, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col2, CellValues.String, 4),
+                                    excelHelper.ConstructCell((item.col3), CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col4, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col5, CellValues.String, 4)
+                                );
+                                sheetData_K.Append(row_K);
+                            }
+
+                            worksheetPart_K.Worksheet = new DocumentFormat.OpenXml.Spreadsheet.Worksheet(sheetData_K);
+
+
+
+
+                            #endregion
+                            worksheetPart_K.Worksheet.InsertAfter(mergeCells_K, worksheetPart_K.Worksheet.Elements<SheetData>().First());
+                            spreadsheet.WorkbookPart.Workbook.AppendChild<DocumentFormat.OpenXml.Spreadsheet.Sheets>(sheets1);
+
+                            workbookPart.Workbook.Save();
+
+                            spreadsheet.Close();
+
+                            FileContentResult file = new FileContentResult(mem.ToArray(), "application/octet-stream")
+                            {
+                                FileDownloadName = "BCTK_"+ Tenfile + "_" + DateTime.Now.ToString("ddMMyyyymmss") + ".xlsx"
+                            };
+
+                            return JsonResultCommon.ThanhCong(file);
+                        }
+                    }
+                }
+                else
+                {
+                    return JsonResultCommon.Custom("Không có dữ liệu");
+                    //return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        public class BaoCaoThongKe
+        {
+            public string Ten { get; set; }
+            public string col1 { get; set; }
+            public string col2 { get; set; }
+            public string col3 { get; set; }
+            public string col4 { get; set; }
+            public string col5 { get; set; }
         }
 
         public static string GetListStatusDynamic(string lst_dept, DpsConnection cnn, string fieldname)

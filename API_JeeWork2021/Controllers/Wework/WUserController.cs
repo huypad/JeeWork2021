@@ -398,7 +398,9 @@ from v_wework_new w where w.disabled=0 and id_nv = " + id;
                     sqlq += @$";select a.id_user as id_nv, '' as hoten, '' as username, '' as image, '' as Tenchucdanh, '' as mobile from we_authorize a
 where disabled = 0 and a.CreatedBy = " + id;
                     sqlq += @"select p.id_row, p.title from we_project_team_user u
-join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Disabled=0 and id_user=" + id;
+join we_project_team p on p.id_row=u.id_project_team 
+join we_department d on d.id_row = p.id_department and (d.ParentID not in (select id_row from we_department where Disabled = 1)) 
+where u.disabled=0 and d.Disabled = 0 and p.Disabled=0 and id_user=" + id;
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {

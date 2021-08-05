@@ -198,6 +198,10 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
   }
 
+  ThemDuan(id){
+    this.QuickInsert = id; 
+  }
+
   Create(_item: ProjectTeamModel) {
     this._Services.InsertFasttProjectTeam(_item).subscribe((res) => {
       if (res && res.status == 1) {

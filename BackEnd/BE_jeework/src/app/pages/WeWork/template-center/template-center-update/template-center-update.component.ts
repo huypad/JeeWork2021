@@ -91,7 +91,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
   }
   LoadDetailChoose() {
     this.id_save_as = this.data.item.id;
-    console.log(this.id_save_as);
     this.TemplateDetail.share_with = 1;
     this.TemplateDetail.types = this.data.item.type;
     if (this.data.item.type == 1 || this.data.item.type == 2) {
@@ -521,7 +520,6 @@ export class TemplateCenterUpdateComponent implements OnInit {
       var i = 0;
       this.ListField.forEach((element) => {
         var x = this.TemplateDetail.data_fields.find(x=> x.id_field == element.id_field);
-        console.log(i,':',x);
         i++;
         if(x){
           element.checked = true;

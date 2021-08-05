@@ -1,11 +1,12 @@
 <!-- start -->
 
-<div class="user url" *ngFor="let user of ListUser;let index = index"
-    style="justify-content: flex-end;">
-    <ng-container *ngIf="index <= MaxSize" >
-        <kt-avatar-user *ngIf="index < MaxSize" [image]="user.image" [size]="iconSize" [name]="user.hoten" [matMenuTriggerFor]="menu" >
+<ng-container *ngFor="let user of ListUser;let index = index">
+    <div class="user url" *ngIf="index <= MaxSize" style="justify-content: flex-end;">
+        <kt-avatar-user *ngIf="index < MaxSize" [image]="user.image" [size]="iconSize" [name]="user.hoten"
+            [matMenuTriggerFor]="menu">
         </kt-avatar-user>
-        <kt-avatar-user *ngIf="ListUser.length-MaxSize == 1 && index == MaxSize" [image]="user.image" [size]="iconSize" [name]="user.hoten" [matMenuTriggerFor]="menu" >
+        <kt-avatar-user *ngIf="ListUser.length-MaxSize == 1 && index == MaxSize" [image]="user.image" [size]="iconSize"
+            [name]="user.hoten" [matMenuTriggerFor]="menu">
         </kt-avatar-user>
         <mat-menu #menu="matMenu">
             <div class="row">
@@ -14,18 +15,19 @@
                 </kt-avatar-user>
             </div>
         </mat-menu>
-    </ng-container>
-</div>
+    </div>
+</ng-container>
+
 <div class="user url" *ngIf="ListUser.length > MaxSize" style="justify-content: flex-end;">
     <div *ngIf="ListUser.length-MaxSize != 1" class="m--img-rounded m--marginless m--img-centered background"
         [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': iconSize,'height.px':iconSize}">
-        <div style="opacity: 1;color:white;padding-top:3px;text-align: center;" [ngStyle]="{'font-size.px': iconSize>=35?20:15}">
+        <div style="opacity: 1;color:white;padding-top:3px;text-align: center;"
+            [ngStyle]="{'font-size.px': iconSize>=35?20:15}">
             +{{ListUser.length-MaxSize}}
         </div>
     </div>
     <mat-menu #menu1="matMenu">
-        <div *ngFor="let user of ListUser;let index = index"
-            style="justify-content: flex-end;">
+        <div *ngFor="let user of ListUser;let index = index" style="justify-content: flex-end;">
             <ng-container *ngIf="index > (MaxSize-1)">
                 <div class="row ">
                     <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten" [showFull]="true"

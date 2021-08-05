@@ -4,6 +4,9 @@
             [ngStyle]="{'backgroundColor': Opaciti_color(tag.color)}">
             <div class="cu-tags-select__click">
                 <div class="cu-tags-select__name hide-more-text" [ngStyle]="{'color': tag.color}"> {{tag.title}} </div>
+                <!-- <div *ngIf="isRename" class="cu-tags-select__name hide-more-text" [ngStyle]="{'color': tag.color}">  -->
+                    <!-- <input type="text" value="{{tag.title}}"> -->
+                <!-- </div> -->
                 <div class="cu-tags-select__name-shadow"> {{tag.title}} </div>
                 <div cupreventdefault="" class="cu-tags-select__badge-ellipsis">
                     <div cudropdown="" class="cu-dropdown menu-options nav-menu">
@@ -26,13 +29,17 @@
                             <kt-color-picker2 [selected]="tag.color" (ItemSelected)="ColorPickerStatus($event)">
                             </kt-color-picker2>
                         </mat-menu>
-                    </mat-menu>
+                    </mat-menu> 
                 </div>
                 <div icon="close-bold" class="cu-tags-select__badge-icon-close icon ng-star-inserted"
                     [ngStyle]="{'backgroundColor': tag.color}">
                     <i class="fas fa-times icon-close" (click)="RemoveTags()"></i>
                 </div>
             </div>
+            <input type="text" autocomplete="off" class="input_renname {{isRename?'':'d-none'}}" [ngStyle]="{'border-color': tag.color}"
+            id="renameText{{tag.id_row}}{{node.id_row}}{{detail?'1':'0'}}" (keyup.enter)="checkUpdate()"
+            (focusout)="checkUpdate()"> 
+
         </div>
     </div>
 

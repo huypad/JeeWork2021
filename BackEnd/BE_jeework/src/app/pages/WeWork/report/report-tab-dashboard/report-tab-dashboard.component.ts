@@ -3,7 +3,7 @@ import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/uti
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { environment } from 'src/environments/environment';
 import { TranslateService } from '@ngx-translate/core';
-import { ChartModal } from './../modal/report.modal';
+import { BaoCaoThongKeModel, ChartModal } from './../modal/report.modal';
 import { ReportService } from './../report.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangeDetectorRef, Component, OnInit, Type } from '@angular/core';
@@ -812,6 +812,58 @@ export class ReportTabDashboardComponent implements OnInit {
       this.detectChange.detectChanges();
     })
   }
+  ExportReportExcel(filename: string) {
+    const list = new Array<BaoCaoThongKeModel>();
+    if(filename == 'member'){
+      this.Staff.forEach(i=>{
+        const item = new BaoCaoThongKeModel(
+          i.hoten,
+          i.hoanthanh,
+          i.ht_quahan,
+          i.quahan,
+          i.danglam,
+          i.dangdanhgia
+        );
+        list.push(item);
+      });
+    }
+    else if(filename == 'project'){
+      this.ProjectTeam.forEach(i=>{
+        const item = new BaoCaoThongKeModel(
+          i.title,
+          i.num_work,
+          i.hoanthanh,
+          i.quahan,
+          i.danglam,
+          i.dangdanhgia
+        );
+        list.push(item);
+      });
+    }
+    else{
+      this.Department.forEach(i=>{
+        const item = new BaoCaoThongKeModel(
+          i.title,
+          i.num_work,
+          i.hoanthanh,
+          i.quahan,
+          i.danglam,
+          i.dangdanhgia
+        );
+        list.push(item);
+      });
+    }
+    this.reportService.ExportReportExcel(list,filename).subscribe( (res) => {
+      const linkSource = `data:application/octet-stream;base64,${res.data.FileContents}`;
+				const downloadLink = document.createElement("a");
+				const fileName = res.data.FileDownloadName;
+
+				downloadLink.href = linkSource;
+				downloadLink.download = fileName;
+				downloadLink.click();
+    });
+    
+  }
   ExportExcel(filename: string) {
     var linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
     window.open(linkdownload);
@@ -1013,7 +1065,6 @@ export class ReportTabDashboardComponent implements OnInit {
 			}
 			this.dataFolder.unshift(itemhientai)
 			this.loadListfolder = true;
-      console.log(this.list_department);
       this.list_department = this.dataFolder;
       this.DontChange = false;
 			this.detectChange.detectChanges();
@@ -1030,3 +1081,4 @@ export interface DialogData {
   startDate: string;
   endDate: string;
 }
+

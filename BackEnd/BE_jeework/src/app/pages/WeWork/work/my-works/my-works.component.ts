@@ -28,7 +28,6 @@ export class MyWorksComponent implements OnInit {
     });
     this.activatedRoute.data.subscribe((res) => {
       if (res && res.selectedTab) this.selectedTab = res.selectedTab;
-      console.log(this.selectedTab,'tab');
     });
     this.route.queryParamMap.subscribe((params) => {
 		const pr = params["params"];
