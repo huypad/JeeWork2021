@@ -1006,6 +1006,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    IsToDo = r["IsToDo"],
                                    Description = r["description"],
                                    SL_Tasks = r["SL_Tasks"],
+                                   Type = r["Type"],
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }

@@ -1,3 +1,4 @@
+import { TimeEstimatesViewComponent } from './projects-team/work-list-new/time-estimates-view/time-estimates-view.component';
 import { DanhsachthumucComponent } from './projects-team/danhsachthumuc/danhsachthumuc.component';
 import { CreatQuickFolderComponent } from './List-department/creat-quick-folder/creat-quick-folder.component';
 import { AutomationService } from './automation/automation.service';
@@ -355,6 +356,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
 		DanhsachthumucComponent,
+		TimeEstimatesViewComponent,
 	],
 	declarations: [
 		RepeatedListComponent,
@@ -432,6 +434,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		AutomationTabManageComponent,
 		AutomationLabelComponent,
 		DanhsachthumucComponent,
+		TimeEstimatesViewComponent,
 	],
 	exports: [
 		JeeCommentModule,
@@ -547,7 +550,8 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		AutomationTabBrowseComponent,
 		AutomationTabManageComponent,
 		DanhsachthumucComponent,
-		ApplicationPipesModule
+		ApplicationPipesModule,
+		TimeEstimatesViewComponent,
 	]
 })
 export class WeWorkModule { }

@@ -2246,7 +2246,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     #endregion
                     string sql = $@"";
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,
+                    string sqlq = @$"select distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,estimates,
 w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w.result,w.CreatedDate,w.CreatedBy,
 w.UpdatedDate,w.UpdatedBy,w.NguoiGiao, w.project_team,w.id_department,w.clickup_prioritize 
 , '' as hoten_nguoigiao, Iif(fa.id_row is null ,0,1) as favourite,
@@ -2389,7 +2389,8 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                     DataTable dt_projects = cnn.CreateDataTable($@"select id_row, icon, title, id_department
                                                                 , loai, start_date, end_date, color, status 
                                                                 , is_project, Locked, Disabled 
-                                                                from we_project_team where Disabled = 0");
+                                                                from we_project_team where Disabled = 0"); 
+
                     var data = (from r in ds.Tables[0].AsEnumerable()
                                     //where r["id_parent"] == DBNull.Value
                                 where r["id_row"].ToString() == id.ToString()
@@ -2425,8 +2426,9 @@ where we_status.disabled=0 and WorkID=" + id + " order by Position";
                                     UpdatedBy = r["UpdatedBy"],
                                     NguoiSua = r["NguoiSua"],
                                     NguoiGiao = r["NguoiGiao"],
-                                    clickup_prioritize = r["clickup_prioritize"],
+                                    clickup_prioritize = r["estimates"],
                                     result = r["result"],
+                                    estimates = r["estimates"],
                                     User = from us in User.AsEnumerable()
                                            where r["id_row"].Equals(us["id_work"])
                                            select new
@@ -2844,21 +2846,29 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
+                    int estimates = 0;
+                    if ((!"".Equals(data.estimates)) && int.TryParse(data.estimates, out estimates))
+                    {
+                        val.Add("estimates", estimates);
+                    }
+                    else
+                        val.Add("estimates", DBNull.Value);
+
                     if (data.start_date > DateTime.MinValue)
                     {
-                        string return_date = "";
-                        DateTime ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "end_date", data.id_project_team, out return_date, cnn);
-                        if (ngaykiemtra > DateTime.MinValue)
-                        {
-                            if (data.start_date > ngaykiemtra)
-                                return JsonResultCommon.Custom("Ngày bắt đầu phải nhỏ hơn ngày kết thúc của dự án" + return_date + "");
-                        }
-                        ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "start_date", data.id_project_team, out return_date, cnn);
-                        if (ngaykiemtra > DateTime.MinValue)
-                        {
-                            if (ngaykiemtra > data.start_date)
-                                return JsonResultCommon.Custom("Ngày bắt đầu phải lớn hơn hoặc bằng ngày bắt đầu của dự án" + return_date + "");
-                        }
+                        //string return_date = "";
+                        //DateTime ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "end_date", data.id_project_team, out return_date, cnn);
+                        //if (ngaykiemtra > DateTime.MinValue)
+                        //{
+                        //    if (data.start_date > ngaykiemtra)
+                        //        return JsonResultCommon.Custom("Ngày bắt đầu phải nhỏ hơn ngày kết thúc của dự án" + return_date + "");
+                        //}
+                        //ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "start_date", data.id_project_team, out return_date, cnn);
+                        //if (ngaykiemtra > DateTime.MinValue)
+                        //{
+                        //    if (ngaykiemtra > data.start_date)
+                        //        return JsonResultCommon.Custom("Ngày bắt đầu phải lớn hơn hoặc bằng ngày bắt đầu của dự án" + return_date + "");
+                        //}
                         val.Add("start_date", data.start_date);
                     }
                     if (data.deadline > DateTime.MinValue)
@@ -2917,7 +2927,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
-
                     }
                     if (data.Tags != null)
                     {
@@ -3074,7 +3083,13 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         val.Add("id_group", DBNull.Value);
                     val.Add("prioritize", data.prioritize);
                     val.Add("urgent", data.urgent);
-
+                    int estimates = 0;
+                    if ((!"".Equals(data.estimates)) && int.TryParse(data.estimates, out estimates))
+                    {
+                        val.Add("estimates", estimates);
+                    }
+                    else
+                        val.Add("estimates", DBNull.Value);
                     val.Add("UpdatedDate", DateTime.Now);
                     val.Add("UpdatedBy", iduser);
                     val.Add("status", data.status);
@@ -3691,20 +3706,20 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             #region Nếu key là deadline thì kiểm tra rồi cập nhật status tương ứng (Nếu đã trễ thì update IsDeadline, ngược lại update IsTodo)
                             if ("deadline".Equals(data.key))
                             {
-                                DateTime values = Convert.ToDateTime(data.value.ToString());
-                                string return_date = "";
-                                DateTime ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "end_date", id_project_team, out return_date, cnn);
-                                if (ngaykiemtra > DateTime.MinValue)
-                                {
-                                    if (values > ngaykiemtra)
-                                        return JsonResultCommon.Custom("Hạn chót phải nhỏ hơn ngày kết thúc của dự án " + string.Format("{0:MM/dd/yyyy}", return_date) + "");
-                                }
-                                ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "start_date", id_project_team, out return_date, cnn);
-                                if (ngaykiemtra > DateTime.MinValue)
-                                {
-                                    if (ngaykiemtra > values)
-                                        return JsonResultCommon.Custom("Hạn chót phải lớn hơn hoặc bằng ngày bắt đầu của dự án " + string.Format("{0:MM/dd/yyyy}", return_date) + "");
-                                }
+                                //DateTime values = Convert.ToDateTime(data.value.ToString());
+                                //string return_date = "";
+                                //DateTime ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "end_date", id_project_team, out return_date, cnn);
+                                //if (ngaykiemtra > DateTime.MinValue)
+                                //{
+                                //    if (values > ngaykiemtra)
+                                //        return JsonResultCommon.Custom("Hạn chót phải nhỏ hơn ngày kết thúc của dự án " + string.Format("{0:MM/dd/yyyy}", return_date) + "");
+                                //}
+                                //ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "start_date", id_project_team, out return_date, cnn);
+                                //if (ngaykiemtra > DateTime.MinValue)
+                                //{
+                                //    if (ngaykiemtra > values)
+                                //        return JsonResultCommon.Custom("Hạn chót phải lớn hơn hoặc bằng ngày bắt đầu của dự án " + string.Format("{0:MM/dd/yyyy}", return_date) + "");
+                                //}
                                 DateTime deadline = DateTime.Now;
                                 if (DateTime.TryParse(data.value.ToString(), out deadline))
                                 {
@@ -3724,7 +3739,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             }
                                             #endregion
                                             val.Add("status", StatusPresent);
-
                                             foreach (long idUser in danhsachU)
                                             {
                                                 NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "-", _configuration, _producer);
@@ -3739,15 +3753,12 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             StatusPresent = long.Parse(RowStatus[0]["id_row"].ToString());
                                         }
                                         val.Add("status", StatusPresent);
-
                                         foreach (long idUser in danhsachU)
                                         {
                                             NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
                                         }
                                     }
                                 }
-
-
                             }
                             #endregion
                         }
@@ -3779,9 +3790,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     }
                                 }
                             }
-
                         }
-
                         if (cnn.Update(val, sqlcond, "we_work") != 1)
                         {
                             cnn.RollbackTransaction();
@@ -4010,7 +4019,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 if (data.key == "follower")
                                     loai = 2;
                                 val1["loai"] = loai;
-
                                 SqlConditions sqlcond123 = new SqlConditions();
                                 sqlcond123.Add("id_work", data.id_row);
                                 sqlcond123.Add("id_user", data.value);
@@ -4024,7 +4032,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         cnn.RollbackTransaction();
                                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                     }
-
                                     if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
                                     {
                                         NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
@@ -4043,7 +4050,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "+", _configuration, _producer);
                                     }
                                 }
-
                                 #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                                 if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                                 {
@@ -4177,7 +4183,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
-
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (id_log_action > 0)
                     {

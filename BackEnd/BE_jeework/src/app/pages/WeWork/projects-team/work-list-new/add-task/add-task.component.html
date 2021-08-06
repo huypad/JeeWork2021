@@ -13,7 +13,7 @@
                 </div>
                 <div class="cu-task-row-new__close ng-star-inserted" *ngIf="showIconclose">
                     <div icon="cu2-plus" class="icon" (click)="CloseAddnewTask()">
-                        <i class="fas fa-plus text-muted" matTooltip="Close"></i>
+                        <i class="fas fa-plus text-muted" matTooltip="Đóng"></i>
                     </div>
                 </div>
 
@@ -27,13 +27,9 @@
             </div>
             <div class="cu-task-row-new__options ng-star-inserted">
                 <ng-container [ngTemplateOutlet]="Assignee"></ng-container>
-
                 <ng-container [ngTemplateOutlet]="Follower"></ng-container>
-
                 <ng-container [ngTemplateOutlet]="setPriority"></ng-container>
-
                 <ng-container [ngTemplateOutlet]="setDate"></ng-container>
-
                 <div class="cu-task-row-new__button ng-star-inserted" (click)="AddTask()">
                     {{'GeneralKey.luu' | translate}}
                 </div>
@@ -61,9 +57,7 @@
                 <div class="cu-panel-board__footer cu-dropdown">
                     <div class="cu-panel-board__footer_left">
                         <ng-container [ngTemplateOutlet]="setPriority"></ng-container>
-
                         <ng-container [ngTemplateOutlet]="Assignee"></ng-container>
-
                         <ng-container [ngTemplateOutlet]="setDate"></ng-container>
                     </div>
                 </div>

@@ -214,6 +214,11 @@
                             </div>
                         </div>
                         <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
+                            <div >
+                                <time-estimates-view  [role]="CheckRoles(19)" [time]="item.estimates" (submit)="Updateestimates($event)"></time-estimates-view>
+                            </div>
+                        </div>
+                        <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
                             <div class="position-relative">
                                 <div class="cu-task-info__key">
                                     <span translate="filter.ngaybatdau"></span>

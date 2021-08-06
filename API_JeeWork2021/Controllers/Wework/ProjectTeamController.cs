@@ -1170,7 +1170,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     string sql_insert = "";
-                    var list_roles = new List<long> { 1,11 };
+                    var list_roles = new List<long> { 1, 11 };
                     if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, cnn))
                     {
                         cnn.RollbackTransaction();
@@ -1184,19 +1184,20 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
-                    long TemplateID = long.Parse(cnn.ExecuteScalar("select TemplateID from we_department").ToString());
-                    if (TemplateID > 0)
+                    var TemplateID = cnn.ExecuteScalar("select templateid from we_department where id_row = " + departmentid + "").ToString();
+                    if (TemplateID == null)
                     {
-                        sql_insert = "";
-                        sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
-                        sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
-                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
-                        cnn.ExecuteNonQuery(sql_insert);
-                        if (cnn.LastError != null)
-                        {
-                            cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                        }
+                        TemplateID = "1";
+                    }
+                    sql_insert = "";
+                    sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                    sql_insert += $@";insert into we_status (statusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select statusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                    cnn.ExecuteNonQuery(sql_insert);
+                    if (cnn.LastError != null)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
@@ -1416,7 +1417,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    var list_roles = new List<long> { 1,11 };
+                    var list_roles = new List<long> { 1, 11 };
                     if (!WeworkLiteController.Init_RoleDefault(idc, list_roles, cnn))
                     {
                         cnn.RollbackTransaction();
@@ -1702,7 +1703,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     foreach (var owner in data.Users)
                     {
                         if (owner.id_row == 0)
-                        { 
+                        {
                             NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
                         }
                     }
@@ -3031,7 +3032,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     {
                         if (dr["sql"] != DBNull.Value)
                         {
-                            sql_query = dr["sql"].ToString(); 
+                            sql_query = dr["sql"].ToString();
                             DataTable dt_temp = cnn.CreateDataTable(sql_query, new SqlConditions() { { "old", dr["oldvalue"] }, { "new", dr["newvalue"] } });
                             if (dt_temp == null)
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);

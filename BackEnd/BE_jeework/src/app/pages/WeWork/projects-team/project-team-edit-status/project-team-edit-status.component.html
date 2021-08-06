@@ -19,9 +19,17 @@
                     <div class="view-template overflow-auto" style="padding-bottom: 0;">
                         <div class="row w-100">
                             <div class="col-md-6">
-                                <div class="header-view-title" style="color: black;">
+                                <!-- <div class="header-view-title" style="color: black;">
                                     {{ 'department.maudangchon'|translate}}
+                                </div> -->
+                                <!-- template-selected -->
+                                <div class="item-template mb-1" (click)="isStatusNow = true;" [ngClass]="{'template-selected': isStatusNow}">
+                                    Các trạng thái đang sử dụng
                                 </div>
+                                <div class="item-template mb-1" (click)="isStatusNow = false;" [ngClass]="{'template-selected': !isStatusNow}">
+                                    Các trạng thái thuộc template khác
+                                </div>
+                                <hr/>
                                 <ng-container *ngFor="let demo of litsTemplateDemo">
                                     <div class="template-selected" *ngIf="demo.id_row == TempSelected">
                                         {{demo.title}}

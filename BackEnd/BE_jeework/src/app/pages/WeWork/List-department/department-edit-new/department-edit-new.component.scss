@@ -143,6 +143,20 @@
         border-radius: 3px;
         display: flex;
     }
+    .item-template{
+        background-color: white;
+        color: black;
+        font-size: 14px;
+        padding: 0 8px;
+        height: 30px;
+        align-items: center;
+        border-radius: 3px;
+        display: flex;
+        &.template-selected{
+            background-color: #1DB954;
+            color: white;
+        }
+    }
 }
 
 .btn-next{

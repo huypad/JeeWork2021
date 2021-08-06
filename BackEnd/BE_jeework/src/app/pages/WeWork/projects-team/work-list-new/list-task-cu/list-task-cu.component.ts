@@ -1159,7 +1159,9 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     }
     return false;
   }
-  
+  Updateestimates(task,event){
+    this.UpdateByKey(task, "estimates", event);
+  }
   UpdateStatus(task, status) {
     if (+task.status == +status.id_row) return; 
     if(this.IsAdmin(task.id_project_team)){

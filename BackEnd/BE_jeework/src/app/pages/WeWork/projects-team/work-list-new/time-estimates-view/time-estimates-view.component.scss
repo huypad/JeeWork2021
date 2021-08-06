@@ -1,0 +1,205 @@
+.time-estimates-view__icon {
+    width: 36px;
+    height: 36px;
+    padding: 5px;
+    border-radius: 50%;
+    border: 1px dashed gray;
+}
+
+.cu-time-estimate-dropdown__menu {
+    width: 320px
+}
+
+.cu-time-estimate-dropdown__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px 0
+}
+
+.cu-time-estimate-dropdown__row-title {
+    display: flex;
+    align-items: center;
+    font: 500 15px/1 Gotham Pro, Proxima Nova, arial, serif;
+    color: #292d34
+}
+
+.dark-theme .cu-time-estimate-dropdown__row-title {
+    color: #d5d6d7
+}
+
+.cu-time-estimate-dropdown__row-title .help-question-mark {
+    width: 18px;
+    height: 18px;
+    margin-left: 5px;
+    fill: #b9bec7
+}
+
+.dark-theme .cu-time-estimate-dropdown__row-title .help-question-mark {
+    fill: #7c828d
+}
+
+.cu-time-estimate-dropdown__row-container {
+    margin-left: 10px
+}
+
+.cu-time-estimate-dropdown__hours-per-day {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font: 400 13px/1 Gotham Pro, Proxima Nova, arial, serif;
+    padding: 0 15px;
+    color: #7c828d
+}
+
+.dark-theme .cu-time-estimate-dropdown__hours-per-day {
+    color: #abaeb0
+}
+
+.cu-time-estimate-dropdown__title {
+    text-transform: uppercase;
+    font: 500 11px/1 Gotham Pro, Proxima Nova, arial, serif;
+    white-space: nowrap;
+    margin: 20px 0 10px;
+    color: #7c828d
+}
+
+.dark-theme .cu-time-estimate-dropdown__title {
+    color: #828588
+}
+
+.cu-time-estimate-dropdown__assignee {
+    padding: 0 15px
+}
+
+.cu-time-estimate-dropdown__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px 0 0;
+    padding: 10px 15px;
+    border-top: 1px solid #e9ebf0
+}
+
+.dark-theme .cu-time-estimate-dropdown__footer {
+    border-top-color: #1e272e
+}
+
+.cu-time-estimate-dropdown__footer-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 8px;
+    fill: #fff;
+    stroke: #fff
+}
+
+.cu-time-estimate-dropdown__footer-cancel {
+    color: #fd71af;
+    font: 400 13px/1 Gotham Pro, Proxima Nova, arial, serif;
+    cursor: pointer
+}
+
+.cu-time-estimate-dropdown__footer-cancel:hover {
+    color: #fd58a1
+}
+
+.cu-time-estimate-dropdown__footer-rolled {
+    visibility: hidden
+}
+
+.cu-time-estimate-dropdown__footer-rolled_display {
+    visibility: visible
+}
+
+.cu-time-estimate-dropdown__footer-rolled-title {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-transform: uppercase;
+    font: 600 10px/1 Gotham Pro, Proxima Nova, arial, serif;
+    white-space: nowrap;
+    margin-bottom: 6px;
+    color: #b9bec7
+}
+
+.dark-theme .cu-time-estimate-dropdown__footer-rolled-title {
+    color: #7c828d
+}
+
+.cu-time-estimate-dropdown__footer-rolled-value {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font: 500 13px/1 Gotham Pro, Proxima Nova, arial, serif;
+    white-space: nowrap;
+    display: inline;
+    cursor: pointer;
+    color: #7c828d
+}
+
+.dark-theme .cu-time-estimate-dropdown__footer-rolled-value {
+    color: #abaeb0
+}
+
+.cu-time-estimate-dropdown__footer-rolled-value:hover {
+    color: #7b68ee
+}
+
+@supports (--theme-main-color:#7b68ee) {
+    .cu-time-estimate-dropdown__footer-rolled-value:hover {
+        color: var(--theme-main-color)
+    }
+}
+
+.cu-time-estimate-dropdown__footer-rolled-note {
+    font: 400 10px/1 Gotham Pro, Proxima Nova, arial, serif;
+    color: #7c828d
+}
+
+.dark-theme .cu-time-estimate-dropdown__footer-rolled-note {
+    color: #abaeb0
+}
+
+.cu-time-estimate-dropdown__warning {
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px;
+    background: #f2f4f7
+}
+
+.dark-theme .cu-time-estimate-dropdown__warning {
+    background: #2b343b
+}
+
+.cu-time-estimate-dropdown__warning-title {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font: 500 14px/1 Gotham Pro, Proxima Nova, arial, serif;
+    margin-bottom: 10px;
+    color: #292d34
+}
+
+.dark-theme .cu-time-estimate-dropdown__warning-title {
+    color: #d5d6d7
+}
+
+.cu-time-estimate-dropdown__warning-desc {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font: 400 13px/1.2 Gotham Pro, Proxima Nova, arial, serif;
+    margin-bottom: 10px;
+    color: #7c828d
+}
+
+.dark-theme .cu-time-estimate-dropdown__warning-desc {
+    color: #abaeb0
+}
+
+.cu-time-estimate-dropdown__warning-checkbox .cu-checkbox__label {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font: 400 13px/1 Gotham Pro, Proxima Nova, arial, serif;
+    text-transform: none;
+    color: #292d34
+}
+
+.dark-theme .cu-time-estimate-dropdown__warning-checkbox .cu-checkbox__label {
+    color: #d5d6d7
+}

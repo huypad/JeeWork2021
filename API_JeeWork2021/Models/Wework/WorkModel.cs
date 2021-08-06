@@ -29,8 +29,7 @@ namespace JeeWork_Core2021.Models
         public List<FileUploadModel> Attachments { get; set; }
         public List<WorkTagModel> Tags { get; set; }
         public long clickup_prioritize { get; set; }
-
-
+        public string estimates { get; set; }
     }
     public class WorkDuplicateModel
     {
@@ -87,6 +86,7 @@ namespace JeeWork_Core2021.Models
                     case "favorites": return 43;
                     case "status": return 44;
                     case "new_field": return 1;
+                    case "estimates": return 58;
                     default: return 0;
                 }
             }

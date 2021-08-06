@@ -1363,7 +1363,9 @@ export class WorkListNewDetailComponent implements OnInit {
       }
     });
   }
-
+  Updateestimates(event){
+    this.UpdateByKeyNew(this.item, "estimates", event);
+  }
   stopPropagation(event) {
     event.stopPropagation();
   }

@@ -1277,7 +1277,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     var list = val.split(" ");
     return list[list.length - 1];
   }
-
+  Updateestimates(task,event){
+    this.UpdateByKey(task, "estimates", event);
+  }
   updateDate(task, date, field) {
     this.UpdateByKey(task, field, moment(date).format("MM/DD/YYYY HH:mm"));
   }
