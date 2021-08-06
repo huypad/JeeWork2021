@@ -847,22 +847,6 @@
                                                             <br /> 
                                                         </td>
                                                     </tr>
-                                                    <!-- <tr *ngIf="HasupdateResult()">
-                                                        <td colspan="2" style="width: 100%">
-                                                            <a class="action" (click)="Update_Result()"> 
-                                                                <span translate="work.capnhatketquacongviec"></span>
-                                                            </a>&nbsp;&nbsp;
-                                                            hoặc
-                                                            <input #resultInput hidden="true" type="file" onclick="this.value=null"
-                                                                (change)="save_file_Direct($event, '11')" />
-                        
-                                                            <a class="action" (click)="resultInput.click()"
-                                                                matTooltip="{{ 'work.uploadfile' | translate }}">
-                                                                <span translate="work.themtailieu"></span>
-                                                                <i class="las la-paperclip"></i> &nbsp;
-                                                            </a>
-                                                        </td>
-                                                    </tr> -->
                                                 </table>
                                             </div>
                                         </div>
@@ -925,9 +909,9 @@
                                 <div class="task-history-item">
                                     <ng-container *ngIf="log.id_action != 39;else comment">
                                         <div class="task-history-item__content row">
-                                            <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{log.action}} 
+                                            <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{getActionActivities(log)}} 
                                             
-                                            <ng-container *ngIf="log.id_action != 1 && log.id_action != 9">
+                                            <ng-container *ngIf="log.id_action != 1 && log.id_action != 9 && log.id_action != 8">
                                                 <ng-container *ngIf="log.oldvalue">
                                                     từ &nbsp;
                                                     <ng-container *ngIf="log.colorold">

@@ -63,10 +63,7 @@ export class ReportByProjectComponent implements OnInit {
       startDate: new Date(start_date.setMonth(start_date.getMonth() - 5)),
     }
     this.filterCVC = this._filterCV[0];
-    this.trangthai = {
-      statusname: this.translate.instant('filter.tatcatrangthai'),
-      id_row: '',
-    };
+    this.trangthai = this._filterTT[0];
     this.column_sort = this.sortField[0];
   }
 

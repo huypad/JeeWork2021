@@ -2451,9 +2451,8 @@ iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
 iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
                             from v_wework_new w where 1=1 " + strW;
-                    string sql_comment = @"select we_comment.* from v_wework_new w join we_comment 
-                                     on w.id_row = we_comment.object_id and object_type = 1 
-                                     where we_comment.Disabled = 0 " + strW + "";
+                    string sql_comment = @$"select iif(sum(num_comment)>0,sum(num_comment),0) from we_work where id_row in (select distinct id_row
+from v_wework_new w where 1=1 {strW})";
                     string sql_object = @"select count(id_nv) 
                                             from v_wework_new w 
                                             where 1 = 1 " + strW + "(child) " +
@@ -2468,7 +2467,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     }
                     DataSet ds_object = cnn.CreateDataSet(sql_object, cond);
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
-                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment;
+                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment=0;
                     GetWeekInMonth(from, to, out daynum, out weeknum);
                     DataTable dt_work = ds.Tables[1];
                     work_of_week = dt_work.Rows.Count / weeknum;
@@ -2476,11 +2475,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         work_of_member = work_of_week / ds_object.Tables[0].Rows.Count;
                     if (ds_object.Tables[1].Rows.Count > 0)
                         work_of_project = work_of_week / ds_object.Tables[1].Rows.Count;
-                    DataTable dt_Comment = cnn.CreateDataTable(sql_comment, cond);
-                    if (dt_Comment.Rows.Count > 0)
-                        comment = dt_Comment.Rows.Count;
-                    else
-                        comment = 0;
+                    comment = double.Parse(cnn.ExecuteScalar(sql_comment, cond).ToString());
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     var  data = new

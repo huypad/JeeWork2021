@@ -3605,7 +3605,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     "from we_status where disabled = 0 and id_project_team = @id_project_team";
                     DataTable dt_StatusID = new DataTable();
                     dt_StatusID = cnn.CreateDataTable(sql_status, new SqlConditions() { { "id_project_team", id_project_team.ToString() } });
-                    if (data.key != "Tags" && data.key != "Attachments" && data.key != "assign" && data.key != "follower")
+                    if (data.key != "Tags" && data.key != "Attachments" && data.key != "Attachments_result" && data.key != "assign" && data.key != "follower")
                     {
                         Hashtable val = new Hashtable();
                         val.Add("UpdatedDate", DateTime.Now);
@@ -4182,7 +4182,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (id_log_action > 0)
                     {
                         bool re = true;
-                        if (data.key != "Tags" && data.key != "Attachments")
+                        if (data.key != "Tags" && data.key != "Attachments" && data.key != "Attachments_result")
                         {
                             string temp = data.key;
                             if (temp == "assign" || temp == "follower")

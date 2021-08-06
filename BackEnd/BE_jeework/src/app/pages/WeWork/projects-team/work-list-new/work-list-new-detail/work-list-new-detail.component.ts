@@ -1223,37 +1223,46 @@ export class WorkListNewDetailComponent implements OnInit {
         ct.strBase64 = this.File;
         ct.filename = this.TenFile;
         ct.IsAdd = true;
-        _model.item = ct;
-        this.loadingAfterSubmit = true;
-        this.viewLoading = true;
-        this._attservice.Upload_attachment(_model).subscribe((res) => {
-          this.changeDetectorRefs.detectChanges();
-          if (res && res.status === 1) {
-            const _messageType = this.translate.instant(
-              "GeneralKey.capnhatthanhcong"
-            );
-            this.layoutUtilsService
-              .showActionNotification(
-                _messageType,
-                MessageType.Update,
-                4000,
-                true,
-                false
-              )
-              .afterDismissed()
-              .subscribe((tt) => {});
+        // _model.item = ct;
+        // this.loadingAfterSubmit = true;
+        // this.viewLoading = true;
+        // this._attservice.Upload_attachment(_model).subscribe((res) => {
+        //   this.changeDetectorRefs.detectChanges();
+        //   if (res && res.status === 1) {
+        //     const _messageType = this.translate.instant(
+        //       "GeneralKey.capnhatthanhcong"
+        //     );
+        //     this.layoutUtilsService
+        //       .showActionNotification(
+        //         _messageType,
+        //         MessageType.Update,
+        //         4000,
+        //         true,
+        //         false
+        //       )
+        //       .afterDismissed()
+        //       .subscribe((tt) => {});
+        //     this.LoadData();
+        //   } else {
+        //     this.layoutUtilsService.showActionNotification(
+        //       res.error.message,
+        //       MessageType.Read,
+        //       9999999999,
+        //       true,
+        //       false,
+        //       3000,
+        //       "top",
+        //       0
+        //     );
+        //   }
+        // });
+        const item = new UpdateWorkModel();
+        item.id_row = this.item.id_row;
+        item.key = type=='1'?'Attachments':'Attachments_result';
+        item.values = new Array<FileUploadModel>(ct);
+        this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
+          if (res && res.status == 1) {
             this.LoadData();
-          } else {
-            this.layoutUtilsService.showActionNotification(
-              res.error.message,
-              MessageType.Read,
-              9999999999,
-              true,
-              false,
-              3000,
-              "top",
-              0
-            );
           }
         });
       }, 50);
@@ -1261,6 +1270,14 @@ export class WorkListNewDetailComponent implements OnInit {
       this.File = "";
     }
   }
+  getActionActivities(value) {
+		var text = '';
+		text = value.action;
+		if(text){
+			return text.replace("{0}","");
+		}
+		return '';
+	}
   Delete_File(val: any) {
     const _title = this.translate.instant("GeneralKey.xoa");
     const _description = this.translate.instant(

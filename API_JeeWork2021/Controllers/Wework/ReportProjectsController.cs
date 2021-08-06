@@ -2188,8 +2188,14 @@ where w.disabled=0  " + strW;
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiện (đang làm & phải làm)||2: đã xong
                 {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
+                    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    {
+                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
+                    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    {
+                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                    }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -2204,9 +2210,8 @@ where w.disabled=0  " + strW;
                             ,Deadline,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
                             iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,id_department 
                             from v_wework_clickup_new w where 1=1 " + strW;
-                    string sql_comment = @"select DISTINCT we_comment.* from v_wework_new w join we_comment 
-                        on w.id_row = we_comment.object_id and object_type = 1 
-                        where we_comment.Disabled = 0 " + strW + "";
+                    string sql_comment = @$"select iif(sum(num_comment)>0,sum(num_comment),0) from we_work where id_row in (select id_row 
+                            from v_wework_clickup_new w where 1=1 {strW})";
                     string sql_object = @"select count(id_nv) 
                                             from v_wework_new w 
                                             where 1 = 1 " + strW + "(child) " +
@@ -2221,7 +2226,7 @@ where w.disabled=0  " + strW;
                     }
                     DataSet ds_object = cnn.CreateDataSet(sql_object, cond);
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
-                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment;
+                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment= 0;
                     GetWeekInMonth(from, to, out daynum, out weeknum);
                     DataTable dt_work = ds.Tables[1];
                     work_of_week = dt_work.Rows.Count / weeknum;
@@ -2229,11 +2234,13 @@ where w.disabled=0  " + strW;
                         work_of_member = work_of_week / ds_object.Tables[0].Rows.Count;
                     if (ds_object.Tables[1].Rows.Count > 0)
                         work_of_project = dt_work.Rows.Count / ds_object.Tables[1].Rows.Count;
-                    DataTable dt_Comment = cnn.CreateDataTable(sql_comment, cond);
-                    if (dt_Comment.Rows.Count > 0)
-                        comment = dt_Comment.Rows.Count;
-                    else
-                        comment = 0;
+                    //DataTable dt_Comment = cnn.CreateDataTable(sql_comment, cond);
+                    //if (dt_Comment.Rows.Count > 0)
+                    //    comment = dt_Comment.Rows.Count;
+                    //else
+                    //    comment = 0;
+                    comment = double.Parse(cnn.ExecuteScalar(sql_comment, cond).ToString());
+
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     var

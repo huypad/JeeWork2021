@@ -68,6 +68,7 @@ namespace JeeWork_Core2021.Models
                     case "deadline": return 4;
                     case "urgent": return 7;
                     case "important": return 8;
+                    case "clickup_prioritize": return 8;
                     case "Tags": return 9;
                     case "Attachments": return 10;
                     case "start_date": return 11;
