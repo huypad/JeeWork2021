@@ -41,7 +41,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             ConnectionCache = _cache;
             _configuration = configuration;
             _logger = logger;
-
         }
         //[CusAuthorize(Roles = "3400")]
         [Route("List")]
@@ -70,6 +69,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
                     bool Visible = Common.CheckRoleByUserID(loginData, 3400, cnn);
                     //WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
                     SqlConditions Conds = new SqlConditions();
