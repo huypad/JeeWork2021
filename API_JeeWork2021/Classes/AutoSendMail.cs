@@ -123,7 +123,6 @@ namespace JeeWork_Core2021.Classes
                                 ThongBaoHetHan(cnnWW, CustomerID.ToString());
                                 EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
                                 EveryDayForceRun(cnnWW, CustomerID.ToString());
-                                WeworkLiteController.Insert_Template(cnnWW, CustomerID.ToString());
                             }
                         }
                         catch (Exception ex)
@@ -373,13 +372,13 @@ namespace JeeWork_Core2021.Classes
 
         private void ThongBaoSapHetHan(DpsConnection cnn, string CustemerID)
         {
-            PushNotifyModel notify = new PushNotifyModel();
+            string baotruoc_deadline = Common.GetThamSo(cnn, CustemerID, 3);
             APIModel.Models.Notify Knoti;
             Hashtable has = new Hashtable();
             SqlConditions conds = new SqlConditions();
             string select = @"select (SELECT DATEDIFF(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
 from v_wework w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
-and deadline< (GETDATE() +CONVERT(INT, (select Giatri from Temp_Thamso where id_row = 3))) and id_nv is not null";
+and deadline< (GETDATE() +CONVERT(INT, ("+baotruoc_deadline+"))) and id_nv is not null";
             DataTable dt = cnn.CreateDataTable(select);
 
             List<long> users = new List<long>();

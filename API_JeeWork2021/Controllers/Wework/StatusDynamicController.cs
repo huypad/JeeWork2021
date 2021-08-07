@@ -162,7 +162,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("id_project_team", data.Id_project_team);
                     val.Add("Disabled", 0);
                     val.Add("IsDefault", 0);
-                    val.Add("Type", data.Type);
+                    if (!string.IsNullOrEmpty(data.Type))
+                    {
+                        val.Add("Type", data.Type);
+                    }
                     if (string.IsNullOrEmpty(data.Color))
                         val.Add("color", "");
                     else

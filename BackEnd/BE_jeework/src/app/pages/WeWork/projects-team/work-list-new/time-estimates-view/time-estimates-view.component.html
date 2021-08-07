@@ -1,4 +1,4 @@
-<div class="time-estimates-view" [matMenuTriggerFor]="estimates" #menuTrigger="matMenuTrigger" *ngIf="role">
+<div class="time-estimates-view" [matMenuTriggerFor]="estimates" #menuTrigger="matMenuTrigger" [ngClass]="{'d-none': !role}">
     <div class="time-estimates-view__toogle">
         <ng-container *ngIf="this.time > 0;else settime">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@
         </ng-template>
     </div>
 </div> 
-<div class="time-estimates-view" *ngIf="!role">
+<div class="time-estimates-view" [ngClass]="{'d-none': role}">
     <div class="time-estimates-view__toogle">
         <ng-container *ngIf="this.time > 0;else settime">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
@@ -44,48 +44,8 @@
             font: 500 15px/1 Gotham Pro,Proxima Nova,arial,serif;
             color: #292d34;"> {{'filter.timeestimates' | translate}}</div>
             <div class="col-7">
-                <input type="number" [value]="time" #times (keyup.enter)="submitOut();" class="form-control">
+                <input type="number" [value]="time" #times (keyup.enter)="submitOut();menuTrigger.closeMenu()" class="form-control">
             </div>
         </div>
     </div>
 </mat-menu>
-
-<!-- đã chọn giờ -->
-
-<!-- <time-estimates-view _ngcontent-adt-c720="">
-    <div class="time-estimates-view time-estimates-view_active">
-        <div class="time-estimates-view__toogle">
-            
-            <div class="time-estimates-view__full ng-star-inserted">
-                <div class="cu-task-info__key time-estimates-view__full-key ng-star-inserted"> ESTIMATE </div>
-                
-                <div class="time-estimates-view__full-value">
-                    <div icon="close-o" class="time-estimates-view__close icon ng-star-inserted"><svg
-                            class="ng-star-inserted">
-                            <use xlink:href="https://app.clickup.com/map.eb497e79a1fa5f418503.svg#svg-sprite-close-o">
-                            </use>
-                        </svg>
-                        
-                    </div>
-                    
-                    <div class="icon time-estimates-view__icon"><svg width="10" height="14"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <g transform="translate(1 1)" stroke-width=".726" fill="none" fill-rule="evenodd"
-                                class="cu-stroke">
-                                <path
-                                    d="M1.28000544,1.46667573 L1.28000544,3.28000544 C1.28000544,4.78221697 2.49778847,6 4,6 C5.50221153,6 6.71999453,4.78221697 6.71999453,3.28000544 L6.71999453,1.46667573 L1.28000544,1.46667573 Z M1.28000544,10.5333243 L6.71999453,10.5333243 L6.71999453,8.71999453 C6.71999453,7.217783 5.50221153,6 4,6 C2.49778847,6 1.28000544,7.217783 1.28000544,8.71999453 L1.28000544,10.5333243 Z">
-                                </path>
-                                <rect x=".071" y=".258" width="7.858" height="1.209" rx=".604"></rect>
-                                <rect x=".071" y="10.533" width="7.858" height="1.209" rx=".604"></rect>
-                            </g>
-                        </svg></div>
-                    <div class="cu-task-info__value ng-star-inserted"> 123h </div>
-                    
-                    
-                </div>
-            </div>
-            
-            
-        </div>
-    </div>
-</time-estimates-view> -->

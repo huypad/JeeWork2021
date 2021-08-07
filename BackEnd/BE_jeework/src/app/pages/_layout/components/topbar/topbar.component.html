@@ -1,4 +1,21 @@
 <ng-container *ngIf="extrasNotificationsDisplay">
+
+	<ng-container *ngIf="extrasNotificationsLayout === 'offcanvas'">
+        <!--begin::Notifications-->
+        <div class="topbar-item">
+            <div class="btn btn-icon btn-icon-mobile btn-clean btn-lg mr-1 pulse pulse-primary"
+                id="kt_quick_notifications_toggle">
+                <i [ngClass]="{'Notify' : numberInfo>0}" class="flaticon2-bell-2" style="color: #3699ff;"></i>
+                <span class="badge" *ngIf="numberInfo>0">{{numberInfo}}</span>
+                <span class="pulse-ring"></span>
+            </div>
+        </div>
+        <app-notifications-offcanvas (loadUnreadList)="updateNumberNoti($event)">
+
+        </app-notifications-offcanvas>
+        <!--end::Notifications-->
+    </ng-container>
+
 	<ng-container *ngIf="extrasNotificationsLayout === 'dropdown'">
 		<!--begin::Notifications-->
 		<div class="dropdown" ngbDropdown placement="bottom">

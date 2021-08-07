@@ -76,24 +76,30 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 
   LoadDataTemp() {
     //load lại
+    this.layoutUtilsService.showWaitingDiv();
     this.weworkService.ListTemplateByCustomer().subscribe((res) => {
+      this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status === 1) {
         this.litsTemplateDemo = res.data;
         this.litsTemplateDemo.sort((a, b) => (a.IsTodo === b.IsTodo ? -1 : 1)); // isTodo true lên trước
-		console.log(this.TempSelected);
-		console.log(this.litsTemplateDemo);
-        if (this.TempSelected == 0 || !this.litsTemplateDemo.find(x=>x.id_row == this.TempSelected))
-          {
-			this.TempSelected = this.litsTemplateDemo[0].id_row;
-		  }
-        this.LoadListSTT();
+        console.log(this.TempSelected);
+        console.log(this.litsTemplateDemo);
+        if (
+          this.TempSelected == 0 ||
+          !this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected)
+        ) {
+          this.TempSelected = this.litsTemplateDemo[0].id_row;
+        }
+        if (!this.isStatusNow) this.LoadListSTT();
         this.changeDetectorRefs.detectChanges();
       }
     });
   }
 
   ListStatusDynamic() {
+    this.layoutUtilsService.showWaitingDiv();
     this.weworkService.ListStatusDynamic(this.data.id_row).subscribe((res) => {
+      this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status == 1) {
         this.listStatus = res.data;
         this.listStatus.forEach((element) => {
@@ -106,36 +112,41 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   LoadListSTT() {
-    var x = this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected);
-    if (x) {
-      this.listSTT = x.status;
+    if(!this.isStatusNow){
+      var x = this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected);
+      if (x) {
+        this.listSTT = x.status;
+      }
     }
   }
 
-  LoadStatusDuan(){
-	if (this.listStatus) {
-        // this.listSTT = this.listStatus;
-        var listTemp = [];
-        this.listStatus.forEach((element) => {
-          var item = {
-            IsDeadline: element.IsDeadline,
-            IsDefault: element.isdefault,
-            IsFinal: element.IsFinal,
-            IsTodo: element.IsTodo,
-            Position: element.position,
-            StatusName: element.statusname,
-            color: element.color,
-            description: element.Description,
-            id_row: element.id_row,
-          };
-          listTemp.push(item);
-        });
-        this.listSTT = listTemp;
-        this.changeDetectorRefs.detectChanges();
-      }
+  LoadStatusDuan() {
+    if (this.listStatus && this.isStatusNow) {
+      // this.listSTT = this.listStatus;
+      var listTemp = [];
+      this.listStatus.forEach((element) => {
+        var item = {
+          IsDeadline: element.IsDeadline,
+          IsDefault: element.isdefault,
+          IsFinal: element.IsFinal,
+          IsTodo: element.IsToDo,
+          Position: element.position,
+          StatusName: element.statusname,
+          color: element.color,
+          description: element.Description,
+          id_project_team: element.id_project_team,
+          id_row: element.id_row,
+          SL_Tasks: element.SL_Tasks,
+        };
+        listTemp.push(item);
+      });
+      this.listSTT = listTemp;
+      this.changeDetectorRefs.detectChanges();
+    }
   }
 
   LoadNewvalue(viewid) {
+    console.log(this.listStatus);
     var x = this.listSTT.find((x) => x.StatusID == viewid);
     if (x) {
       return x;
@@ -146,31 +157,45 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       };
     }
   }
-
+  Doistt(item,stt){
+    console.log(stt);
+    item.colornew = stt.color;
+    item.newtitle = stt.StatusName;
+  }
   HoanthanhUpdate() {
     const _item = new Different_StatusesModel();
     _item.clear();
     _item.id_project_team = this.data.id_row;
     _item.IsMapAll = !this.isChose;
     _item.TemplateID_New = this.TempSelected;
+    var error = false;
     if (this.isChose) {
       this.listStatus.forEach((element) => {
-        if (element.newvalue == 0) {
-          this.layoutUtilsService.showError(
-            "Bắt buộc phải chọn trạng thái công việc"
-          );
-          return;
-        } else {
-          const ct = new MapModel();
-          ct.new_status = element.newvalue;
-          ct.old_status = element.id_row;
-          _item.Map_Detail.push(ct);
+        if(element.SL_Tasks > 0){
+          if (element.newvalue == 0) {
+            error = true;
+            return;
+          } else {
+            const ct = new MapModel();
+            ct.new_status = element.newvalue;
+            ct.old_status = element.id_row;
+            _item.Map_Detail.push(ct);
+          }
         }
       });
+      if(!error)
+        this.Created(_item);
+      else
+        this.layoutUtilsService.showError("Bắt buộc phải chọn trạng thái công việc");
     } else {
       _item.Map_Detail = [];
+      this.Created(_item);
     }
 
+    
+  }
+
+  Created(_item){
     this._service.Different_Statuses(_item).subscribe((res) => {
       if (res && res.status == 1) {
         this.layoutUtilsService.showInfo("Update thành công");
@@ -206,26 +231,40 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       const item = new StatusDynamicModel();
       item.clear();
       item.Id_row = status.id_row;
-      item.StatusName = status.statusname;
+      item.StatusName = status.StatusName;
       item.Color = status.color;
 
       item.Description = status.Description;
       item.Id_project_team = status.id_project_team;
-    //   item.Follower = status.Follower;
-      item.Type = status.Type?status.Type:"2";
-      console.log(status);
-
-    //   this.UpdateStatus(item);
+      //   item.Follower = status.Follower;
+      item.Type = status.Type ? status.Type : "2";
+      console.log(item);
+      this.UpdateStatus(item);
     }
   }
   ChangeColor(value, status) {
-    const _item = new UpdateQuickModel();
-    _item.clear();
-    _item.id_row = status.id_row;
-    _item.columname = "color";
-    _item.values = value;
-    _item.id_template = this.TempSelected;
-    this.UpdateQuick(_item);
+    if (this.TempSelected > 0 && !this.isStatusNow) {
+      const _item = new UpdateQuickModel();
+      _item.clear();
+      _item.id_row = status.id_row;
+      _item.columname = "color";
+      _item.values = value;
+      _item.id_template = this.TempSelected;
+      this.UpdateQuick(_item);
+    } else {
+      const item = new StatusDynamicModel();
+      item.clear();
+      item.Id_row = status.id_row;
+      item.StatusName = status.StatusName;
+      item.Color = value;
+
+      item.Description = status.Description;
+      item.Id_project_team = status.id_project_team;
+      //   item.Follower = status.Follower;
+      item.Type = status.Type ? status.Type : "2";
+      console.log(item);
+      this.UpdateStatus(item);
+    }
   }
 
   ChangeTemplate(id) {
@@ -278,12 +317,38 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     });
   }
 
-  Delete_Templete(id, isDelStatus) {
-    this._Services.Delete_Templete(id, isDelStatus).subscribe((res) => {
-      if (res && res.status == 1) {
-        this.LoadDataTemp();
+  Delete_Templete(status, isDelStatus) {
+    if (!this.isStatusNow) {
+      this._Services
+        .Delete_Templete(status.id_row, isDelStatus)
+        .subscribe((res) => {
+          if (res && res.status == 1) {
+            this.LoadDataTemp();
+          }
+        });
+    } else {
+      if (+status.SL_Tasks > 0) {
+        this.layoutUtilsService.showError(`Trạng thái đang được sử dụng cho ${status.SL_Tasks} công việc`);
+        return
+      } else {
+        this._service.DeleteStatus(status.id_row).subscribe((res) => {
+          if (res && res.status == 1) {
+            this.ListStatusDynamic();
+          } else {
+            this.layoutUtilsService.showActionNotification(
+              res.error.message,
+              MessageType.Read,
+              9999999999,
+              true,
+              false,
+              3000,
+              "top",
+              0
+            );
+          }
+        });
       }
-    });
+    }
   }
 
   focusOutSTT(value) {
@@ -291,14 +356,40 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     if (!value) {
       return;
     }
-    const _item = new UpdateQuickModel();
-    _item.clear();
-    _item.id_row = 0;
-    _item.columname = "StatusName";
-    _item.values = value;
-    _item.istemplate = false;
-    _item.id_template = this.TempSelected;
-    this.UpdateQuick(_item);
+    if(!this.isStatusNow){
+      const _item = new UpdateQuickModel();
+      _item.clear();
+      _item.id_row = 0;
+      _item.columname = "StatusName";
+      _item.values = value;
+      _item.istemplate = false;
+      _item.id_template = this.TempSelected;
+      this.UpdateQuick(_item);
+    }else{
+      const item = new StatusDynamicModel();
+      item.clear();
+      item.StatusName = value;
+      item.Color = 'rgb(29, 126, 236)';
+      item.Id_project_team = this.data.id_row;
+      item.Type = "2";
+      console.log(item);
+      this._service.InsertStatus(item).subscribe((res) => {
+        if (res && res.status == 1) {
+          this.ListStatusDynamic();
+        } else {
+          this.layoutUtilsService.showActionNotification(
+            res.error.message,
+            MessageType.Read,
+            9999999999,
+            true,
+            false,
+            3000,
+            "top",
+            0
+          );
+        }
+      });
+    }
   }
 
   // Update người quản lý quá trình cv
@@ -364,16 +455,16 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   UpdateStatus(item) {
     this._service.UpdateStatus(item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.layoutUtilsService.showActionNotification(
-          this.translate.instant("GeneralKey.capnhatthanhcong"),
-          MessageType.Read,
-          3000,
-          true,
-          false,
-          3000,
-          "top",
-          1
-        );
+        // this.layoutUtilsService.showActionNotification(
+        //   this.translate.instant("GeneralKey.capnhatthanhcong"),
+        //   MessageType.Read,
+        //   3000,
+        //   true,
+        //   false,
+        //   3000,
+        //   "top",
+        //   1
+        // );
         this.ListStatusDynamic();
       } else {
         this.layoutUtilsService.showActionNotification(

@@ -781,6 +781,8 @@ export const locale = {
       chontrangthaicongviecmongmuon: "Chọn trạng thái công việc mong muốn",
       chontrangthaicv: "Chọn trạng thái công việc",
       doinguoitheodoi: "Đổi người theo dõi công việc",
+      cactrangthaidangsudung: "Các trạng thái dự án đang sử dụng",
+      cactrangthaicuamaukhac: "Các trạng thái của mẫu khác",
     },
     projects: {
       themtasklistmoi: "Thêm danh sách công việc mới",

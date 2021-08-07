@@ -64,7 +64,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-
     // list Status all
     this.LoadDataStatus();
     // list account user
@@ -141,8 +140,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  selectedParent(value) {
-  }
+  selectedParent(value) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     this.checked = 0;
@@ -160,7 +158,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     }
   }
   MapvalueEdit() {
-
     // Action ID
     switch (this.Actionid) {
       case 1: // assign
@@ -176,7 +173,11 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       case 2: // 2 = task ; 3 = subtask ;
       case 3:
         {
-          if (this.data_actions && this.data_actions.data_task && this.isMapdata) {
+          if (
+            this.data_actions &&
+            this.data_actions.data_task &&
+            this.isMapdata
+          ) {
             this.isMapdata = false;
             var dataTask = this.data_actions.data_task;
             this.value.taskid = dataTask.rowid;
@@ -205,9 +206,9 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
               this.value.startdateValue = dataTask.start_date;
             }
             if (dataTask.users && dataTask.users.length > 0) {
-              dataTask.users.forEach(element => {
+              dataTask.users.forEach((element) => {
                 element.id_nv = element.id_user;
-                this.ItemSelectedAssign(element, 1)
+                this.ItemSelectedAssign(element, 1);
               });
             }
           }
@@ -240,10 +241,16 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
           this.LoadDataAction9();
         }
         break;
+      case 10:
+        {
+          // _item.data = "" + element.data.to;
+          this.value.to = this.data_actions.value
+        }
+        break;
       case 11:
       case 12:
         {
-          var list = this.data_actions.value.split(';');
+          var list = this.data_actions.value.split(";");
           this.value.datetype = list[0];
           this.value.dateValue = list[1];
         }
@@ -253,16 +260,19 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
 
   MapUser() {
     if (this.listUser && this.listUser.length > 0) {
-      this.dataAction.data_actions.forEach(element => {
-        var listUser = element.value.split(',');
-        listUser.forEach(UserID => {
-          var x = this.listUser.find(x => x.id_nv == UserID);
+      console.log(this.dataAction.data_actions);
+      this.dataAction.data_actions.forEach((element) => {
+        var listUser = element.value.split(",");
+        if(element.actionid == 3){
+          this.value.removeall = element.value;
+        }
+        listUser.forEach((UserID) => {
+          var x = this.listUser.find((x) => x.id_nv == UserID);
           if (x) {
             this.ItemSelectedAssign(x, element.actionid);
           }
         });
       });
-
     } else {
       setTimeout(() => {
         this.MapUser();
@@ -271,16 +281,15 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
   }
   MapTags() {
     if (this.list_Tag && this.list_Tag.length > 0) {
-      this.dataAction.data_actions.forEach(element => {
-        var listTag = element.value.split(',');
-        listTag.forEach(id_row => {
-          var x = this.list_Tag.find(x => x.id_row == id_row);
+      this.dataAction.data_actions.forEach((element) => {
+        var listTag = element.value.split(",");
+        listTag.forEach((id_row) => {
+          var x = this.list_Tag.find((x) => x.id_row == id_row);
           if (x) {
             this.SelectedTag(x, element.actionid);
           }
         });
       });
-
     } else {
       setTimeout(() => {
         this.MapTags();
@@ -363,7 +372,8 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     return options;
   }
   ItemSelectedAssign(item, Actionid) {
-    if (Actionid == 1) { // giao
+    if (Actionid == 1) {
+      // giao
       if (!this.value.ItemSelectedAssign) {
         this.value.ItemSelectedAssign = [];
       }
@@ -375,7 +385,8 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       } else {
         this.value.ItemSelectedAssign.push(item);
       }
-    } else if (Actionid == 2) { // bỏ 
+    } else if (Actionid == 2) {
+      // bỏ
       if (!this.value.ItemRemoveAssign) {
         this.value.ItemRemoveAssign = [];
       }
@@ -387,7 +398,8 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       } else {
         this.value.ItemRemoveAssign.push(item);
       }
-    } else if (Actionid == 4) { // chỉ định lại
+    } else if (Actionid == 4) {
+      // chỉ định lại
       if (!this.value.ItemReassign) {
         this.value.ItemReassign = [];
       }
@@ -447,31 +459,29 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     this.item1 = {
       id_row: 1,
       id_project_team: this.ID_projectteam,
-    }
+    };
     this.item2 = {
       id_row: 2,
       id_project_team: this.ID_projectteam,
-    }
+    };
   }
   item1: any = [];
   item2: any = [];
   SelectedTag(value, loai = 5) {
     if (loai == 5) {
       if (!this.value.Tags) this.value.Tags = [];
-      var index = this.value.Tags.findIndex(x => x.id_row == value.id_row);
+      var index = this.value.Tags.findIndex((x) => x.id_row == value.id_row);
       if (index >= 0) {
         this.value.Tags.splice(index, 1);
-      }
-      else {
+      } else {
         this.value.Tags.push(value);
       }
     } else {
       if (!this.value.Tags2) this.value.Tags2 = [];
-      var index = this.value.Tags2.findIndex(x => x.id_row == value.id_row);
+      var index = this.value.Tags2.findIndex((x) => x.id_row == value.id_row);
       if (index >= 0) {
         this.value.Tags2.splice(index, 1);
-      }
-      else {
+      } else {
         this.value.Tags2.push(value);
       }
     }

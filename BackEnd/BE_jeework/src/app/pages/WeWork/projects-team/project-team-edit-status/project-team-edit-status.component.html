@@ -3,11 +3,12 @@
     <div class="position-relative" style="padding:35px">
         <ng-template #chucnangcu>
             <ng-container *ngIf="!IsSave;else saveStatus">
-                <div class="cu-view-space"  style="padding-bottom: 80px;">
+                <div class="cu-view-space" style="padding-bottom: 80px;">
                     <div class="close-dialog">
                         <div class="row">
                             <div class="text-center" style="flex-grow: 1;">
-                                <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chontrangthai'|translate}}
+                                <h1 style="margin-top: -15px; font-size: 40px;">{{
+                                    'department.chontrangthai'|translate}}
                                 </h1>
                             </div>
                             <div>
@@ -19,63 +20,68 @@
                     <div class="view-template overflow-auto" style="padding-bottom: 0;">
                         <div class="row w-100">
                             <div class="col-md-6">
-                                <!-- <div class="header-view-title" style="color: black;">
-                                    {{ 'department.maudangchon'|translate}}
-                                </div> -->
-                                <!-- template-selected -->
-                                <div class="item-template mb-1" (click)="isStatusNow = true;" [ngClass]="{'template-selected': isStatusNow}">
-                                    Các trạng thái đang sử dụng
+                                <div class="item-template mb-1" (click)="isStatusNow = true;LoadStatusDuan();"
+                                    [ngClass]="{'template-selected': isStatusNow}">
+                                    {{ 'department.cactrangthaidangsudung'|translate}}
                                 </div>
-                                <div class="item-template mb-1" (click)="isStatusNow = false;" [ngClass]="{'template-selected': !isStatusNow}">
-                                    Các trạng thái thuộc template khác
+                                <div class="item-template mb-1" (click)="isStatusNow = false;LoadListSTT();"
+                                    [ngClass]="{'template-selected': !isStatusNow}">
+                                    <ng-container *ngFor="let demo of litsTemplateDemo">
+                                        <div *ngIf="demo.id_row == TempSelected">
+                                            {{demo.title}}
+                                        </div>
+                                    </ng-container>
                                 </div>
-                                <hr/>
-                                <ng-container *ngFor="let demo of litsTemplateDemo">
-                                    <div class="template-selected" *ngIf="demo.id_row == TempSelected">
-                                        {{demo.title}}
+                                
+                                
+                                <ng-container *ngIf="!isStatusNow">
+                                    <hr />
+                                    <div class="header-view " style="margin-top: 5px;">
+                                        <div class="header-view-title">
+                                            {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
+                                        </div>
+                                        <i class="fas fa-plus url text-success " (click)="addTemplate()"
+                                            style="font-size: 20px;" matTooltipPosition="above"
+                                            matTooltip="Thêm mẫu mới"></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 item-template"
+                                            [ngStyle]="{'color': TempSelected==demo.id_row?'green':''}"
+                                            *ngFor="let demo of litsTemplateDemo">
+                                            <div class="title-template url">
+                                                <span (click)="ChangeTemplate(demo.id_row)"
+                                                    *ngIf="updateTemp!=demo.id_row;else update">{{demo.title}}</span>
+                                                <ng-template #update>
+                                                    <app-focus-block type="text" isbd="true" style="width:100%"
+                                                        value="{{demo.title}}" (out)="focusOutTemp($event,demo,true);">
+                                                    </app-focus-block>
+                                                </ng-template>
+                                            </div>
+                                            <div class="edit-template ">
+                                                <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
+                                                    matTooltip="Chỉnh sửa">edit</mat-icon>
+                                                <mat-icon class="-hover url"
+                                                    (click)="Delete_Templete(demo,false)" matTooltip="Xóa">close
+                                                </mat-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="add-new-template w-100">
+                                            <button class="btn text-success" (click)="addTemplate()"
+                                                *ngIf="!isAddTemplate">
+                                                <i class="fas fa-plus"></i> &nbsp;
+                                                <span>{{ 'department.themmau'|translate}}</span>
+                                            </button>
+                                            <div *ngIf="isAddTemplate">
+                                                <app-focus-block type="text" isbd="true" style="width:100%"
+                                                    (out)="focusOutTemp($event,{});">
+                                                </app-focus-block>
+                                            </div>
+                                        </div>
                                     </div>
                                 </ng-container>
-                                <div class="header-view " style="margin-top: 5px;">
-                                    <div class="header-view-title">
-                                        {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
-                                    </div>
-                                    <i class="fas fa-plus url text-success " (click)="addTemplate()"
-                                        style="font-size: 20px;" matTooltipPosition="above" matTooltip="Thêm mẫu mới"></i>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 item-template"
-                                        [ngStyle]="{'color': TempSelected==demo.id_row?'green':''}"
-                                        *ngFor="let demo of litsTemplateDemo">
-                                        <div class="title-template url">
-                                            <span (click)="ChangeTemplate(demo.id_row)"
-                                                *ngIf="updateTemp!=demo.id_row;else update">{{demo.title}}</span>
-                                            <ng-template #update>
-                                                <app-focus-block type="text" isbd="true" style="width:100%"
-                                                    value="{{demo.title}}" (out)="focusOutTemp($event,demo,true);">
-                                                </app-focus-block>
-                                            </ng-template>
-                                        </div>
-                                        <div class="edit-template ">
-                                            <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
-                                                matTooltip="Chỉnh sửa">edit</mat-icon>
-                                            <mat-icon class="-hover url" (click)="Delete_Templete(demo.id_row,false)"
-                                                matTooltip="Xóa">close</mat-icon>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="add-new-template w-100">
-                                        <button class="btn text-success" (click)="addTemplate()" *ngIf="!isAddTemplate">
-                                            <i class="fas fa-plus"></i> &nbsp;
-                                            <span>{{ 'department.themmau'|translate}}</span>
-                                        </button>
-                                        <div *ngIf="isAddTemplate">
-                                            <app-focus-block type="text" isbd="true" style="width:100%"
-                                                (out)="focusOutTemp($event,{});">
-                                            </app-focus-block>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                             <div class="col-md-6">
                                 <div class="header-view row">
@@ -95,8 +101,9 @@
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                                 [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
-    
+                                            <div class="box-color" (click)="changeColor.click();"
+                                                [ngStyle]="{'backgroundColor': stt.color }">
+
                                             </div>
                                             <div class="input">
                                                 <input type="text" #input (focus)="sttFocus(stt.id_row)"
@@ -105,27 +112,28 @@
                                                     [(ngModel)]="stt.StatusName" class="">
                                             </div>
                                             <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                                <i class="fas fa-check url text-success"
+                                                    *ngIf="idfocus==stt.id_row"></i>
                                                 <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
                                                     *ngIf="idfocus!=stt.id_row"></i>
                                             </div>
                                             <mat-menu #menu1="matMenu">
                                                 <button mat-menu-item (click)="input.focus()">
                                                     {{ 'department.doiten'|translate}}
-    
+
                                                 </button>
                                                 <button mat-menu-item (click)="changeColor.click();">
                                                     {{ 'department.doimau'|translate}}
-    
+
                                                 </button>
-                                                <button mat-menu-item (click)="Delete_Templete(stt.id_row,true)"
+                                                <button mat-menu-item (click)="Delete_Templete(stt,true)"
                                                     *ngIf="!stt.IsTodo">
                                                     {{ 'GeneralKey.xoa'|translate}}
                                                 </button>
                                             </mat-menu>
                                         </div>
                                     </ng-container>
-    
+
                                     <div class="status-input col-12 form-control" *ngIf="isAddStatus">
                                         <div class="input">
                                             <app-focus-block type="text" placeholder="Thêm trạng thái mới" isbd="true"
@@ -133,14 +141,14 @@
                                             </app-focus-block>
                                         </div>
                                     </div>
-    
-                                    <button class="btn btn-success" style="padding: 5px 10px;" (click)="isAddStatus=true"
-                                        *ngIf="!isAddStatus">
+
+                                    <button class="btn btn-success" style="padding: 5px 10px;"
+                                        (click)="isAddStatus=true" *ngIf="!isAddStatus">
                                         <i class="fas fa-plus"></i> &nbsp;
                                         {{ 'department.themtrangthai'|translate}}
                                     </button>
                                 </div>
-    
+
                                 <div class="header-view row" style="margin-top: 15px!important;">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaitre'|translate}}
@@ -157,8 +165,9 @@
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                                 [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color"(click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
-    
+                                            <div class="box-color" (click)="changeColor.click();"
+                                                [ngStyle]="{'backgroundColor': stt.color }">
+
                                             </div>
                                             <div class="input">
                                                 <input type="text" #input (focus)="sttFocus(stt.id_row)"
@@ -167,7 +176,8 @@
                                                     [(ngModel)]="stt.StatusName" class="">
                                             </div>
                                             <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                                <i class="fas fa-check url text-success"
+                                                    *ngIf="idfocus==stt.id_row"></i>
                                                 <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
                                                     *ngIf="idfocus!=stt.id_row"></i>
                                             </div>
@@ -178,12 +188,12 @@
                                                 <button mat-menu-item (click)="changeColor.click();">
                                                     {{ 'department.doimau'|translate}}
                                                 </button>
-    
+
                                             </mat-menu>
                                         </div>
                                     </ng-container>
                                 </div>
-    
+
                                 <div class="header-view row" style="margin-top: 15px!important;">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaidone'|translate}}
@@ -200,8 +210,9 @@
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
                                                 [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
-    
+                                            <div class="box-color" (click)="changeColor.click();"
+                                                [ngStyle]="{'backgroundColor': stt.color }">
+
                                             </div>
                                             <div class="input">
                                                 <input type="text" #input (focus)="sttFocus(stt.id_row)"
@@ -210,7 +221,8 @@
                                                     [(ngModel)]="stt.StatusName" class="">
                                             </div>
                                             <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                                <i class="fas fa-check url text-success"
+                                                    *ngIf="idfocus==stt.id_row"></i>
                                                 <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
                                                     *ngIf="idfocus!=stt.id_row"></i>
                                             </div>
@@ -225,7 +237,7 @@
                                         </div>
                                     </ng-container>
                                 </div>
-                                <div class="form-group" style="margin-top: 15px!important;">
+                                <div class="form-group" style="margin-top: 15px!important;" *ngIf="isStatusNow">
                                     <button class="btn btn-outline-success w-100" (click)="isDoinguoi=true">
                                         {{ 'department.chinhsuanguoitheodoicongviec'|translate}}
                                     </button>
@@ -233,7 +245,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-success btn-next" type="button" (click)="IsSave=true">
+                    <button class="btn btn-success btn-next" type="button" *ngIf="this.TempSelected > 0 && !this.isStatusNow" (click)="IsSave=true">
                         {{ 'department.luuthaydoi'|translate}}
                     </button>
                 </div>
@@ -243,11 +255,13 @@
                     <div class="close-dialog">
                         <div class="row">
                             <div class="text-center" style="flex-grow: 1;">
-                                <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.thaydoitrangthai'|translate}}
+                                <h1 style="margin-top: -15px; font-size: 40px;">{{
+                                    'department.thaydoitrangthai'|translate}}
                                 </h1>
                             </div>
                             <div>
-                                <mat-icon class="scale-2 url" (click)="IsSave=false;ListStatusDynamic()">close</mat-icon>
+                                <mat-icon class="scale-2 url" (click)="IsSave=false;ListStatusDynamic()">close
+                                </mat-icon>
                             </div>
                         </div>
                     </div>
@@ -258,15 +272,16 @@
                                 <input type="radio" class="cu-radio__input">
                                 <div class="cu-radio__label" [ngClass]="{'checked': !isChose}" (click)="isChose=false">
                                     {{ 'department.chuyentatcavemacdinh'|translate}}
-                                    <div class="cu-conflict-management__subtext ng-star-inserted"> {{ 'department.ngoaitrucaccongviecdadong'|translate}} </div>
+                                    <div class="cu-conflict-management__subtext ng-star-inserted"> {{
+                                        'department.ngoaitrucaccongviecdadong'|translate}} </div>
                                 </div>
                             </div>
                             <div class="cu-radio">
                                 <input type="radio" class="cu-radio__input">
                                 <div class="cu-radio__label " [ngClass]="{'checked': isChose}" (click)="isChose=true">
                                     {{ 'department.chontrangthaicv'|translate}}
-                                    <div class="cu-conflict-management__subtext ng-star-inserted"> 
-                                        {{ 'department.chontrangthaicongviecmongmuon'|translate}}    
+                                    <div class="cu-conflict-management__subtext ng-star-inserted">
+                                        {{ 'department.chontrangthaicongviecmongmuon'|translate}}
                                     </div>
                                 </div>
                             </div>
@@ -280,41 +295,44 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of listStatus">
-                                    <td style="width:50%">
-                                        <div class="row">
-                                            <div class="point" [ngStyle]="{'backgroundColor': item.color}"></div>
-                                            <div style="flex-grow: 1;">
-                                                {{item.statusname}}
-                                            </div>
-                                            <div>
-                                                <i class="fas fa-arrow-right"></i>&nbsp;&nbsp;{{item.SL_Tasks}} công
-                                                việc
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="width:50%">
-                                        <div [matMenuTriggerFor]="chonSTT" class="row url">
-                                            <div class="point"
-                                                [ngStyle]="{'backgroundColor': LoadNewvalue(item.newvalue).color}">
-                                            </div>
-                                            <div style="flex-grow: 1;" [ngClass]="{'text-danger': item.newvalue==0}">
-                                                {{LoadNewvalue(item.newvalue).StatusName}}
-                                            </div>
-                                        </div>
-                                        <mat-menu #chonSTT="matMenu" yPosition="above" xPosition="after">
-                                            <button mat-menu-item *ngFor="let stt of listSTT"
-                                                (click)="item.newvalue = stt.id_row">
-                                                <div class="row">
-                                                    <div class="point" [ngStyle]="{'backgroundColor': stt.color}"></div>
-                                                    <div style="flex-grow: 1;">
-                                                        {{stt.StatusName}}
-                                                    </div>
+                                <ng-container *ngFor="let item of listStatus">
+                                    <tr *ngIf="item.SL_Tasks > 0" >
+                                        <td style="width:50%">
+                                            <div class="row">
+                                                <div class="point" [ngStyle]="{'backgroundColor': item.color}"></div>
+                                                <div style="flex-grow: 1;">
+                                                    {{item.statusname}}
                                                 </div>
-                                            </button>
-                                        </mat-menu>
-                                    </td>
-                                </tr>
+                                                <div>
+                                                    <i class="fas fa-arrow-right"></i>&nbsp;&nbsp;{{item.SL_Tasks}} công
+                                                    việc
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="width:50%">
+                                            <div [matMenuTriggerFor]="chonSTT" class="row url">
+                                                <div class="point"
+                                                    [ngStyle]="{'backgroundColor': item.colornew?item.colornew:'pink'}">
+                                                </div>
+                                                <div style="flex-grow: 1;" [ngClass]="{'text-danger': item.newvalue==0}">
+                                                    {{ item.newtitle?item.newtitle:'Chọn trạng thái mới'}}
+                                                </div>
+                                            </div>
+                                            <mat-menu #chonSTT="matMenu" yPosition="above" xPosition="after">
+                                                <button mat-menu-item *ngFor="let stt of listSTT"
+                                                    (click)="item.newvalue = stt.id_row;Doistt(item,stt)">
+                                                    <div class="row">
+                                                        <div class="point" [ngStyle]="{'backgroundColor': stt.color}"></div>
+                                                        <div style="flex-grow: 1;">
+                                                            {{stt.StatusName}}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </mat-menu>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                                
                             </tbody>
                         </table>
                     </div>
@@ -349,15 +367,16 @@
                             <div class="item-status form-group" *ngFor="let item of listStatus">
                                 <div class="row">
                                     <div class="set-color" style="min-width: 50px;">
-                                        <div [ngStyle]="{backgroundColor: item.color}" style="width: 25px; height: 25px;"
-                                            class="box-color">
+                                        <div [ngStyle]="{backgroundColor: item.color}"
+                                            style="width: 25px; height: 25px;" class="box-color">
                                         </div>
                                     </div>
                                     <div class="name-desc">
                                         <span class="text-uppercase">{{item.statusname}} </span>
                                     </div>
-                                    <div class="col-5 form-control" >
-                                        <mat-select style="width: 100%;"[(ngModel)]="item.Follower" (ngModelChange)="onSubmit(item)">
+                                    <div class="col-5 form-control">
+                                        <mat-select style="width: 100%;" [(ngModel)]="item.Follower"
+                                            (ngModelChange)="onSubmit(item)">
                                             <mat-option [value]="0">
                                             </mat-option>
                                             <mat-option [value]="item.id_nv" *ngFor="let item of listUser">

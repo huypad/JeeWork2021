@@ -6,6 +6,7 @@ export const environment = {
   USERDATA_KEY: "authf649fc9a5f55",
   apiUrl: "api",
   //
+  APPCODE: 'WORK',
   APIROOTSLANDING: "https://api-proxy.vts-demo.com",
   APIROOTS: "https://localhost:44366", //"https://jeework-api.jee.vn/",//root chung
   LOGOLINK: "",

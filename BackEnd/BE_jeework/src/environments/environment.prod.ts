@@ -9,6 +9,7 @@ export const environment = {
   APIROOTSLANDING: "https://api-proxy.vts-demo.com",
   APIROOTS: "https://jeework-api.jee.vn", //"https://localhost:44336/",//root chung
   LOGOLINK: "",
+  APPCODE: 'WORK',
   MODULE: "wework",
   // ApiRootAcount: "https://wms-apisys.bookve.com.vn/api",
   // WMSApiRoot: 'https://wms-apisys.bookve.com.vn/api',

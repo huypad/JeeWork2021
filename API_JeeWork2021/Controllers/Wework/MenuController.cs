@@ -62,6 +62,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                     using (DpsConnection Conn = new DpsConnection(ConnectionString))
                     {
+                        WeworkLiteController.Insert_Template(Conn, loginData.CustomerID.ToString());
                         #region Lấy dữ liệu account từ JeeAccount
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)

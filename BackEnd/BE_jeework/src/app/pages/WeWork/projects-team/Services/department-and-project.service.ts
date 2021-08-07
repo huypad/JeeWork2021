@@ -415,6 +415,10 @@ export class ProjectsTeamService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_Status + '/Update', item, { headers: httpHeaders });
 	}
+	DeleteStatus(id): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API_Status + '/Delete?id='+id, { headers: httpHeaders });
+	}
 
 	Different_Statuses(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();

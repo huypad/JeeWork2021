@@ -93,57 +93,60 @@ namespace API_JeeWork2021.Classes
                 }
                 if (dt_execute.Rows.Count <= 0)
                     return result;
-                if (get_condition_by_events(dt_auto, data.data_input, cnn)) // Kiểm tra event để thực thi hành động
+                if(dt_auto.Rows.Count > 0)
                 {
-                    foreach (DataRow dr in dt_auto.Rows)
+                    foreach(DataRow dr in dt_auto.Rows)
                     {
-                        long actionid = long.Parse(dr["actionid"].ToString());
-                        long autoid = long.Parse(dr["rowid"].ToString());
-                        string data_auto = dr["data"].ToString();
-                        string columnname = "id_project_team";
-                        switch (actionid)
+                        if (get_condition_by_events(dr, data.data_input, cnn)) // Kiểm tra event để thực thi hành động
                         {
-                            case 1:
-                            case 7:
-                                DataTable dt_sub = cnn.CreateDataTable(@"select sub.rowid, autoid, subactionid, value,sublist.TableName from automation_subaction sub
+                            long actionid = long.Parse(dr["actionid"].ToString());
+                            long autoid = long.Parse(dr["rowid"].ToString());
+                            string data_auto = dr["data"].ToString();
+                            string columnname = "id_project_team";
+                            switch (actionid)
+                            {
+                                case 1:
+                                case 7:
+                                    DataTable dt_sub = cnn.CreateDataTable(@"select sub.rowid, autoid, subactionid, value,sublist.TableName from automation_subaction sub
 join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where autoid =" + autoid + "");
-                                if (dt_sub.Rows.Count > 0)
-                                {
-                                    process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn);
-                                }
-                                break; 
-                            case 4: // comment 
-                                insertComment(data.userid,data_auto, get_list_id(dt_execute), cnn);
-                                break;
-                            case 8:
-                            case 9:
-                                columnname = "status";
-                                goto case 14;
-                            case 10:
-                                columnname = "clickup_prioritize";
-                                goto case 14;
-                            case 11:
-                                columnname = "deadline";
-                                goto case 14;
-                            case 12:
-                                columnname = "start_date";
-                                goto case 14;
-                            case 13:
-                            case 14:
-                                doitinhtrang(columnname, data_auto, get_list_id(dt_execute), cnn);
-                                break;
-                            case 5:
-                                doitinhtrang("Disabled", "1", get_list_id(dt_execute), cnn);
-                                break;
-                            case 6:
-                                DuplicateTask(data_auto,get_list_id(dt_execute), cnn);
-                                break;
-                            case 2:
-                            case 3:
-                                CreatedTask(dr["rowid"].ToString(), data.userid, cnn);
-                                break;
-                            default:
-                                break;
+                                    if (dt_sub.Rows.Count > 0)
+                                    {
+                                        process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn);
+                                    }
+                                    break;
+                                case 4: // comment 
+                                    insertComment(data.userid, data_auto, get_list_id(dt_execute), cnn);
+                                    break;
+                                case 8:
+                                case 9:
+                                    columnname = "status";
+                                    goto case 14;
+                                case 10:
+                                    columnname = "clickup_prioritize";
+                                    goto case 14;
+                                case 11:
+                                    columnname = "deadline";
+                                    goto case 14;
+                                case 12:
+                                    columnname = "start_date";
+                                    goto case 14;
+                                case 13:
+                                case 14:
+                                    doitinhtrang(columnname, data_auto, get_list_id(dt_execute), cnn);
+                                    break;
+                                case 5:
+                                    doitinhtrang("Disabled", "1", get_list_id(dt_execute), cnn);
+                                    break;
+                                case 6:
+                                    DuplicateTask(data_auto, get_list_id(dt_execute), cnn);
+                                    break;
+                                case 2:
+                                case 3:
+                                    CreatedTask(dr["rowid"].ToString(), data.userid, cnn);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
@@ -349,50 +352,49 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             return true;
            
         }
-        public static bool get_condition_by_events(DataTable dt_auto, string conditions_input, DpsConnection cnn)
+        public static bool get_condition_by_events(DataRow dr_auto, string conditions_input, DpsConnection cnn)
         {
             bool result = false;
-            if (dt_auto.Rows.Count > 0)
+
+            long eventid = long.Parse(dr_auto["eventid"].ToString());
+            switch (eventid)
             {
-                long eventid = long.Parse(dt_auto.Rows[0]["eventid"].ToString());
-                switch (eventid)
-                {
-                    case 1:
-                    case 2:
-                        string[] conditions = dt_auto.Rows[0]["condition"].ToString().Split(";");
-                        List<string> from = conditions[0].Replace("From:", "").Split(",").ToList();
-                        List<string> to = conditions[1].Replace("To:", "").Split(",").ToList();
-                        if ("any".Equals(from) && "any".Equals(to))
-                            result = true;
-                        else
+                case 1:
+                case 2:
+                    string[] conditions = dr_auto["condition"].ToString().Split(";");
+                    List<string> from = conditions[0].Replace("From:", "").Split(",").ToList();
+                    List<string> to = conditions[1].Replace("To:", "").Split(",").ToList();
+                    if ("any".Equals(from) && "any".Equals(to))
+                        result = true;
+                    else
+                    {
+                        bool isfrom = true, isto = true;
+                        if (!"any".Equals(from[0]))
                         {
-                            bool isfrom = true, isto = true;
-                            if (!"any".Equals(from[0]))
-                            {
-                                isfrom = from.Contains(conditions_input.Split(",")[0]);
-                            }
-                            if (!"any".Equals(to[0]))
-                            {
-                                isto = to.Contains(conditions_input.Split(",")[1]);
-                            }
-                            if (isfrom && isto)
-                                return true;
+                            isfrom = from.Contains(conditions_input.Split(",")[0]);
                         }
-                        break;
-                    case 3:
-                    case 4:
-                    case 7:
-                    case 10:
-                    case 11:
-                        return true;
-                    case 5:
-                    case 6:
-                    case 8:
-                        string list = dt_auto.Rows[0]["condition"].ToString();
-                        if (list == "any") return true;
-                        return list.Contains(conditions_input);
-                }
+                        if (!"any".Equals(to[0]))
+                        {
+                            isto = to.Contains(conditions_input.Split(",")[1]);
+                        }
+                        if (isfrom && isto)
+                            return true;
+                    }
+                    break;
+                case 3:
+                case 4:
+                case 7:
+                case 10:
+                case 11:
+                    return true;
+                case 5:
+                case 6:
+                case 8:
+                    string list = dr_auto["condition"].ToString();
+                    if (list == "any") return true;
+                    return list.Contains(conditions_input);
             }
+
             return result;
         }
         public static bool insertComment(long userid, string data,string condition_update, DpsConnection cnn)

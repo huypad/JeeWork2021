@@ -1,0 +1,35 @@
+.unread {
+    color: #000000;
+  }
+
+  .read {
+    color: #808080
+  }
+
+  .read:hover {
+    color: #7c7c7c
+  }
+
+  .time-unread {
+    color: rgb(10, 170, 10)
+  }
+
+  .time-read {
+    color: rgb(124, 231, 124)
+  }
+
+  .dot {
+    height: 8px;
+    width: 8px;
+    background-color: rgb(10, 170, 10);
+    border-radius: 50%;
+    display: inline-block;
+    margin-top: 18px;
+    margin-left: 36px;
+    position: absolute;
+    left: 280px;
+  }
+
+  .width {
+    width: 383px;
+  }

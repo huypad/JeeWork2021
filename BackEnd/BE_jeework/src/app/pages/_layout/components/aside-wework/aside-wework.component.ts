@@ -933,8 +933,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             return;
           } else {
           this.LoadMenu();
-          // location.reload();
           }
+          location.reload();
         });
         this.changeDetectorRefs.detectChanges();
       } else {

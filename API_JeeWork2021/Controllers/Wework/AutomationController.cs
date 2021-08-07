@@ -338,8 +338,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(data.listid))
                         val.Add("listid", data.listid);
 
-                    val.Add("UpdatedDate", DateTime.Now);
-                    val.Add("UpdatedBy", iduser);
+                    //val.Add("UpdatedDate", DateTime.Now);
+                    //val.Add("UpdatedBy", iduser);
                     val.Add("status", data.status);
                     // event
                     val.Add("eventid", data.eventid);
@@ -377,7 +377,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                         }
                     }
-                    cnn.ExecuteNonQuery("delete Automation_SubAction where AutoID = " + data.rowid);
+                    //cnn.ExecuteNonQuery("delete Automation_SubAction where AutoID = " + data.rowid);
                     if (data.task != null)
                     {
                         Hashtable has = new Hashtable();
