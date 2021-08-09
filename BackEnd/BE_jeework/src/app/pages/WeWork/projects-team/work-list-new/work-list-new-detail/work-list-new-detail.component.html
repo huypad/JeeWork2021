@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <mat-menu #status1="matMenu">
-                        <button mat-menu-item *ngFor="let status of status_dynamic"
+                        <button mat-menu-item *ngFor="let status of item.DataStatus | allow_update_status"
                             (click)="UpdateStatus(this.item,status)" [ngStyle]="{color: status.color}">
                             <div class="row">
                                 <div class="cu-task-row-status1" style="width:20px;padding-right:5px">
@@ -45,7 +45,7 @@
                             </div>
                         </button>
                     </mat-menu>
-                    <div class="done-task-btn cu-hidden-print ng-tns-c150-53 ng-star-inserted" *ngIf="CheckRoles(11)"
+                    <div class="done-task-btn cu-hidden-print ng-tns-c150-53 ng-star-inserted" *ngIf="CheckRoles(11) && IsAdmin()"
                         matTooltip="{{ 'work.completetask' | translate }}" (click)="NextStatus('complete')">
                         <div class="done-task-btn__icon icon" icon="check">
                             <i class="fas fa-check"></i>

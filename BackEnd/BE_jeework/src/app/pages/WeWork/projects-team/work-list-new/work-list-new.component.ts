@@ -1228,22 +1228,22 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   UpdateStatus(task, status) {
     if (+task.status == +status.id_row) return;
-    if (this.IsAdmin()) {
-      this.UpdateByKey(task, "status", status.id_row);
-    } else {
-      if (status.Follower) {
-        if (status.Follower == this.UserID) {
-          this.UpdateByKey(task, "status", status.id_row);
-        } else {
-          this.layoutUtilsService.showError(
-            "Không có quyền thay đổi trạng thái"
-          );
-        }
-      } else {
-        this.UpdateByKey(task, "status", status.id_row);
-      }
-    }
-    // this.UpdateByKey(task, "status", status.id_row);
+    // if (this.IsAdmin()) {
+    //   this.UpdateByKey(task, "status", status.id_row);
+    // } else {
+    //   if (status.Follower) {
+    //     if (status.Follower == this.UserID) {
+    //       this.UpdateByKey(task, "status", status.id_row);
+    //     } else {
+    //       this.layoutUtilsService.showError(
+    //         "Không có quyền thay đổi trạng thái"
+    //       );
+    //     }
+    //   } else {
+    //     this.UpdateByKey(task, "status", status.id_row);
+    //   }
+    // }
+    this.UpdateByKey(task, "status", status.id_row);
   }
 
   UpdateByKey(task, key, value,isReloadData = true) {

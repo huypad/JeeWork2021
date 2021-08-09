@@ -1554,11 +1554,9 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 error = cnn.LastError.Message.ToString();
                 return false;
             }
+            WeworkLiteController.insert_processwork(cnn);
             return true; 
         }
-        
-        
-        
         /// <summary>
         /// add user vào template library
         /// </summary>

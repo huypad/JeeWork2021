@@ -436,7 +436,7 @@
                                                             </div>
                                                         </div>
                                                         <mat-menu #status1="matMenu">
-                                                            <button mat-menu-item *ngFor="let status of status_dynamic"
+                                                            <button mat-menu-item *ngFor="let status of node.DataStatus | allow_update_status"
                                                                 (click)="UpdateStatus(node,status)"
                                                                 [ngStyle]="{color: status.color}">
                                                                 <div class="row">
@@ -650,7 +650,7 @@
                                                                             </div>
                                                                             <mat-menu #status="matMenu">
                                                                                 <button mat-menu-item
-                                                                                    *ngFor="let status of status_dynamic"
+                                                                                    *ngFor="let status of node.DataStatus | allow_update_status"
                                                                                     (click)="UpdateStatus(node,status)"
                                                                                     [ngStyle]="{color: status.color}">
                                                                                     <div class="row">

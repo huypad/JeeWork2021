@@ -99,7 +99,7 @@ export class WorkProcessModel {
     this.id_project_team = id_project_team;
     this.statusid = statusid;
     this.workid = workid;
-    this.checker = checker; 
+    this.checker = checker?checker:''; 
     this.change_note = change_note?change_note:'';
   }
 }

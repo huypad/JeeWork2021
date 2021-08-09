@@ -3276,11 +3276,12 @@ and IdKH={loginData.CustomerID} )";
         {
             Hashtable val = new Hashtable();
             string sqlq = "";
-            sqlq = $@"select we_work.id_row, we_work.id_project_team, we_work.createddate
-                    , we_work.createdby, we_status.id_row as statusid
-                    from we_work join we_status on we_work.id_project_team = we_status.id_project_team
-                    where we_work.id_row not in (select workid from we_work_process)
-                    and we_work.Disabled = 0 and we_status.disabled = 0";
+            sqlq = $@"select w.id_row, w.id_project_team, w.createddate
+                    , w.createdby, _st.id_row as statusid
+                    from we_work w join we_status _st 
+                    on w.id_project_team = _st.id_project_team
+                    where w.id_row not in (select workid from we_work_process where disabled = 0)
+                    and w.disabled = 0 and _st.disabled = 0";
             DataTable dt = new DataTable();
             dt = cnn.CreateDataTable(sqlq);
             if (dt.Rows.Count > 0)

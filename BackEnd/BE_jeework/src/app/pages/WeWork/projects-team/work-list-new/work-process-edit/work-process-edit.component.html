@@ -37,17 +37,19 @@
                 <ng-container *ngFor="let item of data.Process">
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-3">
+                            <div class="col-3 row align-items-center">
                                 <!-- <input type="text" [(ngModel)]="this.data.statusname" class="form-control"
                                     placeholder="{{ 'status.statusname' | translate }}"> -->
-                                    <!-- <div class="box-color"></div> -->
-                                <div class="form-control">
+                                    <div class="box-color" [ngStyle]="{'background-color': item.color}"></div>
                                     {{item.statusname}}
-                                </div>
+
+                                <!-- <div class="form-control">
+                                    {{item.statusname}}
+                                </div> -->
                             </div>
                             <div class="col-3">
                                 <mat-select style="width: 100%;" class="form-control" [(ngModel)]="item.checker">
-                                    <mat-option [value]="0">
+                                    <mat-option [value]="">
                                     </mat-option>
                                     <mat-option [value]="item.id_nv" *ngFor="let item of listUser">
                                         <span style="color: black;">{{ item.hoten }}</span>
@@ -62,7 +64,8 @@
                                     <kt-color-picker2 [selected]="color_status" (ItemSelected)="ColorPickerStatus($event)">
                                     </kt-color-picker2>
                                 </mat-menu> -->
-                                <input type="text" [(ngModel)]="item.change_note" class="form-control" >
+                                <textarea  rows="1" [(ngModel)]="item.change_note" class="form-control"></textarea>
+                                <!-- <input type="text" [(ngModel)]="item.change_note" class="form-control" > -->
                             </div>
                             <div class="col-2">
                                 <button class="btn btn-primary w-100" (click)="LuuItem(item)">

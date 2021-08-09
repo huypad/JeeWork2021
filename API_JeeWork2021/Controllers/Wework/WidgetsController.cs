@@ -689,7 +689,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,loginData, ConnectionString);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -830,7 +830,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -961,7 +961,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild("", loginData.CustomerID, "", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString);
+                    var Children = WorkClickupController.getChild("", loginData.CustomerID, "", displayChild, loginData.UserID, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -1362,7 +1362,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             tmp = rows.CopyToDataTable();
                         foreach (DataRow item in tmp.Rows)
                         {
-                            item["DataChildren"] = WorkClickupController.dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount);
+                            item["DataChildren"] = WorkClickupController.dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, loginData);
                         }
                         DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept, strW);
                         if (cnn.LastError != null || ds == null)

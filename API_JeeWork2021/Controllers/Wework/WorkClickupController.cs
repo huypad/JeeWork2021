@@ -344,11 +344,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                             tmp = rows.CopyToDataTable();
                         foreach (DataRow item in tmp.Rows)
                         {
-                            item["DataChildren"] = dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount);
+                            item["DataChildren"] = dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, loginData);
                         }
                         foreach (DataRow item in tmp.Rows)
                         {
-                            item["DataStatus"] = list_status_user(item["id_row"].ToString(), query.filter["id_project_team"], loginData, cnn);
+                            item["DataStatus"] = list_status_user(item["id_row"].ToString(), query.filter["id_project_team"], loginData, cnn, DataAccount);
                         }
                     }
                     var data = new
@@ -456,7 +456,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, ConnectionString)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
 
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
@@ -721,7 +721,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     {
                                         id = rr["id_row"],
                                         title = rr["title"],
-                                        data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, ConnectionString),
+                                        data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, loginData, ConnectionString),
                                         count = tmpW.AsEnumerable().Where(x => x["id_project_team"].ToString() == rr["id_row"].ToString()).ToList().Count(),
                                     }).FirstOrDefault();
                     return JsonResultCommon.ThanhCong(Children);
@@ -943,7 +943,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
                                        //data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags)
 
                                    };
@@ -1086,7 +1086,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -1226,7 +1226,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, ConnectionString)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -2422,6 +2422,7 @@ where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and obj
                                     clickup_prioritize = r["estimates"],
                                     result = r["result"],
                                     estimates = r["estimates"],
+                                    DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, cnn, DataAccount),
                                     User = from us in User.AsEnumerable()
                                            where r["id_row"].Equals(us["id_work"])
                                            select new
@@ -4044,6 +4045,74 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 }
                                 else
                                 {
+                                    // kiểm tra người khác đã tồn tại trong công việc hay chưa nếu tồn tại thì insert còn nếu tồn tại thì thông báo đã có người
+                                    var sqlckeck = @"select * from we_work_user where id_work = @id_work and loai = @loai and disabled = 0";
+                                    DataTable dtCheck = cnn.CreateDataTable(sqlckeck, sqlcond123);
+                                    if (dtCheck.Rows.Count > 0)
+                                    {
+                                        // nếu công việc con  thì thay thế người còn nếu không phải thì thông báo
+                                        if (cnn.CreateDataTable("select * from we_work where id_row = @id_work and id_parent is not null", sqlcond123).Rows.Count > 0)
+                                        {
+                                            // xóa cv của người hiện tại
+                                            if (cnn.ExecuteNonQuery("update we_work_user set Disabled = 1 where id_work = @id_work and loai = @loai", sqlcond123) < 0)
+                                            {
+                                                cnn.RollbackTransaction();
+                                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                            }
+                                            if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
+                                            {
+                                                NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
+                                            }
+                                            // thông báo cho người được xóa
+                                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                                            {
+                                                // var users = new List<long> { long.Parse(data.value.ToString()) };
+                                                List<long> users = dtCheck.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+                                                WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier);
+                                                #region Notify assign
+                                                Hashtable has_replace = new Hashtable();
+                                                for (int i = 0; i < users.Count; i++)
+                                                {
+                                                    NotifyModel notify_model = new NotifyModel();
+                                                    has_replace = new Hashtable();
+                                                    notify_model.AppCode = "WORK";
+                                                    notify_model.From_IDNV = loginData.UserID.ToString();
+                                                    notify_model.To_IDNV = users[i].ToString();
+                                                    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoaassign", "", "vi");
+                                                    if (data.key == "follower")
+                                                    {
+                                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoafollower", "", "vi");
+                                                    }
+                                                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                                                    notify_model.ReplaceData = has_replace;
+                                                    notify_model.To_Link_MobileApp = "";
+                                                    notify_model.To_Link_WebApp = "/tasks";
+                                                    //try
+                                                    //{
+                                                    //    if (notify_model != null)
+                                                    //    {
+                                                    //        //Knoti = new APIModel.Models.Notify();
+                                                    //        //bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                                    //    }
+                                                    //}
+                                                    //catch
+                                                    //{ }
+
+                                                    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                                    if (info is not null)
+                                                    {
+                                                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
+                                                    }
+                                                }
+                                                #endregion
+                                            }
+                                        }
+                                        else
+                                        {
+                                            return JsonResultCommon.Custom("Công việc đã có người thực hiện, vui lòng tạo công việc con");
+                                        }
+                                    }
                                     if (cnn.Insert(val1, "we_work_user") != 1)
                                     {
                                         cnn.RollbackTransaction();
@@ -4464,7 +4533,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
-                    if (!string.IsNullOrEmpty(data.checker) || data.checker =="0")
+                    if (!string.IsNullOrEmpty(data.checker) || data.checker == "0")
                         val.Add("checker", data.checker);
                     else
                         val.Add("checker", DBNull.Value);
@@ -4671,7 +4740,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
             return result;
         }
-        public static DataTable dtChildren(string id_parent, DataTable data, DpsConnection cnn, DataTable dataField, string id_project_team, List<AccUsernameModel> DataAccount)
+        public static DataTable dtChildren(string id_parent, DataTable data, DpsConnection cnn, DataTable dataField, string id_project_team, List<AccUsernameModel> DataAccount, UserJWT loginData)
         {
             DataTable result = new DataTable();
             foreach (DataRow item in dataField.Rows)
@@ -4702,6 +4771,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
 
 
             result.Columns.Add("DataChildren", typeof(DataTable));
+            result.Columns.Add("DataStatus", typeof(DataTable));
             DataRow[] row = data.Select("id_parent in (" + id_parent + ")");
             foreach (DataRow dr in row)
             {
@@ -4711,7 +4781,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (!(bool)field["isnewfield"])
                         drow[field["fieldName"].ToString()] = dr[field["fieldName"].ToString()];
                 }
-                drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount);
+                drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount,loginData);
+                drow["DataStatus"] = list_status_user(dr["id_row"].ToString(), id_project_team, loginData, cnn, DataAccount);
                 result.Rows.Add(drow);
             }
             if (result.Rows.Count > 0)
@@ -4735,42 +4806,83 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
             return result;
         }
-        public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, DpsConnection cnn)
+        public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, DpsConnection cnn, List<AccUsernameModel> DataAccount)
         {
             DataTable dt = new DataTable();
             long status_hientai = long.Parse(cnn.ExecuteScalar("select status from we_work where id_row = " + workid + "").ToString());
             long position = long.Parse(cnn.ExecuteScalar("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).ToString());
             string sql = @"";
-            sql = @$"select we_work_process.*, statusname, color, position
-                    , type, isdefault, isfinal, isdeadline, istodo
-                    from we_work_process right join we_status
-                    on we_status.id_row = we_work_process.statusid
-                    where we_status.id_project_team = " + id_project_team + " " +
-                        "and we_status.disabled = 0 and we_work_process.disabled = 0 " +
+            sql = @$"select process.id_project_team, workid, process.statusid, process.id_row as processid
+                        , process.checker, process.change_note , statusname, color, position, _status.id_row
+                        , _status.type, isdefault, isfinal, isdeadline, istodo, '' as hoten_follower
+                        from we_work_process process right join we_status _status
+                        on _status.id_row = process.statusid
+                        where _status.id_project_team = " + id_project_team + " " +
+                        "and _status.disabled = 0 and process.disabled = 0 " +
                         "and workid = " + workid + " " +
-                        "order by type, position";
+                        "order by type, position ";
+            string offset = " OFFSET " + (position - 1) + " ROWS FETCH NEXT " + (position + 1) + " ROWS ONLY";
+
+            bool admin_project = bool.Parse(cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID).ToString());
+            bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
+            //if (!admin_system && !admin_project)
+            //{
+            //    sql += sql + offset;
+            //}
+            bool is_stop = false;
             dt = cnn.CreateDataTable(sql);
             dt.Columns.Add("allow_update", typeof(bool));
             if (dt.Rows.Count > 0)
             {
                 foreach (DataRow item in dt.Rows)
                 {
-                    long value_table = long.Parse(item["position"].ToString());
-                    string checker = item["checker"].ToString();
-                    if (string.IsNullOrEmpty(checker) || (checker == loginData.UserID.ToString()))
+                    if (admin_project || admin_system)
                     {
                         item["allow_update"] = true;
                     }
                     else
                     {
-                        if (Math.Abs(value_table - position) > 1)
-                        {
-                            item["allow_update"] = false;
-                        }
-                        else
+                        long value_table = long.Parse(item["position"].ToString());
+                        string checker = item["checker"].ToString();
+                        if (Math.Abs(value_table - position) == 0) // dòng hiện tại
                         {
                             item["allow_update"] = true;
                         }
+                        if (Math.Abs(value_table - position) > 0) // dòng trên và dòng dưới
+                        {
+                            if (Math.Abs(value_table - position) == 1) // dòng trên + 1 và dòng dưới +1
+                            {
+                                item["allow_update"] = true;
+                                if (!string.IsNullOrEmpty(checker) && !checker.Equals(loginData.UserID.ToString()))
+                                {
+                                    is_stop = true;
+                                }
+                            }
+                            if (is_stop) // Nếu dòng n-1 và n+1 có người check và không thuộc user đăng nhập thì dừng hẳn
+                            {
+                                if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                {
+                                    item["allow_update"] = false;
+                                }
+                            }
+                            else
+                            {
+                                if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                {
+                                    if (string.IsNullOrEmpty(checker) || (checker == loginData.UserID.ToString()))
+                                    {
+                                        item["allow_update"] = true;
+                                    }
+                                    else
+                                        item["allow_update"] = false;
+                                }
+                            }
+                        }
+                    }
+                    var info = DataAccount.Where(x => item["checker"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info != null)
+                    {
+                        item["hoten_follower"] = info.FullName;
                     }
                 }
                 return dt;
@@ -5148,7 +5260,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, string ConnectString, object parent = null)
+        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount,UserJWT loginData, string ConnectString, object parent = null)
         {
             object a = "";
             if (parent == null)
@@ -5241,6 +5353,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                          updatedby = r["UpdatedBy"],
                          nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
+                         DataStatus = list_status_user(r["id_row"].ToString(),  r["id_project_team"].ToString(), loginData, new DpsConnection(ConnectString), DataAccount),
                          User = from us in User.AsEnumerable()
                                 where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                 select new
@@ -5283,7 +5396,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                                       IsDefault = s["IsDefault"],
                                       IsToDo = s["IsToDo"]
                                   },
-                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, ConnectString, r["id_row"])
+                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount,loginData, ConnectString, r["id_row"])
                      };
             return re.Distinct().ToList();
         }
