@@ -150,7 +150,6 @@ export class UserDetailComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      debugger;
       if (result) {
         this.TuNgay = result.startDate;
         this.DenNgay = result.endDate;
