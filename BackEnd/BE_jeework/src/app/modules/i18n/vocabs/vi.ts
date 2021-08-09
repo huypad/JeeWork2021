@@ -1127,8 +1127,8 @@ export const locale = {
       expandall: "Bao gồm luôn công việc con",
       m_deadline: "Hạn chót mục tiêu",
       createdby: "Người tạo",
-      estimates: "Ước tính",
-      timeestimates: "TG Dự kiến (giờ)",
+      estimates: "Thời gian làm",
+      timeestimates: "Thời gian làm",
     },
     priority: {
       Urgent: "Khẩn cấp",
