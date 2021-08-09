@@ -4831,8 +4831,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         "and workid = " + workid + " " +
                         "order by type, position ";
             string offset = " OFFSET " + (position - 1) + " ROWS FETCH NEXT " + (position + 1) + " ROWS ONLY";
-
-            bool admin_project = bool.Parse(cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID).ToString());
+            bool admin_project = false;
+            object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
+            if (project_team != null)
+                admin_project = bool.TrueString.Equals(project_team.ToString());
             bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
             //if (!admin_system && !admin_project)
             //{
