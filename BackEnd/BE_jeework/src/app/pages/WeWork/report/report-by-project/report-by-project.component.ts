@@ -259,63 +259,31 @@ export class ReportByProjectComponent implements OnInit {
     this.reportService.GetOverview(queryParams).subscribe(data => {
       this.ListOverview = [
         {
-          title: this.translate.instant('report.duan'),
-          tong: 0,
-          text1: this.translate.instant('report.duannoibo'),
-          text2: this.translate.instant('report.duanbenngoai'),
-          isShow: false,
-        },
-        {
-          title: this.translate.instant('report.phongban'),
-          tong: 0,
-          text1: this.translate.instant('report.phongbannoibo'),
-          text2: this.translate.instant('report.phongbanbenngoai'),
-          isShow: false,
-        },
-        {
           title: this.translate.instant('report.congviec'),
           tong: 0,
           text1: this.translate.instant('report.hoanthanh'),
           text2: this.translate.instant('report.dangthuchien'),
-          isShow: true,
-        },
-        {
-          title: this.translate.instant('report.muctieu'),
-          tong: 0,
-          text1: this.translate.instant('report.hoanthanh'),
-          text2: this.translate.instant('report.dangthuchien'),
+          text3:  this.translate.instant('filter.quahan'),
           isShow: true,
         },
         {
           title: this.translate.instant('report.thanhvien'),
           tong: 0,
-          text1: this.translate.instant('report.nhanvien'),
-          text2: this.translate.instant('report.khach'),
+          text1: this.translate.instant('report.quantrivien'),
+          text2: this.translate.instant('report.thanhvien'),
           isShow: true,
         },
       ]
       if (data && data.status == 1) {
         let arrdata = (data.data);
-        //Dự án
-        this.ListOverview[0].tong = arrdata['DuAn'].Tong;
-        this.ListOverview[0].text1 = arrdata['DuAn'].DuAnNoiBo + ' ' + this.ListOverview[0].text1;
-        this.ListOverview[0].text2 = arrdata['DuAn'].DuAnKH + ' ' + this.ListOverview[0].text2;
-        //phòng ban
-        this.ListOverview[1].tong = arrdata['PhongBan'].Tong;
-        this.ListOverview[1].text1 = arrdata['PhongBan'].DuAnNoiBo + ' ' + this.ListOverview[1].text1;
-        this.ListOverview[1].text2 = arrdata['PhongBan'].DuAnKH + ' ' + this.ListOverview[1].text2;
-        //Công việc
-        this.ListOverview[2].tong = arrdata['CongViec'].Tong;
-        this.ListOverview[2].text1 = arrdata['CongViec'].HoanThanh + ' ' + this.ListOverview[2].text1;
-        this.ListOverview[2].text2 = arrdata['CongViec'].DangThucHien + ' ' + this.ListOverview[2].text2;
-        //Mục tiêu
-        this.ListOverview[3].tong = arrdata['MucTieu'].Tong;
-        this.ListOverview[3].text1 = arrdata['MucTieu'].HoanThanh + ' ' + this.ListOverview[3].text1;
-        this.ListOverview[3].text2 = arrdata['MucTieu'].DangThucHien + ' ' + this.ListOverview[3].text2;
+        this.ListOverview[0].tong = arrdata['CongViec'].Tong;
+        this.ListOverview[0].text1 = arrdata['CongViec'].HoanThanh + ' ' + this.ListOverview[0].text1;
+        this.ListOverview[0].text2 = arrdata['CongViec'].DangThucHien + ' ' + this.ListOverview[0].text2;
+        this.ListOverview[0].text3 = arrdata['CongViec'].TreHan + ' ' + this.ListOverview[0].text3;
         //Thành viên
-        this.ListOverview[4].tong = arrdata['ThanhVien'].Tong;
-        this.ListOverview[4].text1 = arrdata['ThanhVien'].NhanVien + ' ' + this.ListOverview[4].text1;
-        this.ListOverview[4].text2 = arrdata['ThanhVien'].Khach + ' ' + this.ListOverview[4].text2;
+        this.ListOverview[1].tong = arrdata['ThanhVien'].Tong;
+        this.ListOverview[1].text1 = arrdata['ThanhVien'].QuanTriVien + ' ' + this.ListOverview[1].text1;
+        this.ListOverview[1].text2 = arrdata['ThanhVien'].ThanhVien + ' ' + this.ListOverview[1].text2;
       }
 
 
@@ -812,11 +780,17 @@ export class ReportByProjectComponent implements OnInit {
   Staff: any[] = [];
   // Report by staff
   colorCrossbar = ['rgb(20, 204, 63)', 'blue', '#ff9900', 'green', 'violet'];
+  titleReportByStaff : string[] = [
+    this.translate.instant('filter.hoanthanh'),
+    this.translate.instant('filter.hoanthanhmuon'),
+    this.translate.instant('filter.quahan'),
+    this.translate.instant('filter.dangthuchien'),
+    this.translate.instant('filter.dangdanhgia'),
+  ];
   ReportByStaff() {
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
     );
-    //queryParams.sortField = this.column_sort.value;
     this.reportService.ReportByStaff(queryParams).subscribe(data => {
       if (data && data.status == 1) {
         this.Staff = data.data;

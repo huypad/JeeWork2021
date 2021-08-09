@@ -54,7 +54,7 @@
                 <div class="colum-items">
                     <div class="row">
                         <ng-container *ngFor="let item of ListOverview">
-                            <div class="col-4 box" *ngIf="item.isShow" >
+                            <div class="col box" *ngIf="item.isShow" >
                                 <kt-item-group [value]="item"></kt-item-group>
                             </div>    
                         </ng-container>
@@ -210,7 +210,7 @@
                                                     <div class="noidung-danhgia">
                                                         <div class="square"></div>
                                                         <span> {{ Eisenhower.data.late }} / {{ Eisenhower.data.dangdanhgia }}
-                                                              <span translate="report.danhgia"></span></span>
+                                                              <span translate="report.danhgia" matTooltip="{{ 'report.danhgia' | translate }}"></span></span>
         
                                                     </div>
                                                 </div>
@@ -323,7 +323,7 @@
                                                 </div>
                                                 <div class="side">
                                                     
-                                                    <kt-crossbar-chart [data]="item.datasets" [color]="colorCrossbar">
+                                                    <kt-crossbar-chart [title]="titleReportByStaff" [data]="item.datasets" [color]="colorCrossbar">
                                                     </kt-crossbar-chart>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
                                                         {{item.hoanthanh}} </div>

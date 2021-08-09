@@ -1,0 +1,81 @@
+<div class="btn-close-container">
+    <button class="btn-close" type="button" mat-mini-fab color="" (click)="this.dialogRef.close();" title="Đóng">
+        <mat-icon>clear</mat-icon>
+    </button>
+</div>
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+    <div class="kt-portlet__head kt-portlet__head__custom">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title"> {{getTitle()}} </h3>
+        </div>
+        <!-- <div class="kt-portlet__head-toolbar">
+            <button mat-raised-button class="jee_btn-addclose" type="button">
+                <span translate="GeneralKey.luudong"></span>
+            </button>
+        </div> -->
+    </div>
+    <div class="kt-portlet__body" style="padding-bottom: 50px;">
+        <div class="load-list-status">
+            <div class="tao-status">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3">
+                            Tên trạng thái
+                        </div>
+                        <div class="col-3 hide-more-text">
+                            Người theo dõi trạng thái
+                        </div>
+                        <div class="col-4 row hide-more-text">
+                            Nhập lý do thay đổi người theo dõi
+                        </div>
+                        <div class="col-2">
+                            
+                        </div>
+                    </div>
+
+                </div>
+                <ng-container *ngFor="let item of data.Process">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-3">
+                                <!-- <input type="text" [(ngModel)]="this.data.statusname" class="form-control"
+                                    placeholder="{{ 'status.statusname' | translate }}"> -->
+                                    <!-- <div class="box-color"></div> -->
+                                <div class="form-control">
+                                    {{item.statusname}}
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <mat-select style="width: 100%;" class="form-control" [(ngModel)]="item.checker">
+                                    <mat-option [value]="0">
+                                    </mat-option>
+                                    <mat-option [value]="item.id_nv" *ngFor="let item of listUser">
+                                        <span style="color: black;">{{ item.hoten }}</span>
+                                    </mat-option>
+                                </mat-select>
+                            </div>
+                            <div class="col-4 row">
+                                <!-- <div matTooltip="Chọn màu" [ngStyle]="{backgroundColor: color_status}"
+                                    [matMenuTriggerFor]="colorpicker" class="box-color">
+                                </div>
+                                <mat-menu #colorpicker>
+                                    <kt-color-picker2 [selected]="color_status" (ItemSelected)="ColorPickerStatus($event)">
+                                    </kt-color-picker2>
+                                </mat-menu> -->
+                                <input type="text" [(ngModel)]="item.change_note" class="form-control" >
+                            </div>
+                            <div class="col-2">
+                                <button class="btn btn-primary w-100" (click)="LuuItem(item)">
+                                    Lưu
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </ng-container>
+
+            </div>
+        </div>
+    </div>
+</div>

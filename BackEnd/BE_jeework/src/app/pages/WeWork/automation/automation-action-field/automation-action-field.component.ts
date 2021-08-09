@@ -260,7 +260,6 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
 
   MapUser() {
     if (this.listUser && this.listUser.length > 0) {
-      console.log(this.dataAction.data_actions);
       this.dataAction.data_actions.forEach((element) => {
         var listUser = element.value.split(",");
         if(element.actionid == 3){

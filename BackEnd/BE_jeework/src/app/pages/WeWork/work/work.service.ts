@@ -171,15 +171,11 @@ export class WorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_work_CU + '/Update-by-key', item, { headers: httpHeaders });
 	}
-	// UpdateByKeyNew(item): Observable<any> {
-	// 	const httpHeaders = this.httpUtils.getHTTPHeaders();
-	// 	return this.http.post<any>(API_work_CU + '/Update-by-key', item, { headers: httpHeaders });
-	// }
-	//#region import/export
-	// ImportData(item): Observable<any> {
-	// 	const httpHeaders = this.httpUtils.getHTTPHeaders();
-	// 	return this.http.post<any>(API_work + '/ImportData', item, { headers: httpHeaders });
-	// }
+	UpdateWorkProcess(item): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.post<any>(API_work_CU + '/update-work-process', item, { headers: httpHeaders });
+	}
+	
 	ImportData(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_work_CU + '/ImportData', item, { headers: httpHeaders });

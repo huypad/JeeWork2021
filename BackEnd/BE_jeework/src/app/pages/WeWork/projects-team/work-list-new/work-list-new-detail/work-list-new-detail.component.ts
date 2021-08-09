@@ -1,3 +1,4 @@
+import { WorkProcessEditComponent } from './../work-process-edit/work-process-edit.component';
 import { QueryFilterComment } from "./../../../jee-comment/jee-comment.model";
 import { DanhMucChungService } from "./../../../../../_metronic/jeework_old/core/services/danhmuc.service";
 import { QueryParamsModelNew } from "./../../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
@@ -862,6 +863,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.UpdateByKeyNew(task, "status", status.id_row);
       }
     }
+    // this.UpdateByKeyNew(task, "status", status.id_row);
   }
 
   UpdateTitle() {
@@ -899,6 +901,13 @@ export class WorkListNewDetailComponent implements OnInit {
     this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadData();
+      }else{
+        // if(isReloadData){ 
+        //   setTimeout(() => {
+        //     this.LoadData();
+        //   }, 500);
+        // }
+        this.layoutUtilsService.showError(res.error.message);
       }
     });
   }
@@ -1463,6 +1472,17 @@ export class WorkListNewDetailComponent implements OnInit {
     this.changeDetectorRefs.detectChanges();
   }
 
+  UpdateWorkProcess() {
+    // item.id_project_team = this.Id_project_team;
+    const dialogRef = this.dialog.open(WorkProcessEditComponent, {
+      // width: "40vw",
+      // minHeight: "200px",
+      data: {Process:this.item.Process,id_project_team : this.Id_project_team},
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      this.LoadData();
+    });
+  }
   chinhsuastt(item) {
     item.id_project_team = this.Id_project_team;
     const dialogRef = this.dialog.open(StatusDynamicDialogComponent, {

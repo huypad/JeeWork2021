@@ -41,6 +41,7 @@ import { MatChipsModule } from "@angular/material/chips";
 import { NgDragDropModule } from "ng-drag-drop";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { WorkProcessEditComponent } from './work-list-new/work-process-edit/work-process-edit.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -77,6 +78,7 @@ import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   ],
   entryComponents: [
     QuickStatusComponent,
+    WorkProcessEditComponent
   ],
   declarations: [
     ProjectsTeamComponent,
@@ -88,6 +90,7 @@ import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     WorkPeriodComponent,
     ClickOutsideDirective,
     QuickStatusComponent,
+    WorkProcessEditComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,

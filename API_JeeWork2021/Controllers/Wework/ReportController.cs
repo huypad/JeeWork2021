@@ -131,17 +131,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     if (listDept != "")
                     {
-                        strP += " and id_department in (" + listDept + ") ";
-                        strW += " and p.id_department in (" + listDept + ") ";
-                        strD += " and id_row in (" + listDept + ") ";
+                        strP += $" and id_department in (select id_row from we_department where disabled = 0 and (id_row in ( {listDept} ) or ParentID in ( {listDept} ) )) ";
+                        strW += $" and p.id_department in (select id_row from we_department where disabled = 0 and (id_row in ( {listDept} ) or ParentID in ( {listDept} ) )) ";
+                        strD += " and  ( id_row in (" + listDept + ") or ParentID in ( " + listDept + ") )";
                     }
 
-                    string list_Complete = "";
-                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
-                    string list_Deadline = "";
-                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
-                    string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
+                    string list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
+                    string list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
+                    string list_Todo  = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -160,26 +157,38 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_parent is null";
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    //string sqlq = @"select  COUNT(CASE WHEN is_project = 1 THEN 1 END) as DuAn,
+                    //                COUNT(CASE WHEN is_project = 1 and Loai=1 THEN 1 END) as DuAnNoiBo,
+                    //                COUNT(CASE WHEN is_project = 1 and Loai=2 THEN 1 END) as DuAnKH,
+                    //                COUNT(CASE WHEN is_project <> 1 THEN 1 END) as PhongBan,
+                    //                COUNT(CASE WHEN is_project <>1 and Loai=1 THEN 1 END) as PhongBanNoiBo ,
+                    //                COUNT(CASE WHEN is_project <>1 and Loai=2 THEN 1 END) as PhongBanNgoai 
+                    //                from we_project_team p
+                    //                where p.Disabled=0 " + strP;
                     string sqlq = @"select  COUNT(CASE WHEN is_project = 1 THEN 1 END) as DuAn,
-                                    COUNT(CASE WHEN is_project = 1 and Loai=1 THEN 1 END) as DuAnNoiBo,
-                                    COUNT(CASE WHEN is_project = 1 and Loai=2 THEN 1 END) as DuAnKH,
-                                    COUNT(CASE WHEN is_project <> 1 THEN 1 END) as PhongBan,
-                                    COUNT(CASE WHEN is_project <>1 and Loai=1 THEN 1 END) as PhongBanNoiBo ,
-                                    COUNT(CASE WHEN is_project <>1 and Loai=2 THEN 1 END) as PhongBanNgoai 
-                                    from we_project_team p
-                                    where p.Disabled=0 " + strP;
+                                    COUNT(CASE WHEN is_project = 1 and status = 1 and (end_date is null or end_date <= GETDATE()) THEN 1 END) as DungTienDo,
+                                    COUNT(CASE WHEN is_project = 1 and ( status = 2 or end_date > GETDATE() )THEN 1 END) as ChamTienDo
+                                    from we_project_team p where p.Disabled=0   " + strP;
+                    sqlq += @"select COUNT(*) as Tong,
+                                    COUNT(CASE WHEN ParentID is null THEN 1 END) as PhongBan ,
+                                    COUNT(CASE WHEN ParentID is not null THEN 1 END) as ThuMuc 
+                                    from we_department d
+                                    where d.Disabled=0  " + strD;
                     sqlq += @";select count(*) as Tong, COUNT(CASE WHEN w.status in (" + list_Complete + @") THEN 1 END) as HoanThanh
-                        ,COUNT(CASE WHEN w.status not in (" + list_Complete + @") THEN 1 END) as DangThucHien from v_wework_clickup_new w
+                                    ,COUNT(CASE WHEN w.status not in (" + list_Complete +","+ list_Deadline + @") THEN 1 END) as DangThucHien,
+                                    COUNT(CASE WHEN w.status in (" + list_Deadline + @") THEN 1 END) as TreHan from v_wework_clickup_new w
                         join we_project_team p on p.id_row = w.id_project_team
                         where w.disabled=0" + strW;
-                    sqlq += @";select count(*) as Tong, COUNT(CASE WHEN deadline>=getdate() THEN 1 END) as HoanThanh
-                            ,COUNT(CASE WHEN deadline<=getdate() THEN 1 END) as DangThucHien from we_milestone m
-                            join we_project_team p on p.id_row = m.id_project_team
-                            where m.disabled = 0" + strP;
-                    sqlq += @$";select count(distinct pu.id_user) as Tong from we_project_team_user pu
-                              join we_project_team p on p.id_row=pu.id_project_team
-                              where pu.Disabled=0 and pu.id_user in ({listID}) and p.Disabled=0" + strP;
-                    sqlq += @"select COUNT(*) as Tong , COUNT(*) as PhongBanNoiBo,0 as PhongBanNgoai from we_department where Disabled = 0" + strD;
+                    //sqlq += @";select count(*) as Tong, COUNT(CASE WHEN deadline>=getdate() THEN 1 END) as HoanThanh
+                    //        ,COUNT(CASE WHEN deadline<=getdate() THEN 1 END) as DangThucHien from we_milestone m
+                    //        join we_project_team p on p.id_row = m.id_project_team
+                    //        where m.disabled = 0" + strP;
+                    sqlq += @$";select count(distinct pu.id_user) as Tong,
+                                    COUNT(CASE WHEN pu.admin = 1 THEN 1 END) as QuanTriVien,
+                                    COUNT(CASE WHEN pu.admin = 0 THEN 1 END) as ThanhVien 
+                                    from we_project_team_user pu
+                                    join we_project_team p on p.id_row=pu.id_project_team
+                                    where pu.Disabled=0 and p.Disabled=0" + strP;
 
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
@@ -189,31 +198,33 @@ namespace JeeWork_Core2021.Controllers.Wework
                         DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
                         {
                             Tong = ds.Tables[0].Rows[0]["DuAn"],
-                            DuAnNoiBo = ds.Tables[0].Rows[0]["DuAnNoiBo"],
-                            DuAnKH = ds.Tables[0].Rows[0]["DuAnKH"]
+                            DuAnNoiBo = ds.Tables[0].Rows[0]["DungTienDo"],
+                            DuAnKH = ds.Tables[0].Rows[0]["ChamTienDo"]
                         } : null,
-                        PhongBan = ds.Tables[4] != null && ds.Tables[4].Rows.Count > 0 ? new
-                        {
-                            Tong = ds.Tables[4].Rows[0]["Tong"],
-                            DuAnNoiBo = ds.Tables[4].Rows[0]["PhongBanNoiBo"],
-                            DuAnKH = ds.Tables[4].Rows[0]["PhongBanNgoai"]
-                        } : null,
-                        CongViec = ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0 ? new
+                        PhongBan = ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0 ? new
                         {
                             Tong = ds.Tables[1].Rows[0]["Tong"],
-                            HoanThanh = ds.Tables[1].Rows[0]["HoanThanh"],
-                            DangThucHien = ds.Tables[1].Rows[0]["DangThucHien"],
+                            DuAnNoiBo = ds.Tables[1].Rows[0]["PhongBan"],
+                            DuAnKH = ds.Tables[1].Rows[0]["ThuMuc"]
                         } : null,
-                        MucTieu = ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0 ? new
+                        CongViec = ds.Tables[2] != null && ds.Tables[1].Rows.Count > 0 ? new
                         {
                             Tong = ds.Tables[2].Rows[0]["Tong"],
                             HoanThanh = ds.Tables[2].Rows[0]["HoanThanh"],
                             DangThucHien = ds.Tables[2].Rows[0]["DangThucHien"],
+                            TreHan = ds.Tables[2].Rows[0]["TreHan"],
                         } : null,
+                        //MucTieu = ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0 ? new
+                        //{
+                        //    Tong = ds.Tables[2].Rows[0]["Tong"],
+                        //    HoanThanh = ds.Tables[2].Rows[0]["HoanThanh"],
+                        //    DangThucHien = ds.Tables[2].Rows[0]["DangThucHien"],
+                        //} : null,
                         ThanhVien = ds.Tables[3] != null && ds.Tables[3].Rows.Count > 0 ? new
                         {
                             Tong = ds.Tables[3].Rows[0]["Tong"],
-                            NhanVien = ds.Tables[3].Rows[0]["Tong"],
+                            QuanTriVien = ds.Tables[3].Rows[0]["QuanTriVien"],
+                            ThanhVien = ds.Tables[3].Rows[0]["ThanhVien"],
                             Khach = 0
                         } : null
                     };
@@ -571,12 +582,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             pie1 = new List<object>()
                             {
-                                new{trangthai = "Hoàn thành",value = ht},
+                                new{trangthai = "Hoàn thành",value = (ht+htm)},
                                 new {trangthai = "Hoàn thành muộn",value = htm}
                             },
                             pie2 = new List<object>()
                             {
-                                new{trangthai = "Đang thực hiện",value = dth},
+                                new{trangthai = "Đang thực hiện",value = (dth+qh)},
                                 new {trangthai = "Quá hạn",value = qh}
                             },
                             khong = khong
@@ -1128,7 +1139,6 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                         else
                         {
                             dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = dr["dangdanhgia"] = 0;
-
                         }
                     }
                     for (int i = dt.Rows.Count - 1; i >= 0; i--)
@@ -1983,7 +1993,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
 iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
-                                    from v_wework_new w 
+                                    from v_wework_clickup_new w 
                                     where disabled = 0 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -2161,7 +2171,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
 iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
-                                    from v_wework_new w 
+                                    from v_wework_clickup_new w 
                                     where disabled = 0 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";

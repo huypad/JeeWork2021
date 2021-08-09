@@ -10,6 +10,7 @@ export class CrossbarChartComponent implements OnInit {
 
   @Input() data: any = undefined;
   @Input() color: any = undefined;
+  @Input() title: any = [];
 
   ngOnInit() {
     if(this.color==undefined)(
@@ -19,13 +20,13 @@ export class CrossbarChartComponent implements OnInit {
   }
   chart :any = [];
   Xulydata(){
-    
     var sum = this.data.reduce((a, b) => a + b);
     if(sum > 0){
       for(let i = 0;i<this.data.length; i++){
         this.chart.push({
           'width': (this.data[i]/sum)*100 + '%',
-          'color':this.color[i]
+          'color':this.color[i],
+          title:this.title[i],
         });
       }
     }else{

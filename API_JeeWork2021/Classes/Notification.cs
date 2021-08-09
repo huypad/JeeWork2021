@@ -25,12 +25,11 @@ namespace API_JeeWork2021.Classes
                 message_text = message,
                 message_html = html,
                 message_json = JsonConvert.SerializeObject(noti_mess),
-                // Các field dưới đây là của OneSignal
-                //osTitle = "Test title",
-                //osMessage = "Test message",
-                //osWebURL = "https://google.vn",
-                //osAppURL = "https://google.vn",
-                //osIcon = "https://api.jeehr.com/images/logokhachhang/25.jpg"
+                osTitle = "Thông báo từ JeeWork",
+                osMessage = noti_mess.Content,
+                osWebURL = noti_mess.Link,
+                osAppURL = noti_mess.oslink,
+                osIcon = ""
             };
             _notifier.sendSocket(asyncnotice);
         }

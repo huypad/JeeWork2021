@@ -173,7 +173,6 @@ export class JeeCommentComponent implements OnInit {
           }
         }),
         catchError((err) => {
-          console.log(err);
           this._isLoading$.next(false);
           this._errorMessage$.next(err);
           return of();
@@ -373,7 +372,6 @@ export class JeeCommentComponent implements OnInit {
           this.ngOnInit();
         }),
         catchError((err) => {
-          console.log(err);
           return of();
         }),
         finalize(() => {}),
@@ -385,7 +383,6 @@ export class JeeCommentComponent implements OnInit {
   }
 
   GetValueComment(event){
-    console.log('thay đổi comment/reaction')
     this.getShowChangeTopic();
     this.getShowTopic();
   }

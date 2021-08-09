@@ -77,7 +77,6 @@ export class ListActivitiesComponent {
 		this.activatedRoute.params.subscribe(params => {
 			this.ID_QuyTrinh = +params.id;
 			this.ID_milestone = +params.id_milestone;
-			console.log('params:',params)
 		});
 		this.loadDataList();
 	}

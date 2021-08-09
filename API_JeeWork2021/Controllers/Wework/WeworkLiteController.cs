@@ -936,7 +936,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
         }
         /// <summary>
-        /// Lấy danh sách field động theo id_project_team, isnewfield: Field bên ngoài không select trong DB tùy mục đích người dùng
+        /// Lấy danh sách tất cả trạng thái theo dự
         /// </summary>
         /// <param name="id_project_team"></param>
         /// <param name="isnewfield"></param>
@@ -951,7 +951,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
@@ -1112,7 +1112,7 @@ and IdKH={loginData.CustomerID} )";
                 query = "select id_row, title, color, locked from we_project_team where Disabled = 0;" +
                     "select id_row, StatusName, description, id_project_team, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo " +
                     "from we_status where Disabled = 0";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     DataSet ds = cnn.CreateDataSet(query);
@@ -2105,6 +2105,7 @@ and IdKH={loginData.CustomerID} )";
             noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
             noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
             noti_mess.Link = notify_model.To_Link_WebApp;
+            noti_mess.oslink = notify_model.To_Link_MobileApp;
             string html = "<h1>Gửi nội dung thông báo</h1>";
             notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess);
             return true;
@@ -2502,23 +2503,48 @@ and IdKH={loginData.CustomerID} )";
         {
             DataTable dt = new DataTable();
             string query = "";
-            query = $@"select id_row, StatusName, description, id_project_team,IsToDo
-,Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, '' as hoten_Follower
-from we_status 
-where Disabled = 0";
+            query = $@"select id_row, statusname, description, id_project_team,IsToDo
+                    ,Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, '' as hoten_Follower
+                    from we_status 
+                    where Disabled = 0 ";
             if (id_project > 0)
                 query += " and id_project_team =" + id_project + "";
-            query += " order by IsFinal,id_row";
+            query += " order by type, Position";
+            dt = cnn.CreateDataTable(query);
+            #region Map info account từ JeeAccount
+            foreach (DataRow item in dt.Rows)
+            {
+                var info = DataAccount.Where(x => item["Follower"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                if (info != null)
+                {
+                    item["hoten_Follower"] = info.FullName;
+                }
+            }
+            #endregion
+            return dt;
+        }
+        public static DataTable list_status_by_user(long id_project, List<AccUsernameModel> DataAccount, DpsConnection cnn)
+        {
+            DataTable dt = new DataTable();
+            string query = "";
+            query = $@"select id_row, statusname, description, id_project_team, istodo
+                        ,type, isdefault, color, position, isfinal, follower
+                        , isdeadline, '' as hoten_follower
+                        from we_status 
+                        where disabled = 0";
+            if (id_project > 0)
+                query += " and id_project_team =" + id_project + "";
+            query += " order by type, Position";
             dt = cnn.CreateDataTable(query);
             #region Map info account từ JeeAccount
 
             foreach (DataRow item in dt.Rows)
             {
-                var info = DataAccount.Where(x => item["Follower"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                var info = DataAccount.Where(x => item["follower"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
 
                 if (info != null)
                 {
-                    item["hoten_Follower"] = info.FullName;
+                    item["hoten_follower"] = info.FullName;
                 }
             }
 
@@ -2680,57 +2706,7 @@ where Disabled = 0";
             }
             return true;
         }
-        /// <summary>
-        /// Khởi tạo status theo template mặc định cho project
-        /// </summary>
-        /// <param name="id_project"></param>
-        /// <param name="conn"></param>
-        /// <returns></returns>
-        public static bool Init_Status_Project(long id_project, DpsConnection conn, UserJWT loginData, string list_status = "")
-        {
-            SqlConditions cond = new SqlConditions();
-            DataTable dt = new DataTable();
 
-            string sqlq = "";
-            SqlConditions conds = new SqlConditions();
-            Hashtable has = new Hashtable();
-            conds.Add("disabled", 0);
-            conds.Add("id_project_team", id_project);
-            sqlq = "select * from we_status where (where)";
-            dt = conn.CreateDataTable(sqlq, "(where)", conds);
-            if (dt.Rows.Count <= 0)
-            {
-                sqlq = "select statusname, description, type, isdefault" +
-                    ", color, position, isfinal, isdeadline, istodo " +
-                    "from we_status_list " +
-                    "where disabled = 1 and id_row in (" + list_status + ")";
-                dt = conn.CreateDataTable(sqlq);
-                if (dt.Rows.Count > 0)
-                {
-                    foreach (DataRow item in dt.Rows)
-                    {
-                        Hashtable val1 = new Hashtable();
-                        val1.Add("statusname", item["statusname"]);
-                        val1.Add("description", item["description"]);
-                        val1.Add("id_project_team", id_project);
-                        val1.Add("type", item["type"]);
-                        val1.Add("isdefault", item["isdefault"]);
-                        val1.Add("color", item["color"]);
-                        val1.Add("position", item["position"]);
-                        val1.Add("isfinal", item["isfinal"]);
-                        val1.Add("isdeadline", item["isdeadline"]);
-                        val1.Add("istodo", item["istodo"]);
-                        val1.Add("createddate", DateTime.Now);
-                        val1.Add("createdby", loginData.UserID);
-                        if (conn.Insert(val1, "we_status") != 1)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
         /// <summary>
         /// Lấy danh sách view theo project
         /// </summary>
@@ -3295,6 +3271,77 @@ where Disabled = 0";
                 return new DataTable();
             else
                 return dt;
+        }
+        public static bool insert_processwork(DpsConnection cnn)
+        {
+            Hashtable val = new Hashtable();
+            string sqlq = "";
+            sqlq = $@"select we_work.id_row, we_work.id_project_team, we_work.createddate
+                    , we_work.createdby, we_status.id_row as statusid
+                    from we_work join we_status on we_work.id_project_team = we_status.id_project_team
+                    where we_work.id_row not in (select workid from we_work_process)
+                    and we_work.Disabled = 0 and we_status.disabled = 0";
+            DataTable dt = new DataTable();
+            dt = cnn.CreateDataTable(sqlq);
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    val = new Hashtable();
+                    val.Add("id_project_team", item["id_project_team"]);
+                    val.Add("workid", item["id_row"]);
+                    val.Add("statusid", item["statusid"]);
+                    val.Add("checker", DBNull.Value);
+                    val.Add("createddate", item["createddate"]);
+                    val.Add("createdby", item["createdby"]);
+                    if (cnn.Insert(val, "we_work_process") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return false;
+                    }
+                    long processid = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_process')").ToString());
+                    val = new Hashtable();
+                    val.Add("processid", processid);
+                    val.Add("new_checker", DBNull.Value);
+                    val.Add("createddate", item["createddate"]);
+                    val.Add("createdby", item["createdby"]);
+                    if (cnn.Insert(val, "we_work_process_log") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        public static bool update_position_status(long id_project_team, DpsConnection cnn)
+        {
+            long position = 0;
+            Hashtable val = new Hashtable();
+            SqlConditions cond = new SqlConditions();
+            cond.Add("disabled", 0);
+            cond.Add("id_project_team", id_project_team);
+            string sqlq = "select id_row, id_project_team, position " +
+                        "from we_status " +
+                        "where (where) order by type, position";
+            DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    val = new Hashtable();
+                    position++;
+                    val.Add("position", position);
+                    cond = new SqlConditions();
+                    cond.Add("id_row", item["id_row"].ToString());
+                    if (cnn.Update(val, cond, "we_status") != 1)
+                    {
+                        return false;
+                    }
+                }
+
+            }
+            return true;
         }
     }
 }

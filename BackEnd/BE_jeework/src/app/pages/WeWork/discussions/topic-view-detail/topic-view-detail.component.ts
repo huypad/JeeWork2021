@@ -161,7 +161,6 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
           }, 50);
         }),
         catchError((err) => {
-          console.log(err);
           return of();
         }),
         finalize(() => {}),

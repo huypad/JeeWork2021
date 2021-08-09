@@ -88,7 +88,6 @@ this.userCurrent=dt.user.username
 
     }catch(err)
     {
-      console.log(err)
     }
     setTimeout(() => {
       this.messageService.connectToken(this.user.user.IdGroup);
@@ -152,8 +151,6 @@ this.userCurrent=dt.user.username
   }
 
   onFocusEvent(event: any) {
-    //console.log(event.target.value);
-    // this.activedChatBox();
   }
   
   activedChatBox() {

@@ -94,12 +94,14 @@
                     </div>
                     <div class="cu-task-row-assignee pd-r-10"> 
                         <ng-container *ngIf="item.Followers">
-                            Theo dõi:
                             <ng-container *ngIf="CheckRoles(14);else norole14">
+                                Theo dõi:
                                 <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
                                 </kt-avatar-list-users> 
                             </ng-container>
                             <ng-template #norole14>
+                                <ng-container *ngIf="item.Followers.length > 0">Theo dõi:</ng-container>
+                                
                                 <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
                                 </kt-avatar-list-users> 
                             </ng-template> 
@@ -178,13 +180,17 @@
                     </div>
 
                     <div class="action float-right" style="flex-grow: 1;">
-                        <div class="title float-right" *ngIf="item.Process">
-                            <a class="action float-right">
-                                <button class="btn -hover text-muted" [matMenuTriggerFor]="follower">
-                                    <i class="fas fa-user-cog pd-0" style="font-size: 20px; color: green;"></i>
-                                </button>
-                            </a>
-                        </div>
+                        <ng-container *ngIf="IsAdmin()">
+                            <div class="title float-right" *ngIf="item.Process && item.Process.length > 0 ">
+                                <a class="action float-right">
+                                    <button class="btn -hover text-muted"   (click)="UpdateWorkProcess();">
+                                        <!-- [matMenuTriggerFor]="follower" -->
+                                        <i class="fas fa-user-cog pd-0" style="font-size: 20px; color: green;"></i>
+                                    </button>
+                                </a>
+                            </div>
+                        </ng-container>
+                        
                         <mat-menu #follower="matMenu">
                             <button mat-menu-item *ngFor="let status of this.item.Process"
                                 (click)="$event.stopPropagation()" [ngStyle]="{color: status.color}">
@@ -194,6 +200,13 @@
                                         </div>
                                     </div>
                                     {{status.statusname}} {{status.hoten?('('+status.hoten+')'):''}}
+                                    <!-- <i class="fas fa-pencil-alt text-right" style="flex-grow: 1;padding-left: 20px;" (click)="$event.stopPropagation();chinhsuastt(status);"></i> -->
+                                    <!-- <i class="fas fa-pencil-alt text-right" style="flex-grow: 1;padding-left: 20px;" [matMenuTriggerFor]="assignqt"></i>
+                                    <mat-menu #assignqt="matMenu">
+                                        <button mat-menu-item *ngFor="let item of listUser" (click)="UpdateStatus_dynamic(status,item)" >
+                                            <span style="color: black;">{{ item.hoten }}</span>
+                                        </button>
+                                    </mat-menu> -->
                                 </div>
                             </button>
                         </mat-menu>

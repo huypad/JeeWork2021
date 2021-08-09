@@ -65,7 +65,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     public weworkService: WeWorkService,
     public _Services: ListDepartmentService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.TempSelected = this.data.id_template > 0 ? this.data.id_template : 0;
@@ -82,8 +82,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       if (res && res.status === 1) {
         this.litsTemplateDemo = res.data;
         this.litsTemplateDemo.sort((a, b) => (a.IsTodo === b.IsTodo ? -1 : 1)); // isTodo true lên trước
-        console.log(this.TempSelected);
-        console.log(this.litsTemplateDemo);
         if (
           this.TempSelected == 0 ||
           !this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected)
@@ -112,7 +110,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   LoadListSTT() {
-    if(!this.isStatusNow){
+    if (!this.isStatusNow) {
       var x = this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected);
       if (x) {
         this.listSTT = x.status;
@@ -146,7 +144,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   LoadNewvalue(viewid) {
-    console.log(this.listStatus);
     var x = this.listSTT.find((x) => x.StatusID == viewid);
     if (x) {
       return x;
@@ -157,8 +154,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       };
     }
   }
-  Doistt(item,stt){
-    console.log(stt);
+  Doistt(item, stt) {
     item.colornew = stt.color;
     item.newtitle = stt.StatusName;
   }
@@ -171,7 +167,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     var error = false;
     if (this.isChose) {
       this.listStatus.forEach((element) => {
-        if(element.SL_Tasks > 0){
+        if (element.SL_Tasks > 0) {
           if (element.newvalue == 0) {
             error = true;
             return;
@@ -183,7 +179,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
           }
         }
       });
-      if(!error)
+      if (!error)
         this.Created(_item);
       else
         this.layoutUtilsService.showError("Bắt buộc phải chọn trạng thái công việc");
@@ -192,10 +188,10 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       this.Created(_item);
     }
 
-    
+
   }
 
-  Created(_item){
+  Created(_item) {
     this._service.Different_Statuses(_item).subscribe((res) => {
       if (res && res.status == 1) {
         this.layoutUtilsService.showInfo("Update thành công");
@@ -238,7 +234,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.Id_project_team = status.id_project_team;
       //   item.Follower = status.Follower;
       item.Type = status.Type ? status.Type : "2";
-      console.log(item);
       this.UpdateStatus(item);
     }
   }
@@ -262,7 +257,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.Id_project_team = status.id_project_team;
       //   item.Follower = status.Follower;
       item.Type = status.Type ? status.Type : "2";
-      console.log(item);
       this.UpdateStatus(item);
     }
   }
@@ -356,7 +350,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     if (!value) {
       return;
     }
-    if(!this.isStatusNow){
+    if (!this.isStatusNow) {
       const _item = new UpdateQuickModel();
       _item.clear();
       _item.id_row = 0;
@@ -365,14 +359,13 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       _item.istemplate = false;
       _item.id_template = this.TempSelected;
       this.UpdateQuick(_item);
-    }else{
+    } else {
       const item = new StatusDynamicModel();
       item.clear();
       item.StatusName = value;
       item.Color = 'rgb(29, 126, 236)';
       item.Id_project_team = this.data.id_row;
       item.Type = "2";
-      console.log(item);
       this._service.InsertStatus(item).subscribe((res) => {
         if (res && res.status == 1) {
           this.ListStatusDynamic();

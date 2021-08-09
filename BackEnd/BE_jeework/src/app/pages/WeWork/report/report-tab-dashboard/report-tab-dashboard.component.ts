@@ -159,13 +159,7 @@ export class ReportTabDashboardComponent implements OnInit {
       value: 'status',
       id_row: '2',
       loai: 'trangthai'
-    },
-    // {
-    //   title: this.translate.instant('filter.congviecquahan'),
-    //   value: 'status',
-    //   id_row: '3',
-    //   loai: 'trangthai'
-    // },
+    }, 
   ]
 
   NameDept(id) {
@@ -173,14 +167,7 @@ export class ReportTabDashboardComponent implements OnInit {
     var x = this.list_department.find(x=>x.id_row == id);
     if(x){
       return x.title;
-    }
-    // if (this.list_department) {
-    //   this.list_department.forEach(res => {
-    //     if (res.id_row == id) {
-    //       return res.title;
-    //     }
-    //   })
-    // }
+    } 
     return title
   }
 
@@ -211,6 +198,13 @@ export class ReportTabDashboardComponent implements OnInit {
     setTimeout(() => {
       this.layoutUtilsService.OffWaitingDiv();
     }, 500);
+  }
+
+  ngAfterViewInit(): void {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+    // this.layoutUtilsService.OffWaitingDiv();
+    
   }
 
   LoadDatafilter() {
@@ -247,32 +241,33 @@ export class ReportTabDashboardComponent implements OnInit {
         {
           title: this.translate.instant('report.duan'),
           tong: 0,
-          text1: this.translate.instant('report.duannoibo'),
-          text2: this.translate.instant('report.duanbenngoai'),
+          text1: this.translate.instant('filter.dungtiendo'),
+          text2: this.translate.instant('filter.chamtiendo'),
         },
         {
           title: this.translate.instant('report.phongban'),
           tong: 0,
-          text1: this.translate.instant('report.phongbannoibo'),
-          text2: this.translate.instant('report.phongbanbenngoai'),
+          text1: this.translate.instant('report.phongban'),
+          text2: this.translate.instant('report.thumuc'),
         },
         {
           title: this.translate.instant('report.congviec'),
           tong: 0,
           text1: this.translate.instant('report.hoanthanh'),
           text2: this.translate.instant('report.dangthuchien'),
+          text3:  this.translate.instant('filter.quahan'),
         },
+        // {
+        //   title: this.translate.instant('report.muctieu'),
+        //   tong: 0,
+        //   text1: this.translate.instant('report.hoanthanh'),
+        //   text2: this.translate.instant('report.dangthuchien'),
+        // },
         {
-          title: this.translate.instant('report.muctieu'),
+          title: this.translate.instant('report.thanhvienduan'),
           tong: 0,
-          text1: this.translate.instant('report.hoanthanh'),
-          text2: this.translate.instant('report.dangthuchien'),
-        },
-        {
-          title: this.translate.instant('report.thanhvien'),
-          tong: 0,
-          text1: this.translate.instant('report.nhanvien'),
-          text2: this.translate.instant('report.khach'),
+          text1: this.translate.instant('report.quantrivien'),
+          text2: this.translate.instant('report.thanhvien'),
         },
       ]
       if (data && data.status == 1) {
@@ -289,14 +284,15 @@ export class ReportTabDashboardComponent implements OnInit {
         this.ListOverview[2].tong = arrdata['CongViec'].Tong;
         this.ListOverview[2].text1 = arrdata['CongViec'].HoanThanh + ' ' + this.ListOverview[2].text1;
         this.ListOverview[2].text2 = arrdata['CongViec'].DangThucHien + ' ' + this.ListOverview[2].text2;
+        this.ListOverview[2].text3 = arrdata['CongViec'].TreHan + ' ' + this.ListOverview[2].text3;
         //Mục tiêu
-        this.ListOverview[3].tong = arrdata['MucTieu'].Tong;
-        this.ListOverview[3].text1 = arrdata['MucTieu'].HoanThanh + ' ' + this.ListOverview[3].text1;
-        this.ListOverview[3].text2 = arrdata['MucTieu'].DangThucHien + ' ' + this.ListOverview[3].text2;
+        // this.ListOverview[3].tong = arrdata['MucTieu'].Tong;
+        // this.ListOverview[3].text1 = arrdata['MucTieu'].HoanThanh + ' ' + this.ListOverview[3].text1;
+        // this.ListOverview[3].text2 = arrdata['MucTieu'].DangThucHien + ' ' + this.ListOverview[3].text2;
         //Thành viên
-        this.ListOverview[4].tong = arrdata['ThanhVien'].Tong;
-        this.ListOverview[4].text1 = arrdata['ThanhVien'].NhanVien + ' ' + this.ListOverview[4].text1;
-        this.ListOverview[4].text2 = arrdata['ThanhVien'].Khach + ' ' + this.ListOverview[4].text2;
+        this.ListOverview[3].tong = arrdata['ThanhVien'].Tong;
+        this.ListOverview[3].text1 = arrdata['ThanhVien'].QuanTriVien + ' ' + this.ListOverview[3].text1;
+        this.ListOverview[3].text2 = arrdata['ThanhVien'].ThanhVien + ' ' + this.ListOverview[3].text2;
       }
 
 

@@ -100,6 +100,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strW += " and  id_project_team= @id_projectteam ";
                     cond.Add("id_projectteam", query.filter["id_projectteam"]);
                 }
+                else
+                {
+                    return JsonResultCommon.Custom("Dự án không hợp lệ");
+                }
+                int id_projectteam = int.Parse(query.filter["id_projectteam"]);
+
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
@@ -136,68 +142,58 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    #region get trạng thái của dự án - hoàn thành - đang làm
-                    string sqlht = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1";
-                    string sqldth = "select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsTodo = 1";
-                    long hoanthanh = long.Parse(cnn.ExecuteScalar(sqlht,cond).ToString());
-                    long danglam = long.Parse(cnn.ExecuteScalar(sqldth, cond).ToString());
+                    #region get trạng thái của dự án - hoàn thành - đang làm 
+                    long hoanthanh = GetStatusComplete(id_projectteam, cnn);
+                    long deadline = GetStatusDeadline(id_projectteam, cnn);
+                    long danglam = GetStatusTodo(id_projectteam,cnn);
                     #endregion
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("danglam", danglam);
-                    #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select  COUNT(CASE WHEN is_project = 1 THEN 1 END) as DuAn,
-                                    COUNT(CASE WHEN is_project = 1 and Loai=1 THEN 1 END) as DuAnNoiBo,
-                                    COUNT(CASE WHEN is_project = 1 and Loai=2 THEN 1 END) as DuAnKH,
-                                    COUNT(CASE WHEN is_project <> 1 THEN 1 END) as PhongBan,
-                                    COUNT(CASE WHEN is_project <>1 and Loai=1 THEN 1 END) as PhongBanNoiBo ,
-                                    COUNT(CASE WHEN is_project <>1 and Loai=2 THEN 1 END) as PhongBanNgoai 
-                                    from we_project_team p
-                                    where p.Disabled=0 " + strP;
-                    sqlq += @";select count(*) as Tong, COUNT(CASE WHEN w.status = @hoanthanh THEN 1 END) as HoanThanh
-,COUNT(CASE WHEN w.status <> @hoanthanh THEN 1 END) as DangThucHien from v_wework_clickup_new w
+                    cond.Add("deadline", deadline);
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện 
+                    string sqlq = @"select count(*) as Tong, COUNT(CASE WHEN w.status = @hoanthanh THEN 1 END) as HoanThanh
+,COUNT(CASE WHEN w.status NOT IN (@deadline,@hoanthanh) THEN 1 END) as DangThucHien,COUNT(CASE WHEN w.status = @deadline THEN 1 END) as TreHan from v_wework_clickup_new w
 join we_project_team p on p.id_row = w.id_project_team
-where w.disabled=0  " + strW;
-                    sqlq += @";select count(*) as Tong, COUNT(CASE WHEN deadline>=getdate() THEN 1 END) as HoanThanh
-                            ,COUNT(CASE WHEN deadline<=getdate() THEN 1 END) as DangThucHien from we_milestone m
-                            join we_project_team p on p.id_row = m.id_project_team
-                            where m.disabled = 0  and  id_project_team= @id_projectteam " + strP;
-                    sqlq += @$";select count(distinct id_user) as Tong from we_project_team_user pu
-                              join we_project_team p on p.id_row=pu.id_project_team
-                              where pu.Disabled=0 and p.Disabled=0 and pu.id_user in ({listID}) and  id_project_team= @id_projectteam ";
+where w.disabled=0  " + strW; 
+                    sqlq += @$";select count(*) as Tong,COUNT(CASE WHEN pu.admin = 1 THEN 1 END) as QuanTriVien,COUNT(CASE WHEN pu.admin = 0 THEN 1 END) as ThanhVien from we_project_team_user pu
+join we_project_team p on p.id_row=pu.id_project_team
+where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
                     var data = new
                     {
-                        DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
+                        //DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
+                        //{
+                        //    Tong = ds.Tables[0].Rows[0]["DuAn"],
+                        //    DuAnNoiBo = ds.Tables[0].Rows[0]["DuAnNoiBo"],
+                        //    DuAnKH = ds.Tables[0].Rows[0]["DuAnKH"]
+                        //} : null,
+                        //PhongBan = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
+                        //{
+                        //    Tong = ds.Tables[0].Rows[0]["PhongBan"],
+                        //    DuAnNoiBo = ds.Tables[0].Rows[0]["PhongBanNoiBo"],
+                        //    DuAnKH = ds.Tables[0].Rows[0]["PhongBanNgoai"]
+                        //} : null,
+                        CongViec = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
                         {
-                            Tong = ds.Tables[0].Rows[0]["DuAn"],
-                            DuAnNoiBo = ds.Tables[0].Rows[0]["DuAnNoiBo"],
-                            DuAnKH = ds.Tables[0].Rows[0]["DuAnKH"]
+                            Tong = ds.Tables[0].Rows[0]["Tong"],
+                            HoanThanh = ds.Tables[0].Rows[0]["HoanThanh"],
+                            DangThucHien = ds.Tables[0].Rows[0]["DangThucHien"],
+                            TreHan = ds.Tables[0].Rows[0]["TreHan"],
                         } : null,
-                        PhongBan = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
-                        {
-                            Tong = ds.Tables[0].Rows[0]["PhongBan"],
-                            DuAnNoiBo = ds.Tables[0].Rows[0]["PhongBanNoiBo"],
-                            DuAnKH = ds.Tables[0].Rows[0]["PhongBanNgoai"]
-                        } : null,
-                        CongViec = ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0 ? new
+                        //MucTieu = ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0 ? new
+                        //{
+                        //    Tong = ds.Tables[2].Rows[0]["Tong"],
+                        //    HoanThanh = ds.Tables[2].Rows[0]["HoanThanh"],
+                        //    DangThucHien = ds.Tables[2].Rows[0]["DangThucHien"],
+                        //} : null,
+                        ThanhVien = ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0 ? new
                         {
                             Tong = ds.Tables[1].Rows[0]["Tong"],
-                            HoanThanh = ds.Tables[1].Rows[0]["HoanThanh"],
-                            DangThucHien = ds.Tables[1].Rows[0]["DangThucHien"],
-                        } : null,
-                        MucTieu = ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0 ? new
-                        {
-                            Tong = ds.Tables[2].Rows[0]["Tong"],
-                            HoanThanh = ds.Tables[2].Rows[0]["HoanThanh"],
-                            DangThucHien = ds.Tables[2].Rows[0]["DangThucHien"],
-                        } : null,
-                        ThanhVien = ds.Tables[3] != null && ds.Tables[3].Rows.Count > 0 ? new
-                        {
-                            Tong = ds.Tables[3].Rows[0]["Tong"],
-                            NhanVien = ds.Tables[3].Rows[0]["Tong"],
+                            QuanTriVien = ds.Tables[1].Rows[0]["QuanTriVien"],
+                            ThanhVien = ds.Tables[1].Rows[0]["ThanhVien"],
                             Khach = 0
                         } : null
                     };
@@ -1360,7 +1356,7 @@ where w.disabled=0  " + strW;
                         sqlq += " and id_parent is null";
                     DataTable dt = cnn.CreateDataTable(sqlq, cond);
                     bool hasValue = dt.Rows.Count > 0;
-                    DataTable list_project = cnn.CreateDataTable("select id_row, require_evaluate from we_project_team where disabled = 0" + strD);
+                    DataTable list_project = cnn.CreateDataTable("select id_row, require_evaluate from we_project_team where disabled = 0" + strD, cond);
                     bool is_evaluate = list_project.Rows.Count > 0;
                     var listdata = (new
                     {

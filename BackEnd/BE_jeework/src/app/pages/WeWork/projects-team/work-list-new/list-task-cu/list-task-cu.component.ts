@@ -1177,6 +1177,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
         this.UpdateByKey(task, "status", status.id_row);
       }
     }  
+    // this.UpdateByKey(task, "status", status.id_row);
   }
   UpdateByKey(task, key, value) {
     const item = new UpdateWorkModel();

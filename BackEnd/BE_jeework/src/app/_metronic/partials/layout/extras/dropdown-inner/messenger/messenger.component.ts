@@ -73,7 +73,6 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
 	ngOnChanges(changes: SimpleChanges) {
 		this.propChanges = changes;
 		this.searchText=this.propChanges.PData.currentValue
-		console.log(this.searchText);
 	  }
 	ngOnDestroy(): void {
 		if(this._subscriptions)
@@ -227,7 +226,6 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
    
 	const sb=this.presence.onlineUsers$.subscribe(res=>
 	  {
-		console.log('onlineUsers',res)
 	   for(let i=0;i<res.length;i++)
 	   {
 		if(res[i].JoinGroup==="changeActive" )
@@ -264,7 +262,6 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
 	let  data=this.ItemConversation();
 	this.conversation_sevices.CreateConversation(data).subscribe(res=>
 	  {
-		console.log('create conversat',res.data)
 		if (res && res.status === 1) {
 		  this.selectUser(res.data[0]);
 			this.GetContact();
@@ -295,12 +292,6 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
 	  } else {
 		this.chatBoxUsers = [];
 	  }
-	//   this.searchControl.valueChanges
-	//   .pipe()
-	//   .subscribe(() => {
-	// 	// this.filterBankGroups();
-	// 	console.log('AAAAAAAA')
-	//   });
 	
 	}
   

@@ -1495,6 +1495,7 @@ export const locale = {
       quatrinhhoanthanhtheongay: "Quá trình hoành thành theo ngày",
       soluongcongviec: "Số lượng công việc",
       thanhvien: "Thành viên",
+      thanhvienduan: "Thành viên dự án",
       thanhvienxuatsac: "Thành viên xuất sắc",
       tagclounds: "Tag clounds",
       tonghoptheotuan: "Tổng hợp theo tuần",
@@ -1527,6 +1528,8 @@ export const locale = {
       phongbanhoatdong: "Phòng ban hoạt động",
       congviectrongphongban: "Công việc trong phòng ban",
       clicktoupdate: "Điều kiện ngày",
+      quantrivien: "Quản trị viên",
+      thumuc: "Thư mục",
     },
     repeated: {
       tansuatlaplai: "Tần suất lặp lại",

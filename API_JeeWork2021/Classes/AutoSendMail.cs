@@ -107,7 +107,7 @@ namespace JeeWork_Core2021.Classes
         {
             try
             {
-                #region danh sách tài khoản customer
+                #region danh sách customer
                 List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
                 if (DanhSachCustomer != null)
                 {
@@ -117,17 +117,18 @@ namespace JeeWork_Core2021.Classes
                         try
                         {
                             string _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
-                            using (DpsConnection cnnWW = new DpsConnection(_connection))
+                            using (DpsConnection cnn = new DpsConnection(_connection))
                             {
-                                ThongBaoSapHetHan(cnnWW, CustomerID.ToString());
-                                ThongBaoHetHan(cnnWW, CustomerID.ToString());
-                                EveryDay_UpdateLate(cnnWW, CustomerID.ToString());
-                                EveryDayForceRun(cnnWW, CustomerID.ToString());
+                                //WeworkLiteController.insert_processwork(cnn);
+                                ThongBaoSapHetHan(cnn, CustomerID.ToString());
+                                ThongBaoHetHan(cnn, CustomerID.ToString());
+                                EveryDay_UpdateLate(cnn, CustomerID.ToString());
+                                EveryDayForceRun(cnn, CustomerID.ToString());
                             }
                         }
                         catch (Exception ex)
                         {
-                            //continue;
+                            continue;
                         }
                     }
                 }
@@ -411,8 +412,7 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
             loginData.LastName = "Hệ thống";
             loginData.UserID = 0;
             foreach (DataRow dr in dt.Rows)
-            {
-                //users.Add(long.Parse(dr["Id_NV"].ToString()));
+            { 
                 WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
             }
         }

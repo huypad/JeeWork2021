@@ -96,10 +96,6 @@ namespace JeeWork_Core2021.Models
         public string Value { get; set; } // dùng cho new field (nếu có options thì truyền ID không truyền text)
         public string WorkID { get; set; } // dùng cho new field // giống id_row
         public string TypeID { get; set; } // dùng cho new field //
-
-
-
-
     }
     public class ColumnWorkModel
     {
@@ -174,9 +170,14 @@ namespace JeeWork_Core2021.Models
         public string Value { get; set; }
         public string Color { get; set; }
         public string Note { get; set; }
-
-
-
     }
-
+    public class WorkProcessModel
+    {
+        public long id_row { get; set; }
+        public long id_project_team { get; set; }
+        public long statusid { get; set; }
+        public long workid { get; set; }
+        public string checker { get; set; }
+        public string change_note { get; set; }
+    }
 }

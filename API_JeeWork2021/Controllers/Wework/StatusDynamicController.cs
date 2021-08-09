@@ -96,34 +96,34 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.Insert(val, "we_status") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_status')").ToString();
+                    WeworkLiteController.update_position_status(data.Id_project_team, cnn);
                     // Insert người follow cho công việc (We_Status_Process)
-                    val = new Hashtable();
-                    val.Add("id_project_team", data.Id_project_team);
-                    val.Add("StatusID", idc);
-                    if (data.Follower > 0)
-                        val.Add("Checker", data.Follower);
-                    else
-                        val.Add("Checker", DBNull.Value);
-                    val.Add("CheckedDate", DateTime.Now);
-                    val.Add("CreatedBy", iduser);
-                    val.Add("CreatedDate", DateTime.Now);
-                    cnn.BeginTransaction();
-                    //if (cnn.Insert(val, "We_Work_Process") != 1)
+                    //val = new Hashtable();
+                    //val.Add("id_project_team", data.Id_project_team);
+                    //val.Add("statusid", idc);
+                    //if (data.Follower > 0)
+                    //    val.Add("checker", data.Follower);
+                    //else
+                    //    val.Add("checker", DBNull.Value);
+                    //val.Add("createdby", iduser);
+                    //val.Add("createddate", DateTime.Now);
+                    //cnn.BeginTransaction();
+                    //if (cnn.Insert(val, "we_work_process") != 1)
                     //{
                     //    cnn.RollbackTransaction();
-                    //    return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                    //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     //}
-                    cnn.EndTransaction();
-                    data.Id_row = int.Parse(idc);
+                    //cnn.EndTransaction();
+                    //data.Id_row = int.Parse(idc);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("Update")]
@@ -154,7 +154,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string s = "select * from we_status where disabled=0 and id_row=@id_row";
                     DataTable old = cnn.CreateDataTable(s, sqlcond);
                     if (cnn.LastError != null || old == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Filter");
                     Hashtable val = new Hashtable();
@@ -189,15 +189,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.Update(val, sqlcond, "we_status") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    WeworkLiteController.update_position_status(data.Id_project_team, cnn);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("Delete")]
@@ -218,20 +219,26 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqlq = "select ISNULL((select count(*) from we_status where disabled=0 and id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Filter");
+                    long id_project_team = long.Parse(cnn.ExecuteScalar("select ISNULL((select id_project_team from we_status where disabled=0 and id_row = " + id + "),0)").ToString());
+                    long sl_congviec = long.Parse(cnn.ExecuteScalar("select ISNULL((select count(*) from we_work where disabled=0 and status = " + id + "),0)").ToString());
+                    if (sl_congviec > 0)
+                        return JsonResultCommon.Custom("Hiện tại đang có "+sl_congviec+" đang thuộc trạng thái này, nên không thể xóa");
                     sqlq = "update we_status set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+
+                    WeworkLiteController.update_position_status(id_project_team, cnn);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -266,7 +273,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.ExecuteNonQuery(sqlq_insert) < 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //DataTable dt_status_old = cnn.CreateDataTable("select * from we_status where Disabled = 1 and id_project_team =" + data.id_project_team + "");
                     #endregion
@@ -275,7 +282,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.ExecuteNonQuery(sql_update_template) < 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #endregion
                     #region Insert những status của template mới
@@ -285,8 +292,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (rs < 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    WeworkLiteController.update_position_status(data.id_project_team, cnn);
                     // insert người
                     #endregion
                     int status_todo = int.Parse(cnn.ExecuteScalar("select id_row from we_status where Disabled = 0 and id_project_team = " + data.id_project_team + " and istodo = 1").ToString());
@@ -303,7 +311,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (rs < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     else
@@ -317,14 +325,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 where = "where StatusID_Reference = " + _map.new_status + " and id_project_team =" + data.id_project_team + " and disabled = 0";
                                 sql_update = $@"update we_status set Follower = (select Follower from we_status where id_row = " + _map.old_status + ") ";
                                 sql_update += where;
-                                sql_update += $@";update we_work set status_old = " + _map.old_status + " where status = "+ _map.old_status + " and id_project_team = " + data.id_project_team + "";
+                                sql_update += $@";update we_work set status_old = " + _map.old_status + " where status = " + _map.old_status + " and id_project_team = " + data.id_project_team + "";
                                 long newStatusID = long.Parse(cnn.ExecuteScalar("select id_row from we_status " + where).ToString());
                                 sql_update += $@";update we_work set status = " + newStatusID + " where status = " + _map.old_status + " and id_project_team = " + data.id_project_team + "";
                                 rs = cnn.ExecuteNonQuery(sql_update);
                                 if (rs < 0)
                                 {
                                     cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
                         }
@@ -335,7 +343,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
     }

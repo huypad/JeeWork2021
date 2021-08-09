@@ -104,9 +104,7 @@ export class ProjectsTeamComponent implements OnInit {
 
   GetColorName(val) {
     // name
-    this.layoutUtilsService.showWaitingDiv();
     this.WeWorkService.getColorName(val).subscribe((res) => {
-      this.layoutUtilsService.OffWaitingDiv();
       this.colorName = res.data.Color;
       this.changeDetectorRefs.detectChanges();
     });
@@ -120,6 +118,7 @@ export class ProjectsTeamComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.layoutUtilsService.showWaitingDiv();
     var path = this.router.url;
     if (path) {
       var arr = path.split("/");
@@ -166,6 +165,14 @@ export class ProjectsTeamComponent implements OnInit {
       this.changeDetectorRefs.detectChanges();
     });
   }
+
+  ngAfterViewInit(): void {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+    this.layoutUtilsService.OffWaitingDiv();
+    
+  }
+
 
   SelectedView(view) {
     // TabName=view.view_name_new;click('home');linkTo(view.link)

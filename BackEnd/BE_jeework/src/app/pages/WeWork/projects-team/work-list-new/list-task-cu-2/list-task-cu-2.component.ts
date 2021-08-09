@@ -842,6 +842,7 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
         this.UpdateByKey(task, "status", status.id_row);
       }
     }
+    // this.UpdateByKey(task, "status", status.id_row);
   }
   UpdateByKey(task, key, value) {
     const item = new UpdateWorkModel();
@@ -1268,7 +1269,6 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
           }
         }),
         catchError((err) => {
-          console.log(err);
           return of();
         }),
         finalize(() => {}),

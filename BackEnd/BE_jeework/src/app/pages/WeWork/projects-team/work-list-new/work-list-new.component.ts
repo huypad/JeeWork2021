@@ -1019,7 +1019,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if (remove) {
       val.id_nv = val.id_user;
     }
-    this.UpdateByKey(task, "assign", val.id_nv);
+    this.UpdateByKey(task, "assign", val.id_nv,false);
   }
 
   listUser: any[];
@@ -1243,9 +1243,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.UpdateByKey(task, "status", status.id_row);
       }
     }
+    // this.UpdateByKey(task, "status", status.id_row);
   }
 
-  UpdateByKey(task, key, value) {
+  UpdateByKey(task, key, value,isReloadData = true) {
     const item = new UpdateWorkModel();
     item.id_row = task.id_row;
     item.key = key;
@@ -1257,9 +1258,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.LoadData();
       } else {
-        setTimeout(() => {
-          this.LoadData();
-        }, 500);
+        if(isReloadData){ 
+          setTimeout(() => {
+            this.LoadData();
+          }, 500);
+        }
         this.layoutUtilsService.showError(res.error.message);
       }
     });

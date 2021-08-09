@@ -986,6 +986,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
+                        WeworkLiteController.update_position_status(idc, cnn);
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
@@ -1199,6 +1200,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    WeworkLiteController.update_position_status(idc, cnn);
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
                     {
@@ -1444,6 +1446,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
+                        WeworkLiteController.update_position_status(idc, cnn);
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
@@ -2325,6 +2328,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
+                    WeworkLiteController.update_position_status(long.Parse(dt.Rows[0]["id_row"].ToString()), cnn);
                     #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser))
                     {
