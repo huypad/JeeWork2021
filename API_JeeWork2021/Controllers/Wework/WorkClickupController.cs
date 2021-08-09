@@ -3959,7 +3959,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 #region Check dự án đó có gửi gửi mail khi cập nhật tình trạng hay không
                                 if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_status", false, ConnectionString))
                                 {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) }; 
+                                    string lst_user = string.Join(",", users);
+                                    var userProcess = cnn.CreateDataTable($"select * from we_work_process where WorkID = {data.id_row} and StatusID = {data.value} and Checker not in ({ string.Join(",", users) })");
+                                    if (userProcess.Rows.Count > 0)
+                                    {
+                                        foreach (DataRow item in userProcess.Rows)
+                                        {
+                                            users.Add(long.Parse(item["checker"].ToString()));
+                                        }
+                                    }
                                     DataTable dts = cnn.CreateDataTable("select * from we_status where id_row = " + data.value);
                                     if (dts.Rows.Count > 0)
                                     {
