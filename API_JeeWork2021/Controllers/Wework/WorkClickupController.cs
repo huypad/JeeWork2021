@@ -2650,12 +2650,12 @@ where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and obj
                     string strG = @"select 0 as id_row, N'Chưa phân loại' as title union
                     select id_row, title from we_group g where disabled=0 
                     and id_project_team=" + query.filter["id_project_team"];
-                    string sql_status = @"select id_row, statusname as title, color, position, type 
-                                    from we_status 
-                                    where disabled = 0 and id_project_team=" + query.filter["id_project_team"] + " " +
-                                    "order by type, position";
-                    DataTable dt_st = cnn.CreateDataTable(sql_status);
-                    //DataTable dt_st = cnn.CreateDataTable(strG);
+                    //string sql_status = @"select id_row, statusname as title, color, position, type 
+                    //                from we_status 
+                    //                where disabled = 0 and id_project_team=" + query.filter["id_project_team"] + " " +
+                    //                "order by type, position";
+                    //DataTable dt_st = cnn.CreateDataTable(sql_status);
+                    DataTable dt_st = cnn.CreateDataTable(strG);
                     DataSet ds = await GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept);
                     DataTable dt_stt = cnn.CreateDataTable($"select * from we_status where id_project_team=" + query.filter["id_project_team"]);
                     if (cnn.LastError != null || ds == null)
@@ -2702,7 +2702,7 @@ where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and obj
                                            id = "W" + rr["id_row"],
                                            label = rr["title"],
                                            expanded = true,
-                                           parentId = rr["status"] == DBNull.Value ? "G0" : ("G" + rr["status"]),
+                                           parentId = rr["id_group"] == DBNull.Value ? "G0" : ("G" + rr["id_group"]),
                                            start_date = rr["start_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["start_date"]),
                                            end_date = rr["end_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["end_date"]),
                                            deadline = rr["deadline"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["deadline"]),
@@ -4180,9 +4180,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                             }
                                         }
-                                        catch (Exception ex)
+                                        catch
                                         {
-                                            return JsonResultCommon.Exception(_logger, ex, _config, loginData);
                                         }
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
