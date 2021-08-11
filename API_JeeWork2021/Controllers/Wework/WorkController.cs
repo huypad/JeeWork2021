@@ -1401,7 +1401,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier);
+                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
                     #region Notify thêm mới công việc
                     Hashtable has_replace = new Hashtable();
                     for (int i = 0; i < data.Users.Count; i++)
@@ -1550,7 +1550,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                         }
                     }
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier);
+                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
                     cnn.EndTransaction();
                     #region Notify chỉnh sửa công việc
                     Hashtable has_replace = new Hashtable();
@@ -1638,7 +1638,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, old);
+                                WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
                                 for (int i = 0; i < users.Count; i++)
@@ -1675,7 +1675,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, ConnectionString, _notifier, old);
+                                WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, ConnectionString, _notifier, _configuration, old);
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
                                 for (int i = 0; i < users.Count; i++)
@@ -1714,7 +1714,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 cnn.EndTransaction();
                                 if (int.Parse(data.value.ToString()) == 2)
                                 {
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, ConnectionString, _notifier);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, ConnectionString, _notifier, _configuration);
                                     #region Notify cập nhật trạng thái công việc hoàn thành
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -1745,7 +1745,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 }
                                 if (int.Parse(data.value.ToString()) == 1)
                                 {
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, ConnectionString, _notifier);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, ConnectionString, _notifier, _configuration);
                                     #region Notify cập nhật trạng thái công việc đang làm
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -1802,7 +1802,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 }
                             }
                             var users = new List<long> { long.Parse(data.value.ToString()) };
-                            WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier);
+                            WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier, _configuration);
                             #region Notify assign
                             Hashtable has_replace = new Hashtable();
                             for (int i = 0; i < users.Count; i++)
@@ -1978,7 +1978,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (dt_user.Rows.Count > 0)
                     {
                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                        WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier);
+                        WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
                         object workname = cnn.ExecuteScalar("select title from we_work where Disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
                         if (workname != null)
                             workname = workname.ToString();

@@ -69,12 +69,12 @@ namespace JeeWork_Core2021.Controllers
             //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             //notify.notificationemail(loginData.access_token);
             //return "Oke";
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             emailMessage asyncnotice = new emailMessage()
             {
-                CustomerID = loginData.CustomerID,
+                CustomerID = 1119,
                 from = "derhades1998@gmail.com",
-                to = "ngocrong193@gmail.com",
+                to = "thanhthang1798@gmail.com",
                 subject = "Mail test",
                 html = "<h1>Hello World</h1>" //nội dung html
             };

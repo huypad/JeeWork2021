@@ -30,42 +30,36 @@ namespace JeeWork_Core2021.Classes
         public Stylesheet GenerateStylesheet()
         {
             Stylesheet styleSheet = null;
-
-
             Fonts fonts = new Fonts(
-                new Font( // Index 0 - default
-                    new FontSize() { Val = 14 }
-
-
-                ),
-                new Font( // Index 1 - header
-                    new FontSize() { Val = 14 },
-                    new Color() { Rgb = "FFFFFF" }
-
-                ),
-                 new Font( // Index 2 - body
-                    new FontSize() { Val = 16 },
-                      new Bold()
-                ),
-                 new Font( // Index 3 - header BÁO CÁO
-                    new FontSize() { Val = 20 },
-                      new Bold()
-                ),
-                 new Font( // Index 4 - header TỪ NGÀY - ĐẾN NGÀY
-                    new FontSize() { Val = 11 }
-                ),
-                 new Font( // Index 5 - header table
-                    new FontSize() { Val = 12 },
-                    new Bold()
-                //new FontName() { Val="" }
-                ),
-                new Font( // Index 5 - header table
-                    new FontSize() { Val = 15 },
-                    new Bold()
-                //new FontName() { Val="" }
-                )
-
-            );
+    new Font( // Index 0 - default
+        new FontSize() { Val = 14 }
+    ),
+    new Font( // Index 1 - header
+        new FontSize() { Val = 14 },
+        new Color() { Rgb = "FFFFFF" }
+    ),
+     new Font( // Index 2 - body
+        new FontSize() { Val = 16 },
+          new Bold()
+    ),
+     new Font( // Index 3 - header BÁO CÁO
+        new FontSize() { Val = 20 },
+          new Bold()
+    ),
+     new Font( // Index 4 - header TỪ NGÀY - ĐẾN NGÀY
+        new FontSize() { Val = 11 }
+    ),
+     new Font( // Index 5 - header table
+        new FontSize() { Val = 12 },
+        new Bold()
+    //new FontName() { Val="" }
+    ),
+    new Font( // Index 5 - header table
+        new FontSize() { Val = 15 },
+        new Bold()
+    //new FontName() { Val="" }
+    )
+);
 
             Fills fills = new Fills(
                     new Fill(new PatternFill() { PatternType = PatternValues.None }), // Index 0 - default

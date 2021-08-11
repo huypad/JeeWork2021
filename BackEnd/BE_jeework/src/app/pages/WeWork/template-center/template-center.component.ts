@@ -139,6 +139,7 @@ export class TemplateCenterComponent implements OnInit {
       .subscribe((res) => {
         if (res && res.status == 1) {
           this.DanhSachTC = res.data;
+          debugger
           this.changeDetectorRefs.detectChanges();
         } else {
           this.layoutUtilsService.showError(res.error.message);

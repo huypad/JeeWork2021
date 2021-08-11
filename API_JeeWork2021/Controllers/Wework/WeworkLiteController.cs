@@ -255,6 +255,83 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             {
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
+        }/// <summary>
+        /// Danh sách phòng ban theo user tham gia
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <returns></returns>
+        [Route("lite_department_folder_byuser")]
+        [HttpGet]
+        public object Lite_Department_Folder_ByUser(string keyword = "",long DepartmentID = 0)
+        {
+
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    string error = "";
+                    string listID = ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+                    SqlConditions conds = new SqlConditions();
+                    conds.Add("id_user", loginData.UserID);
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    string sqlq = @$"select distinct de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
+from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and id_row in ({listDept})"; 
+                    #endregion
+
+                    DataTable dt = cnn.CreateDataTable(sqlq, conds);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    #region Map info account từ JeeAccount
+
+                    foreach (DataRow item in dt.Rows)
+                    {
+                        var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (infoNguoiTao != null)
+                        {
+                            item["NguoiTao"] = infoNguoiTao.Username;
+                            item["TenNguoiTao"] = infoNguoiTao.FullName;
+                        }
+                        if (infoNguoiSua != null)
+                        {
+                            item["NguoiSua"] = infoNguoiSua.Username;
+                            item["TenNguoiSua"] = infoNguoiSua.FullName;
+                        }
+                    }
+                    #endregion
+                    var data = from r in dt.AsEnumerable()
+                               where  r["parentid"] == DBNull.Value
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   data_folder = from s in dt.AsEnumerable()
+                                                 where s["parentid"].ToString() == r["id_row"].ToString()
+                                                 select new
+                                                 {
+                                                     id_row = s["id_row"],
+                                                     title = s["title"],
+                                                 },
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
         }
         /// <summary>
         /// DS milestone lite by id_project_team
@@ -352,7 +429,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sql = "select id_row, title from we_group where Disabled=0 and id_project_team=" + id_project_team + " order by title";
+                    string sql = "select 0 as id_row, N'Chưa phân loại' as title union select id_row, title from we_group where Disabled=0 and id_project_team=" + id_project_team + " order by title";
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2199,25 +2276,51 @@ and IdKH={loginData.CustomerID} )";
                     template = template.Replace(key, val);
                 }
 
-                string HRConnectionString = JeeWorkConstant.getHRCnn();
-                DpsConnection cnnHR = new DpsConnection(HRConnectionString);
-                MailInfo MInfo = new MailInfo(nguoigui.CustomerID.ToString(), cnnHR);
-                cnn.Disconnect();
-                if (MInfo.Email != null)
+                for (int i = 0; i < dtUser.Rows.Count; i++)
                 {
-                    for (int i = 0; i < dtUser.Rows.Count; i++)
+                    //Gửi mail cho người nhận
+                    if (!"".Equals(dtUser.Rows[i]["email"].ToString()))
                     {
-                        //Gửi mail cho người nhận
-                        if (!"".Equals(dtUser.Rows[i]["email"].ToString()))
+                        if (exclude_sender && dtUser.Rows[i]["id_nv"].ToString() == nguoigui.UserID.ToString())
+                            continue;
+                        string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
+                        string ErrorMessage = "";
+                        //s.Send(m);
+                        emailMessage asyncnotice = new emailMessage()
                         {
-                            if (exclude_sender && dtUser.Rows[i]["id_nv"].ToString() == nguoigui.UserID.ToString())
-                                continue;
-                            string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
-                            string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, _notifier);
-                        }
+                            CustomerID = nguoigui.CustomerID,
+                            access_token = "",
+                            //from = "derhades1998@gmail.com",
+                            //to = "thanhthang1798@gmail.com", //
+                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            subject = title,
+                            html = contents //nội dung html
+                        };
+                        _notifier.sendEmail(asyncnotice);
+                        //SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, _notifier);
                     }
                 }
+               
+
+                //string HRConnectionString = JeeWorkConstant.getHRCnn();
+                //DpsConnection cnnHR = new DpsConnection(HRConnectionString);
+                //MailInfo MInfo = new MailInfo(nguoigui.CustomerID.ToString(), cnnHR);
+                cnn.Disconnect();
+                //if (MInfo.Email != null)
+                //{
+                //    for (int i = 0; i < dtUser.Rows.Count; i++)
+                //    {
+                //        //Gửi mail cho người nhận
+                //        if (!"".Equals(dtUser.Rows[i]["email"].ToString()))
+                //        {
+                //            if (exclude_sender && dtUser.Rows[i]["id_nv"].ToString() == nguoigui.UserID.ToString())
+                //                continue;
+                //            string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
+                //            string ErrorMessage = "";
+                //            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, _notifier);
+                //        }
+                //    }
+                //}
             }
             return true;
         }
@@ -2267,13 +2370,14 @@ and IdKH={loginData.CustomerID} )";
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, DataTable dtOld = null)
+        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, IConfiguration _configuration, DataTable dtOld = null)
         {
             if (users == null || users.Count == 0)
                 return;
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
-                List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
+                //List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
+                List<AccUsernameModel> DataAccount = GetDanhSachAccountFromCustomerID(_configuration, loginData.CustomerID);
                 DataTable dtUser = new DataTable();
                 dtUser.Columns.Add("id_nv");
                 dtUser.Columns.Add("hoten");
@@ -2755,7 +2859,7 @@ and IdKH={loginData.CustomerID} )";
         /// <param name="WorkID"></param>
         /// <param name="statusID"></param>
         /// <returns></returns>
-        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config, string ConnectionString, INotifier _notifier)
+        public static bool ProcessWork(long WorkID, long StatusID, UserJWT data, JeeWorkConfig config, string ConnectionString, INotifier _notifier, IConfiguration _configuration)
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
@@ -2796,7 +2900,7 @@ and IdKH={loginData.CustomerID} )";
                                 return false;
                             }
                             var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                            mailthongbao(WorkID, users, 10, data, ConnectionString, _notifier);
+                            mailthongbao(WorkID, users, 10, data, ConnectionString, _notifier, _configuration);
                             return true;
                         }
                     }

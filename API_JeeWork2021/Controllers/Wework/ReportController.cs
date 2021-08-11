@@ -131,14 +131,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     if (listDept != "")
                     {
-                        strP += $" and id_department in (select id_row from we_department where disabled = 0 and (id_row in ( {listDept} ) or ParentID in ( {listDept} ) )) ";
-                        strW += $" and p.id_department in (select id_row from we_department where disabled = 0 and (id_row in ( {listDept} ) or ParentID in ( {listDept} ) )) ";
-                        strD += " and  ( id_row in (" + listDept + ") or ParentID in ( " + listDept + ") )";
+                        strP += $" and id_department in ( {listDept} ) ";
+                        strW += $" and p.id_department in ( {listDept}) ";
+                        strD += " and  id_row in (" + listDept + ") ";
                     }
 
                     string list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                     string list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
-                    string list_Todo  = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
+                    string list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -166,8 +166,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //                from we_project_team p
                     //                where p.Disabled=0 " + strP;
                     string sqlq = @"select  COUNT(CASE WHEN is_project = 1 THEN 1 END) as DuAn,
-                                    COUNT(CASE WHEN is_project = 1 and status = 1 and (end_date is null or end_date <= GETDATE()) THEN 1 END) as DungTienDo,
-                                    COUNT(CASE WHEN is_project = 1 and ( status = 2 or end_date > GETDATE() )THEN 1 END) as ChamTienDo
+                                    COUNT(CASE WHEN is_project = 1 and status = 1  THEN 1 END) as DungTienDo, -- and (end_date is null or end_date <= GETDATE())
+                                    COUNT(CASE WHEN is_project = 1 and ( status = 2  )THEN 1 END) as ChamTienDo --or end_date > GETDATE()
                                     from we_project_team p where p.Disabled=0   " + strP;
                     sqlq += @"select COUNT(*) as Tong,
                                     COUNT(CASE WHEN ParentID is null THEN 1 END) as PhongBan ,
@@ -175,7 +175,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     from we_department d
                                     where d.Disabled=0  " + strD;
                     sqlq += @";select count(*) as Tong, COUNT(CASE WHEN w.status in (" + list_Complete + @") THEN 1 END) as HoanThanh
-                                    ,COUNT(CASE WHEN w.status not in (" + list_Complete +","+ list_Deadline + @") THEN 1 END) as DangThucHien,
+                                    ,COUNT(CASE WHEN w.status not in (" + list_Complete + "," + list_Deadline + @") THEN 1 END) as DangThucHien,
                                     COUNT(CASE WHEN w.status in (" + list_Deadline + @") THEN 1 END) as TreHan from v_wework_clickup_new w
                         join we_project_team p on p.id_row = w.id_project_team
                         where w.disabled=0" + strW;
@@ -183,7 +183,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //        ,COUNT(CASE WHEN deadline<=getdate() THEN 1 END) as DangThucHien from we_milestone m
                     //        join we_project_team p on p.id_row = m.id_project_team
                     //        where m.disabled = 0" + strP;
-                    sqlq += @$";select count(distinct pu.id_user) as Tong,
+                    sqlq += @$";select count(pu.id_user) as Tong,
                                     COUNT(CASE WHEN pu.admin = 1 THEN 1 END) as QuanTriVien,
                                     COUNT(CASE WHEN pu.admin = 0 THEN 1 END) as ThanhVien 
                                     from we_project_team_user pu
@@ -192,7 +192,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = new
                     {
                         DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
@@ -234,7 +234,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -258,7 +258,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string  listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                     string list_Deadline = "";
@@ -292,22 +292,23 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        strW += " and id_department=@id_department";
-                        cond.Add("id_department", query.filter["id_department"]);
+                        strW += " and  id_department in (" + query.filter["id_department"] + ") ";
+                        //strW += " and id_department=@id_department";
+                        //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        if (query.filter["status"].ToString().Equals(1.ToString()))
-                        {
-                            strW += $" and w.status not in ({list_Complete})";
-                        }
-                        else if (query.filter["status"].ToString().Equals(2.ToString()))
-                        {
-                            strW += $" and w.status in ({list_Complete})";
-                        }
+                    //if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    //{
+                    //    if (query.filter["status"].ToString().Equals(1.ToString()))
+                    //    {
+                    //        strW += $" and w.status not in ({list_Complete})";
+                    //    }
+                    //    else if (query.filter["status"].ToString().Equals(2.ToString()))
+                    //    {
+                    //        strW += $" and w.status in ({list_Complete})";
+                    //    }
 
-                    }
-                
+                    //}
+
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select status, count(*) as value 
                                     from we_project_team p
@@ -315,23 +316,24 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
-                    List<string> label = new List<string>() { "Đúng tiến độ", "Chậm tiến độ", "Có rủi to cao", "Dự án hoàn thành", "Dự án bị hủy" };
+                    List<string> label = new List<string>() { "Đúng tiến độ", "Chậm tiến độ", "Có rủi to cao", "Dự án đóng và hoàn thành", "Dự án đóng và chưa hoàn thành", "Dự án đóng và tạm dừng" };
                     List<int> data = new List<int>();
                     data.Add(dtW.Where(x => x["status"].ToString() == "1").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "2").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "3").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "4").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "5").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "6").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     return JsonResultCommon.ThanhCong(new { label = label, datasets = data });
                 }
                 #endregion
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -357,33 +359,33 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
-                Dictionary<string, string> collect = new Dictionary<string, string>
+                    Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
                             { "Deadline", "Deadline"},
                             { "StartDate", "StartDate"}
                         };
-                string collect_by = "CreatedDate";
-                if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-                    collect_by = collect[query.filter["collect_by"]];
-                SqlConditions cond = new SqlConditions();
-                string strW = "", strW1 = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
-                if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                if (!from1)
-                    return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                strW += " and m." + collect_by + ">=@from";
-                cond.Add("from", from);
-                bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                if (!to1)
-                    return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                strW += " and m." + collect_by + "<@to";
-                cond.Add("to", to);
-                if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                {
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+                    SqlConditions cond = new SqlConditions();
+                    string strW = "", strW1 = "";
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    if (!from1)
+                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    strW += " and m." + collect_by + ">=@from";
+                    cond.Add("from", from);
+                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    if (!to1)
+                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    strW += " and m." + collect_by + "<@to";
+                    cond.Add("to", to);
+                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
+                    {
 
                         listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
@@ -402,7 +404,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -428,7 +430,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     //var data = from r in dtW
@@ -448,7 +450,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -519,7 +521,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -546,7 +548,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -598,7 +600,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -653,7 +655,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
-                        cond.Add("id_department", query.filter["id_department"]);
+                        //cond.Add("id_department", query.filter["id_department"]);
                     }
 
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -669,7 +671,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -694,7 +696,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -731,7 +733,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -786,7 +788,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
-                        cond.Add("id_department", query.filter["id_department"]);
+                        //cond.Add("id_department", query.filter["id_department"]);
                     }
 
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -805,7 +807,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -830,7 +832,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -855,7 +857,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -911,7 +913,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
-                        //strD += " and id_row=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
 
@@ -922,13 +923,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (listDept != "")
                     {
                         strW += " and id_department in (" + listDept + ") ";
+                        strD += $" and id_row in ({listDept})";
                     }
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -954,7 +956,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[1];
                     var Children = from r in ds.Tables[0].AsEnumerable()
@@ -965,7 +967,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                                        {
                                            tatca = dtW.AsEnumerable().Where(rr => rr["id_department"].Equals(r["id_row"])).Count(),
                                            dangthuchien = (int)dtW.Compute("count( id_row)", " id_department=" + r["id_row"] + " and dangthuchien=1  "),
-                                           dangdanhgia = 0,
+                                           //dangdanhgia = 0,
                                            //dangdanhgia = (int)dtW.Compute("count(id_row)", " id_department=" + r["id_row"] + " and status=3 "),
                                            hoanthanh = (int)dtW.Compute("count( id_row)", " id_department=" + r["id_row"] + " and (is_ht=1 or is_htquahan=1)"),
                                            quahan = (int)dtW.Compute("count( id_row)", " id_department=" + r["id_row"] + " and is_quahan=1 ")
@@ -977,7 +979,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -1003,41 +1005,41 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                 {
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                Dictionary<string, string> collect = new Dictionary<string, string>
+                    Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
                             { "Deadline", "Deadline"},
                             { "StartDate", "StartDate"}
                         };
-                string collect_by = "CreatedDate";
-                if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-                    collect_by = collect[query.filter["collect_by"]];
-                SqlConditions cond = new SqlConditions();
-                string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
-                if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                if (!from1)
-                    return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
-                bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                if (!to1)
-                    return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
-                if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                {
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+                    SqlConditions cond = new SqlConditions();
+                    string strW = "";
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    if (!from1)
+                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    strW += " and w." + collect_by + ">=@from";
+                    cond.Add("from", from);
+                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    if (!to1)
+                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    strW += " and w." + collect_by + "<@to";
+                    cond.Add("to", to);
+                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
+                    {
                         listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
 
-                string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                    displayChild = query.filter["displayChild"];
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
 
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     if (listDept != "")
@@ -1050,7 +1052,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1092,9 +1094,9 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     dt.Columns.Add("danglam");
                     dt.Columns.Add("dangdanhgia");
                     dt.Columns.Add("image");
-                    foreach ( var item in DataAccount)
+                    foreach (var item in DataAccount)
                     {
-                        dt.Rows.Add(item.UserId, item.FullName, item.PhoneNumber, item.Username, item.Email, item.Jobtitle,0,0,0,0,0,0,item.AvartarImgURL);
+                        dt.Rows.Add(item.UserId, item.FullName, item.PhoneNumber, item.Username, item.Email, item.Jobtitle, 0, 0, 0, 0, 0, 0, item.AvartarImgURL);
                     }
                     List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                     if (nvs.Count == 0)
@@ -1103,15 +1105,14 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string sqlq = @"select count(distinct p.id_row) as dem, id_user from we_project_team p 
                                     join we_project_team_user u 
                                     on p.id_row=u.id_project_team 
-                                    where p.disabled=0 and u.disabled=0 
-                                    and u.id_user in (" + ids + ") " +
+                                    where p.disabled=0 and u.disabled=0  " +
                                     "group by u.id_user";
                     sqlq += @";select id_row, id_nv, status, iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
                                     iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
                                     iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
                                     iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                     from v_wework_new w 
-                                    where id_nv in (" + ids + ") " + strW + " (parent)";
+                                    where 1=1 " + strW + " (parent)";
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -1185,7 +1186,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1294,7 +1295,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1311,15 +1312,14 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string sqlq = @"select count(distinct p.id_row) as dem,id_user from we_project_team p 
                                     join we_project_team_user u 
                                     on p.id_row=u.id_project_team 
-                                    where p.disabled=0 and u.disabled=0 
-                                    and u.id_user in (" + ids + ") " +
+                                    where p.disabled=0 and u.disabled=0  " +
                                     "group by u.id_user";
                     sqlq += @";select id_row, id_nv, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
 iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                     from v_wework_new w 
-                                    where id_nv in (" + ids + ") " + strW + " (parent)";
+                                    where 1=1  " + strW + " (parent)";
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -1359,11 +1359,21 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         {
                             dr.Delete();
                         }
+                        // xóa có công việc nhưng không có công việc trễ
+                        else if ("late".Equals(query.filter["type"]))
+                        {
+                            int quahan = int.Parse(dr["quahan"].ToString());
+                            int htmuon = int.Parse(dr["ht_quahan"].ToString());
+                            if ((quahan) <= 0 && (htmuon) <= 0)
+                            {
+                                dr.Delete();
+                            }
+                        }
                     }
                     dt.AcceptChanges();
                     var data = (from r in dt.AsEnumerable()
                                .Take(top)
-                                where total > 0
+                                where long.Parse(r["tong"].ToString()) > 0
                                 select new
                                 {
                                     id_nv = r["id_nv"],
@@ -1372,13 +1382,13 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                     image = r["image"],
                                     //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
                                     num_project = asP.Where(x => x["id_user"].Equals(r["id_nv"])).Select(x => x["dem"]).DefaultIfEmpty(0).First(),
-                                    num_work = total,
+                                    num_work = r["tong"],
                                     danglam = r["danglam"],
-                                    hoanthanh = success,
+                                    hoanthanh = r["ht"],
                                     dangdanhgia = r["dangdanhgia"],
                                     ht_quahan = r["ht_quahan"],
                                     quahan = r["quahan"],
-                                    percentage = total == 0 ? 0 : (success * 100 / total)
+                                    percentage = total == 0 ? 0 : (long.Parse(r["ht"].ToString()) * 100 / long.Parse(r["tong"].ToString()))
                                 });
                     if ("excellent".Equals(query.filter["type"]))
                         data = data.OrderByDescending(x => x.hoanthanh);
@@ -1392,7 +1402,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1471,7 +1481,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1519,7 +1529,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1605,7 +1615,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1696,7 +1706,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1779,7 +1789,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1876,7 +1886,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1908,47 +1918,47 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                             { "Deadline", "Deadline"},
                             { "StartDate", "StartDate"}
                         };
-                string collect_by = "CreatedDate";
-                if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-                    collect_by = collect[query.filter["collect_by"]];
-                SqlConditions cond = new SqlConditions();
-                string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
-                if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                if (!from1)
-                    return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
-                bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                if (!to1)
-                    return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
-                if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                {
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+                    SqlConditions cond = new SqlConditions();
+                    string strW = "";
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    if (!from1)
+                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    strW += " and w." + collect_by + ">=@from";
+                    cond.Add("from", from);
+                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    if (!to1)
+                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    strW += " and w." + collect_by + "<@to";
+                    cond.Add("to", to);
+                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
+                    {
                         listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
 
-                string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                    displayChild = query.filter["displayChild"];
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
 
-                #region danh sách department, list status hoàn thành, trễ,đang làm
-                if (listDept != "")
-                {
-                    strW += " and id_department in (" + listDept + ") ";
-                }
-                string list_Complete = "";
-                list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
-                string list_Deadline = "";
-                list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
-                string list_Todo = "";
-               list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    if (listDept != "")
+                    {
+                        strW += " and id_department in (" + listDept + ") ";
+                    }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    string list_Todo = "";
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -1975,8 +1985,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                             "from we_project_team where Disabled = 0";
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        sql_query += " and id_department=@id_department";
-                        conds.Add("id_department", query.filter["id_department"]);
+                        sql_query += " and  id_department in (" + query.filter["id_department"] + ") ";
                     }
                     title = "BÁO CÁO CHI TIẾT THEO DỰ ÁN & PHÒNG BAN";
                     _header = "Dự án & phòng ban";
@@ -2054,7 +2063,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2107,10 +2116,10 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                            listDept = query.filter["id_department"];
-                            //strW += " and id_department=@id_department";
-                            //cond.Add("id_department", query.filter["id_department"]);
-                        }
+                        listDept = query.filter["id_department"];
+                        //strW += " and id_department=@id_department";
+                        //cond.Add("id_department", query.filter["id_department"]);
+                    }
 
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -2126,7 +2135,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -2153,8 +2162,9 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                             "from we_department where Disabled = 0";
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        sql_query += " and id_row=@id_department";
-                        conds.Add("id_department", query.filter["id_department"]);
+                        sql_query += " and  id_row in (" + query.filter["id_department"] + ") ";
+                        //sql_query += " and id_row=@id_department";
+                        //conds.Add("id_department", query.filter["id_department"]);
                     }
                     title = "BÁO CÁO CHI TIẾT THEO PHÒNG BAN";
                     _header = "Phòng ban";
@@ -2231,7 +2241,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2284,7 +2294,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                            listDept = query.filter["id_department"];
+                        listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
@@ -2293,11 +2303,10 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
                     string sql_query = "";
-                    sql_query = "select title " +
-                            ",'' as tong,'' as ht,'' as ht_quahan" +
-                            ",'' as quahan,'' as danglam,'' as dangdanhgia" +
-                            ",id_cocau, IdKH, priority, Disabled, CreatedDate, id_row " +
-                            "from we_department where Disabled = 0";
+                    sql_query = @"select title  ,'' as tong,'' as ht,'' as ht_quahan ,ParentID
+,'' as quahan,'' as danglam,'' as dangdanhgia
+,id_cocau, IdKH, priority, Disabled, CreatedDate, id_row 
+from we_department where Disabled = 0";
                     SqlConditions conds = new SqlConditions();
                     //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     //{
@@ -2315,7 +2324,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -2347,7 +2356,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
 iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
-                                    from v_wework_new w 
+                                    from v_wework_clickup_new w 
                                     where disabled = 0 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -2355,10 +2364,10 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     bool is_work = dt_data.Rows.Count > 0;
                     var data = new
                     {
-                        department_active = dt.Rows.Count,
+                        department_active = dt.AsEnumerable().Where(x => string.IsNullOrEmpty(x["ParentID"].ToString())).ToList().Count(), //Rows.Count
                         group_closed = is_group ? dt_group.Compute("count(id_row)", "Locked=1") : 0,
                         num_work = dt_data.Rows.Count,
-                        hoanthanh = is_work ? dt_data.Compute("count(id_row)", "is_ht = 1") : 0,
+                        hoanthanh = is_work ? dt_data.Compute("count(id_row)", "is_ht = 1 or is_htquahan = 1") : 0,
                         quahan = is_work ? dt_data.Compute("count(id_row)", "is_quahan = 1") : 0,
                     };
                     return JsonResultCommon.ThanhCong(data);
@@ -2366,7 +2375,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2420,9 +2429,6 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         listDept = query.filter["id_department"];
-                        //strW += " and id_department=@id_department";
-                        //strD += " and id_row=@id_department";
-                        //cond.Add("id_department", query.filter["id_department"]);
                     }
 
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -2439,7 +2445,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Deadline = "";
                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
-                   list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
@@ -2463,10 +2469,8 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                             from v_wework_new w where 1=1 " + strW;
                     string sql_comment = @$"select iif(sum(num_comment)>0,sum(num_comment),0) from we_work where id_row in (select distinct id_row
 from v_wework_new w where 1=1 {strW})";
-                    string sql_object = @"select count(id_nv) 
-                                            from v_wework_new w 
-                                            where 1 = 1 " + strW + "(child) " +
-                                            "group by id_nv; " +
+                    string sql_object = @"select u.id_user from we_project_team_user u join we_project_team p on u.id_project_team = p.id_row
+where u.Disabled = 0 and p.Disabled = 0 and p.id_department in (" + listDept + ") ; " +
                                             "select count(id_project_team) " +
                                             "from v_wework_new w where 1 = 1 " + strW + "(child) " +
                                             "group by id_project_team";
@@ -2475,9 +2479,13 @@ from v_wework_new w where 1=1 {strW})";
                         sqlq += " and id_parent is null";
                         sql_object = sql_object.Replace("(child)", " and id_parent is null");
                     }
+                    else
+                    {
+                        sql_object = sql_object.Replace("(child)", "");
+                    }
                     DataSet ds_object = cnn.CreateDataSet(sql_object, cond);
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
-                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment=0;
+                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment = 0;
                     GetWeekInMonth(from, to, out daynum, out weeknum);
                     DataTable dt_work = ds.Tables[1];
                     work_of_week = dt_work.Rows.Count / weeknum;
@@ -2487,23 +2495,269 @@ from v_wework_new w where 1=1 {strW})";
                         work_of_project = work_of_week / ds_object.Tables[1].Rows.Count;
                     comment = double.Parse(cnn.ExecuteScalar(sql_comment, cond).ToString());
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
-                    var  data = new
-                                       {
-                                           week = string.Format("{0:###,##0.00}", work_of_week),
-                                           member = string.Format("{0:###,##0.00}", work_of_member),
-                                           project = string.Format("{0:###,##0.00}", work_of_project),
-                                           numcomment = comment,
-                                       };
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = new
+                    {
+                        week = string.Format("{0:###,##0.00}", work_of_week),
+                        member = string.Format("{0:###,##0.00}", work_of_member),
+                        project = string.Format("{0:###,##0.00}", work_of_project),
+                        numcomment = comment,
+                    };
                     return JsonResultCommon.ThanhCong(data);
                 }
                 #endregion
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+
+        /// <summary>
+        /// Phân bổ cv theo department
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("thong-ke-he-thong")]
+        [HttpGet]
+        public object ThongKeHeThong([FromQuery] QueryParams query)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                if (query == null)
+                    query = new QueryParams();
+
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    Dictionary<string, string> collect = new Dictionary<string, string>
+                            {
+                                { "CreatedDate", "CreatedDate"},
+                                { "Deadline", "Deadline"},
+                                { "StartDate", "StartDate"}
+                            };
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
+                    SqlConditions cond = new SqlConditions();
+                    string strW = "";
+                    string strD = "";
+                    string strP = "";
+                    DateTime from = DateTime.Now;
+                    DateTime to = DateTime.Now;
+                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    if (!from1)
+                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    strW += " and w." + collect_by + ">=@from";
+                    cond.Add("from", from);
+                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    if (!to1)
+                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                    strW += " and w." + collect_by + "<@to";
+                    cond.Add("to", to);
+                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
+                    {
+                        listDept = query.filter["id_department"];
+                    }
+
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    #region danh sách department, list status hoàn thành, trễ,đang làm
+                    if (listDept != "")
+                    {
+                        strW += " and w.id_department in (" + listDept + ") ";
+                        strP += " and p.id_department in (" + listDept + ") ";
+                        strD += " and d.id_row in (" + listDept + ") ";
+                    }
+                    string list_Complete = "";
+                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
+                    string list_Deadline = "";
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    string list_Todo = "";
+                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+                    #endregion
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        if (query.filter["status"].ToString().Equals(1.ToString()))
+                        {
+                            strW += $" and w.status not in ({list_Complete})";
+                        }
+                        else if (query.filter["status"].ToString().Equals(2.ToString()))
+                        {
+                            strW += $" and w.status in ({list_Complete})";
+                        }
+
+                    }
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    string sqlthongkechung = @"select id_row, title,Locked from we_project_team p where disabled=0 " + strP;
+                    sqlthongkechung += @";select id_row, title from we_department d where d.disabled=0 " + strD;
+                    sqlthongkechung += @";select id_row, id_nv, status, CreatedDate,id_parent
+                            ,Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
+                            from v_wework_new w where 1=1 " + strW + " (parent)";
+                    sqlthongkechung += @";select * from we_project_team_user u join we_project_team p on
+u.id_project_team = p.id_row where u.Disabled = 0 and p.Disabled = 0 " + strP;
+
+                    if (displayChild == "0")
+                        sqlthongkechung = sqlthongkechung.Replace("(parent)", " and id_parent is null");
+                    else
+                        sqlthongkechung = sqlthongkechung.Replace("(parent)", " ");
+                    DataSet ds_thongkechung = cnn.CreateDataSet(sqlthongkechung, cond);
+
+                    // gắn người
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("id_nv");
+                    dt.Columns.Add("hoten");
+                    dt.Columns.Add("mobile");
+                    dt.Columns.Add("Username");
+                    dt.Columns.Add("Email");
+                    dt.Columns.Add("Tenchucdanh");
+                    dt.Columns.Add("soduan");
+                    dt.Columns.Add("sophongban");
+                    dt.Columns.Add("tong");
+                    dt.Columns.Add("ht");
+                    dt.Columns.Add("ht_quahan");
+                    dt.Columns.Add("quahan");
+                    dt.Columns.Add("danglam");
+                    dt.Columns.Add("dangdanhgia");
+                    dt.Columns.Add("image");
+                    foreach (var item in DataAccount)
+                    {
+                        dt.Rows.Add(item.UserId, item.FullName, item.PhoneNumber, item.Username, item.Email, item.Jobtitle, 0, 0, 0, 0, 0, 0, item.AvartarImgURL);
+                    }
+                    List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
+                    if (nvs.Count == 0)
+                        return JsonResultCommon.ThanhCong(nvs);
+                    string ids = string.Join(",", nvs);
+                    string sqlq = @"select count(distinct p.id_row) as dem, id_user from we_project_team p 
+                                    join we_project_team_user u 
+                                    on p.id_row=u.id_project_team 
+                                    where p.disabled=0 and u.disabled=0  " +
+                                    "group by u.id_user";
+                    sqlq += @";select id_row, id_nv, status, iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                                    iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                                    iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
+                                    from v_wework_new w 
+                                    where 1=1 " + strW + " (parent)";
+                    sqlq += @"; select * from we_project_team_user u join we_project_team p on
+u.id_project_team = p.id_row where u.Disabled = 0 and p.Disabled = 0 " + strP;
+                    sqlq += @"; select o.* from we_department_owner o join we_department d on o.id_department = d.id_row 
+and o.Disabled = 0 and d.Disabled = 0 " + strD;
+                    if (displayChild == "0")
+                        sqlq = sqlq.Replace("(parent)", " and id_parent is null");
+                    else
+                        sqlq = sqlq.Replace("(parent)", " ");
+
+                    DataSet ds = cnn.CreateDataSet(sqlq, cond);
+                    var asP = ds.Tables[0].AsEnumerable();
+                    DataTable dtW = ds.Tables[1];
+                    bool hasValue = dtW.Rows.Count > 0;
+                    bool hasValueDA = ds.Tables[2].Rows.Count > 0;
+                    bool hasValuePB = ds.Tables[3].Rows.Count > 0;
+                    int total = 0, success = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        DataRow[] row = dtW.Select("id_nv=" + dr["id_nv"].ToString());
+                        if (row.Length > 0)
+                        {
+                            dr["tong"] = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + dr["id_nv"].ToString()) : 0);
+                            dr["ht"] = (hasValue ? (int)dtW.Compute("count(id_nv)", " is_ht=1 and id_nv=" + dr["id_nv"].ToString()) : 0);
+                            dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                            dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                            dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                            dr["dangdanhgia"] = 0;
+                            dr["soduan"] = hasValueDA ? ds.Tables[2].Compute("count(id_user)", " id_user =" + dr["id_nv"].ToString()) : 0;
+                            dr["sophongban"] = hasValuePB ? ds.Tables[3].Compute("count(id_user)", " id_user=" + dr["id_nv"].ToString()) : 0;
+                            //dr["dangdanhgia"] = hasValue ? dtW.Compute("count(id_nv)", " status=3 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                        }
+                        else
+                        {
+                            dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = dr["dangdanhgia"] = 0;
+                        }
+                    }
+                    //for (int i = dt.Rows.Count - 1; i >= 0; i--)
+                    //{
+                    //    DataRow dr = dt.Rows[i];
+                    //    total = int.Parse(dr["tong"].ToString());
+                    //    if ((total) <= 0)
+                    //    {
+                    //        dr.Delete();
+                    //    }
+                    //}
+                    //dt.AcceptChanges();
+
+                    var dataU = from r in dt.AsEnumerable()
+                                select new
+                                {
+                                    id_nv = r["id_nv"],
+                                    hoten = r["hoten"],
+                                    tenchucdanh = r["tenchucdanh"],
+                                    image = r["image"],
+                                    num_project = asP.Where(x => x["id_user"].Equals(r["id_nv"])).Select(x => x["dem"]).DefaultIfEmpty(0).First(),
+                                    num_work = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + r["id_nv"].ToString()) : 0),
+                                    danglam = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1  and id_nv=" + r["id_nv"].ToString()) : 0,
+                                    hoanthanh = success = (hasValue ? (int)dtW.Compute("count(id_nv)", " is_ht=1 and id_nv=" + r["id_nv"].ToString()) : 0),
+                                    dangdanhgia = 0,
+                                    soduan = r["soduan"],
+                                    sophongban = r["sophongban"],
+                                    ht_quahan = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + r["id_nv"].ToString()) : 0,
+                                    quahan = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + r["id_nv"].ToString()) : 0,
+                                    percentage = total == 0 ? 0 : (success * 100 / total)
+                                };
+                    var dataThongKe = new
+                    {
+                        Soduan = ds_thongkechung.Tables[0].Rows.Count,
+                        Sophongban = ds_thongkechung.Tables[1].Rows.Count,
+                        Soduandangchay = ds_thongkechung.Tables[0].Compute("count(id_row)", " Locked = 0 "),
+                        Soduandadong = ds_thongkechung.Tables[0].Compute("count(id_row)", " Locked = 1 "),
+                        Socongviec = ds_thongkechung.Tables[2].Compute("count(id_row)", " id_parent is null "),
+                        Socongvieccon = ds_thongkechung.Tables[2].Compute("count(id_row)", " id_parent is not null "),
+                        Sothanhvien = ds_thongkechung.Tables[3].Rows.Count,
+                    };
+
+                    dataU = dataU.OrderByDescending(x => x.num_work);
+
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = new
+                    {
+                        dataThongKe = dataThongKe,
+                        dataUser = dataU,
+                    };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
+
+
         [Route("TagCloud")]
         [HttpGet]
         public object TagCloud([FromQuery] QueryParams query)
@@ -2548,7 +2802,7 @@ from v_wework_new w where 1=1 {strW})";
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                            listDept = query.filter["id_department"];
+                        listDept = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
                         //strW1 += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
@@ -2605,7 +2859,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -2642,7 +2896,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
 
         [Route("ExportReportExcel")]
         [HttpPost]
-        public BaseModel<object>  ExportReportExcel([FromBody] List<BaoCaoThongKe> data, string FileName)
+        public BaseModel<object> ExportReportExcel([FromBody] List<BaoCaoThongKe> data, string FileName)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             List<BaoCaoThongKe> ListDetail = data;
@@ -2650,11 +2904,12 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             string TenBC = "";
             try
             {
-                if(FileName == "member")
+                if (FileName == "member")
                 {
                     Tenfile = "THANHVIEN";
                     TenBC = "THEO THÀNH VIÊN";
-                }else if(FileName == "project")
+                }
+                else if (FileName == "project")
                 {
                     Tenfile = "DUAN";
                     TenBC = "THEO DỰ ÁN";
@@ -2729,8 +2984,8 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                             MergeCells mergeCells_Null = new MergeCells();
 
                             //append a MergeCell to the mergeCells for each set of merged cells
-                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A1:G1") });
-                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A2:G2") });
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A1:F1") });
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A2:F2") });
                             //mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A3:H3") });
 
                             // Constructing header
@@ -2744,8 +2999,8 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                                   excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
                                   excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
                                   excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
-                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2),
-                                  excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
+                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2)
+                               //excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
                                );
                             }
                             else
@@ -2756,10 +3011,10 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                                   excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
                                   excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
                                   excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
-                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2),
-                                  excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
+                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2)
+                                 //excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
                                  );
-                            } 
+                            }
 
                             sheetData_K.AppendChild(row_K);
                             int stt = 1;
@@ -2775,8 +3030,8 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                                     excelHelper.ConstructCell(item.col1, CellValues.String, 4),
                                     excelHelper.ConstructCell(item.col2, CellValues.String, 4),
                                     excelHelper.ConstructCell((item.col3), CellValues.String, 4),
-                                    excelHelper.ConstructCell(item.col4, CellValues.String, 4),
-                                    excelHelper.ConstructCell(item.col5, CellValues.String, 4)
+                                    excelHelper.ConstructCell(item.col4, CellValues.String, 4)
+                                //excelHelper.ConstructCell(item.col5, CellValues.String, 4)
                                 );
                                 sheetData_K.Append(row_K);
                             }
@@ -2796,9 +3051,144 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
 
                             FileContentResult file = new FileContentResult(mem.ToArray(), "application/octet-stream")
                             {
-                                FileDownloadName = "BCTK_"+ Tenfile + "_" + DateTime.Now.ToString("ddMMyyyymmss") + ".xlsx"
+                                FileDownloadName = "BCTK_" + Tenfile + "_" + DateTime.Now.ToString("ddMMyyyymmss") + ".xlsx"
                             };
 
+                            return JsonResultCommon.ThanhCong(file);
+                        }
+                    }
+                }
+                else
+                {
+                    return JsonResultCommon.Custom("Không có dữ liệu");
+                    //return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
+        [Route("ExportReportExcelHeThong")]
+        [HttpPost]
+        public BaseModel<object> ExportReportExcelHeThong([FromBody] ThongkehethongModel data)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            List<ThongkethanhvienhethongModel> ListDetail = data.sanhsachthanhvien;
+            string Tenfile = "HETHONG";
+            try
+            {
+                if (ListDetail != null && ListDetail.Count > 0)
+                {
+                    using (MemoryStream mem = new MemoryStream())
+                    {
+                        using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(mem, SpreadsheetDocumentType.Workbook))
+                        {
+                            WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
+                            workbookPart.Workbook = new Workbook();
+                            DocumentFormat.OpenXml.Spreadsheet.Sheets sheets1 = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+                            #region
+                            WorksheetPart worksheetPart_K = workbookPart.AddNewPart<WorksheetPart>();
+                            worksheetPart_K.Worksheet = new Worksheet();
+                            MergeCells mergeCells_K = new MergeCells();
+                            // Adding style
+                            WorkbookStylesPart stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                            ExportExcelHelper excelHelper = new ExportExcelHelper();
+                            stylePart.Stylesheet = excelHelper.GenerateStylesheet();
+                            stylePart.Stylesheet.Save();
+                            SheetData sheetData_K = new SheetData();
+                            //DocumentFormat.OpenXml.Spreadsheet.Sheets sheets1_K = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+                            Sheet sheet_K = new Sheet();
+                            sheet_K.Id = spreadsheet.WorkbookPart.GetIdOfPart(worksheetPart_K);
+                            sheet_K.SheetId = 2; //sheet Id, anything but unique
+                            sheet_K.Name = "THỐNG KÊ CHI TIẾT";
+                            sheets1.Append(sheet_K);
+                            DocumentFormat.OpenXml.Spreadsheet.Row rowTitle_Null = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            DocumentFormat.OpenXml.Spreadsheet.Cell dataCellnd_Null = new DocumentFormat.OpenXml.Spreadsheet.Cell();
+                            dataCellnd_Null.CellReference = "A1";
+                            dataCellnd_Null.DataType = CellValues.String;
+                            dataCellnd_Null.StyleIndex = 8;
+                            CellValue cellValue_Null = new CellValue();
+                            cellValue_Null.Text = ("THỐNG KÊ BÁO CÁO HỆ THỐNG ");//"BÁO CÁO TỔNG HỢP TÌNH HÌNH XỬ LÝ CÔNG VIỆC";
+                            dataCellnd_Null.Append(cellValue_Null);
+                            rowTitle_Null.RowIndex = 1;
+                            rowTitle_Null.AppendChild(dataCellnd_Null);
+                            sheetData_K.AppendChild(rowTitle_Null);
+
+                            DocumentFormat.OpenXml.Spreadsheet.Row row_Ktitle = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            row_Ktitle.RowIndex = (uint)3;
+                            row_Ktitle.Append(
+                                   excelHelper.ConstructCell("", CellValues.String, 2),
+                                   excelHelper.ConstructCell("SỐ DỰ ÁN", CellValues.String, 2),
+                                   excelHelper.ConstructCell("SỐ PHÒNG BAN", CellValues.String, 2),
+                                   excelHelper.ConstructCell("DỰ ÁN ĐANG CHẠY", CellValues.String, 2),
+                                   excelHelper.ConstructCell("DỰ ÁN ĐÃ ĐÓNG", CellValues.String, 2),
+                                   excelHelper.ConstructCell("SỐ CÔNG VIỆC", CellValues.String, 2),
+                                   excelHelper.ConstructCell("SỐ CÔNG VIỆC CON", CellValues.String, 2),
+                                    excelHelper.ConstructCell("THÀNH VIÊN", CellValues.String, 2)
+                                );
+                            sheetData_K.AppendChild(row_Ktitle);
+                            DocumentFormat.OpenXml.Spreadsheet.Row row_Kval = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            row_Kval.RowIndex = (uint)4;
+                            row_Kval.Append(
+                                   excelHelper.ConstructCell("", CellValues.String, 2),
+                                   excelHelper.ConstructCell(data.soduan, CellValues.String, 2),
+                                   excelHelper.ConstructCell(data.phongban, CellValues.String, 2),
+                                   excelHelper.ConstructCell(data.soduandangchay, CellValues.String, 2),
+                                   excelHelper.ConstructCell(data.soduandadong, CellValues.String, 2),
+                                   excelHelper.ConstructCell(data.congviec, CellValues.String, 2),
+                                    excelHelper.ConstructCell(data.convieccon, CellValues.String, 2),
+                                    excelHelper.ConstructCell(data.tongthanhvien, CellValues.String, 2)
+                                );
+                            sheetData_K.AppendChild(row_Kval);
+                            MergeCells mergeCells_Null = new MergeCells();
+                            //append a MergeCell to the mergeCells for each set of merged cells
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A1:H1") });
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A2:H2") });
+                            //mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A3:H3") });
+                            // Constructing header
+                            DocumentFormat.OpenXml.Spreadsheet.Row row_K = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            row_K.RowIndex = (uint)6;
+                            row_K.Append(
+                                   excelHelper.ConstructCell("STT", CellValues.String, 2),
+                                   excelHelper.ConstructCell("THÀNH VIÊN", CellValues.String, 2),
+                                   excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
+                                   excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
+                                   excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
+                                   excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2),
+                                    excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2),
+                                    excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
+                                );
+                            sheetData_K.AppendChild(row_K);
+                            int stt = 1;
+                            foreach (var item in ListDetail)
+                            {
+                                row_K = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                                //row.RowIndex = (uint)i + 3; //RowIndex must be start with 1, since i = 0
+                                row_K.RowIndex = (uint)(ListDetail.IndexOf(item) + 7); //RowIndex must be start with 1, since i = 0, khúc này là dòng sẽ insert vào Excel
+                                row_K.Append(
+                                excelHelper.ConstructCell(stt++.ToString(), CellValues.Number, 9),
+                                    excelHelper.ConstructCell(item.thanhvien, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.soduan, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.phongban, CellValues.String, 4),
+                                    excelHelper.ConstructCell((item.congviec), CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.hoanthanh, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.quahan, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.dangthuchien, CellValues.String, 4)
+                                );
+                                sheetData_K.Append(row_K);
+                            }
+                            worksheetPart_K.Worksheet = new DocumentFormat.OpenXml.Spreadsheet.Worksheet(sheetData_K);
+                            #endregion
+                            worksheetPart_K.Worksheet.InsertAfter(mergeCells_K, worksheetPart_K.Worksheet.Elements<SheetData>().First());
+                            spreadsheet.WorkbookPart.Workbook.AppendChild<DocumentFormat.OpenXml.Spreadsheet.Sheets>(sheets1);
+                            workbookPart.Workbook.Save();
+                            spreadsheet.Close();
+                            FileContentResult file = new FileContentResult(mem.ToArray(), "application/octet-stream")
+                            {
+                                FileDownloadName = "BCTK_" + Tenfile + "_" + DateTime.Now.ToString("ddMMyyyymmss") + ".xlsx"
+                            };
                             return JsonResultCommon.ThanhCong(file);
                         }
                     }
@@ -2822,6 +3212,27 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             public string col3 { get; set; }
             public string col4 { get; set; }
             public string col5 { get; set; }
+        }
+        public class ThongkehethongModel
+        {
+            public string soduan { get; set; }
+            public string soduandadong { get; set; }
+            public string soduandangchay { get; set; }
+            public string phongban { get; set; }
+            public string congviec { get; set; }
+            public string convieccon { get; set; }
+            public string tongthanhvien { get; set; }
+            public List<ThongkethanhvienhethongModel> sanhsachthanhvien { get; set; }
+        }
+        public class ThongkethanhvienhethongModel
+        {
+            public string thanhvien { get; set; }
+            public string soduan { get; set; }
+            public string phongban { get; set; }
+            public string congviec { get; set; }
+            public string hoanthanh { get; set; }
+            public string quahan { get; set; }
+            public string dangthuchien { get; set; }
         }
 
         public static string GetListStatusDynamic(string lst_dept, DpsConnection cnn, string fieldname)

@@ -232,16 +232,28 @@
                             </div>
                         </div>
                         <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
-                            <div class="position-relative">
+                            <div class="position-relative item-datetime">
                                 <div class="cu-task-info__key">
                                     <span translate="filter.ngaybatdau"></span>
                                 </div>
-                                <div class="cu-task-info__value url" (click)="pickerstart.open()"
-                                    *ngIf="CheckRoles(10)">
-                                    {{item.start_date?item.start_date:'Thêm ngày bắt đầu'}}
+                                <div class="remove-date url" (click)="RemoveBykey('start_date')" *ngIf="item.start_date && CheckRoles(10)">
+                                    <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
+                                </div>
+                                <div class="cu-task-info__value url" (click)="pickerstart.open()" *ngIf="CheckRoles(10)">
+                                    <ng-container *ngIf="item.start_date;else nostartdate">
+                                        {{item.start_date | date:'dd/MM/yyyy HH:mm'}}
+                                    </ng-container>
+                                    <ng-template #nostartdate>
+                                        Thêm ngày bắt đầu
+                                    </ng-template>
                                 </div>
                                 <div class="cu-task-info__value" *ngIf="!CheckRoles(10)">
-                                    {{item.start_date?item.start_date:'Chưa có ngày bắt đầu'}}
+                                    <ng-container *ngIf="item.start_date;else nostartdate">
+                                        {{item.start_date | date:'dd/MM/yyyy HH:mm'}}
+                                    </ng-container>
+                                    <ng-template #nostartdate>
+                                        Chưa có ngày bắt đầu
+                                    </ng-template>
                                 </div>
                             </div>
                             <input matInput readonly
@@ -254,15 +266,28 @@
                             <owl-date-time #pickerstart></owl-date-time>
                         </div>
                         <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
-                            <div class="position-relative">
+                            <div class="position-relative item-datetime">
                                 <div class="cu-task-info__key">
                                     <span translate="filter.deadline"></span>
                                 </div>
+                                <div class="remove-date url" (click)="RemoveBykey('deadline')" *ngIf="item.deadline && CheckRoles(10)">
+                                    <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
+                                </div>
                                 <div class="cu-task-info__value url" (click)="dt1.open()" *ngIf="CheckRoles(10)">
-                                    {{item.deadline?item.deadline:'Thêm hạn chót'}}
+                                    <ng-container *ngIf="item.deadline;else nodeadline">
+                                        {{item.deadline | date:'dd/MM/yyyy HH:mm'}} 
+                                    </ng-container>
+                                    <ng-template #nodeadline>
+                                        Thêm hạn chót
+                                    </ng-template>
                                 </div>
                                 <div class="cu-task-info__value" *ngIf="!CheckRoles(10)">
-                                    {{item.deadline?item.deadline:'Chưa có hạn chót'}}
+                                    <ng-container *ngIf="item.deadline;else nodeadline">
+                                        {{item.deadline | date:'dd/MM/yyyy HH:mm'}}
+                                    </ng-container>
+                                    <ng-template #nodeadline>
+                                        Chưa có hạn chót
+                                    </ng-template> 
                                 </div>
                             </div>
                             <input matInput readonly
@@ -910,7 +935,7 @@
                                         hoặc
                                     </span>
                                     <span class="action" >
-                                        <span translate="work.themtailieu"></span>
+                                        <span translate="work.themtailieucapnhatketquacongviec"></span>
                                         <i class="las la-paperclip"></i> &nbsp;
                                     </span>
                                 </div>

@@ -1091,6 +1091,7 @@ export const locale = {
       chonduan: "Chọn dự án",
       tatcaphongban: "Tất cả phòng ban",
       tatcacongviec: "Tất cả công việc",
+      congviecdatao: "Công việc đã tạo",
       congviecvacongvieccon: "Công việc và công việc con",
       khongtinhcongvieccon: "Không tính công việc con",
       congviecdangthuchien: "Công việc đang thực hiện",
@@ -1129,6 +1130,9 @@ export const locale = {
       createdby: "Người tạo",
       estimates: "Thời gian làm",
       timeestimates: "Thời gian làm",
+      soduan: "số dự án",
+      sophongban: "Số phòng ban",
+      id_group: "Nhóm công việc",
     },
     priority: {
       Urgent: "Khẩn cấp",
@@ -1282,6 +1286,7 @@ export const locale = {
       themnhanhnhanmoi: "Thêm nhanh nhãn mới",
       themnhieunguoitheodoi: "Thêm nhiều người theo dõi",
       themtailieu: "Thêm tài liệu",
+      themtailieucapnhatketquacongviec: "Thêm tài liệu cập nhật kết quả công việc",
       thuocnhomcongviec: "Thuộc nhóm công việc",
       time: "Thời gian (hh:mm, không bắt buộc)",
       tongquan: "Tổng quan",
@@ -1370,6 +1375,8 @@ export const locale = {
       ancot: "Ẩn cột",
       updatecot: "Update cột",
       xoacot: "Xóa cột",
+      themnhomcongviec: "Thêm nhóm công việc",
+      chinhnhomcongviec: "Chỉnh sửa nhóm công việc",
     },
     wuser: {
       list_uyquyen: "Danh sách thành viên ủy quyền giao việc",
@@ -1530,6 +1537,7 @@ export const locale = {
       clicktoupdate: "Điều kiện ngày",
       quantrivien: "Quản trị viên",
       thumuc: "Thư mục",
+      thongkehethong: "Thống kê hệ thống",
     },
     repeated: {
       tansuatlaplai: "Tần suất lặp lại",

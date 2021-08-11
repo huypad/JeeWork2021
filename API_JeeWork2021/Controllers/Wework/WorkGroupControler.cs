@@ -136,13 +136,13 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select * from we_group where disabled=0 and id_row=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
                     var data = (from r in dt.AsEnumerable()
                                 select new
                                 {
@@ -153,8 +153,8 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                                     reviewer = r["reviewer"]
                                 }).FirstOrDefault();
                     return JsonResultCommon.ThanhCong(data);
+                    #endregion
                 }
-                #endregion
             }
             catch (Exception ex)
             {

@@ -183,6 +183,22 @@ export class ReportService {
 			params: httpParams
 		});
 	}
+	ThongKeHeThong(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
+		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = this.RootURL + 'thong-ke-he-thong';
+		return this.http.get<QueryResultsModel>(url, {
+			headers: httpHeaders,
+			params: httpParams
+		});
+	}
+	ExportReportExcelHeThong(data): Observable<any> { 
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = this.RootURL + 'ExportReportExcelHeThong';
+		return this.http.post<QueryResultsModel>(url,data, {
+			headers: httpHeaders, 
+		});
+	}
 	ExportReportExcel(item,fileName): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = this.RootURL + 'ExportReportExcel?FileName='+fileName;

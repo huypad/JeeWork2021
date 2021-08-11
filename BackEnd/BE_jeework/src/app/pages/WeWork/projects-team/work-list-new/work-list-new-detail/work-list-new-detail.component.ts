@@ -1418,6 +1418,9 @@ export class WorkListNewDetailComponent implements OnInit {
     );
   }
 
+  RemoveBykey(key){
+    this.UpdateByKeyNew(this.item,key,null);
+  }
   InputData() {
     var result = document.getElementById("input-text-data");
     result.focus();

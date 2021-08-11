@@ -83,7 +83,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
-                        dieukien_where += " and (filename like N'%@keyword%' or nv_tao.holot+' '+nv_tao.ten like '%@keyword%' or nv_sua.holot+' '+nv_sua.ten like '%@keyword%'')";
+                        dieukien_where += " and (filename like N'%@keyword%' )";
                         dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
                     }
                     #region Sort data theo các dữ liệu bên dưới

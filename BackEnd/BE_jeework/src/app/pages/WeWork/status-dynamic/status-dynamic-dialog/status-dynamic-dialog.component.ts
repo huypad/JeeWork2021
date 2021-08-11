@@ -30,7 +30,7 @@ export class StatusDynamicDialogComponent implements OnInit {
 
   ngOnInit() {
     this.color_status = this.data.color ? this.data.color : "#aaa";
-
+    console.log(this.data);
     this.LoadListAccount();
     if (this.data.Follower) {
       this.data.Follower = this.data.Follower.toString();
@@ -52,10 +52,11 @@ export class StatusDynamicDialogComponent implements OnInit {
     item.Description = this.data.description;
     item.Id_project_team = this.data.id_project_team;
     item.Follower = this.data.Follower;
-    item.Type = "1";
+    // item.Type = "1";
     if (item.Id_row > 0) {
       this.UpdateStatus(item);
     } else {
+      item.Type = "2";
       this.InsertStatus(item);
     }
   }

@@ -95,7 +95,7 @@ export class JeeCommentComponent implements OnInit {
       this.ShowSpinner$.next(true);
       if (this.objectID) {
         this.getShowTopic();
-        const source = interval(1000);
+        const source = interval(2000);
         source.pipe(takeUntil(this.onDestroy)).subscribe(() => {
           if (
             this._errorMessage$.value == "" &&

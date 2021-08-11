@@ -8,8 +8,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 export class AllowUpdateStatus implements PipeTransform{
     transform(value : any):any {
-        var newValue = value.filter(x=>x.allow_update);
-        return newValue;
+        if(value)
+            return value.filter(x=>x.allow_update);
+        return value;
     }
  
 }

@@ -32,7 +32,7 @@ Wordcloud(Highcharts);
 })
 export class ReportByProjectComponent implements OnInit {
 
-  ID_department: number = 0;
+  // ID_department: number = 0;
   ID_ProjectTeam: number = 0;
   ProjectTeam: any = [];
   public filterCVC: any = [];
@@ -77,10 +77,10 @@ export class ReportByProjectComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
       if (params.id) {
-        this.ID_department = +params.id;
+        // this.ID_department = +params.id;
         this.ID_ProjectTeam = +params.id;
         this.DontChange = true;
-        this.filter_dept.id_row = this.ID_department.toString();
+        this.filter_dept.id_row = this.ID_ProjectTeam.toString();
         // this.LoadData();
       }
       else {
@@ -118,7 +118,7 @@ export class ReportByProjectComponent implements OnInit {
     // filter.DenNgay = this.selectedDate.endDate;
     filter.TuNgay = (this.f_convertDate(this.selectedDate.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.selectedDate.endDate)).toString();
-    filter.id_department = this.filter_dept.id_row;
+    // filter.id_department = this.filter_dept.id_row;
     filter.id_projectteam = this.ID_ProjectTeam;
     filter.collect_by = this.column_sort.value;
     filter.displayChild = this.filterCVC.value;
@@ -817,7 +817,7 @@ export class ReportByProjectComponent implements OnInit {
           i.ht_quahan,
           i.quahan,
           i.danglam,
-          i.dangdanhgia
+          // i.dangdanhgia
         );
         list.push(item);
       });

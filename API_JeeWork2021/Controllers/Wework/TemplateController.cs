@@ -475,6 +475,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         };
                     SqlConditions cond = new SqlConditions();
                     string where_template = "";
+                    string where_type = "";
                     string types = "", levels = "", template_typeid = "", collect_by = "";
                     #region Filter
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
@@ -486,6 +487,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         template_typeid = query.filter["template_typeid"];
                         where_template += $" and list.template_typeid in ({template_typeid})";
+                        where_type += $" and id_row in ({template_typeid})";
                     }
                     if (!string.IsNullOrEmpty(query.filter["types"]))//1 - space, 2 - folder, 3 - list (Project)
                     {
@@ -506,10 +508,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select id_row, title, isdefault, types
                                     from we_template_types 
-                                    where disabled = 0 
-                                    and id_row in (select template_typeid 
-                                    from we_template_customer list
-                                    where disabled = 0 and is_template_center = 1 " + where_template + ")";
+                                    where disabled = 0  " + where_type;
                     sqlq += @$";select id_row, title, description, isdefault, color
                                     , is_template_center, types, levels, img_temp, share_with, sample_id
                                     , viewid, group_statusid, template_typeid, field_id

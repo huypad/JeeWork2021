@@ -64,8 +64,10 @@ export class ListDocumentsComponent implements OnInit {
 			50,
 			true
 		);
+		this.LayoutUtilsService.showWaitingDiv();
 		this.DocumentsService.ListDocuments(queryParams).subscribe((res) => {
-			if (res && res.status == 1) {
+		this.LayoutUtilsService.OffWaitingDiv();
+		if (res && res.status == 1) {
 				this.dataSource = res.data;
 			}
 			this.changeDetectorRefs.detectChanges();
@@ -80,51 +82,8 @@ export class ListDocumentsComponent implements OnInit {
 		this.keyword = text;
 		this.LoadData();
 	}
-	loadDataList(page: boolean = false) {
-		const queryParams = new QueryParamsModelNew(
-			this.filterConfiguration(),
-			this.sort.direction,
-			this.sort.active,
-			this.paginator.pageIndex,
-			this.paginator.pageSize
-		);
-
-		this.dataSource.loadListDocument(queryParams);
-
-		setTimeout(x => {
-			this.loadPage();
-		}, 50)
-	}
-
-	loadPage() {
-		var arrayData = [];
-		this.dataSource.entitySubject.subscribe(res => arrayData = res);
-		if (arrayData !== undefined && arrayData.length == 0) {
-			var totalRecord = 0;
-			this.dataSource.paginatorTotal$.subscribe(tt => totalRecord = tt)
-			if (totalRecord > 0) {
-				const queryParams1 = new QueryParamsModelNew(
-					this.filterConfiguration(),
-					this.sort.direction,
-					this.sort.active,
-					this.paginator.pageIndex = this.paginator.pageIndex - 1,
-					this.paginator.pageSize
-				);
-				this.dataSource.loadListDocument(queryParams1);
-			}
-			else {
-				const queryParams1 = new QueryParamsModelNew(
-					this.filterConfiguration(),
-					this.sort.direction,
-					this.sort.active,
-					this.paginator.pageIndex = 0,
-					this.paginator.pageSize
-				);
-				this.dataSource.loadListDocument(queryParams1);
-			}
-		}
-	}
-
+	
+	
 	filterConfiguration(): any {
 		const filter: any = {};
 		filter.keyword = this.keyword;

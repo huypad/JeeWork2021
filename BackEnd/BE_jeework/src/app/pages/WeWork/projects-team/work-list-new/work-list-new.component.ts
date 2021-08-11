@@ -124,6 +124,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   ProjectTeam: any = {};
   listNewField: any = [];
   DataNewField: any = [];
+  listType: any = [];
   textArea: string = "";
   private readonly componentName: string = "kt-task_";
   Emtytask = false;
@@ -371,6 +372,17 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         // this.changeDetectorRefs.detectChanges();
       }
     });
+
+    //Load data work group
+    this.WeWorkService.lite_workgroup(this.ID_Project).pipe(
+      tap(res => {
+        if (res && res.status === 1) {
+          this.listType = res.data;
+          console.log(this.listType);
+          this.changeDetectorRefs.detectChanges();
+        };
+      })
+    ).subscribe();
   }
   // RemoveinList(field){
   //   var colDelete = ["title", "id_row","m_deadline","milestone"];
@@ -432,6 +444,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.LoadData();
       }
     });
+  }
+
+  LoadNhomCongViec(id){
+    var x = this.listType.find(x=>x.id_row == id);
+    if(x){
+      return x.title;
+    }
+    return "Chưa phân loại"
   }
 
   UpdateValue() {}
@@ -1282,6 +1302,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
   Updateestimates(task,event){
     this.UpdateByKey(task, "estimates", event);
+  }
+  UpdateGroup(node,id_row){
+    if(id_row == 0){
+      this.UpdateByKey(node, 'id_group', null);
+    }else
+      this.UpdateByKey(node, 'id_group', id_row);
   }
   updateDate(task, date, field) {
     this.UpdateByKey(task, field, moment(date).format("MM/DD/YYYY HH:mm"));

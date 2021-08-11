@@ -37,7 +37,7 @@ namespace JeeWork_Core2021.Classes
             Timer5Minute = new System.Timers.Timer(300000);
             Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
             //10p chạy 1 lần - 600000
-            TimerSendNotify = new System.Timers.Timer(60000);
+            TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendNotify_Elapsed);
             //60p chạy 1 lần
             TimerAutoUpdate = new System.Timers.Timer(3600000);
@@ -257,7 +257,7 @@ namespace JeeWork_Core2021.Classes
                                                 loginData.CustomerID = int.Parse(CustemerID);
                                                 loginData.LastName = "Hệ thống";
                                                 loginData.UserID = 0;
-                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier);
+                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
                                                 for (int i = 0; i < users.Count; i++)
@@ -373,13 +373,16 @@ namespace JeeWork_Core2021.Classes
 
         private void ThongBaoSapHetHan(DpsConnection cnn, string CustemerID)
         {
+            #region thông báo dự án sắp hết hạn
+                
+            #endregion
             string baotruoc_deadline = Common.GetThamSo(cnn, CustemerID, 3);
-            APIModel.Models.Notify Knoti;
+            //APIModel.Models.Notify Knoti;
             Hashtable has = new Hashtable();
             SqlConditions conds = new SqlConditions();
             string select = @"select (SELECT DATEDIFF(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
-from v_wework w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
-and deadline< (GETDATE() +CONVERT(INT, ("+baotruoc_deadline+"))) and id_nv is not null";
+from v_wework_new w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
+and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline+"))) and id_nv is not null";
             DataTable dt = cnn.CreateDataTable(select);
 
             List<long> users = new List<long>();
@@ -391,7 +394,7 @@ and deadline< (GETDATE() +CONVERT(INT, ("+baotruoc_deadline+"))) and id_nv is no
             foreach (DataRow dr in dt.Rows)
             {
                 //users.Add(long.Parse(dr["Id_NV"].ToString()));
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
             }
         }
 
@@ -413,9 +416,63 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
             loginData.UserID = 0;
             foreach (DataRow dr in dt.Rows)
             { 
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
             }
         }
+        
+        private void ThongBaoCongViecSapHetHan(DpsConnection cnn, string CustemerID)
+        {
+            string baotruoc_deadline = Common.GetThamSo(cnn, CustemerID, 4);
+            //APIModel.Models.Notify Knoti;
+            Hashtable has = new Hashtable();
+            SqlConditions conds = new SqlConditions();
+            string select = @"select (SELECT DATEDIFF(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
+from v_wework_new w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
+and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) and id_nv is not null";
+            DataTable dt = cnn.CreateDataTable(select);
+            if(cnn.LastError != null || dt.Rows.Count == 0)
+            {
+                return;
+            }
+
+            UserJWT loginData = new UserJWT();
+            loginData.CustomerID = int.Parse(CustemerID);
+            loginData.LastName = "Hệ thống";
+            loginData.UserID = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                //users.Add(long.Parse(dr["Id_NV"].ToString()));
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+            }
+        }
+        private void ThongBaoDuAnHetHan(DpsConnection cnn, string CustemerID)
+        {
+            string baotruoc_deadline = Common.GetThamSo(cnn, CustemerID, 3);
+            //APIModel.Models.Notify Knoti;
+            Hashtable has = new Hashtable();
+            SqlConditions conds = new SqlConditions();
+            string select = @"select (SELECT DATEDIFF(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
+from v_wework_new w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
+and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) and id_nv is not null";
+            DataTable dt = cnn.CreateDataTable(select);
+            if(cnn.LastError != null || dt.Rows.Count == 0)
+            {
+                return;
+            }
+
+            UserJWT loginData = new UserJWT();
+            loginData.CustomerID = int.Parse(CustemerID);
+            loginData.LastName = "Hệ thống";
+            loginData.UserID = 0;
+            foreach (DataRow dr in dt.Rows)
+            {
+                //users.Add(long.Parse(dr["Id_NV"].ToString()));
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+            }
+        }
+
+        
+
         public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config, string ConnectionString)
         {
             try

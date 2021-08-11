@@ -248,7 +248,7 @@
                                                                 <i class="fas fa-pencil-alt" matTooltipPosition="above"
                                                                     *ngIf="isUpdateStatusname(status.id_row)"
                                                                     (click)="chinhsuanoidung(status)"
-                                                                    matTooltip="{{ 'work.chinhsuatrangthai' | translate }}"></i>
+                                                                    matTooltip="{{ (this.filter_groupby.value == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
                                                                 <i *ngIf="status.data.length > 0"
                                                                     class="fas fa-check-double"
                                                                     (click)="Chontatca(status)"
@@ -257,7 +257,7 @@
                                                                 <i class="fas fa-plus" (click)="chinhsuanoidung({})"
                                                                     *ngIf="isUpdateStatusname()"
                                                                     matTooltipPosition="above"
-                                                                    matTooltip="{{ 'work.themtrangthai' | translate }}"></i>
+                                                                    matTooltip="{{ (this.filter_groupby.value == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
                                                                 <!-- <i class="fas fa-ellipsis-h"
                                                                     [matMenuTriggerFor]="groupoptions"
                                                                     matTooltipPosition="above"
@@ -862,6 +862,16 @@
                                                                                     [name]="Nguoitaocv(node[item.fieldname]).hoten">
                                                                                 </kt-avatar-user>
                                                                             </div>
+                                                                        </ng-container>
+                                                                        <ng-container *ngSwitchCase="'id_group'">
+                                                                            <div class="item-field" [matMenuTriggerFor]="groupid">
+                                                                                {{LoadNhomCongViec(node[item.fieldname])}}
+                                                                            </div>
+                                                                            <mat-menu #groupid="matMenu">
+                                                                                <ng-container *ngFor="let item of listType">
+                                                                                    <button mat-menu-item (click)="UpdateGroup(node,item.id_row)">{{item.title}}</button>
+                                                                                </ng-container>
+                                                                            </mat-menu>
                                                                         </ng-container>
                                                                         <ng-container *ngSwitchCase="'milestone'">
                                                                             <div class="item-field">

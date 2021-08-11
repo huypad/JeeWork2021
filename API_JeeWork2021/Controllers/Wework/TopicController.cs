@@ -492,7 +492,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     #endregion
                     if (data.email)
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier);
+                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
                     data.id_row = idc;
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -616,7 +616,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     cnn.EndTransaction();
                     if (data.email)
-                        WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier);
+                        WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }

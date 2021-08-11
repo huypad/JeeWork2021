@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportListTabComponent implements OnInit {
 
-  activeLink='';
+  activeLink='home';
 
   constructor() { }
 
@@ -16,17 +16,16 @@ export class ReportListTabComponent implements OnInit {
   click(activeLink) {
 		this.activeLink = activeLink;
 	}
-
   public Danhmuc =[
     {
       ten:'Dashboard',
       url:'/reports'
     },
-    // {
-    //   ten:'Member',
-    //   url:'/reports'
-    //   // url:'/reports/member'
-    // }
+    {
+      ten:'Member',
+      // url:'/reports'
+      url:'/reports/member'
+    }
   ];
 
 }

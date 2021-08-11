@@ -964,7 +964,7 @@ from we_repeated_Task task where task.Disabled=0";
                                             foreach (DataRow row in dt_New_Data.Rows)
                                             {
                                                 var users = new List<long> { long.Parse(row["id_user"].ToString()) };
-                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier);
+                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
                                                 for (int i = 0; i < users.Count; i++)

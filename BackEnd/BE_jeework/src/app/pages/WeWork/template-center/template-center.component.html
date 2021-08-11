@@ -57,15 +57,7 @@
     <div class="cu-template-center__body ">
         <div class="cu-template-center-sidebar ps">
             <div class="cu-template-center-sidebar__header"> {{ 'template.templates' | translate }} </div>
-            <div class="cu-template-center-sidebar__choices ">
-                <!-- <div class="cu-template-center-sidebar__choice ">
-                    <div class="cu-team-avatar">
-                        <div data-test="avatar" class="cu-avatar " [ngStyle]="{'backgroundColor': getBackground('N')}">
-                            N
-                        </div>
-                    </div>
-                    <div class="cu-template-center-sidebar__choice-name"> Nguyễn's Workspace </div>
-                </div> -->
+            <div class="cu-template-center-sidebar__choices "> 
                 <div class="cu-template-center-sidebar__choice  cu-template-center-sidebar__choice-active">
                     <div class="cu-template-center-sidebar__choice-icon"
                         style="background-color: rgba(0, 0, 0, 0.14)!important;">
@@ -73,10 +65,7 @@
                             <img width="12" height="12" src="../../../../assets/images/Jee_Work.png" alt="">
                         </div>
                     </div>
-                    <div class="cu-template-center-sidebar__choice-name"> {{ 'template.mauhethong' | translate }} </div>
-                    <!-- <div class="cu-template-center-sidebar__choice-count">
-                        <div class="cu-template-center-sidebar__choice-count-number"> 127 </div>
-                    </div> -->
+                    <div class="cu-template-center-sidebar__choice-name"> {{ 'template.mauhethong' | translate }} </div> 
                 </div>
             </div>
             <div class="cu-template-center-sidebar__header"> {{ 'template.types' | translate }} </div>
@@ -251,7 +240,8 @@
                         <div class="cu-template-center-main__section-header-line"></div>
                     </div>
 
-                    <div class="cu-template-center-main__rows" *ngFor="let Template of DanhSachTC">
+                   <ng-container *ngFor="let Template of DanhSachTC">
+                    <div class="cu-template-center-main__rows" *ngIf="Template.Data_Templates_Default && Template.Data_Templates_Default.length > 0">
                         <div class="cu-template-center-main__row-container">
 
 
@@ -307,6 +297,8 @@
                             </div>
                         </div>
                     </div>
+                   </ng-container>
+                   
                 </div>
             </div>
         </div>

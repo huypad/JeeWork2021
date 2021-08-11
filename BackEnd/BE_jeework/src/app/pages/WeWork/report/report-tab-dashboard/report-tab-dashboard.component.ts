@@ -1,3 +1,5 @@
+import { tap } from 'rxjs/operators';
+import { NestedTreeControl } from '@angular/cdk/tree';
 import { ListDepartmentService } from './../../List-department/Services/List-department.service';
 import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
@@ -18,10 +20,16 @@ More(Highcharts);
 import Histogram from 'highcharts/modules/histogram-bellcurve';
 import { WeWorkService } from '../../services/wework.services';
 import { ActivatedRoute } from '@angular/router';
+import { MatTreeNestedDataSource } from '@angular/material/tree';
 Histogram(Highcharts);
 
 const Wordcloud = require('highcharts/modules/wordcloud');
 Wordcloud(Highcharts);
+interface Department {
+  id_row: string;
+  title: string;
+  data_folder?: Department[];
+}
 
 @Component({
   selector: 'kt-report-tab-dashboard',
@@ -31,6 +39,8 @@ export class ReportTabDashboardComponent implements OnInit {
   ID_department: number = 0;
   public filterCVC: any = [];
   public column_sort: any = [];
+  treeControl = new NestedTreeControl<Department>(node => node.data_folder);
+  dataSource = new MatTreeNestedDataSource<Department>();
   constructor(
     public dialog: MatDialog,
     public reportService: ReportService,
@@ -41,22 +51,9 @@ export class ReportTabDashboardComponent implements OnInit {
     public weworkService: WeWorkService,
     private activatedRoute: ActivatedRoute,
     // private TongHopHieuQuaTuyenDungService:TongHopHieuQuaTuyenDungService
-  ) {
-    this.filter_dept = {
-      title: this.translate.instant('filter.tatcaphongban'),
-      id_row: ''
-    }
-    var today = new Date();
-    var start_date = new Date();
-    this.selectedDate = {
-      endDate: new Date(today.setMonth(today.getMonth() + 1)),
-      startDate: new Date(start_date.setMonth(start_date.getMonth() - 5)),
-    }
-    this.filterCVC = this._filterCV[0];
-    this.trangthai = this._filterTT[0];
-    this.column_sort = this.sortField[0];
+  ) {  
   }
-
+  hasChild = (_: number, node: Department) => !!node.data_folder && node.data_folder.length >= 0;
   DontChange = false 
   selectedDate = {
     startDate: new Date('09/01/2020'),
@@ -64,6 +61,7 @@ export class ReportTabDashboardComponent implements OnInit {
   }
   trangthai: any;
   ngOnInit() {
+    this.SetUp();
     this.activatedRoute.params.subscribe(params => {
       if (params.id) {
         this.ID_department = +params.id;
@@ -80,6 +78,35 @@ export class ReportTabDashboardComponent implements OnInit {
     this.LoadDatafilter();
   }
 
+  DanhSachPhongBan: any = [];
+  todoItemSelectionToggle(id){
+    console.log(id);
+    var index = this.DanhSachPhongBan.findIndex(x=> x==id);
+    // debugger
+    if(index >= 0){
+      this.DanhSachPhongBan.splice(index,1);
+    }else{
+      this.DanhSachPhongBan.push(id);
+    }
+    console.log(this.DanhSachPhongBan);
+    this.LoadData();
+  }
+
+  SetUp(){
+    this.filter_dept = {
+      title: this.translate.instant('filter.tatcaphongban'),
+      id_row: ''
+    }
+    var today = new Date();
+    var start_date = new Date();
+    this.selectedDate = {
+      endDate: new Date(today.setMonth(today.getMonth() + 1)),
+      startDate: new Date(start_date.setMonth(start_date.getMonth() - 5)),
+    }
+    this.filterCVC = this._filterCV[0];
+    this.trangthai = this._filterTT[0];
+    this.column_sort = this.sortField[0];
+  }
   Filter(item) {
     if (item.loai == 'displayChild') {
       this.filterCVC = item
@@ -108,7 +135,10 @@ export class ReportTabDashboardComponent implements OnInit {
     // filter.DenNgay = this.selectedDate.endDate;
     filter.TuNgay = (this.f_convertDate(this.selectedDate.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.selectedDate.endDate)).toString();
-    filter.id_department = this.filter_dept.id_row;
+    // filter.id_department = this.filter_dept.id_row;
+    if(this.DanhSachPhongBan && this.DanhSachPhongBan.length > 0){
+      filter.id_department = this.DanhSachPhongBan.join(',');
+    }
     filter.collect_by = this.column_sort.value;
     filter.displayChild = this.filterCVC.value;
     filter.status = this.trangthai.id_row;
@@ -194,10 +224,10 @@ export class ReportTabDashboardComponent implements OnInit {
     this.getReportByProjectTeam();
     this.getReportToDepartments();
     this.getCacConSoThongKe();
-    this.getEisenhower();
+    this.getEisenhower(); 
     setTimeout(() => {
       this.layoutUtilsService.OffWaitingDiv();
-    }, 500);
+    }, 1000);
   }
 
   ngAfterViewInit(): void {
@@ -207,19 +237,24 @@ export class ReportTabDashboardComponent implements OnInit {
     
   }
 
+  
   LoadDatafilter() {
-    this.weworkService.lite_department_byuser().subscribe(res => {
+    this.weworkService.lite_department_folder_byuser(this.ID_department).subscribe(res => {
       if (res && res.status === 1) {
           this.list_department = res.data;
-          this.list_department.unshift({
-            title: this.translate.instant('filter.tatcaphongban'),
-            id_row: ''
-          })
-          if(this.ID_department > 0)
-          this.LoadDataFolder();
+          // this.list_department.unshift({
+          //   title: this.translate.instant('filter.tatcaphongban'),
+          //   id_row: ''
+          // })
+          // if(this.ID_department > 0)
+          // this.LoadDataFolder();
+          this.dataSource.data = res.data
+          console.log(this.list_department);
       };
       this.detectChange.detectChanges();
-    });
+    },
+      err => console.log('Nội dung gây lỗi:',err)
+    );
   }
 
   selected_Dept(item) {
@@ -388,7 +423,7 @@ export class ReportTabDashboardComponent implements OnInit {
         this.DataChart2 = data.data;
         this.chartLabel2 = this.ElementObjectToArr(this.DataChart2, 'tencot');
         this.chartData2.push(
-          { "data": this.ElementObjectToArr(this.DataChart2, 'tatca'), "label": this.translate.instant('filter.tatca'), "type": 'line', backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
+          { "data": this.ElementObjectToArr(this.DataChart2, 'tatca'), "label": this.translate.instant('filter.congviecdatao'), "type": 'line', backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
           { "data": this.ElementObjectToArr(this.DataChart2, 'quahan'), "label": this.translate.instant('filter.quahan'), "stack": 'a', backgroundColor: this.listColor2[1] },
           { "data": this.ElementObjectToArr(this.DataChart2, 'hoanthanh'), "label": this.translate.instant('filter.hoanthanh'), "stack": 'a', backgroundColor: this.listColor2[2] }
         );
@@ -402,9 +437,10 @@ export class ReportTabDashboardComponent implements OnInit {
     var text = 'report.congviecdangthuchien';
     return congviec + "/" + tongconviec + " " + this.translate.instant(text);
   }
-  getInfoCVHT(congviec, tongconviec) {
+  getInfoCVHT(congviec,ht_quahan, tongconviec) {
+    var tonghoanthanh = (+congviec) + (+ht_quahan);
     var text = 'report.congviecdahoanthanh';
-    return congviec + "/" + tongconviec + " " + this.translate.instant(text);
+    return tonghoanthanh + "/" + tongconviec + " " + this.translate.instant(text);
   }
   getInfoquahan(quahan, ht_quahan) {
     return quahan + " " + this.translate.instant('filter.quahan') + '· ' + ht_quahan + " " + this.translate.instant('filter.hoanthanhmuon');
@@ -478,7 +514,7 @@ export class ReportTabDashboardComponent implements OnInit {
   }
 
   // chart 4 Tong hop theo du an
-  listColorChart4 = ['#40FF00', '#F7FE2E', 'rgb(124, 181, 236)', '#FE2E2E', 'gray'];
+  listColorChart4 = ['#40FF00', '#F7FE2E', '#FE2E2E', 'rgb(124, 181, 236)', 'black','gray'];
   Data4: any;
   chart4Ready = false;
   TongDuAn = 0;
@@ -801,7 +837,6 @@ export class ReportTabDashboardComponent implements OnInit {
             i.ht_quahan,
             i.quahan,
             i.danglam,
-            i.dangdanhgia,
           ]
         }
       }
@@ -818,7 +853,7 @@ export class ReportTabDashboardComponent implements OnInit {
           i.ht_quahan,
           i.quahan,
           i.danglam,
-          i.dangdanhgia
+          // i.dangdanhgia
         );
         list.push(item);
       });
@@ -831,7 +866,7 @@ export class ReportTabDashboardComponent implements OnInit {
           i.hoanthanh,
           i.quahan,
           i.danglam,
-          i.dangdanhgia
+          // i.dangdanhgia
         );
         list.push(item);
       });
@@ -844,7 +879,7 @@ export class ReportTabDashboardComponent implements OnInit {
           i.hoanthanh,
           i.quahan,
           i.danglam,
-          i.dangdanhgia
+          // i.dangdanhgia
         );
         list.push(item);
       });
@@ -960,7 +995,7 @@ export class ReportTabDashboardComponent implements OnInit {
             +i.hoanthanh,
             +i.ht_quahan,
             +i.danglam,
-            +i.dangdanhgia,
+            // +i.dangdanhgia,
           ]
         });
       }
@@ -986,7 +1021,6 @@ export class ReportTabDashboardComponent implements OnInit {
             +i.hoanthanh,
             +i.ht_quahan,
             +i.danglam,
-            +i.dangdanhgia,
           ]
         });
       }
@@ -1026,6 +1060,8 @@ export class ReportTabDashboardComponent implements OnInit {
 
     })
   }
+  
+
 
   //get Report By Department
   Eisenhower: any = {};

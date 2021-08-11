@@ -1,1 +1,178 @@
-<p>report-tab-member works!</p>
+<style>
+    .example-tree-invisible {
+  display: none;
+}
+
+.example-tree ul,
+.example-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+/*
+ * This padding sets alignment of the nested nodes.
+ */
+.example-tree .mat-nested-tree-node div[role=group] {
+  padding-left: 40px;
+}
+
+/*
+ * Padding for leaf nodes.
+ * Leaf nodes need to have padding so as to align with other non-leaf nodes
+ * under the same parent.
+ */
+.example-tree div[role=group] > .mat-tree-node {
+  padding-left: 40px;
+}
+.item-hethong{
+    text-align: center;
+    padding-top: 5px;
+    border: 1px solid #c8c5c5;
+    color:purple;
+    
+}
+.item-hethong:not(:first-child) {
+    border-left: none;
+}
+.item-hethong .text-header{
+    font-weight: 400;
+    margin-bottom: 0;
+}
+.item-hethong .text-number{
+    font-weight: 600;
+    font-size: 150%;
+}
+.it.item-text{
+    width: 120px!important;
+    font-size: 14px!important;
+    text-align: center;
+}
+</style>
+<div id="page-report">
+    <div class="rp-wrapper">
+        
+        <div class="rp-title">
+            <span class="text-uppercase" translate="report.thongkehethong"></span>
+        </div>
+
+        <div class="info-rp">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card ">
+                        <div class="card-header bg-white">
+                            <div class="row">
+                                <div class="flex-grow-1 d-flex align-items-center">
+                                    <b translate="report.thongkehethong" ></b>
+                                </div>
+                                <div class="filter mr-5 d-flex align-items-center url" (click)="openDialog()">{{'filter.tu'|translate}}:
+                                    <em>{{  selectedDate.startDate | date:'dd/MM'}} -
+                                        {{ selectedDate.endDate | date:'dd/MM/yyyy'}}</em>
+                                    <i class="fas fa-chevron-down ml-2"></i>
+                                </div>
+                                <div class="filter mr-5" >
+                                    <button class="btn btn-sm btn-primary" (click)="XuatExcelThongKe()">Xuất Excel</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body pd-0" style="min-height:500px">
+                            <div class="header-hethong row border" *ngIf="_ThongKeHeThong && _ThongKeHeThong.dataThongKe">
+                                <div class="col item-hethong">
+                                    <p class="text-header">Số dự án</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Soduan}}</p>
+                                </div>
+                                <div class="col item-hethong">
+                                    <p class="text-header">Số phòng ban</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Sophongban}}</p>
+                                </div>
+                                <div class="col item-hethong">
+                                    <p class="text-header">Dự án đang chạy</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Soduandangchay}}</p>
+                                </div>
+                                <div class="col item-hethong">
+                                    <p class="text-header">Dự án đã đóng</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Soduandadong}}</p>
+                                </div>
+                                <div class="col item-hethong">
+                                    <p class="text-header">Số công việc</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Socongviec}}</p>
+                                </div>
+                                <div class="col item-hethong">
+                                    <p class="text-header">Số công việc con</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Socongvieccon}}</p>
+                                </div>
+                                <div class="col item-hethong">
+                                    <p class="text-header">Tổng số thành viên</p>
+                                    <p class="text-number">{{_ThongKeHeThong.dataThongKe.Sothanhvien}}</p>
+                                </div>
+                            </div>
+                            <div class="card-body pd-0 overflow-auto">
+                                <div class="list-thanhvien">
+                                    <div class="list-header">
+                                        <div class="float-left text-uppercase">
+                                            <span translate="report.thanhvien"></span>
+                                        </div>
+                                        <div class="item float-right">
+    
+                                            <div class="it item-text text-dark font-weight-bold" matTooltip="{{ 'filter.soduan' | translate }}" matTooltipPosition="above"> <span translate="filter.soduan"></span> </div>
+                                            <div class="it item-text text-dark font-weight-bold" matTooltip="{{ 'filter.sophongban' | translate }}" matTooltipPosition="above"> <span translate="filter.sophongban"></span> </div>
+                                            <div class="it item-text text-dark font-weight-bold" matTooltip="{{ 'filter.congviec' | translate }}" matTooltipPosition="above"> <span translate="filter.congviec"></span> </div>
+                                            <div class="it item-text text-dark font-weight-bold" matTooltip="{{ 'filter.hoanthanh' | translate }}" matTooltipPosition="above"> <span translate="filter.hoanthanh"></span> </div>
+                                            <!-- <div class="it item-text" matTooltip="{{ 'filter.hoanthanhmuon' | translate }}" matTooltipPosition="above"> <span translate="filter.hoanthanhmuon"></span> </div> -->
+                                            <div class="it item-text text-dark font-weight-bold" matTooltip="{{ 'filter.quahan' | translate }}" matTooltipPosition="above"> <span translate="filter.quahan"></span> </div>
+                                            <div class="it item-text text-dark font-weight-bold" matTooltip="{{ 'filter.dangthuchien' | translate }}" matTooltipPosition="above"> <span translate="filter.dangthuchien"></span> </div>
+                                            <!-- <div class="it item-text" matTooltip="{{ 'filter.dangdanhgia' | translate }}" matTooltipPosition="above"> <span translate="filter.dangdanhgia"></span> </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="list-body" *ngIf="_ThongKeHeThong && _ThongKeHeThong.dataUser">
+                                        <div class="item" *ngFor="let item of _ThongKeHeThong.dataUser">
+                                            <div class="avatar pl-2">
+                                                <div class="user url">
+                                                    <ngx-avatar size="35"
+                                                        matTooltip="{{item.hoten}}"
+                                                        src="{{item.image}}"
+                                                        *ngIf="item.image;else bindText">
+                                                    </ngx-avatar> 
+                                                    <ng-template #bindText>
+                                                        <ngx-avatar textSizeRatio="2.5"
+                                                            matTooltip="{{item.hoten}}"
+                                                            size="35"
+                                                            [name]="weworkService.getNameUser(item.hoten)"
+                                                            bgColor="{{weworkService.getColorNameUser(item.hoten)}}">
+                                                        </ngx-avatar>
+                                                    </ng-template>
+                                                </div>
+                                            </div>
+                                            <div class="name">
+                                                <span class="url -hover">{{item.hoten}}</span>
+                                            </div>
+                                            <div class="info">
+                                                <span style="color: black;">{{item.tenchucdanh}}</span>
+                                            </div>
+                                            <div class="side" style="max-width: none"> 
+                                                <div class="it item-text  text-dark font-weight-bold" >
+                                                    {{item.soduan}} </div>
+                                                <div class="it item-text  text-dark font-weight-bold" >
+                                                    {{item.sophongban}} </div>
+                                                <div class="it item-text  text-dark font-weight-bold" >
+                                                    {{item.num_work}} </div>
+                                                <div class="it item-text  text-success font-weight-bold" >
+                                                    {{sum(item.hoanthanh,item.ht_quahan)}} </div>
+                                                <!-- <div class="it item-text" >
+                                                    {{item.ht_quahan}} </div> -->
+                                                <div class="it item-text  text-danger font-weight-bold" >
+                                                    {{item.quahan}} </div>
+                                                <div class="it item-text  text-dark font-weight-bold" >
+                                                    {{item.danglam}} </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
