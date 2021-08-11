@@ -31,6 +31,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
+        public List<AccUsernameModel> DataAccount;
         private IConfiguration _configuration;
         private readonly ILogger<WorkGroupController> _logger;
 
@@ -60,6 +61,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
+                    //string ids = string.Join(",", nvs);
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -76,12 +90,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    long hoanthanh = ReportByProjectController.GetStatusComplete(int.Parse(query.filter["id_project_team"]),cnn);
+                    Conds.Add("hoanthanh", hoanthanh);
                     //string sqlq = "select  null as id_row, '' as description, N'Chưa phân loại' as title, id_project_team,count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht from v_wework w where id_group is null" + dieukien_where+ "  group by id_group, id_project_team  union ";
-                    //                    string sqlq = @"select g.id_row, g.description, g.title, g.id_project_team, coalesce( w.tong,0) as tong, coalesce( w.ht,0) as ht from we_group g 
-                    //left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_group from v_wework_new w group by w.id_group) w on g.id_row=w.id_group
-                    //where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
-                    string sqlq = @"select g.id_row, g.description, g.title, g.id_project_team, coalesce( w.tong,0) as tong, coalesce( w.ht,0) as ht from we_group g 
-left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_group from v_wework_new w group by w.id_group) w on g.id_row=w.id_group
+                    string sqlq = @"select g.*, coalesce( w.tong,0) as tong, coalesce( w.ht,0) as ht from we_group g 
+left join (select count(*) as tong, COUNT(CASE WHEN w.status=@hoanthanh THEN 1 END) as ht,w.id_group from v_wework_new w group by w.id_group) w on g.id_row=w.id_group
 where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     if (cnn.LastError != null || dt == null)
@@ -100,6 +113,9 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                         query.page = 1;
                         query.record = pageModel.TotalCount;
                     }
+                    var nguoitao = new { };
+                    var nguoisua = new { }; 
+                    var checker = new { }; 
                     // Phân trang
                     dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
                     var data = from r in dt.AsEnumerable()
@@ -109,6 +125,12 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                                    title = r["title"],
                                    description = r["description"],
                                    id_project_team = r["id_project_team"],
+                                   locked = r["locked"],
+                                   CreatedDate = r["CreatedDate"],
+                                   UpdatedDate = r["UpdatedDate"],
+                                   nguoitao = r["CreatedBy"].Equals(DBNull.Value) ? new { } : getUser(r["CreatedBy"].ToString(), DataAccount),
+                                   nguoisua = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : getUser(r["UpdatedBy"].ToString(), DataAccount),
+                                   reviewer = r["reviewer"].Equals(DBNull.Value) ? new { } : getUser(r["reviewer"].ToString(), DataAccount),
                                    Count = new
                                    {
                                        tong = r["tong"],
@@ -123,6 +145,23 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
             {
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
+        }
+
+        object getUser(string iduser, List<AccUsernameModel> DataAccount)
+        {
+            var info = DataAccount.Where(x => iduser.Contains(x.UserId.ToString())).FirstOrDefault();
+            if (info != null)
+            { 
+               var data = new
+                {
+                    hoten = info.FullName,
+                    mobile = info.PhoneNumber,
+                    username = info.Username,
+                    image = info.AvartarImgURL,
+                };
+                return data;
+            }
+            return new { };
         }
 
 

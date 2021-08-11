@@ -89,6 +89,13 @@ namespace JeeWork_Core2021.Classes
         {
             try
             {
+                string _connection = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
+                using (DpsConnection cnn = new DpsConnection(_connection))
+                {
+                    //ThongBaoDuAnSapHetHan(cnn, 1119.ToString(), _connection);
+
+                    //ThongBaoHetHan(cnn, 1119.ToString(), _connection);
+                }
             }
             catch (Exception ex)
             {
@@ -121,7 +128,7 @@ namespace JeeWork_Core2021.Classes
                             {
                                 //WeworkLiteController.insert_processwork(cnn);
                                 ThongBaoSapHetHan(cnn, CustomerID.ToString());
-                                ThongBaoHetHan(cnn, CustomerID.ToString());
+                                ThongBaoHetHan(cnn, CustomerID.ToString(),_connection);
                                 EveryDay_UpdateLate(cnn, CustomerID.ToString());
                                 EveryDayForceRun(cnn, CustomerID.ToString());
                             }
@@ -398,14 +405,14 @@ and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline+"))) and id_nv is 
             }
         }
 
-        private void ThongBaoHetHan(DpsConnection cnn, string CustemerID)
+        private void ThongBaoHetHan(DpsConnection cnn, string CustemerID, string ConnectionString)
         {
             PushNotifyModel notify = new PushNotifyModel();
             APIModel.Models.Notify Knoti;
             Hashtable has = new Hashtable();
             SqlConditions conds = new SqlConditions();
-            string select = @"select w.* from v_wework w where disabled = 0 and deadline is not null and deadline < (GETDATE()) 
-and id_nv is not null and exists (select id_row from we_status where IsFinal <> 1 )";
+            string select = @"select w.* from v_wework_new w where disabled = 0 and deadline is not null and deadline < (GETDATE()) 
+and id_nv is not null and exists (select id_row from we_status where w.status = id_row and IsFinal <> 1 )";
             DataTable dt = cnn.CreateDataTable(select);
 
             List<long> users = new List<long>();
@@ -416,7 +423,7 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
             loginData.UserID = 0;
             foreach (DataRow dr in dt.Rows)
             { 
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
             }
         }
         
@@ -427,7 +434,8 @@ and id_nv is not null and exists (select id_row from we_status where IsFinal <> 
             Hashtable has = new Hashtable();
             SqlConditions conds = new SqlConditions();
             string select = @"select (SELECT DATEDIFF(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
-from v_wework_new w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
+from v_wework_new w join we_status s on w.status = s.id_row and s.IsFinal = 0
+where w.disabled = 0 and s.disabled = 0 and deadline is not null and deadline > (GETDATE()) 
 and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) and id_nv is not null";
             DataTable dt = cnn.CreateDataTable(select);
             if(cnn.LastError != null || dt.Rows.Count == 0)
@@ -441,19 +449,19 @@ and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) and id_nv i
             loginData.UserID = 0;
             foreach (DataRow dr in dt.Rows)
             {
-                //users.Add(long.Parse(dr["Id_NV"].ToString()));
                 WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
             }
         }
-        private void ThongBaoDuAnHetHan(DpsConnection cnn, string CustemerID)
-        {
+        private void ThongBaoDuAnSapHetHan(DpsConnection cnn, string CustemerID, string ConnectionString)
+        { 
             string baotruoc_deadline = Common.GetThamSo(cnn, CustemerID, 3);
             //APIModel.Models.Notify Knoti;
             Hashtable has = new Hashtable();
             SqlConditions conds = new SqlConditions();
-            string select = @"select (SELECT DATEDIFF(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
-from v_wework_new w where disabled = 0 and deadline is not null and deadline > (GETDATE()) 
-and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) and id_nv is not null";
+            string select = @"select (SELECT DATEDIFF(hour , GETDATE(), end_date)) as thoigianconlai, pu.* 
+from we_project_team p join we_project_team_user pu on p.id_row = pu.id_project_team
+where p.disabled = 0 and pu.disabled = 0 and  end_date is not null and end_date > (GETDATE()) 
+and end_date< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) ";
             DataTable dt = cnn.CreateDataTable(select);
             if(cnn.LastError != null || dt.Rows.Count == 0)
             {
@@ -467,7 +475,7 @@ and deadline< (GETDATE() +CONVERT(INT, (" + baotruoc_deadline + "))) and id_nv i
             foreach (DataRow dr in dt.Rows)
             {
                 //users.Add(long.Parse(dr["Id_NV"].ToString()));
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_project_team"].ToString()), new List<long> { long.Parse(dr["id_user"].ToString()) }, 20, loginData, ConnectionString, _notifier, _configuration);//thông báo sắp hết hạn dự án
             }
         }
 

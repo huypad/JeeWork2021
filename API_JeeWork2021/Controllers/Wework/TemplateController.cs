@@ -1469,7 +1469,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         long idfolder = long.Parse(dr["id_row"].ToString());
                         string titlef = dr["title"].ToString();
                         long idfoldertemp = InsertTepmToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
-                        if (idfolder <= 0)
+                        if (idfoldertemp <= 0)
                         {
                             return false;
                         } 
@@ -1548,7 +1548,10 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 error = cnn.LastError.Message.ToString();
                 return false;
             }
-            WeworkLiteController.insert_processwork(cnn);
+            if (!WeworkLiteController.insert_processwork(cnn))
+            {
+                return false;
+            }
             return true; 
         }
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using DPSinfra.Notifier;
 using JeeWork_Core2021.Models;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,11 @@ namespace API_JeeWork2021.Classes
             _notifier = notifier;
         }
 
-        public void notification(string sender, string receivers, string message, string html, NotificationMess noti_mess)
+        public void notification(string sender, string receivers, string message, string html, NotificationMess noti_mess, IConfiguration _configuration)
         {
+            string jeework_be = _configuration.GetValue<string>("Host:JeeWork_BE");
+            string appcode_jw = _configuration.GetValue<string>("AppConfig:AppCode");
+            //jeework_be + notify_model.To_Link_MobileApp  jeework_be + notify_model.To_Link_WebApp;
             socketMessage asyncnotice = new socketMessage()
             {
                 sender = sender,
@@ -27,8 +31,8 @@ namespace API_JeeWork2021.Classes
                 message_json = JsonConvert.SerializeObject(noti_mess),
                 osTitle = "Thông báo từ JeeWork",
                 osMessage = noti_mess.Content,
-                osWebURL = noti_mess.Link,
-                osAppURL = noti_mess.oslink,
+                osWebURL = jeework_be + noti_mess.Link,
+                osAppURL = jeework_be + noti_mess.oslink,
                 osIcon = noti_mess.Icon
             };
             _notifier.sendSocket(asyncnotice);

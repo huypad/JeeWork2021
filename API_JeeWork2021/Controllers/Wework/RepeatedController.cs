@@ -999,7 +999,7 @@ from we_repeated_Task task where task.Disabled=0";
                                                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                     if (info is not null)
                                                     {
-                                                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier);
+                                                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
                                                     }
                                                 }
                                                 #endregion

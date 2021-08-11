@@ -2173,8 +2173,11 @@ and IdKH={loginData.CustomerID} )";
         //    return "Oke";
         //}
 
-        public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier)
+        public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
         {
+            string jeeglobal_be = _configuration.GetValue<string>("Host:jeeglobal_be");
+            string appcode_land = _configuration.GetValue<string>("AppConfig:AppCode_Land");
+
             notify = new Notification(notifier);
             NotificationMess noti_mess = new NotificationMess();
             noti_mess.AppCode = notify_model.AppCode;
@@ -2184,7 +2187,7 @@ and IdKH={loginData.CustomerID} )";
             noti_mess.Link = notify_model.To_Link_WebApp;
             noti_mess.oslink = notify_model.To_Link_MobileApp;
             string html = "<h1>Gửi nội dung thông báo</h1>";
-            notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess);
+            notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess,_configuration);
             return true;
         }
 
@@ -2197,7 +2200,7 @@ and IdKH={loginData.CustomerID} )";
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, List<AccUsernameModel> DataAccount, DataTable dtOld = null)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
@@ -2245,6 +2248,16 @@ and IdKH={loginData.CustomerID} )";
                 //}
                 #endregion
                 DataRow values = dtFind.Rows[0];
+                if (dtFind.Columns.Contains("id_nv"))
+                {
+                    #region Map info account từ JeeAccount
+                    var info = DataAccount.Where(x => values["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info != null)
+                    {
+                        values["hoten"] = info.FullName;
+                    }
+                    #endregion
+                }
                 DataRow old_values = dtOld == null ? null : dtOld.Rows[0];
                 foreach (DataRow dr in dtKey.Rows)
                 {
@@ -2292,7 +2305,8 @@ and IdKH={loginData.CustomerID} )";
                             access_token = "",
                             //from = "derhades1998@gmail.com",
                             //to = "thanhthang1798@gmail.com", //
-                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            //to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            to = "thanhthang1798@gmail.com", //
                             subject = title,
                             html = contents //nội dung html
                         };
@@ -2391,7 +2405,7 @@ and IdKH={loginData.CustomerID} )";
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, dtOld);
             }
         }
         /// <summary>

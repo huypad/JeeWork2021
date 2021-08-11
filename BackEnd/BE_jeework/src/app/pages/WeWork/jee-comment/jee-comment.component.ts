@@ -230,8 +230,14 @@ export class JeeCommentComponent implements OnInit {
     if (objectID_current === changeComment.parentObjectID) {
       this.updateLengCreate(totalLength, changeComment.LstChange.length);
       this.updateLengCreate(viewLength, changeComment.LstChange.length);
+      // changeComment.LstChange.forEach((comment) => {
+      //   lstCommentDTO_current.push(comment);
+      // });
       changeComment.LstChange.forEach((comment) => {
-        lstCommentDTO_current.push(comment);
+        const index = lstCommentDTO_current.findIndex((item) => item.Id === comment.Id);
+        if (index === -1) {
+          lstCommentDTO_current.push(comment);
+        }
       });
     } else {
       lstCommentDTO_current.forEach((comment) => {
