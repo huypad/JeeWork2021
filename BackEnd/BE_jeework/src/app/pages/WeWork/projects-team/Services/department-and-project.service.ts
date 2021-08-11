@@ -370,7 +370,7 @@ export class ProjectsTeamService {
 			params: httpParams
 		});
 	}
-	TaskinProject(queryParams: QueryParamsModelNew,projectteamID): Observable<QueryResultsModel> {
+	TaskinProject(queryParams: QueryParamsModelNew, projectteamID): Observable<QueryResultsModel> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
 		const url = API_work_CU + `/task-in-project/${projectteamID}`;
@@ -417,7 +417,7 @@ export class ProjectsTeamService {
 	}
 	DeleteStatus(id): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.get<any>(API_Status + '/Delete?id='+id, { headers: httpHeaders });
+		return this.http.get<any>(API_Status + '/Delete?id=' + id, { headers: httpHeaders });
 	}
 
 	Different_Statuses(item): Observable<any> {

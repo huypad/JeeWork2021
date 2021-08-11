@@ -3,12 +3,14 @@
         <kt-portlet-body class="pd-0">
             <nav mat-tab-nav-bar>
                 <!-- <a mat-tab-link *ngFor="let item of Danhmuc" [routerLink]="item.url" routerLinkActive="router-link-active"> {{item.ten}}</a> -->
-                <a mat-tab-link  [routerLink]="'/reports'" (click)="activeLink = 'home'" [active]="activeLink == 'home'" > Dashboard </a>
-                <a mat-tab-link  [routerLink]="'/reports/member'" (click)="activeLink = 'member'" [active]="activeLink == 'member'"> Thành viên </a>
+                <a mat-tab-link [routerLink]="'/reports'" (click)="activeLink = 'home'" [active]="activeLink == 'home'">
+                    Báo cáo tổng quan </a>
+                <a mat-tab-link [routerLink]="'/reports/member'" (click)="activeLink = 'member'"
+                    [active]="activeLink == 'member'"> Báo cáo theo thành viên </a>
             </nav>
         </kt-portlet-body>
     </kt-portlet>
-    <div >
+    <div>
         <router-outlet></router-outlet>
     </div>
 </div>

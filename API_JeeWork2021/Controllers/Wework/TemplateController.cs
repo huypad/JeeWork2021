@@ -865,10 +865,9 @@ from we_template_library where disabled = 0 and id_template = " + id;
                                                       } : null,
                                                   }
                                 }).FirstOrDefault();
-
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
+                    #endregion
                 }
-                #endregion
             }
             catch (Exception ex)
             {
@@ -1019,7 +1018,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    cnn.BeginTransaction();
 
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
@@ -1046,23 +1044,21 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         val.Add("field_id", data.field_id);
                     else
                         val.Add("field_id", DBNull.Value);
-                     
                     // flow -> insert vào mẫu tạm xong lấy dữ liệu trong mẫu tạm đi insert
+                    cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_template_customer_temp") != 1)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
-
                     //select save_as_id from we_template_customer where id_row =
                     #region insert Bảng tạm về data
-                    if (!InsertTempToData(idc, data, loginData, istemplatelist,cnn, out error))
+                    if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))
                     {
                         return JsonResultCommon.Custom(error);
                     }
                     #endregion
-
                     data.id_row = idc;
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1457,7 +1453,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
             // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
             if (data.types == 1) // phòng ban
             {
-                
                 idmau = long.Parse(cnn.ExecuteScalar($"select id_row from we_department_temp where {field} = {datatemplatecemter} and parentid is null").ToString());
                 long idc = InsertTepmToDepartment(id_temp, idmau, data.title, data.ParentID, data.field_id, loginData, cnn, out error);
                 if (idc <= 0)
@@ -1521,7 +1516,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 return 0;
             }
             long idc = long.Parse(dt.Rows[0]["id_row"].ToString());
-            string sqlp = "select * from we_project_team_temp where  Disabled = 0 and id_department = " + idmau;
+            string sqlp = "select * from we_project_team_temp where disabled = 0 and id_department = " + idmau;
             DataTable dataprojectteam = cnn.CreateDataTable(sqlp);
             if (dataprojectteam.Rows.Count > 0)
             {

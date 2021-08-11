@@ -2396,8 +2396,8 @@ where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and obj
                                     description = r["description"],
                                     id_project_team = r["id_project_team"],
                                     project_team = r["project_team"],
-                                    deadline =  r["deadline"],
-                                    start_date =  r["start_date"],
+                                    deadline = r["deadline"],
+                                    start_date = r["start_date"],
                                     end_date = r["end_date"],
                                     //deadline = string.Format("{0:dd/MM/yyyy HH:mm}", r["deadline"]),
                                     //start_date = string.Format("{0:dd/MM/yyyy HH:mm}", r["start_date"]),
@@ -2648,8 +2648,14 @@ where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and obj
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
                     string strG = @"select 0 as id_row, N'Chưa phân loại' as title union
-select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
-                    DataTable dtG = cnn.CreateDataTable(strG);
+                    select id_row, title from we_group g where disabled=0 
+                    and id_project_team=" + query.filter["id_project_team"];
+                    string sql_status = @"select id_row, statusname as title, color, position, type 
+                                    from we_status 
+                                    where disabled = 0 and id_project_team=" + query.filter["id_project_team"] + " " +
+                                    "order by type, position";
+                    DataTable dt_st = cnn.CreateDataTable(sql_status);
+                    //DataTable dt_st = cnn.CreateDataTable(strG);
                     DataSet ds = await GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept);
                     DataTable dt_stt = cnn.CreateDataTable($"select * from we_status where id_project_team=" + query.filter["id_project_team"]);
                     if (cnn.LastError != null || ds == null)
@@ -2664,7 +2670,6 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                         {
                             rows = new List<string>(),
                             items = new List<string>()
-
                         });
                     if (query.more)
                     {
@@ -2678,7 +2683,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     pageModel.Page = query.page;
                     var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
-                    var rows = (from rr in dtG.AsEnumerable()
+                    var rows = (from rr in dt_st.AsEnumerable()
                                 select new
                                 {
                                     id = "G" + rr["id_row"],
@@ -2697,7 +2702,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                            id = "W" + rr["id_row"],
                                            label = rr["title"],
                                            expanded = true,
-                                           parentId = rr["id_group"] == DBNull.Value ? "G0" : ("G" + rr["id_group"]),
+                                           parentId = rr["status"] == DBNull.Value ? "G0" : ("G" + rr["status"]),
                                            start_date = rr["start_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["start_date"]),
                                            end_date = rr["end_date"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["end_date"]),
                                            deadline = rr["deadline"] == DBNull.Value ? "--" : string.Format("{0:dd/MM}", rr["deadline"]),
@@ -2740,7 +2745,6 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                              style = getStyle(rr["status"].ToString(), dt_stt),
                                              time = new
                                              {
-
                                                  end = ms = getMs(rr["deadline"]),
                                                  start = rr["start_date"] == DBNull.Value ? ms : getMs(rr["start_date"]),
                                              }
@@ -3771,7 +3775,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                             #endregion
                         }
-                        if ( ("deadline".Equals(data.key) || "start_date".Equals(data.key)) && data.value != null)
+                        if (("deadline".Equals(data.key) || "start_date".Equals(data.key)) && data.value != null)
                         {
                             DateTime values = DateTime.Now;
                             if (DateTime.TryParse(data.value.ToString(), out values))
@@ -3962,7 +3966,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 #region Check dự án đó có gửi gửi mail khi cập nhật tình trạng hay không
                                 if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_status", false, ConnectionString))
                                 {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) }; 
+                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                     string lst_user = string.Join(",", users);
                                     var userProcess = cnn.CreateDataTable($"select * from we_work_process where WorkID = {data.id_row} and StatusID = {data.value} and Checker not in ({ string.Join(",", users) })");
                                     if (userProcess.Rows.Count > 0)
@@ -4176,9 +4180,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
                                             }
                                         }
-                                        catch
-                                        { }
-
+                                        catch (Exception ex)
+                                        {
+                                            return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+                                        }
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
@@ -5079,7 +5084,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     if (!(bool)field["isnewfield"])
                         drow[field["fieldName"].ToString()] = dr[field["fieldName"].ToString()];
                 }
-                drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount,loginData);
+                drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount, loginData);
                 drow["DataStatus"] = list_status_user(dr["id_row"].ToString(), id_project_team, loginData, cnn, DataAccount);
                 result.Rows.Add(drow);
             }
@@ -5560,7 +5565,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount,UserJWT loginData, string ConnectString, object parent = null)
+        public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, UserJWT loginData, string ConnectString, object parent = null)
         {
             object a = "";
             if (parent == null)
@@ -5653,7 +5658,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                          updatedby = r["UpdatedBy"],
                          nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
-                         DataStatus = list_status_user(r["id_row"].ToString(),  r["id_project_team"].ToString(), loginData, new DpsConnection(ConnectString), DataAccount),
+                         DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, new DpsConnection(ConnectString), DataAccount),
                          User = from us in User.AsEnumerable()
                                 where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                 select new
@@ -5696,7 +5701,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                                       IsDefault = s["IsDefault"],
                                       IsToDo = s["IsToDo"]
                                   },
-                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount,loginData, ConnectString, r["id_row"])
+                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectString, r["id_row"])
                      };
             return re.Distinct().ToList();
         }
@@ -5704,7 +5709,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
         {
             var temp = enumerableRowCollections;
             #region filter
-            if (!string.IsNullOrEmpty(filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong||3: đang đánh giá
+            if (!string.IsNullOrEmpty(filter["status"]))
                 temp = temp.Where(x => x["status"].ToString() == filter["status"]);
             if (!string.IsNullOrEmpty(filter["is_quahan"]))//quá hạn
                 temp = temp.Where(x => x["is_quahan"].ToString() == filter["is_quahan"]);

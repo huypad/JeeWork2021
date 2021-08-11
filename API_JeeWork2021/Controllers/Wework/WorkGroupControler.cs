@@ -77,6 +77,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     //string sqlq = "select  null as id_row, '' as description, N'Chưa phân loại' as title, id_project_team,count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht from v_wework w where id_group is null" + dieukien_where+ "  group by id_group, id_project_team  union ";
+                    //                    string sqlq = @"select g.id_row, g.description, g.title, g.id_project_team, coalesce( w.tong,0) as tong, coalesce( w.ht,0) as ht from we_group g 
+                    //left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_group from v_wework_new w group by w.id_group) w on g.id_row=w.id_group
+                    //where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     string sqlq = @"select g.id_row, g.description, g.title, g.id_project_team, coalesce( w.tong,0) as tong, coalesce( w.ht,0) as ht from we_group g 
 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_group from v_wework_new w group by w.id_group) w on g.id_row=w.id_group
 where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;

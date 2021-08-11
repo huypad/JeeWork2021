@@ -31,16 +31,16 @@ namespace API_JeeWork2021.Classes
             //
             // TODO: Add constructor logic here
             //
-            //1p chạy 1 lần (chỉ áp dụng những chức năng cần chạy sớm và phải chạy nhanh)
+            //1p chạy 1 lần (chỉ áp dụng những chức năng cần chạy sớm và phải chạy nhanh) 60000
             Timer1Minute = new System.Timers.Timer(60000);
             Timer1Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer1Minute_Elapsed);
-            //5p chạy 1 lần
+            //5p chạy 1 lần 300000
             Timer5Minute = new System.Timers.Timer(300000);
             Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
-            //10p chạy 1 lần
+            //10p chạy 1 lần 600000
             TimerSendReminder = new System.Timers.Timer(600000);
             TimerSendReminder.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendReminder_Elapsed);
-            //60p chạy 1 lần
+            //60p chạy 1 lần 3600000
             TimerAutoUpdate = new System.Timers.Timer(3600000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
             _configuration = configuration;
@@ -139,11 +139,6 @@ namespace API_JeeWork2021.Classes
             {
             }
         }
-
-        private void EveryDayForceRun(DpsConnection cnn, string CustemerID)
-        {
-
-        }
         /// <summary>
         /// Update số lượng công việc  +1 hoặc -1 với những tài kkhoan quy định mà không nhắc nhở theo định kì 
         /// </summary>
@@ -211,7 +206,8 @@ namespace API_JeeWork2021.Classes
                 SqlConditions cond = new SqlConditions();
                 cond.Add("UserID", UserID);
                 string sqlq = @$"select count(distinct id_row) from v_wework_new w 
-    where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) and status not in (select id_row from we_status where IsFinal = 1 and Disabled = 0)";
+                                where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) 
+                                and status not in (select id_row from we_status where IsFinal = 1 and Disabled = 0)";
                 long Tongcv = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
                 if (cnn.LastError is not null)
                     return 0;
@@ -237,8 +233,10 @@ namespace API_JeeWork2021.Classes
                 SqlConditions cond = new SqlConditions();
                 cond.Add("UserID", UserID);
                 string sqlq = @$"select count(distinct id_row) from v_wework_new w 
-    where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) and status not in (select id_row from we_status where IsFinal = 1 and Disabled = 0)";
-                sqlq += "and (deadline BETWEEN (SELECT CAST(CAST(GETDATE() AS DATE) AS DATETIME)) AND (SELECT CAST(CAST(GETDATE()+ 1 AS DATE) AS DATETIME)) )";
+                                where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) 
+                                and status not in (select id_row from we_status where isfinal = 1 and disabled = 0)";
+                sqlq += "and (deadline BETWEEN (SELECT CAST(CAST(GETDATE() AS DATE) AS DATETIME)) " +
+                    "AND (SELECT CAST(CAST(GETDATE()+ 1 AS DATE) AS DATETIME)) )";
                 long Tongcv = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
                 if (cnn.LastError is not null)
                     return 0;
@@ -293,15 +291,14 @@ namespace API_JeeWork2021.Classes
                 cond.Add("UserID", UserID);
                 cond.Add("IdKH", IdKH);
                 string sqlq = @$"select count(distinct p.id_row)
-from we_project_team p
-join we_department d on d.id_row = p.id_department
-join we_project_team_user u on u.id_project_team = p.id_row
-where u.Disabled = 0 and id_user = @UserID  and end_date < GETDATE()
-and p.Disabled = 0  and d.Disabled = 0 and IdKH=@IdKH ";
+                                from we_project_team p
+                                join we_department d on d.id_row = p.id_department
+                                join we_project_team_user u on u.id_project_team = p.id_row
+                                where u.Disabled = 0 and id_user = @UserID  and end_date < GETDATE()
+                                and p.Disabled = 0  and d.Disabled = 0 and IdKH=@IdKH ";
                 long Tongda = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
                 if (cnn.LastError is not null)
                     return 0;
-
                 var demo = new Remider()
                 {
                     PhanLoaiID = 804,

@@ -29,7 +29,7 @@ namespace API_JeeWork2021.Classes
                 osMessage = noti_mess.Content,
                 osWebURL = noti_mess.Link,
                 osAppURL = noti_mess.oslink,
-                osIcon = ""
+                osIcon = noti_mess.Icon
             };
             _notifier.sendSocket(asyncnotice);
         }

@@ -39,8 +39,8 @@ import {
 })
 export class TemplateCenterComponent implements OnInit {
   @ViewChild(MatAccordion) accordion: MatAccordion;
-	public userFilterCtrl: FormControl = new FormControl();
-	public filteredUsecase: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+  public userFilterCtrl: FormControl = new FormControl();
+  public filteredUsecase: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   ItemParentID: any = {};
   ParentName = "Chọn vị trí lưu";
   isAddsuccess = false;
@@ -69,14 +69,14 @@ export class TemplateCenterComponent implements OnInit {
     private departmentServices: ListDepartmentService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userFilterCtrl.valueChanges
-			.pipe()
-			.subscribe(() => {
-				this.filterUsers();
-			});
+      .pipe()
+      .subscribe(() => {
+        this.filterUsers();
+      });
     //load type
     this.templatecenterService.getTemplateTypes().subscribe((res) => {
       if (res && res.status == 1) {
@@ -147,7 +147,7 @@ export class TemplateCenterComponent implements OnInit {
       });
   }
   getTooltipStatus(status) {
-    if(!status.status_list) return;
+    if (!status.status_list) return;
     var text = "Nhóm" + status.title + ": ";
     status.status_list.forEach((element) => {
       text += element.statusname + ", ";
@@ -199,14 +199,14 @@ export class TemplateCenterComponent implements OnInit {
     return filter;
   }
   //
-  SelectedTemplate(item,istemplatelist = false) {
+  SelectedTemplate(item, istemplatelist = false) {
     this.NextStep();
     this.templatecenterService
-      .getDetailTemplate(item.id_row,istemplatelist)
+      .getDetailTemplate(item.id_row, istemplatelist)
       .subscribe((res) => {
         if (res && res.status == 1) {
           this.TemplateDetail = res.data;
-          if(!istemplatelist){
+          if (!istemplatelist) {
             this.LoadDatafield();
           }
         }
@@ -254,18 +254,18 @@ export class TemplateCenterComponent implements OnInit {
     TCinsert.types = this.TemplateDetail.types;
     TCinsert.customerid = this.TemplateDetail.customerid;
     TCinsert.template_typeid = this.TemplateDetail.template_typeid;
-    if(this.TemplateDetail.img_temp)
+    if (this.TemplateDetail.img_temp)
       TCinsert.img_temp = this.TemplateDetail.img_temp;
     TCinsert.id_row = this.TemplateDetail.id_row;
-    if(this.TemplateDetail.templateid) 
+    if (this.TemplateDetail.templateid)
       TCinsert.templateid = this.TemplateDetail.templateid;
     TCinsert.levels = this.TemplateDetail.levels;
     TCinsert.is_task = this.isAddTask;
     TCinsert.is_views = this.AllView;
     TCinsert.group_statusid = this.TemplateDetail.group_statusid;
     TCinsert.viewid = this.TemplateDetail.viewid;
-    if(this.TemplateDetail.sample_id > 0){
-      TCinsert.sample_id = ''+this.TemplateDetail.sample_id;
+    if (this.TemplateDetail.sample_id > 0) {
+      TCinsert.sample_id = '' + this.TemplateDetail.sample_id;
     }
     // kiểm tra title
     let titleTemplate = (<HTMLInputElement>(
@@ -276,7 +276,7 @@ export class TemplateCenterComponent implements OnInit {
     } else {
       TCinsert.title = this.TemplateDetail.title;
 
-      if(!TCinsert.title){
+      if (!TCinsert.title) {
         this.layoutUtilsService.showError("Tên Template Center là bắt buộc");
         return;
       }
@@ -284,7 +284,7 @@ export class TemplateCenterComponent implements OnInit {
     // kiểm tra chọn parent
     if (this.TemplateDetail.types > 1) {
       if (this.ItemParentID.type > 0) {
-        if(this.TemplateDetail.types == 2){ // folder
+        if (this.TemplateDetail.types == 2) { // folder
           if (this.ItemParentID.type != 1) {
             this.layoutUtilsService.showError("Vị trí lưu trữ không hợp lệ.");
             return;
@@ -292,7 +292,7 @@ export class TemplateCenterComponent implements OnInit {
             TCinsert.ParentID = this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
           }
         }
-        if(this.TemplateDetail.types == 3){ // list
+        if (this.TemplateDetail.types == 3) { // list
           TCinsert.ParentID = this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
         }
       } else {
@@ -303,7 +303,7 @@ export class TemplateCenterComponent implements OnInit {
       }
     }
     // kiểm tra custom item
-    TCinsert.is_customitems = this.importall; 
+    TCinsert.is_customitems = this.importall;
     TCinsert.list_field_name = [];
     if (!this.importall) {
       const listcustomitems = this.ListField.filter((item) => item.checked);
@@ -322,7 +322,7 @@ export class TemplateCenterComponent implements OnInit {
         if (element.typeid) cus_it.typeid = element.typeid;
         TCinsert.list_field_name.push(cus_it);
       });
-    } else { 
+    } else {
       this.ListField.forEach((element) => {
         const cus_it = new ListFieldModel();
         cus_it.clear();
@@ -338,7 +338,7 @@ export class TemplateCenterComponent implements OnInit {
         if (element.typeid) cus_it.typeid = element.typeid;
         TCinsert.list_field_name.push(cus_it);
       });
-    }  
+    }
     //ListField new
     // kiểm tra project date
     TCinsert.is_projectdates = this.ProjectDatesDefault;
@@ -351,16 +351,16 @@ export class TemplateCenterComponent implements OnInit {
       }
     }
 
-    var istemplatelist  = this.TemplateDetail.istemplatelist
-    if(this.TemplateDetail.addtolibrary){
+    var istemplatelist = this.TemplateDetail.istemplatelist
+    if (this.TemplateDetail.addtolibrary) {
       istemplatelist = true;
       TCinsert.id_row = this.TemplateDetail.save_as_id;
     }
 
     setTimeout(() => {
-      this.SudungMau(TCinsert,istemplatelist);
+      this.SudungMau(TCinsert, istemplatelist);
     }, 5);
-      // return;
+    // return;
 
     // if(!this.TemplateDetail.istemplatelist)
     // { 
@@ -421,9 +421,9 @@ export class TemplateCenterComponent implements OnInit {
     // }
     // // this.Create(_item, false);
   }
-  SudungMau(_item: TemplateCenterModel,istemplatelist) {
+  SudungMau(_item: TemplateCenterModel, istemplatelist) {
     this.disabledBtn = true;
-    this.templatecenterService.Sudungmau(_item,istemplatelist).subscribe((res) => {
+    this.templatecenterService.Sudungmau(_item, istemplatelist).subscribe((res) => {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
@@ -435,7 +435,7 @@ export class TemplateCenterComponent implements OnInit {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
-  } 
+  }
   disabledBtn = false;
   Create(_item: DepartmentModel, withBack: boolean) {
     this.disabledBtn = true;
@@ -481,33 +481,33 @@ export class TemplateCenterComponent implements OnInit {
   }
 
   onSelectFile(event) {
-    var icondata :any;
+    var icondata: any;
     const file = new FileUploadModel();
-		file.clear()
+    file.clear()
 
-		if (event.target.files && event.target.files[0]) {
-			var filesAmount = event.target.files[0];
-			var Strfilename = filesAmount.name.split('.');
+    if (event.target.files && event.target.files[0]) {
+      var filesAmount = event.target.files[0];
+      var Strfilename = filesAmount.name.split('.');
 
-			event.target.type = 'text';
-			event.target.type = 'file';
-			var reader = new FileReader();
-			let base64Str: any;
-			reader.onload = (event) => {
-				base64Str = event.target["result"]
-				var metaIdx = base64Str.indexOf(';base64,');
-				let strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
+      event.target.type = 'text';
+      event.target.type = 'file';
+      var reader = new FileReader();
+      let base64Str: any;
+      reader.onload = (event) => {
+        base64Str = event.target["result"]
+        var metaIdx = base64Str.indexOf(';base64,');
+        let strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
         icondata = { filename: filesAmount.name, strBase64: strBase64, base64Str: base64Str };
         this.TemplateDetail.img_temp = base64Str;
         file.filename = filesAmount.name;
         file.strBase64 = strBase64;
         file.IdRow = this.TemplateDetail.id_row;
-				this.changeDetectorRefs.detectChanges();
-			}
-			reader.readAsDataURL(filesAmount);
-		}
+        this.changeDetectorRefs.detectChanges();
+      }
+      reader.readAsDataURL(filesAmount);
+    }
     setTimeout(() => {
-      this.templatecenterService.UpdateFileTemplate(file,this.TemplateDetail.istemplatelist).subscribe((res) => {
+      this.templatecenterService.UpdateFileTemplate(file, this.TemplateDetail.istemplatelist).subscribe((res) => {
         this.disabledBtn = false;
         this.changeDetectorRefs.detectChanges();
         if (res && res.status === 1) {
@@ -521,8 +521,8 @@ export class TemplateCenterComponent implements OnInit {
       });
     }, 50);
 
-		
-	}
+
+  }
   getBackground(text) {
     return "#1DB954";
   }
@@ -594,10 +594,10 @@ export class TemplateCenterComponent implements OnInit {
       name: "Danh sách",
       id: "3",
       countitem: 15,
-    }, 
+    },
   ];
   Levels = [
-     {
+    {
       checked: false,
       name: "Cơ bản",
       id: "1",
@@ -617,69 +617,69 @@ export class TemplateCenterComponent implements OnInit {
     },
   ];
 
-  add_template_library(){
+  add_template_library() {
     const user = new TempalteUserModel();
     user.clear();
     user.id_row = 0;
     user.id_template = this.TemplateDetail.id_row;
     user.id_user = +this.UserID;
-    
+
     var object = {
-      templateid:this.TemplateDetail.id_row,
-      list_share:new Array<TempalteUserModel>(user),
+      templateid: this.TemplateDetail.id_row,
+      list_share: new Array<TempalteUserModel>(user),
     }
-    this.templatecenterService.add_template_library(object).subscribe( res => {
-      if(res && res.status ==1){
+    this.templatecenterService.add_template_library(object).subscribe(res => {
+      if (res && res.status == 1) {
         this.layoutUtilsService.showInfo('thêm vào thư viện thành công');
         this.isAddsuccess = true;
-      }else{
+      } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
   }
-  delete_library(){ 
-    this.templatecenterService.delete_library(this.TemplateDetail.id_row).subscribe( res => {
-      if(res && res.status ==1){
+  delete_library() {
+    this.templatecenterService.delete_library(this.TemplateDetail.id_row).subscribe(res => {
+      if (res && res.status == 1) {
         this.buocthuchien = 1;
         this.LoadTC();
-      }else{
+      } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
   }
-  LoadDatafield(){
+  LoadDatafield() {
     // this.ListField.filter((item) => item.checked)
-    if(this.ListField.length == this.TemplateDetail.data_fields.length){
+    if (this.ListField.length == this.TemplateDetail.data_fields.length) {
       this.importall = true;
-    }else{
+    } else {
       this.importall = false;
       var i = 0;
       this.ListField.forEach((element) => {
-        var x = this.TemplateDetail.data_fields.find(x=> x.id_field == element.id_field);
+        var x = this.TemplateDetail.data_fields.find(x => x.id_field == element.id_field);
         i++;
-        if(x){
+        if (x) {
           element.checked = true;
-        }else{
+        } else {
           element.checked = false;
         }
       });
     }
   }
   protected filterUsers() {
-		if (!this.TemplateTypes) {
-			return;
-		}
+    if (!this.TemplateTypes) {
+      return;
+    }
 
-		let search = this.userFilterCtrl.value;
-		if (!search) {
-			this.filteredUsecase.next(this.TemplateTypes.slice());
-			return;
-		} else {
-			search = search.toLowerCase();
-		}
-		// filter the banks
-		this.filteredUsecase.next(
+    let search = this.userFilterCtrl.value;
+    if (!search) {
+      this.filteredUsecase.next(this.TemplateTypes.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filter the banks
+    this.filteredUsecase.next(
       this.TemplateTypes.filter(bank => bank.title.toLowerCase().indexOf(search) > -1)
     );
-	}
+  }
 }

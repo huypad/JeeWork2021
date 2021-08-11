@@ -177,7 +177,7 @@ export class WorkKanBanComponent implements OnInit {
       }
     });
     this.tokenStorage.getUserData().subscribe((res) => {
-      this.menuServices.WW_Roles(res.Username).subscribe((resl) => {});
+      this.menuServices.WW_Roles(res.Username).subscribe((resl) => { });
     });
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
@@ -206,8 +206,8 @@ export class WorkKanBanComponent implements OnInit {
           a.id_project_team > b.id_project_team
             ? -1
             : b.id_project_team > a.id_project_team
-            ? 1
-            : 0
+              ? 1
+              : 0
         ); // nào chọn xếp trước
         this.ListColumns.sort((a, b) =>
           a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
