@@ -14,6 +14,7 @@ export class CuTagComponent implements OnInit {
 
   @Input() node: any = [];
   @Input() tag: any = [];
+  @Input() role: boolean = true;
   @Input() detail: boolean = false;
   @Output() RemoveTag = new EventEmitter<any>();
   @Output() loadData = new EventEmitter<any>();

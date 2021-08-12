@@ -318,20 +318,19 @@
                                         <div class="kt-form__group" style="padding: 15px; line-height: 25px;">
 
                                             <div class="row" style="margin-bottom: 10px!important;">
-                                                <div class="border-tag url" *ngIf="CheckRoles(15)"
+                                                <div class="border-tag url" *ngIf="CheckRoles(20)"
                                                     [matMenuTriggerFor]="tag"
                                                     (menuOpened)="loadTags = true"
                                                     (menuClosed)="loadTags = false"
                                                     matTooltip="{{ 'work.chinhsuatag' | translate}}">
                                                     <i class="fas fa-tags"></i>
                                                 </div>
-                                                <div class="border-tag url" *ngIf="!CheckRoles(15)"
-                                                    matTooltip="{{ 'work.chinhsuatag' | translate}}">
+                                                <div class="border-tag url" *ngIf="!CheckRoles(20)" >
                                                     <i class="fas fa-tags"></i>
                                                 </div>
 
                                                 <ng-container *ngFor="let tag of item.Tags">
-                                                    <kt-cu-tag [node]="item" [tag]="tag" [detail]="true"
+                                                    <kt-cu-tag [node]="item" [tag]="tag" [detail]="true" [role]="CheckRoles(20)"
                                                         (RemoveTag)="RemoveTag(tag)">
                                                     </kt-cu-tag>
                                                 </ng-container>

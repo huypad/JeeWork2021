@@ -101,7 +101,7 @@ export class ChangeReivewerComponent implements OnInit {
 	createForm() {
 
 		this.itemForm = this.fb.group({
-			reviewer: ['' + this.item.reviewer.id_nv, Validators.required],
+			// reviewer: ['' + this.item.reviewer.id_nv, Validators.required],
 		});
 		// this.itemForm.controls["reviewer"].markAsTouched();
 	}

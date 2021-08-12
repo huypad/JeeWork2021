@@ -3,15 +3,15 @@
         <div placement="right" container="body" triggers="" class="cu-tags-select__badge list-view ng-star-inserted"
             [ngStyle]="{'backgroundColor': Opaciti_color(tag.color)}">
             <div class="cu-tags-select__click">
-                <div class="cu-tags-select__name hide-more-text" [ngStyle]="{'color': tag.color}"> {{tag.title}} </div>
+                <div class="cu-tags-select__name " [ngClass]="{'cu-tags-hide-more-text': role}" [ngStyle]="{'color': tag.color}"  > {{tag.title}} </div>
                 <!-- <div *ngIf="isRename" class="cu-tags-select__name hide-more-text" [ngStyle]="{'color': tag.color}">  -->
                     <!-- <input type="text" value="{{tag.title}}"> -->
                 <!-- </div> -->
-                <div class="cu-tags-select__name-shadow"> {{tag.title}} </div>
-                <div cupreventdefault="" class="cu-tags-select__badge-ellipsis">
+                <div class="cu-tags-select__name-shadow" > {{tag.title}} </div>
+                <div cupreventdefault="" class="cu-tags-select__badge-ellipsis" [hidden]="!role">
                     <div cudropdown="" class="cu-dropdown menu-options nav-menu">
                         <div cudropdowntoggle="" class="cu-dropdown__toggle url">
-                            <div icon="ellipsis" class="cu-tags-select__badge-ellipsis-icon icon ng-star-inserted"
+                            <div icon="ellipsis" class="cu-tags-select__badge-ellipsis-icon icon ng-star-inserted" 
                                 [ngStyle]="{'fill': tag.color}">
                                 <i class="fas fa-ellipsis-h" [ngStyle]="{'color': tag.color}"
                                     [matMenuTriggerFor]="tags"></i>
@@ -31,7 +31,7 @@
                         </mat-menu>
                     </mat-menu> 
                 </div>
-                <div icon="close-bold" class="cu-tags-select__badge-icon-close icon ng-star-inserted"
+                <div icon="close-bold" class="cu-tags-select__badge-icon-close icon ng-star-inserted"  [hidden]="!role"
                     [ngStyle]="{'backgroundColor': tag.color}">
                     <i class="fas fa-times icon-close" (click)="RemoveTags()"></i>
                 </div>

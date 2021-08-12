@@ -285,7 +285,7 @@
                                                                                     *ngIf="node.Childs.length == 0"
                                                                                     (click)="AddnewTask(node.id_row);node.isExpanded=true"
                                                                                     matTooltip="{{ 'work.addsubtask' | translate }}"></i>
-                                                                                <i class="fas fa-tags"
+                                                                                <i class="fas fa-tags" *ngIf="CheckRoles(20,node.id_project_team)"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
                                                                                     [matMenuTriggerFor]="selecedtag"
                                                                                     (menuOpened)="node.showtag = true"
@@ -294,7 +294,7 @@
                                                                         </span>
 
                                                                         <ng-container *ngFor="let tag of node.Tags">
-                                                                            <kt-cu-tag [node]="node" [tag]="tag"
+                                                                            <kt-cu-tag [node]="node" [tag]="tag" [role]="CheckRoles(20,node.id_project_team)"
                                                                                 (RemoveTag)="RemoveTag(tag,node)">
                                                                             </kt-cu-tag>
                                                                         </ng-container>
@@ -324,7 +324,7 @@
                                                         style="width:100px;color: #646c9a;">
                                                         <ng-container *ngIf="item.fieldname=='estimates';else notestimates">
                                                             <div class="w-100 h-100 d-flex" style="align-items: center;">
-                                                                <time-estimates-view style="margin:auto" [role]="CheckRoles(18,node.id_project_team)" 
+                                                                <time-estimates-view style="margin:auto" [role]="CheckRoles(19,node.id_project_team)" 
                                                                     [time]="node[item.fieldname]" (submit)="Updateestimates(node,$event)"></time-estimates-view>
                                                             </div>
                                                         </ng-container>

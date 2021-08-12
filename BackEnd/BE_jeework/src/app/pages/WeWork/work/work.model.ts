@@ -165,7 +165,7 @@ export class WorkGroupModel {
 	title: string;
 	description: string;
 	id_project_team: string;
-	reviewer: ReviewerModel;
+	reviewer: string;
 	id: number;
 
 	clear() {

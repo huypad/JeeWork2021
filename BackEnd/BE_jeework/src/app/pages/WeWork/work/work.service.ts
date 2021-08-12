@@ -241,6 +241,14 @@ export class WorkService {
 		const url = `${API_work}/Delete?id=${id}`;
 		return this.http.get<any>(url, { headers: httpHeaders });
 	}
+	ListWorkGroup(queryParams: QueryParamsModelNew): Observable<any> {
+		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API_work_group + '/list', { 
+			headers: httpHeaders,
+			params: httpParams
+		 });
+	}
 	InsertWorkGroup(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_work_group + '/Insert', item, { headers: httpHeaders });
@@ -252,6 +260,16 @@ export class WorkService {
 	DeleteWorkGroup(id: number): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = `${API_work_group}/Delete?id=${id}`;
+		return this.http.get<any>(url, { headers: httpHeaders });
+	}
+	CloseWorkGroup(id: number, closed: boolean): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = `${API_work_group}/Close?id=${id}&&closed=${closed}`;
+		return this.http.get<any>(url, { headers: httpHeaders });
+	}
+	DetailWorkGroup(id: number): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = `${API_work_group}/Detail?id=${id}`;
 		return this.http.get<any>(url, { headers: httpHeaders });
 	}
 	assign(id: number, user: number): Observable<QueryResultsModel> {

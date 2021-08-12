@@ -503,7 +503,7 @@
                                                                                 </div>
                                                                             </ng-container>
                                                                             <span class="action-inline text-muted">
-                                                                                <i class="fas fa-tags"
+                                                                                <i class="fas fa-tags"  *ngIf=" CheckRoles(20)"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
                                                                                     [matMenuTriggerFor]="tag"
                                                                                     (menuOpened)="node.showtag = true"
@@ -526,6 +526,7 @@
                                                                                 <mat-menu #tag="matMenu">
                                                                                     <ng-container *ngIf="node.showtag">
                                                                                         <kt-choose-milestone-and-tags
+                                                                                        (click)="$event.stopPropagation()"
                                                                                             [options]="list_Tag"
                                                                                             [project_team]="project_team"
                                                                                             [id_project_Team]="ID_Project"
@@ -539,7 +540,7 @@
                                                                         </span>
 
                                                                         <ng-container *ngFor="let tag of node.Tags">
-                                                                            <kt-cu-tag [node]="node" [tag]="tag"
+                                                                            <kt-cu-tag [node]="node" [tag]="tag" [role]="CheckRoles(20)"
                                                                                 (loadData)="LoadData()"
                                                                                 (RemoveTag)="RemoveTag(tag,node)">
                                                                             </kt-cu-tag>
@@ -620,7 +621,7 @@
                                                                             <div class="w-100 h-100 d-flex"
                                                                                 style="align-items: center;">
                                                                                 <time-estimates-view style="margin:auto"
-                                                                                    [role]="CheckRoles(18)"
+                                                                                    [role]="CheckRoles(19)"
                                                                                     [time]="node[item.fieldname]"
                                                                                     (submit)="Updateestimates(node,$event)">
                                                                                 </time-estimates-view>
@@ -864,7 +865,10 @@
                                                                             </div>
                                                                         </ng-container>
                                                                         <ng-container *ngSwitchCase="'id_group'">
-                                                                            <div class="item-field" [matMenuTriggerFor]="groupid">
+                                                                            <div class="item-field" [matMenuTriggerFor]="groupid" [hidden]="!CheckRoles(21)">
+                                                                                {{LoadNhomCongViec(node[item.fieldname])}}
+                                                                            </div>
+                                                                            <div class="item-field" [hidden]="CheckRoles(21)">
                                                                                 {{LoadNhomCongViec(node[item.fieldname])}}
                                                                             </div>
                                                                             <mat-menu #groupid="matMenu">

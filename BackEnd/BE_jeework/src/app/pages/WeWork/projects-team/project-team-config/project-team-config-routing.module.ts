@@ -1,3 +1,4 @@
+import { WorkGroupComponent } from './work-group/work-group.component';
 import { RepeatedListComponent } from './../../work/repeated-list/repeated-list.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -31,6 +32,10 @@ const routes: Routes = [
 			{
 				path: 'repeated',
 				component: RepeatedListComponent
+			},
+			{
+				path: 'work-group',
+				component: WorkGroupComponent
 			},
 			{
 				path: 'import',

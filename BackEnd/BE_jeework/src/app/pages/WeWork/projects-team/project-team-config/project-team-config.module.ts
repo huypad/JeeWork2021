@@ -26,6 +26,7 @@ import { ExportDialogComponent } from './export_dialog/export_dialog.component';
 import { RepeatedListComponent } from '../../work/repeated-list/repeated-list.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { AvatarModule } from 'ngx-avatar';
+import { WorkGroupComponent } from './work-group/work-group.component';
 
 @NgModule({
 	imports: [
@@ -61,6 +62,7 @@ import { AvatarModule } from 'ngx-avatar';
 		RoleComponent,
 		ImportComponent,
 		ExportDialogComponent,
+		WorkGroupComponent,
 		// RepeatedListComponent
 	],
 	exports: [
@@ -72,6 +74,7 @@ import { AvatarModule } from 'ngx-avatar';
 		RoleComponent,
 		ImportComponent,
 		ExportDialogComponent,
+		WorkGroupComponent,
 		// RepeatedListComponent
 	]
 })

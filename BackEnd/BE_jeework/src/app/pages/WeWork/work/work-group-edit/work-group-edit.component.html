@@ -15,13 +15,24 @@
                     </mat-form-field>
                 </div>
             </div>
+            <div class="col-md-12 kt--margin-bottom-10-mobile">
+                <mat-form-field appearance="fill" class="w-100">
+                    <mat-label>Người theo dõi công việc</mat-label>
+                    <mat-select style="width: 100%;" formControlName="reviewer">
+                        <mat-option [value]="0">
+                        </mat-option>
+                        <mat-option [value]="item.id_nv" *ngFor="let item of listUser">
+                            <span style="color: black;">{{ item.hoten }}</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
             <div class="row">
                 <div class="col-md-12 m--margin-bottom-10-mobile">
                     <mat-form-field class="mat-form-field-fluid ">
                         <textarea matInput rows="4" placeholder="{{ 'object.mota' | translate }}"
-                        formControlName="NoiDung"></textarea>
+                            formControlName="NoiDung"></textarea>
                     </mat-form-field>
-                   
                 </div>
             </div>
         </div>

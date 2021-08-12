@@ -1,0 +1,176 @@
+<style>
+    input[type='date'].p-date-read {
+        pointer-events: none;
+        border: none;
+        font-family: Roboto, 'Helvetica Neue', sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+    }
+
+    .mat-header-cell {
+        white-space: nowrap;
+    }
+
+    .mat-cell {
+        white-space: nowrap;
+    }
+
+    /* :host>>>.m-portlet__head.m-portlet__head--fit {
+		z-index: 100 !important;
+	} */
+</style>
+<kt-portlet style="padding-top: 50px !important;">
+    <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
+        <!-- <ng-container ktPortletTitle>
+            <span class="title-header -hover url" translate="workgroup.nhomcongviec">
+            </span>
+        </ng-container> -->
+        <ng-container ktPortletTitle>
+            <div class="kt-form__filtration">
+                <div class="row align-items-center">
+                    <h3><span style="color: black; font-weight: bold;"
+                            translate="workgroup.nhomcongviec"></span></h3>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container ktPortletTools>
+            <button class="btn btn-success" (click)="Themmoi()">Thêm mới</button>
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body class="pd-0">
+        <div class="example-container mat-table__wrapper">
+            <!-- [ngStyle]="{'height': getHeight()}" -->
+            <table mat-table class="lmat-elevation-z8 lst-project table-list-dept" [dataSource]="dataSource" matSort
+                matSortActive="id" matSortDirection="asc" matSortDisableClear>
+                <ng-container matColumnDef="title">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center">
+                        <span translate="workgroup.title" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center;">
+                        {{item.title}}
+                    </td>
+                </ng-container>
+                <!-- <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center">
+                        <span translate="GeneralKey.mota" class="text-uppercase"></span>
+                        &nbsp;
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center;">
+                        <div>
+                            {{item.description}}
+                        </div>
+                    </td>
+                </ng-container> -->
+                <ng-container matColumnDef="ngaytao">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center ;"><span
+                            translate="GeneralKey.ngaytao" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center">
+                        <div>{{item.CreatedDate | timezone}}</div>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="nguoitao">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center ;"><span
+                            translate="filter.createdby" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center">
+                        <ng-container *ngIf="item.nguoitao && item.nguoitao.hoten">
+                            <kt-avatar-user [image]="item.nguoitao.image" [size]="35" [name]="item.nguoitao.hoten">
+                            </kt-avatar-user>
+                        </ng-container>
+
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="ngaycapnhat">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center; ">
+                        <span translate="GeneralKey.ngaycapnhat" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center;">
+                        {{item.UpdatedDate | timezone }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="nguoicapnhat">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center; ">
+                        <span translate="GeneralKey.nguoicapnhat" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center;">
+                        <ng-container *ngIf="item.nguoisua && item.nguoisua.hoten">
+                            <kt-avatar-user [image]="item.nguoisua.image" [size]="35" [name]="item.nguoisua.hoten">
+                            </kt-avatar-user>
+                        </ng-container>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="nguoitheodoi">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center; "><span
+                            translate="congviec.nguoitheodoi" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
+                        <ng-container *ngIf="item.reviewer">
+                            <ng-container *ngIf="item.reviewer && item.reviewer.hoten">
+                                <kt-avatar-user [image]="item.reviewer.image" [size]="35" [name]="item.reviewer.hoten">
+                                </kt-avatar-user>
+                            </ng-container>
+                        </ng-container>
+
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="tongsocongviec">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center; "><span
+                            translate="workgroup.slcongviec" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
+                        {{ item.Count.tong }}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="soluonghoanthanh">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center;  "><span
+                            translate="workgroup.slhoanthanh" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
+                        {{ item.Count.ht }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="locked">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center"><span
+                            translate="phanquyen.khoa" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" class="sora-switch">
+                        <!-- {{item.locked}} -->
+                      <!-- <label class="switch">
+                            <input #inputlock (change)="lock1(item.id_row)" type="checkbox" [checked]="item.locked">
+                            <span (click)="inputlock.click()" class="slider round"></span>
+                        </label> -->
+                        <mat-slide-toggle [checked]="item.locked" (change)="lock($event, item.id_row)">
+                        </mat-slide-toggle>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center; "><span
+                            translate="GeneralKey.tacvu" class="text-uppercase"></span>
+                    </th>
+                    <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
+                        <div class="row">
+                            <button mat-icon-button [disabled]="(item.locked==true)" class="text-black" (click)="UpdateItem(item)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button [disabled]="(item.locked==true)" class="text-danger" (click)="DeleteItem(item)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="row.highlighted = !row.highlighted"
+                    [ngClass]="{hovered: row.hovered, highlighted: row.highlighted}" (mouseover)="row.hovered = true"
+                    (mouseout)="row.hovered = false"></tr>
+            </table>
+            <div class="mat-table__message" *ngIf="!dataSource.hasItems"><span
+                    translate="GeneralKey.khongcodulieu"></span>
+            </div>
+        </div>
+        <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;"
+            [paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)">
+        </app-paginator>
+    </kt-portlet-body>
+</kt-portlet>

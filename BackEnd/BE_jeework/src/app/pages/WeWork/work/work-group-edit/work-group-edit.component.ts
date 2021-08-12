@@ -1,3 +1,4 @@
+import { ReviewerModel } from './../work.model';
 // import { tinyMCE } from 'src/app/views/components/tinyMCE';
 // Angular
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, OnChanges, ViewChild, ElementRef } from '@angular/core';
@@ -68,7 +69,8 @@ export class WorkGroupEditComponent implements OnInit {
 		this.id_project_team = parseInt(this.item.id_project_team);
 		this.tinyMCE = tinyMCE;
 		const filter: any = {};
-		this.weworkService.list_account({}).subscribe(res => {
+		filter.id_project_team = this.id_project_team;
+		this.weworkService.list_account(filter).subscribe(res => {
 			this.changeDetectorRefs.detectChanges();
 			if (res && res.status === 1) {
 				this.listUser = res.data;
@@ -76,11 +78,21 @@ export class WorkGroupEditComponent implements OnInit {
 			this.changeDetectorRefs.detectChanges();
 		});
 		this.createForm();
+		//Detail
+		this.workServices.DetailWorkGroup(this.item.id_row).subscribe(res => {
+				if(res && res.status == 1){
+					console.log(res.data);
+					this.item = res.data;
+					this.createForm();
+				}
+			}
+		)
 		this.changeDetectorRefs.detectChanges();
 	}
 	createForm() {
 		this.itemForm = this.FormControlFB.group({
 			title: ['' + this.item.title, Validators.required],
+			reviewer: ['' + this.item.reviewer?this.item.reviewer:''],
 			NoiDung: ['' + this.item.description],
 		});
 		// this.itemForm.controls["title"].markAsTouched();
@@ -120,6 +132,11 @@ export class WorkGroupEditComponent implements OnInit {
 		_item.title = controls['title'].value;
 		_item.description = controls['NoiDung'].value;
 		_item.id_project_team = '' + this.id_project_team;
+		// const reviewer = new ReviewerModel();
+		// reviewer.id_nv = controls['reviewer'].value;
+		// reviewer.id_user = controls['reviewer'].value;
+		_item.reviewer = controls['reviewer'].value;
+		console.log(_item);
 		return _item;
 	}
 	close() {
@@ -190,4 +207,5 @@ export class WorkGroupEditComponent implements OnInit {
 		this.itemForm.markAsUntouched();
 		this.itemForm.updateValueAndValidity();
 	}
+ 
 }

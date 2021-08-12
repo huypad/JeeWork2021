@@ -243,6 +243,7 @@ export const locale = {
       congdu: "Công đủ",
       chinhsuastatus: "Thay đổi bộ trạng thái khác",
       cvlaplai: "Công việc lặp lại",
+      dsnhomcongviec: "Nhóm công việc",
       chuamotacongviec: "Chưa có mô tả cho công việc này",
       khongcotailieudinhkem: "Không có tài liệu đính kèm",
       tepdinhkem: "Tệp đính kèm",
@@ -1598,6 +1599,12 @@ export const locale = {
     Common: {
       user_hello: 'Xin chào, ',
       notify_titile: 'Thông báo',
+    },
+    workgroup: {
+      slcongviec: 'Tổng SL công việc',
+      slhoanthanh: 'SL đã hoàn thành',
+      title: 'Tên nhóm',
+      nhomcongviec: 'Nhóm công việc'
     }
   },
 };

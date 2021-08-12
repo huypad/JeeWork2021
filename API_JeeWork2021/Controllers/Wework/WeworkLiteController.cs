@@ -2200,7 +2200,7 @@ and IdKH={loginData.CustomerID} )";
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, List<AccUsernameModel> DataAccount, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, List<AccUsernameModel> DataAccount, IConfiguration _configuration, DataTable dtOld = null)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
@@ -2208,7 +2208,8 @@ and IdKH={loginData.CustomerID} )";
                 string sql = "select * from we_template where id_row=" + id_template;
                 DataTable dt = cnn.CreateDataTable(sql);
                 bool exclude_sender = (bool)dt.Rows[0]["exclude_sender"];//loại bỏ người gửi khỏi ds người nhận
-                string link = JeeWorkConstant.LinkWework + dt.Rows[0]["link"].ToString().Replace("$id$", object_id.ToString());
+                string jeework_be = _configuration.GetValue<string>("Host:JeeWork_BE");
+                string link = jeework_be + dt.Rows[0]["link"].ToString().Replace("$id$", object_id.ToString());
                 string title = dt.Rows[0]["title"].ToString();
                 string template = dt.Rows[0]["template"].ToString();
                 title = title.Replace("$nguoigui$", nguoigui.Username);
@@ -2222,6 +2223,11 @@ and IdKH={loginData.CustomerID} )";
                 if ("$data_account$".Equals(sqlq))
                 {
                     sqlq = sqlq.Replace("$data_account$", "");
+                }
+                if (id_template.Equals(15))
+                {
+                    // trường hợp cv bị xóa k thể lấy trong view
+                    sqlq = sqlq.Replace("v_wework_new", "we_work");
                 }
                 DataTable dtFind = cnn.CreateDataTable(sqlq);
                 if (cnn.LastError != null)
@@ -2305,8 +2311,8 @@ and IdKH={loginData.CustomerID} )";
                             access_token = "",
                             //from = "derhades1998@gmail.com",
                             //to = "thanhthang1798@gmail.com", //
-                            //to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
-                            to = "thanhthang1798@gmail.com", //
+                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            //to = "thanhthang1798@gmail.com", //
                             subject = title,
                             html = contents //nội dung html
                         };
@@ -2405,7 +2411,7 @@ and IdKH={loginData.CustomerID} )";
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
             }
         }
         /// <summary>
