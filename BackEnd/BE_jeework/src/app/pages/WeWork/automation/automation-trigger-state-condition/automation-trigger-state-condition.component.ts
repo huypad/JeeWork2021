@@ -134,7 +134,6 @@ export class AutomationTriggerStateConditionComponent
     if ( !this.Remapdata && this.data_condition.list && this.data_condition.list != "any") {
       this.Remapdata = true;
       var listID = this.data_condition.list.split(",");
-      // debugger
       listID.forEach((id) => {
         var user = this.listUser.find((x) => +x.id_nv == +id);
         if (user) this.SelectedUser(user);

@@ -75,9 +75,9 @@ export class WorkGroupComponent implements OnInit {
     //   // this.loadDataList();
     // });
 
-    // setTimeout(() => {
-    //   this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
-    // }, 10000);
+    setTimeout(() => {
+      this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+    }, 3000);
   }
 
   loadDataList() {

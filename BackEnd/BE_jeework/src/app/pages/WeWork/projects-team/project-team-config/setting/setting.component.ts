@@ -275,10 +275,10 @@ export class SettingComponent {
 				// 		controls["evaluate_by_assignner"].value;
 				_item.start_date = this.f_convertDate(this.item.start_date);
 				_item.end_date = this.f_convertDate(this.item.end_date);
-				if (this.icon.strBase64) {
-					_item.icon = this.icon;
-				}
 			}
+		}
+		if (this.icon.strBase64 || this.icon.src) {
+			_item.icon = this.icon;
 		}
 		if (group == 3) {
 			form = this.itemForm3;

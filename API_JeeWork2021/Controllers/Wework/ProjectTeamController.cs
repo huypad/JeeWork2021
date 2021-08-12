@@ -599,8 +599,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     id_row = r["id_row"],
                                     title = r["title"],
                                     icon = r["icon"] == DBNull.Value ? "" : WeworkLiteController.genLinkAttachment(_configuration, r["icon"]),
-                                    description = r["description"],
-                                    detail = r["detail"],
+                                    description = r["description"] == DBNull.Value ? "" : r["description"],
+                                    detail = r["detail"] == DBNull.Value ? "" : r["detail"],
                                     id_department = r["id_department"],
                                     department = r["department"],
                                     CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
@@ -614,7 +614,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     color = r["color"],
                                     status = r["status"],
                                     locked = r["locked"],
-                                    stage_description = r["stage_description"],
+                                    stage_description = r["stage_description"] == DBNull.Value ? "": r["stage_description"],
                                     allow_estimate_time = r["allow_estimate_time"],
                                     require_evaluate = r["require_evaluate"],
                                     evaluate_by_assignner = r["evaluate_by_assignner"],
@@ -627,7 +627,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     default_view = r["default_view"],
                                     //1: hàng tuần, 2 hàng tháng
                                     period_type = r["period_type"],
-                                    id_template = r["id_template"],
+                                    id_template = r["id_template"] == DBNull.Value ? 0 : r["id_template"],
                                     Users = from u in ds.Tables[1].AsEnumerable()
                                             where u["id_project_team"].ToString() == r["id_row"].ToString()
                                             select new
@@ -1020,16 +1020,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ComponentName = "";
                         notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -1236,22 +1236,22 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ComponentName = "";
                         notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
-
-                        //var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        //if (info is not null)
+                        //try
                         //{
-                        //    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
                         //}
+                        //catch
+                        //{ }
+
+                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info is not null)
+                        {
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                        }
                     }
                     #endregion
                     foreach (DataRow item in dt_member.Rows)
@@ -1276,21 +1276,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             notify_model.ComponentName = "";
                             notify_model.Component = "";
                             notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
-                            try
-                            {
-                                if (notify_model != null)
-                                {
-                                    Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                }
-                            }
-                            catch
-                            { }
-                            //var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                            //if (info is not null)
+                            //try
                             //{
-                            //    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model,_notifier);
+                            //    if (notify_model != null)
+                            //    {
+                            //        Knoti = new APIModel.Models.Notify();
+                            //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                            //    }
                             //}
+                            //catch
+                            //{ }
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier,_configuration);
+                            }
                         }
                         #endregion
                     }
@@ -1483,16 +1483,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ComponentName = "";
                         notify_model.Component = "";
                         notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
 
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
@@ -2148,7 +2148,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sqlq = "select id_row,email_delete_team  from we_project_team where Disabled=0 and  id_row = " + id;
+                    string sqlq = "select id_row,email_delete_team,title  from we_project_team where Disabled=0 and  id_row = " + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
@@ -2177,7 +2177,46 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         #endregion
                         mailthongbao(id, 4, loginData, Token, cnn, DataAccount);
                     }
-                    return JsonResultCommon.ThanhCong();
+                    #region
+                    // gửi thông báo cho thành viên dự án
+                    string sqltv = $"select * from we_project_team_user where id_project_team = {id} and Disabled = 0";
+                    DataTable dt_user = cnn.CreateDataTable(sqltv);
+                    for (int i = 0; i < dt_user.Rows.Count; i++)
+                    {
+                        NotifyModel notify_model = new NotifyModel();
+                        Hashtable has_replace = new Hashtable();
+                        has_replace.Add("nguoigui", loginData.Username);
+                        has_replace.Add("project_team", dt.Rows[0]["title"]);
+                        notify_model.AppCode = "WORK";
+                        notify_model.From_IDNV = loginData.UserID.ToString();
+                        notify_model.To_IDNV = dt_user.Rows[i]["id_user"].ToString();
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoaduan", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dt.Rows[0]["title"].ToString());
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = "";
+                        notify_model.ComponentName = "";
+                        notify_model.Component = "";
+                        notify_model.To_Link_WebApp = "/wework/projects";
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
+                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info is not null)
+                        {
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                        }
+                    }
+
+                        #endregion
+                        return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)

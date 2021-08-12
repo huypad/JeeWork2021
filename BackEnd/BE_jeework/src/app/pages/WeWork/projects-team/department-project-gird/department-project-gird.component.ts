@@ -54,7 +54,6 @@ export class DepartmentProjecGirdComponent implements OnInit {
 	listproject: any[] = [];
 	listquydinh: any[] = [];
 	showTruyCapNhanh: boolean = true;
-	TenQuyTrinh: string = 'Pad Trần Văn';
 	filter: any = {};
 	thongbao: any = {};
 	// ShowHead: boolean = false;

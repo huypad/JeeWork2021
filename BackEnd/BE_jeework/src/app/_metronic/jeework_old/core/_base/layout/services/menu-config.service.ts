@@ -62,6 +62,7 @@ export class MenuConfigService {
 		if (res && res.status == 1) {
 			let dt = res.data.data;
 			let spaceww = res.data.dataww;
+			debugger
 			let arr = [];
 			// Menu chính
 			if (dt.length > 0) {

@@ -403,7 +403,6 @@ export class ProjectTeamEditComponent implements OnInit {
 					_item
 				});
 				const _messageType = this.translate.instant('GeneralKey.capnhatthanhcong');
-				this.layoutUtilsService.showActionNotification(_messageType, MessageType.Read, 4000, true, false, 3000, 'top', 1);
 			}
 			else {
 				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);

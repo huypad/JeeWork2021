@@ -28,11 +28,11 @@
             <div class="cu-task-row-new__options ng-star-inserted">
                 <ng-container [ngTemplateOutlet]="Assignee"></ng-container>
 
-                <ng-container [ngTemplateOutlet]="Follower"></ng-container>
+                <ng-container [ngTemplateOutlet]="Follower" *ngIf="rolefollower"></ng-container>
 
-                <ng-container [ngTemplateOutlet]="setPriority"></ng-container>
+                <ng-container [ngTemplateOutlet]="setPriority" *ngIf="roleprioritize"></ng-container>
 
-                <ng-container [ngTemplateOutlet]="setDate"></ng-container>
+                <ng-container [ngTemplateOutlet]="setDate" *ngIf="roledeadline"></ng-container>
 
                 <div class="cu-task-row-new__button ng-star-inserted" (click)="AddTask()">
                     {{'GeneralKey.luu' | translate}}
@@ -79,21 +79,20 @@
     <div class="cu-task-row-assignee row">
         <div class="cu-user-group url scale-hover-02 position-relative" style="padding-top: 5px;"
             *ngFor="let user of getAssignees()">
-            <i class="far fa-times-circle url view-hover text-dark bg-white"
+            <i class="far fa-times-circle url view-hover text-dark bg-white" [hidden]="!roleassign"
                 style="position: absolute;top:0;right:0;border-radius: 50%;" (click)="ItemSelected(user,1)"></i>
             <kt-avatar-user [image]="user.image" size="26" [name]="user.hoten">
             </kt-avatar-user>
         </div>
-        <div class="cu-user-group">
+        <div class="cu-user-group" [hidden]="!roleassign">
             <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print" matTooltipPosition="above"
                 matTooltip="{{Assign.id_nv>0?Assign.hoten: 'work.assignee' | translate}}">
                 <div
                     class="cu-avatar cu-avatar-border cu-avatar_lg cu-avatar_transparent cu-avatar__assign-mono cu-avatar_30">
                     <div class="cu-user-group__icon-mono">
                         <button class="btn -hover text-muted" [matMenuTriggerFor]="assign">
-                            <i class="fas fa-user-plus pd-0" style="font-size: 13px;"></i>
-
-                        </button>
+                            <i class="fas fa-user-plus pd-0" style="font-size: 13px;"></i> 
+                        </button> 
                     </div>
                 </div>
             </div>

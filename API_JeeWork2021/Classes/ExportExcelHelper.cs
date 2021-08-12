@@ -26,7 +26,6 @@ namespace JeeWork_Core2021.Classes
         public ExportExcelHelper()
         {
         }
-
         public Stylesheet GenerateStylesheet()
         {
             Stylesheet styleSheet = null;
@@ -36,7 +35,7 @@ namespace JeeWork_Core2021.Classes
     ),
     new Font( // Index 1 - header
         new FontSize() { Val = 14 },
-        new Color() { Rgb = "FFFFFF" }
+        new Color() { Rgb = "#009900" }
     ),
      new Font( // Index 2 - body
         new FontSize() { Val = 16 },
@@ -66,7 +65,7 @@ namespace JeeWork_Core2021.Classes
                     new Fill(new PatternFill() { PatternType = PatternValues.Gray125 }), // Index 1 - default
                     new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "66666666" } })
                     { PatternType = PatternValues.Solid }),// Index 2 - header
-                     new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "6600CCFF" } })
+                     new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "#009900" } })
                      { PatternType = PatternValues.Solid })// Index 3 - header table bg
                 );
 
@@ -94,8 +93,6 @@ namespace JeeWork_Core2021.Classes
                     new CellFormat { FontId = 4, FillId = 0, BorderId = 0, ApplyBorder = true, Alignment = new Alignment { WrapText = true, Vertical = VerticalAlignmentValues.Center, Horizontal = HorizontalAlignmentValues.Left } } // header canh trái
 
                 );
-
-
 
             styleSheet = new Stylesheet(fonts, fills, borders, cellFormats);
 

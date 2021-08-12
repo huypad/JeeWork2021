@@ -323,7 +323,6 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         public static bool CheckGroupAdministrator(string username, DpsConnection Conn, long CustomerID)
         {
             string sqlq = "";

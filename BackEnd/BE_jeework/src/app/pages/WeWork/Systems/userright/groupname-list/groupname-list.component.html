@@ -69,11 +69,10 @@
 					</td>
 				</ng-container>
 				<ng-container matColumnDef="TenNhom">
-					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode"
-						style="width: 80%;">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode" style="width: 80%;">
 						<span translate="phanquyen.tennhom" class="text-uppercase"></span> &nbsp;
-						<app-sort-icon column="TenNhom" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+						<app-sort-icon column="TenNhom" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode" style="width: 80%;">
 						{{item.TenNhom}}

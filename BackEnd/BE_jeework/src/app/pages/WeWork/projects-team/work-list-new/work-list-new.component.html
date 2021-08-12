@@ -1204,8 +1204,8 @@
                                                     </div>
                                                     <ng-container *ngIf="addNodeitem==node.id_row">
                                                         <kt-add-task [item]="node" [loai]="'subtask'" [nhom]="getNhom()"
-                                                            (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project"
-                                                            (dataTask)="CreateTask($event)"></kt-add-task>
+                                                            (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"
+                                                            [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" ></kt-add-task>
                                                     </ng-container>
 
                                                 </div>
@@ -1234,9 +1234,10 @@
                                     <ng-container *ngIf="newtask == status.id_row">
                                         <div
                                             class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
-                                            <kt-add-task [item]="status" [loai]="'task'"
+                                            <kt-add-task [item]="status" [loai]="'task'" 
                                                 (Close)="CloseAddnewTask($event)" [nhom]="getNhom()"
-                                                [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"></kt-add-task>
+                                                [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"
+                                                [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" ></kt-add-task>
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="CheckRoles(1)">
@@ -1262,7 +1263,8 @@
                                     <!-- <ng-container *ngIf="newtask == lstcongviec.id_row">
                                         <div class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
                                             <kt-add-task [item]="lstcongviec" [loai]="'task'" (Close)="CloseAddnewTask($event)"
-                                                [ID_Project]="lstcongviec.id" (dataTask)="CreateTask($event)"></kt-add-task>
+                                                [ID_Project]="lstcongviec.id" (dataTask)="CreateTask($event)"
+                                                [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)"></kt-add-task>
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="CheckRoles(1)">

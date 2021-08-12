@@ -72,7 +72,8 @@ export class ListActivitiesComponent {
 
 	ngOnInit() {
 		var arr = this.router.url.split("/");
-		this.id_project_team = +arr[2];
+		if(+arr[2] > 0)
+			this.id_project_team = +arr[2];
 
 		this.activatedRoute.params.subscribe(params => {
 			this.ID_QuyTrinh = +params.id;

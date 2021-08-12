@@ -82,7 +82,6 @@ export class ReportTabDashboardComponent implements OnInit {
   todoItemSelectionToggle(id){
     console.log(id);
     var index = this.DanhSachPhongBan.findIndex(x=> x==id);
-    // debugger
     if(index >= 0){
       this.DanhSachPhongBan.splice(index,1);
     }else{

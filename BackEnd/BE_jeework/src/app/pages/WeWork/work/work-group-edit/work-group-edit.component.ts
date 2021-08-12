@@ -135,7 +135,7 @@ export class WorkGroupEditComponent implements OnInit {
 		// const reviewer = new ReviewerModel();
 		// reviewer.id_nv = controls['reviewer'].value;
 		// reviewer.id_user = controls['reviewer'].value;
-		_item.reviewer = controls['reviewer'].value;
+		_item.reviewer = controls['reviewer'].value?controls['reviewer'].value:'0';
 		console.log(_item);
 		return _item;
 	}
@@ -171,7 +171,7 @@ export class WorkGroupEditComponent implements OnInit {
 	}
 	Create(_item: WorkGroupModel, withBack: boolean) {
 		this.loadingAfterSubmit = true;
-		this.disabledBtn = true;
+		this.disabledBtn = true; 
 		this.workServices.InsertWorkGroup(_item).subscribe(res => {
 			this.disabledBtn = false;
 			this.changeDetectorRefs.detectChanges();

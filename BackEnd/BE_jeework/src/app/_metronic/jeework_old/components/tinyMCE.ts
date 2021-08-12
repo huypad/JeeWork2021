@@ -77,7 +77,8 @@ const tinyMCE = {
 	},
 	init_instance_callback: function () {
 		var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
-		freeTiny.style.display = 'none';
+		if(freeTiny)
+			freeTiny.style.display = 'none';
 	},
 	content_style: '.tox-notification--in{display:none};'
 };

@@ -22,6 +22,10 @@ import * as moment from 'moment';
 export class AddTaskComponent implements OnInit, AfterViewInit {
 
   @Input() ID_Project: number = 0;
+  @Input() roleassign: boolean = true;
+  @Input() rolefollower: boolean = true;
+  @Input() roleprioritize: boolean = true;
+  @Input() roledeadline: boolean = true;
   @Input() showIconclose: boolean = true;
   @Input() item: any = [];
   @Input() loai: any = [];
@@ -148,6 +152,7 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
 
   listUser: any[];
   LoadListAccount() {
+ 
     const filter: any = {};
     // filter.key = 'id_project_team';
     // filter.value = this.ID_Project;
@@ -155,6 +160,9 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     this.weworkService.list_account(filter).subscribe(res => {
       if (res && res.status === 1) {
         this.listUser = res.data;
+        if(!this.roleassign){
+          this.id_nv_selected = +localStorage.getItem("idUser");
+        }
         if (this.id_nv_selected > 0) {
           var x = this.listUser.find(x => x.id_nv == this.id_nv_selected)
           if (x) {
