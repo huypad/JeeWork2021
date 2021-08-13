@@ -1032,8 +1032,7 @@ div.cu-avatar {
 }
 .scale-hover-02{
     &:hover{
-        z-index: 10;
-        transform: scale(1.2);
+        z-index: 10; 
         transition:all .05s;
         border: 0;
         .view-hover{

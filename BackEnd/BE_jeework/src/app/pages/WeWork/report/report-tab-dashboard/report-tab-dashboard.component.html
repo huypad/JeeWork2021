@@ -79,28 +79,8 @@
                             [ngStyle]="{'font-weight': filter_dept.id_row==item.id_row?'bold':''}"
                             (click)="selected_Dept(item)">{{item.title}}</button> -->
                             <div  (click)="$event.stopPropagation()" style="min-width: 250px;">
-                                <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree"> 
-                                    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-                                        <mat-checkbox class="p-1"  (change)="todoItemSelectionToggle(node.id_row)">{{node.item}}</mat-checkbox>
-                                        {{node.title}}
-                                    </mat-tree-node>
-                                     <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
-                                        <div class="mat-tree-node">
-                                          <button mat-icon-button matTreeNodeToggle
-                                                  [attr.aria-label]="'Toggle ' + node.title">
-                                            <mat-icon class="mat-icon-rtl-mirror">
-                                              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                                            </mat-icon>
-                                          </button>
-                                          <mat-checkbox class="p-1" (change)="todoItemSelectionToggle(node.id_row)">{{node.item}}</mat-checkbox>
-                                          {{node.title}}
-                                        </div> 
-                                        <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
-                                            role="group">
-                                          <ng-container matTreeNodeOutlet></ng-container>
-                                      </div>
-                                    </mat-nested-tree-node>
-                                  </mat-tree>
+                                <ng-container *ngTemplateOutlet="viewSelectDept"></ng-container>
+                                
                             </div>
                     </mat-menu>
                 </div>
@@ -144,19 +124,21 @@
 
         <div class="info-rp db-grid">
             <div class="row">
-                <div class="col-3">
+                <div class="col-4">
                     <div class="card">
                         <div class="card-header bg-white">
                             <b translate="report.baocaotrangthaicongviec">
                             </b>
                         </div>
                         <div class="card-body">
-                            <div id="chart-pie" style="display: block;">
+                            <div id="chart-pie" style="display: block;margin-top: 0;margin-bottom: 30px;">
+                                    <!-- col-3 margin sử dụng mặc định -->
                                 <canvas baseChart [data]="pieChartData" [legend]="pieChartLegend"
                                     [labels]="pieChartLabel" [chartType]="pieChartType" [options]="pieChartOptions"
                                     [colors]="pieChartColor">
                                 </canvas>
-                                <div class="text-in-chart">
+                                <div class="text-in-chart" style="top:50%">
+                                    <!-- col-3 thì bỏ top -->
                                     <div style="font-size:24px;font-weight: 500;color:black">{{Tongcongviec}}</div>
                                     <span translate="report.congviec"></span>
                                 </div>
@@ -174,7 +156,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <div class="card">
                         <div class="card-header bg-white">
                             <b translate="report.thanhvienxuatsac"></b>
@@ -193,7 +175,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <div class="card">
                         <div class="card-header bg-white">
                             <b translate="report.congvieckhongdunghan"></b>
@@ -228,7 +210,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="in-col col-3">
+                <div class="in-col col-3" [hidden]="true">
                     <div class="h-100">
                         <div class="card" style="min-height: 200px;">
                             <div class="card-header bg-white">
@@ -840,3 +822,55 @@
 
     </div>
 </div>
+
+<ng-template #viewSelectDept>
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree"> 
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+            <mat-checkbox class="p-1"  (change)="todoItemSelectionToggle(node.id_row)">{{node.item}}</mat-checkbox>
+            {{node.title}}
+        </mat-tree-node>
+         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node">
+              <button mat-icon-button matTreeNodeToggle
+                      [attr.aria-label]="'Toggle ' + node.title">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
+              </button>
+              <mat-checkbox class="p-1" (change)="todoItemSelectionToggle(node.id_row)">{{node.item}}</mat-checkbox>
+              {{node.title}}
+            </div> 
+            <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
+                role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+          </div>
+        </mat-nested-tree-node>
+      </mat-tree>
+
+<!-- update chưa xong -->
+      <!-- <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree"> 
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+            <mat-checkbox class="p-1" [checked]="checklistSelection.isSelected(node)"
+                                    (change)="todoLeafItemSelectionToggle(node);" >{{node.item}}</mat-checkbox>
+            {{node.title}}
+        </mat-tree-node>
+         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node">
+              <button mat-icon-button matTreeNodeToggle
+                      [attr.aria-label]="'Toggle ' + node.title">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
+              </button>
+              <mat-checkbox class="p-1" 
+                (change)="todoItemSelectionToggle1(node)" 
+                [checked]="descendantsAllSelected(node)">{{node.item}}</mat-checkbox>
+              {{node.title}}
+            </div> 
+            <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
+                role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+          </div>
+        </mat-nested-tree-node>
+      </mat-tree> -->
+</ng-template>

@@ -117,7 +117,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                         string sql_space = "", sql_project = "", sql_folder = "", where_department = "";
                         //if (v_module.ToLower().Equals("module = 'wework'"))
                         //{
-                        where_department = @$" and (id_row in (select id_department from we_project_team 
+                        where_department = @$" and (id_row in (select ParentID from we_department where Disabled = 0 and id_row in (select id_department from we_department_owner where Disabled = 0 and id_user =  { loginData.UserID})
+union all select id_department from we_project_team 
                                         where (id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
                                         and Disabled = 0) or (CreatedBy = { loginData.UserID})) and disabled = 0) or (CreatedBy = { loginData.UserID}));";
                         sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID

@@ -123,6 +123,12 @@
   <data name="ww_assign" xml:space="preserve">
     <value>$nguoigui$ đã giao công việc $tencongviec$ cho bạn</value>
   </data>
+  <data name="ww_capnhatketquacongviec" xml:space="preserve">
+    <value>$nguoigui$ đã cập nhật kết quả công việc $tencongviec$</value>
+  </data>
+  <data name="ww_capnhattag" xml:space="preserve">
+    <value>$nguoigui$ đã cập nhật thẻ công việc $tencongviec$</value>
+  </data>
   <data name="ww_capnhatthoigianuoctinh" xml:space="preserve">
     <value>$nguoigui$ đã thay đổi thời gian ước tính trong công việc $tencongviec$ là $value$ giờ</value>
   </data>
@@ -141,6 +147,12 @@
   <data name="ww_chinhsuadeadline" xml:space="preserve">
     <value>$nguoigui$ đã chỉnh sửa deadline công việc $tencongviec$</value>
   </data>
+  <data name="ww_chinhsuamota" xml:space="preserve">
+    <value>$nguoigui$ đã chỉnh sửa mô tả công việc $tencongviec$</value>
+  </data>
+  <data name="ww_chinhsuathoigianbatdau" xml:space="preserve">
+    <value>$nguoigui$ đã chỉnh sửa thời gian bắt đầu công việc $tencongviec$</value>
+  </data>
   <data name="ww_comment" xml:space="preserve">
     <value>$nguoigui$ đã bình luận trong công việc bạn tham gia</value>
   </data>
@@ -156,11 +168,23 @@
   <data name="ww_themmoicongviec" xml:space="preserve">
     <value>$nguoigui$ đã tạo công việc $tencongviec$ cho bạn</value>
   </data>
+  <data name="ww_themtailieucapnhatketquacongviec" xml:space="preserve">
+    <value>$nguoigui$ đã thêm tài liệu cập nhật kết quả công việc $tencongviec$</value>
+  </data>
+  <data name="ww_themtailieucongviec" xml:space="preserve">
+    <value>$nguoigui$ đã thêm tài liệu đính kèm công việc $tencongviec$</value>
+  </data>
   <data name="ww_thietlapvaitroadmin" xml:space="preserve">
     <value>$nguoigui$ đã thiết lập vai trò của bạn trong $project_team$ là admin</value>
   </data>
   <data name="ww_thietlapvaitrothanhvien" xml:space="preserve">
     <value>$nguoigui$ đã thiết lập vai trò của bạn trong $project_team$ là thành viên</value>
+  </data>
+  <data name="ww_thongbaocvtrehan" xml:space="preserve">
+    <value>$tencongviec$ mà bạn thực hiện đã hết hạn</value>
+  </data>
+  <data name="ww_thongbaoduantrehan" xml:space="preserve">
+    <value>$duan$ mà bạn tham gia đã hết hạn</value>
   </data>
   <data name="ww_thongbaowework" xml:space="preserve">
     <value>Thông báo JeeWork</value>
@@ -171,10 +195,22 @@
   <data name="ww_xoacongviec" xml:space="preserve">
     <value>$nguoigui$ đã xóa công việc $tencongviec$</value>
   </data>
+  <data name="ww_xoadeadline" xml:space="preserve">
+    <value>$nguoigui$ đã xóa deadline công việc $tencongviec$</value>
+  </data>
   <data name="ww_xoaduan" xml:space="preserve">
     <value>$nguoigui$ đã xóa dự án $project_team$</value>
   </data>
   <data name="ww_xoafollower" xml:space="preserve">
     <value>$nguoigui$ đã xóa bạn theo dõi công việc $tencongviec$</value>
+  </data>
+  <data name="ww_xoakhoithaoluan" xml:space="preserve">
+    <value>$nguoigui$ xóa bạn khỏi thảo luận $thaoluan$</value>
+  </data>
+  <data name="ww_xoaphongban" xml:space="preserve">
+    <value>$nguoigui$ đã xóa phòng ban $department$</value>
+  </data>
+  <data name="ww_xoathoigianbatdau" xml:space="preserve">
+    <value>$nguoigui$ đã xóa thời gian bắt đầu công việc $tencongviec$</value>
   </data>
 </root>

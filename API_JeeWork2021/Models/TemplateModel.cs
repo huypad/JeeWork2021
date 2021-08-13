@@ -5,6 +5,18 @@ using System.Web;
 
 namespace JeeWork_Core2021.Models
 {
+    public class SendNotifyModel
+    {
+        public long id_row { get; set; }
+        public string name { get; set; }
+        public string title { get; set; }
+        public string template { get; set; }
+        public string keys { get; set; }
+        public string link { get; set; } //Link dành cho web app
+        public string lang { get; set; }
+        public string link_mobileapp { get; set; } // deep link dành cho mobile
+        public bool exclude_sender { get; set; } = true;
+    }
     public class TemplateModel
     {
         public long id_row { get; set; }
@@ -15,7 +27,7 @@ namespace JeeWork_Core2021.Models
         public long customerid { get; set; }
         public List<TemplateStatusModel> Status { get; set; }
     }
-    public class UpdateQuickModel
+        public class UpdateQuickModel
     {
         public long id_row { get; set; }
         public string columname { get; set; } // color, title, statusname

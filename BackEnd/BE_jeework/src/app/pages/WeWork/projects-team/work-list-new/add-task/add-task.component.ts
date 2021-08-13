@@ -211,7 +211,7 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     if (loai == 1) {
       var index = this.Assign.findIndex(x => x.id_nv == val.id_nv)
       if (index < 0) {
-        this.Assign.push(val);
+        this.Assign[0]=val;
       } else {
         this.Assign.splice(index, 1);
       }

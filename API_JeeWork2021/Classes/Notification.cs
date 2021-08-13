@@ -21,7 +21,7 @@ namespace API_JeeWork2021.Classes
         {
             string jeework_be = _configuration.GetValue<string>("Host:JeeWork_BE");
             string appcode_jw = _configuration.GetValue<string>("AppConfig:AppCode");
-            //jeework_be + notify_model.To_Link_MobileApp  jeework_be + notify_model.To_Link_WebApp;
+
             socketMessage asyncnotice = new socketMessage()
             {
                 sender = sender,

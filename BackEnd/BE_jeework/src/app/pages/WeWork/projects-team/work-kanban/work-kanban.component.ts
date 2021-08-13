@@ -499,19 +499,20 @@ export class WorkKanBanComponent implements OnInit {
   }
 
   ViewDetail(item) {
-    const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-      width: "90vw",
-      height: "90vh",
-      data: item,
-    });
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.id_row }, }]);
+    // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+    //   width: "90vw",
+    //   height: "90vh",
+    //   data: item,
+    // });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      this.LoadData();
-      if (result != undefined) {
-        // this.selectedDate.startDate = new Date(result.startDate)
-        // this.selectedDate.endDate = new Date(result.endDate)
-      }
-    });
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   this.LoadData();
+    //   if (result != undefined) {
+    //     // this.selectedDate.startDate = new Date(result.startDate)
+    //     // this.selectedDate.endDate = new Date(result.endDate)
+    //   }
+    // });
   }
 
   ThemCongviec() {

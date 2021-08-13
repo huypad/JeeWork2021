@@ -95,7 +95,9 @@
 
                 <kt-add-task [item]="th" [loai]="'task'" [nhom]="getNhom()" *ngIf="addNodeitem==th.id_row"
                     (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project" type="board"
-                    (dataTask)="CreateTask($event)" [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)">
+                    (dataTask)="CreateTask($event)" [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" 
+                    [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')"   
+                    >
                 </kt-add-task>
 
                 <div class="example-box kaban-item" *ngFor="let _children of th.data;trackBy: trackByFn" cdkDrag

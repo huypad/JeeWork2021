@@ -71,10 +71,7 @@ export class MilestoneDetailComponent {
 	];
 	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	constructor(public _deptServices: ListDepartmentService,
-		private ProjectsTeamService: ProjectsTeamService,
-		private WeWorkService: WeWorkService,
 		public dialog: MatDialog,
-		private route: ActivatedRoute,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		private activatedRoute: ActivatedRoute,
@@ -227,20 +224,21 @@ export class MilestoneDetailComponent {
 	}
 
 	ViewDetail(id_row){
-		this.ProjectsTeamService.WorkDetail(id_row).subscribe(res => {
-			if (res && res.status == 1) {
-				const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-					width: '90vw',
-					height: '90vh',
-					data: res.data,
-				  });
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+ id_row }, }]);
+		// this.ProjectsTeamService.WorkDetail(id_row).subscribe(res => {
+		// 	if (res && res.status == 1) {
+		// 		const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+		// 			width: '90vw',
+		// 			height: '90vh',
+		// 			data: res.data,
+		// 		  });
 
-				  dialogRef.afterClosed().subscribe(result => {
-					  this.ngOnInit();
-				  });
-			}
-			else this.layoutUtilsService.showError(res.error.message)
-		});
+		// 		  dialogRef.afterClosed().subscribe(result => {
+		// 			  this.ngOnInit();
+		// 		  });
+		// 	}
+		// 	else this.layoutUtilsService.showError(res.error.message)
+		// });
 	}
 
 	CheckedAll() {

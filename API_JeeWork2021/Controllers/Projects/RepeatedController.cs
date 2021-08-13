@@ -411,13 +411,12 @@ from we_repeated_Task task where task.Disabled=0";
                 return JsonResultCommon.DangNhap();
             try
             {
-                string strRe = "";
-                List<string> listIDprojectTeam = data.id_project_team.Split(',').ToList();
+                string strRe = ""; 
                 if (string.IsNullOrEmpty(data.title))
                     strRe += (strRe == "" ? "" : ",") + "tên công việc lặp lại";
                 if (string.IsNullOrEmpty(data.repeated_day))
                     strRe += (strRe == "" ? "" : ",") + "các ngày lặp lại";
-                if (listIDprojectTeam.Count <= 0)
+                if (data.id_project_team <= 0)
                     strRe += (strRe == "" ? "" : ",") + "dự án/phòng ban";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
@@ -428,9 +427,7 @@ from we_repeated_Task task where task.Disabled=0";
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     long idc = 0;
-
-                    foreach (var item in listIDprojectTeam)
-                    {
+                     
                         Hashtable val = new Hashtable();
                         val.Add("title", data.title);
                         val.Add("description", string.IsNullOrEmpty(data.description) ? "" : data.description);
@@ -450,9 +447,9 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("CreatedDate", DateTime.Now);
                         val.Add("CreatedBy", iduser);
 
-                        val.Add("id_project_team", item);
+                        val.Add("id_project_team", data.id_project_team);
                         string strCheck = "select count(*) from we_repeated where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
-                        if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", item }, { "name", data.title } }).ToString()) > 0)
+                        if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
                         {
                             return JsonResultCommon.Custom("Công việc lặp lại đã tồn tại trong dự án/phòng ban");
                         }
@@ -499,9 +496,7 @@ from we_repeated_Task task where task.Disabled=0";
                                     return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
-                        }
-
-                    }
+                        } 
 
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu repeated: title=" + data.title + ", id_project_team=" + data.id_project_team;
@@ -964,6 +959,9 @@ from we_repeated_Task task where task.Disabled=0";
                                             foreach (DataRow row in dt_New_Data.Rows)
                                             {
                                                 var users = new List<long> { long.Parse(row["id_user"].ToString()) };
+                                                #region Lấy thông tin để thông báo
+                                                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
+                                                #endregion
                                                 WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
@@ -981,20 +979,19 @@ from we_repeated_Task task where task.Disabled=0";
                                                     notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                                     notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", row["tencongviec"].ToString());
                                                     notify_model.ReplaceData = has_replace;
-                                                    notify_model.Component = "";
-                                                    notify_model.ComponentName = "";
-                                                    notify_model.To_Link_MobileApp = "";
-                                                    notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + int.Parse(row["id_work"].ToString()) + ")";  //"/tasks/detail/" + int.Parse(row["id_work"].ToString()) + "";
-                                                    try
-                                                    {
-                                                        if (notify_model != null)
-                                                        {
-                                                            Knoti = new APIModel.Models.Notify();
-                                                            bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                                        }
-                                                    }
-                                                    catch
-                                                    { }
+                                                    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", row["id_work"].ToString());
+                                                    notify_model.To_Link_WebApp = noti.link.Replace("$id$", row["id_work"].ToString());
+
+                                                    //try
+                                                    //{
+                                                    //    if (notify_model != null)
+                                                    //    {
+                                                    //        Knoti = new APIModel.Models.Notify();
+                                                    //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                                    //    }
+                                                    //}
+                                                    //catch
+                                                    //{ }
 
                                                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                     if (info is not null)

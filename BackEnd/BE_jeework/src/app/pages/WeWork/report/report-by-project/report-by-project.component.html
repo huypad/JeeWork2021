@@ -68,19 +68,32 @@
         
                 <div class="info-rp db-grid">
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-4">
                             <div class="card">
                                 <div class="card-header bg-white">
                                     <b translate="report.baocaotrangthaicongviec">
                                     </b>
                                 </div>
                                 <div class="card-body">
-                                    <div id="chart-pie" style="display: block;">
+                                    <!-- 
+                                        <div id="chart-pie" style="display: block;">
                                         <canvas baseChart [data]="pieChartData" [legend]="pieChartLegend"
                                             [labels]="pieChartLabel" [chartType]="pieChartType" [options]="pieChartOptions"
                                             [colors]="pieChartColor">
                                         </canvas>
                                         <div class="text-in-chart">
+                                            <div style="font-size:24px;font-weight: 500;color:black">{{Tongcongviec}}</div>
+                                            <span translate="report.congviec"></span>
+                                        </div>
+                                    </div> -->
+                                    <div id="chart-pie" style="display: block;margin-top: 0;margin-bottom: 30px;">
+                                            <!-- col-3 margin sử dụng mặc định -->
+                                        <canvas baseChart [data]="pieChartData" [legend]="pieChartLegend"
+                                            [labels]="pieChartLabel" [chartType]="pieChartType" [options]="pieChartOptions"
+                                            [colors]="pieChartColor">
+                                        </canvas>
+                                        <div class="text-in-chart" style="top:50%">
+                                            <!-- col-3 thì bỏ top -->
                                             <div style="font-size:24px;font-weight: 500;color:black">{{Tongcongviec}}</div>
                                             <span translate="report.congviec"></span>
                                         </div>
@@ -98,7 +111,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-4">
                             <div class="card">
                                 <div class="card-header bg-white">
                                     <b translate="report.thanhvienxuatsac"></b>
@@ -119,7 +132,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-4">
                             <div class="card">
                                 <div class="card-header bg-white">
                                     <b translate="report.congvieckhongdunghan"></b>
@@ -154,7 +167,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="in-col col-3">
+                        <div class="in-col col-3" [hidden]="true">
                             <div class="h-100">
                                 <div class="card" style="min-height: 200px;">
                                     <div class="card-header bg-white">

@@ -23,7 +23,7 @@ import { ReportListTabComponent } from "./report-list-tab/report-list-tab.compon
 import { ChartsModule } from "ng2-charts";
 import { TranslateModule } from "@ngx-translate/core";
 import { ReportTabDashboardComponent } from "./report-tab-dashboard/report-tab-dashboard.component";
-import { ReportTabMemberComponent } from "./report-tab-member/report-tab-member.component";
+import { ReportTabMemberComponent } from "./report-tab-member/report-tab-member.component"; 
 const routes: Routes = [
   {
     path: "",
@@ -67,7 +67,6 @@ const routes: Routes = [
   ],
   providers: [ReportService],
   entryComponents: [
-	  
   ],
   declarations: [ReportListTabComponent, ReportTabMemberComponent],
   exports: [],

@@ -551,7 +551,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		AutomationTabManageComponent,
 		DanhsachthumucComponent,
 		ApplicationPipesModule,
-		TimeEstimatesViewComponent,
+		TimeEstimatesViewComponent, 
 	]
 })
 export class WeWorkModule { }

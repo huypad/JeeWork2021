@@ -28,6 +28,7 @@ export class AuxiliaryRouterJWComponent implements OnInit {
       if(res && res.status==1){
         this.openDialogJW(res.data);
       }else{
+        this.close();
         alert(res.error.message);
       }
     })

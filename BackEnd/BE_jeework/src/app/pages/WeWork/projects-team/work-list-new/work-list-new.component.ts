@@ -505,68 +505,77 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.addNodeitem == element.id_row
           ? true
           : false;
-      this.listFilter.forEach((val) => {
-        if (this.isAssignforme) {
-          if (
-            this.filter_groupby.value == "status" &&
-            +val.id_row == +element.status &&
-            (element.User.find((x) => x.id_user == this.UserID) ||
-              element.createdby == this.UserID)
-          ) {
+      this.listFilter.forEach((val) => {  
+        
+          if ( this.CheckDataStatus(val,element) ) {
             val.data.push(element);
-          } else if (
-            this.filter_groupby.value == "assignee" &&
-            ((element.User.find((x) => x.id_user == val.id_row) &&
-              element.User.find((x) => x.id_user == this.UserID)) ||
-              (element.createdby == this.UserID && element.User.length == 0))
-          ) {
-            if (val.id_row == this.UserID) {
-              // || (element.User.length == 0 && val.id_row == "") || (element.User.length > 1 && val.id_row == "0")
+          } 
+          else if ( this.CheckDataAssigne(val,element) ) {
+            if ( element.User.length == 1 || (element.User.length == 0 && val.id_row == "") || (element.User.length > 1 && val.id_row == "0")) 
+            {
               val.data.push(element);
             }
-          }
-          // else if ( this.filter_groupby.value =='assignee' && ( element.User.find(x => x.id_user == val.id_row) && (element.User.find(x => x.id_user == this.UserID) || (element.createdby == this.UserID && element.User.length == 0 ) )) ) {
-          //   if (val.id_row == this.UserID || +val.id_row == 0 || val.id_row == "") {
-          //     val.data.push(element);
-          //   }
-          // }
-          else if (
-            this.filter_groupby.value == "groupwork" &&
-            element.id_group == val.id_row &&
-            (element.User.find((x) => x.id_user == this.UserID) ||
-              element.createdby == this.UserID)
-          ) {
+          } else if ( this.CheckDataWorkGroup(val,element) ) {
             val.data.push(element);
           }
-        } else {
-          if (
-            this.filter_groupby.value == "status" &&
-            +val.id_row == +element.status
-          ) {
-            val.data.push(element);
-          } else if (
-            this.filter_groupby.value == "assignee" &&
-            (element.User.find((x) => x.id_user == val.id_row) ||
-              (element.User.length == 0 && val.id_row == "") ||
-              (element.User.length > 1 && val.id_row == "0"))
-          ) {
-            if (
-              element.User.length == 1 ||
-              (element.User.length == 0 && val.id_row == "") ||
-              (element.User.length > 1 && val.id_row == "0")
-            ) {
-              val.data.push(element);
-            }
-          } else if (
-            this.filter_groupby.value == "groupwork" &&
-            element.id_group == val.id_row
-          ) {
-            val.data.push(element);
-          }
-        }
       });
     });
     this.listStatus = this.listFilter;
+  }
+
+  CheckDataStatus(valuefilter,elementTask){
+    if(this.filter_groupby.value == "status" && valuefilter.id_row == +elementTask.status){
+      if(this.isAssignforme){
+        // kiểm tra có phải người được giao hay người tạo hay không
+        if( this.isAssignForme(elementTask)  || elementTask.createdby == this.UserID ){
+          return true;
+        } 
+      }else{
+        return true;
+      } 
+    }
+    return false;
+  }
+  isAssignForme(elementTask){
+    if(elementTask.User.find((x) => x.id_user == this.UserID) || elementTask.Follower.find((x) => x.id_user == this.UserID) || elementTask.UserSubtask.find((x) => x.id_user == this.UserID) ){
+      return true;
+    } 
+    return false;
+  }
+  CheckDataAssigne(valuefilter,elementTask){  
+    if(this.filter_groupby.value == "assignee"){
+      if(this.isAssignforme){
+        if( (elementTask.User.find((x) => x.id_user == valuefilter.id_row) && this.isAssignForme(elementTask)) || (elementTask.createdby == this.UserID && elementTask.User.length == 0)  ){
+            return true
+          }
+      }else{
+        if( elementTask.User.find((x) => x.id_user == valuefilter.id_row) ||
+          (elementTask.User.length == 0 && valuefilter.id_row == "") ||
+          (elementTask.User.length > 1 && valuefilter.id_row == "0") ){
+            return true
+          }
+      }
+    }
+    return false;
+  }
+  CheckDataWorkGroup(valuefilter,elementTask){ 
+    /**
+     * this.filter_groupby.value == "groupwork" &&
+        //     element.id_group == val.id_row &&
+        //     (element.User.find((x) => x.id_user == this.UserID) ||
+        //       element.createdby == this.UserID)
+     */
+    if(this.filter_groupby.value == "groupwork" && elementTask.id_group == valuefilter.id_row){
+      if(this.isAssignforme){
+        // kiểm tra có phải người được giao hay người tạo hay không
+        if( this.isAssignForme(elementTask)  || elementTask.createdby == this.UserID ){
+          return true;
+        } 
+      }else{
+        return true;
+      } 
+    }
+    return false;
   }
 
   drop1(event: CdkDragDrop<string[]>) {
@@ -1087,19 +1096,20 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
   ViewDetai(item) {
-    const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-      width: "90vw",
-      height: "90vh",
-      data: item,
-    });
+    this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.id_row }, }]);
+    // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+    //   width: "90vw",
+    //   height: "90vh",
+    //   data: item,
+    // });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      this.LoadData();
-      if (result != undefined) {
-        // this.selectedDate.startDate = new Date(result.startDate)
-        // this.selectedDate.endDate = new Date(result.endDate)
-      }
-    });
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   this.LoadData();
+    //   if (result != undefined) {
+    //     // this.selectedDate.startDate = new Date(result.startDate)
+    //     // this.selectedDate.endDate = new Date(result.endDate)
+    //   }
+    // });
   }
 
   f_convertDate(v: any) {

@@ -30,7 +30,6 @@
     <Compile Remove="Controllers\ChecklistController.cs" />
     <Compile Remove="Controllers\DepartmentController.cs" />
     <Compile Remove="Controllers\DocumentsController.cs" />
-    <Compile Remove="Controllers\ErrorController.cs" />
     <Compile Remove="Controllers\FilterWorkController.cs" />
     <Compile Remove="Controllers\InternalAPIClient.cs" />
     <Compile Remove="Controllers\MenuController.cs" />

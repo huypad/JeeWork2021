@@ -736,6 +736,7 @@
                                                         <kt-add-task [item]="node" [loai]="'subtask'" [nhom]="getNhom()"
                                                             (Close)="CloseAddnewTask($event)"
                                                             [ID_Project]="node.id_project_team"
+                                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize',node.id_project_team)" 
                                                             (dataTask)="CreateTask($event)"
                                                             [roleassign]="CheckRoles(14,node.id_project_team)" [roledeadline]="CheckRoles(10,node.id_project_team)" ></kt-add-task>
                                                     </ng-container>
@@ -762,6 +763,7 @@
                                     <div class="cu-task-row-new ng-tns-c104-196 cu-task-row-new_active">
                                         <kt-add-task [item]="lstcongviec" [loai]="'task'"
                                             (Close)="CloseAddnewTask($event)" [ID_Project]="lstcongviec.id"
+                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize',lstcongviec.id )" 
                                             (dataTask)="CreateTask($event)"
                                             [roleassign]="CheckRoles(14,lstcongviec.id)" [roledeadline]="CheckRoles(10,lstcongviec.id)" ></kt-add-task>
                                     </div>

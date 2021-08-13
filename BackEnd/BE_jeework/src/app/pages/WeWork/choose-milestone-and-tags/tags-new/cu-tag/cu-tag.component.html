@@ -1,10 +1,10 @@
 <div class="cu-tags-badge">
     <div class="cu-tags-badge__inner position-relative" type="badge">
-        <div placement="right" container="body" triggers="" class="cu-tags-select__badge list-view ng-star-inserted"
+        <div placement="right" [ngClass]="{'cu-tags-select__badge_readonly': !role}" class="cu-tags-select__badge list-view ng-star-inserted"
             [ngStyle]="{'backgroundColor': Opaciti_color(tag.color)}">
             <div class="cu-tags-select__click">
-                <div class="cu-tags-select__name " [ngClass]="{'cu-tags-hide-more-text': role}" [ngStyle]="{'color': tag.color}"  > {{tag.title}} </div>
-                <!-- <div *ngIf="isRename" class="cu-tags-select__name hide-more-text" [ngStyle]="{'color': tag.color}">  -->
+                <div class="cu-tags-select__name  hide-more-text" [ngStyle]="{'color': tag.color}"  > {{tag.title}} </div>
+                <!-- <div *ngIf="isRename" class="cu-tags-select__name" [ngStyle]="{'color': tag.color}">  -->
                     <!-- <input type="text" value="{{tag.title}}"> -->
                 <!-- </div> -->
                 <div class="cu-tags-select__name-shadow" > {{tag.title}} </div>

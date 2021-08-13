@@ -11,7 +11,7 @@ import { ActivatedRoute, Router, NavigationStart, NavigationEnd } from '@angular
 // RXJS
 import { TranslateService } from '@ngx-translate/core';
 // Services
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import 'dayjs/locale/vi' // load on demand
@@ -20,6 +20,7 @@ import Selection from "gantt-schedule-timeline-calendar/dist/Selection.plugin.js
 import { ProjectsTeamService } from '../Services/department-and-project.service';
 import { UpdateWorkModel } from '../../work/work.model';
 import { stringify } from 'node:querystring';
+import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
 
 // import inforModal from "./inforModal"
 @Component({
@@ -33,14 +34,16 @@ export class GanttChart2Component implements OnInit {
 	isMenuVisible = false;
 	firstDemoLoaded = false;
 	searchText = '';
+	@ViewChild("editor") editor: GanttEditorComponent;
+	public editorOptions: GanttEditorOptions;
 	title = "ng-gstc-test";
 	gstcState: any;
 	public data: any;
 	view = 'gantt';
-	fromDate =  (new Date()).getFullYear()+ '/05/01';
+	fromDate = (new Date()).getFullYear() + '/05/01';
 	toDate = (new Date()).getFullYear() + 1 + '/04/30';
 	inforModal;
-	status_dynamic : any = [];
+	status_dynamic: any = [];
 	// LEFT SIDE LIST COLUMNS
 	columns: any = {
 		percent: 100,
@@ -56,7 +59,7 @@ export class GanttChart2Component implements OnInit {
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return "";
-					if(item.status){
+					if (item.status) {
 						return ` <div onclick="Window.myComponent.onClick123('${item.id}')" class="url" style="background:${item.color}; width: 20px;
 						height: 20px;
 						display: flex;
@@ -73,8 +76,8 @@ export class GanttChart2Component implements OnInit {
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return `${item.label}`;
-					if(item.status){
-						return ` <span onclick="Window.myComponent.Viewdetail('${item.id}')" class="url"> ${item.label} </span>`;	
+					if (item.status) {
+						return ` <span onclick="Window.myComponent.Viewdetail('${item.id}')" class="url"> ${item.label} </span>`;
 					}
 				},
 				isHTML: true,
@@ -85,21 +88,21 @@ export class GanttChart2Component implements OnInit {
 					content: "Công việc"
 				}
 			},
-			start_date: { id: "start_date", data: "start_date", width: 80, header: { content: "Start" } },
-			deadline: { id: "deadline", data: "deadline", width: 80, header: { content: "Deadline" } },
+			start_date: { id: "start_date", data: "start_date", width: 80, header: { content: "Ngày BĐ" } },
+			deadline: { id: "deadline", data: "deadline", width: 80, header: { content: "Hạn chót" } },
 			end_date: { id: "end_date", data: "end_date", width: 80, header: { content: "Finished at" } },
 			status: {
 				id: "status",
 				data: function (item) {
 					if (item.id[0] == "G")//group
 						return "";
-					if(item.status){
+					if (item.status) {
 						return `<span class="btn-sm text-white" style="background:${item.color}">${item.status}</span>`;
 					}
 				},
 				isHTML: true,
 				width: 100,
-				header: { content: "Status" }
+				header: { content: "Trạng thái" }
 			},
 		}
 	};
@@ -153,11 +156,10 @@ export class GanttChart2Component implements OnInit {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
 		private _workservice: WorkService,
-		private WeWorkService:WeWorkService
+		private WeWorkService: WeWorkService
 	) {
-		if((new Date()).getMonth() < 5)
-		{
-			this.fromDate =  ((new Date()).getFullYear() -1)+ '/05/01';
+		if ((new Date()).getMonth() < 5) {
+			this.fromDate = ((new Date()).getFullYear() - 1) + '/05/01';
 			this.toDate = (new Date()).getFullYear() + '/04/30';
 		};
 		Window["myComponent"] = this;
@@ -166,164 +168,154 @@ export class GanttChart2Component implements OnInit {
 		// let now = new Date();
 		// let from = (moment(now).add("M", 1).toDate()).getTime();
 		// let to = (moment(now).add("M", -1).toDate()).getTime();
-		
-		this.config = {
-			// height: window.innerHeight - 125,
-			height: window.innerHeight - 159, //800
-			viewMode: 'day',
-			list: {
-				rows: {},
-				rowHeight: 40,
-				columns: this.columns,
-				expander: {
-					padding: 18,
-					size: 20,
-					icon: {
-						width: 16,
-						height: 16
-					},
 
-				},
+		// this.config = {
+		// 	// height: window.innerHeight - 125,
+		// 	height: window.innerHeight - 159, //800
+		// 	viewMode: 'day',
+		// 	list: {
+		// 		rows: {},
+		// 		rowHeight: 40,
+		// 		columns: this.columns,
+		// 		expander: {
+		// 			padding: 18,
+		// 			size: 20,
+		// 			icon: {
+		// 				width: 16,
+		// 				height: 16
+		// 			},
 
-			},
+		// 		},
 
-			scroll: {
-				smooth: false,
-				top: 0,
-				left: 0,
-				xMultiplier: 3,
-				yMultiplier: 3,
-				percent: {
-					top: 0,
-					left: 0
-				},
-				compensation: {
-					x: 0,
-					y: 0
-				}
-			},
+		// 	},
 
-			chart: {
-				items: {
-				},
-				time: {
-					// centerGlobal: 1597992656512,//now.getTime(),
-					// compressMode: false,
-					// finalFrom: 1583082000000,
-					// finalTo: 1651769999999,
-					// from: from,
-					// leftGlobal: 1594690260608,
-					// levels: [],
-					// period: "day",
-					// rightGlobal: 1601304678016,
-					// to: to,
-					// zoom: 0
-					centerGlobal: (new Date()).getTime(),//now.getTime(),
-					compressMode: false,
-					finalFrom: new Date(this.fromDate).getTime(),
-					finalTo: new Date(this.toDate).getTime(),
-					from: new Date(this.fromDate).getTime(),
-					to: new Date(this.toDate).getTime(),
+		// 	scroll: {
+		// 		smooth: false,
+		// 		top: 0,
+		// 		left: 0,
+		// 		xMultiplier: 3,
+		// 		yMultiplier: 3,
+		// 		percent: {
+		// 			top: 0,
+		// 			left: 0
+		// 		},
+		// 		compensation: {
+		// 			x: 0,
+		// 			y: 0
+		// 		}
+		// 	},
 
-					// leftGlobal: 1594690260608,
-					levels: [],
-					period: "day",
-					// rightGlobal: 1601304678016,
-					zoom: 0
-				}
-			},
-			locale: this.locale,
-			plugins: [
-				// drag x Horizontal, y portrait
-				ItemMovement({
-					moveable: 'x',
-					resizerContent: '<div class="resizer">-></div>',
-					ghostNode: false,
-					collisionDetection: false,
-					snapStart(time, diff, item) {
-						if (Math.abs(diff) > 14400000) {
-							return time + diff
-						}
-						return time
-					},
-					snapEnd(time, diff, item) {
-						if (Math.abs(diff) > 14400000) {
-							return time + diff
-						}
-						return time
-					}
-				}),
-				Selection({
-					items: false,
-					rows: false,
-					grid: true,
-					rectStyle: { opacity: '0.0' },
-					canSelect(type, currentlySelecting) {
+		// 	chart: {
+		// 		items: {
+		// 		},
+		// 		time: {
+		// 			centerGlobal: (new Date()).getTime(),//now.getTime(),
+		// 			compressMode: false,
+		// 			finalFrom: new Date(this.fromDate).getTime(),
+		// 			finalTo: new Date(this.toDate).getTime(),
+		// 			from: new Date(this.fromDate).getTime(),
+		// 			to: new Date(this.toDate).getTime(),
 
-						if (type === 'chart-timeline-grid-row-block') {
-							return currentlySelecting.filter(selected => {
-								if (!selected.row.canSelect) return false;
-								for (const item of selected.row._internal.items) {
-									if (
-										(item.time.start >= selected.time.leftGlobal && item.time.start <= selected.time.rightGlobal) ||
-										(item.time.end >= selected.time.leftGlobal && item.time.end <= selected.time.rightGlobal) ||
-										(item.time.start <= selected.time.leftGlobal && item.time.end >= selected.time.rightGlobal)
-									) {
-										return false;
-									}
-								}
-								return true;
-							});
-						}
-						return currentlySelecting;
-					},
-					canDeselect(type, currently, all) {
-						if (type === 'chart-timeline-grid-row-blocks') {
-							return all.selecting['chart-timeline-grid-row-blocks'].length ? [] : currently;
-						}
-						return [];
-					}
-				})
-			],
-			modal: {
-				visible: false,
-				title: '',
-				data: {}
-			},
-			subs: [],
-			watch: {},
-			computed: {},
-			methods: {
-				addListenClick(element, data) {
-					const onClick = (e) => {
-						e.preventDefault()
-						this.modal = {
-							visible: true,
-							title: data.item.label,
-							data
-						}
-						return false
-					}
-					element.addEventListener('contextmenu', onClick);
-					return {
-						update(element, newData) {
-							data = newData;
-						},
-						destroy(element, data) {
-							element.removeEventListener('click', onClick);
+		// 			// leftGlobal: 1594690260608,
+		// 			levels: [],
+		// 			period: "day",
+		// 			// rightGlobal: 1601304678016,
+		// 			zoom: 0
+		// 		}
+		// 	},
+		// 	locale: this.locale,
+		// 	plugins: [
+		// 		// drag x Horizontal, y portrait
+		// 		ItemMovement({
+		// 			moveable: 'x',
+		// 			resizerContent: '<div class="resizer">-></div>',
+		// 			ghostNode: false,
+		// 			collisionDetection: false,
+		// 			snapStart(time, diff, item) {
+		// 				if (Math.abs(diff) > 14400000) {
+		// 					return time + diff
+		// 				}
+		// 				return time
+		// 			},
+		// 			snapEnd(time, diff, item) {
+		// 				if (Math.abs(diff) > 14400000) {
+		// 					return time + diff
+		// 				}
+		// 				return time
+		// 			}
+		// 		}),
+		// 		Selection({
+		// 			items: false,
+		// 			rows: false,
+		// 			grid: true,
+		// 			rectStyle: { opacity: '0.0' },
+		// 			canSelect(type, currentlySelecting) {
 
-						}
-					};
-				},
-				closeModal() {
-					this.modal = {
-						visible: false,
-						title: '',
-						data: {}
-					}
-				}
-			}
-		}
+		// 				if (type === 'chart-timeline-grid-row-block') {
+		// 					return currentlySelecting.filter(selected => {
+		// 						if (!selected.row.canSelect) return false;
+		// 						for (const item of selected.row._internal.items) {
+		// 							if (
+		// 								(item.time.start >= selected.time.leftGlobal && item.time.start <= selected.time.rightGlobal) ||
+		// 								(item.time.end >= selected.time.leftGlobal && item.time.end <= selected.time.rightGlobal) ||
+		// 								(item.time.start <= selected.time.leftGlobal && item.time.end >= selected.time.rightGlobal)
+		// 							) {
+		// 								return false;
+		// 							}
+		// 						}
+		// 						return true;
+		// 					});
+		// 				}
+		// 				return currentlySelecting;
+		// 			},
+		// 			canDeselect(type, currently, all) {
+		// 				if (type === 'chart-timeline-grid-row-blocks') {
+		// 					return all.selecting['chart-timeline-grid-row-blocks'].length ? [] : currently;
+		// 				}
+		// 				return [];
+		// 			}
+		// 		})
+		// 	],
+		// 	modal: {
+		// 		visible: false,
+		// 		title: '',
+		// 		data: {}
+		// 	},
+		// 	subs: [],
+		// 	watch: {},
+		// 	computed: {},
+		// 	methods: {
+		// 		addListenClick(element, data) {
+		// 			const onClick = (e) => {
+		// 				e.preventDefault()
+		// 				this.modal = {
+		// 					visible: true,
+		// 					title: data.item.label,
+		// 					data
+		// 				}
+		// 				return false
+		// 			}
+		// 			element.addEventListener('contextmenu', onClick);
+		// 			return {
+		// 				update(element, newData) {
+		// 					data = newData;
+		// 				},
+		// 				destroy(element, data) {
+		// 					element.removeEventListener('click', onClick);
+
+		// 				}
+		// 			};
+		// 		},
+		// 		closeModal() {
+		// 			this.modal = {
+		// 				visible: false,
+		// 				title: '',
+		// 				data: {}
+		// 			}
+		// 		}
+		// 	}
+		// }
+		this.data = this.initialData();
 		let rows: any = {};
 		let items: any = {};
 		var query = new QueryParamsModelNew({ "id_project_team": this.ID_Project });
@@ -335,14 +327,14 @@ export class GanttChart2Component implements OnInit {
 					return result;
 				}, {});
 				items = res.data.items.reduce(function (result, item, index, array) {
-					result[item.id] = item; 
+					result[item.id] = item;
 					return result;
 				}, {});
 
 			}
 			this.gstcState.data.config.list.rows = rows;
 			this.gstcState.data.config.chart.items = items;
-
+			debugger
 			this.gstcState.data.config.locale = this.locale;
 			this.gstcState.update('config', config => {
 				return config;
@@ -353,14 +345,364 @@ export class GanttChart2Component implements OnInit {
 
 		this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe(res => {
 			if (res && res.status === 1) {
-			  this.status_dynamic = res.data;
+				this.status_dynamic = res.data;
 			};
-		  })
+		})
+		this.editorOptions = {
+			vFormat: "day",
+			vEditable: true,
+			vEventsChange: {
+				taskname: () => {
+					console.log("taskname");
+				}
+			}
+		};
 	}
-	changeChinhSua() {
-
-	}
-	UpdateCheck(item){
+	initialData() {
+		return [
+		  {
+			pID: 1,
+			pName: "Define Chart API",
+			pStart: "",
+			pEnd: "",
+			pClass: "ggroupblack",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 0,
+			pGroup: 1,
+			pParent: 0,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: "Some Notes text"
+		  },
+		  {
+			pID: 11,
+			pName: "Chart Object",
+			pStart: "2017-02-20",
+			pEnd: "2017-02-20",
+			pClass: "gmilestone",
+			pLink: "",
+			pMile: 1,
+			pRes: "Shlomy",
+			pComp: 100,
+			pGroup: 0,
+			pParent: 1,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 12,
+			pName: "Task Objects",
+			pStart: "",
+			pEnd: "",
+			pClass: "ggroupblack",
+			pLink: "",
+			pMile: 0,
+			pRes: "Shlomy",
+			pComp: 40,
+			pGroup: 1,
+			pParent: 1,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 121,
+			pName: "Constructor Proc #1234 of February 2017",
+			pStart: "2017-02-21",
+			pEnd: "2017-03-09",
+			pClass: "gtaskblue",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian T.",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 12,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 122,
+			pName: "Task Variables",
+			pStart: "2017-03-06",
+			pEnd: "2017-03-11",
+			pClass: "gtaskred",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 12,
+			pOpen: 1,
+			pDepend: 121,
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 123,
+			pName: "Task by Minute/Hour",
+			pStart: "2017-03-09",
+			pEnd: "2017-03-14 12: 00",
+			pClass: "gtaskyellow",
+			pLink: "",
+			pMile: 0,
+			pRes: "Ilan",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 12,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 124,
+			pName: "Task Functions",
+			pStart: "2017-03-09",
+			pEnd: "2017-03-29",
+			pClass: "gtaskred",
+			pLink: "",
+			pMile: 0,
+			pRes: "Anyone",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 12,
+			pOpen: 1,
+			pDepend: "123SS",
+			pCaption: "This is a caption",
+			pNotes: null
+		  },
+		  {
+			pID: 2,
+			pName: "Create HTML Shell",
+			pStart: "2017-03-24",
+			pEnd: "2017-03-24",
+			pClass: "gtaskyellow",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 20,
+			pGroup: 0,
+			pParent: 0,
+			pOpen: 1,
+			pDepend: 122,
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 3,
+			pName: "Code Javascript",
+			pStart: "",
+			pEnd: "",
+			pClass: "ggroupblack",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 0,
+			pGroup: 1,
+			pParent: 0,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 31,
+			pName: "Define Variables",
+			pStart: "2017-02-25",
+			pEnd: "2017-03-17",
+			pClass: "gtaskpurple",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 30,
+			pGroup: 0,
+			pParent: 3,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 32,
+			pName: "Calculate Chart Size",
+			pStart: "2017-03-15",
+			pEnd: "2017-03-24",
+			pClass: "gtaskgreen",
+			pLink: "",
+			pMile: 0,
+			pRes: "Shlomy",
+			pComp: 40,
+			pGroup: 0,
+			pParent: 3,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 33,
+			pName: "Draw Task Items",
+			pStart: "",
+			pEnd: "",
+			pClass: "ggroupblack",
+			pLink: "",
+			pMile: 0,
+			pRes: "Someone",
+			pComp: 40,
+			pGroup: 2,
+			pParent: 3,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 332,
+			pName: "Task Label Table",
+			pStart: "2017-03-06",
+			pEnd: "2017-03-09",
+			pClass: "gtaskblue",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 33,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 333,
+			pName: "Task Scrolling Grid",
+			pStart: "2017-03-11",
+			pEnd: "2017-03-20",
+			pClass: "gtaskblue",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 0,
+			pGroup: 0,
+			pParent: 33,
+			pOpen: 1,
+			pDepend: "332",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 34,
+			pName: "Draw Task Bars",
+			pStart: "",
+			pEnd: "",
+			pClass: "ggroupblack",
+			pLink: "",
+			pMile: 0,
+			pRes: "Anybody",
+			pComp: 60,
+			pGroup: 1,
+			pParent: 3,
+			pOpen: 0,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 341,
+			pName: "Loop each Task",
+			pStart: "2017-03-26",
+			pEnd: "2017-04-11",
+			pClass: "gtaskred",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 34,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 342,
+			pName: "Calculate Start/Stop",
+			pStart: "2017-04-12",
+			pEnd: "2017-05-18",
+			pClass: "gtaskpink",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 34,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 343,
+			pName: "Draw Task Div",
+			pStart: "2017-05-13",
+			pEnd: "2017-05-17",
+			pClass: "gtaskred",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 34,
+			pOpen: 1,
+			pDepend: "",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 344,
+			pName: "Draw Completion Div",
+			pStart: "2017-05-17",
+			pEnd: "2017-06-04",
+			pClass: "gtaskred",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 60,
+			pGroup: 0,
+			pParent: 34,
+			pOpen: 1,
+			pDepend: "342,343",
+			pCaption: "",
+			pNotes: ""
+		  },
+		  {
+			pID: 35,
+			pName: "Make Updates",
+			pStart: "2017-07-17",
+			pEnd: "2017-09-04",
+			pClass: "gtaskpurple",
+			pLink: "",
+			pMile: 0,
+			pRes: "Brian",
+			pComp: 30,
+			pGroup: 0,
+			pParent: 3,
+			pOpen: 1,
+			pDepend: "333",
+			pCaption: "",
+			pNotes: ""
+		  }
+		];
+	  }
+	UpdateCheck(item) {
 	}
 	// GET THE GANTT INTERNAL STATE
 	onState(state) {
@@ -377,7 +719,7 @@ export class GanttChart2Component implements OnInit {
 				if (eventInfo.type === "update" && eventInfo.params.id) {
 					const itemId = eventInfo.params.id;
 					this.changeDetectorRefs.detectChanges();
-					this.dataChanged(this.gstcState.get("config.chart.items." + itemId))					
+					this.dataChanged(this.gstcState.get("config.chart.items." + itemId))
 				}
 			},
 			{ bulk: true }
@@ -403,7 +745,7 @@ export class GanttChart2Component implements OnInit {
 				this.changeDetectorRefs.detectChanges();
 			}
 			else {
-				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999, true, false,0);
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999, true, false, 0);
 			}
 		});
 		var model_end = new UpdateWorkModel();
@@ -424,75 +766,76 @@ export class GanttChart2Component implements OnInit {
 	}
 
 	getHeight() {
-		return window.innerHeight - 53 -this.tokenStorage.getHeightHeader() + 'px'
+		return window.innerHeight - 53 - this.tokenStorage.getHeightHeader() + 'px'
 	}
-	
 
-	updateDate(item){
-		if(item=='pre'){
-			this.fromDate = (new Date(this.fromDate).getFullYear() - 1) + "/05/01" ;
-			this.toDate = (new Date(this.toDate).getFullYear() - 1) + "/04/30" ;
+
+	updateDate(item) {
+		if (item == 'pre') {
+			this.fromDate = (new Date(this.fromDate).getFullYear() - 1) + "/05/01";
+			this.toDate = (new Date(this.toDate).getFullYear() - 1) + "/04/30";
 		}
-		if(item=='next'){
-			this.fromDate = (new Date(this.fromDate).getFullYear() + 1) + "/05/01" ;
-			this.toDate = (new Date(this.toDate).getFullYear() + 1) + "/04/30" ;
+		if (item == 'next') {
+			this.fromDate = (new Date(this.fromDate).getFullYear() + 1) + "/05/01";
+			this.toDate = (new Date(this.toDate).getFullYear() + 1) + "/04/30";
 		}
-		
+
 		this.ngOnInit();
 		// this.changeDetectorRefs.detectChanges();
 	}
 
-	onClick123(val = ''){
+	onClick123(val = '') {
 		return;
 		// không setup update trạng thái
 		const dialogRef = this.dialog.open(QuickStatusComponent, {
 			width: '300px',
 			data: this.status_dynamic,
-		  });
-	  
-		  dialogRef.afterClosed().subscribe(result => {
-			if(result){
+		});
+
+		dialogRef.afterClosed().subscribe(result => {
+			if (result) {
 				const item = new UpdateWorkModel();
-				item.id_row = +val.replace("W","");
+				item.id_row = +val.replace("W", "");
 				item.key = 'status';
 				item.value = result.id_row;
 				// if (task.id_nv > 0) {
 				// 	item.IsStaff = true;
 				// }
 				this._service._UpdateByKey(item).subscribe(res => {
-				if (res && res.status == 1) {
-					this.ngOnInit();
-				}
-				else {
-					this.ngOnInit();
-					this.layoutUtilsService.showError(res.error.message);
-				}
+					if (res && res.status == 1) {
+						this.ngOnInit();
+					}
+					else {
+						this.ngOnInit();
+						this.layoutUtilsService.showError(res.error.message);
+					}
 				})
 			}
-		  });
+		});
 	}
 
-	Viewdetail(value){
-		var item :any = {};
-		item.id_row = value.replace("W","");
-		item.id_project_team = this.ID_Project;
-		// this.DataID = this.data.id_row;
-		// this.Id_project_team = this.data.id_project_team;
-		const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-			width: '90vw',
-			height: '90vh',
-			data: item
-		  });
-	  
-		  dialogRef.afterClosed().subscribe(result => {
-			this.ngOnInit();
-		  });
+	Viewdetail(value) {
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+value.id_row }, }]);
+		// var item: any = {};
+		// item.id_row = value.replace("W", "");
+		// item.id_project_team = this.ID_Project;
+		// // this.DataID = this.data.id_row;
+		// // this.Id_project_team = this.data.id_project_team;
+		// const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+		// 	width: '90vw',
+		// 	height: '90vh',
+		// 	data: item
+		// });
+
+		// dialogRef.afterClosed().subscribe(result => {
+		// 	this.ngOnInit();
+		// });
 	}
 
-	  test(){
-	  }
+	test() {
+	}
 
-	updateView(value){
+	updateView(value) {
 		this.view = value;
 	}
 

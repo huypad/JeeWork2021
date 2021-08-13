@@ -1,5 +1,5 @@
-﻿using API.Classes;
-using API.Models;
+﻿using JeeWork_Core2021.Classes;
+using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +16,7 @@ public class ErrorController : ControllerBase
         if (loginData != null)
         {
             string custemerid = loginData.IDKHDPS.ToString();
-            AutoSendMail.SendErrorReport(custemerid, noidung);
+            //AutoSendMail.SendErrorReport(custemerid, noidung);
         }
         return Problem();
     }

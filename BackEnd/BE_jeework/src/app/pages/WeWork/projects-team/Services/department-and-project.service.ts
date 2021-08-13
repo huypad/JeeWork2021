@@ -106,6 +106,16 @@ export class ProjectsTeamService {
 			params: httpParams
 		});
 	}
+	find_gantt_editor(queryParams: QueryParamsModelNew): Observable<any> {
+
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+		const url = API_work_CU + '/gantt-editor';
+		return this.http.get<any>(url, {
+			headers: httpHeaders,
+			params: httpParams
+		});
+	}
 	findUsers(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
 
 		const httpHeaders = this.httpUtils.getHTTPHeaders();

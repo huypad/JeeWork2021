@@ -438,6 +438,8 @@ export class WorkListNewDetailComponent implements OnInit {
     this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadData();
+      }else{
+        this.layoutUtilsService.showError(res.error.message);
       }
     });
   }

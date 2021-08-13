@@ -110,12 +110,15 @@ namespace API_JeeWork2021.Classes
                     {
                         string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
                         List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
-                        foreach (var account in DataAccount)
+                        if (DataAccount != null)
                         {
-                            GetSoluongCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                            GetSoluongCongviecQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                            GetSoluongCongviecHethanTrongngay(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                            GetSoluongDuAnQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                            foreach (var account in DataAccount)
+                            {
+                                GetSoluongCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                GetSoluongCongviecQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                GetSoluongCongviecHethanTrongngay(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                GetSoluongDuAnQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                            }
                         }
                     }
                     catch
@@ -225,9 +228,7 @@ namespace API_JeeWork2021.Classes
             }
         }
         public static long GetSoluongCongviecHethanTrongngay(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
-        {
-            //SELECT CAST(CAST(GETDATE() AS DATE) AS DATETIME) as homnay
-            //SELECT CAST(CAST(GETDATE()+1 AS DATE) AS DATETIME) as ngaymai
+        { 
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
@@ -254,9 +255,7 @@ namespace API_JeeWork2021.Classes
             }
         }
         public static long GetSoluongCongviecQuaHan(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
-        {
-            //SELECT CAST(CAST(GETDATE() AS DATE) AS DATETIME) as homnay
-            //SELECT CAST(CAST(GETDATE()+1 AS DATE) AS DATETIME) as ngaymai
+        { 
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();

@@ -212,25 +212,26 @@ export class ListActivitiesComponent {
 	}
 
 	Viewdetail(item){
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.id_row }, }]);
 		// this.data = this.datalog;
 		// this.DataID = this.data.id_row;
 		// this.Id_project_team = this.data.id_project_team;
-		var _item = {
-			id_row : item.object_id,
-			id_project_team : item.id_project_team,
-		}
-		const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-			width: '90vw',
-			height: '90vh',
-			data: _item
-		  });
+		// var _item = {
+		// 	id_row : item.object_id,
+		// 	id_project_team : item.id_project_team,
+		// }
+		// const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+		// 	width: '90vw',
+		// 	height: '90vh',
+		// 	data: _item
+		//   });
 	  
-		  dialogRef.afterClosed().subscribe(result => {
-			if (result != undefined) {
-			  // this.selectedDate.startDate = new Date(result.startDate)
-			  // this.selectedDate.endDate = new Date(result.endDate)
-			}
-		  });
+		//   dialogRef.afterClosed().subscribe(result => {
+		// 	if (result != undefined) {
+		// 	  // this.selectedDate.startDate = new Date(result.startDate)
+		// 	  // this.selectedDate.endDate = new Date(result.endDate)
+		// 	}
+		// });
 	}
 
 	getHeight() {

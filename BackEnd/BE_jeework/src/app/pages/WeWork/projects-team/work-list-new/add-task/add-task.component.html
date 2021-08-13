@@ -28,7 +28,7 @@
             <div class="cu-task-row-new__options ng-star-inserted">
                 <ng-container [ngTemplateOutlet]="Assignee"></ng-container>
 
-                <ng-container [ngTemplateOutlet]="Follower" *ngIf="rolefollower"></ng-container>
+                <ng-container [ngTemplateOutlet]="Follower" *ngIf="roleassign"></ng-container>
 
                 <ng-container [ngTemplateOutlet]="setPriority" *ngIf="roleprioritize"></ng-container>
 
@@ -62,9 +62,9 @@
                     <div class="cu-panel-board__footer_left">
                         <ng-container [ngTemplateOutlet]="setPriority"></ng-container>
 
-                        <ng-container [ngTemplateOutlet]="Assignee"></ng-container>
+                        <ng-container [ngTemplateOutlet]="Assignee" *ngIf="roleprioritize"></ng-container>
 
-                        <ng-container [ngTemplateOutlet]="setDate"></ng-container>
+                        <ng-container [ngTemplateOutlet]="setDate" *ngIf="roledeadline"></ng-container>
                     </div>
                 </div>
             </div>

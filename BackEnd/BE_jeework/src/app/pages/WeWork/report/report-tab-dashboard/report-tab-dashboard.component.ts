@@ -1,3 +1,4 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import { tap } from 'rxjs/operators';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { ListDepartmentService } from './../../List-department/Services/List-department.service';
@@ -28,6 +29,7 @@ Wordcloud(Highcharts);
 interface Department {
   id_row: string;
   title: string;
+  selected: boolean;
   data_folder?: Department[];
 }
 
@@ -41,6 +43,7 @@ export class ReportTabDashboardComponent implements OnInit {
   public column_sort: any = [];
   treeControl = new NestedTreeControl<Department>(node => node.data_folder);
   dataSource = new MatTreeNestedDataSource<Department>();
+  checklistSelection = new SelectionModel<Department>(true /* multiple */);
   constructor(
     public dialog: MatDialog,
     public reportService: ReportService,
@@ -1104,8 +1107,59 @@ export class ReportTabDashboardComponent implements OnInit {
 		}
 	  })
 	}
+  todoLeafItemSelectionToggle(node: Department): void {
+    console.log(node);
+    this.checklistSelection.toggle(node);
+    this.checkRootNodeSelection(node);
+  }
 
+  checkRootNodeSelection(node: Department): void {
+    const nodeSelected = this.checklistSelection.isSelected(node);
+    const descendants = this.treeControl.getDescendants(node);
+    const descAllSelected = descendants.length > 0 && descendants.every(child => {
+      return this.checklistSelection.isSelected(child);
+    });
+    if (nodeSelected && !descAllSelected) {
+      this.checklistSelection.deselect(node);
+    } else if (!nodeSelected && descAllSelected) {
+      this.checklistSelection.select(node);
+    }
+  }
+  
+  todoItemSelectionToggle1(node: Department): void {
+    console.log(node)
+    this.checklistSelection.toggle(node);
+    const descendants = this.treeControl.getDescendants(node);
+    console.log(descendants)
+    this.checklistSelection.isSelected(node)
+      ? this.checklistSelection.select(...descendants)
+      : this.checklistSelection.deselect(...descendants);
+    console.log(this.checklistSelection.isSelected(node)); 
+  }
+  descendantsAllSelected(node: Department): boolean {
+    // console.log(node)
+    const descendants = this.treeControl.getDescendants(node);
+    return descendants.every(child => this.checklistSelection.isSelected(child));
+  }
+  checkAllParentsSelection(node: Department): void {
+    let parent: Department | null = this.getParentNode(node);
+    while (parent) {
+      this.checkRootNodeSelection(parent);
+      parent = this.getParentNode(parent);
+    }
+  }
+  getParentNode(node: Department): Department | null {
+ 
 
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+
+    for (let i = startIndex; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
+
+      return currentNode;
+    }
+    return null;
+  }
 }
 
 export interface DialogData {

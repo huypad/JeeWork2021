@@ -1205,7 +1205,9 @@
                                                     <ng-container *ngIf="addNodeitem==node.id_row">
                                                         <kt-add-task [item]="node" [loai]="'subtask'" [nhom]="getNhom()"
                                                             (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"
-                                                            [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" ></kt-add-task>
+                                                            [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" 
+                                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')" 
+                                                            ></kt-add-task>
                                                     </ng-container>
 
                                                 </div>
@@ -1237,6 +1239,7 @@
                                             <kt-add-task [item]="status" [loai]="'task'" 
                                                 (Close)="CloseAddnewTask($event)" [nhom]="getNhom()"
                                                 [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"
+                                                [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')" 
                                                 [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" ></kt-add-task>
                                         </div>
                                     </ng-container>

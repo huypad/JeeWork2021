@@ -137,10 +137,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     left join (select count(*) as tong,COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
                                     ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
-                                    where p.Disabled=0 and de.Disabled = 0 and p.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
+                                    where p.Disabled=0 and de.Disabled = 0 " + dieukien_where + "  order by " + dieukienSort;
                     sqlq += @$";select u.*,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 
                                 join we_project_team p on p.id_row=u.id_project_team 
-                                and id_department=" + query.filter["id_department"] + " where u.disabled=0  and u.Id_user in (" + listID + " )";
+                                and id_department=" + query.filter["id_department"] + " where u.disabled=0 ";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -997,6 +997,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     #endregion
 
                     cnn.EndTransaction();
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
+                    #endregion
                     data.id_row = idc;
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
@@ -1016,10 +1019,10 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+
                         //try
                         //{
                         //    if (notify_model != null)
@@ -1038,6 +1041,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
 
                     }
                     #endregion
+                    #region Lấy thông tin để thông báo
+                    noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                    #endregion
                     WeworkLiteController.mailthongbao(idc, data.Users.Where(x => !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                     #region Notify thiết lập vai trò member
                     for (int i = 0; i < users_member.Count; i++)
@@ -1054,20 +1060,19 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
 
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
@@ -1217,6 +1222,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     data.listid = idc;
                     Hashtable has_replace = new Hashtable();
                     var users_admin = new List<long> { loginData.UserID };
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
+                    #endregion
                     WeworkLiteController.mailthongbao(idc, users_admin, 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
                     #region Notify thiết lập vai trò admin
                     for (int i = 0; i < users_admin.Count; i++)
@@ -1232,10 +1240,8 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", "Cuộc họp");
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.listid.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.listid.ToString());
                         //try
                         //{
                         //    if (notify_model != null)
@@ -1257,6 +1263,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     foreach (DataRow item in dt_member.Rows)
                     {
                         var users_member = new List<long> { long.Parse(item["id_user"].ToString()) };
+                        #region Lấy thông tin để thông báo
+                          noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                        #endregion
                         WeworkLiteController.mailthongbao(idc, users_member, 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                         #region Notify thiết lập vai trò member
                         for (int i = 0; i < users_member.Count; i++)
@@ -1272,10 +1281,8 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                             notify_model.ReplaceData = has_replace;
-                            notify_model.To_Link_MobileApp = "";
-                            notify_model.ComponentName = "";
-                            notify_model.Component = "";
-                            notify_model.To_Link_WebApp = "/project/" + data.listid + "/settings/members";
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.listid.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.listid.ToString());
                             //try
                             //{
                             //    if (notify_model != null)
@@ -1461,6 +1468,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
+                    #endregion
                     data.id_row = idc;
                     Hashtable has_replace = new Hashtable();
                     var users_admin = new List<long> { iduser };
@@ -1478,11 +1488,10 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
-                        notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
+                        notify_model.ReplaceData = has_replace; 
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
                         //try
                         //{
                         //    if (notify_model != null)
@@ -1503,6 +1512,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     #endregion
                     foreach (DataRow item in dt_member.Rows)
                     {
+                        #region Lấy thông tin để thông báo
+                        noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                        #endregion
                         var users_member = new List<long> { long.Parse(item["id_user"].ToString()) };
                         WeworkLiteController.mailthongbao(idc, users_member, 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                         #region Notify thiết lập vai trò member
@@ -1519,10 +1531,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                             notify_model.ReplaceData = has_replace;
-                            notify_model.To_Link_MobileApp = "";
-                            notify_model.ComponentName = "";
-                            notify_model.Component = "";
-                            notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
                             try
                             {
                                 if (notify_model != null)
@@ -1714,6 +1725,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
                     List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
+                    #endregion
                     #region Notify thiết lập vai trò admin
                     for (int i = 0; i < users_admin.Count; i++)
                     {
@@ -1729,20 +1743,19 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         //notify_model.TitleLanguageKey = WeworkLiteController.getErrorMessageFromBackend("ww_thietlapvaitroadmin", "vi", ""); ;
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
 
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
@@ -1750,6 +1763,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
+                    #endregion
+                    #region Lấy thông tin để thông báo
+                      noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
                     #endregion
                     WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                     #region Notify thiết lập vai trò member
@@ -1766,20 +1782,19 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -1804,6 +1819,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                         if (id_template > 0)
                         {
+                            #region Lấy thông tin để thông báo
+                            noti = WeworkLiteController.GetInfoNotify(id_template, ConnectionString);
+                            #endregion
                             WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row > 0).Select(x => x.id_user).ToList(), id_template, loginData, ConnectionString, _notifier, _configuration, old);
                             #region Notify thiết lập vai trò member
                             for (int i = 0; i < users_member.Count; i++)
@@ -1819,20 +1837,19 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
                                 notify_model.ReplaceData = has_replace;
-                                notify_model.To_Link_MobileApp = "";
-                                notify_model.ComponentName = "";
-                                notify_model.Component = "";
-                                notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                                try
-                                {
-                                    if (notify_model != null)
-                                    {
-                                        Knoti = new APIModel.Models.Notify();
-                                        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                    }
-                                }
-                                catch
-                                { }
+                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+                                //try
+                                //{
+                                //    if (notify_model != null)
+                                //    {
+                                //        Knoti = new APIModel.Models.Notify();
+                                //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                                //    }
+                                //}
+                                //catch
+                                //{ }
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
@@ -2178,6 +2195,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         mailthongbao(id, 4, loginData, Token, cnn, DataAccount);
                     }
                     #region
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(4, ConnectionString);
+                    #endregion
                     // gửi thông báo cho thành viên dự án
                     string sqltv = $"select * from we_project_team_user where id_project_team = {id} and Disabled = 0";
                     DataTable dt_user = cnn.CreateDataTable(sqltv);
@@ -2194,10 +2214,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dt.Rows[0]["title"].ToString());
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/wework/projects";
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+
                         //try
                         //{
                         //    if (notify_model != null)
@@ -2565,6 +2584,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     #region Notify thiết lập vai trò admin
                     if (users_admin.Count > 0)
                     {
+                        #region Lấy thông tin để thông báo
+                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
+                        #endregion
                         WeworkLiteController.mailthongbao(data.id_row, users_admin, 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
                         for (int i = 0; i < users_admin.Count; i++)
                         {
@@ -2579,19 +2601,17 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
                             notify_model.ReplaceData = has_replace;
-                            notify_model.To_Link_MobileApp = "";
-                            notify_model.ComponentName = "";
-                            notify_model.Component = "";
-                            notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                            try
-                            {
-                                if (notify_model != null)
-                                {
-                                    Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                }
-                            }
-                            catch
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                            //try
+                            //{
+                            //    if (notify_model != null)
+                            //    {
+                            //        Knoti = new APIModel.Models.Notify();
+                            //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                            //    }
+                            //}
+                            //catch
                             { }
 
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -2605,6 +2625,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     #region Notify thiết lập vai trò member
                     if (users_member.Count > 0)
                     {
+                        #region Lấy thông tin để thông báo
+                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                        #endregion
                         WeworkLiteController.mailthongbao(data.id_row, users_member, 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                         for (int i = 0; i < users_member.Count; i++)
                         {
@@ -2619,20 +2642,19 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
                             notify_model.ReplaceData = has_replace;
-                            notify_model.To_Link_MobileApp = "";
-                            notify_model.ComponentName = "";
-                            notify_model.Component = "";
-                            notify_model.To_Link_WebApp = "/project/" + data.id_row + "/settings/members";
-                            try
-                            {
-                                if (notify_model != null)
-                                {
-                                    Knoti = new APIModel.Models.Notify();
-                                    bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                }
-                            }
-                            catch
-                            { }
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+                            //try
+                            //{
+                            //    if (notify_model != null)
+                            //    {
+                            //        Knoti = new APIModel.Models.Notify();
+                            //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                            //    }
+                            //}
+                            //catch
+                            //{ }
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
@@ -2754,6 +2776,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         id_template = 6;//thiết lập vai trò admin
                     else
                         id_template = 7;//Thay đổi vai trò từ admin thành member
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(id_template, ConnectionString);
+                    #endregion
                     WeworkLiteController.mailthongbao(id_project_team, users, id_template, loginData, ConnectionString, _notifier, _configuration);
                     #region Notify thiết lập vai trò member
                     object projectname = cnn.ExecuteScalar("select title from we_project_team where Disabled = 0 and id_row = @id_row", new SqlConditions() { { "id_row", id_project_team } });
@@ -2773,20 +2798,19 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", projectname.ToString());
                         notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = "";
-                        notify_model.ComponentName = "";
-                        notify_model.Component = "";
-                        notify_model.To_Link_WebApp = "/project/" + id + "/settings/members";
-                        try
-                        {
-                            if (notify_model != null)
-                            {
-                                Knoti = new APIModel.Models.Notify();
-                                bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            }
-                        }
-                        catch
-                        { }
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+
+                        //try
+                        //{
+                        //    if (notify_model != null)
+                        //    {
+                        //        Knoti = new APIModel.Models.Notify();
+                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
+                        //    }
+                        //}
+                        //catch
+                        //{ }
 
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)

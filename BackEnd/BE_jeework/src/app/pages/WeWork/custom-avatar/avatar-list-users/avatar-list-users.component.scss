@@ -1,0 +1,8 @@
+.view-hover{
+    display: none;
+}
+.hover-to-show:hover{
+    .view-hover{
+        display: block;
+    }
+}

@@ -708,18 +708,18 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     });
   }
   ViewDetai(item) {
-    // this.router.navigate(['', { outlets: { auxName: 'aux/task/'+item.id_row }, }]);
-    const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-      width: "90vw",
-      height: "90vh",
-      data: item,
-    });
+    this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.id_row }, }]);
+    // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+    //   width: "90vw",
+    //   height: "90vh",
+    //   data: item,
+    // });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      this.LoadSampleList();
-      if (result != undefined) {
-      }
-    });
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   this.LoadSampleList();
+    //   if (result != undefined) {
+    //   }
+    // });
   }
 
   f_convertDate(v: any) {

@@ -139,8 +139,8 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     this.id_project_team = +this.item.id_project_team;
     if (this.id_project_team > 0) {
       this.isUpdate = true;
+      this.LoadUser(this.id_project_team);
     }
-    this.LoadUser();
     this.txt_repeat_day = this.item.repeated_day;
     this.Is_duplicate = this.item.IsCopy;
     this.createForm();
@@ -170,7 +170,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
           var j = 0;
           j < this.item.repeated_day.substring(0).split(",").length;
           j++
-        ) {
+        ) { 
           if (
             this.list_weekdays[i].Code ==
             this.item.repeated_day.substring(0).split(",")[j]
@@ -286,8 +286,9 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     });
     this.Change_frequency(this._data._item.frequency);
   }
-  LoadUser() {
+  LoadUser(id_projectteam) {
     const filter: any = {};
+    filter.id_project_team = id_projectteam;
     this.weworkService.list_account(filter).subscribe((res) => {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
@@ -344,9 +345,6 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
         this.item.deadline == null ? "" : this.item.deadline,
       ],
     });
-    if(this.id_project_team == 0){
-      this.itemForm.controls["id_project_team"].setValue([]);
-    }
     // this.itemForm.controls["id_project_team"].markAsTouched();
     // this.itemForm.controls["id_group"].markAsTouched();
     // this.itemForm.controls["frequency"].markAsTouched();
@@ -493,7 +491,8 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     if (index >= 0) {
       this.selectedUser.splice(index, 1);
     } else {
-      this.selectedUser.push(data);
+      this.selectedUser[0] = data;
+      // this.selectedUser.push(data);
     }
   }
 
@@ -576,6 +575,8 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
   }
   BindList(id_project: any) {
     this.weworkService.lite_workgroup(id_project).subscribe((res) => {
+      this.changeDetectorRefs.detectChanges();
+
       if (res && res.status === 1) {
         this.listGroup = res.data;
         this.changeDetectorRefs.detectChanges();
@@ -642,18 +643,16 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     _item.id_row = this.item.id_row;
     _item.title = controls["title"].value;
     _item.description = controls["description"].value;
+    _item.id_project_team = controls["id_project_team"].value;
+    // _item.id_group = controls['id_group'].value == "null" ? "0" : controls['id_group'].value;
+    // _item.assign = controls['assign'].value;// chỉ lưu id
     _item.frequency = controls["frequency"].value;
     _item.deadline = +controls["deadline"].value>0?controls["deadline"].value:"0";
-    if(this.isUpdate){
-      _item.id_project_team = controls["id_project_team"].value;
-    }else{
-      _item.id_project_team = controls["id_project_team"].value.join();
-    }
 
     if (!this.show_frequency)
       _item.repeated_day = controls["repeated_day"].value;
     else _item.repeated_day = this.txt_repeat_day;
-
+    const LIST = Array<UserInfoModel>(); 
     if (this.selectedUser.length > 0) {
       this.selectedUser.map((item, index) => {
         let _true = this.User.find((x) => x.id_nv === item.id_nv);
@@ -662,18 +661,18 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
           ct.id_row = item.id_row;
           ct.id_user = item.id_nv;
           ct.loai = 1;
-          this.list_User.push(ct);
+          LIST.push(ct);
         } else {
           const ct = new UserInfoModel();
           if (ct.id_row == undefined) ct.id_row = 0;
           ct.id_user = item.id_nv;
           ct.loai = 1;
-          this.list_User.push(ct);
+          LIST.push(ct);
         }
       });
     }
 
-    _item.Users = this.list_User;
+    _item.Users = LIST;
     _item.start_date = this.f_convertDate(controls["start_date"].value);
     _item.end_date = this.f_convertDate(controls["end_date"].value);
     _item.Locked = controls["Locked"].value;

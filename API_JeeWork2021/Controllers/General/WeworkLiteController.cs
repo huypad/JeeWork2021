@@ -2311,8 +2311,8 @@ and IdKH={loginData.CustomerID} )";
                             access_token = "",
                             //from = "derhades1998@gmail.com",
                             //to = "thanhthang1798@gmail.com", //
-                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
-                            //to = "thanhthang1798@gmail.com", //
+                            //to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            to = "thanhthang1798@gmail.com", //
                             subject = title,
                             html = contents //nội dung html
                         };
@@ -2412,6 +2412,34 @@ and IdKH={loginData.CustomerID} )";
                     }
                 }
                 NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id_template">ID Mẫu template trong bảng we_template</param>
+        /// <param name="ConnectionString"></param>
+        /// <returns></returns>
+        public static SendNotifyModel GetInfoNotify(int id_template, string ConnectionString)
+        {
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                SendNotifyModel templatemodel = new SendNotifyModel();
+                string sqlq = "";
+                sqlq = "select id_row, name, title, template, keys, link, lang, exclude_sender, link_mobileapp " +
+                        "from we_template " +
+                        "where id_row=" + id_template;
+                DataTable dt = cnn.CreateDataTable(sqlq);
+                templatemodel.name = dt.Rows[0]["name"].ToString();
+                templatemodel.title = dt.Rows[0]["title"].ToString();
+                templatemodel.template = dt.Rows[0]["template"].ToString();
+                templatemodel.keys = dt.Rows[0]["keys"].ToString();
+                bool exclude_sender = (bool)dt.Rows[0]["exclude_sender"]; // loại bỏ người gửi khỏi ds người nhận
+                templatemodel.exclude_sender = exclude_sender;
+                templatemodel.link = dt.Rows[0]["link"].ToString();
+                templatemodel.link_mobileapp = dt.Rows[0]["link_mobileapp"].ToString();
+                templatemodel.lang = dt.Rows[0]["lang"].ToString();
+                return templatemodel;
             }
         }
         /// <summary>

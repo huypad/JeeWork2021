@@ -103,6 +103,9 @@ export class TopicEditComponent implements OnInit {
   ) { }
   /** LOAD DATA */
   ngOnInit() {
+    this.projectFilterCtrl.valueChanges.pipe().subscribe(() => {
+      this.filterProject();
+    });
     this.title = this.translate.instant("GeneralKey.choncocautochuc") + "";
     this.item = this.data._item;
     this.tinyMCE = tinyMCE;
@@ -110,6 +113,7 @@ export class TopicEditComponent implements OnInit {
       this.DisableTeam = true;
       this.changeproject(this.item.id_project_team);
     }
+    
     const filter: any = {};
     this.weworkService.lite_project_team_byuser("").subscribe((res) => {
       this.disabledBtn = false;
@@ -196,9 +200,6 @@ export class TopicEditComponent implements OnInit {
   setUpDropSearchProject() {
     this.projectFilterCtrl.setValue("");
     this.filterProject();
-    this.projectFilterCtrl.valueChanges.pipe().subscribe(() => {
-      this.filterProject();
-    });
   }
   protected filterProject() {
     if (!this.listProject) {
@@ -210,11 +211,10 @@ export class TopicEditComponent implements OnInit {
       return;
     } else {
       search = search.toLowerCase();
-    }
-    // filter the banks
+    } 
     this.filtereproject.next(
-      this.listUser.filter(
-        (bank) => bank.hoten.toLowerCase().indexOf(search) > -1
+      this.listProject.filter(
+        (bank) => bank.title.toLowerCase().indexOf(search) > -1
       )
     );
   }

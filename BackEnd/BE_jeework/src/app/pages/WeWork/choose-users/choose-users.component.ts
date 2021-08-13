@@ -96,7 +96,7 @@ export class ChooseUsersComponent implements OnInit, OnChanges {
 		// filter the banks
 		if (search[0] == '@') {
 			this.filteredUsers.next(
-				this.listUser.filter(bank => ("@" + bank.username.toLowerCase()).indexOf(search) > -1)
+				this.listUser.filter(bank => (bank.hoten.toLowerCase()).indexOf(search.replace('@','')) > -1)
 			);
 		}
 		else {

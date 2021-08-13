@@ -59,9 +59,11 @@
 
                     <div class="cu-task-row-assignee pd-r-10"> 
                         <ng-container *ngIf="item.User">
-                            <ng-container *ngIf="CheckRoles(14);else norole14">
-                                <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
-                                </kt-avatar-list-users>
+                            <ng-container *ngIf="CheckRoles(14);else norole14"> 
+                                <div class="ml-1">
+                                    <ng-container *ngTemplateOutlet="giaovieccanhan"></ng-container>
+                                </div>
+                                
                             </ng-container>
                             <ng-template #norole14>
                                 <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
@@ -96,13 +98,16 @@
                         <ng-container *ngIf="item.Followers">
                             <ng-container *ngIf="CheckRoles(14);else norole14">
                                 Theo dõi:
-                                <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
-                                </kt-avatar-list-users> 
+                                <div class="ml-1">
+                                    <ng-container *ngTemplateOutlet="theodoicongviec"></ng-container>
+                                </div>
+                                <!-- <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
+                                </kt-avatar-list-users>  -->
                             </ng-container>
                             <ng-template #norole14>
                                 <ng-container *ngIf="item.Followers.length > 0">Theo dõi:</ng-container>
                                 
-                                <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="3" iconSize="26">
+                                <kt-avatar-list-users style="margin-left: 10px;" [ListUser]="item.Followers" MaxSize="10" iconSize="26">
                                 </kt-avatar-list-users> 
                             </ng-template> 
                         </ng-container>
@@ -569,6 +574,7 @@
                                                         <kt-add-task [item]="item" [loai]="'subtask'" *ngIf="newtask"
                                                             [showIconclose]="false" [ID_Project]="Id_project_team"
                                                             (dataTask)="CreateTask($event)"
+                                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')" 
                                                             [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)"></kt-add-task>
                                                     </ng-container>
 
@@ -927,7 +933,7 @@
     
                                     <span class="action url" style="color:#34960d" (click)="resultInput.click()"
                                         matTooltip="{{ 'work.uploadfile' | translate }}">
-                                        <span translate="work.themtailieu"></span>
+                                        <span translate="work.themtailieucapnhatketquacongviec"></span>
                                         <i class="las la-paperclip"></i> &nbsp;
                                     </span>
                                 </div>
@@ -1016,3 +1022,39 @@
         </div>
     </kt-portlet-body>
 </kt-portlet>
+
+<ng-template #giaovieccanhan>
+    <ng-container *ngFor="let us of item.User "> 
+        <div class="user url scale-hover-02 position-relative"
+            style="justify-content: flex-end;">
+            <i class="far fa-times-circle url view-hover text-dark bg-white"
+                style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 10pt;"
+                (click)="ItemSelected(us)"></i>
+            <ng-container>
+                <kt-avatar-user 
+                    [image]="us.image"
+                    size="26"
+                    [name]="us.hoten">
+                </kt-avatar-user>
+            </ng-container>
+        </div>
+    </ng-container>  
+</ng-template>
+
+<ng-template #theodoicongviec>
+    <ng-container *ngFor="let us of item.Followers "> 
+        <div class="user url scale-hover-02 position-relative"
+            style="justify-content: flex-end;">
+            <i class="far fa-times-circle url view-hover text-dark bg-white"
+                style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 10pt;"
+                (click)="ItemFollower(us)"></i>
+            <ng-container>
+                <kt-avatar-user 
+                    [image]="us.image"
+                    size="26"
+                    [name]="us.hoten">
+                </kt-avatar-user>
+            </ng-container>
+        </div>
+    </ng-container>  
+</ng-template>

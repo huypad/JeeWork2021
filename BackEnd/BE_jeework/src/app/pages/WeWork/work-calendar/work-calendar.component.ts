@@ -244,25 +244,26 @@ export class WorkCalendarComponent implements OnInit {
 
   eventClicked(el) {
     // this.layoutUtilsService.showActionNotification("event clicked:" + el.event.extendedProps.id_row)
-    this.ProjectsTeamService.WorkDetail(
-      el.event.extendedProps.id_row
-    ).subscribe((res) => {
-      if (res && res.status == 1) {
-        var _item = res.data;
-        const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-          width: "90vw",
-          height: "90vh",
-          data: _item,
-        });
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+ el.event.extendedProps.id_row }, }]);
+    // this.ProjectsTeamService.WorkDetail(
+    //   el.event.extendedProps.id_row
+    // ).subscribe((res) => {
+    //   if (res && res.status == 1) {
+    //     var _item = res.data;
+    //     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+    //       width: "90vw",
+    //       height: "90vh",
+    //       data: _item,
+    //     });
 
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result != undefined) {
-            // this.selectedDate.startDate = new Date(result.startDate)
-            // this.selectedDate.endDate = new Date(result.endDate)
-          }
-        });
-      }
-    });
+    //     dialogRef.afterClosed().subscribe((result) => {
+    //       if (result != undefined) {
+    //         // this.selectedDate.startDate = new Date(result.startDate)
+    //         // this.selectedDate.endDate = new Date(result.endDate)
+    //       }
+    //     });
+    //   }
+    // });
   }
   handleSelect(el) {
     this.layoutUtilsService.showActionNotification(
