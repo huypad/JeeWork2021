@@ -44,5 +44,4 @@ export class DanhMucChungService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<QueryResultsModel>(API_URL + `/controllergeneral/GetListPositionbyStructure?structureid=${structureid}`, { headers: httpHeaders });
 	}
-
 }

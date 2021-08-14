@@ -28,8 +28,6 @@ export class ExportDialogComponent {
 		public weworkService: WeWorkService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
-		private layoutUtilsService: LayoutUtilsService,
-		private activatedRoute: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
 		public dynamicFormService: DynamicFormService,

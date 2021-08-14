@@ -76,7 +76,6 @@ export class ListDepartmentListComponent implements OnInit {
 		private translate: TranslateService,
 		public datepipe: DatePipe,
 		public tokenStorage: TokenStorage,
-		public danhMucChungService: DanhMucChungService,
 		public commonService: CommonService,
 		public menuAsideService: MenuAsideService,
 	) { }

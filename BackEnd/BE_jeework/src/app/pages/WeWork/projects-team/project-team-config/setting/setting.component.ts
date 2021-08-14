@@ -19,7 +19,7 @@ import {
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 // Material
-import {  MatDialog  } from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { SelectionModel } from "@angular/cdk/collections";
 // RXJS
 import { fromEvent, merge, ReplaySubject, BehaviorSubject } from "rxjs";
@@ -75,7 +75,7 @@ export class SettingComponent {
 	public projectFilterCtrl: FormControl = new FormControl();
 	listdepartment: any[] = [];
 	listDefaultView: any[] = [];
-	
+
 	//icon
 	icon: any = {};
 	constructor(
@@ -83,12 +83,12 @@ export class SettingComponent {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private _service: ProjectsTeamService,
 		private layoutUtilsService: LayoutUtilsService,
-		private translate: TranslateService,		
+		private translate: TranslateService,
 		public dialog: MatDialog,
 		private danhMucChungService: DanhMucChungService,
 		public weworkService: WeWorkService,
 		private router: Router
-	) {}
+	) { }
 	/** LOAD DATA */
 	ngOnInit() {
 		var arr = this.router.url.split("/");
@@ -157,8 +157,8 @@ export class SettingComponent {
 			});
 	}
 
-	litsTemplateDemo:any=[];
-	listSTT:any=[];
+	litsTemplateDemo: any = [];
+	listSTT: any = [];
 	TempSelected = 0;
 	LoadDataTemp() {
 		//load lại
@@ -175,9 +175,9 @@ export class SettingComponent {
 		});
 	}
 
-	TemplateUsed(){
-		var x =this.litsTemplateDemo.find(x=>x.id_row==this.TempSelected);
-		if(x){
+	TemplateUsed() {
+		var x = this.litsTemplateDemo.find(x => x.id_row == this.TempSelected);
+		if (x) {
 			return x.title;
 		}
 		return 'Chưa sử dụng giao diện template';
@@ -192,7 +192,7 @@ export class SettingComponent {
 		this.changeDetectorRefs.detectChanges();
 	}
 
-	UpdateTemplate(){
+	UpdateTemplate() {
 		const dialogRef = this.dialog.open(ProjectTeamEditStatusComponent, {
 			data: this.item,
 			minWidth: '800px',
@@ -209,9 +209,9 @@ export class SettingComponent {
 
 	dataChanged(view) {
 		setTimeout(() => {
-			if(view.isChecked){ // thêm view 
+			if (view.isChecked) { // thêm view 
 				this.addView(view);
-			}else{ // xóa view
+			} else { // xóa view
 				this.deleteView(view);
 			}
 		}, 10);

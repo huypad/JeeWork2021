@@ -46,7 +46,6 @@ export class milestoneDetailEditComponent implements OnInit {
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		public weworkService: WeWorkService,
-		private danhMucChungService: DanhMucChungService,
 		private router: Router,) {
 	}
 	/** LOAD DATA */

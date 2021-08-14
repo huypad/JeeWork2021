@@ -22,7 +22,6 @@ import { MenuConfigService } from "./_metronic/jeework_old/core/_base/layout/ser
 import { MenuAsideService } from "./_metronic/jeework_old/core/_base/layout/services/menu-aside.service";
 import { HttpUtilsService } from "./_metronic/jeework_old/core/_base/crud/utils/http-utils.service";
 import { ListDepartmentService } from "./pages/WeWork/List-department/Services/List-department.service";
-import { WeWorkModule } from "./pages/WeWork/wework.module";
 import { NgModule, APP_INITIALIZER } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";

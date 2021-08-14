@@ -31,8 +31,6 @@ export class ProjectListTabComponent implements OnInit, OnChanges {
 
 	ngOnChanges(){
 	}
-
-
 	constructor(
 		public _Services: ProjectsTeamService,
  		public dialog: MatDialog,

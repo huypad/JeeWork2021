@@ -128,9 +128,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     private changeDetectorRefs: ChangeDetectorRef,
     public commonService: CommonService,
     public WeWorkService: WeWorkService
-  ) {}
+  ) { }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void { }
 
   ngOnInit(): void {
     // load view settings
@@ -172,7 +172,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     // }
   }
 
-  LoadMenu(){
+  LoadMenu() {
     this.menuAsideService.loadMenu();
   }
 
@@ -198,8 +198,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ThemDuan(id){
-    this.QuickInsert = id; 
+  ThemDuan(id) {
+    this.QuickInsert = id;
   }
 
   Create(_item: ProjectTeamModel) {
@@ -212,7 +212,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         this.layoutUtilsService.showActionNotification(
           res.error.message,
           MessageType.Read,
-          9999999999,
+          999999999,
           true,
           false,
           3000,
@@ -340,7 +340,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     return classes;
   }
 
-  UpdateTemplate(value,itemMenu) {
+  UpdateTemplate(value, itemMenu) {
     const item = itemMenu;
     const dialogRef = this.dialog.open(TemplateCenterUpdateComponent, {
       data: { item, buocthuchien: value },
@@ -611,7 +611,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             // });
           } else {
             // location.reload();
-          this.LoadMenu();
+            this.LoadMenu();
 
           }
         } else {
@@ -849,7 +849,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       } else {
         // this.ngOnInit();
         this.layoutUtilsService.showInfo(_saveMessage);
-          this.menuAsideService.loadMenu();
+        this.menuAsideService.loadMenu();
         // location.reload();
         // this.changeDetectorRefs.detectChanges();
       }
@@ -885,7 +885,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           true,
           false
         );
-          this.LoadMenu();
+        this.LoadMenu();
         // location.reload();
         // this.changeDetectorRefs.detectChanges();
       }
@@ -932,7 +932,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           if (!res) {
             return;
           } else {
-          this.LoadMenu();
+            this.LoadMenu();
           }
           location.reload();
         });
@@ -976,7 +976,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     return "red";
   }
 
-  AddAutomation(itemMenu){
+  AddAutomation(itemMenu) {
     const item = itemMenu;
     const dialogRef = this.dialog.open(AutomationComponent, {
       data: { item },

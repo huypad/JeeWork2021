@@ -24,11 +24,8 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 // Material
 import { MatDialog } from "@angular/material/dialog";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
 import { SelectionModel } from "@angular/cdk/collections";
 // RXJS
-import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { BehaviorSubject, fromEvent, merge } from "rxjs";
 import { TranslateService } from "@ngx-translate/core";
 // Models

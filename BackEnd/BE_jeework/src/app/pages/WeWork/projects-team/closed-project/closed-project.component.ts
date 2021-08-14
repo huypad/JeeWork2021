@@ -58,7 +58,6 @@ export class ClosedProjectComponent implements OnInit {
 		private _service: ProjectsTeamService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		private danhMucChungService: DanhMucChungService,
 		public weworkService: WeWorkService,
 		private router: Router,) { }
 	/** LOAD DATA */

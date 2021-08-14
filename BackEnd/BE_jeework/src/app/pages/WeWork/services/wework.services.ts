@@ -1,11 +1,8 @@
 import { QueryResultsModel } from './../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
 import { HttpUtilsService } from './../../../_metronic/jeework_old/core/utils/http-utils.service';
 import { environment } from 'src/environments/environment';
-import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { QueryParamsModel } from './../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
-import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
 const API_Lite = environment.APIROOTS + '/api/wework-lite';
@@ -158,7 +155,6 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-all-status-dynamic`, { headers: httpHeaders });
 	}
-
 	//#region nhắc nhở 
 	Get_DSNhacNho(): Observable<QueryResultsModel> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();

@@ -78,7 +78,6 @@ export class DuplicateProjectComponent implements OnInit {
     private translate: TranslateService,
     private menuAsideService: MenuAsideService,
     public weworkService: WeWorkService,
-    private router: Router
   ) { }
   /** LOAD DATA */
   ngOnInit() {

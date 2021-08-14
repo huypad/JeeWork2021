@@ -34,12 +34,9 @@ export class AddUsersDialogComponent {
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		public weworkService: WeWorkService,
 		public dialog: MatDialog,
-		private route: ActivatedRoute,
 		private layoutUtilsService: LayoutUtilsService,
-		private activatedRoute: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private translate:TranslateService,
-		private router: Router,
 		public dynamicFormService: DynamicFormService,
 		private tokenStorage: TokenStorage,) {
 	}

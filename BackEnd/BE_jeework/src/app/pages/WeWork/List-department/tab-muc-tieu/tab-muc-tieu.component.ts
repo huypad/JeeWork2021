@@ -56,7 +56,6 @@ export class TabMucTieuComponent implements OnInit {
 	@Input() Values: any;
 	flag: boolean = true;
 	constructor(public deptService: ListDepartmentService,
-		private danhMucService: DanhMucChungService,
 		public WeWorkService: WeWorkService,
 		public dialog: MatDialog,
 		private router: Router,
