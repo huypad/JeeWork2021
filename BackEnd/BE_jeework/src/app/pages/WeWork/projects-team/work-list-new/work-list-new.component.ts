@@ -33,12 +33,14 @@ import {
   finalize,
   share,
   takeUntil,
+  debounceTime,
+  startWith,
 } from "rxjs/operators";
 import { element } from "protractor";
 import { WeWorkService } from "./../../services/wework.services";
 import { DatePipe, DOCUMENT } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
-import { FormBuilder } from "@angular/forms";
+import { FormBuilder, FormControl } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { ProjectsTeamService } from "./../Services/department-and-project.service";
 import {
@@ -126,6 +128,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   DataNewField: any = [];
   listType: any = [];
   textArea: string = "";
+  searchCtrl: FormControl = new FormControl();
   private readonly componentName: string = "kt-task_";
   Emtytask = false;
   filterDay = {
@@ -161,6 +164,20 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
+    this.searchCtrl.valueChanges
+    .pipe(
+      debounceTime(1000),
+      startWith("")
+    )
+    .subscribe(res => {
+      /**
+       * (keyup.enter)="LoadData()" [(ngModel)]="keyword" 
+       */
+      this.keyword = res;
+      this.LoadData();
+    });
+
     var today = new Date();
     var start_date = new Date();
     this.filterDay = {
@@ -320,7 +337,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.listFilter = this.data.Filter;
         this.ListColumns = this.data.TenCot;
         //xóa title khỏi cột
-        var colDelete = ["title", "id_row"];
+        var colDelete = ["title", "id_row", "id_project_team", "id_parent"];
         colDelete.forEach((element) => {
           var indextt = this.ListColumns.findIndex(
             (x) => x.fieldname == element
@@ -1322,7 +1339,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   updateDate(task, date, field) {
     this.UpdateByKey(task, field, moment(date).format("MM/DD/YYYY HH:mm"));
   }
-
   updatePriority(task, field, value) {
     this.UpdateByKey(task, field, value);
   }

@@ -581,7 +581,7 @@ namespace JeeWork_Core2021.Classes
                 m.Subject = title;
                 m.Body = contents;
                 if (!"".Equals(guiden)) guiden = guiden.Substring(1);
-                    DpsConnection cnn1 = new DpsConnection(ConnectionString);
+                DpsConnection cnn1 = new DpsConnection(ConnectionString);
                 try
                 {
                     //s.Send(m);
@@ -595,7 +595,7 @@ namespace JeeWork_Core2021.Classes
                         subject = title,
                         html = contents //nội dung html
                     };
-                     _notifier.sendEmail(asyncnotice);
+                    _notifier.sendEmail(asyncnotice);
                     //Lưu lại email đã gửi
                     Hashtable val = new Hashtable();
                     val.Add("MailTo", guiden);
@@ -641,7 +641,11 @@ namespace JeeWork_Core2021.Classes
         {
             InitialData(CustemerID, cnn);
         }
-        public MailInfo(string CustemerID,string ConnectionString)
+        public MailInfo()
+        {
+            InfoMailTest();
+        }
+        public MailInfo(string CustemerID, string ConnectionString)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
@@ -649,7 +653,7 @@ namespace JeeWork_Core2021.Classes
             }
         }
         private void InitialData(string CustemerID, DpsConnection cnn)
-      {
+        {
             DataTable dt = new DataTable();
             SqlConditions cond = new SqlConditions();
             cond.Add("RowID", CustemerID);
@@ -679,6 +683,15 @@ namespace JeeWork_Core2021.Classes
                 }
                 catch { }
             }
+        }
+        private void InfoMailTest()
+        {
+            Email = "hrm@dps.com.vn";
+            UserName = "hrm@dps.com.vn";
+            SmptClient = "smtp.gmail.com";
+            EnableSSL = true;
+            Port = 587;
+            Password = "3mailHRm@dps";
         }
         public string Email;
         public string UserName;

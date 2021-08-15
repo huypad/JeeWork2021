@@ -64,4 +64,13 @@ export class SocketioService {
         params: httpParam
       });
   }
+
+  ReadAll(): Observable<any> {
+    const auth = this.auth.getAuthFromLocalStorage();
+    const httpHeader = new HttpHeaders({
+      Authorization: `${auth != null ? auth.access_token : ''}`,
+    });
+    let item = { };
+    return this.http.post<any>(environment.APINOTIFICATION + `/notification/readall`, item, { headers: httpHeader });
+  }
 }

@@ -446,6 +446,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("frequency", data.frequency);
                         val.Add("CreatedDate", DateTime.Now);
                         val.Add("CreatedBy", iduser);
+                        val.Add("customerid", loginData.CustomerID);
 
                         val.Add("id_project_team", data.id_project_team);
                         string strCheck = "select count(*) from we_repeated where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";

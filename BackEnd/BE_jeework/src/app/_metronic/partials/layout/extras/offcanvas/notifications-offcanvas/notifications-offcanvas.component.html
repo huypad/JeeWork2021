@@ -3,7 +3,9 @@
   <!--begin::Header-->
   <div class="offcanvas-header d-flex align-items-center justify-content-between mb-10">
     <h3 class="font-weight-bold m-0">
-      <span class="text-dark" style="margin-top: 25px;">{{'Common.notify_titile' | translate}}</span>
+      <span class="text-dark" style="margin-top: 25px;">{{'Common.notify_titile' | translate}}</span>&nbsp;
+      <span [inlineSVG]="'./assets/media/svg/icons/Navigation/Double-check.svg'" cacheSVG="true" matTooltip="Đánh dấu tất cả đã xem"
+      class="svg-icon svg-icon-xl svg-icon-primary" (click)="DanhDauDaXem()" style="cursor: pointer;"></span>
     </h3>
     <a href="#" class="btn btn-xs btn-icon btn-light btn-hover-primary" id="kt_quick_notifications_close">
       <i class="ki ki-close icon-xs text-muted"></i>

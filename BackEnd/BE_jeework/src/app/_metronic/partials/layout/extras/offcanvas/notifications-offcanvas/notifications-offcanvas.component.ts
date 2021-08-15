@@ -66,23 +66,14 @@ export class NotificationsOffcanvasComponent implements OnInit {
           this.router.navigateByUrl(noti.message_json.Link) //có link thì chuyển link
         }
       }
+      this.loadUnreadList.emit(true) 
+    });
+  }
+
+  DanhDauDaXem(){
+    this.socketService.ReadAll().subscribe(res => {
+      this.getListNoti();
       this.loadUnreadList.emit(true)
-      // if(noti.message_json.Link != null && noti.message_json.Link != "") {
-      //   if(noti.message_json.AppCode == "WORK") {
-      //     this.router.navigateByUrl(noti.message_json.Link) //có link thì chuyển link
-      //   }
-      //   else { //các link không nằm trong app
-      //     let domain = ""
-      //     // if(noti.message_json.AppCode == "REQ") {
-      //     //   domain = environment.linkREQ
-      //     // }
-      //     if(noti.message_json.AppCode == "ACC") {
-      //       domain = environment.LINKACCOUNT+'/'
-      //     }
-      //     window.open(domain + noti.message_json.Link, '_blank');
-      //   }
-      // }
-      // this.loadUnreadList.emit(true)
     });
   }
 }

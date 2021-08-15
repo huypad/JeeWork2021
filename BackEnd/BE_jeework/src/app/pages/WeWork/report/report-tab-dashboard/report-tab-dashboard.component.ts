@@ -84,14 +84,15 @@ export class ReportTabDashboardComponent implements OnInit {
   DanhSachPhongBan: any = [];
   todoItemSelectionToggle(id){
     console.log(id);
-    var index = this.DanhSachPhongBan.findIndex(x=> x==id);
-    if(index >= 0){
-      this.DanhSachPhongBan.splice(index,1);
-    }else{
-      this.DanhSachPhongBan.push(id);
-    }
-    console.log(this.DanhSachPhongBan);
-    this.LoadData();
+    // var index = this.DanhSachPhongBan.findIndex(x=> x==id);
+    // if(index >= 0){
+    //   this.DanhSachPhongBan.splice(index,1);
+    // }else{
+    //   this.DanhSachPhongBan.push(id);
+    // }
+    // console.log(this.DanhSachPhongBan);
+    // this.LoadData();
+    id.data_folder(element=> element.checked = true);
   }
 
   SetUp(){
@@ -1160,6 +1161,7 @@ export class ReportTabDashboardComponent implements OnInit {
     }
     return null;
   }
+
 }
 
 export interface DialogData {

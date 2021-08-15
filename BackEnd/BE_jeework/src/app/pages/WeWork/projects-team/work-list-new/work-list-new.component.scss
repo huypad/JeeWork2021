@@ -1315,3 +1315,14 @@ textarea:focus{
         padding: 7px 10px;
     }
 }
+
+.remove-date{
+    color: blue;
+    position: absolute;
+    top: 30%;
+    left: 0%;
+    display: none;
+}
+.item-datetime:hover .remove-date{
+    display: block;
+}

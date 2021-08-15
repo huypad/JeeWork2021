@@ -25,7 +25,7 @@ import {
 import { SelectionModel } from "@angular/cdk/collections";
 import { WeWorkService } from "./../../../services/wework.services";
 import { TranslateService } from "@ngx-translate/core";
-import { FormBuilder } from "@angular/forms";
+import { FormBuilder, FormControl } from "@angular/forms";
 import { MatDialog } from "@angular/material/dialog";
 import { Router, ActivatedRoute } from "@angular/router";
 import { WorkService } from "./../../../work/work.service";
@@ -56,6 +56,8 @@ import {
   tap,
   share,
   switchMap,
+  debounceTime,
+  startWith,
 } from "rxjs/operators";
 @Component({
   selector: "kt-list-task-cu-2",
@@ -107,14 +109,14 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   ProjectTeam: any = {};
   IsAdminGroup = false;
   private readonly componentName: string = "kt-task_";
-  public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<
-    any[]
-  >(1);
+  public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
     startDate: new Date("09/01/2020"),
     endDate: new Date("09/30/2020"),
   };
   public column_sort: any = [];
+	public searchCtrl: FormControl = new FormControl();
+
   constructor(
     @Inject(DOCUMENT) private document: Document, // multi level
     private _service: ProjectsTeamService,
@@ -144,6 +146,21 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
 
   formattedDate: any;
   ngOnInit() {
+
+    this.searchCtrl.valueChanges
+			.pipe(
+        debounceTime(1000),
+        startWith("")
+      )
+			.subscribe(res => {
+        /**
+         * (keyup.enter)="LoadSampleList()" 
+         * [(ngModel)]="keyword"
+         */
+        this.keyword = res;
+        this.LoadSampleList();
+			});
+
     // get filter groupby
     this.filter_groupby = this.getMystaff
       ? this.listFilter_Groupby[1]

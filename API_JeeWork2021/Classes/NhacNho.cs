@@ -28,21 +28,9 @@ namespace API_JeeWork2021.Classes
         private INotifier _notifier;
         public NhacNho(IConnectionCache _cache, IConfiguration configuration, INotifier notifier, IProducer producer)
         {
-            //
-            // TODO: Add constructor logic here
-            //
-            //1p chạy 1 lần (chỉ áp dụng những chức năng cần chạy sớm và phải chạy nhanh) 60000
-            Timer1Minute = new System.Timers.Timer(60000);
-            Timer1Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer1Minute_Elapsed);
-            //5p chạy 1 lần 300000
-            Timer5Minute = new System.Timers.Timer(300000);
-            Timer5Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer5Minute_Elapsed);
             //10p chạy 1 lần 600000
-            TimerSendReminder = new System.Timers.Timer(600000);
-            TimerSendReminder.Elapsed += new System.Timers.ElapsedEventHandler(TimerSendReminder_Elapsed);
-            //60p chạy 1 lần 3600000
-            TimerAutoUpdate = new System.Timers.Timer(3600000);
-            TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(TimerAutoUpdate_Elapsed);
+            Timer10Minute = new System.Timers.Timer(60000);
+            Timer10Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
             _producer = producer;
@@ -62,86 +50,87 @@ namespace API_JeeWork2021.Classes
                 _basePath = value;
             }
         }
-        System.Timers.Timer TimerAutoUpdate;
-        System.Timers.Timer TimerSendReminder;
-        System.Timers.Timer Timer1Minute;
-        System.Timers.Timer Timer5Minute;
+        System.Timers.Timer Timer10Minute;
 
         public void Start()
         {
-            TimerAutoUpdate.Start();
-            TimerSendReminder.Start();
-            Timer1Minute.Start();
-            Timer5Minute.Start();
+            Timer10Minute.Start();
         }
         public void Stop()
         {
-            TimerAutoUpdate.Stop();
-            TimerSendReminder.Stop();
-            Timer1Minute.Stop();
-            Timer1Minute.Stop();
+            Timer10Minute.Start();
         }
-        protected void Timer1Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        protected void Timer10Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-        private void Timer5Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-        protected void TimerSendReminder_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
+            string ham = "Timer10Minute_Elapsed"; string idkh = "0";
+            string ConnectionString = "";
             try
             {
                 List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
-                foreach(var item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
+                foreach (var item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
                 {
                     try
                     {
-                        string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
+                        ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
+                        ham = "DataAccount"; idkh = item.ToString();
                         List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
-                        if (DataAccount != null)
+                        if (DataAccount != null && !string.IsNullOrEmpty(ConnectionString))
                         {
                             foreach (var account in DataAccount)
                             {
-                                GetSoluongCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                                GetSoluongCongviecQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                                GetSoluongCongviecHethanTrongngay(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
-                                GetSoluongDuAnQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                ham = "SLCongviecUser"; idkh = item.ToString();
+                                SLCongviecUser(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                ham = "SLCongviecQuaHan"; idkh = item.ToString();
+                                SLCongviecQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                ham = "SLCongViecHetHanTrongNgay"; idkh = item.ToString();
+                                SLCongViecHetHanTrongNgay(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                                ham = "SLDuAnQuaHan"; idkh = item.ToString();
+                                SLDuAnQuaHan(account.UserId, account.CustomerID, ConnectionString, _configuration, _producer);
+                            }
+                        }
+                        using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                        {
+                            if (cnn.LastError != null)
+                            {
+                                string content = " TimerSendReminder_Elapsed. Lỗi Database: " + cnn.LastError.Message;
+                                string error_message = "";
+                                string CustemerID1 = "0";
+                                //Gửi thông báo khi phát sinh lỗi
+                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        continue;
+                        using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                        {
+                            if (cnn.LastError != null)
+                            {
+                                string content = " TimerSendReminder_Elapsed. Lỗi Database: " + ex.Message;
+                                string error_message = "";
+                                string CustemerID1 = "0";
+                                //Gửi thông báo khi phát sinh lỗi
+                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                            }
+                        }
                     }
-
                 }
             }
             catch (Exception ex)
             {
+                string error = ex.Message;
+                string content = " TimerSendReminder_Elapsed: " + ex.Message + ". Customer " + idkh + " funcion " + ham;
+                string error_message = "";
+                string CustemerID1 = "0";
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    //Gửi thông báo khi phát sinh lỗi
+                    SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                }
             }
 
         }
-        void TimerAutoUpdate_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-            }
-        }
+       
         /// <summary>
         /// Update số lượng công việc  +1 hoặc -1 với những tài kkhoan quy định mà không nhắc nhở theo định kì 
         /// </summary>
@@ -153,7 +142,7 @@ namespace API_JeeWork2021.Classes
         {
             UpdateSoluongCongviecHetHanUser(UserID, CustomerID, value, _configuration, _producer);
         }
-        public static void UpdateCVHoanthanh(long UserID, long CustomerID,bool hasDeadline, IConfiguration _configuration, IProducer _producer)
+        public static void UpdateCVHoanthanh(long UserID, long CustomerID, bool hasDeadline, IConfiguration _configuration, IProducer _producer)
         {
             UpdateSoluongCongviecUser(UserID, CustomerID, "-", _configuration, _producer);
             if (hasDeadline)
@@ -161,10 +150,9 @@ namespace API_JeeWork2021.Classes
                 UpdateSoluongCongviecHetHanUser(UserID, CustomerID, "-", _configuration, _producer);
             }
         }
-        
         public static void UpdateSoluongDuan(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
         {
-            GetSoluongDuAnQuaHan(UserID, CustomerID, ConnectionString, _configuration, _producer);
+            SLDuAnQuaHan(UserID, CustomerID, ConnectionString, _configuration, _producer);
         }
         /// <summary>
         /// Cập nhập số lượng công việc đang làm cần nhắc nhở
@@ -187,7 +175,7 @@ namespace API_JeeWork2021.Classes
             };
             SendTestReminder(_configuration, _producer, demo);
         }
-        
+
         public static void UpdateSoluongCongviecHetHanUser(long UserID, long CustomerID, string value, IConfiguration _configuration, IProducer _producer)
         {
             var demo = new Remider()
@@ -201,116 +189,125 @@ namespace API_JeeWork2021.Classes
             };
             SendTestReminder(_configuration, _producer, demo);
         }
-        
-        public static long GetSoluongCongviecUser(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
+
+        public static long SLCongviecUser(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
                 cond.Add("UserID", UserID);
-                string sqlq = @$"select count(distinct id_row) from v_wework_new w 
-                                where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) 
-                                and status not in (select id_row from we_status where IsFinal = 1 and Disabled = 0)";
-                long Tongcv = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
-                if (cnn.LastError is not null)
+                string sqlq = @$"select w.* from v_wework_new w 
+                                where disabled = 0 and (w.createdBy = @UserID or w.id_nv = @UserID) 
+                                and status not in (select id_row from we_status where isfinal = 1)";
+                DataTable dt = new DataTable();
+                dt = cnn.CreateDataTable(sqlq, cond);
+                if (cnn.LastError != null || dt.Rows.Count < 0)
                     return 0;
-
                 var demo = new Remider()
                 {
                     PhanLoaiID = 503,
-                    SoLuong = int.Parse(Tongcv.ToString()),
+                    SoLuong = dt.Rows.Count,
                     UserID = UserID,
                     CustomerID = CustomerID,
                     DataField = "Sophu1",
                 };
                 SendTestReminder(_configuration, _producer, demo);
-                return Tongcv;
+                return dt.Rows.Count;
             }
         }
-        public static long GetSoluongCongviecHethanTrongngay(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
-        { 
+        public static long SLCongViecHetHanTrongNgay(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
+        {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
+                DateTime today = DateTime.Now;
+                DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
                 SqlConditions cond = new SqlConditions();
                 cond.Add("UserID", UserID);
-                string sqlq = @$"select count(distinct id_row) from v_wework_new w 
-                                where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) 
+                string sqlq = @$"select w.* from v_wework_new w 
+                                where disabled = 0 
+                                and (w.CreatedBy = @UserID or w.Id_NV = @UserID) 
+                                and deadline is not null
                                 and status not in (select id_row from we_status where isfinal = 1 and disabled = 0)";
-                sqlq += "and (deadline BETWEEN (SELECT CAST(CAST(GETDATE() AS DATE) AS DATETIME)) " +
-                    "AND (SELECT CAST(CAST(GETDATE()+ 1 AS DATE) AS DATETIME)) )";
-                long Tongcv = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
-                if (cnn.LastError is not null)
+                sqlq += " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
+                DataTable dt = new DataTable();
+                dt = cnn.CreateDataTable(sqlq, cond);
+                if (cnn.LastError != null || dt.Rows.Count < 0)
                     return 0;
-
                 var demo = new Remider()
                 {
                     PhanLoaiID = 803,
-                    SoLuong = int.Parse(Tongcv.ToString()),
+                    SoLuong = dt.Rows.Count,
                     UserID = UserID,
                     CustomerID = CustomerID,
                     DataField = "Sophu1",
                 };
                 SendTestReminder(_configuration, _producer, demo);
-                return Tongcv;
+                return dt.Rows.Count;
             }
         }
-        public static long GetSoluongCongviecQuaHan(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
-        { 
+        public static long SLCongviecQuaHan(long UserID, long CustomerID, string ConnectionString, IConfiguration _configuration, IProducer _producer)
+        {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
                 cond.Add("UserID", UserID);
-                string sqlq = @$"select count(distinct id_row) from v_wework_new w 
-    where Disabled = 0 and ( w.CreatedBy = @UserID or w.Id_NV = @UserID) and status not in (select id_row from we_status where IsFinal = 1 and Disabled = 0)";
-                sqlq += "and (deadline < GETDATE() or status in (select id_row from we_status where IsDeadline = 1 and Disabled = 0) )";
-                long Tongcv = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
-                if (cnn.LastError is not null)
+                string sqlq = @$"select w.* 
+                            from v_wework_new w 
+                            where disabled = 0 
+                            and (w.CreatedBy = @UserID or w.Id_NV = @UserID) 
+                            and deadline < dateadd (minute, +10, getdate())
+                            and deadline > dateadd (minute, -10, getdate())
+                            and status not in (select id_row from we_status where isfinal = 1 and Disabled = 0)";
+                DataTable dt = new DataTable();
+                dt = cnn.CreateDataTable(sqlq, cond);
+                if (cnn.LastError != null || dt.Rows.Count < 0)
                     return 0;
-
                 var demo = new Remider()
                 {
                     PhanLoaiID = 802,
-                    SoLuong = int.Parse(Tongcv.ToString()),
+                    SoLuong = dt.Rows.Count,
                     UserID = UserID,
                     CustomerID = CustomerID,
                     DataField = "Sophu1",
                 };
                 SendTestReminder(_configuration, _producer, demo);
-                return Tongcv;
+                return dt.Rows.Count;
             }
         }
-        
-        public static long GetSoluongDuAnQuaHan(long UserID,long IdKH, string ConnectionString, IConfiguration _configuration, IProducer _producer)
+
+        public static long SLDuAnQuaHan(long UserID, long IdKH, string ConnectionString, IConfiguration _configuration, IProducer _producer)
         {
-            //SELECT CAST(CAST(GETDATE() AS DATE) AS DATETIME) as homnay
-            //SELECT CAST(CAST(GETDATE()+1 AS DATE) AS DATETIME) as ngaymai
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 SqlConditions cond = new SqlConditions();
                 cond.Add("UserID", UserID);
                 cond.Add("IdKH", IdKH);
-                string sqlq = @$"select count(distinct p.id_row)
+                string sqlq = @$"select p.*
                                 from we_project_team p
                                 join we_department d on d.id_row = p.id_department
                                 join we_project_team_user u on u.id_project_team = p.id_row
-                                where u.Disabled = 0 and id_user = @UserID  and end_date < GETDATE()
-                                and p.Disabled = 0  and d.Disabled = 0 and IdKH=@IdKH ";
-                long Tongda = long.Parse(cnn.ExecuteScalar(sqlq, cond).ToString());
-                if (cnn.LastError is not null)
+                                where u.disabled = 0 
+                                and id_user = @UserID 
+                                and end_date < GETDATE()
+                                and p.disabled = 0 
+                                and d.disabled = 0 
+                                and IdKH=@IdKH";
+                DataTable dt = new DataTable();
+                dt = cnn.CreateDataTable(sqlq, cond);
+                if (cnn.LastError != null || dt.Rows.Count < 0)
                     return 0;
                 var demo = new Remider()
                 {
                     PhanLoaiID = 804,
-                    SoLuong = int.Parse(Tongda.ToString()),
+                    SoLuong = dt.Rows.Count,
                     UserID = UserID,
                     CustomerID = IdKH,
                     DataField = "Sophu1",
                 };
                 SendTestReminder(_configuration, _producer, demo);
-                return Tongda;
+                return dt.Rows.Count;
             }
         }
-
         public static void SendTestReminder(IConfiguration _configuration, IProducer _producer, Remider remider)
         {
             string TopicCus = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeFlowUpdateReminder");
@@ -319,11 +316,11 @@ namespace API_JeeWork2021.Classes
         }
         public class Remider
         {
-            public long PhanLoaiID{ get; set; }
+            public long PhanLoaiID { get; set; }
             public int SoLuong { get; set; }
             public long UserID { get; set; }
             public long CustomerID { get; set; }
-            public string DataField{ get; set; }
+            public string DataField { get; set; }
             public string FieldChange { get; set; } = "";
         }
     }

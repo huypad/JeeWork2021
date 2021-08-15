@@ -33,6 +33,7 @@ export class AuxiliaryRouterComponent implements OnInit {
         this.openDialog(res.data);
       }else{
         alert(res.error.message);
+        this.router.navigate(['/error'])
       }
     })
   }

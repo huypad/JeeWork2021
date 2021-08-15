@@ -2294,7 +2294,6 @@ and IdKH={loginData.CustomerID} )";
                     title = title.Replace(key, val);
                     template = template.Replace(key, val);
                 }
-
                 for (int i = 0; i < dtUser.Rows.Count; i++)
                 {
                     //Gửi mail cho người nhận
@@ -2309,19 +2308,15 @@ and IdKH={loginData.CustomerID} )";
                         {
                             CustomerID = nguoigui.CustomerID,
                             access_token = "",
-                            //from = "derhades1998@gmail.com",
-                            //to = "thanhthang1798@gmail.com", //
-                            //to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
-                            to = "thanhthang1798@gmail.com", //
+                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
                             subject = title,
                             html = contents //nội dung html
                         };
                         _notifier.sendEmail(asyncnotice);
-                        //SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, _notifier);
+                        MailInfo MInfo = new MailInfo();
+                        SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier);
                     }
                 }
-               
-
                 //string HRConnectionString = JeeWorkConstant.getHRCnn();
                 //DpsConnection cnnHR = new DpsConnection(HRConnectionString);
                 //MailInfo MInfo = new MailInfo(nguoigui.CustomerID.ToString(), cnnHR);
@@ -3159,13 +3154,20 @@ and IdKH={loginData.CustomerID} )";
         /// <returns></returns>
         public static string getConnectionString(IConnectionCache ConnectionCache, long CustomerID, IConfiguration _configuration)
         {
-            var x = _configuration.GetValue<string>("AppConfig:IsOnlineDB");
-            string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
-            if (string.IsNullOrEmpty(x))
+            try
             {
-                ConnectionString = _configuration.GetValue<string>("AppConfig:ConnectionString");
+                var x = _configuration.GetValue<string>("AppConfig:IsOnlineDB");
+                string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
+                if (string.IsNullOrEmpty(x))
+                {
+                    ConnectionString = _configuration.GetValue<string>("AppConfig:ConnectionString");
+                }
+                return ConnectionString;
             }
-            return ConnectionString;
+            catch
+            {
+                return "";
+            }
         }
         public static void Insert_Template(DpsConnection cnn, string CustemerID)
         {

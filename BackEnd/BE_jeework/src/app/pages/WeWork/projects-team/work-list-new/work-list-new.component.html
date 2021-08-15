@@ -75,6 +75,11 @@
                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
                         (keyup.enter)="LoadData()" [(ngModel)]="keyword" type="text"
                         placeholder="{{ 'work.filterbytaskname' | translate }}">
+                        <!-- seach 1s 1 lần khi không nhập nữa
+                            <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" 
+                                style="border:0;outline:0" type="text" [formControl]="searchCtrl"
+                                placeholder="{{ 'work.filterbytaskname' | translate }}">
+                         -->
                     <div class="cu-search-filter__extra">
                         <div class="cu-filter-value-list-dropdown ng-star-inserted">
                             <div class="cu-dropdown_left cu-dropdown">
@@ -569,8 +574,11 @@
                                                                 </ng-container>
 
                                                                 <ng-template #selectedDate>
-                                                                    <div (click)="dt1.open()" class="item-field"
+                                                                    <div (click)="dt1.open()" class="item-field item-datetime" 
                                                                         *ngIf="CheckRoleskeypermit(item.fieldname)">
+                                                                        <div class="remove-date url" (click)="UpdateByKey(node,item.fieldname,null)" [hidden]="!node[item.fieldname]">
+                                                                            <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
+                                                                        </div>
                                                                         <span
                                                                             class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
                                                                             matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
