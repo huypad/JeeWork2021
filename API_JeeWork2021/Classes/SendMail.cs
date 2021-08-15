@@ -221,49 +221,15 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool SendWithConnection(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, string ConnectionString)
         {
-            if (mailTo.Count <= 0)
-            {
-                ErrorMessage = "Email không hợp lệ";
-                return true;
-            }
-            DataTable dt = new DataTable();
-            SqlConditions cond = new SqlConditions();
-            cond.Add("RowID", CustemerID);
-            dt = cnn.CreateDataTable("select SmtpClient, Port, Email, Password, EnableSSL, Username from tbl_custemers where (where)", "(where)", cond);
-            if (dt.Rows.Count <= 0)
-            {
-                if (SaveCannotSend)
-                    SaveMailCannotSend(title, mailTo, contents, "Không tìm thấy khách hàng", cc, CustemerID, ConnectionString);
-                ErrorMessage = "Không tìm thấy cấu hình mailserver";
-                return false;
-            }
-            else
-            {
-                int port = 0;
-                if (!int.TryParse(dt.Rows[0]["Port"].ToString(), out port))
-                {
-                    if (SaveCannotSend)
-                        SaveMailCannotSend(title, mailTo, contents, "Chưa cấu hình email", cc, CustemerID, ConnectionString);
-                    ErrorMessage = "Thông tin port trong cấu hình mail server không hợp lệ";
-                    return false;
-                }
-                //Task.Factory.StartNew(() =>
-                //{
-
-                string email = dt.Rows[0]["email"].ToString();
-                string username = dt.Rows[0]["username"].ToString();
-                string SmtpClient = dt.Rows[0]["SmtpClient"].ToString();
-                string password = "";
-                try
-                {
-                    password = DpsLibs.Common.EncDec.Decrypt(dt.Rows[0]["Password"].ToString(), "JeeHR_DPSSecurity435");
-                }
-                catch { }
+                string email = "hrm@dps.com.vn";
+                string username = "hrm@dps.com.vn";
+                string SmtpClient = "smtp.gmail.com";
+                bool EnableSSL = true;
+                int port = 587;
+                string password = "3mailHRm@dps";
                 SmtpClient s = new SmtpClient(SmtpClient, port);
                 s.UseDefaultCredentials = false;
-                if (bool.TrueString.Equals(dt.Rows[0]["EnableSSL"].ToString()))
-                    s.EnableSsl = true;
-                else s.EnableSsl = false;
+                s.EnableSsl = true;
                 s.Credentials = new NetworkCredential(username, password);
                 s.DeliveryMethod = SmtpDeliveryMethod.Network;
                 MailMessage m = new MailMessage();
@@ -323,8 +289,6 @@ namespace JeeWork_Core2021.Classes
                     //SaveMailCannotSend(title, mailTo, contents, ex.Message, cc, CustemerID);
                 }
                 //});
-            }
-
             ErrorMessage = "";
             return true;
         }
@@ -357,7 +321,7 @@ namespace JeeWork_Core2021.Classes
         {
             if ((mailTo == null) || ("".Equals(mailTo.Trim())))
             {
-                ErrorMessage = "Email người  nhận không đúng";
+                ErrorMessage = "Email người nhận không đúng";
                 return true;
             }
             string contents = "";
