@@ -791,7 +791,7 @@ namespace JeeWork_Core2021.Classes
                         if (!string.IsNullOrEmpty(mcc))
                             cc.Add(mcc);
                         string error_message = "";
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), errormsg, "", "", false, out error_message, cnn, ConnectionString);
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi từ API: ", new MailAddressCollection(), errormsg, "", "", false, out error_message, cnn, ConnectionString);
                     }
                 }
             }
