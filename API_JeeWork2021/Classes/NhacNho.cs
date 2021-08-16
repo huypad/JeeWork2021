@@ -29,7 +29,7 @@ namespace API_JeeWork2021.Classes
         public NhacNho(IConnectionCache _cache, IConfiguration configuration, INotifier notifier, IProducer producer)
         {
             //10p chạy 1 lần 600000
-            Timer10Minute = new System.Timers.Timer(600000);
+            Timer10Minute = new System.Timers.Timer(60000);
             Timer10Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
@@ -51,17 +51,20 @@ namespace API_JeeWork2021.Classes
             }
         }
         System.Timers.Timer Timer10Minute;
-
+        public bool Time10IsRun;
         public void Start()
         {
+            Time10IsRun = false;
             Timer10Minute.Start();
         }
         public void Stop()
         {
             Timer10Minute.Start();
+            Time10IsRun = false;
         }
         protected void Timer10Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            Time10IsRun = true;
             string ham = "Timer10Minute_Elapsed"; string idkh = "0";
             string ConnectionString = "";
             try
@@ -69,9 +72,9 @@ namespace API_JeeWork2021.Classes
                 List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
                 foreach (var item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
                 {
+                    ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
                     try
                     {
-                        ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
                         ham = "DataAccount"; idkh = item.ToString();
                         List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
                         if (DataAccount != null && !string.IsNullOrEmpty(ConnectionString))
@@ -92,7 +95,7 @@ namespace API_JeeWork2021.Classes
                         {
                             if (cnn.LastError != null)
                             {
-                                string content = " TimerSendReminder_Elapsed. Lỗi Database: " + cnn.LastError.Message;
+                                string content = " Timer10Minute_Elapsed. Lỗi Database: " + cnn.LastError.Message;
                                 string error_message = "";
                                 string CustemerID1 = "0";
                                 //Gửi thông báo khi phát sinh lỗi
@@ -106,7 +109,7 @@ namespace API_JeeWork2021.Classes
                         {
                             if (cnn.LastError != null)
                             {
-                                string content = " TimerSendReminder_Elapsed. Lỗi Database: " + ex.Message;
+                                string content = " Timer10Minute_Elapsed. Lỗi Database: " + ex.Message;
                                 string error_message = "";
                                 string CustemerID1 = "0";
                                 //Gửi thông báo khi phát sinh lỗi
@@ -119,7 +122,7 @@ namespace API_JeeWork2021.Classes
             catch (Exception ex)
             {
                 string error = ex.Message;
-                string content = " TimerSendReminder_Elapsed: " + ex.Message + ". Customer " + idkh + " funcion " + ham;
+                string content = " Timer10Minute_Elapsed: " + ex.Message + ". Customer " + idkh + " funcion " + ham;
                 string error_message = "";
                 string CustemerID1 = "0";
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -128,7 +131,7 @@ namespace API_JeeWork2021.Classes
                     SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                 }
             }
-
+            Time10IsRun = false;
         }
        
         /// <summary>

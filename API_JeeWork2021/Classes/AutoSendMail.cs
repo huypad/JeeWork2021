@@ -73,9 +73,9 @@ namespace JeeWork_Core2021.Classes
         public string NotSendmail;
         public void Start()
         {
-            Time10IsRun = false;
-            Time1IsRun = false;
-            Time5IsRun = false;
+            //Time10IsRun = false;
+            //Time1IsRun = false;
+            //Time5IsRun = false;
             Time60IsRun = false;
             TimerAutoUpdate.Start();
             TimerSendNotify.Start();
@@ -88,9 +88,9 @@ namespace JeeWork_Core2021.Classes
             TimerSendNotify.Stop();
             Timer1Minute.Stop();
             Timer1Minute.Stop();
-            Time10IsRun = false;
-            Time1IsRun = false;
-            Time5IsRun = false;
+            //Time10IsRun = false;
+            //Time1IsRun = false;
+            //Time5IsRun = false;
             Time60IsRun = false;
         }
 

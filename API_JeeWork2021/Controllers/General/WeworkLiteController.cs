@@ -2274,6 +2274,16 @@ and IdKH={loginData.CustomerID} )";
                     string val = dr["value"].ToString();
                     var temp = val.Split(new string[] { " as " }, StringSplitOptions.None);
                     val = temp[temp.Length - 1];
+                    //if ("id_nv".Equals(val))
+                    //{
+                    //    #region Map info account từ JeeAccount
+                    //    var info = DataAccount.Where(x => values[val].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //    if (info != null)
+                    //    {
+                    //        template = template.Replace("$nguoitao$", info.FullName);
+                    //    }
+                    //    #endregion
+                    //}
                     if (!(bool)dr["is_old"])
                     {
                         if (!string.IsNullOrEmpty(f))
@@ -2291,6 +2301,7 @@ and IdKH={loginData.CustomerID} )";
                                 val = old_values[val].ToString();
                         }
                     }
+                   
                     title = title.Replace(key, val);
                     template = template.Replace(key, val);
                 }
