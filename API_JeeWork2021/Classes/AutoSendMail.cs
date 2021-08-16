@@ -201,7 +201,7 @@ namespace JeeWork_Core2021.Classes
                         string content = " Timer60minute. Danh sách khách hàng chưa có Connection string để vào hệ thống JeeWork" + listKH;
                         string error_message = "";
                         string CustemerID1 = "0";
-                        _connection = "Data Source=115.79.43.243;Initial Catalog=Jee_Work;User ID=jee_work;Password=D123jeework";
+                        _connection = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
                         using (DpsConnection cnn = new DpsConnection(_connection))
                         {
                             SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
