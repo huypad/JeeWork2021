@@ -165,7 +165,7 @@ namespace JeeWork_Core2021.Classes
         {
             if (Time60IsRun) return;
             Time60IsRun = true;
-            string _connection = ""; string ham = "ThongBaoHetHan"; string idkh = "0";
+            string _connection = ""; string ham = "ThongBaoHetHan"; string idkh = "0"; string listKH = "";
             try
             {
                 #region danh sách customer
@@ -175,18 +175,36 @@ namespace JeeWork_Core2021.Classes
                     foreach (long CustomerID in list_customer)
                     {
                         _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
+                        if (!string.IsNullOrEmpty(_connection))
+                        {
+                            using (DpsConnection cnn = new DpsConnection(_connection))
+                            {
+                                ham = "EveryDayReminder"; idkh = CustomerID.ToString();
+                                EveryDayReminder(cnn, CustomerID, _connection);
+                                if (cnn.LastError != null)
+                                {
+                                    string content = " Timer60minute. Lỗi Database: " + cnn.LastError.Message;
+                                    string error_message = "";
+                                    string CustemerID1 = "0";
+                                    //Gửi thông báo khi phát sinh lỗi
+                                    SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            listKH += "" + CustomerID;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(listKH))
+                    {
+                        string content = " Timer60minute. Danh sách khách hàng chưa có Connection string để vào hệ thống JeeWork" + listKH;
+                        string error_message = "";
+                        string CustemerID1 = "0";
+                        _connection = "Data Source=115.79.43.243;Initial Catalog=Jee_Work;User ID=jee_work;Password=D123jeework";
                         using (DpsConnection cnn = new DpsConnection(_connection))
                         {
-                            ham = "EveryDayReminder"; idkh = CustomerID.ToString();
-                            EveryDayReminder(cnn, CustomerID, _connection);
-                            if (cnn.LastError != null)
-                            {
-                                string content = " Timer60minute. Lỗi Database: " + cnn.LastError.Message;
-                                string error_message = "";
-                                string CustemerID1 = "0";
-                                //Gửi thông báo khi phát sinh lỗi
-                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
-                            }
+                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                         }
                     }
                 }
@@ -198,7 +216,7 @@ namespace JeeWork_Core2021.Classes
                 string content = " Timer60minute: " + ex.Message + ". Customer " + idkh + " funcion " + ham;
                 string error_message = "";
                 string CustemerID1 = "0";
-                using (DpsConnection cnn = new DpsConnection())
+                using (DpsConnection cnn = new DpsConnection(_connection))
                 {
                     //Gửi thông báo khi phát sinh lỗi
                     SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
@@ -756,13 +774,14 @@ namespace JeeWork_Core2021.Classes
                 {
                     Hashtable val = new Hashtable();
                     val.Add("Id_row", 1);
-                    val.Add("giatri", DateTime.Now.AddDays(-1));
+                    val.Add("giatri", DateTime.Now.AddDays(1));
                     val.Add("mota", "Thời gian nhắc nhở tiếp theo (Theo ngày)");
                     val.Add("nhom", "other");
                     val.Add("id_nhom", 0);
                     val.Add("CustemerID", CustomerID);
                     val.Add("Allowedit", 0);
                     cnn.Insert(val, "tbl_thamso");
+
                 }
             }
             catch (Exception ex)
