@@ -40,7 +40,7 @@ namespace JeeWork_Core2021.Classes
             TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             //60p chạy 1 lần - 3600000
-            TimerAutoUpdate = new System.Timers.Timer(60000);
+            TimerAutoUpdate = new System.Timers.Timer(3600000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(Timer60Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
@@ -199,7 +199,7 @@ namespace JeeWork_Core2021.Classes
                     if (!listKH.Equals(""))
                     {
                         listKH = listKH.Substring(1);
-                        string content = " Timer60minute. Danh sách khách hàng chưa có Connection string để vào hệ thống JeeWork" + listKH;
+                        string content = " Timer60minute. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
                         string error_message = "";
                         string CustemerID1 = "0";
                         _connection = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
@@ -214,7 +214,7 @@ namespace JeeWork_Core2021.Classes
             catch (Exception ex)
             {
                 string error = ex.Message;
-                string content = " Timer60minute: " + ex.Message + ". Customer " + idkh + " funcion " + ham;
+                string content = " Timer60minute: " + ex.Message + " - Customer: " + idkh + " - Funcion: " + ham;
                 string error_message = "";
                 string CustemerID1 = "0";
                 using (DpsConnection cnn = new DpsConnection(_connection))
@@ -787,7 +787,7 @@ namespace JeeWork_Core2021.Classes
             catch (Exception ex)
             {
                 string error = ex.Message;
-                string content = " EveryDayReminder: " + ex.Message + ". Customer " + CustomerID + " funcion " + ham;
+                string content = " EveryDayReminder: " + ex.Message + " - Customer: " + CustomerID + " - Funcion: " + ham;
                 string error_message = "";
                 string CustemerID1 = "0";
                 //Gửi thông báo khi phát sinh lỗi

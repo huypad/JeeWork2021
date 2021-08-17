@@ -614,7 +614,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     color = r["color"],
                                     status = r["status"],
                                     locked = r["locked"],
-                                    stage_description = r["stage_description"] == DBNull.Value ? "": r["stage_description"],
+                                    stage_description = r["stage_description"] == DBNull.Value ? "" : r["stage_description"],
                                     allow_estimate_time = r["allow_estimate_time"],
                                     require_evaluate = r["require_evaluate"],
                                     evaluate_by_assignner = r["evaluate_by_assignner"],
@@ -1264,7 +1264,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     {
                         var users_member = new List<long> { long.Parse(item["id_user"].ToString()) };
                         #region Lấy thông tin để thông báo
-                          noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                        noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
                         #endregion
                         WeworkLiteController.mailthongbao(idc, users_member, 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                         #region Notify thiết lập vai trò member
@@ -1296,7 +1296,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier,_configuration);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -1488,7 +1488,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
-                        notify_model.ReplaceData = has_replace; 
+                        notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
 
@@ -1713,14 +1713,14 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    cnn.EndTransaction();
                     foreach (var owner in data.Users)
                     {
                         if (owner.id_row == 0)
                         {
-                            NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                            NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, cnn, _configuration, _producer);
                         }
                     }
+                    cnn.EndTransaction();
                     WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList(), 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
@@ -1765,7 +1765,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     #endregion
                     #region Lấy thông tin để thông báo
-                      noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                    noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
                     #endregion
                     WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                     #region Notify thiết lập vai trò member
@@ -2234,8 +2234,8 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
 
-                        #endregion
-                        return JsonResultCommon.ThanhCong();
+                    #endregion
+                    return JsonResultCommon.ThanhCong();
                 }
             }
             catch (Exception ex)
@@ -2573,11 +2573,11 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
                     }
-                    cnn.EndTransaction();
                     foreach (var owner in datas)
                     {
-                        NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, ConnectionString, _configuration, _producer);
+                        NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, cnn, _configuration, _producer);
                     }
+                    cnn.EndTransaction();
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
                     List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
@@ -2709,9 +2709,8 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
                     }
+                    NhacNho.UpdateSoluongDuan(id, loginData.CustomerID, cnn, _configuration, _producer);
                     cnn.EndTransaction();
-
-                    NhacNho.UpdateSoluongDuan(id, loginData.CustomerID, ConnectionString, _configuration, _producer);
                     return JsonResultCommon.ThanhCong();
                 }
             }
