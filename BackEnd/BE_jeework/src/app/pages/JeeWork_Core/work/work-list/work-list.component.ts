@@ -5,22 +5,15 @@ import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_ser
 import { locale } from './../../../../modules/i18n/vocabs/vi';
 import { MilestoneModel } from './../../projects-team/Model/department-and-project.model';
 import { milestoneDetailEditComponent } from './../../List-department/milestone-detail-edit/milestone-detail-edit.component';
-import { ChooseMilestoneAndTagComponent } from './../../choose-milestone-and-tags/choose-milestone-and-tags.component';
 import { Component, OnInit, OnChanges, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, OnDestroy, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 // Material
 import { MatDialog } from '@angular/material/dialog';
-import { SelectionModel } from '@angular/cdk/collections';
-import { CdkDragStart, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 // RXJS
-import { debounceTime, distinctUntilChanged, tap, filter } from 'rxjs/operators';
-import { ReplaySubject, fromEvent, merge, BehaviorSubject } from 'rxjs';
 //Datasource
-import { WorkEditDialogComponent } from '../work-edit-dialog/work-edit-dialog.component';
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { WorkEditComponent } from '../work-edit/work-edit.component';
 import { WorkService } from '../work.service';
 import { MyWorkModel, CountModel, MoiDuocGiaoModel, GiaoQuaHanModel, LuuYModel, UserInfoModel, MyMilestoneModel, FilterModel, WorkModel } from '../work.model';
 import { filterEditComponent } from '../../filter/filter-edit/filter-edit.component';
@@ -42,7 +35,6 @@ export class WorkListComponent implements OnInit {
 	data: any[] = [];
 	listUser: any[] = [];
 	selectedItem: any = undefined;
-	childComponentType: any = WorkEditComponent;
 	childComponentData: any = {};
 	listProject: any;
 	selectedTab: number = 0;
@@ -275,12 +267,7 @@ export class WorkListComponent implements OnInit {
 	}
 
 	open() {
-		const dialogRef = this.dialog.open(WorkEditDialogComponent, { data: { DATA: { Id: 1 } } });
-		dialogRef.afterClosed().subscribe(res => {
-			if (!res) {
-				return;
-			}
-		});
+	
 	}
 	selected($event) {
 		this.selectedItem = $event;
@@ -327,7 +314,6 @@ export class WorkListComponent implements OnInit {
 	AddWork() {
 		const models = new WorkModel();
 		models.clear();
-		this.UpdateWork(models);
 	}
 	restoreState(queryParams: QueryParamsModelNew, id: number) {
 		if (id > 0) {
@@ -337,22 +323,6 @@ export class WorkListComponent implements OnInit {
 			return;
 		}
 	}
-	UpdateWork(_item: WorkModel) {
-		let saveMessageTranslateParam = '';
-		saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
-		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-		const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-		const dialogRef = this.dialog.open(WorkEditDialogComponent, { data: { _item } });
-		dialogRef.afterClosed().subscribe(res => {
-			if (!res) {
-			}
-			else {
-				this.ngOnInit();
-				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
-			}
-		});
-	}
-
 	ChangeFilter(item) {
 		const url = 'tasks/filter/' + item;
 		this.router.navigateByUrl(url);

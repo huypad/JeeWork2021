@@ -35,22 +35,22 @@
 			<div *ngIf="type_Duplicate" class="row align-items-center">
 				<div class="col-md-12 kt--margin-bottom-10-mobile">
 					<mat-form-field class="mat-form-field-fluid ">
-                        <input matInput placeholder="{{ 'topic.nguoitheodoi' | translate }}" id="InputUser" type="text"
-						autocomplete="off" value="{{ListFollower}}" [popover]="follower" [popoverOnHover]="false"
-                            (input)="onSearchChange($event)" (click)="click($event)">
-                    </mat-form-field>
-                    <span #hiddenText
-                        style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{ListFollower}}</span>
-                    <popover-content #follower placement="bottom-left" [closeOnClickOutside]="true">
-                        <kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
-                    </popover-content>
+						<input matInput placeholder="{{ 'topic.nguoitheodoi' | translate }}" id="InputUser" type="text"
+							autocomplete="off" value="{{ListFollower}}" [popover]="follower" [popoverOnHover]="false"
+							(input)="onSearchChange($event)" (click)="click($event)">
+					</mat-form-field>
+					<span #hiddenText
+						style="visibility:hidden; white-space: pre;font-size:1.1rem; position:absolute">{{ListFollower}}</span>
+					<popover-content #follower placement="bottom-left" [closeOnClickOutside]="true">
+						<kt-choose-users [options]="options" (ItemSelected)="ItemSelected($event)"></kt-choose-users>
+					</popover-content>
 				</div>
 			</div>
 			<div *ngIf="type_Duplicate" class="row align-items-center">
 				<div class="col-md-12 kt--margin-bottom-10-mobile">
 					<mat-form-field class="mat-form-field-fluid ">
-						<input autocomplete="off" matInput placeholder="{{ 'work.giaoviec' | translate }}" id="InputAssign" type="text"
-							value="{{_Assign}}" [popover]="Assign" [popoverOnHover]="false"
+						<input autocomplete="off" matInput placeholder="{{ 'work.giaoviec' | translate }}"
+							id="InputAssign" type="text" value="{{_Assign}}" [popover]="Assign" [popoverOnHover]="false"
 							(input)="onSearchChange_Assign($event)" (click)="click_Assign($event)">
 					</mat-form-field>
 					<span #hiddenText_Assign

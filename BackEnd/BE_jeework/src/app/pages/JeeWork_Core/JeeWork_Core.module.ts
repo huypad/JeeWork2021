@@ -250,7 +250,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		CRUDTableModule,
 		NgxPrintModule,
 		ApplicationPipesModule,
-		
+
 	],
 	providers: [
 		{ provide: MAT_DATE_LOCALE, useValue: 'vi' },
@@ -302,7 +302,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		// PeriodViewComponent,
 		DepartmentProjectTabComponent,
 		// WorkEditDialogComponent,
-		CommentComponent, 
+		CommentComponent,
 		CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
@@ -551,7 +551,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		AutomationTabManageComponent,
 		DanhsachthumucComponent,
 		ApplicationPipesModule,
-		TimeEstimatesViewComponent, 
+		TimeEstimatesViewComponent,
 	]
 })
 export class JeeWork_CoreModule { }

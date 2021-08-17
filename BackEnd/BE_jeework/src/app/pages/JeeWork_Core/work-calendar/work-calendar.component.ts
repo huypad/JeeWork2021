@@ -2,7 +2,6 @@ import { TokenStorage } from './../../../_metronic/jeework_old/core/auth/_servic
 import { FullCalendarComponent } from "@fullcalendar/angular";
 import { LayoutUtilsService } from "./../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { QueryParamsModel } from "./../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model";
-import { WorkListNewDetailComponent } from "./../projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component";
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
 import {
   Component,

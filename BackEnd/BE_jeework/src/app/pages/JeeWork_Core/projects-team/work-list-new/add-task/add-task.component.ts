@@ -152,7 +152,7 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
 
   listUser: any[];
   LoadListAccount() {
- 
+
     const filter: any = {};
     // filter.key = 'id_project_team';
     // filter.value = this.ID_Project;
@@ -160,7 +160,7 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     this.weworkService.list_account(filter).subscribe(res => {
       if (res && res.status === 1) {
         this.listUser = res.data;
-        if(!this.roleassign){
+        if (!this.roleassign) {
           this.id_nv_selected = +localStorage.getItem("idUser");
         }
         if (this.id_nv_selected > 0) {
@@ -211,7 +211,7 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     if (loai == 1) {
       var index = this.Assign.findIndex(x => x.id_nv == val.id_nv)
       if (index < 0) {
-        this.Assign[0]=val;
+        this.Assign[0] = val;
       } else {
         this.Assign.splice(index, 1);
       }

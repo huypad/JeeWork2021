@@ -56,7 +56,7 @@ export class DuplicateWorkComponent implements OnInit {
   listProject: any[] = [];
   tinyMCE = {};
   NoiDung: string;
-  minDate:any = new Date();
+  minDate: any = new Date();
   public filtereproject: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   public projectFilterCtrl: FormControl = new FormControl();
   @ViewChild("follower", { static: true }) myPopover: PopoverContentComponent;
@@ -83,7 +83,7 @@ export class DuplicateWorkComponent implements OnInit {
     private translate: TranslateService,
     public weworkService: WeWorkService,
     private router: Router
-  ) {}
+  ) { }
   /** LOAD DATA */
   ngOnInit() {
     this.item = this.data._item;
@@ -432,7 +432,7 @@ export class DuplicateWorkComponent implements OnInit {
               false
             )
             .afterDismissed()
-            .subscribe((tt) => {});
+            .subscribe((tt) => { });
           // this.focusInput.nativeElement.focus();
         }
       } else {

@@ -30,13 +30,13 @@ export class MyWorksComponent implements OnInit {
       if (res && res.selectedTab) this.selectedTab = res.selectedTab;
     });
     this.route.queryParamMap.subscribe((params) => {
-		const pr = params["params"];
-		if(pr && pr.detail){
-			if(+pr.detail > 0){
-				this.detailWork = pr.detail;
-			  }
-		}
-      
+      const pr = params["params"];
+      if (pr && pr.detail) {
+        if (+pr.detail > 0) {
+          this.detailWork = pr.detail;
+        }
+      }
+
     });
     this.LoadFilter();
   }

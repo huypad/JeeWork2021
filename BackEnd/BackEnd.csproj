@@ -11,4 +11,11 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="BE_jeework\src\app\pages\WeWork\**" />
+    <Content Remove="BE_jeework\src\app\pages\WeWork\**" />
+    <EmbeddedResource Remove="BE_jeework\src\app\pages\WeWork\**" />
+    <None Remove="BE_jeework\src\app\pages\WeWork\**" />
+  </ItemGroup>
+
 </Project>

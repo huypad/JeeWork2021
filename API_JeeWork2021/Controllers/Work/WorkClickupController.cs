@@ -81,15 +81,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-                    //string ids = string.Join(",", nvs);
                     string error = "";
                     string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region filter thời gian, keyword, group by
                     DateTime from = DateTime.Now;
                     DateTime to = DateTime.Now;
@@ -123,7 +119,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     SqlConditions Conds = new SqlConditions();
                     DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), ConnectionString);
                     dt_new_fields = cnn.CreateDataTable(data_newfield);
-
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -203,12 +198,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     SqlConditions conds1 = new SqlConditions();
                                     conds1.Add("id_project_team", query.filter["id_project_team"]);
                                     conds1.Add("w_user.Disabled", 0);
-                                    string select_user = $@"select  distinct w_user.id_user,'' as hoten,'' as color, '' as Follower,'' as Description
+                                    string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as color, '' as Follower,'' as Description
                                                     from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
                                                     where w_user.id_user in ({listID}) and (where)";
                                     dt_filter_tmp = cnn.CreateDataTable(select_user, "(where)", conds1);
                                     #region Map info account từ JeeAccount
-
                                     foreach (DataRow item in dt_filter_tmp.Rows)
                                     {
                                         var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -5698,16 +5692,11 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                             "and _status.disabled = 0 and process.disabled = 0 " +
                             "and workid = " + workid + " " +
                             "order by type, position ";
-                string offset = " OFFSET " + (position - 1) + " ROWS FETCH NEXT " + (position + 1) + " ROWS ONLY";
                 bool admin_project = false;
                 object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
                 if (project_team != null)
                     admin_project = bool.TrueString.Equals(project_team.ToString());
                 bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
-                //if (!admin_system && !admin_project)
-                //{
-                //    sql += sql + offset;
-                //}
                 bool is_stop = false;
                 dt = cnn.CreateDataTable(sql);
                 dt.Columns.Add("allow_update", typeof(bool));

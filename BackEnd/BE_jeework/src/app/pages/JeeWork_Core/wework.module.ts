@@ -36,7 +36,6 @@ import { DuplicateTaskNewComponent } from './projects-team/work-list-new/duplica
 import { WorkListNewComponent } from './projects-team/work-list-new/work-list-new.component';
 import { AddTaskComponent } from './projects-team/work-list-new/add-task/add-task.component';
 import { RepeatedListComponent } from './work/repeated-list/repeated-list.component';
-import { Department_WorkListComponent } from './projects-team/department-work-list/department-work-list.component';
 import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -57,16 +56,11 @@ import { WeWorkService } from './services/wework.services';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
 import { DepartmentEditComponent } from './List-department/List-department-edit/List-department-edit.component';
-import { WorkItemComponent } from './work/work-item/work-item.component';
-import { StreamViewComponent } from './work/stream-view/stream-view.component';
 import { WorkService } from './work/work.service';
-import { ListViewComponent } from './work/list-view/list-view.component';
-import { WorkEditComponent } from './work/work-edit/work-edit.component';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { ListDepartmentService } from './List-department/Services/List-department.service';
 import { DepartmentProjectTabComponent } from './projects-team/department-project-tab/department-project-tab.component';
 
-import { WorkEditDialogComponent } from './work/work-edit-dialog/work-edit-dialog.component';
 import { CommentService } from './comment/comment.service';
 import { CommentComponent } from './comment/comment.component';
 import { EmotionDialogComponent } from './emotion-dialog/emotion-dialog.component';
@@ -81,9 +75,6 @@ import { milestoneDetailEditComponent } from './List-department/milestone-detail
 import { filterEditComponent } from './filter/filter-edit/filter-edit.component';
 import { filterService } from './filter/filter.service';
 import { MyStaffComponent } from './mystaff/mystaff.component';
-import { WorkEditPageComponent } from './work/work-edit-page/work-edit-page.component';
-import { WorkDetailComponent } from './work/work-detail/work-detail.component';
-import { WorkDetailTabRightComponent } from './work/work-detail-tab-right/work-detail-tab-right.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { TagsEditComponent } from './tags/tags-edit/tags-edit.component';
 import { TagsService } from './tags/tags.service';
@@ -95,7 +86,6 @@ import { DuplicateWorkComponent } from './work/work-duplicate/work-duplicate.com
 import { workAddFollowersComponent } from './work/work-add-followers/work-add-followers.component';
 import { CustomUserComponent } from './report/custom-user/custom-user.component';
 
-import { PeriodViewComponent } from './work/period-view/period-view.component';
 import { AngularGanttScheduleTimelineCalendarModule } from 'angular-gantt-schedule-timeline-calendar';
 import { WorkGroupEditComponent } from './work/work-group-edit/work-group-edit.component';
 import { AuthorizeEditComponent } from './user/authorize-edit/authorize-edit.component';
@@ -293,22 +283,13 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		DepartmentEditNewComponent,
 		CreatQuickFolderComponent,
 		ProjectTeamEditComponent,
-		WorkEditComponent,
-		WorkDetailComponent,
-		WorkEditPageComponent,
-		WorkItemComponent,
-		StreamViewComponent,
-		ListViewComponent,
-		PeriodViewComponent,
 		DepartmentProjectTabComponent,
-		WorkEditDialogComponent,
 		CommentComponent, CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
 		milestoneDetailEditComponent,
 		filterEditComponent,
 		MyStaffComponent,
-		WorkDetailTabRightComponent,
 		ColorPickerComponent,
 		TagsEditComponent,
 		RepeatedEditComponent,
@@ -324,7 +305,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportTabDashboardComponent,
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
-		Department_WorkListComponent,
 		RepeatedListComponent,
 		WorkListNewComponent,
 		DuplicateTaskNewComponent,
@@ -363,15 +343,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		DepartmentEditNewComponent,
 		CreatQuickFolderComponent,
 		ProjectTeamEditComponent,
-		WorkEditComponent,
-		WorkDetailComponent,
-		WorkEditPageComponent,
-		WorkItemComponent,
-		StreamViewComponent,
-		ListViewComponent,
-		PeriodViewComponent,
 		DepartmentProjectTabComponent,
-		WorkEditDialogComponent,
 		CommentComponent, CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
@@ -383,7 +355,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		milestoneDetailEditComponent,
 		filterEditComponent,
 		MyStaffComponent,
-		WorkDetailTabRightComponent,
 		ColorPickerComponent,
 		TagsEditComponent,
 		RepeatedEditComponent,
@@ -400,7 +371,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportTabDashboardComponent,
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
-		Department_WorkListComponent,
 		WorkListNewComponent,
 		AddTaskComponent,
 		AddStatusComponent,
@@ -482,15 +452,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		DepartmentEditNewComponent,
 		CreatQuickFolderComponent,
 		ProjectTeamEditComponent,
-		WorkEditComponent,
-		WorkDetailComponent,
-		WorkEditPageComponent,
-		WorkItemComponent,
-		StreamViewComponent,
-		ListViewComponent,
-		PeriodViewComponent,
 		DepartmentProjectTabComponent,
-		WorkEditDialogComponent,
 		CommentComponent, CommentNewComponent,
 		EmotionDialogComponent,
 		CommentEditDialogComponent,
@@ -502,7 +464,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		milestoneDetailEditComponent,
 		filterEditComponent,
 		MyStaffComponent,
-		WorkDetailTabRightComponent,
 		ColorPickerComponent,
 		TagsEditComponent,
 		RepeatedEditComponent,
@@ -518,7 +479,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportTabDashboardComponent,
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
-		Department_WorkListComponent,
 		RepeatedListComponent,
 		WorkListNewComponent,
 		AddTaskComponent,

@@ -9,7 +9,7 @@ import { Observable, BehaviorSubject, Subscription, ReplaySubject } from 'rxjs';
 // NGRX
 // Service
 //Models
- import { WorkGroupModel } from '../work.model';
+import { WorkGroupModel } from '../work.model';
 import { WeWorkService } from '../../services/wework.services';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WorkService } from '../work.service';
@@ -62,7 +62,7 @@ export class WorkGroupEditComponent implements OnInit {
 		@Inject(MAT_DIALOG_DATA) public DATA: any,
 	) { }
 	ngOnInit() {
-		
+
 		this.item = this.DATA._item;
 		if (this.item.id_row > 0)
 			this.is_edit = true;
@@ -80,19 +80,19 @@ export class WorkGroupEditComponent implements OnInit {
 		this.createForm();
 		//Detail
 		this.workServices.DetailWorkGroup(this.item.id_row).subscribe(res => {
-				if(res && res.status == 1){
-					console.log(res.data);
-					this.item = res.data;
-					this.createForm();
-				}
+			if (res && res.status == 1) {
+				console.log(res.data);
+				this.item = res.data;
+				this.createForm();
 			}
+		}
 		)
 		this.changeDetectorRefs.detectChanges();
 	}
 	createForm() {
 		this.itemForm = this.FormControlFB.group({
 			title: ['' + this.item.title, Validators.required],
-			reviewer: ['' + this.item.reviewer?this.item.reviewer:''],
+			reviewer: ['' + this.item.reviewer ? this.item.reviewer : ''],
 			NoiDung: ['' + this.item.description],
 		});
 		// this.itemForm.controls["title"].markAsTouched();
@@ -135,7 +135,7 @@ export class WorkGroupEditComponent implements OnInit {
 		// const reviewer = new ReviewerModel();
 		// reviewer.id_nv = controls['reviewer'].value;
 		// reviewer.id_user = controls['reviewer'].value;
-		_item.reviewer = controls['reviewer'].value?controls['reviewer'].value:'0';
+		_item.reviewer = controls['reviewer'].value ? controls['reviewer'].value : '0';
 		console.log(_item);
 		return _item;
 	}
@@ -171,7 +171,7 @@ export class WorkGroupEditComponent implements OnInit {
 	}
 	Create(_item: WorkGroupModel, withBack: boolean) {
 		this.loadingAfterSubmit = true;
-		this.disabledBtn = true; 
+		this.disabledBtn = true;
 		this.workServices.InsertWorkGroup(_item).subscribe(res => {
 			this.disabledBtn = false;
 			this.changeDetectorRefs.detectChanges();
@@ -207,5 +207,5 @@ export class WorkGroupEditComponent implements OnInit {
 		this.itemForm.markAsUntouched();
 		this.itemForm.updateValueAndValidity();
 	}
- 
+
 }
