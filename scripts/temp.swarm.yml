@@ -21,8 +21,8 @@ services:
       VaultConfig__Token: ${VAULT_TOKEN}
       MinioConfig__MinioServer: ${HOST_CDN}
       KafkaConfig__Brokers: ${KAFKA_BROKER}
-      Host__JeeWork_API: ${HOST_JEEWORK_BE}
-      Host__JeeWork_BE: ${HOST_JEEWORK_API}
+      Host__JeeWork_API: ${HOST_JEEWORK_API}
+      Host__JeeWork_BE: ${HOST_JEEWORK_BE}
       Host__JeeAccount_API: ${HOST_ACCOUNT_API}
       Host__JeeComment_API: ${HOST_JEECOMMENT_API}
       Host__MinIOBrowser: https://${HOST_CDN}
