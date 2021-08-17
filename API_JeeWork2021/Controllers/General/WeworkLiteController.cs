@@ -66,7 +66,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Lite_Department()
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -423,7 +422,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             public object data { get; set; }
             public bool? IsDefault { get; set; }
         }
-
         public class LiteModel : LiteModelT<long>
         { }
         /// <summary>
@@ -1073,7 +1071,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListProcessing()
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1082,9 +1079,10 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    DataTable dt = cnn.CreateDataTable("select id_row, title, ColumnName, description, priority, Disabled " +
+                    DataTable dt = cnn.CreateDataTable("select id_row, title, columnname" +
+                        ", description, priority, disabled " +
                         "from we_list_processing " +
-                        "where Disabled = 0 " +
+                        "where disabled = 0 " +
                         "order by priority");
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1093,7 +1091,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                {
                                    Id_row = r["id_project_team"],
                                    Title = r["fieldname"],
-                                   ColumnName = r["ColumnName"],
+                                   ColumnName = r["columnname"],
                                    Description = r["type"],
                                    Priority = r["priority"],
                                };
@@ -2166,8 +2164,6 @@ and IdKH={loginData.CustomerID} )";
             _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
             return "Oke";
         }
-
-
         [HttpGet]
         [Route("roles-by-project")]
         public object GetRoleWeWork(string id_project_team)
@@ -2755,8 +2751,8 @@ and IdKH={loginData.CustomerID} )";
         {
             DataTable dt = new DataTable();
             string query = "";
-            query = $@"select id_row, statusname, description, id_project_team,IsToDo
-                    ,Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, '' as hoten_Follower
+            query = $@"select id_row, statusname, description, id_project_team, istodo
+                    ,type, isdefault, color, position, isfinal, follower, isdeadline, '' as hoten_follower
                     from we_status 
                     where Disabled = 0 ";
             if (id_project > 0)
@@ -2769,7 +2765,7 @@ and IdKH={loginData.CustomerID} )";
                 var info = DataAccount.Where(x => item["Follower"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 if (info != null)
                 {
-                    item["hoten_Follower"] = info.FullName;
+                    item["hoten_follower"] = info.FullName;
                 }
             }
             #endregion

@@ -1,7 +1,7 @@
 import { MessengerComponent } from './dropdown-inner/messenger/messenger.component';
 import { ChatBoxComponent } from './dropdown-inner/chat-box/chat-box.component';
 import { CreateConvesationGroupComponent } from './create-convesation-group/create-convesation-group.component';
-import { WeWorkModule } from "./../../../../pages/WeWork/wework.module";
+import { JeeWork_CoreModule } from "./../../../../pages/JeeWork_Core/JeeWork_Core.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
@@ -76,7 +76,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    WeWorkModule,
+    JeeWork_CoreModule,
     AvatarModule,
     TranslationModule, 
     MatTooltipModule,

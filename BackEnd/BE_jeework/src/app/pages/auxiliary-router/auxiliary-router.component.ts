@@ -1,8 +1,8 @@
-import { ProjectsTeamService } from './../WeWork/projects-team/Services/department-and-project.service';
+import { ProjectsTeamService } from './../JeeWork_Core/projects-team/Services/department-and-project.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { WorkListNewDetailComponent } from '../WeWork/projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
+import { WorkListNewDetailComponent } from '../JeeWork_Core/projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
 
 @Component({
   selector: 'app-auxiliary-router',

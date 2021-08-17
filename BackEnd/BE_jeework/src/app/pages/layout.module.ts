@@ -6,8 +6,8 @@ import { MenuPhanQuyenServices } from './../_metronic/jeework_old/core/_base/lay
 import { MenuConfigService } from './../_metronic/jeework_old/core/_base/layout/services/menu-config.service';
 import { MenuAsideService } from './../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import { HttpUtilsService } from './../_metronic/jeework_old/core/_base/crud/utils/http-utils.service';
-import { ListDepartmentService } from './WeWork/List-department/Services/List-department.service';
-import { WeWorkModule } from './WeWork/wework.module';
+import { ListDepartmentService } from './JeeWork_Core/List-department/Services/List-department.service';
+import { JeeWork_CoreModule } from './JeeWork_Core/JeeWork_Core.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InlineSVGModule } from 'ng-inline-svg';
@@ -62,7 +62,7 @@ import { AvatarModule } from 'ngx-avatar';
     NgbProgressbarModule,
     CoreModule,
     SubheaderModule,
-    WeWorkModule,
+    JeeWork_CoreModule,
     PartialsModule,
     AvatarModule, 
   ],

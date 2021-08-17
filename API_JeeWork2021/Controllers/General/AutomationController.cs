@@ -387,20 +387,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 has["description"] = _t.description;
                             has["id_project_team"] = _t.id_project_team;
                             has["id_group"] = _t.id_group;
-                            //has["deadline"] = _t.deadline;
+                            has["deadline"] = _t.deadline;
                             if (_t.id_parent > 0)
                                 has["id_parent"] = _t.id_parent;
                             //else
                             //    has["id_parent"] = DBNull.Value;
-                            //has["start_date"] = _t.start_date;
-                            if (_t.startdate_type == "3")
-                            {
-                                has["start_date"] = _t.start_date;
-                            }
-                            if (_t.deadline_type == "3")
-                            {
-                                has["deadline"] = _t.deadline;
-                            }
+                            has["start_date"] = _t.start_date;
+                            //if (_t.startdate_type == "3")
+                            //{
+                            //    has["start_date"] = _t.start_date;
+                            //}
+                            //if (_t.deadline_type == "3")
+                            //{
+                            //    has["deadline"] = _t.deadline;
+                            //}
                             has["status"] = _t.status;
                             has["startdate_type"] = _t.startdate_type;
                             has["deadline_type"] = _t.deadline_type;
@@ -748,8 +748,10 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                                             startdate_type = r["startdate_type"],
                                             deadline_type = r["deadline_type"],
                                             id_parent = r["id_parent"],
-                                            deadline = r["deadline"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["deadline"]),
-                                            start_date = r["start_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["start_date"]),
+                                            //deadline = r["deadline"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["deadline"]),
+                                            //start_date = r["start_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["start_date"]),
+                                            deadline = r["deadline"],
+                                            start_date = r["start_date"],
                                             users = from f in ds_task.Tables[1].AsEnumerable()
                                                     select new
                                                     {

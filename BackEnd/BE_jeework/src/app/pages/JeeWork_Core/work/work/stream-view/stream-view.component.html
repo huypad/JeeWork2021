@@ -1,0 +1,47 @@
+
+<div [ngStyle]="{'height': selectedItem?getHeight():'auto','overflow-y': selectedItem?'scroll':'auto'}">
+    <ng-container *ngFor="let item of listNode" >
+        <div class="text-dark" style="padding: 5px 0;border-top: 1px solid #eeeeee;border-bottom: 1px solid #eeeeee;">
+            <span style="font-weight: bold;">{{ 'filter.tuan' | translate }}
+                {{item.start | date: 'dd/MM/yyyy'}} -
+                {{item.end | date: 'dd/MM/yyyy'}}</span>
+        </div>
+        <mat-tree class="mat-tree-custom hide-overflow-x"
+            [dataSource]="item.DataSource" [ngClass]="{'minimize': selectedId>0}" [treeControl]="treeControl"
+            style="width: 100% !important; overflow-y: auto;">
+            <mat-tree-node *matTreeNodeDef="let node" class="{{ selectedItem?'pd-0':'' }}"
+                style="border-bottom: 1px dotted rgba(0,0,0,0.2); height: auto;"
+                [ngClass]="{'work-selected':node.item.id_row==selectedId}" matTreeNodeToggle matTreeNodePadding>
+                <kt-work-item style="width:100%" [ngStyle]="{background: selectedId==node.item.id_row?'#ffffee':'','margin-left': (selectedId>0 && node.item.id_parent > 0 )?'25px':''}"
+                    (Reload)="Reload($event)" [item]="node.item" [selectedItem]="selectedItem"
+                    (ItemSelected)="selected($event)" [listUser]="listUser"></kt-work-item>
+            </mat-tree-node>
+            <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" style="height: 80px;" matTreeNodePadding>
+                <button mat-icon-button disabled></button>
+                <mat-form-field>
+                    <input matInput #itemValue placeholder="New item...">
+                </mat-form-field>
+                <button mat-button>Save</button>
+                <button mat-icon-button>
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-tree-node>
+            <hr>
+            <mat-tree-node *matTreeNodeDef="let node; when: hasChild" class="{{ selectedItem?'pd-0':'' }}"
+                style="border-bottom: 1px dotted rgba(0,0,0,0.2); height: auto;"
+                [ngClass]="{'work-selected':node.item.id_row==selectedId}" expand matTreeNodePadding>
+                <kt-work-item style="width:100%" [ngStyle]="{background: selectedId==node.item.id_row?'#ffffee':''}"
+                    (Reload)="Reload($event)" [item]="node.item" [selectedItem]="selectedItem"
+                    (ItemSelected)="selected($event)" [listUser]="listUser"></kt-work-item>
+            </mat-tree-node>
+        </mat-tree>
+    </ng-container>
+</div>
+
+<style>
+    .node-child{
+        padding-left: 25px;
+        border-left: 2px solid red;
+    }
+</style>
+

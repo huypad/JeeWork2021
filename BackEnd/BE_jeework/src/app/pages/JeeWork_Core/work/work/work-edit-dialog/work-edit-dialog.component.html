@@ -1,0 +1,9 @@
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="col-md-12 kt-margin-bottom-10-mobile" style="margin-top: 20px;">
+			<h3 class="kt-portlet__head-title">{{ComponentTitle}}</h3>
+		</div>
+	</div>
+	<lib-dynamic-component [childComponentType]="childComponentType" [data]="childComponentData"
+		(getInstance)="getInstance($event)"></lib-dynamic-component>
+</div>

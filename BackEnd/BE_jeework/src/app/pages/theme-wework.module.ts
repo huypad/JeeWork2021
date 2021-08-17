@@ -1,5 +1,5 @@
 // import { JeeHRSubModule } from './../../pages/JeeHR/JeeHRSub.module';
-// import { WeWorkModule } from './../../pages/JeeHR/WeWork/wework.module';
+// import { JeeWork_CoreModule } from './../../pages/JeeHR/JeeWork_Core/JeeWork_Core.module';
 // import { NgxPermissionsModule } from 'ngx-permissions';
 // // Angular
 // import { NgModule } from '@angular/core';
@@ -36,7 +36,7 @@
 // import { MenuHorizontalComponent } from './header/menu-horizontal/menu-horizontal.component';
 // import { PartialsModule } from '../../partials/partials.module';
 // import { BaseComponent } from './base/base.component';
-// import { PagesRoutingModule } from '../../pages/pages-routing-wework.module';
+// import { PagesRoutingModule } from '../../pages/pages-routing-JeeWork_Core.module';
 // import { PagesModule } from '../../pages/pages.module';
 // import { HtmlClassService } from './html-class.service';
 // import { HeaderMobileComponent } from './header/header-mobile/header-mobile.component';
@@ -81,7 +81,7 @@
 // 		NgbProgressbarModule,
 // 		NgbTooltipModule,
 // 		ViewModule,
-// 		WeWorkModule,
+// 		JeeWork_CoreModule,
 // 		JeeHRSubModule
 // 	]
 // })

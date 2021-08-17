@@ -632,7 +632,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
         public bool CreatedTask(string AutoID, long userid, DpsConnection cnn,string ConnectionString, long CustomerID)
         {
             string sqlq = @"select at.* from Automation_Task at
-where AutoID = " + AutoID;
+where AutoID = " + AutoID+ " order by RowID desc";
             DataTable dt = cnn.CreateDataTable(sqlq);
             if (cnn.LastError != null || dt.Rows.Count == 0)
             {

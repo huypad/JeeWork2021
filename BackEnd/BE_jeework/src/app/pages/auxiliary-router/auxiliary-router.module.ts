@@ -1,8 +1,8 @@
 import { SubheaderService } from './../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
-import { ProjectsTeamService } from './../WeWork/projects-team/Services/department-and-project.service';
+import { ProjectsTeamService } from './../JeeWork_Core/projects-team/Services/department-and-project.service';
 import { AuxiliaryRouterComponent } from './auxiliary-router.component';
 import { AuxiliaryRouterJWComponent } from './auxiliary-router-jw.component';
-import { WeWorkModule } from './../WeWork/wework.module';
+import { JeeWork_CoreModule } from './../JeeWork_Core/JeeWork_Core.module';
 import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -34,7 +34,7 @@ const routes: Routes = [
 		FormsModule,
 		ReactiveFormsModule,
 		TranslateModule.forChild(),
-		WeWorkModule,
+		JeeWork_CoreModule,
 		// TagInputModule,
 		AngularMultiSelectModule,
 		MatDatepickerModule,

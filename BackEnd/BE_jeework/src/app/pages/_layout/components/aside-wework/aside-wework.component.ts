@@ -1,24 +1,24 @@
-import { CreatQuickFolderComponent } from './../../../WeWork/List-department/creat-quick-folder/creat-quick-folder.component';
-import { AutomationComponent } from './../../../WeWork/automation/automation.component';
-import { TemplateCenterComponent } from "./../../../WeWork/template-center/template-center.component";
-import { TemplateCenterUpdateComponent } from "./../../../WeWork/template-center/template-center-update/template-center-update.component";
-import { WeWorkService } from "./../../../WeWork/services/wework.services";
+import { CreatQuickFolderComponent } from './../../../JeeWork_Core/List-department/creat-quick-folder/creat-quick-folder.component';
+import { AutomationComponent } from './../../../JeeWork_Core/automation/automation.component';
+import { TemplateCenterComponent } from "./../../../JeeWork_Core/template-center/template-center.component";
+import { TemplateCenterUpdateComponent } from "./../../../JeeWork_Core/template-center/template-center-update/template-center-update.component";
+import { WeWorkService } from "./../../../JeeWork_Core/services/wework.services";
 import {
   LayoutUtilsService,
   MessageType,
 } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
-import { ProjectTeamEditStatusComponent } from "./../../../WeWork/projects-team/project-team-edit-status/project-team-edit-status.component";
-import { AddStatusComponent } from "./../../../WeWork/projects-team/work-list-new/add-status/add-status.component";
-import { DepartmentEditNewComponent } from "./../../../WeWork/List-department/department-edit-new/department-edit-new.component";
-import { DepartmentModel } from "./../../../WeWork/List-department/Model/List-department.model";
-import { UpdateStatusProjectComponent } from "./../../../WeWork/projects-team/update-status-project/update-status-project.component";
-import { DuplicateProjectComponent } from "./../../../WeWork/projects-team/duplicate-project/duplicate-project.component";
-import { ProjectTeamDuplicateModel } from "./../../../WeWork/projects-team/Model/department-and-project.model";
-import { ClosedProjectComponent } from "./../../../WeWork/projects-team/closed-project/closed-project.component";
-import { ProjectTeamEditComponent } from "./../../../WeWork/projects-team/project-team-edit/project-team-edit.component";
+import { ProjectTeamEditStatusComponent } from "./../../../JeeWork_Core/projects-team/project-team-edit-status/project-team-edit-status.component";
+import { AddStatusComponent } from "./../../../JeeWork_Core/projects-team/work-list-new/add-status/add-status.component";
+import { DepartmentEditNewComponent } from "./../../../JeeWork_Core/List-department/department-edit-new/department-edit-new.component";
+import { DepartmentModel } from "./../../../JeeWork_Core/List-department/Model/List-department.model";
+import { UpdateStatusProjectComponent } from "./../../../JeeWork_Core/projects-team/update-status-project/update-status-project.component";
+import { DuplicateProjectComponent } from "./../../../JeeWork_Core/projects-team/duplicate-project/duplicate-project.component";
+import { ProjectTeamDuplicateModel } from "./../../../JeeWork_Core/projects-team/Model/department-and-project.model";
+import { ClosedProjectComponent } from "./../../../JeeWork_Core/projects-team/closed-project/closed-project.component";
+import { ProjectTeamEditComponent } from "./../../../JeeWork_Core/projects-team/project-team-edit/project-team-edit.component";
 import { CommonService } from "./../../../../_metronic/jeework_old/core/services/common.service";
-import { ProjectsTeamService } from "./../../../WeWork/projects-team/Services/department-and-project.service";
-import { ListDepartmentService } from "./../../../WeWork/List-department/Services/List-department.service";
+import { ProjectsTeamService } from "./../../../JeeWork_Core/projects-team/Services/department-and-project.service";
+import { ListDepartmentService } from "./../../../JeeWork_Core/List-department/Services/List-department.service";
 import { OffcanvasOptions } from "./../../../../_metronic/jeework_old/core/_base/layout/directives/offcanvas.directive";
 import { MenuOptions } from "./../../../../_metronic/jeework_old/core/_base/layout/directives/menu.directive";
 import { MenuAsideService } from "./../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service";
@@ -42,7 +42,7 @@ import * as objectPath from "object-path";
 // import { HtmlClassService } from '../html-class.service';
 import { TranslateService } from "@ngx-translate/core";
 import { MatDialog } from "@angular/material/dialog";
-import { ProjectTeamModel } from "src/app/pages/WeWork/projects-team/Model/department-and-project.model";
+import { ProjectTeamModel } from "src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model";
 
 @Component({
   selector: "app-aside-wework",
@@ -605,7 +605,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           );
           if (ID_Project == this.router.url.split("/")[2]) {
             this.LoadMenu();
-            this.router.navigate(["/wework/projects"]);
+            this.router.navigate(["/JeeWork_Core/projects"]);
             // .then(() => {
             //   window.location.reload();
             // });
@@ -776,7 +776,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             "top",
             1
           );
-          let _backUrl = `/wework/projects`;
+          let _backUrl = `/JeeWork_Core/projects`;
           this.router.navigateByUrl(_backUrl);
         } else {
           this.layoutUtilsService.showActionNotification(

@@ -3948,42 +3948,49 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             #region Nếu key là deadline thì kiểm tra rồi cập nhật status tương ứng (Nếu đã trễ thì update IsDeadline, ngược lại update IsTodo)
                             if ("deadline".Equals(data.key) && data.value != null)
                             {
-                                DateTime deadline = DateTime.Now;
-                                if (DateTime.TryParse(data.value.ToString(), out deadline))
+                                #region kiểm tra cv hoàn thành hay chưa
+                                DataTable dtstt = cnn.CreateDataTable(@"select * from we_status s join we_work w on s.id_row = w.status
+where w.id_row = " + data.id_row + " and s.IsFinal = 1");
+                                #endregion
+                               if(dtstt.Rows.Count == 0)
                                 {
-                                    if (deadline > DateTime.Now)
+                                    DateTime deadline = DateTime.Now;
+                                    if (DateTime.TryParse(data.value.ToString(), out deadline))
                                     {
-                                        #region Kiểm tra Nếu công việc trước đó có IsDeadline = 1
-                                        var statusNew = cnn.ExecuteScalar("select * from we_status where disabled=0 " +
-                                            "and id_project_team = " + id_project_team + " and id_row = " + StatusPresent + " and (IsDeadline = 1)");
-                                        #endregion
-                                        if (statusNew != null)
+                                        if (deadline > DateTime.Now)
                                         {
-                                            #region Trường hợp công việc từ deadline giãn ngày ra
-                                            DataRow[] RowStatus = dt_StatusID.Select("IsToDo = 1");
+                                            #region Kiểm tra Nếu công việc trước đó có IsDeadline = 1
+                                            var statusNew = cnn.ExecuteScalar("select * from we_status where disabled=0 " +
+                                                "and id_project_team = " + id_project_team + " and id_row = " + StatusPresent + " and (IsDeadline = 1)");
+                                            #endregion
+                                            if (statusNew != null)
+                                            {
+                                                #region Trường hợp công việc từ deadline giãn ngày ra
+                                                DataRow[] RowStatus = dt_StatusID.Select("IsToDo = 1");
+                                                if (RowStatus.Length > 0)
+                                                {
+                                                    StatusPresent = long.Parse(RowStatus[0]["id_row"].ToString());
+                                                }
+                                                #endregion
+                                                val.Add("status", StatusPresent);
+                                                foreach (long idUser in danhsachU)
+                                                {
+                                                    NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "-", _configuration, _producer);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            DataRow[] RowStatus = dt_StatusID.Select("IsDeadline = 1");
                                             if (RowStatus.Length > 0)
                                             {
                                                 StatusPresent = long.Parse(RowStatus[0]["id_row"].ToString());
                                             }
-                                            #endregion
                                             val.Add("status", StatusPresent);
                                             foreach (long idUser in danhsachU)
                                             {
-                                                NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "-", _configuration, _producer);
+                                                NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
                                             }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        DataRow[] RowStatus = dt_StatusID.Select("IsDeadline = 1");
-                                        if (RowStatus.Length > 0)
-                                        {
-                                            StatusPresent = long.Parse(RowStatus[0]["id_row"].ToString());
-                                        }
-                                        val.Add("status", StatusPresent);
-                                        foreach (long idUser in danhsachU)
-                                        {
-                                            NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
                                         }
                                     }
                                 }

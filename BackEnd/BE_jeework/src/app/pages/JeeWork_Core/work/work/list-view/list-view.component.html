@@ -1,0 +1,41 @@
+<mat-tree [ngStyle]="{'height': selectedItem?getHeight():'auto'}" class="mat-tree-custom hide-overflow-x"
+    [dataSource]="dataSource" [ngClass]="{'minimize': selectedId>0}" [treeControl]="treeControl"
+    style="width: 100% !important; overflow-y: auto;">
+    <mat-tree-node *matTreeNodeDef="let node" class="{{ selectedItem?'pd-0':'' }}"
+        style="border-bottom: 1px dotted rgba(0,0,0,0.2); height: auto; overflow-y: auto;"
+        [ngClass]="{'work-selected':node.item.id_row==selectedId}" matTreeNodeToggle matTreeNodePadding>
+        <kt-work-item style="width:100%" [ngStyle]="{background: selectedId==node.item.id_row?'#ffffee':''}"
+            (Reload)="ReloadNode($event)" (ItemSelected)="selected($event)" [item]="node.item"
+            [selectedItem]="selectedItem" [listUser]="listUser"></kt-work-item>
+    </mat-tree-node>
+    <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" style="height: 80px;" matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+        <mat-form-field>
+            <input matInput #itemValue placeholder="New item...">
+        </mat-form-field>
+        <button mat-button>
+            <span translate="GeneralKey.luu"></span>
+        </button>
+        <button mat-icon-button>
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-tree-node>
+    <hr>
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" expand matTreeNodePadding>
+        <div class="row" style="width: 100%">
+            <div class="{{ selectedItem?'col-md-12':'col-md-10' }} m--margin-bottom-10-mobile"
+                [ngStyle]="{'margin-left': selectedItem?'-20px':0}">
+                <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+                    <mat-icon class="mat-icon-rtl-mirror">
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                    </mat-icon>
+                </button>
+                <mat-checkbox>
+                    <span style="font-weight: bold;">{{node.item.title}}</span>
+                </mat-checkbox>
+            </div>
+
+        </div>
+    </mat-tree-node>
+
+</mat-tree>

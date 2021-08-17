@@ -1,0 +1,95 @@
+<kt-portlet class="work-edit-page" [options]="{headLarge: true, hideHeader:true}">
+	<kt-portlet-body>
+		<div class="row position-relative">
+			<div class="text-left d-flex work-tag">
+				<mat-chip-list style="    padding-top: 5px;
+				padding-left: 10px;" aria-label="Fish selection">
+					<mat-chip *ngIf="IsKhanCap" color="purple">
+						{{ 'filter.khancap' | translate }}
+					</mat-chip>
+					<mat-chip *ngIf="IsQuanTrong" color="primary">
+						{{ 'filter.quantrong' | translate }}
+					</mat-chip>
+					<mat-chip *ngIf="IsQuaHan" color="danger">
+						{{ 'filter.quahan' | translate }}
+					</mat-chip>
+					<ng-container *ngIf="Tags">
+						<mat-chip *ngFor="let tag of this.Tags" color="warn">
+							{{tag.title}}
+						</mat-chip>
+					</ng-container>
+				</mat-chip-list>
+				<button class="btn-node hover btn-hover" mat-icon-button [matMenuTriggerFor]="tag"  style="size: 10px"
+					matTooltip="{{ 'projects.gannhan' | translate }}" color="accent">
+					<mat-icon>label</mat-icon>
+					<div class="point-hover"></div>
+				</button>
+				<mat-menu #tag="matMenu">
+					<kt-choose-milestone-and-tags [options]="options" [project_team]="project_team"
+						[id_project_Team]="id_project_team" [Id]="DataID" [Id_key]="9" [Loai]="'Tags'"
+						(ItemSelected)="ReloadData($event)">
+					</kt-choose-milestone-and-tags>
+				</mat-menu>
+
+			</div>
+			<div class="text-right work-action">
+				<button mat-icon-button [matMenuTriggerFor]="menu" class="bolder">
+					<i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
+				</button>
+				<button class="btn-node hover btn-hover" [ngStyle]="{'color': IsKhanCap?'#c34343':'#ebedf2'}"
+					mat-icon-button (click)="mark_urgent()" style="size: 10px"
+					matTooltip="{{ 'projects.dokhancap' | translate }}">
+					<mat-icon>error</mat-icon>
+					<div class="point-hover"></div>
+				</button>
+				<button [ngStyle]="{'color': IsQuanTrong?'#7abd1a':'#ebedf2'}" class="btn-node hover btn-hover"
+					mat-icon-button (click)="mark_important()" style="size: 10px"
+					matTooltip="{{ 'projects.quantrong' | translate }}">
+					<mat-icon>turned_in</mat-icon>
+					<div class="point-hover"></div>
+				</button>
+				<button class="btn-node hover btn-hover" [ngStyle]="{'color': IsFavourite?'#FFD000':'#ebedf2'}"
+					mat-icon-button (click)="favourite()" style="size: 10px"
+					matTooltip="{{ 'topic.favourite' | translate }}">
+					<mat-icon>star</mat-icon>
+					<div class="point-hover"></div>
+				</button>
+				<mat-menu #menu="matMenu">
+					<button mat-menu-item color="accent" (click)="work()">
+						<i class="flaticon2-edit" style="color: royalblue;"></i>&nbsp;<span style="font-size: 9pt"
+							translate="work.chinhsuathongtincongviec"></span>
+					</button>
+					<button mat-menu-item (click)="assign()">
+						<i class="flaticon2-user-1" style="color: #0A9562;"></i>&nbsp;
+						<span>
+							<span style="font-size: 9pt" translate="work.giaolaichonguoikhac"></span>
+						</span>
+					</button>
+					<button mat-menu-item color="accent" (click)="Add_followers()">
+						<i class="flaticon2-group" style="color: rgba(158, 6, 145, 0.671);"></i>&nbsp;<span
+							style="font-size: 9pt" translate="work.themnhieunguoitheodoi"></span>
+					</button>
+					<button mat-menu-item color="accent" (click)="duplicate(1)">
+						<i class="flaticon2-layers" style="color: rgb(73, 62, 218);"></i>&nbsp;<span
+							style="font-size: 9pt" translate="work.nhanbancongviec"></span>
+					</button>
+					<button mat-menu-item color="accent" (click)="duplicate(2)">
+						<i class="flaticon2-copy" style="color: rgb(34, 167, 52);"></i>&nbsp;<span
+							style="font-size: 9pt" translate="work.nhanbancongviecvaoprojectkhac"></span>
+					</button>
+					<button mat-menu-item (click)="Delete()">
+						<i class="flaticon2-delete" style="color: red;"></i>&nbsp;
+						<span>
+							<span style="font-size: 9pt" translate="work.xoacongviec"></span>
+						</span>
+					</button>
+				</mat-menu>
+				<button class="btn btn-secondary kt-margin-r-10" mat-icon-button (click)="goBack()">
+					<mat-icon>close</mat-icon>
+				</button>
+			</div>
+		</div>
+		<lib-dynamic-component [childComponentType]="childComponentType" [data]="childComponentData"
+			(getInstance)="getInstance($event)"></lib-dynamic-component>
+	</kt-portlet-body>
+</kt-portlet>

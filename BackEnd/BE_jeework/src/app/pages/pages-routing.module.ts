@@ -28,7 +28,7 @@ const routes: Routes = [
       {
         path: "depts",
         loadChildren: () =>
-          import("./WeWork/List-department/List-department.module").then(
+          import("./JeeWork_Core/List-department/List-department.module").then(
             (m) => m.DepartmentModule
           ),
       },
@@ -36,34 +36,34 @@ const routes: Routes = [
         path: "wework",
         loadChildren: () =>
           import(
-            "./WeWork/projects-team/all-project-team/all-project-team.module"
+            "./JeeWork_Core/projects-team/all-project-team/all-project-team.module"
           ).then((m) => m.AllProjectTeamModule),
       },
       {
         path: "project/:id",
         loadChildren: () =>
-          import("./WeWork/projects-team/projects-team.module").then(
+          import("./JeeWork_Core/projects-team/projects-team.module").then(
             (m) => m.ProjectsTeamModule),
       },
       {
         path: "tasks",
         loadChildren: () =>
-          import("./WeWork/work/work.module").then((m) => m.WorkModule),
+          import("./JeeWork_Core/work/work.module").then((m) => m.WorkModule),
       },
       {
         path: "users",
         loadChildren: () =>
-          import("./WeWork/user/user.module").then((m) => m.UserModule),
+          import("./JeeWork_Core/user/user.module").then((m) => m.UserModule),
       },
       {
         path: "reports",
         loadChildren: () =>
-          import("./WeWork/report/report.module").then((m) => m.ReportModule),
+          import("./JeeWork_Core/report/report.module").then((m) => m.ReportModule),
       },
       {
         path: "permision",
         loadChildren: () =>
-          import("./WeWork/Systems/userright/userright.module").then(
+          import("./JeeWork_Core/Systems/userright/userright.module").then(
             (m) => m.UserRightModule
           ),
       },

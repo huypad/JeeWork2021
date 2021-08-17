@@ -21,7 +21,7 @@ import { MenuPhanQuyenServices } from "./_metronic/jeework_old/core/_base/layout
 import { MenuConfigService } from "./_metronic/jeework_old/core/_base/layout/services/menu-config.service";
 import { MenuAsideService } from "./_metronic/jeework_old/core/_base/layout/services/menu-aside.service";
 import { HttpUtilsService } from "./_metronic/jeework_old/core/_base/crud/utils/http-utils.service";
-import { ListDepartmentService } from "./pages/WeWork/List-department/Services/List-department.service";
+import { ListDepartmentService } from "./pages/JeeWork_Core/List-department/Services/List-department.service";
 import { NgModule, APP_INITIALIZER } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";
@@ -79,7 +79,7 @@ function appInitializer(authService: AuthService) {
     AppRoutingModule,
     InlineSVGModule.forRoot(),
     NgbModule,
-    // WeWorkModule,
+    // JeeWork_CoreModule,
     MatTooltipModule,
     MatMenuModule,
     MatIconModule,

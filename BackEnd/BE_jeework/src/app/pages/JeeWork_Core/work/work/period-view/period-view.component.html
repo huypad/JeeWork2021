@@ -1,0 +1,160 @@
+<mat-tree [ngStyle]="{'height': selectedItem?getHeight():'auto'}" class="mat-tree-custom hide-overflow-x"
+    [dataSource]="dataSource" [ngClass]="{'minimize': selectedId>0}" [treeControl]="treeControl"
+    style="width: 100% !important; overflow-y: auto;">
+    <mat-tree-node *matTreeNodeDef="let node" class="{{ selectedItem?'pd-0':'' }}"
+        style="border-bottom: 1px dotted rgba(0,0,0,0.2); height: auto; overflow-y: auto;"
+        [ngClass]="{'work-selected':node.item.id_row==selectedId}" matTreeNodeToggle matTreeNodePadding>
+        <kt-work-item style="width:100%" [ngStyle]="{background: selectedId==node.item.id_row?'#ffffee':''}" [item]="node.item" [selectedItem]="selectedItem"
+            (ItemSelected)="selected($event)" [listUser]="listUser"></kt-work-item>
+    </mat-tree-node>
+    <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" style="height: 80px;" matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+        <mat-form-field>
+            <input matInput #itemValue placeholder="New item...">
+        </mat-form-field>
+        <button mat-button >{{'GeneralKey.luu' | translate}}</button>
+        <button mat-icon-button >
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-tree-node>
+    <hr>
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" expand matTreeNodePadding>
+        <div class="row" style="width: 100%">
+            <div class="{{ selectedItem?'col-md-12':'col-md-10' }} m--margin-bottom-10-mobile"
+                [ngStyle]="{'margin-l   eft': selectedItem?'-20px':0}">
+                <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+                    <mat-icon class="mat-icon-rtl-mirror">
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                    </mat-icon>
+                </button>
+                <mat-checkbox>
+                    <span style="font-weight: bold;">{{node.item.title}}</span>
+                </mat-checkbox>
+            </div>
+            <div class="{{ selectedItem?'col-md-12':'col-md-10' }} m--margin-bottom-10-mobile"
+                [ngStyle]="{'margin-left': selectedItem?'-20px':0}">
+                <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+                    <mat-icon class="mat-icon-rtl-mirror">
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                    </mat-icon>
+                </button>
+                <span style="color: #D96C6C; font-size: 11px;"
+                    translate="work.congviecchuahoanthanhtuthoigiantruocdo"></span>
+            </div>
+
+            <div *ngIf="!selectedItem" class="col-md-2 m--margin-bottom-10-mobile"
+                style="justify-content: right !important; text-align: right;">
+                <span style="font-weight: bold;">
+                    {{node.item.Count.ht}}/{{node.item.Count.tong}}</span>&nbsp;
+                <button mat-icon-button (click)="addNewItem(node)"
+                    matTooltip="{{id_choose != node.item.id?'Add':'Remove'}}">
+                    <mat-icon [ngStyle]="{color: id_choose != node.item.id?'rgb(12, 177, 12)':'red',
+                    transition:' all 0.5s',
+                    transform: id_choose != node.item.id?'rotate(0deg)':'rotate(45deg)'}"
+                        style="color: rgb(12, 177, 12);">add</mat-icon>
+                </button>
+                <button *ngIf="node.item.id > 0" mat-icon-button [matMenuTriggerFor]="menu" class="bolder">
+                    <i class="las la-ellipsis-h m--font-brand" style="font-size: 2.2rem;"></i>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item color="accent" (click)="UpdateWorkGroup(node)">
+                        <span style="font-size: 9pt" translate="work.chinhsuanhomcongviec"></span>
+                    </button>
+                    <button mat-menu-item (click)="ChangeReviewer(node)">
+                        <span style="font-size: 9pt" translate="work.suanguoireiewer"></span>
+                    </button>
+                    <hr>
+                    <button mat-menu-item (click)="DeleteWorkGroup(node)">
+                        <span style="font-size: 9pt; color: red;" translate="work.xoanhomcongviec"></span>
+                    </button>
+                </mat-menu>
+            </div>
+            <div *ngIf="id_choose == node.item.id" class="col-md-12 pd-0">
+                <div class="add-new-task">
+                    <div class="new-task">
+                        <div class="task-status">
+                            <mat-checkbox>
+                            </mat-checkbox>
+                        </div>
+                        <div class="task-info">
+                            <div class="input">
+                                <input type="text" [(ngModel)]="createNode.title" placeholder="Tên công việc">
+                            </div>
+                            <div class="action">
+                                <mat-form-field style="margin-bottom:-20px;"
+                                    class="mat-form-field-fluid giaocho">
+                                    <mat-select [(ngModel)]="createNode.giaocho"
+                                        placeholder="{{ 'topic.assign' | translate }}">
+                                        <mat-option>
+                                            <ngx-mat-select-search [formControl]="bankFilterCtrl"
+                                                [placeholderLabel]="''" [noEntriesFoundLabel]="''">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option value="{{user.id_nv}}" *ngFor="let user of filteredBanks | async">
+                                            <span style="color: black;">{{ user.hoten }}</span>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <div class="act d-flex">
+                                    <mat-form-field style="width:1px;height:1px;overflow: hidden;" appearance="fill">
+                                        <input matInput [(ngModel)]="createNode.deadline" readonly
+                                            [ngModelOptions]="{standalone: true}" [matDatepicker]="picker">
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                    <mat-label (click)="picker.open()">
+                                        <ng-container *ngIf="createNode.deadline=='';else time"> {{'filter.deadline' | translate}}
+                                        </ng-container>
+                                        <ng-template #time>
+                                            {{'filter.deadline' | translate}}: {{createNode.deadline|date:'dd/MM/yyyy'}}
+                                        </ng-template>
+                                    </mat-label>
+                                </div>
+
+                                <div class="act"> {{'filter.tasklist' | translate}}: {{node.item.title}}
+                                    <i class="fas fa-lock"></i></div>
+                                <div class="act" [matMenuTriggerFor]="milestone">
+                                    <span *ngIf="createNode.milestone.title;else nomiles">
+                                        {{createNode.milestone.title}} </span>
+                                    <ng-template #nomiles>
+                                        <span> {{'filter.setmilestone' | translate}} </span>
+                                    </ng-template>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="act" [matMenuTriggerFor]="tag">
+                                    <span *ngIf="createNode.tag.length > 0;else notag">
+                                        {{'filter.tag' | translate}}:
+                                        <span style="color:#16a850" *ngFor="let item of this.createNode.tag">
+                                            {{item.title}}, </span>
+                                    </span>
+                                    <ng-template #notag> {{'filter.settag' | translate}} </ng-template>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <mat-menu #giaoviec="matMenu">
+                                    <div class="page-work-detail">
+                                        <kt-choose-users [options]="filteredBanks" (ItemSelected)="selected($event)" >
+                                        </kt-choose-users>
+                                    </div>
+                                </mat-menu>
+                                <mat-menu #milestone="matMenu">
+
+                                    <button mat-menu-item *ngFor="let item of List_mileston" [ngStyle]="{'font-weight': isSelectedMileston(item)?'bold':''}"
+                                        (click)="AddMileston(item)"> {{item.title}} </button>
+                                    <button mat-menu-item (click)="AddMileston('{}')"> {{'filter.nomileston' | translate}} </button>
+                                </mat-menu>
+                                <mat-menu #tag="matMenu">
+                                    <button mat-menu-item *ngFor="let item of List_tag" [ngStyle]="{'font-weight': isSelectedTag(item)?'bold':''}" 
+                                        (click)="AddTag(item)">{{item.title}}</button>
+                                </mat-menu>
+                            </div>
+                        </div>
+                        <div class="task-submit">
+                            <button (click)="submitData(node.item.id)" class="btn btn-sm btn-primary float-right"> <i
+                                    class="fas fa-check"></i> <span translate="GeneralKey.them"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-tree-node>
+</mat-tree>

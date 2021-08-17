@@ -1,4 +1,4 @@
-import { WeWorkService } from './../../../../../../pages/WeWork/services/wework.services';
+import { WeWorkService } from './../../../../../../pages/JeeWork_Core/services/wework.services';
 import { Router } from '@angular/router';
 import { TokenStorage } from './../../../../../jeework_old/core/auth/_services/token-storage.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
