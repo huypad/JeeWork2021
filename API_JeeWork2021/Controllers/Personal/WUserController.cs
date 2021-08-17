@@ -773,10 +773,10 @@ and ( (start_date <= @from and end_date >= @from ) or (start_date <= @to and end
                                {
                                    UserID = r.UserId,
                                    Fullname = r.FullName,
-                                   congviecphutrach = NhacNho.SLCongviecUser(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   congviecquahan = NhacNho.SLCongviecQuaHan(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   congviechethantrongngay = NhacNho.SLCongViecHetHanTrongNgay(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
-                                   duanquahan = NhacNho.SLDuAnQuaHan(r.UserId, r.CustomerID, ConnectionString, _configuration, _producer),
+                                   congviecphutrach = NhacNho.SLCongviecUser(r.UserId, r.CustomerID, cnn, _configuration, _producer),
+                                   congviecquahan = NhacNho.SLCongviecQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer),
+                                   congviechethantrongngay = NhacNho.SLCongViecHetHanTrongNgay(r.UserId, r.CustomerID, cnn, _configuration, _producer),
+                                   duanquahan = NhacNho.SLDuAnQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer),
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
