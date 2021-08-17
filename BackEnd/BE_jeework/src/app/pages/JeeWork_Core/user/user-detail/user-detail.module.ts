@@ -20,7 +20,7 @@ import { DynamicComponentModule } from "dps-lib";
 import { EditorModule } from "@tinymce/tinymce-angular";
 import { UserDetailComponent } from "./user-detail.component";
 import { UserService } from "../Services/user.service";
-import { WorkEditPageComponent } from "../../work/work-edit-page/work-edit-page.component";
+// import { WorkEditPageComponent } from "../../work/work-edit-page/work-edit-page.component";
 const routes: Routes = [
   {
     path: "",
@@ -34,10 +34,7 @@ const routes: Routes = [
         path: "uyquyen",
         component: UyquyenComponent,
       },
-      {
-        path: "detail/:id",
-        component: WorkEditPageComponent,
-      },
+      
     ],
   },
 ];

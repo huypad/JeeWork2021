@@ -67,7 +67,7 @@ import { cloneDeep, find, values } from "lodash";
 import * as moment from "moment";
 import { SelectionModel } from "@angular/cdk/collections";
 import { workAddFollowersComponent } from "../../work/work-add-followers/work-add-followers.component";
-import { WorkEditDialogComponent } from "../../work/work-edit-dialog/work-edit-dialog.component";
+// import { WorkEditDialogComponent } from "../../work/work-edit-dialog/work-edit-dialog.component";
 import { WorkAssignedComponent } from "../../work/work-assigned/work-assigned.component";
 import { DuplicateWorkComponent } from "../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
@@ -1417,7 +1417,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   work() {
     const model = new WorkModel();
     model.clear();
-    this.Update_work(model);
   }
   assign(node) {
     var item = this.getOptions_Assign();
@@ -1428,34 +1427,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
     dialogRef.afterClosed().subscribe((res) => {
       this.UpdateByKey(node, "assign", res.id_nv);
-    });
-  }
-  Update_work(_item: WorkModel) {
-    let saveMessageTranslateParam = "";
-    // _item = this.detail;
-    saveMessageTranslateParam +=
-      _item.id_row > 0
-        ? "GeneralKey.capnhatthanhcong"
-        : "GeneralKey.themthanhcong";
-    const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-    const _messageType =
-      _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(WorkEditDialogComponent, {
-      data: { _item },
-    });
-    dialogRef.afterClosed().subscribe((res) => {
-      if (!res) {
-        this.ngOnInit();
-      } else {
-        this.layoutUtilsService.showActionNotification(
-          _saveMessage,
-          _messageType,
-          4000,
-          true,
-          false
-        );
-        this.ngOnInit();
-      }
     });
   }
   Add_followers() {

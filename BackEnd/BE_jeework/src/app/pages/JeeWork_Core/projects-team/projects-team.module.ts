@@ -20,7 +20,7 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { WorkKanBanComponent } from "./work-kanban/work-kanban.component";
-import { WorkStreamComponent } from "./work-stream/work-stream.component";
+// import { WorkStreamComponent } from "./work-stream/work-stream.component";
 import {
   AngularGanttScheduleTimelineCalendarModule,
   GSTCComponent,
@@ -31,7 +31,7 @@ import { ListDepartmentService } from "../List-department/Services/List-departme
 import { ProjectListTabComponent } from "./project-list-tab/project-list-tab.component";
 import { EditorModule } from "@tinymce/tinymce-angular";
 import { ProjectTeamRoutingModule } from "./project-team-routing.module";
-import { WorkPeriodComponent } from "./work-period/work-period.component";
+// import { WorkPeriodComponent } from "./work-period/work-period.component";
 import { ProjectsTeamService } from "./Services/department-and-project.service";
 import { ProjectsTeamComponent } from "./projects-team.component";
 import { ChartsModule } from "ng2-charts";
@@ -86,10 +86,10 @@ import { NgGanttEditorModule } from 'ng-gantt'
     ProjectsTeamComponent,
     ProjectListTabComponent,
     WorkKanBanComponent,
-    WorkStreamComponent,
+    // WorkStreamComponent,
     GanttChart2Component,
     // GSTCComponent,
-    WorkPeriodComponent,
+    // WorkPeriodComponent,
     ClickOutsideDirective,
     QuickStatusComponent,
     WorkProcessEditComponent,

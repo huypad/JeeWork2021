@@ -2,12 +2,9 @@ import { MatDialog } from "@angular/material/dialog";
 import { TokenStorage } from "./../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
 import { MenuPhanQuyenServices } from "./../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
 import { StatusDynamicDialogComponent } from "./../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component";
-import { WorkService } from "./../../work/work.service";
 import { FormControl } from "@angular/forms";
-import { WorkListNewDetailComponent } from "./../work-list-new/work-list-new-detail/work-list-new-detail.component";
 import { WeWorkService } from "./../../services/wework.services";
 import { WorkGroupEditComponent } from "./../../work/work-group-edit/work-group-edit.component";
-import { WorkEditDialogComponent } from "./../../work/work-edit-dialog/work-edit-dialog.component";
 import {
   WorkModel,
   WorkGroupModel,
@@ -29,7 +26,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 // Material
 import { SelectionModel } from "@angular/cdk/collections";
 // RXJS
-import { debounceTime, distinctUntilChanged, tap } from "rxjs/operators";
 import { fromEvent, merge, ReplaySubject } from "rxjs";
 import { TranslateService } from "@ngx-translate/core";
 import * as moment from "moment";
@@ -92,9 +88,7 @@ export class WorkKanBanComponent implements OnInit {
     private route: ActivatedRoute,
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
-    private activatedRoute: ActivatedRoute,
     private changeDetectorRefs: ChangeDetectorRef,
-    private Workservice: WorkService,
     private tokenStorage: TokenStorage,
     private router: Router
   ) {
@@ -518,35 +512,6 @@ export class WorkKanBanComponent implements OnInit {
   ThemCongviec() {
     const ObjectModels = new WorkModel();
     ObjectModels.clear(); // Set all defaults fields
-    this.Update(ObjectModels);
-  }
-  Update(_item: WorkModel) {
-    let saveMessageTranslateParam = "";
-    _item.id_project_team = this.ID_Project;
-    saveMessageTranslateParam +=
-      _item.id_row > 0
-        ? "GeneralKey.capnhatthanhcong"
-        : "GeneralKey.themthanhcong";
-    const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-    const _messageType =
-      _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(WorkEditDialogComponent, {
-      data: { _item },
-    });
-    dialogRef.afterClosed().subscribe((res) => {
-      if (!res) {
-        return;
-      } else {
-        this.layoutUtilsService.showActionNotification(
-          _saveMessage,
-          _messageType,
-          4000,
-          true,
-          false
-        );
-        this.changeDetectorRefs.detectChanges();
-      }
-    });
   }
 
   AddWorkGroup() {

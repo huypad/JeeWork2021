@@ -11,12 +11,13 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { fromEvent, merge, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+// import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; 
+import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+// import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+// import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { WorkEditDialogComponent } from '../../work/work-edit-dialog/work-edit-dialog.component';
+// import { WorkEditDialogComponent } from '../../work/work-edit-dialog/work-edit-dialog.component';
 import { ViewTopicDetailComponent } from '../topic-view-detail/topic-view-detail.component';
 import { DiscussionsService } from '../discussions.service';
 import * as moment from 'moment';

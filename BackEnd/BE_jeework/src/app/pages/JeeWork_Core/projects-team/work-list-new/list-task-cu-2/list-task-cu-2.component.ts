@@ -9,7 +9,7 @@ import {
 import { QueryParamsModelNew } from "./../../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
 import { filterEditComponent } from "./../../../filter/filter-edit/filter-edit.component";
 import { workAddFollowersComponent } from "./../../../work/work-add-followers/work-add-followers.component";
-import { WorkEditDialogComponent } from "./../../../work/work-edit-dialog/work-edit-dialog.component";
+// import { WorkEditDialogComponent } from "./../../../work/work-edit-dialog/work-edit-dialog.component";
 import { WorkAssignedComponent } from "./../../../work/work-assigned/work-assigned.component";
 import { DuplicateWorkComponent } from "./../../../work/work-duplicate/work-duplicate.component";
 import { DuplicateTaskNewComponent } from "./../duplicate-task-new/duplicate-task-new.component";
@@ -977,7 +977,6 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
   work() {
     const model = new WorkModel();
     model.clear();
-    this.Update_work(model);
   }
   assign(node) {
     this.loadOptionprojectteam(node);
@@ -989,32 +988,6 @@ export class ListTaskCUComponent2 implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe((res) => {
       if (res) {
         this.UpdateByKey(node, "assign", res.id_nv);
-      }
-    });
-  }
-  Update_work(_item: WorkModel) {
-    let saveMessageTranslateParam = "";
-    // _item = this.detail;
-    saveMessageTranslateParam +=
-      _item.id_row > 0 ? "JeeHR.capnhatthanhcong" : "JeeHR.themthanhcong";
-    const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-    const _messageType =
-      _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(WorkEditDialogComponent, {
-      data: { _item },
-    });
-    dialogRef.afterClosed().subscribe((res) => {
-      if (!res) {
-        this.ngOnInit();
-      } else {
-        this.layoutUtilsService.showActionNotification(
-          _saveMessage,
-          _messageType,
-          4000,
-          true,
-          false
-        );
-        this.ngOnInit();
       }
     });
   }

@@ -33,7 +33,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     [Route("api/wework-lite")]
     [EnableCors("JeeWorkPolicy")]
     /// <summary>
-    /// các ds lite dành cho wework
+    /// các ds lite dành cho JeeWork
     /// </summary>
     public class WeworkLiteController : ControllerBase
     {
@@ -2261,7 +2261,6 @@ and IdKH={loginData.CustomerID} )";
         //    notify.notification("huypad", title);
         //    return "Oke";
         //}
-
         public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
         {
             string jeeglobal_be = _configuration.GetValue<string>("Host:jeeglobal_be");
@@ -2279,8 +2278,6 @@ and IdKH={loginData.CustomerID} )";
             notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration);
             return true;
         }
-
-
         /// <summary>
         /// Notify mail
         /// </summary>
