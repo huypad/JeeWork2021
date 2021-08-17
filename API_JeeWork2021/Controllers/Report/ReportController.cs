@@ -1369,6 +1369,16 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                 dr.Delete();
                             }
                         }
+                        // xóa công việc xuất sắc mà hoàn thành = 0
+                        else if ("excellent".Equals(query.filter["type"]))
+                        {
+                            int ht = int.Parse(dr["ht"].ToString());
+                            int htmuon = int.Parse(dr["ht_quahan"].ToString());
+                            if ((ht) <= 0 && (htmuon) <= 0)
+                            {
+                                dr.Delete();
+                            }
+                        }
                     }
                     dt.AcceptChanges();
                     var data = (from r in dt.AsEnumerable()
@@ -1388,10 +1398,12 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                     dangdanhgia = r["dangdanhgia"],
                                     ht_quahan = r["ht_quahan"],
                                     quahan = r["quahan"],
-                                    percentage = total == 0 ? 0 : (long.Parse(r["ht"].ToString()) * 100 / long.Parse(r["tong"].ToString()))
+                                    tonghoanthanh = (long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString())),
+                                    percentage = long.Parse(r["tong"].ToString()) == 0 ? 0 : (long.Parse(r["ht"].ToString()) * 100 / long.Parse(r["tong"].ToString())),
+                                    percentageexcellent = long.Parse(r["tong"].ToString()) == 0 ? 0 : (long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString()) * 100 / long.Parse(r["tong"].ToString()))
                                 });
                     if ("excellent".Equals(query.filter["type"]))
-                        data = data.OrderByDescending(x => x.hoanthanh);
+                        data = data.OrderByDescending(x => x.percentageexcellent); 
                     else
                         if ("most".Equals(query.filter["type"]))
                         data = data.OrderByDescending(x => x.danglam);

@@ -1159,7 +1159,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #endregion
-
                     return JsonResultCommon.ThanhCong();
                 }
             }

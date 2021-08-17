@@ -75,7 +75,7 @@
                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
                         (keyup.enter)="LoadData()" [(ngModel)]="keyword" type="text"
                         placeholder="{{ 'work.filterbytaskname' | translate }}">
-                        <!-- seach 1s 1 lần khi không nhập nữa
+                    <!-- seach 1s 1 lần khi không nhập nữa
                             <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" 
                                 style="border:0;outline:0" type="text" [formControl]="searchCtrl"
                                 placeholder="{{ 'work.filterbytaskname' | translate }}">
@@ -441,7 +441,8 @@
                                                             </div>
                                                         </div>
                                                         <mat-menu #status1="matMenu">
-                                                            <button mat-menu-item *ngFor="let status of node.DataStatus | allow_update_status"
+                                                            <button mat-menu-item
+                                                                *ngFor="let status of node.DataStatus | allow_update_status"
                                                                 (click)="UpdateStatus(node,status)"
                                                                 [ngStyle]="{color: status.color}">
                                                                 <div class="row">
@@ -508,7 +509,8 @@
                                                                                 </div>
                                                                             </ng-container>
                                                                             <span class="action-inline text-muted">
-                                                                                <i class="fas fa-tags"  *ngIf=" CheckRoles(20)"
+                                                                                <i class="fas fa-tags"
+                                                                                    *ngIf=" CheckRoles(20)"
                                                                                     matTooltip="{{ 'work.chinhsuatag' | translate }}"
                                                                                     [matMenuTriggerFor]="tag"
                                                                                     (menuOpened)="node.showtag = true"
@@ -531,7 +533,7 @@
                                                                                 <mat-menu #tag="matMenu">
                                                                                     <ng-container *ngIf="node.showtag">
                                                                                         <kt-choose-milestone-and-tags
-                                                                                        (click)="$event.stopPropagation()"
+                                                                                            (click)="$event.stopPropagation()"
                                                                                             [options]="list_Tag"
                                                                                             [project_team]="project_team"
                                                                                             [id_project_Team]="ID_Project"
@@ -545,7 +547,8 @@
                                                                         </span>
 
                                                                         <ng-container *ngFor="let tag of node.Tags">
-                                                                            <kt-cu-tag [node]="node" [tag]="tag" [role]="CheckRoles(20)"
+                                                                            <kt-cu-tag [node]="node" [tag]="tag"
+                                                                                [role]="CheckRoles(20)"
                                                                                 (loadData)="LoadData()"
                                                                                 (RemoveTag)="RemoveTag(tag,node)">
                                                                             </kt-cu-tag>
@@ -574,10 +577,14 @@
                                                                 </ng-container>
 
                                                                 <ng-template #selectedDate>
-                                                                    <div (click)="dt1.open()" class="item-field item-datetime" 
+                                                                    <div (click)="dt1.open()"
+                                                                        class="item-field item-datetime"
                                                                         *ngIf="CheckRoleskeypermit(item.fieldname)">
-                                                                        <div class="remove-date url" (click)="UpdateByKey(node,item.fieldname,null)" [hidden]="!node[item.fieldname]">
-                                                                            <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
+                                                                        <div class="remove-date url"
+                                                                            (click)="UpdateByKey(node,item.fieldname,null)"
+                                                                            [hidden]="!node[item.fieldname]">
+                                                                            <i class="fas fa-times-circle"
+                                                                                style="color: #28a745 ;"></i>
                                                                         </div>
                                                                         <span
                                                                             class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
@@ -619,7 +626,8 @@
                                                                     *ngIf="item.type == 'code';else noestcode">
                                                                     <div class="item-field hide-more-text">
                                                                         <span class="hide-more-text">
-                                                                            {{node[item.fieldname]?'#'+node[item.fieldname]:''}} </span>
+                                                                            {{node[item.fieldname]?'#'+node[item.fieldname]:''}}
+                                                                        </span>
                                                                     </div>
                                                                 </ng-container>
 
@@ -673,9 +681,9 @@
                                                                                     </div>
                                                                                 </button>
                                                                             </mat-menu>
-                                                                        </ng-container> 
+                                                                        </ng-container>
                                                                         <ng-container *ngSwitchCase="'id_nv'">
-                                                                            <div class="item-field hide-more-text">
+                                                                            <div class="item-field hide-more-text"> 
                                                                                 <div class="item-field"
                                                                                     *ngIf="CheckRoleskeypermit(item.fieldname)">
                                                                                     <ng-container
@@ -873,15 +881,20 @@
                                                                             </div>
                                                                         </ng-container>
                                                                         <ng-container *ngSwitchCase="'id_group'">
-                                                                            <div class="item-field" [matMenuTriggerFor]="groupid" [hidden]="!CheckRoles(21)">
+                                                                            <div class="item-field"
+                                                                                [matMenuTriggerFor]="groupid"
+                                                                                [hidden]="!CheckRoles(21)">
                                                                                 {{LoadNhomCongViec(node[item.fieldname])}}
                                                                             </div>
-                                                                            <div class="item-field" [hidden]="CheckRoles(21)">
+                                                                            <div class="item-field"
+                                                                                [hidden]="CheckRoles(21)">
                                                                                 {{LoadNhomCongViec(node[item.fieldname])}}
                                                                             </div>
                                                                             <mat-menu #groupid="matMenu">
-                                                                                <ng-container *ngFor="let item of listType">
-                                                                                    <button mat-menu-item (click)="UpdateGroup(node,item.id_row)">{{item.title}}</button>
+                                                                                <ng-container
+                                                                                    *ngFor="let item of listType">
+                                                                                    <button mat-menu-item
+                                                                                        (click)="UpdateGroup(node,item.id_row)">{{item.title}}</button>
                                                                                 </ng-container>
                                                                             </mat-menu>
                                                                         </ng-container>
@@ -1212,10 +1225,12 @@
                                                     </div>
                                                     <ng-container *ngIf="addNodeitem==node.id_row">
                                                         <kt-add-task [item]="node" [loai]="'subtask'" [nhom]="getNhom()"
-                                                            (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"
-                                                            [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" 
-                                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')" 
-                                                            ></kt-add-task>
+                                                            (Close)="CloseAddnewTask($event)" [ID_Project]="ID_Project"
+                                                            (dataTask)="CreateTask($event)"
+                                                            [roleassign]="CheckRoles(14)"
+                                                            [roledeadline]="CheckRoles(10)"
+                                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')">
+                                                        </kt-add-task>
                                                     </ng-container>
 
                                                 </div>
@@ -1244,11 +1259,12 @@
                                     <ng-container *ngIf="newtask == status.id_row">
                                         <div
                                             class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
-                                            <kt-add-task [item]="status" [loai]="'task'" 
+                                            <kt-add-task [item]="status" [loai]="'task'"
                                                 (Close)="CloseAddnewTask($event)" [nhom]="getNhom()"
                                                 [ID_Project]="ID_Project" (dataTask)="CreateTask($event)"
-                                                [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')" 
-                                                [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)" ></kt-add-task>
+                                                [roleprioritize]="CheckRoleskeypermit('clickup_prioritize')"
+                                                [roleassign]="CheckRoles(14)" [roledeadline]="CheckRoles(10)">
+                                            </kt-add-task>
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="CheckRoles(1)">

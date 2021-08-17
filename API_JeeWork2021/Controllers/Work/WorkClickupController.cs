@@ -3210,9 +3210,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
-                    //string LogContent = "", LogEditContent = "";
-                    //LogContent = LogEditContent = "Thêm mới dữ liệu work: title=" + data.title + ", id_project_team=" + data.id_project_team;
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
+
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
@@ -3264,7 +3262,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
 
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
@@ -4044,7 +4041,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             postauto.data_input += "," + data.value; // giá trị mới
                             //postauto.data_input = datapost;
                             Automation.SendAutomation(postauto, _configuration, _producer);
-
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
@@ -4092,7 +4088,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         #region gửi event đổi độ thời gian ước tính
                         if ("estimates".Equals(data.key))
                         {
-
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
@@ -5225,7 +5220,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    DataSet ds = getWork(cnn, query, loginData.UserID, DataAccount, " and w.id_nv=@iduser");
+                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.Disabled = 0 and wu.Disabled = 0  and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    DataSet ds = getWork(cnn, query, loginData.UserID, DataAccount, strW);//" and w.id_nv=@iduser"
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -5616,7 +5612,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                                 "and id_work = ";
             //DataTable dt_Tags = cnn.CreateDataTable(queryTag);
             string queryUser = $@"select w_user.id_work, w_user.id_user, w_user.loai
-                                , id_child, w_user.disabled, '' as hoten, id_project_team
+                                , id_child, w_user.disabled, '' as hoten,'' as image, id_project_team
                                 from we_work_user w_user 
                                 join we_work 
                                 on we_work.id_row = w_user.id_work 
@@ -5624,6 +5620,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                                 and we_work.id_project_team = " + id_project_team + " and id_work = ";
             result.Columns.Add("Tags", typeof(DataTable));
             result.Columns.Add("User", typeof(DataTable));
+            result.Columns.Add("Follower", typeof(DataTable));
             //result.Columns.Add("comments", typeof(string));
 
 
@@ -5647,7 +5644,10 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 foreach (DataRow dr in result.Rows)
                 {
                     dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
-                    DataTable user = cnn.CreateDataTable(queryUser + dr["id_row"]);
+                    //DataTable user = cnn.CreateDataTable(queryUser + dr["id_row"]);
+
+                    DataTable user = cnn.CreateDataTable(queryUser + dr["id_row"] + "  and loai = 1");
+                    DataTable follower = cnn.CreateDataTable(queryUser + dr["id_row"] + "  and loai = 2");
                     #region Map info account từ JeeAccount
                     foreach (DataRow item in user.Rows)
                     {
@@ -5655,9 +5655,20 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;
+                            item["image"] = info.AvartarImgURL;
                         }
                     }
                     dr["User"] = user;
+                    foreach (DataRow item in follower.Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["image"] = info.AvartarImgURL;
+                        }
+                    }
+                    dr["Follower"] = follower;
                     #endregion
                 }
             }
@@ -5665,89 +5676,96 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         }
         public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, DpsConnection cnn, List<AccUsernameModel> DataAccount)
         {
-            DataTable dt = new DataTable();
-            long status_hientai = long.Parse(cnn.ExecuteScalar("select status from we_work where id_row = " + workid + "").ToString());
-            long position = long.Parse(cnn.ExecuteScalar("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).ToString());
-            string sql = @"";
-            sql = @$"select process.id_project_team, workid, process.statusid, process.id_row as processid
+            try
+            {
+                DataTable dt = new DataTable();
+                long status_hientai = long.Parse(cnn.ExecuteScalar("select status from we_work where id_row = " + workid + "").ToString());
+                long position = long.Parse(cnn.ExecuteScalar("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).ToString());
+                string sql = @"";
+                sql = @$"select process.id_project_team, workid, process.statusid, process.id_row as processid
                         , process.checker, process.change_note , statusname, color, position, _status.id_row
                         , _status.type, isdefault, isfinal, isdeadline, istodo, '' as hoten_follower
                         from we_work_process process right join we_status _status
                         on _status.id_row = process.statusid
                         where _status.id_project_team = " + id_project_team + " " +
-                        "and _status.disabled = 0 and process.disabled = 0 " +
-                        "and workid = " + workid + " " +
-                        "order by type, position ";
-            string offset = " OFFSET " + (position - 1) + " ROWS FETCH NEXT " + (position + 1) + " ROWS ONLY";
-            bool admin_project = false;
-            object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
-            if (project_team != null)
-                admin_project = bool.TrueString.Equals(project_team.ToString());
-            bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
-            //if (!admin_system && !admin_project)
-            //{
-            //    sql += sql + offset;
-            //}
-            bool is_stop = false;
-            dt = cnn.CreateDataTable(sql);
-            dt.Columns.Add("allow_update", typeof(bool));
-            if (dt.Rows.Count > 0)
-            {
-                foreach (DataRow item in dt.Rows)
+                            "and _status.disabled = 0 and process.disabled = 0 " +
+                            "and workid = " + workid + " " +
+                            "order by type, position ";
+                string offset = " OFFSET " + (position - 1) + " ROWS FETCH NEXT " + (position + 1) + " ROWS ONLY";
+                bool admin_project = false;
+                object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
+                if (project_team != null)
+                    admin_project = bool.TrueString.Equals(project_team.ToString());
+                bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
+                //if (!admin_system && !admin_project)
+                //{
+                //    sql += sql + offset;
+                //}
+                bool is_stop = false;
+                dt = cnn.CreateDataTable(sql);
+                dt.Columns.Add("allow_update", typeof(bool));
+                if (dt.Rows.Count > 0)
                 {
-                    if (admin_project || admin_system)
+                    foreach (DataRow item in dt.Rows)
                     {
-                        item["allow_update"] = true;
-                    }
-                    else
-                    {
-                        long value_table = long.Parse(item["position"].ToString());
-                        string checker = item["checker"].ToString();
-                        if (Math.Abs(value_table - position) == 0) // dòng hiện tại
+                        if (admin_project || admin_system)
                         {
                             item["allow_update"] = true;
                         }
-                        if (Math.Abs(value_table - position) > 0) // dòng trên và dòng dưới
+                        else
                         {
-                            if (Math.Abs(value_table - position) == 1) // dòng trên + 1 và dòng dưới +1
+                            long value_table = long.Parse(item["position"].ToString());
+                            string checker = item["checker"].ToString();
+                            if (Math.Abs(value_table - position) == 0) // dòng hiện tại
                             {
                                 item["allow_update"] = true;
-                                if (!string.IsNullOrEmpty(checker) && !checker.Equals(loginData.UserID.ToString()))
-                                {
-                                    is_stop = true;
-                                }
                             }
-                            if (is_stop) // Nếu dòng n-1 và n+1 có người check và không thuộc user đăng nhập thì dừng hẳn
+                            if (Math.Abs(value_table - position) > 0) // dòng trên và dòng dưới
                             {
-                                if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                if (Math.Abs(value_table - position) == 1) // dòng trên + 1 và dòng dưới +1
                                 {
-                                    item["allow_update"] = false;
-                                }
-                            }
-                            else
-                            {
-                                if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
-                                {
-                                    if (string.IsNullOrEmpty(checker) || (checker == loginData.UserID.ToString()))
+                                    item["allow_update"] = true;
+                                    if (!string.IsNullOrEmpty(checker) && !checker.Equals(loginData.UserID.ToString()))
                                     {
-                                        item["allow_update"] = true;
+                                        is_stop = true;
                                     }
-                                    else
+                                }
+                                if (is_stop) // Nếu dòng n-1 và n+1 có người check và không thuộc user đăng nhập thì dừng hẳn
+                                {
+                                    if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                    {
                                         item["allow_update"] = false;
+                                    }
+                                }
+                                else
+                                {
+                                    if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                    {
+                                        if (string.IsNullOrEmpty(checker) || (checker == loginData.UserID.ToString()))
+                                        {
+                                            item["allow_update"] = true;
+                                        }
+                                        else
+                                            item["allow_update"] = false;
+                                    }
                                 }
                             }
                         }
+                        var info = DataAccount.Where(x => item["checker"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            item["hoten_follower"] = info.FullName;
+                        }
                     }
-                    var info = DataAccount.Where(x => item["checker"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                    if (info != null)
-                    {
-                        item["hoten_follower"] = info.FullName;
-                    }
+                    return dt;
                 }
-                return dt;
+                else
+                    return new DataTable();
             }
-            else
+            catch
+            {
                 return new DataTable();
+            }
         }
 
         public static async Task<DataSet> GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string listDept, string dieukien_where = "")

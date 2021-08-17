@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 //Share
 //Component
 //Service
-import { DynamicFormModule, DynamicComponentModule } from 'dps-lib';
+import { DynamicComponentModule } from 'dps-lib';
 import { DatePipe, CommonModule } from '@angular/common';
 import { WeWorkModule } from '../../wework.module';
 import { HttpClientModule } from '@angular/common/http';

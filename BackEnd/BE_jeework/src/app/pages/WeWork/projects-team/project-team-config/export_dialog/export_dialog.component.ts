@@ -1,8 +1,6 @@
 import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { TokenStorage } from 'src/app/_metronic/jeework_old/core/auth/_services';
-import { DynamicFormService } from './../../../../dynamic-form/dynamic-form.service';
-import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
 import { MatPaginator,PageEvent } from '@angular/material/paginator';
@@ -30,7 +28,6 @@ export class ExportDialogComponent {
 		private route: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
-		public dynamicFormService: DynamicFormService,
 		private tokenStorage: TokenStorage,) {
 	}
 

@@ -211,8 +211,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -389,12 +387,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 has["description"] = _t.description;
                             has["id_project_team"] = _t.id_project_team;
                             has["id_group"] = _t.id_group;
-                            has["deadline"] = _t.deadline;
+                            //has["deadline"] = _t.deadline;
                             if (_t.id_parent > 0)
                                 has["id_parent"] = _t.id_parent;
                             //else
                             //    has["id_parent"] = DBNull.Value;
-                            has["start_date"] = _t.start_date;
+                            //has["start_date"] = _t.start_date;
+                            if (_t.startdate_type == "3")
+                            {
+                                has["start_date"] = _t.start_date;
+                            }
+                            if (_t.deadline_type == "3")
+                            {
+                                has["deadline"] = _t.deadline;
+                            }
                             has["status"] = _t.status;
                             has["startdate_type"] = _t.startdate_type;
                             has["deadline_type"] = _t.deadline_type;
@@ -512,9 +518,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -709,7 +712,7 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                         sql_data = "select rowid, title, description, id_project_team, id_group" +
                             ", deadline, id_parent, start_date, status, priority" +
                             ", startdate_type, deadline_type, autoid " +
-                            "from automation_task " + where_str + "";
+                            "from automation_task " + where_str + "  order by RowID desc";
                         sql_data += ";select id_row, taskid, id_user, loai, '' as hoten from automation_task_user " +
                             "where taskid in (select rowid from automation_task " + where_str + ")";
                         sql_data += ";select tagid, taskid from automation_task_tag " +
@@ -912,12 +915,18 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                         has["description"] = _t.description;
                     has["id_project_team"] = _t.id_project_team;
                     has["id_group"] = _t.id_group;
-                    has["deadline"] = _t.deadline;
                     if (_t.id_parent > 0)
                         has["id_parent"] = _t.id_parent;
                     //else
                     //    has["id_parent"] = DBNull.Value;
-                    has["start_date"] = _t.start_date;
+                    if (_t.startdate_type == "3")
+                    {
+                        has["start_date"] = _t.start_date;
+                    }
+                    if (_t.deadline_type == "3")
+                    {
+                        has["deadline"] = _t.deadline;
+                    }
                     has["status"] = _t.status;
                     has["startdate_type"] = _t.startdate_type;
                     has["deadline_type"] = _t.deadline_type;

@@ -4,7 +4,6 @@ import { CreatQuickFolderComponent } from './List-department/creat-quick-folder/
 import { AutomationService } from './automation/automation.service';
 import { TemplateCenterService } from './template-center/template-center.service';
 import { CRUDTableModule } from './../../_metronic/shared/crud-table/crud-table.module';
-import { DynamicFormService } from './../dynamic-form/dynamic-form.service';
 import { ActionNotificationComponent } from './../../_metronic/jeework_old/_shared/action-natification/action-notification.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -250,7 +249,8 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		FullCalendarModule,
 		CRUDTableModule,
 		NgxPrintModule,
-		ApplicationPipesModule
+		ApplicationPipesModule,
+		
 	],
 	providers: [
 		{ provide: MAT_DATE_LOCALE, useValue: 'vi' },
@@ -285,7 +285,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		AuthService,
 		TokenStorage,
 		AttachmentService,
-		DynamicFormService,
 		TemplateCenterService,
 		AutomationService,
 	],

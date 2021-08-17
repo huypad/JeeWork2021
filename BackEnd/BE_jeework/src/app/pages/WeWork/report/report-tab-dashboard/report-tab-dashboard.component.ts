@@ -22,6 +22,7 @@ import Histogram from 'highcharts/modules/histogram-bellcurve';
 import { WeWorkService } from '../../services/wework.services';
 import { ActivatedRoute } from '@angular/router';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { BehaviorSubject } from 'rxjs';
 Histogram(Highcharts);
 
 const Wordcloud = require('highcharts/modules/wordcloud');
@@ -44,6 +45,7 @@ export class ReportTabDashboardComponent implements OnInit {
   treeControl = new NestedTreeControl<Department>(node => node.data_folder);
   dataSource = new MatTreeNestedDataSource<Department>();
   checklistSelection = new SelectionModel<Department>(true /* multiple */);
+  public datatree: BehaviorSubject<any[]> = new BehaviorSubject([]);
   constructor(
     public dialog: MatDialog,
     public reportService: ReportService,
@@ -54,10 +56,9 @@ export class ReportTabDashboardComponent implements OnInit {
     public weworkService: WeWorkService,
     private activatedRoute: ActivatedRoute,
     // private TongHopHieuQuaTuyenDungService:TongHopHieuQuaTuyenDungService
-  ) {  
+  ) {
   }
   hasChild = (_: number, node: Department) => !!node.data_folder && node.data_folder.length >= 0;
-  DontChange = false 
   selectedDate = {
     startDate: new Date('09/01/2020'),
     endDate: new Date('09/30/2020'),
@@ -68,21 +69,20 @@ export class ReportTabDashboardComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       if (params.id) {
         this.ID_department = +params.id;
-        this.DontChange = true;
         this.filter_dept.id_row = this.ID_department.toString();
         // this.LoadData();
-        
+
       }
       else {
       }
     });
-    
+
     this.LoadData();
     this.LoadDatafilter();
   }
 
   DanhSachPhongBan: any = [];
-  todoItemSelectionToggle(id){
+  todoItemSelectionToggle(id) {
     console.log(id);
     // var index = this.DanhSachPhongBan.findIndex(x=> x==id);
     // if(index >= 0){
@@ -92,10 +92,10 @@ export class ReportTabDashboardComponent implements OnInit {
     // }
     // console.log(this.DanhSachPhongBan);
     // this.LoadData();
-    id.data_folder(element=> element.checked = true);
+    id.data_folder(element => element.checked = true);
   }
 
-  SetUp(){
+  SetUp() {
     this.filter_dept = {
       title: this.translate.instant('filter.tatcaphongban'),
       id_row: ''
@@ -134,18 +134,29 @@ export class ReportTabDashboardComponent implements OnInit {
   // };
   filterConfiguration(): any {
     const filter: any = {};
-    // filter.TuNgay = this.selectedDate.startDate;
-    // filter.DenNgay = this.selectedDate.endDate;
     filter.TuNgay = (this.f_convertDate(this.selectedDate.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.selectedDate.endDate)).toString();
-    // filter.id_department = this.filter_dept.id_row;
-    if(this.DanhSachPhongBan && this.DanhSachPhongBan.length > 0){
-      filter.id_department = this.DanhSachPhongBan.join(',');
+    if (this.Selected) {
+      filter.id_department = this.getDanhSachPB();
     }
     filter.collect_by = this.column_sort.value;
     filter.displayChild = this.filterCVC.value;
     filter.status = this.trangthai.id_row;
     return filter;
+  }
+  getDanhSachPB(){
+    if(this.Selected){
+      let ds = [];
+      ds.push(this.Selected.id);
+      if(this.Selected.data && this.Selected.data.length > 0){
+        this.Selected.data.forEach(element => {
+          ds.push(element.id);
+        });
+      }
+      return ds.join(',');
+
+    }
+    return "";
   }
 
   _filterCV = [
@@ -192,15 +203,15 @@ export class ReportTabDashboardComponent implements OnInit {
       value: 'status',
       id_row: '2',
       loai: 'trangthai'
-    }, 
+    },
   ]
 
   NameDept(id) {
     var title = this.translate.instant('filter.tatcaphongban');
-    var x = this.list_department.find(x=>x.id_row == id);
-    if(x){
+    var x = this.list_department.find(x => x.id_row == id);
+    if (x) {
       return x.title;
-    } 
+    }
     return title
   }
 
@@ -227,46 +238,36 @@ export class ReportTabDashboardComponent implements OnInit {
     this.getReportByProjectTeam();
     this.getReportToDepartments();
     this.getCacConSoThongKe();
-    this.getEisenhower(); 
+    this.getEisenhower();
     setTimeout(() => {
       this.layoutUtilsService.OffWaitingDiv();
     }, 1000);
   }
 
-  ngAfterViewInit(): void {
-    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-    //Add 'implements AfterViewInit' to the class.
-    // this.layoutUtilsService.OffWaitingDiv();
-    
-  }
 
-  
   LoadDatafilter() {
-    this.weworkService.lite_department_folder_byuser(this.ID_department).subscribe(res => {
+    this.weworkService.lite_tree_department(this.ID_department).subscribe(res => {
       if (res && res.status === 1) {
-          this.list_department = res.data;
-          // this.list_department.unshift({
-          //   title: this.translate.instant('filter.tatcaphongban'),
-          //   id_row: ''
-          // })
-          // if(this.ID_department > 0)
-          // this.LoadDataFolder();
-          this.dataSource.data = res.data
-          console.log(this.list_department);
-      };
+        this.datatree.next(res.data);
+        console.log(res.data,'(1)')
+        if(this.ID_department > 0){
+          this.Selected = res.data[0];
+          this.LoadData();
+        }
+      }
+      else {
+        this.datatree.next([]);
+        this.layoutUtilsService.showError(res.error.message);
+      }
       this.detectChange.detectChanges();
-    },
-      err => console.log('Nội dung gây lỗi:',err)
-    );
+    });
   }
-
+  Selected:any = null;
   selected_Dept(item) {
-    this.filter_dept = item;
+    console.log(item);
+    this.Selected = item;
     this.LoadData();
-    //note
   }
-
-
   //Load overview 
   ListOverview = []
   getOverview() {
@@ -293,7 +294,7 @@ export class ReportTabDashboardComponent implements OnInit {
           tong: 0,
           text1: this.translate.instant('report.hoanthanh'),
           text2: this.translate.instant('report.dangthuchien'),
-          text3:  this.translate.instant('filter.quahan'),
+          text3: this.translate.instant('filter.quahan'),
         },
         // {
         //   title: this.translate.instant('report.muctieu'),
@@ -440,7 +441,7 @@ export class ReportTabDashboardComponent implements OnInit {
     var text = 'report.congviecdangthuchien';
     return congviec + "/" + tongconviec + " " + this.translate.instant(text);
   }
-  getInfoCVHT(congviec,ht_quahan, tongconviec) {
+  getInfoCVHT(congviec, ht_quahan, tongconviec) {
     var tonghoanthanh = (+congviec) + (+ht_quahan);
     var text = 'report.congviecdahoanthanh';
     return tonghoanthanh + "/" + tongconviec + " " + this.translate.instant(text);
@@ -517,7 +518,7 @@ export class ReportTabDashboardComponent implements OnInit {
   }
 
   // chart 4 Tong hop theo du an
-  listColorChart4 = ['#40FF00', '#F7FE2E', '#FE2E2E', 'rgb(124, 181, 236)', 'black','gray'];
+  listColorChart4 = ['#40FF00', '#F7FE2E', '#FE2E2E', 'rgb(124, 181, 236)', 'black', 'gray'];
   Data4: any;
   chart4Ready = false;
   TongDuAn = 0;
@@ -661,7 +662,7 @@ export class ReportTabDashboardComponent implements OnInit {
         }
         for (let index of this.keyObject) {
           this.chartPhanbocongviecDepartment.datasets.push(
-            { data: dt1[index], label: this.getTitle(index),backgroundColor: this.getColor(index) }
+            { data: dt1[index], label: this.getTitle(index), backgroundColor: this.getColor(index) }
           )
           this.chartPhanbocongviecDepartment.color.push(
             { backgroundColor: this.getColor(index) }
@@ -848,8 +849,8 @@ export class ReportTabDashboardComponent implements OnInit {
   }
   ExportReportExcel(filename: string) {
     const list = new Array<BaoCaoThongKeModel>();
-    if(filename == 'member'){
-      this.Staff.forEach(i=>{
+    if (filename == 'member') {
+      this.Staff.forEach(i => {
         const item = new BaoCaoThongKeModel(
           i.hoten,
           i.hoanthanh,
@@ -861,8 +862,8 @@ export class ReportTabDashboardComponent implements OnInit {
         list.push(item);
       });
     }
-    else if(filename == 'project'){
-      this.ProjectTeam.forEach(i=>{
+    else if (filename == 'project') {
+      this.ProjectTeam.forEach(i => {
         const item = new BaoCaoThongKeModel(
           i.title,
           i.num_work,
@@ -874,8 +875,8 @@ export class ReportTabDashboardComponent implements OnInit {
         list.push(item);
       });
     }
-    else{
-      this.Department.forEach(i=>{
+    else {
+      this.Department.forEach(i => {
         const item = new BaoCaoThongKeModel(
           i.title,
           i.num_work,
@@ -887,16 +888,16 @@ export class ReportTabDashboardComponent implements OnInit {
         list.push(item);
       });
     }
-    this.reportService.ExportReportExcel(list,filename).subscribe( (res) => {
+    this.reportService.ExportReportExcel(list, filename).subscribe((res) => {
       const linkSource = `data:application/octet-stream;base64,${res.data.FileContents}`;
-				const downloadLink = document.createElement("a");
-				const fileName = res.data.FileDownloadName;
+      const downloadLink = document.createElement("a");
+      const fileName = res.data.FileDownloadName;
 
-				downloadLink.href = linkSource;
-				downloadLink.download = fileName;
-				downloadLink.click();
+      downloadLink.href = linkSource;
+      downloadLink.download = fileName;
+      downloadLink.click();
     });
-    
+
   }
   ExportExcel(filename: string) {
     var linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
@@ -1063,9 +1064,6 @@ export class ReportTabDashboardComponent implements OnInit {
 
     })
   }
-  
-
-
   //get Report By Department
   Eisenhower: any = {};
   getEisenhower() {
@@ -1082,86 +1080,30 @@ export class ReportTabDashboardComponent implements OnInit {
 
     })
   }
+  dataFolder: any = [];
+  loadListfolder: any = false;
+  LoadDataFolder() {
+    this._deptServices.DeptDetail(this.ID_department).subscribe(res => {
+      if (res && res.status == 1) {
+        if (!res.data.ParentID) {
+          this.dataFolder = res.data.data_folder;
+          var itemhientai = {
+            CreatedBy: res.data.CreatedBy,
+            CreatedDate: res.data.CreatedDate,
+            id_row: res.data.id_row,
+            parentid: res.data.ParentID,
+            templateid: res.data.templateid,
+            title: 'Dự án trực tiếp của phòng ban',
+          }
+          this.dataFolder.unshift(itemhientai)
+          this.loadListfolder = true;
+          this.list_department = this.dataFolder;
+          this.detectChange.detectChanges();
+        }
 
-  dataFolder:any = [];
-  loadListfolder:any = false;
-	LoadDataFolder(){
-	  this._deptServices.DeptDetail(this.ID_department).subscribe(res => {
-		if (res && res.status == 1) {
-		  if(!res.data.ParentID){
-			this.dataFolder = res.data.data_folder; 
-			var itemhientai = {
-			  CreatedBy: res.data.CreatedBy,
-			  CreatedDate: res.data.CreatedDate,
-			  id_row: res.data.id_row,
-			  parentid: res.data.ParentID,
-			  templateid: res.data.templateid,
-			  title: 'Dự án trực tiếp của phòng ban',
-			}
-			this.dataFolder.unshift(itemhientai)
-			this.loadListfolder = true;
-      this.list_department = this.dataFolder;
-      this.DontChange = false;
-			this.detectChange.detectChanges();
-		  }
-		  
-		}
-	  })
-	}
-  todoLeafItemSelectionToggle(node: Department): void {
-    console.log(node);
-    this.checklistSelection.toggle(node);
-    this.checkRootNodeSelection(node);
+      }
+    })
   }
-
-  checkRootNodeSelection(node: Department): void {
-    const nodeSelected = this.checklistSelection.isSelected(node);
-    const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.length > 0 && descendants.every(child => {
-      return this.checklistSelection.isSelected(child);
-    });
-    if (nodeSelected && !descAllSelected) {
-      this.checklistSelection.deselect(node);
-    } else if (!nodeSelected && descAllSelected) {
-      this.checklistSelection.select(node);
-    }
-  }
-  
-  todoItemSelectionToggle1(node: Department): void {
-    console.log(node)
-    this.checklistSelection.toggle(node);
-    const descendants = this.treeControl.getDescendants(node);
-    console.log(descendants)
-    this.checklistSelection.isSelected(node)
-      ? this.checklistSelection.select(...descendants)
-      : this.checklistSelection.deselect(...descendants);
-    console.log(this.checklistSelection.isSelected(node)); 
-  }
-  descendantsAllSelected(node: Department): boolean {
-    // console.log(node)
-    const descendants = this.treeControl.getDescendants(node);
-    return descendants.every(child => this.checklistSelection.isSelected(child));
-  }
-  checkAllParentsSelection(node: Department): void {
-    let parent: Department | null = this.getParentNode(node);
-    while (parent) {
-      this.checkRootNodeSelection(parent);
-      parent = this.getParentNode(parent);
-    }
-  }
-  getParentNode(node: Department): Department | null {
- 
-
-    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
-
-    for (let i = startIndex; i >= 0; i--) {
-      const currentNode = this.treeControl.dataNodes[i];
-
-      return currentNode;
-    }
-    return null;
-  }
-
 }
 
 export interface DialogData {

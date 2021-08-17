@@ -198,8 +198,8 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             //priority
             this.value.to = dataTask.priority;
             if (+dataTask.deadline_type > 0) {
-              this.value.startdatetype = +dataTask.deadline_type;
-              this.value.startdateValue = dataTask.deadline;
+              this.value.duedatetype = +dataTask.deadline_type;
+              this.value.duedateValue = dataTask.deadline;
             }
             if (+dataTask.startdate_type > 0) {
               this.value.startdatetype = +dataTask.startdate_type;
@@ -232,6 +232,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
         }
         break;
       case 4: //comment
+      case 8: //Estimate
         {
           this.value.data = this.data_actions.value;
         }

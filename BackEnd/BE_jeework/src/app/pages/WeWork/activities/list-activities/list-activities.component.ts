@@ -1,4 +1,3 @@
-import { DynamicFormService } from './../../../dynamic-form/dynamic-form.service';
 import { WorkListNewDetailComponent } from './../../projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -56,7 +55,6 @@ export class ListActivitiesComponent {
 		private activatedRoute: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
-		public dynamicFormService: DynamicFormService,
 		private tokenStorage: TokenStorage,) {
 	this.language = localStorage.getItem('language');
 	}

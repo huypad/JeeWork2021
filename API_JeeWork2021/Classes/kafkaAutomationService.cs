@@ -18,21 +18,25 @@ using System.Data;
 using DpsLibs.Data;
 using JeeWork_Core2021.Controllers.Wework;
 using System.Collections;
+using JeeWork_Core2021.Controller;
+using DPSinfra.Notifier;
 
 namespace API_JeeWork2021.Classes
 {
     public class kafkaAutomationService : IHostedService
     {
         private IConfiguration _config;
+        private INotifier _notifier;
         private Consumer testSoLuong;
         private IProducer _producer;
         private IConnectionCache _cache;
         private readonly ILogger<kafkaAutomationService> _logger;
-        public kafkaAutomationService(IConfiguration config, IProducer producer, IConnectionCache connectionCache, ILogger<kafkaAutomationService> logger)
+        public kafkaAutomationService(IConfiguration config, IProducer producer, IConnectionCache connectionCache, ILogger<kafkaAutomationService> logger, INotifier notifier)
         {
             _cache = connectionCache;
             _producer = producer;
             _config = config;
+            _notifier = notifier;
             testSoLuong = new Consumer(_config, "test-sls");
             _logger = logger;
         }
@@ -57,7 +61,7 @@ namespace API_JeeWork2021.Classes
             string connectionString = WeworkLiteController.getConnectionString(_cache, data.customerid, _config);
             ExecuteAutomation(data, connectionString);
         }
-        public static bool ExecuteAutomation(Post_Automation_Model data, string connectionString)
+        public bool ExecuteAutomation(Post_Automation_Model data, string connectionString)
         {
             bool result = true;
             DataTable dt_execute = new DataTable();
@@ -93,9 +97,9 @@ namespace API_JeeWork2021.Classes
                 }
                 if (dt_execute.Rows.Count <= 0)
                     return result;
-                if(dt_auto.Rows.Count > 0)
+                if (dt_auto.Rows.Count > 0)
                 {
-                    foreach(DataRow dr in dt_auto.Rows)
+                    foreach (DataRow dr in dt_auto.Rows)
                     {
                         if (get_condition_by_events(dr, data.data_input, cnn)) // Kiểm tra event để thực thi hành động
                         {
@@ -103,6 +107,8 @@ namespace API_JeeWork2021.Classes
                             long autoid = long.Parse(dr["rowid"].ToString());
                             string data_auto = dr["data"].ToString();
                             string columnname = "id_project_team";
+                            string TitleKey = "";
+                            int TemplateID = 0;
                             switch (actionid)
                             {
                                 case 1:
@@ -111,38 +117,52 @@ namespace API_JeeWork2021.Classes
 join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where autoid =" + autoid + "");
                                     if (dt_sub.Rows.Count > 0)
                                     {
-                                        process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn);
+                                        process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn,connectionString, data.customerid);
                                     }
                                     break;
                                 case 4: // comment 
                                     insertComment(data.userid, data_auto, get_list_id(dt_execute), cnn);
                                     break;
                                 case 8:
+                                    columnname = "estimates";
+                                    TitleKey = "ww_capnhatthoigianuoctinh";
+                                    TemplateID = 26;
+                                    goto case 14;
                                 case 9:
                                     columnname = "status";
+                                    TitleKey = "ww_capnhattrangthaicongviec";
+                                    TemplateID = 21;
                                     goto case 14;
                                 case 10:
                                     columnname = "clickup_prioritize";
+                                    TitleKey = "ww_thaydoidouutiencongviec";
+                                    TemplateID = 25;
                                     goto case 14;
                                 case 11:
                                     columnname = "deadline";
+                                    TitleKey = "ww_chinhsuadeadline";
+                                    TemplateID = 12;
                                     goto case 14;
                                 case 12:
                                     columnname = "start_date";
+                                    TitleKey = "ww_chinhsuathoigianbatdau";
+                                    TemplateID = 27;
                                     goto case 14;
                                 case 13:
                                 case 14:
-                                    doitinhtrang(columnname, data_auto, get_list_id(dt_execute), cnn);
+                                    doitinhtrang(columnname, data_auto, get_list_id(dt_execute), cnn,connectionString, data.customerid,TemplateID,TitleKey);
                                     break;
                                 case 5:
-                                    doitinhtrang("Disabled", "1", get_list_id(dt_execute), cnn);
+                                    TitleKey = "ww_xoacongviec";
+                                    TemplateID = 15;
+                                    doitinhtrang("Disabled", "1", get_list_id(dt_execute), cnn,connectionString, data.customerid, TemplateID, TitleKey);
                                     break;
                                 case 6:
                                     DuplicateTask(data_auto, get_list_id(dt_execute), cnn);
                                     break;
                                 case 2:
                                 case 3:
-                                    CreatedTask(dr["rowid"].ToString(), data.userid, cnn);
+                                    CreatedTask(dr["rowid"].ToString(), data.userid, cnn,connectionString,data.customerid);
                                     break;
                                 default:
                                     break;
@@ -164,25 +184,38 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 list_id_task = list_id_task.Substring(1);
             return list_id_task;
         }
-        public static bool process_automation_subaction(DataTable dt_sub, string condition_update, DpsConnection cnn)
+        public bool process_automation_subaction(DataTable dt_sub, string condition_update, DpsConnection cnn,string ConnectionString,long CustomerID)
         {
             var sub3 = dt_sub.AsEnumerable().Where(x => x["subactionid"].ToString() == "3").FirstOrDefault();
-            if(sub3 != null && sub3["value"].ToString() == "true")
+            if (sub3 != null && sub3["value"].ToString() == "true")
             {
 
                 string[] listTask = condition_update.Split(",");
                 for (int i = 0; i < listTask.Length; i++)
                 {
+                    #region lấy danh sách tài khoản trước khi xóa để gửi thông báo
+                    DataTable dt = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = "+ listTask[i]);
+                    #endregion
                     Hashtable val2 = new Hashtable();
                     val2["UpdatedDate"] = DateTime.Now;
                     val2["UpdatedBy"] = 0;
                     val2["Disabled"] = 1;
                     SqlConditions cond = new SqlConditions();
                     cond.Add("id_work", listTask[i]);
+                    cond.Add("loai", 1 );
                     if (cnn.Update(val2, cond, sub3["tablename"].ToString()) < 0)
                     {
                         cnn.RollbackTransaction();
                         return false;
+                    }
+                    cnn.EndTransaction();
+                    if(dt.Rows.Count > 0 )
+                    {
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            var users = new List<long> { long.Parse(dr["id_user"].ToString()) };
+                            SendNotifyAndMailAssign(22, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_xoaassign");
+                        }
                     }
                 }
             }
@@ -202,6 +235,9 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                             {
                                 for (int i = 0; i < listTask.Length; i++)
                                 {
+                                    #region kiểm tra người đó có trong công việc hay chưa
+                                    DataTable dtu = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i] + " and id_user = "+ item);
+                                    #endregion
                                     SqlConditions sqlcond123 = new SqlConditions();
                                     sqlcond123.Add("id_work", listTask[i]);
                                     sqlcond123.Add("id_user", item);
@@ -223,7 +259,12 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                             return false;
                                         }
                                     }
-
+                                    cnn.EndTransaction();
+                                    if (dtu.Rows.Count == 0)
+                                    {
+                                        var users = new List<long> { long.Parse(item) };
+                                        SendNotifyAndMailAssign( 10 , ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_assign");
+                                    }
                                 }
                             }
                             break;
@@ -232,6 +273,9 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                             {
                                 for (int i = 0; i < listTask.Length; i++)
                                 {
+                                    #region lấy danh sách tài khoản trước khi xóa để gửi thông báo
+                                    DataTable dtu = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i] + " and id_user = " + item);
+                                    #endregion
                                     Hashtable val2 = new Hashtable();
                                     val2["UpdatedDate"] = DateTime.Now;
                                     val2["UpdatedBy"] = 0;
@@ -243,14 +287,22 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     {
                                         cnn.RollbackTransaction();
                                         return false;
+                                    } 
+                                    cnn.EndTransaction();
+                                    if (dtu.Rows.Count > 0)
+                                    {
+                                        var users = new List<long>() { long.Parse(item) };
+                                        SendNotifyAndMailAssign(22, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_xoaassign");
                                     }
-
                                 }
                             }
                             break;
                         case 4: // Gán lại người thực hiện
                             for (int i = 0; i < listTask.Length; i++)
                             {
+                                #region lấy danh sách tài khoản trước khi xóa để gửi thông báo
+                                DataTable dt = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i]);
+                                #endregion
                                 Hashtable val2 = new Hashtable();
                                 val2["UpdatedDate"] = DateTime.Now;
                                 val2["UpdatedBy"] = 0;
@@ -261,6 +313,15 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                 {
                                     cnn.RollbackTransaction();
                                     return false;
+                                }
+                                cnn.EndTransaction();
+                                if (dt.Rows.Count > 0)
+                                {
+                                    foreach (DataRow dru in dt.Rows)
+                                    {
+                                        var users = new List<long> { long.Parse(dru["id_user"].ToString()) };
+                                        SendNotifyAndMailAssign(22, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_xoaassign");
+                                    }
                                 }
                             }
                             // gắn lại
@@ -289,13 +350,15 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                             return false;
                                         }
                                     }
+                                    cnn.EndTransaction();
+                                    var users = new List<long> { long.Parse(item) };
+                                    SendNotifyAndMailAssign(10, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_assign");
 
                                 }
                             }
                             break;
-                        case 3: // Xóa tất cả người hiện tại -- id_work=$objectid$,loai=1
                         case 5: // Thêm tag (we_work_tag)
-                            foreach(var item in values)
+                            foreach (var item in values)
                             {
                                 for (int i = 0; i < listTask.Length; i++)
                                 {
@@ -315,6 +378,15 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                             cnn.RollbackTransaction();
                                             return false;
                                         }
+                                    }
+                                    cnn.EndTransaction();
+                                    // get danh sách người làm công việc đó và người theo dõi
+                                    var sql = $@"select * from we_work_user where id_work = {listTask[i]} and Disabled = 0";
+                                    DataTable dtu = cnn.CreateDataTable(sql);
+                                    if(dtu.Rows.Count > 0)
+                                    { 
+                                        var users = dtu.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+                                        SendNotifyAndMailAssign(34, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_capnhattag");
                                     }
                                 }
                             }
@@ -341,6 +413,16 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                             return false;
                                         }
                                     }
+
+                                    cnn.EndTransaction();
+                                    // get danh sách người làm công việc đó và người theo dõi
+                                    var sql = $@"select * from we_work_user where id_work = {listTask[i]} and Disabled = 0";
+                                    DataTable dtu = cnn.CreateDataTable(sql);
+                                    if (dtu.Rows.Count > 0)
+                                    {
+                                        var users = dtu.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+                                        SendNotifyAndMailAssign(34, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_capnhattag");
+                                    }
                                 }
                             }
                             break;
@@ -350,7 +432,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 }
             }
             return true;
-           
+
         }
         public static bool get_condition_by_events(DataRow dr_auto, string conditions_input, DpsConnection cnn)
         {
@@ -397,7 +479,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
 
             return result;
         }
-        public static bool insertComment(long userid, string data,string condition_update, DpsConnection cnn)
+        public static bool insertComment(long userid, string data, string condition_update, DpsConnection cnn)
         {
             string[] listTask = condition_update.Split(",");
             for (int i = 0; i < listTask.Length; i++)
@@ -416,7 +498,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             }
             return true;
         }
-        public static bool doitinhtrang(string columnname, string data,string condition_update, DpsConnection cnn)
+        public bool doitinhtrang(string columnname, string data, string condition_update, DpsConnection cnn, string ConnectionString, long CustomerID, int TemplateID,string TitleKey)
         {
             if (columnname == "start_date" || columnname == "deadline")
             {
@@ -427,7 +509,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 {
                     data = DateTime.Now.AddDays(int.Parse(value)).ToString();
                 }
-                else if(type == 2)
+                else if (type == 2)
                 {
                     data = DateTime.Now.ToString();
                 }
@@ -455,8 +537,8 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                     cnn.RollbackTransaction();
                     return false;
                 }
-
-                if ( columnname == "id_project_team")
+                 
+                if (columnname == "id_project_team")
                 { // chuyển qua dự án mới thì update lại status
                     string sqlq1 = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + data + "),0)";
                     var statusID = long.Parse(cnn.ExecuteScalar(sqlq1).ToString());
@@ -470,17 +552,28 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                         return false;
                     }
                 }
+
+
+                cnn.EndTransaction();
+                // get danh sách người làm công việc đó và người theo dõi
+                var sql = $@"select * from we_work_user where id_work = {listTask[i]} and Disabled = 0";
+                DataTable dtu = cnn.CreateDataTable(sql);
+                if (dtu.Rows.Count > 0)
+                {
+                    var users = dtu.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+                    SendNotifyAndMailAssign(TemplateID, ConnectionString, users, long.Parse(listTask[i]), CustomerID, TitleKey);
+                }
             }
             return true;
         }
-        public static bool kiemtratinhtrang(string data,string taskid, DpsConnection cnn)
+        public static bool kiemtratinhtrang(string data, string taskid, DpsConnection cnn)
         {
             //kiểm tra data status đó có trong projectteam của task đó hay không
             string sqlq1 = $"select isnull((select id_row from we_status where id_project_team = (select id_project_team from we_work where id_row = {taskid}) and id_row = {data}),0)";
             var statusID = long.Parse(cnn.ExecuteScalar(sqlq1).ToString());
             return statusID > 0;
         }
-        public static bool DuplicateTask(string data,string condition_update, DpsConnection cnn)
+        public static bool DuplicateTask(string data, string condition_update, DpsConnection cnn)
         {
             string[] listTask = condition_update.Split(",");
             for (int i = 0; i < listTask.Length; i++)
@@ -506,7 +599,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                     cnn.RollbackTransaction();
                     return false;
                 }
-                
+
                 long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_duplicate')").ToString());
                 string sql = "exec DuplicateWork " + idc;
 
@@ -535,13 +628,13 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             }
             return true;
         }
-        
-        public static bool CreatedTask(string AutoID, long userid, DpsConnection cnn)
+
+        public bool CreatedTask(string AutoID, long userid, DpsConnection cnn,string ConnectionString, long CustomerID)
         {
             string sqlq = @"select at.* from Automation_Task at
-where AutoID = "+ AutoID;
-            DataTable dt = cnn.CreateDataTable(sqlq) ;
-            if(cnn.LastError != null || dt.Rows.Count == 0)
+where AutoID = " + AutoID;
+            DataTable dt = cnn.CreateDataTable(sqlq);
+            if (cnn.LastError != null || dt.Rows.Count == 0)
             {
                 return false;
             }
@@ -557,7 +650,7 @@ where AutoID = "+ AutoID;
             val.Add("id_project_team", dr["id_project_team"]);
 
 
-            if (int.Parse(cnn.ExecuteScalar("select count(*) from we_status where disabled=0 and id_row = " + dr["status"] +"and id_project_team = "+ dr["id_project_team"] ).ToString()) == 0)
+            if (int.Parse(cnn.ExecuteScalar("select count(*) from we_status where disabled=0 and id_row = " + dr["status"] + "and id_project_team = " + dr["id_project_team"]).ToString()) == 0)
             {
                 string sqlq1 = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + dr["id_project_team"] + "),0)";
                 var statusID = long.Parse(cnn.ExecuteScalar(sqlq1).ToString());
@@ -575,14 +668,14 @@ where AutoID = "+ AutoID;
                         val.Add("start_date", DateTime.Now.AddDays(int.Parse(dr["start_date"].ToString())));
                         break;
                     case 2:
-                        val.Add("start_date", DateTime.Now );
+                        val.Add("start_date", DateTime.Now);
                         break;
                     case 3:
                         val.Add("start_date", dr["start_date"]);
                         break;
                 }
             }
-            if(int.Parse(dr["Deadline_Type"].ToString()) > 0)
+            if (int.Parse(dr["Deadline_Type"].ToString()) > 0)
             {
                 switch (int.Parse(dr["Deadline_Type"].ToString()))
                 {
@@ -590,7 +683,7 @@ where AutoID = "+ AutoID;
                         val.Add("deadline", DateTime.Now.AddDays(int.Parse(dr["deadline"].ToString())));
                         break;
                     case 2:
-                        val.Add("deadline", DateTime.Now );
+                        val.Add("deadline", DateTime.Now);
                         break;
                     case 3:
                         val.Add("deadline", dr["deadline"]);
@@ -598,8 +691,8 @@ where AutoID = "+ AutoID;
                 }
             }
 
-            if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
-                val.Add("id_group", dr["id_group"].ToString());
+            //if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
+            //    val.Add("id_group", dr["id_group"].ToString());
             val.Add("CreatedDate", DateTime.Now);
             val.Add("CreatedBy", userid);
             val.Add("clickup_prioritize", dr["priority"]);
@@ -612,7 +705,7 @@ where AutoID = "+ AutoID;
             long weworkID = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
             #region insert user vào công việc mới tạo
             DataTable dtUser = cnn.CreateDataTable("select * from Automation_Task_User where TaskID = " + dr["RowID"]);
-            if(dtUser.Rows.Count > 0)
+            if (dtUser.Rows.Count > 0)
             {
 
                 Hashtable valU = new Hashtable();
@@ -629,12 +722,159 @@ where AutoID = "+ AutoID;
                         return false;
                     }
                 }
+
+            }
+            #endregion
+            //Insert người follow cho từng tình trạng của công việc
+            DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+            if (dt_status.Rows.Count > 0)
+            {
+                foreach (DataRow item in dt_status.Rows)
+                {
+                    val = new Hashtable();
+                    val.Add("id_project_team", dr["id_project_team"].ToString());
+                    val.Add("workid", weworkID);
+                    val.Add("statusid", item["id_row"]);
+                    if (string.IsNullOrEmpty(item["follower"].ToString()))
+                        val.Add("checker", DBNull.Value);
+                    else
+                        val.Add("checker", item["follower"]);
+                    val.Add("createddate", DateTime.Now);
+                    val.Add("createdby", 0);
+                    if (cnn.Insert(val, "we_work_process") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return false;
+                    }
+                    long processid = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_process')").ToString());
+                    val = new Hashtable();
+                    val.Add("processid", processid);
+                    if (string.IsNullOrEmpty(item["follower"].ToString()))
+                    {
+                        val.Add("new_checker", DBNull.Value);
+                    }
+
+                    val.Add("createddate", DateTime.Now);
+                    val.Add("createdby", 0);
+                    if (cnn.Insert(val, "we_work_process_log") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return false;
+                    }
+                }
+            }
+
+            cnn.EndTransaction(); 
+            var users = dtUser.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+            SendNotifyAndMailAssign(10, ConnectionString, users, weworkID, CustomerID, "ww_assign");
+            return true;
+        }
+
+        public void SendNotifyAndMail(long id_project_team, string ConnectionString, long id_user, long id_work, long CustemerID, bool isAssign, string workname)
+        {
+            UserJWT loginData = new UserJWT();
+            loginData.CustomerID = CustemerID;
+            loginData.LastName = "Hệ thống tự động";
+            loginData.UserID = 0;
+
+            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
+            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+            {
+                var users = new List<long> { id_user };
+                int idtemplatemail = 0;
+                if (isAssign)
+                {
+                    idtemplatemail = 10;
+                }
+                else
+                {
+                    idtemplatemail = 22;
+                }
+                WeworkLiteController.mailthongbao(id_work, users, idtemplatemail, loginData, ConnectionString, _notifier, _config);
+                #region Lấy thông tin để thông báo
+                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
+                #endregion
+                #region Notify assign
+                Hashtable has_replace = new Hashtable();
+                for (int i = 0; i < users.Count; i++)
+                {
+                    NotifyModel notify_model = new NotifyModel();
+                    has_replace = new Hashtable();
+                    notify_model.AppCode = "WORK";
+                    notify_model.From_IDNV = loginData.UserID.ToString();
+                    notify_model.To_IDNV = users[i].ToString();
+                    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_assign", "", "vi");
+                    if (!isAssign)
+                    {
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoaassign", "", "vi");
+                    }
+                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
+                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                    notify_model.ReplaceData = has_replace;
+                    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id_work.ToString());
+                    notify_model.To_Link_WebApp = noti.link.Replace("$id$", id_work.ToString());
+
+                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_config, CustemerID);
+                    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info is not null)
+                    {
+                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _config);
+                    }
+                }
+                #endregion
             }
             #endregion
 
-            cnn.EndTransaction();
+        }
 
-            return true;
+        public void SendNotifyAndMailAssign(int idtemplatemail, string ConnectionString, List<long> users, long id_work, long CustemerID, string TitleLanguageKey)
+        {
+            UserJWT loginData = new UserJWT();
+            loginData.CustomerID = CustemerID;
+            loginData.LastName = "Hệ thống tự động";
+            loginData.UserID = 0;
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                DataTable dt_work = cnn.CreateDataTable("select * from we_work where disabled = 0 and id_row = " + id_work);
+                if(dt_work.Rows.Count > 0)
+                {
+                    #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
+                    if (WeworkLiteController.CheckNotify_ByConditions(long.Parse(dt_work.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
+                    {
+                        WeworkLiteController.mailthongbao(id_work, users, idtemplatemail, loginData, ConnectionString, _notifier, _config);
+                        #region Lấy thông tin để thông báo
+                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
+                        #endregion
+                        #region Notify assign
+                        Hashtable has_replace = new Hashtable();
+                        for (int i = 0; i < users.Count; i++)
+                        {
+                            NotifyModel notify_model = new NotifyModel();
+                            has_replace = new Hashtable();
+                            notify_model.AppCode = "WORK";
+                            notify_model.From_IDNV = loginData.UserID.ToString();
+                            notify_model.To_IDNV = users[i].ToString();
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dt_work.Rows[0]["title"].ToString());
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace(" $value$", dt_work.Rows[0]["estimates"].ToString());
+                            notify_model.ReplaceData = has_replace;
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id_work.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", id_work.ToString());
+
+                            List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_config, CustemerID);
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _config);
+                            }
+                        }
+                        #endregion
+                    }
+                    #endregion
+                }
+
+            }            
         }
     }
 }

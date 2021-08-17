@@ -1,5 +1,4 @@
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { DynamicFormService } from './../../../../dynamic-form/dynamic-form.service';
 import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
@@ -37,7 +36,6 @@ export class AddUsersDialogComponent {
 		private layoutUtilsService: LayoutUtilsService,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private translate:TranslateService,
-		public dynamicFormService: DynamicFormService,
 		private tokenStorage: TokenStorage,) {
 	}
 

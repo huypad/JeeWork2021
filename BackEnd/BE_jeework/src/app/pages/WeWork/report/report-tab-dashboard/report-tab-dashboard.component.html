@@ -1,87 +1,88 @@
 <style>
     .example-tree-invisible {
-  display: none;
-}
+        display: none;
+    }
 
-.example-tree ul,
-.example-tree li {
-  margin-top: 0;
-  margin-bottom: 0;
-  list-style-type: none;
-}
+    .example-tree ul,
+    .example-tree li {
+        margin-top: 0;
+        margin-bottom: 0;
+        list-style-type: none;
+    }
 
-/*
+    /*
  * This padding sets alignment of the nested nodes.
  */
-.example-tree .mat-nested-tree-node div[role=group] {
-  padding-left: 40px;
-}
+    .example-tree .mat-nested-tree-node div[role=group] {
+        padding-left: 40px;
+    }
 
-/*
+    /*
  * Padding for leaf nodes.
  * Leaf nodes need to have padding so as to align with other non-leaf nodes
  * under the same parent.
  */
-.example-tree div[role=group] > .mat-tree-node {
-  padding-left: 40px;
-}
-.item-hethong{
-    text-align: center;
-    padding-top: 5px;
-    border: 1px solid #c8c5c5;
-    
-}
-.item-hethong:not(:first-child) {
-    border-left: none;
-}
-.item-hethong .text-header{
-    font-weight: 400;
-}
-.item-hethong .text-number{
-    font-weight: 600;
-    font-size: 1.5;
-}
+    .example-tree div[role=group]>.mat-tree-node {
+        padding-left: 40px;
+    }
+
+    .item-hethong {
+        text-align: center;
+        padding-top: 5px;
+        border: 1px solid #c8c5c5;
+
+    }
+
+    .item-hethong:not(:first-child) {
+        border-left: none;
+    }
+
+    .item-hethong .text-header {
+        font-weight: 400;
+    }
+
+    .item-hethong .text-number {
+        font-weight: 600;
+        font-size: 1.5;
+    }
+    .text-success {
+        color: #28a745 !important;
+    }
 </style>
 <div id="page-report">
     <div class="rp-wrapper">
         <div class="hd-report">
             <div class="filters">
                 <div class="filter " (click)="openDialog()">{{'filter.tu'|translate}}:
-                    <em>{{  selectedDate.startDate | date:'dd/MM'}} -
+                    <em>{{ selectedDate.startDate | date:'dd/MM'}} -
                         {{ selectedDate.endDate | date:'dd/MM/yyyy'}}</em>
                     <i class="fas fa-chevron-down"></i>
                 </div>
 
-                <div class="filter -menu-op cot-20" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+                <div class="filter -menu-op cot-20" [matMenuTriggerFor]="menu"
+                    matTooltip="{{'report.clicktoupdate'|translate}}">
                     <em>{{column_sort.title}}</em>
                     <i class="fas fa-chevron-down"></i>
                     <mat-menu #menu="matMenu">
                         <button mat-menu-item *ngFor="let item of sortField"
-                        [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
-                        (click)="SelectedField(item)">{{item.title}}</button>
+                            [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                            (click)="SelectedField(item)">{{item.title}}</button>
                     </mat-menu>
                 </div>
 
                 <div class="filter -menu-op cot-20">
+
                     <div [matMenuTriggerFor]="department">
                         <em> <span>Lựa chọn phòng ban báo cáo</span> </em>
                         <i class="fas fa-chevron-down"></i>
                     </div>
-                    <!-- <ng-container *ngIf="DontChange">
-                        <em> 
-                            <span>Lựa chọn phòng ban báo cáo</span>
-                            {{ NameDept(ID_department)  }}
-                        </em>
-                        <i class="fas fa-lock"></i>
-                    </ng-container> -->
+                    <!-- <m-dropdown-tree [data]="datatree" [FieldTitle]="'title'" class="dropdown-tree" [FieldId]="'id'" [FieldChildren]="'data'"
+                        [DropdownTitle]="'Chọn phòng ban'" (SelectedItemTree)="LoadDatafilter($event)">
+                    </m-dropdown-tree> -->
                     <mat-menu #department="matMenu">
-                        <!-- <button mat-menu-item *ngFor="let item of list_department"
-                            [ngStyle]="{'font-weight': filter_dept.id_row==item.id_row?'bold':''}"
-                            (click)="selected_Dept(item)">{{item.title}}</button> -->
-                            <div  (click)="$event.stopPropagation()" style="min-width: 250px;">
-                                <ng-container *ngTemplateOutlet="viewSelectDept"></ng-container>
-                                
-                            </div>
+                        <div (click)="$event.stopPropagation()" style="min-width: 250px;">
+                            <ng-container *ngTemplateOutlet="viewSelectDept"></ng-container>
+                        </div>
                     </mat-menu>
                 </div>
 
@@ -90,19 +91,17 @@
                     <i class="fas fa-chevron-down"></i>
                     <mat-menu #project="matMenu">
                         <button (click)="Filter(item)"
-                            [ngStyle]="{'font-weight': filterCVC.value==item.value?'bold':''}"
-                            mat-menu-item *ngFor="let item of _filterCV"> {{item.title}}</button>
+                            [ngStyle]="{'font-weight': filterCVC.value==item.value?'bold':''}" mat-menu-item
+                            *ngFor="let item of _filterCV"> {{item.title}}</button>
                     </mat-menu>
                 </div>
-
-
                 <div class="filter -menu-op cot-20" [matMenuTriggerFor]="status">
                     <em>{{trangthai.title}}</em>
                     <i class="fas fa-chevron-down"></i>
                     <mat-menu #status="matMenu">
-                        <button (click)="Filter(item)" 
-                            [ngStyle]="{'font-weight': trangthai.id_row==item.id_row?'bold':''}"
-                            mat-menu-item *ngFor="let item of _filterTT">
+                        <button (click)="Filter(item)"
+                            [ngStyle]="{'font-weight': trangthai.id_row==item.id_row?'bold':''}" mat-menu-item
+                            *ngFor="let item of _filterTT">
                             {{item.title}}</button>
                     </mat-menu>
                 </div>
@@ -132,7 +131,7 @@
                         </div>
                         <div class="card-body">
                             <div id="chart-pie" style="display: block;margin-top: 0;margin-bottom: 30px;">
-                                    <!-- col-3 margin sử dụng mặc định -->
+                                <!-- col-3 margin sử dụng mặc định -->
                                 <canvas baseChart [data]="pieChartData" [legend]="pieChartLegend"
                                     [labels]="pieChartLabel" [chartType]="pieChartType" [options]="pieChartOptions"
                                     [colors]="pieChartColor">
@@ -166,7 +165,7 @@
                                 <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
                                     [info]=getInfoCVHT(item.hoanthanh,item.ht_quahan,item.num_work)>
                                 </kt-custom-user>
-                                <mat-menu #user="matMenu"> 
+                                <mat-menu #user="matMenu">
                                     <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
                                         [info]="item.tenchucdanh">
                                     </kt-custom-user>
@@ -300,13 +299,14 @@
                         <div class="card-body position-relative" style="height: 400px;">
                             <div
                                 style="position: absolute; top: 50%; left: -70px; transform: rotate(-90deg); font-size: 24px;">
-                                <span translate="report.soluongcongviec"></span></div>
+                                <span translate="report.soluongcongviec"></span>
+                            </div>
                             <div *ngIf="chart2Ready" style="display: block;margin-left: 30px;">
                                 <canvas baseChart [chartType]="chartType2" [datasets]="chartData2"
                                     [labels]="chartLabel2" [options]="chartOptions2" [legend]="chartLegend2"
                                     [colors]="chartColor2">
                                 </canvas>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -317,10 +317,12 @@
                             <b translate="report.tonghoptheotuan"></b>
                         </div>
                         <div class="card-body position-relative" style="height: 400px;">
-                            <div style="position: absolute; top: 50%; left: -65px; transform: rotate(-90deg); font-size: 20px;">
+                            <div
+                                style="position: absolute; top: 50%; left: -65px; transform: rotate(-90deg); font-size: 20px;">
                                 <span translate="report.soluongcongviec"></span>
                             </div>
-                            <div class="d-block" *ngIf="chartData3Ready" style="position: absolute; top: 20px;left: 25px;right: 0;bottom: 60px;">
+                            <div class="d-block" *ngIf="chartData3Ready"
+                                style="position: absolute; top: 20px;left: 25px;right: 0;bottom: 60px;">
                                 <canvas style=" float: right;" baseChart [chartType]="'bar'" height="325px"
                                     width="363px" [datasets]="chartData3" [labels]="chartLabel3"
                                     [options]="chartOptions3" [legend]='false' [colors]="chartColor3">
@@ -343,7 +345,7 @@
                         <div class="card-header bg-white">
                             <b translate="report.baocaochitiettheothanhvien"></b>
                             <span (click)="ExportReportExcel('member')" *ngIf="Staff.length > 0"
-                                class="url -hover float-right export-excel"><i class="fas fa-download"></i> 
+                                class="url -hover float-right export-excel"><i class="fas fa-download"></i>
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
                         </div>
@@ -355,10 +357,17 @@
                                     </div>
                                     <div class="item float-right">
 
-                                        <div class="it item-text" matTooltip="{{ 'filter.hoanthanh' | translate }}" matTooltipPosition="above"> <span translate="filter.hoanthanh"></span> </div>
-                                        <div class="it item-text" matTooltip="{{ 'filter.hoanthanhmuon' | translate }}" matTooltipPosition="above"> <span translate="filter.hoanthanhmuon"></span> </div>
-                                        <div class="it item-text" matTooltip="{{ 'filter.quahan' | translate }}" matTooltipPosition="above"> <span translate="filter.quahan"></span> </div>
-                                        <div class="it item-text" matTooltip="{{ 'filter.dangthuchien' | translate }}" matTooltipPosition="above"> <span translate="filter.dangthuchien"></span> </div>
+                                        <div class="it item-text" matTooltip="{{ 'filter.hoanthanh' | translate }}"
+                                            matTooltipPosition="above"> <span translate="filter.hoanthanh"></span>
+                                        </div>
+                                        <div class="it item-text" matTooltip="{{ 'filter.hoanthanhmuon' | translate }}"
+                                            matTooltipPosition="above"> <span translate="filter.hoanthanhmuon"></span>
+                                        </div>
+                                        <div class="it item-text" matTooltip="{{ 'filter.quahan' | translate }}"
+                                            matTooltipPosition="above"> <span translate="filter.quahan"></span> </div>
+                                        <div class="it item-text" matTooltip="{{ 'filter.dangthuchien' | translate }}"
+                                            matTooltipPosition="above"> <span translate="filter.dangthuchien"></span>
+                                        </div>
                                         <!-- <div class="it item-text" matTooltip="{{ 'filter.dangdanhgia' | translate }}" matTooltipPosition="above"> <span translate="filter.dangdanhgia"></span> </div> -->
                                     </div>
                                 </div>
@@ -366,16 +375,12 @@
                                     <div class="item" *ngFor="let item of Staff">
                                         <div class="avatar pl-2">
                                             <div class="user url">
-                                                <ngx-avatar size="35"
-                                                    matTooltip="{{item.hoten}}"
-                                                    src="{{item.image}}"
+                                                <ngx-avatar size="35" matTooltip="{{item.hoten}}" src="{{item.image}}"
                                                     *ngIf="item.image;else bindText">
                                                 </ngx-avatar>
                                                 <ng-template #bindText>
-                                                    <ngx-avatar textSizeRatio="2.5"
-                                                        matTooltip="{{item.hoten}}"
-                                                        size="35"
-                                                        [name]="weworkService.getNameUser(item.hoten)"
+                                                    <ngx-avatar textSizeRatio="2.5" matTooltip="{{item.hoten}}"
+                                                        size="35" [name]="weworkService.getNameUser(item.hoten)"
                                                         bgColor="{{weworkService.getColorNameUser(item.hoten)}}">
                                                     </ngx-avatar>
                                                 </ng-template>
@@ -388,7 +393,7 @@
                                             <span style="color: black;">{{item.tenchucdanh}}</span>
                                         </div>
                                         <div class="side">
-                                            
+
                                             <kt-crossbar-chart [data]="item.datasets" [color]="colorCrossbar">
                                             </kt-crossbar-chart>
                                             <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
@@ -440,8 +445,8 @@
                                 </kt-custom-user>
                                 <mat-menu #user="matMenu">
                                     <div style="max-width:250px">
-                                        <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
-                                            [info]="item.tenchucdanh">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [matMenuTriggerFor]="menu" [info]="item.tenchucdanh">
                                         </kt-custom-user>
                                     </div>
                                 </mat-menu>
@@ -473,7 +478,7 @@
                                 </span>
                             </b>
                             <span (click)="ExportReportExcel('project')" *ngIf="ProjectTeam.length != 0"
-                                class="url -hover float-right export-excel"> <i class="fas fa-download"></i> 
+                                class="url -hover float-right export-excel"> <i class="fas fa-download"></i>
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
                         </div>
@@ -487,10 +492,14 @@
                                         </span>
                                     </div>
                                     <div class="item float-right">
-                                        <div class="it item-text" translate="filter.congviec" matTooltip="{{ 'filter.congviec' | translate}}"> </div>
-                                        <div class="it item-text" translate="filter.hoanthanh" matTooltip="{{ 'filter.hoanthanh' | translate}}"></div>
-                                        <div class="it item-text" translate="filter.quahan" matTooltip="{{ 'filter.quahan' | translate}}"> </div>
-                                        <div class="it item-text" translate="filter.dangthuchien" matTooltip="{{ 'filter.dangthuchien' | translate}}"> </div>
+                                        <div class="it item-text" translate="filter.congviec"
+                                            matTooltip="{{ 'filter.congviec' | translate}}"> </div>
+                                        <div class="it item-text" translate="filter.hoanthanh"
+                                            matTooltip="{{ 'filter.hoanthanh' | translate}}"></div>
+                                        <div class="it item-text" translate="filter.quahan"
+                                            matTooltip="{{ 'filter.quahan' | translate}}"> </div>
+                                        <div class="it item-text" translate="filter.dangthuchien"
+                                            matTooltip="{{ 'filter.dangthuchien' | translate}}"> </div>
                                         <!-- <div class="it item-text" translate="filter.dangdanhgia"></div> -->
                                         <div class="it item-chart"></div>
                                     </div>
@@ -565,18 +574,21 @@
                                         </span>
                                         <span class="d-block text-uppercase" translate="report.phongbanhoatdong"></span>
                                         <span>
-                                            <b> {{ReportToDepartments.group_closed?ReportToDepartments.group_closed:'0'}} </b> 
+                                            <b> {{ReportToDepartments.group_closed?ReportToDepartments.group_closed:'0'}}
+                                            </b>
                                             <span class="text-lowercase" translate="filter.nhomdadong"></span>
                                         </span>
                                     </div>
                                     <div class="col-6" style="padding-top: 20px;">
                                         <span style="font-size:24px;color:black" class="d-block">
                                             {{ReportToDepartments.num_work?ReportToDepartments.num_work:'0'}} </span>
-                                        <span class="d-block text-uppercase" translate="report.congviectrongphongban"></span>
+                                        <span class="d-block text-uppercase"
+                                            translate="report.congviectrongphongban"></span>
                                         <span>
-                                            <b> {{ReportToDepartments.hoanthanh?ReportToDepartments.hoanthanh:'0'}}</b>&nbsp;
-                                            <span class="text-lowercase" translate="filter.hoanthanh"></span> - 
-                                            <b>{{ReportToDepartments.quahan?ReportToDepartments.quahan:'0'}} </b>&nbsp; 
+                                            <b>
+                                                {{ReportToDepartments.hoanthanh?ReportToDepartments.hoanthanh:'0'}}</b>&nbsp;
+                                            <span class="text-lowercase" translate="filter.hoanthanh"></span> -
+                                            <b>{{ReportToDepartments.quahan?ReportToDepartments.quahan:'0'}} </b>&nbsp;
                                             <span class="text-lowercase" translate="filter.quahan"></span>
                                         </span>
                                     </div>
@@ -588,7 +600,7 @@
                 <div class="col-8">
                     <div class="card line-3">
                         <div class="card-header bg-white">
-                            <b  ></b>
+                            <b></b>
                             <b>
                                 <span translate="report.baocaotheodepartment"></span>
                                 /
@@ -596,7 +608,7 @@
                                 </span>
                             </b>
                             <span (click)="ExportReportExcel('department')" *ngIf="Department.length != 0"
-                                class="url -hover float-right export-excel"> <i class="fas fa-download"></i> 
+                                class="url -hover float-right export-excel"> <i class="fas fa-download"></i>
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
                         </div>
@@ -609,10 +621,14 @@
                                         </span>
                                     </div>
                                     <div class="item float-right">
-                                        <div class="it item-text" translate="filter.congviec" matTooltip="{{ 'filter.congviec' | translate}}"> </div>
-                                        <div class="it item-text" translate="filter.hoanthanh" matTooltip="{{ 'filter.hoanthanh' | translate}}"></div>
-                                        <div class="it item-text" translate="filter.quahan" matTooltip="{{ 'filter.quahan' | translate}}"> </div>
-                                        <div class="it item-text" translate="filter.dangthuchien" matTooltip="{{ 'filter.dangthuchien' | translate}}"> </div>
+                                        <div class="it item-text" translate="filter.congviec"
+                                            matTooltip="{{ 'filter.congviec' | translate}}"> </div>
+                                        <div class="it item-text" translate="filter.hoanthanh"
+                                            matTooltip="{{ 'filter.hoanthanh' | translate}}"></div>
+                                        <div class="it item-text" translate="filter.quahan"
+                                            matTooltip="{{ 'filter.quahan' | translate}}"> </div>
+                                        <div class="it item-text" translate="filter.dangthuchien"
+                                            matTooltip="{{ 'filter.dangthuchien' | translate}}"> </div>
                                         <!-- <div class="it item-text" translate="filter.dangdanhgia"></div> -->
                                         <div class="it item-chart"></div>
                                     </div>
@@ -673,7 +689,7 @@
                 </div>
             </div>
         </div>
-<!-- 
+        <!-- 
         <div class="rp-title">
             <span class="text-uppercase" translate="report.baocaotheodanhsachmuctieu">
             </span>
@@ -781,7 +797,7 @@
                             <div class="position-relative w-100 h-100">
                                 <div class="grid-stats">
                                     <div class="note-thong-ke">
-                                       <span translate="report.chitinhcaccongviecbaocaotrongthoigianluachon"></span>
+                                        <span translate="report.chitinhcaccongviecbaocaotrongthoigianluachon"></span>
                                     </div>
                                     <div class="stat">
                                         <div class="v">
@@ -824,55 +840,47 @@
 </div>
 
 <ng-template #viewSelectDept>
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree"> 
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-            <mat-checkbox class="p-1"  
-            [checked]="node.checked"
-            (change)="todoItemSelectionToggle(node.id_row)">{{node.item}}</mat-checkbox>
-            {{node.title}}
-        </mat-tree-node>
-         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
-            <div class="mat-tree-node">
-              <button mat-icon-button matTreeNodeToggle
-                      [attr.aria-label]="'Toggle ' + node.title">
-                <mat-icon class="mat-icon-rtl-mirror">
-                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                </mat-icon>
-              </button>
-              <mat-checkbox class="p-1" (change)="todoItemSelectionToggle(node)">{{node.item}}</mat-checkbox>
-              {{node.title}}
-            </div> 
-            <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
-                role="group">
-              <ng-container matTreeNodeOutlet></ng-container>
-          </div>
-        </mat-nested-tree-node>
-      </mat-tree>
+    <!-- <m-dropdown-tree [data]="datatree" [FieldTitle]="'title'" [FieldId]="'id'" [FieldChildren]="'data'"
+        [DropdownTitle]="'Chọn phòng ban'" (SelectedItemTree)="LoadDatafilter($event)">
+    </m-dropdown-tree> -->
+    <div class="view-mat-menu-df" (click)="$event.stopPropagation();">
+        <div class="cu2-space-row__item cu2-space-row__item_expanded" [hidden]="this.ID_department > 0">
+            <div matTooltipShowDelay="300"  (click)="selected_Dept(null)" [ngClass]="{'text-success font-weight-bolder': null === Selected}"
+                matTooltip="Xem tất cả" class="cu2-space-row__item-name">
+                Xem tất cả </div> 
+        </div>
+        <ng-container *ngFor="let space of this.datatree | async">
+            <div class="cu2-space-row__item cu2-space-row__item_expanded">
+                <div class="cu-project-avatar_20 cu-project-avatar">
+                    <div class="cu-project-avatar__item cu-avatar cu-project-avatar__text cu-project-avatar__text_bg"
+                        style="color: rgb(191, 74, 204);">
+                        <span style="margin-top:-1px"> {{space.title[0]}} </span>
+                    </div>
+                </div>
+                <div matTooltipShowDelay="300"  (click)="selected_Dept(space)" [ngClass]="{'text-success font-weight-bolder': space === Selected}"
+                    matTooltip="{{space.title}}" class="cu2-space-row__item-name">
+                    {{space.title}} </div>
+                <mat-icon class="mat-icon-rtl-mirror"  (click)="space.expanded = !space.expanded"> {{ space.expanded ? 'expand_more' : 'chevron_right'}} </mat-icon>
 
-<!-- update chưa xong -->
-      <!-- <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree"> 
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-            <mat-checkbox class="p-1" [checked]="checklistSelection.isSelected(node)"
-                                    (change)="todoLeafItemSelectionToggle(node);" >{{node.item}}</mat-checkbox>
-            {{node.title}}
-        </mat-tree-node>
-         <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
-            <div class="mat-tree-node">
-              <button mat-icon-button matTreeNodeToggle
-                      [attr.aria-label]="'Toggle ' + node.title">
-                <mat-icon class="mat-icon-rtl-mirror">
-                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                </mat-icon>
-              </button>
-              <mat-checkbox class="p-1" 
-                (change)="todoItemSelectionToggle1(node)" 
-                [checked]="descendantsAllSelected(node)">{{node.item}}</mat-checkbox>
-              {{node.title}}
-            </div> 
-            <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
-                role="group">
-              <ng-container matTreeNodeOutlet></ng-container>
-          </div>
-        </mat-nested-tree-node>
-      </mat-tree> -->
+            </div>
+            <ng-container *ngIf="space.expanded">
+                <ng-container *ngFor="let folder of space.data">
+                    <div class="cu2-space-row__item_1 cu2-space-row__item_expanded"
+                        (click)="folder.expanded = !folder.expanded">
+                        <div class="cu-project-avatar_20 cu-project-avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                <path
+                                    d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" />
+                            </svg>
+                        </div>
+                        &nbsp;
+                        <div matTooltipShowDelay="300" matTooltip="{{folder.title}}" (click)="selected_Dept(folder)" [ngClass]="{'text-success font-weight-bolder': folder === Selected || space === Selected}"
+                            class="cu2-space-row__item-name"> {{folder.title}}
+                        </div>
+                    </div>  
+                </ng-container> 
+                <hr>
+            </ng-container>
+        </ng-container>
+    </div>
 </ng-template>

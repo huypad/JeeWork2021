@@ -1,4 +1,3 @@
-import { DynamicFormService } from './../../../dynamic-form/dynamic-form.service';
 import { WeWorkService } from './../../services/wework.services';
 import { element } from 'protractor';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange, EventEmitter, Output } from '@angular/core';
@@ -60,7 +59,6 @@ export class TopicViewComponent {
 		private changeDetectorRefs: ChangeDetectorRef,
 		public WeWorkService: WeWorkService,
 		private router: Router,
-		public dynamicFormService: DynamicFormService,
 		private tokenStorage: TokenStorage,) {
 	}
 

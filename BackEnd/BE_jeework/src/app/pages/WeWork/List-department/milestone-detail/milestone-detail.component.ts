@@ -1,17 +1,11 @@
-import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
-import { WorkListNewDetailComponent } from './../../projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
-import { DynamicFormService } from './../../../dynamic-form/dynamic-form.service';
-import { WeWorkService } from './../../services/wework.services';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
 import { MatPaginator,PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog,MatDialogRef,MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
-import { fromEvent, merge, ReplaySubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Services
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
@@ -77,7 +71,6 @@ export class MilestoneDetailComponent {
 		private activatedRoute: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
-		public dynamicFormService: DynamicFormService,
 		private tokenStorage: TokenStorage,) {
 	}
 

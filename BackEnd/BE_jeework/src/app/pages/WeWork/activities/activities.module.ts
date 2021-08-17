@@ -1,4 +1,3 @@
-import { DynamicFormService } from './../../dynamic-form/dynamic-form.service';
 import { PartialsModule } from './../../../_metronic/jeework_old/partials/partials.module';
 import { NgModule } from '@angular/core';
 import { CommonModule, } from '@angular/common';
@@ -47,7 +46,6 @@ const routes: Routes = [
 	],
 	providers: [
 		ActivitiesService,
-		DynamicFormService
 	],
 	entryComponents: [
 		ListActivitiesComponent,

@@ -40,7 +40,7 @@ namespace JeeWork_Core2021.Classes
             TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             //60p chạy 1 lần - 3600000
-            TimerAutoUpdate = new System.Timers.Timer(3600000);
+            TimerAutoUpdate = new System.Timers.Timer(60000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(Timer60Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
@@ -193,11 +193,12 @@ namespace JeeWork_Core2021.Classes
                         }
                         else
                         {
-                            listKH += "" + CustomerID;
+                            listKH += "," + CustomerID;
                         }
                     }
-                    if (!string.IsNullOrEmpty(listKH))
+                    if (!listKH.Equals(""))
                     {
+                        listKH = listKH.Substring(1);
                         string content = " Timer60minute. Danh sách khách hàng chưa có Connection string để vào hệ thống JeeWork" + listKH;
                         string error_message = "";
                         string CustemerID1 = "0";
@@ -781,7 +782,6 @@ namespace JeeWork_Core2021.Classes
                     val.Add("CustemerID", CustomerID);
                     val.Add("Allowedit", 0);
                     cnn.Insert(val, "tbl_thamso");
-
                 }
             }
             catch (Exception ex)
@@ -810,7 +810,7 @@ namespace JeeWork_Core2021.Classes
                         if (!string.IsNullOrEmpty(mcc))
                             cc.Add(mcc);
                         string error_message = "";
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi từ API: ", new MailAddressCollection(), errormsg, "", "", false, out error_message, cnn, ConnectionString);
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi từ API", new MailAddressCollection(), errormsg, "", "", false, out error_message, cnn, ConnectionString);
                     }
                 }
             }

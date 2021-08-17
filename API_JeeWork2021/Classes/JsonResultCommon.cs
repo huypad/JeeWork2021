@@ -92,14 +92,18 @@ namespace JeeWork_Core2021.Classes
             string noidung = last_error != null ? last_error.Message : "";
             if (last_error != null && last_error.Data != null)
             {
+                string info = "";
+                string computerName = System.Environment.MachineName;
                 string noidungmail = noidung;
                 if (ControllerContext != null)
                     noidungmail += "<br>Tại: " + ControllerContext.ActionDescriptor.ControllerName + "/" + ControllerContext.ActionDescriptor.ActionName;
                 if (last_error != null)
                     noidungmail += "<br>Chi tiết:<br>" + last_error.StackTrace;
+                info = "<br>Đăng nhập từ tài khoản: " + loginData.customdata.personalInfo.Fullname+" - Username: " + loginData.Username;
+                info += "<br>CustomerID: " + loginData.CustomerID+ " - Thiết bị đăng nhập: " + computerName;
+                noidungmail += info;
                 if (loginData.CustomerID > 0)
                     AutoSendMail.SendErrorReport(loginData.CustomerID.ToString(), noidungmail, config,"");
-
                 string category = "Lỗi thao tác";
                 string action = @$"{loginData.Username} thao tác lỗi. ";
                 var d2 = new ActivityLog()

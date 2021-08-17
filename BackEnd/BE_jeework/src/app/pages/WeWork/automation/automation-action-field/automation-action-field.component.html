@@ -12,6 +12,7 @@
     <ng-container *ngSwitchCase="11" [ngTemplateOutlet]="changedate"></ng-container>
     <ng-container *ngSwitchCase="12" [ngTemplateOutlet]="changedate"></ng-container>
     <ng-container *ngSwitchCase="4" [ngTemplateOutlet]="comment"></ng-container>
+    <ng-container *ngSwitchCase="8" [ngTemplateOutlet]="estimate"></ng-container>
     <ng-container *ngSwitchDefault></ng-container>
 </ng-container>
 
@@ -299,246 +300,7 @@
 </ng-template>
 
 <ng-template #task>
-
-
-    <!-- <div class="cu-edit-automation__container-body-actions-row d-block">
-        <div class="item-field">
-            <div class="cu-automation-field-value-text-input w-100">
-                <div class="cu-automation-field-value-text-input__container ">
-                    <div class="cu-automation-field-value-text-input__input ql-container ql-snow">
-                        <input class="input-tencv w-100" type="text" [(ngModel)]="value.taskname"
-                            placeholder="Nhập tên công việc">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="item-field">
-            <div class="cu-automation-field-value cu-automation-field-value_stretch" [matMenuTriggerFor]="DF1"
-                #menuTrigger="matMenuTrigger">
-                <div class="cu-automation-field-value-subcategory ">
-                    <div class="cu-edit-automation-dropdown">
-                        <div class="cu-edit-automation-dropdown__value">
-
-                            <em class="">
-                                {{ value.title_project_team?value.title_project_team:'Select a List' }}
-                            </em>
-
-
-                        </div>
-                        <div icon="cu2-angle-down" class="cu-edit-automation-dropdown__arrow icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                                <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z" />
-                            </svg>
-
-                        </div>
-                    </div>
-
-
-                </div>
-
-            </div>
-            <mat-menu #DF1="matMenu">
-                <div class="view-mat-menu-df" (click)="$event.stopPropagation();">
-                    <ng-container *ngFor="let space of ListDepartmentFolder">
-                        <div class="cu2-space-row__item cu2-space-row__item_expanded"
-                            (click)="space.expanded = !space.expanded">
-                            <div class="cu-project-avatar_20 cu-project-avatar">
-                                <div class="cu-project-avatar__item cu-avatar cu-project-avatar__text cu-project-avatar__text_bg"
-                                    style="color: rgb(191, 74, 204);">
-                                    <span style="margin-top:-1px"> {{space.title[0]}} </span>
-                                </div>
-                            </div>
-                            <div matTooltipShowDelay="300" matTooltip="{{space.title}}"
-                                class="cu2-space-row__item-name">
-                                {{space.title}} </div>
-                        </div>
-                        <ng-container *ngIf="space.expanded">
-                            <ng-container *ngFor="let folder of space.folder">
-                                <div class="cu2-space-row__item_1 cu2-space-row__item_expanded"
-                                    (click)="folder.expanded = !folder.expanded">
-                                    <div class="cu-project-avatar_20 cu-project-avatar">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24">
-                                            <path
-                                                d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" />
-                                        </svg>
-                                    </div>
-                                    &nbsp;
-                                    <div matTooltipShowDelay="300" matTooltip="{{folder.title}}"
-                                        class="cu2-space-row__item-name"> {{folder.title}}
-                                    </div>
-
-                                </div>
-                                <ng-container *ngIf="folder.expanded">
-                                    <div *ngFor="let project of folder.project"
-                                        [ngClass]="{'selectedProject': project.id_row == value.id_project_team}"
-                                        class="cu2-space-row__item_2 cu2-space-row__item_expanded"
-                                        (click)="SelectedProject(project);menuTrigger.closeMenu();">
-                                        <div class="cu-project-avatar_20 cu-project-avatar">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
-                                                viewBox="0 0 24 24">
-                                                <path
-                                                    d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12z" />
-                                            </svg>
-                                        </div>
-                                        &nbsp;
-                                        <div matTooltipShowDelay="300" matTooltip="{{project.title}}"
-                                            class="cu2-space-row__item-name">
-                                            {{project.title}}
-                                        </div>
-
-                                    </div>
-                                </ng-container>
-
-                            </ng-container>
-                            <div *ngFor="let project of space.project"
-                                [ngClass]="{'selectedProject': project.id_row == value.id_project_team}"
-                                class="cu2-space-row__item_1 cu2-space-row__item_expanded"
-                                (click)="SelectedProject(project);menuTrigger.closeMenu();">
-                                <div class="cu-project-avatar_20 cu-project-avatar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                                        <path
-                                            d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12z" />
-                                    </svg>
-                                </div>
-                                &nbsp;
-                                <div matTooltipShowDelay="300" matTooltip="{{project.title}}"
-                                    class="cu2-space-row__item-name">
-                                    {{project.title}}
-                                </div>
-
-                            </div>
-                            <hr>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </mat-menu>
-        </div>
-        <div class="item-field">
-            <div class="cu-automation-field-value-status-single w-100">
-                <div class="cu-edit-automation-dropdown cu-dropdown__toggle">
-                    <div class="cu-edit-automation-dropdown__value row" style="align-items: center;">
-                        <div class="cu-edit-automation__container-body-actions-label">Chọn độ ưu tiên:
-                        </div>
-                
-                        <div class="cu-automation-field-value cu-automation-field-value_stretch url">
-                            <div class="cu-automation-field-value-status-multiple">
-                                <div class="cu-status-filter">
-                                    <div cudropdown="" class="cu-dropdown_left cu-dropdown">
-                                        <div class="cu-status-filter__toggle cu-dropdown__toggle"
-                                            [matMenuTriggerFor]="priorityto">
-                                            <div class="cu-status-filter__value">
-                                                <ng-container *ngIf="!value.to; else bidingpriorityto">
-                                                    Select a prioirty
-                                                </ng-container>
-                                                <ng-template #bidingpriorityto>
-                                                    <i class="{{ getPriority(value.to).icon }}"></i>
-                                                    &nbsp;
-                                                    {{ 'priority.'+getPriority(value.to).name | translate }}
-                                                </ng-template>
-                                            </div>
-                                        </div>
-                                        <mat-menu #priorityto="matMenu">
-                                            <button mat-menu-item *ngFor="let prio of listPriority"
-                                                (click)="updatePriority(prio.value,false)">
-                                                <i class="{{prio.icon}} pd-r-10"></i>
-                                                {{ 'priority.'+prio.name | translate }}
-                                            </button>
-                                        </mat-menu>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div icon="cu2-angle-down" class="cu-edit-automation-dropdown__arrow icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                            <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="item-field">
-            <div class="cu-automation-field-value-status-single w-100" [matMenuTriggerFor]="status">
-                <div class="cu-edit-automation-dropdown cu-dropdown__toggle">
-                    <div class="cu-edit-automation-dropdown__value">
-                        <em class="row" style="align-items: center;">
-                            <ng-container *ngIf="!this.value.status;else showstatus">
-                                Select a status
-                            </ng-container>
-
-                            <ng-template #showstatus>
-                                <div class="cu-task-row-status1" style="width:20px;padding-right:10px">
-                                    <div class="point" style="height: 12px;"
-                                        [ngStyle]="{'backgroundColor': this.value.status.color}">
-                                    </div>
-                                </div>
-                                {{this.value.status.statusname}}
-                            </ng-template>
-
-                        </em>
-                    </div>
-                    <div icon="cu2-angle-down" class="cu-edit-automation-dropdown__arrow icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                            <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            <mat-menu #status="matMenu">
-                <button mat-menu-item *ngFor="let status of listStatus" (click)="UpdateStatus(status)"
-                    [ngStyle]="{color: status.color}">
-                    <div class="row">
-                        <div class="cu-task-row-status1" style="width:20px;padding-right:10px">
-                            <div class="point h-100" [ngStyle]="{'backgroundColor': status.color}">
-                            </div>
-                        </div>
-                        {{status.statusname}}
-                    </div>
-                </button>
-            </mat-menu>
-        </div>
-        <div class="item-field">
-            <div class="cu-automation-field-value-status-single w-100">
-                <div class="cu-edit-automation-dropdown cu-dropdown__toggle">
-                    <div class="cu-edit-automation-dropdown__value row" style="align-items: center;">
-                        <div class="cu-edit-automation__container-body-actions-label">Người tham gia:
-                        </div>
-                
-                        <div class="cu-automation-field-value cu-automation-field-value_stretch url">
-                            <div class="cu-automation-field-value-user">
-
-                                <kt-avatar-list-users [ListUser]="getItemSelectedAssign()" MaxSize="3" iconSize="24">
-                                </kt-avatar-list-users>
-
-                                <div class="add-user url" [matMenuTriggerFor]="owner">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                        <path
-                                            d="M9.602 3.7c-1.154 1.937-.635 5.227 1.424 9.025.93 1.712.697 3.02.338 3.815-.982 2.178-3.675 2.799-6.525 3.456-1.964.454-1.839.87-1.839 4.004h-1.995l-.005-1.241c0-2.52.199-3.975 3.178-4.663 3.365-.777 6.688-1.473 5.09-4.418-4.733-8.729-1.35-13.678 3.732-13.678 3.321 0 5.97 2.117 5.97 6.167 0 3.555-1.949 6.833-2.383 7.833h-2.115c.392-1.536 2.499-4.366 2.499-7.842 0-5.153-5.867-4.985-7.369-2.458zm13.398 15.3h-3v-3h-2v3h-3v2h3v3h2v-3h3v-2z" />
-                                    </svg>
-                                </div>
-
-                                <mat-menu #owner="matMenu">
-                                    <div class="page-work-detail">
-                                        <kt-choose-users isNewView="true" [options]="getOptions()"
-                                            (ItemSelected)="ItemSelectedAssign($event,1)">
-                                        </kt-choose-users>
-                                    </div>
-                                </mat-menu>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div icon="cu2-angle-down" class="cu-edit-automation-dropdown__arrow icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                            <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
+ 
     <ng-container *ngIf="Actionid==3">
         <ng-container [ngTemplateOutlet]="taskparent"></ng-container>
     </ng-container>
@@ -554,7 +316,7 @@
         <div class="Name cu-automation-field-value_stretch cu-automation-field-value_stretch_Task">
             <div class="cu-automation-field-value cu-automation-field-value_stretch">
                 <div class="cu-automation-field-value-text-input w-100">
-                    <div class="cu-automation-field-value-text-input__container ">
+                    <div class="cu-automation-field-value-text-input__container focus-none">
                         <div class="cu-automation-field-value-text-input__input ql-container ql-snow">
                             <input class="input-tencv w-100" type="text" [(ngModel)]="value.taskname"
                                 placeholder="{{ 'work.entertaskname' | translate }}">
@@ -621,36 +383,7 @@
                 </div>
             </button>
         </mat-menu>
-    </div>
-
-    <!-- <div class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
-        <div
-            class="cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Description ">
-            Mô tả công việc:
-
-
-
-        </div>
-
-        <div class="cu-automation-field-value_stretch cu-automation-field-value_stretch_Description">
-            <div class="cu-automation-field-value cu-automation-field-value_stretch">
-                <div class="cu-automation-field-value-text-input w-100">
-                    <div class="cu-automation-field-value-text-input__container ">
-                        <div class="cu-automation-field-value-text-input__input ql-container ql-snow">
-                            <textarea class="w-100" matInput
-                                placeholder="{{ 'automation.enterdescription' | translate }}" cdkTextareaAutosize
-                                #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
-                                cdkAutosizeMaxRows="5"></textarea>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-    </div> -->
-
+    </div> 
 
     <ng-container [ngTemplateOutlet]="priority"></ng-container>
 
@@ -659,7 +392,7 @@
         class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
         <div
             class="Date cu-edit-automation__container-body-actions-label cu-edit-automation__container-body-actions-label_Due ">
-            {{ 'filter.ngayketthuc' | translate }}:
+            {{ 'filter.ngaybatdau' | translate }}:
         </div>
         <div class="Date cu-automation-field-value_stretch cu-automation-field-value_stretch_Due">
             <div class="cu-automation-field-value cu-automation-field-value_stretch">
@@ -1008,6 +741,16 @@
             <mat-label>{{'filter.comments' | translate}}</mat-label>
             <textarea matInput cdkTextareaAutosize [(ngModel)]="value.data" #autosize="cdkTextareaAutosize"
                 cdkAutosizeMinRows="3" cdkAutosizeMaxRows="8"></textarea>
+        </mat-form-field>
+    </div>
+</ng-template>
+<ng-template #estimate>
+    <div class="cu-edit-automation__container-body-actions-row cu-edit-automation__container-body-actions-row-create_task cu-edit-automation__container-body-actions-row_multiline-labels ">
+        <mat-form-field [style.fontSize]="'14px'" class="w-100">
+            <input matInput type="number" [(ngModel)]="value.data"
+                            placeholder="{{'filter.estimates' | translate}}">
+            <!-- <textarea matInput cdkTextareaAutosize [(ngModel)]="value.data" #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="3" cdkAutosizeMaxRows="8"></textarea> -->
         </mat-form-field>
     </div>
 </ng-template>

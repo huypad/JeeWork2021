@@ -363,6 +363,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
           }
           break;
         case 4: //comment
+        case 8: //estimate
           {
             _item.data = element.data.data;
           }
@@ -440,8 +441,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
       "-" +
       ("0" + (a.getMonth() + 1)).slice(-2) +
       "-" +
-      ("0" + a.getDate()).slice(-2) +
-      "T00:00:00.0000000"
+      ("0" + a.getDate()).slice(-2)
     );
   }
 

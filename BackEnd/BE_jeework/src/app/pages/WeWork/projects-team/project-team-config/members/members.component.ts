@@ -1,6 +1,5 @@
 import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { DynamicFormService } from './../../../../dynamic-form/dynamic-form.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router, Route } from '@angular/router';
@@ -33,7 +32,6 @@ export class MembersComponent {
 		private translate: TranslateService,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
-		public dynamicFormService: DynamicFormService,
 		public WeWorkService: WeWorkService,
 		private tokenStorage: TokenStorage) {
 	}

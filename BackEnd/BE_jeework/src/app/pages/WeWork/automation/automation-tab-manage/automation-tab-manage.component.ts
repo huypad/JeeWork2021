@@ -66,7 +66,7 @@ export class AutomationTabManageComponent implements OnInit {
     this.automationService.UpdateStatusAutomation(item.rowid).subscribe((res) => {
       if (res && res.status == 1) {
         this.ngOnInit();
-        this.layoutUtilsService.showActionNotification("cập nhật thành công");
+        // this.layoutUtilsService.showActionNotification("cập nhật thành công");
       } else {
         this.ngOnInit();
         this.layoutUtilsService.showError(res.error.message);

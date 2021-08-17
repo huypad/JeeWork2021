@@ -255,14 +255,15 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             {
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
-        }/// <summary>
+        }
+        /// <summary>
         /// Danh sách phòng ban theo user tham gia
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
         [Route("lite_department_folder_byuser")]
         [HttpGet]
-        public object Lite_Department_Folder_ByUser(string keyword = "",long DepartmentID = 0)
+        public object Lite_Department_Folder_ByUser(string keyword = "", long DepartmentID = 0)
         {
 
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -287,7 +288,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     conds.Add("id_user", loginData.UserID);
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select distinct de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
-from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and id_row in ({listDept})"; 
+from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and id_row in ({listDept})";
                     #endregion
 
                     DataTable dt = cnn.CreateDataTable(sqlq, conds);
@@ -312,7 +313,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     }
                     #endregion
                     var data = from r in dt.AsEnumerable()
-                               where  r["parentid"] == DBNull.Value
+                               where r["parentid"] == DBNull.Value
                                select new
                                {
                                    id_row = r["id_row"],
@@ -333,6 +334,98 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        /// <summary>
+        /// Lấy danh sách phòng ban theo dạng Tree
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="DepartmentID"></param>
+        /// <returns></returns>
+        [Route("tree-department")]
+        [HttpGet]
+        public object TreeDepartment(string keyword = "", long DepartmentID = 0)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    SqlConditions conds = new SqlConditions();
+                    conds.Add("idkh", loginData.CustomerID);
+                    conds.Add("disabled", 0);
+                    if (DepartmentID > 0)
+                        conds.Add("id_row", DepartmentID);
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    string sqlq = @$"select id_row, title, id_cocau, templateid, parentid, id_template_list
+                                    from we_department where (where) and parentid is null";
+                    #endregion
+                    DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    List<LiteModel> _parents = (from pb in dt.AsEnumerable()
+                                                select new LiteModel()
+                                                {
+                                                    id = int.Parse(pb["id_row"].ToString()),
+                                                    title = pb["title"].ToString(),
+                                                }).ToList();
+                    var data = (from pb in _parents
+                                select new LiteModel()
+                                {
+                                    id = pb.id,
+                                    title = pb.title,
+                                    data = findChild(pb.id)
+                                }).ToList();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        private List<LiteModel> findChild(decimal id)
+        {
+            using (DpsConnection cnn = new DpsConnection(_config.ConnectionString))
+            {
+                SqlConditions conds = new SqlConditions();
+                conds.Add("disabled", 0);
+                conds.Add("parentid", id);
+                #region Trả dữ liệu về backend để hiển thị lên giao diện
+                string sqlq = @$"select id_row, title, id_cocau, templateid, parentid, id_template_list
+                                    from we_department where (where)";
+                #endregion
+                DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+                List<LiteModel> _data = (from pb in dt.AsEnumerable()
+                                         select new LiteModel()
+                                         {
+                                             id = int.Parse(pb["id_row"].ToString()),
+                                             title = pb["title"].ToString(),
+                                         }).ToList();
+                if (_data.Count == 0)
+                    return new List<LiteModel>();
+                return (from pb in _data
+                        select new LiteModel
+                        {
+                            id = pb.id,
+                            title = pb.title,
+                            disabled = pb.disabled,
+                            data = findChild(pb.id)
+                        }).ToList();
+            }
+        }
+        public class LiteModelT<T>
+        {
+            public T id { get; set; }
+            public string title { get; set; }
+            public object disabled { get; set; }
+            public object data { get; set; }
+            public bool? IsDefault { get; set; }
+        }
+
+        public class LiteModel : LiteModelT<long>
+        { }
         /// <summary>
         /// DS milestone lite by id_project_team
         /// </summary>
@@ -2187,7 +2280,7 @@ and IdKH={loginData.CustomerID} )";
             noti_mess.Link = notify_model.To_Link_WebApp;
             noti_mess.oslink = notify_model.To_Link_MobileApp;
             string html = "<h1>Gửi nội dung thông báo</h1>";
-            notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess,_configuration);
+            notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration);
             return true;
         }
 
@@ -2261,6 +2354,7 @@ and IdKH={loginData.CustomerID} )";
                     if (info != null)
                     {
                         values["hoten"] = info.FullName;
+                        template = template.Replace("$nguoitao$", info.FullName);
                     }
                     #endregion
                 }
@@ -2301,7 +2395,7 @@ and IdKH={loginData.CustomerID} )";
                                 val = old_values[val].ToString();
                         }
                     }
-                   
+
                     title = title.Replace(key, val);
                     template = template.Replace(key, val);
                 }

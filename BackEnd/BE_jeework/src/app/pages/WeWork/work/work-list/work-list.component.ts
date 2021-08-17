@@ -157,25 +157,25 @@ export class WorkListComponent implements OnInit {
 		let id: any;
 		this.tokenStore.getIDUser().subscribe(res => {
 			id = +res;
-			this.userProfileService.getHinhAnhByID(+id).subscribe(res => {
-				this.profile = res;
-				let UserData = {
-					HoTen: res.HoTen,
-					Image: res.Image,
-					ChucVu: res.ChucVu,
-					Username: localStorage.getItem('Username')
-				};
-				this.tokenStore.setUserData(UserData);
-				if (this.profile == undefined) {
+			// this.userProfileService.getHinhAnhByID(+id).subscribe(res => {
+			// 	this.profile = res;
+			// 	let UserData = {
+			// 		HoTen: res.HoTen,
+			// 		Image: res.Image,
+			// 		ChucVu: res.ChucVu,
+			// 		Username: localStorage.getItem('Username')
+			// 	};
+			// 	this.tokenStore.setUserData(UserData);
+			// 	if (this.profile == undefined) {
 
-				}
-				else {
-					this.Image = this.profile.Image;
-					this.Ten = this.profile.HoTen;
-					this.ChucVu = this.profile.ChucVu;
-				}
-				this.changeDetect.detectChanges();
-			});
+			// 	}
+			// 	else {
+			// 		this.Image = this.profile.Image;
+			// 		this.Ten = this.profile.HoTen;
+			// 		this.ChucVu = this.profile.ChucVu;
+			// 	}
+			// 	this.changeDetect.detectChanges();
+			// });
 		});
 	}
 	loadData() {

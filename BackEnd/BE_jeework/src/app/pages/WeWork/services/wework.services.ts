@@ -109,6 +109,10 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/lite_department_folder_byuser?DepartmentID=`+DepartmentID, { headers: httpHeaders });
 	}
+	lite_tree_department(DepartmentID = 0): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		return this.http.get<any>(API_Lite + `/tree-department?DepartmentID=`+DepartmentID, { headers: httpHeaders });
+	}
 	lite_project_team_byuser(keyword: string = ""): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/lite_project_team_byuser?keyword=${keyword}`, { headers: httpHeaders });

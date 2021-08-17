@@ -1,4 +1,3 @@
-import { DynamicFormService } from "./../../../dynamic-form/dynamic-form.service";
 import {
   Component,
   OnInit,
@@ -69,7 +68,6 @@ export class TopicListComponent {
     private changeDetectorRefs: ChangeDetectorRef,
     private router: Router,
     private translate: TranslateService,
-    public dynamicFormService: DynamicFormService,
     private tokenStorage: TokenStorage,
     location: PlatformLocation
   ) {
