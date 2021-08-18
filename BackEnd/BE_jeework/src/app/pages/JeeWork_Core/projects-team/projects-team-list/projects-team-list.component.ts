@@ -10,7 +10,6 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 // RXJS
 import { TranslateService } from '@ngx-translate/core';
 // Services
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';// import { ProcessWorkService } from '../Services/process-work.service';
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
 
@@ -52,7 +51,7 @@ export class ProjectsTeamListComponent implements OnInit {
 		public commonService: CommonService,
 		public menuAsideService: MenuAsideService,
 		// private dynamicSearchFormService: DynamicSearchFormService,
-		) { }
+	) { }
 
 	/** LOAD DATA */
 	ngOnInit() {

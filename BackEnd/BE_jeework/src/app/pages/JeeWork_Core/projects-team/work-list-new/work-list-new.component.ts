@@ -78,6 +78,7 @@ import { BehaviorSubject, of } from "rxjs";
   templateUrl: "./work-list-new.component.html",
   styleUrls: ["./work-list-new.component.scss"],
 })
+
 export class WorkListNewComponent implements OnInit, OnChanges {
   @Input() ID_Project: number = 0;
 
@@ -521,7 +522,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             val.data.push(element);
           } 
           else if ( this.CheckDataAssigne(val,element) ) {
-            if ( element.User.length == 1 || (element.User.length == 0 && val.id_row == "") || (element.User.length > 1 && val.id_row == "0")) 
+            if ( element.User?.length == 1 || (this.UserNull(element.User) && val.id_row == "") || (element.User?.length > 1 && val.id_row == "0")) 
             {
               val.data.push(element);
             }
@@ -555,18 +556,31 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   CheckDataAssigne(valuefilter,elementTask){  
     if(this.filter_groupby.value == "assignee"){
       if(this.isAssignforme){
-        if( (elementTask.User.find((x) => x.id_user == valuefilter.id_row) && this.isAssignForme(elementTask)) || (elementTask.createdby == this.UserID && elementTask.User.length == 0)  ){
+        if( ( this.FindUser(elementTask.User,valuefilter.id_row) && this.isAssignForme(elementTask)) || (elementTask.createdby == this.UserID && this.UserNull(elementTask.User))  ){
             return true
           }
       }else{
-        if( elementTask.User.find((x) => x.id_user == valuefilter.id_row) ||
-          (elementTask.User.length == 0 && valuefilter.id_row == "") ||
-          (elementTask.User.length > 1 && valuefilter.id_row == "0") ){
+        if( this.FindUser(elementTask.User,valuefilter.id_row)  ||
+          ( this.UserNull(elementTask.User) && valuefilter.id_row == "") ||
+          (elementTask.User?.length > 1 && valuefilter.id_row == "0") ){
             return true
           }
       }
     }
     return false;
+  }
+  FindUser(listUser,iduser){
+    if(listUser){
+      var x = listUser.find((x) => x.id_user == iduser);
+      if(x) return true;
+    }
+    return false;
+  }
+  UserNull(listUser){
+    if(listUser){
+      if(listUser.length > 0) return false;
+    }
+    return true;
   }
   CheckDataWorkGroup(valuefilter,elementTask){ 
     /**

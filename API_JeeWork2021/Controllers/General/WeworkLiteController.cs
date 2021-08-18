@@ -577,7 +577,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 , '' as CoCauToChuc, '' as ParentID, '' as Id_Chucdanh, '' AS Tenchucdanh
                                 from we_project_team_user u
                                 left join we_project_team p on u.id_project_team=p.id_row
-                                where u.id_user in ({listID})";
+                                where 1=1";
                         if (filter.keys.Contains("id_department") && !string.IsNullOrEmpty(filter["id_department"]))
                             sql += " and id_department=" + filter["id_department"];
                         if (filter.keys.Contains("id_project_team") && !string.IsNullOrEmpty(filter["id_project_team"]))

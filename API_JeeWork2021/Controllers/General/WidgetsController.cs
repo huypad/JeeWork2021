@@ -1362,7 +1362,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             tmp = rows.CopyToDataTable();
                         foreach (DataRow item in tmp.Rows)
                         {
-                            item["DataChildren"] = WorkClickupController.dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, loginData);
+                            item["DataChildren"] = dtChildren(item["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, loginData);
                         }
                         DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept, strW);
                         if (cnn.LastError != null || ds == null)
@@ -1402,7 +1402,87 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
+        public static DataTable dtChildren(string id_parent, DataTable data, DpsConnection cnn, DataTable dataField, string id_project_team, List<AccUsernameModel> DataAccount, UserJWT loginData)
+        {
+            DataTable result = new DataTable();
+            foreach (DataRow item in dataField.Rows)
+            {
+                DataColumnCollection columns = result.Columns;
+                if (!columns.Contains(item["fieldName"].ToString()))
+                {
+                    result.Columns.Add(item["fieldName"].ToString());
+                }
+            }
+            string queryTag = @"select a.id_row,a.title,a.color,b.id_work 
+                                from we_tag a join we_work_tag b 
+                                on a.id_row=b.id_tag 
+                                where a.disabled=0 and b.disabled = 0 
+                                and a.id_project_team = " + id_project_team + " " +
+                                "and id_work = ";
+            //DataTable dt_Tags = cnn.CreateDataTable(queryTag);
+            string queryUser = $@"select w_user.id_work, w_user.id_user, w_user.loai
+                                , id_child, w_user.disabled, '' as hoten,'' as image, id_project_team
+                                from we_work_user w_user 
+                                join we_work 
+                                on we_work.id_row = w_user.id_work 
+                                where w_user.Disabled = 0 
+                                and we_work.id_project_team = " + id_project_team + " and id_work = ";
+            result.Columns.Add("Tags", typeof(DataTable));
+            result.Columns.Add("User", typeof(DataTable));
+            result.Columns.Add("Follower", typeof(DataTable));
+            //result.Columns.Add("comments", typeof(string));
 
+
+            result.Columns.Add("DataChildren", typeof(DataTable));
+            result.Columns.Add("DataStatus", typeof(DataTable));
+            DataRow[] row = data.Select("id_parent in (" + id_parent + ")");
+            foreach (DataRow dr in row)
+            {
+                DataRow drow = result.NewRow();
+                foreach (DataRow field in dataField.Rows)
+                {
+                    if (!(bool)field["isnewfield"])
+                        drow[field["fieldName"].ToString()] = dr[field["fieldName"].ToString()];
+                }
+                drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount, loginData);
+                drow["DataStatus"] = WorkClickupController.list_status_user(dr["id_row"].ToString(), id_project_team, loginData, cnn, DataAccount);
+                result.Rows.Add(drow);
+            }
+            if (result.Rows.Count > 0)
+            {
+                foreach (DataRow dr in result.Rows)
+                {
+                    dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
+                    //DataTable user = cnn.CreateDataTable(queryUser + dr["id_row"]);
+
+                    DataTable user = cnn.CreateDataTable(queryUser + dr["id_row"] + "  and loai = 1");
+                    DataTable follower = cnn.CreateDataTable(queryUser + dr["id_row"] + "  and loai = 2");
+                    #region Map info account từ JeeAccount
+                    foreach (DataRow item in user.Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["image"] = info.AvartarImgURL;
+                        }
+                    }
+                    dr["User"] = user;
+                    foreach (DataRow item in follower.Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["image"] = info.AvartarImgURL;
+                        }
+                    }
+                    dr["Follower"] = follower;
+                    #endregion
+                }
+            }
+            return result;
+        }
         [Route("List-activities")]
         [HttpGet]
         public object ListActivities([FromQuery] QueryParams query)

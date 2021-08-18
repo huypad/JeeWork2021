@@ -144,11 +144,11 @@ export class ReportTabDashboardComponent implements OnInit {
     filter.status = this.trangthai.id_row;
     return filter;
   }
-  getDanhSachPB(){
-    if(this.Selected){
+  getDanhSachPB() {
+    if (this.Selected) {
       let ds = [];
       ds.push(this.Selected.id);
-      if(this.Selected.data && this.Selected.data.length > 0){
+      if (this.Selected.data && this.Selected.data.length > 0) {
         this.Selected.data.forEach(element => {
           ds.push(element.id);
         });
@@ -249,8 +249,8 @@ export class ReportTabDashboardComponent implements OnInit {
     this.weworkService.lite_tree_department(this.ID_department).subscribe(res => {
       if (res && res.status === 1) {
         this.datatree.next(res.data);
-        console.log(res.data,'(1)')
-        if(this.ID_department > 0){
+        console.log(res.data, '(1)')
+        if (this.ID_department > 0) {
           this.Selected = res.data[0];
           this.LoadData();
         }
@@ -262,7 +262,7 @@ export class ReportTabDashboardComponent implements OnInit {
       this.detectChange.detectChanges();
     });
   }
-  Selected:any = null;
+  Selected: any = null;
   selected_Dept(item) {
     console.log(item);
     this.Selected = item;

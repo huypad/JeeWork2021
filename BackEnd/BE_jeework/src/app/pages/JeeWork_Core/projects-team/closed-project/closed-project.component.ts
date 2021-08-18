@@ -1,5 +1,4 @@
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
 import { locale } from './../../../../modules/i18n/vocabs/vi';
 import { filter } from 'rxjs/operators';
 import { Component, OnInit, Inject, ChangeDetectionStrategy, HostListener, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
