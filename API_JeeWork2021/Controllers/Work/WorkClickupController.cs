@@ -3095,10 +3095,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     val.Add("CreatedDate", DateTime.Now);
                     val.Add("CreatedBy", iduser);
                     val.Add("clickup_prioritize", data.urgent);
-                    if (!string.IsNullOrEmpty(data.estimates))
-                    {
-                        val.Add("estimates", data.estimates);
-                    }
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_work") != 1)
                     {
@@ -5225,7 +5221,8 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     DataSet ds = getWork(cnn, query, loginData.UserID, DataAccount, strW);//" and w.id_nv=@iduser"
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
+                    var temp = filterWork(ds.Tables[0].AsEnumerable() , query.filter);//k bao gồm con
+                    //var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
                     int total = temp.Count();
@@ -6133,6 +6130,8 @@ where u.disabled = 0 and u.loai = 2";
             return ds;
             #endregion
         }
+
+
         public static object getChild(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, UserJWT loginData, string ConnectString, object parent = null)
         {
             object a = "";
@@ -6193,7 +6192,6 @@ where u.disabled = 0 and u.loai = 2";
                     #endregion
                 }
                 int b = User2.Rows.Count;
-            }
             //columnName="" : không group
             // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))
             // k có phần này thì workclickup lấy dữ liệu không map theo id dự án
@@ -6226,7 +6224,8 @@ where u.disabled = 0 and u.loai = 2";
                          updatedby = r["UpdatedBy"],
                          nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
-                         DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, new DpsConnection(ConnectString), DataAccount),
+                         comments = SoluongComment(r["id_row"].ToString(), cnn),
+                         DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, cnn, DataAccount),
                          User = from us in User.AsEnumerable()
                                 where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                 select new
@@ -6271,8 +6270,17 @@ where u.disabled = 0 and u.loai = 2";
                                   },
                          Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectString, r["id_row"])
                      };
-            return re.Distinct().ToList();
+            
+                return re.Distinct().ToList();
+
+            }
         }
+
+        public static long SoluongComment(string idwork, DpsConnection cnn) 
+            {
+                long comment = long.Parse(cnn.ExecuteScalar("select num_comment from we_work WHERE id_row = "+idwork).ToString());
+                return comment;
+            }
         public static EnumerableRowCollection<DataRow> filterWork(EnumerableRowCollection<DataRow> enumerableRowCollections, FilterModel filter)
         {
             var temp = enumerableRowCollections;

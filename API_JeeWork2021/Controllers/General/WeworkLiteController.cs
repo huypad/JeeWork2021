@@ -1209,10 +1209,10 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         return JsonResultCommon.Custom(error);
                     #endregion
                     string query = "";
-                    query = $@"select id_row, StatusName, description, id_project_team,IsToDo
-                    ,Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, '' as hoten_Follower
-                    from we_status 
-                    where Disabled = 0 and  id_project_team in ( select distinct p.id_row from we_project_team p
+                    query = $@"select stt.id_row, stt.StatusName, stt.description, stt.id_project_team,stt.IsToDo
+                    ,stt.Type, stt.IsDefault, stt.color, stt.Position, stt.IsFinal, stt.Follower, stt.IsDeadline, '' as hoten_Follower,p.title as projectName
+                    from we_status stt join we_project_team p on stt.id_project_team = p.id_row 
+                    where stt.Disabled = 0 and  id_project_team in ( select distinct p.id_row from we_project_team p
 join we_department d on d.id_row = p.id_department
 join we_project_team_user u on u.id_project_team = p.id_row
 where u.Disabled = 0 and id_user = {loginData.UserID} 
@@ -1252,6 +1252,7 @@ and IdKH={loginData.CustomerID} )";
                                    IsDeadline = r["IsDeadline"],
                                    IsToDo = r["IsToDo"],
                                    Description = r["description"],
+                                   projectName = r["projectName"],
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
