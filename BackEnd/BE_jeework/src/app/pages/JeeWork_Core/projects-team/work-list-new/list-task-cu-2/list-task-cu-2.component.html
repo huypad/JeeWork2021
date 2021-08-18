@@ -578,24 +578,28 @@
                                                                         </mat-menu>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'comments'">
-                                                                        <span (menuOpened)="node.showcomment = true"
-                                                                            (menuClosed)="node.showcomment = false"
-                                                                            [matMenuTriggerFor]="commentsmenu"><i
-                                                                                class="far fa-comment-dots"></i>
-                                                                            {{node[item.fieldname]}}</span>
-                                                                        <mat-menu #commentsmenu="matMenu">
-                                                                            <div (click)="$event.stopPropagation()"
-                                                                                style="max-height:600px;min-width: 500px;min-height: 300px;">
-                                                                                <div *ngIf="node.id_row && node.showcomment"
-                                                                                    class="card card-custom">
-                                                                                    <app-jee-comment
-                                                                                        [showonpopup]="true"
-                                                                                        [showCommentDefault]="true"
-                                                                                        [componentName]="getComponentName(node.id_row)">
-                                                                                    </app-jee-comment>
+                                                                        <div class="item-field hide-more-text">
+                                                                            <span (menuOpened)="node.showcomment = true"
+                                                                                (menuClosed)="this.ReloadData(null,node.id_project_team);node.showcomment = false"
+                                                                                [matMenuTriggerFor]="commentsmenu">
+                                                                                        {{node[item.fieldname]>0?node[item.fieldname]:''}}
+                                                                                        <i class="far fa-comment-dots"></i>
+                                                                            </span>
+                                                                            <mat-menu #commentsmenu="matMenu">
+                                                                                <div (click)="$event.stopPropagation()"
+                                                                                    style="max-height:600px;min-width: 500px;min-height: 300px;">
+                                                                                    <div *ngIf="node.id_row && node.showcomment"
+                                                                                        class="card card-custom">
+                                                                                        <app-jee-comment
+                                                                                            [showonpopup]="true"
+                                                                                            [showCommentDefault]="true"
+                                                                                            [componentName]="getComponentName(node.id_row)">
+                                                                                        </app-jee-comment>
+
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </mat-menu>
+                                                                            </mat-menu>
+                                                                        </div>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'createdby'">
                                                                         <div class="item-field">

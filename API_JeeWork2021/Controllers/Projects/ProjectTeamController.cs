@@ -493,7 +493,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + $" where u.disabled=0 ";
                     sqlq += $";select *, '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image " +
                         $"from we_project_team_stage s where id_project_team=" + id;
-                    sqlq += $";exec GetActivitiesNew '{listID}'," + id;
+                    sqlq += $";exec GetActivitiesNew '{loginData.CustomerID}'," + id;
                     sqlq += ";select * from we_group where disabled=0 and  id_project_team=" + id;
                     sqlq += @$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht, '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image  from we_milestone m 
                                 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht,w.id_milestone 
@@ -3026,6 +3026,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         Conds.Add("id_project_team", query.filter["id_project_team"]);
                     else
                         Conds.Add("id_project_team", 0);
+                    Conds.Add("IDKH", loginData.CustomerID );
                     #region Sort data theo các dữ liệu bên dưới
                     Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
@@ -3040,7 +3041,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sqlq = "";
                     //if (!role.IsUserInRole(loginData.UserName, "3502"))
                     //{
-                    sqlq = @$"exec GetActivitiesNew '{listID}',@id_project_team";
+                    sqlq = @$"exec GetActivitiesNew @IDKH, @id_project_team";
                     //}
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     #region Map info account từ JeeAccount

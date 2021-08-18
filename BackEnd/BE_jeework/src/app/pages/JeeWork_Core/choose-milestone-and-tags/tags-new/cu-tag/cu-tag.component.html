@@ -37,8 +37,7 @@
                 </div>
             </div>
             <input type="text" autocomplete="off" class="input_renname {{isRename?'':'d-none'}}" [ngStyle]="{'border-color': tag.color}"
-            id="renameText{{tag.id_row}}{{node.id_row}}{{detail?'1':'0'}}" (keyup.enter)="checkUpdate()"
-            (focusout)="checkUpdate()"> 
+            id="renameText{{tag.id_row}}{{node.id_row}}{{detail?'1':'0'}}" (keyup.enter)="checkUpdate()" (focusout)="checkUpdate()"> 
 
         </div>
     </div>

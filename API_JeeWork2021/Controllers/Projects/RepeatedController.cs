@@ -1037,44 +1037,6 @@ from we_repeated_Task task where task.Disabled=0";
             Hashtable val = new Hashtable();
             foreach (DataRow dr in dt.Rows)
             {
-                val = new Hashtable();
-                val.Add("title", dr["title"].ToString());
-                if (!string.IsNullOrEmpty(dr["deadline"].ToString()))
-                {
-                    DateTime deadline = ngaybatdau.AddHours(long.Parse(dr["deadline"].ToString()));
-                    val.Add("deadline", deadline);
-                }    
-                if (string.IsNullOrEmpty(dr["description"].ToString()))
-                    val.Add("description", "");
-                else
-                    val.Add("description", dr["description"].ToString());
-                val.Add("id_project_team", dr["id_project_team"].ToString());
-                if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
-                {
-                    if (int.Parse(dr["id_group"].ToString()) > 0)
-                        val.Add("id_group", dr["id_group"].ToString());
-                }
-                val.Add("CreatedDate", DateTime.Now);
-                val.Add("Disabled", 0);
-                val.Add("CreatedBy", runby);
-                val.Add("id_repeated", dr["id_row"].ToString());
-                val.Add("start_date", ngaybatdau);
-                DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
-                if (dt.Rows.Count > 0)
-                {
-                    DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
-                    if (RowStatus.Length > 0)
-                    {
-                        val.Add("status", RowStatus[0]["id_row"]);
-                    }
-                }
-                cnn.BeginTransaction();
-                if (cnn.Insert(val, "we_work") != 1)
-                {
-                    cnn.RollbackTransaction();
-                    return false;
-                }
-                long maxid = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
                 // Insert member
                 string sql_user = "select id_row, id_repeated, id_user, CreatedDate" +
                     ", CreatedBy, Disabled, UpdatedDate, UpdatedBy " +
@@ -1086,7 +1048,61 @@ from we_repeated_Task task where task.Disabled=0";
                     foreach (DataRow dr_user in dt_user.Rows)
                     {
                         val = new Hashtable();
+                        val.Add("title", dr["title"].ToString());
+                        if (!string.IsNullOrEmpty(dr["deadline"].ToString()))
+                        {
+                            DateTime deadline = ngaybatdau.AddHours(long.Parse(dr["deadline"].ToString()));
+                            val.Add("deadline", deadline);
+                        }
+                        if (string.IsNullOrEmpty(dr["description"].ToString()))
+                            val.Add("description", "");
+                        else
+                            val.Add("description", dr["description"].ToString());
+                        val.Add("id_project_team", dr["id_project_team"].ToString());
+                        if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
+                        {
+                            if (int.Parse(dr["id_group"].ToString()) > 0)
+                                val.Add("id_group", dr["id_group"].ToString());
+                        }
+                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("Disabled", 0);
+                        val.Add("CreatedBy", runby);
+                        val.Add("id_repeated", dr["id_row"].ToString());
+                        val.Add("start_date", ngaybatdau);
+                        DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+                        if (dt.Rows.Count > 0)
+                        {
+                            DataRow[] RowStatus = dt_status.Select("IsDefault = 1 and IsFinal = 0");
+                            if (RowStatus.Length > 0)
+                            {
+                                val.Add("status", RowStatus[0]["id_row"]);
+                            }
+                        }
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_work") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return false;
+                        }
+                        long maxid = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
+
+                        // Insert assign user là người làm
+                        val = new Hashtable();
                         val.Add("id_user", dr_user["id_user"]);
+                        val.Add("id_work", maxid);
+                        val.Add("loai", 1); // insert giao việc
+                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("Disabled", 0);
+                        val.Add("CreatedBy", runby);
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_work_user") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return false;
+                        }
+                        // insert member người tạo là người theo dõi
+                        val = new Hashtable();
+                        val.Add("id_user", dr["CreatedBy"].ToString());
                         val.Add("id_work", maxid);
                         val.Add("loai", 2); // insert người theo dõi
                         val.Add("CreatedDate", DateTime.Now);
@@ -1098,73 +1114,184 @@ from we_repeated_Task task where task.Disabled=0";
                             cnn.RollbackTransaction();
                             return false;
                         }
-                    }
-                }
-                // Insert assign
-                val = new Hashtable();
-                val.Add("id_user", dr["assign"].ToString());
-                val.Add("id_work", maxid);
-                val.Add("loai", 1); // insert giao việc
-                val.Add("CreatedDate", DateTime.Now);
-                val.Add("Disabled", 0);
-                val.Add("CreatedBy", runby);
-                cnn.BeginTransaction();
-                if (cnn.Insert(val, "we_work_user") != 1)
-                {
-                    cnn.RollbackTransaction();
-                    return false;
-                }
-                // Insert check list
-                string sql_work = "select id_row, id_repeated, title, istodo, userid, CreatedDate" +
-                    ", CreatedBy, Disabled, UpdatedDate, UpdatedBy " +
-                    "from we_repeated_Task " +
-                    "where disabled = 0 and id_repeated = " + dr["id_row"];
-                DataTable dt_work = cnn.CreateDataTable(sql_work);
-                if (dt_work.Rows.Count > 0)
-                {
-                    foreach (DataRow dr_work in dt_work.Rows)
-                    {
-                        if ((bool)dr_work["istodo"]) // To do
+                        // Insert check list
+                        string sql_work = "select id_row, id_repeated, title, istodo, userid, CreatedDate" +
+                            ", CreatedBy, Disabled, UpdatedDate, UpdatedBy " +
+                            "from we_repeated_Task " +
+                            "where disabled = 0 and id_repeated = " + dr["id_row"];
+                        DataTable dt_work = cnn.CreateDataTable(sql_work);
+                        if (dt_work.Rows.Count > 0)
                         {
-                            val = new Hashtable();
-                            val.Add("id_work", maxid);
-                            val.Add("title", dr_work["title"]);
-                            val.Add("CreatedDate", DateTime.Now);
-                            val.Add("Disabled", 0);
-                            val.Add("CreatedBy", runby);
-                            cnn.BeginTransaction();
-                            if (cnn.Insert(val, "we_checklist") != 1)
+                            foreach (DataRow dr_work in dt_work.Rows)
                             {
-                                cnn.RollbackTransaction();
-                                return false;
+                                if ((bool)dr_work["istodo"]) // To do
+                                {
+                                    val = new Hashtable();
+                                    val.Add("id_work", maxid);
+                                    val.Add("title", dr_work["title"]);
+                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("Disabled", 0);
+                                    val.Add("CreatedBy", runby);
+                                    cnn.BeginTransaction();
+                                    if (cnn.Insert(val, "we_checklist") != 1)
+                                    {
+                                        cnn.RollbackTransaction();
+                                        return false;
+                                    }
+                                }
+                                else // Sub task
+                                {
+                                    val = new Hashtable();
+                                    val.Add("title", dr_work["title"].ToString());
+                                    val.Add("id_project_team", dr["id_project_team"].ToString());
+                                    if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
+                                    {
+                                        if ((int)dr["id_group"] > 0)
+                                            val.Add("id_group", dr["id_group"].ToString());
+                                    }
+                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("Disabled", 0);
+                                    val.Add("CreatedBy", runby);
+                                    val.Add("id_repeated", dr["id_row"].ToString());
+                                    val.Add("start_date", ngaybatdau);
+                                    val.Add("id_parent", maxid);
+                                    cnn.BeginTransaction();
+                                    if (cnn.Insert(val, "we_work") != 1)
+                                    {
+                                        cnn.EndTransaction();
+                                        cnn.RollbackTransaction();
+                                        return false;
+                                    }
+                                }
                             }
                         }
-                        else // Sub task
-                        {
-                            val = new Hashtable();
-                            val.Add("title", dr_work["title"].ToString());
-                            val.Add("id_project_team", dr["id_project_team"].ToString());
-                            if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
-                            {
-                                if ((int)dr["id_group"] > 0)
-                                    val.Add("id_group", dr["id_group"].ToString());
-                            }
-                            val.Add("CreatedDate", DateTime.Now);
-                            val.Add("Disabled", 0);
-                            val.Add("CreatedBy", runby);
-                            val.Add("id_repeated", dr["id_row"].ToString());
-                            val.Add("start_date", ngaybatdau);
-                            val.Add("id_parent", maxid);
-                            cnn.BeginTransaction();
-                            if (cnn.Insert(val, "we_work") != 1)
-                            {
-                                cnn.EndTransaction();
-                                cnn.RollbackTransaction();
-                                return false;
-                            }
-                        }
+
                     }
                 }
+                else
+                {
+                        val = new Hashtable();
+                        val.Add("title", dr["title"].ToString());
+                        if (!string.IsNullOrEmpty(dr["deadline"].ToString()))
+                        {
+                            DateTime deadline = ngaybatdau.AddHours(long.Parse(dr["deadline"].ToString()));
+                            val.Add("deadline", deadline);
+                        }
+                        if (string.IsNullOrEmpty(dr["description"].ToString()))
+                            val.Add("description", "");
+                        else
+                            val.Add("description", dr["description"].ToString());
+                        val.Add("id_project_team", dr["id_project_team"].ToString());
+                        if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
+                        {
+                            if (int.Parse(dr["id_group"].ToString()) > 0)
+                                val.Add("id_group", dr["id_group"].ToString());
+                        }
+                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("Disabled", 0);
+                        val.Add("CreatedBy", runby);
+                        val.Add("id_repeated", dr["id_row"].ToString());
+                        val.Add("start_date", ngaybatdau);
+                        DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+                        if (dt.Rows.Count > 0)
+                        {
+                            DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
+                            if (RowStatus.Length > 0)
+                            {
+                                val.Add("status", RowStatus[0]["id_row"]);
+                            }
+                        }
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_work") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return false;
+                        }
+                        long maxid = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
+
+                        // Insert assign user là người làm 
+                        val = new Hashtable();
+                        val.Add("id_user", dr["assign"].ToString());
+                        val.Add("id_work", maxid);
+                        val.Add("loai", 1); // insert giao việc
+                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("Disabled", 0);
+                        val.Add("CreatedBy", runby);
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_work_user") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return false;
+                        }
+                        // insert member người tạo là người theo dõi
+                        val = new Hashtable();
+                        val.Add("id_user", dr["assign"].ToString());
+                        val.Add("id_work", maxid);
+                        val.Add("loai", 2); // insert người theo dõi
+                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("Disabled", 0);
+                        val.Add("CreatedBy", runby);
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_work_user") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return false;
+                        }
+                        // Insert check list
+                        string sql_work = "select id_row, id_repeated, title, istodo, userid, CreatedDate" +
+                            ", CreatedBy, Disabled, UpdatedDate, UpdatedBy " +
+                            "from we_repeated_Task " +
+                            "where disabled = 0 and id_repeated = " + dr["id_row"];
+                        DataTable dt_work = cnn.CreateDataTable(sql_work);
+                        if (dt_work.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr_work in dt_work.Rows)
+                            {
+                                if ((bool)dr_work["istodo"]) // To do
+                                {
+                                    val = new Hashtable();
+                                    val.Add("id_work", maxid);
+                                    val.Add("title", dr_work["title"]);
+                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("Disabled", 0);
+                                    val.Add("CreatedBy", runby);
+                                    cnn.BeginTransaction();
+                                    if (cnn.Insert(val, "we_checklist") != 1)
+                                    {
+                                        cnn.RollbackTransaction();
+                                        return false;
+                                    }
+                                }
+                                else // Sub task
+                                {
+                                    val = new Hashtable();
+                                    val.Add("title", dr_work["title"].ToString());
+                                    val.Add("id_project_team", dr["id_project_team"].ToString());
+                                    if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
+                                    {
+                                        if ((int)dr["id_group"] > 0)
+                                            val.Add("id_group", dr["id_group"].ToString());
+                                    }
+                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("Disabled", 0);
+                                    val.Add("CreatedBy", runby);
+                                    val.Add("id_repeated", dr["id_row"].ToString());
+                                    val.Add("start_date", ngaybatdau);
+                                    val.Add("id_parent", maxid);
+                                    cnn.BeginTransaction();
+                                    if (cnn.Insert(val, "we_work") != 1)
+                                    {
+                                        cnn.EndTransaction();
+                                        cnn.RollbackTransaction();
+                                        return false;
+                                    }
+                                }
+                            }
+
+                    }
+                }
+
+                
             }
             return true;
         }

@@ -6,7 +6,7 @@
                 matTooltip="{{ 'work.giaolaichonguoikhac' | translate}}">
                 <i class="fas fa-tasks"></i>
             </button>
-            <button class="text-white -hover btn hover-bg" *ngIf="CheckRoleskeypermit('status')"
+            <!-- <button class="text-white -hover btn hover-bg" *ngIf="CheckRoleskeypermit('status')"
                 [matMenuTriggerFor]="statuslist" matTooltip="{{ 'work.gantinhtrangcongviec' | translate}}">
                 <i class="fas fa-layer-group"></i>
             </button>
@@ -22,7 +22,7 @@
                         {{status.statusname}}
                     </div>
                 </button>
-            </mat-menu>
+            </mat-menu> -->
             <button class="text-white -hover btn hover-bg" (click)="UpdateListDuplicate(1)"
                 matTooltip="{{ 'work.nhanbancongviec' | translate}}">
                 <i class="far fa-copy"></i> </button>
@@ -851,9 +851,9 @@
                                                                                 <span style="font-size: 12pt;"
                                                                                     [matMenuTriggerFor]="commentsmenu"
                                                                                     (menuOpened)="node.showcomment = true"
-                                                                                    (menuClosed)="node.showcomment = false">
-                                                                                    <i class="far fa-comment-dots"></i>
+                                                                                    (menuClosed)="this.LoadData();node.showcomment = false">
                                                                                     {{node[item.fieldname]>0?node[item.fieldname]:''}}
+                                                                                    <i class="far fa-comment-dots"></i>
                                                                                 </span>
                                                                                 <mat-menu #commentsmenu="matMenu">
                                                                                     <div (click)="$event.stopPropagation()"

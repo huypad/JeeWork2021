@@ -41,9 +41,9 @@ export class ColorPicker2Component implements OnInit {
 	 * On init
 	 */
 	ngOnInit() {
-		if(!this.selected){
-			this.select(this.defaultColors[0])
-		}
+		// if(!this.selected){
+		// 	this.select(this.defaultColors[0])
+		// }
 	}
 	ngOnChanges() {
 

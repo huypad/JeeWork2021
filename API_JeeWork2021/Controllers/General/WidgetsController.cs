@@ -1449,6 +1449,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         Conds.Add("id_project_team", 0);
                         sql = sql.Replace("(where)", " ");
                     }
+                    Conds.Add("IDKH", loginData.CustomerID);
                     //load team 
                     DataTable dt_team = cnn.CreateDataTable(sql);
                     #region Sort data theo các dữ liệu bên dưới
@@ -1465,7 +1466,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqlq = "";
                     //if (!role.IsUserInRole(loginData.UserName, "3502"))
                     //{
-                    sqlq = @$"exec GetActivitiesNew '{listID}',@id_project_team";
+                    sqlq = @$"exec GetActivitiesNew @IDKH, @id_project_team";
                     //}
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     #region Map info account từ JeeAccount

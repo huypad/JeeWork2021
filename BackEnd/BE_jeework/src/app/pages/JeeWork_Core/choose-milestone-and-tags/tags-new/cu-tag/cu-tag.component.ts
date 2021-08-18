@@ -64,6 +64,7 @@ export class CuTagComponent implements OnInit {
   }
 
   checkUpdate() {
+    debugger
     var idname = "renameText" + this.tag.id_row + this.node.id_row + (this.detail ? '1' : '0');
     let ele = (<HTMLInputElement>document.getElementById(idname));
     if (ele.value.trim() == this.tag.title.trim() || ele.value == "") {
@@ -91,6 +92,7 @@ export class CuTagComponent implements OnInit {
   }
 
   Update(_item: TagsModel, withBack: boolean) {
+    debugger
     this._service.Update(_item).subscribe(res => {
       if (res && res.status === 1) {
         this.loadData.emit(true);

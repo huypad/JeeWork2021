@@ -65,6 +65,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     keyword: "",
     data: [],
   };
+  id_project = 0;
   list_follower: any[] = [];
   check_weekdays: any[] = [];
   list_User: any[] = [];
@@ -127,6 +128,11 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
         Title: this.translate.instant("day.chunhat"),
       },
     ];
+    let x = (this.router.url).split('/');
+		if (+x[2] > 0) {
+			this.id_project = + x[2];
+		} else {
+		}
   }
   /** LOAD DATA */
   ngOnInit() {
@@ -139,6 +145,9 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     this.id_project_team = +this.item.id_project_team;
     if (this.id_project_team > 0) {
       this.isUpdate = true;
+      this.LoadUser(this.id_project_team);
+    } else if(this.id_project > 0){
+      this.id_project_team = this.id_project;
       this.LoadUser(this.id_project_team);
     }
     this.txt_repeat_day = this.item.repeated_day;
@@ -491,8 +500,8 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     if (index >= 0) {
       this.selectedUser.splice(index, 1);
     } else {
-      this.selectedUser[0] = data;
-      // this.selectedUser.push(data);
+      // this.selectedUser[0] = data;
+      this.selectedUser.push(data);
     }
   }
 

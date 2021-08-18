@@ -38,7 +38,7 @@
                     <div class="col-md-12 kt--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="id_project_team" class="require"
-                                (selectionChange)="LoadUser($event.value)" required [disabled]="isUpdate"
+                                (selectionChange)="LoadUser($event.value)" required [disabled]="isUpdate || id_project > 0"
                                 (selectionChange)="BindList($event.value)"
                                 placeholder="{{ 'topic.projectteam' | translate}}">
                                 <mat-option>

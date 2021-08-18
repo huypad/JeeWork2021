@@ -139,7 +139,7 @@ export class RepeatedListComponent implements OnInit {
 			.pipe(
 				tap(resultFromServer => {
 					this.layoutUtilsService.OffWaitingDiv();
-					this.pageLength = resultFromServer.page.TotalCount;
+					this.pageLength = resultFromServer.page?.TotalCount;
 					if (resultFromServer.status == 1) {
 						if (resultFromServer.data.length > 0) {
 							var listRepeat = resultFromServer.data;
