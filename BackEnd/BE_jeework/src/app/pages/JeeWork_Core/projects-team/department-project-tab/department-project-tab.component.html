@@ -1,15 +1,16 @@
 <kt-portlet>
     <kt-portlet-body class="pd-0">
         <div class="row">
-            <div class="col-4" >
+            <div class="col-4">
                 <ng-container *ngIf="dataFolder.length > 0 && loadListfolder">
-                    <app-danhsachthumuc [dataSource]="dataFolder" (ChangeFolder)="ReloadList($event)"></app-danhsachthumuc>
+                    <app-danhsachthumuc [dataSource]="dataFolder" (ChangeFolder)="ReloadList($event)">
+                    </app-danhsachthumuc>
                 </ng-container>
             </div>
             <div class=" {{ loadListfolder ? 'col-8':'col-12'}}">
                 <div class="example-container mat-table__wrapper" [ngStyle]="{'height': getHeight()}">
-                    <table mat-table class="lmat-elevation-z8 lst-project table-list-dept" [dataSource]="dataSource" matSort
-                        matSortActive="id" matSortDirection="asc" matSortDisableClear>
+                    <table mat-table class="lmat-elevation-z8 lst-project table-list-dept" [dataSource]="dataSource"
+                        matSort matSortActive="id" matSortDirection="asc" matSortDisableClear>
                         <ng-container matColumnDef="pie">
                             <th mat-header-cell *matHeaderCellDef style="justify-content: center"><span></span>
                             </th>
@@ -21,8 +22,8 @@
                             <th mat-header-cell *matHeaderCellDef style="justify-content: center">
                                 <span translate="department.project" class="text-uppercase"></span>
                                 &nbsp;
-                                <app-sort-icon column="title" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                                    (sort)="sortField($event)"></app-sort-icon>
+                                <app-sort-icon column="title" [activeColumn]="sorting.column"
+                                    [activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
                             </th>
                             <td mat-cell *matCellDef="let item" style="justify-content: center;">
                                 <div class="text-2-line" style="font-weight: bold; font-size: 14px;">
@@ -41,7 +42,8 @@
                                     translate="department.department" class="text-uppercase"></span>
                             </th>
                             <td mat-cell *matCellDef="let item" style="justify-content: center">
-                                <a [routerLink]="['/depts', item.id_department]" class="url"><b>{{item.department}}</b></a>
+                                <a [routerLink]="['/depts', item.id_department]"
+                                    class="url"><b>{{item.department}}</b></a>
                                 <span style="color: red;" *ngIf="!item.department">
                                     Chưa có department
                                 </span>
@@ -57,8 +59,9 @@
                                         <div class="user url" *ngFor="let us of item.users;let index = index"
                                             style="justify-content: flex-end;">
                                             <ng-container *ngIf="index < 3">
-                                                <ngx-avatar size="25" [matMenuTriggerFor]="menu" matTooltip="{{us.hoten}}"
-                                                    src="{{us.image}}" *ngIf="us.image;else bindText">
+                                                <ngx-avatar size="25" [matMenuTriggerFor]="menu"
+                                                    matTooltip="{{us.hoten}}" src="{{us.image}}"
+                                                    *ngIf="us.image;else bindText">
                                                 </ngx-avatar>
                                                 <ng-template #bindText>
                                                     <ngx-avatar textSizeRatio="2.5" [matMenuTriggerFor]="menu"
@@ -70,12 +73,13 @@
                                                 <mat-menu #menu="matMenu">
                                                     <div class="row">
                                                         <div class="col-md-3">
-                                                            <ngx-avatar size="50" matTooltip="{{us.hoten}}" src="{{us.image}}"
-                                                                *ngIf="us.image;else bindText1">
+                                                            <ngx-avatar size="50" matTooltip="{{us.hoten}}"
+                                                                src="{{us.image}}" *ngIf="us.image;else bindText1">
                                                             </ngx-avatar>
                                                             <ng-template #bindText1>
-                                                                <ngx-avatar textSizeRatio="2.5" matTooltip="{{us.hoten}}"
-                                                                    size="50" [name]="WeWorkService.getNameUser(us.hoten)"
+                                                                <ngx-avatar textSizeRatio="2.5"
+                                                                    matTooltip="{{us.hoten}}" size="50"
+                                                                    [name]="WeWorkService.getNameUser(us.hoten)"
                                                                     bgColor="{{WeWorkService.getColorNameUser(us.hoten)}}">
                                                                 </ngx-avatar>
                                                             </ng-template>
@@ -90,7 +94,8 @@
                                                 </mat-menu>
                                             </ng-container>
                                         </div>
-                                        <div class="user url" *ngIf="item.users.length > 3" style="justify-content: flex-end;">
+                                        <div class="user url" *ngIf="item.users.length > 3"
+                                            style="justify-content: flex-end;">
                                             <div class="m--img-rounded m--marginless m--img-centered background"
                                                 [matMenuTriggerFor]="menu1" style="width: 25px; height: 25px;">
                                                 <div
@@ -103,10 +108,12 @@
                                                     style="justify-content: flex-end;">
                                                     <ng-container *ngIf="index > 2">
                                                         <div class="row ">
-                                                            <div class="col-md-3 m--margin-bottom-10-mobile" style="padding-left: 5px;">
+                                                            <div class="col-md-3 m--margin-bottom-10-mobile"
+                                                                style="padding-left: 5px;">
                                                                 <div class="user url" style="margin: 0 0 0 3px;">
                                                                     <ngx-avatar size="35" matTooltip="{{us.hoten}}"
-                                                                        src="{{us.image}}" *ngIf="us.image;else bindText2">
+                                                                        src="{{us.image}}"
+                                                                        *ngIf="us.image;else bindText2">
                                                                     </ngx-avatar>
                                                                     <ng-template #bindText2>
                                                                         <ngx-avatar textSizeRatio="2.5"
@@ -153,7 +160,8 @@
                             </th>
                             <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
                                 <div class="chip-nowrap" style="display: flex;">
-                                    <mat-chip-list style="padding-top: 5px; padding-right: 8px;" aria-label="Fish selection">
+                                    <mat-chip-list style="padding-top: 5px; padding-right: 8px;"
+                                        aria-label="Fish selection">
                                         <mat-chip [color]="getColorLocked(item.locked)">
                                             {{getItemLockedString(item.locked)}}
                                         </mat-chip>
@@ -167,12 +175,14 @@
                             </th>
                             <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
                                 <div class="chip-nowrap" style="display: flex;">
-                                    <mat-chip-list style="padding-top: 5px; padding-right: 8px;" aria-label="Fish selection">
+                                    <mat-chip-list style="padding-top: 5px; padding-right: 8px;"
+                                        aria-label="Fish selection">
                                         <mat-chip [color]="getColor(item.status)">
                                             {{getItemConditionString(item.status)}}
                                         </mat-chip>
                                     </mat-chip-list>
-                                    <button mat-stroked-button [matMenuTriggerFor]="belowMenu" *ngIf="commonService.CheckRole_WeWork(3501).length>0" ><span
+                                    <button mat-stroked-button [matMenuTriggerFor]="belowMenu"
+                                        *ngIf="commonService.CheckRole_WeWork(3501).length>0"><span
                                             translate="filter.options"></span></button>
                                     <mat-menu #belowMenu="matMenu" yPosition="below">
                                         <a (click)="Viewdetail(item)"><button mat-menu-item>
@@ -184,23 +194,25 @@
                                         </button>
                                         <button mat-menu-item (click)="updateStage(item)"> <span
                                                 translate="work.capnhattiendo"></span></button>
-                                        <a [routerLink]="['/project/'+item.id_row+'/settings']"><button mat-menu-item><span
-                                                    translate="work.quanly"></span></button></a>
+                                        <a [routerLink]="['/project/'+item.id_row+'/settings']"><button
+                                                mat-menu-item><span translate="work.quanly"></span></button></a>
                                     </mat-menu>
                                 </div>
                             </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="row.highlighted = !row.highlighted"
-                            [ngClass]="{hovered: row.hovered, highlighted: row.highlighted}" (mouseover)="row.hovered = true"
-                            (mouseout)="row.hovered = false"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns"
+                            (click)="row.highlighted = !row.highlighted"
+                            [ngClass]="{hovered: row.hovered, highlighted: row.highlighted}"
+                            (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"></tr>
                     </table>
                     <div class="mat-table__message" *ngIf="!dataSource.hasItems"><span
                             translate="GeneralKey.khongcodulieu"></span>
                     </div>
                 </div>
-                <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;" [paginator]="paginatorNew"
-                [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)"></app-paginator>
+                <app-paginator class="d-flex justify-content-between align-items-center flex-wrap"
+                    style="padding: 0 20px;" [paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async"
+                    (paginate)="paginate($event)"></app-paginator>
             </div>
         </div>
     </kt-portlet-body>

@@ -8,7 +8,8 @@
                             <span class="las la-search url"
                                 style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
                             <input type="text" [(ngModel)]="keyword" (keyup.enter)="loadDataList()"
-                                placeholder="{{ 'GeneralKey.filterproject' | translate }}" #appcode style="overflow: hidden;width:200px">
+                                placeholder="{{ 'GeneralKey.filterproject' | translate }}" #appcode
+                                style="overflow: hidden;width:200px">
                         </div>
                     </div>
                 </div>
@@ -47,7 +48,8 @@
             </div>
         </div>
         <div class="action-right row">
-            <div class="col-button m--margin-bottom-10-mobile" style="text-align: right;" *ngIf="commonService.CheckRole_WeWork(3402).length>0"> 
+            <div class="col-button m--margin-bottom-10-mobile" style="text-align: right;"
+                *ngIf="commonService.CheckRole_WeWork(3402).length>0">
                 <button (click)="AddProject(true)" class="btn btn-outline-success"
                     style="border-radius:20px; margin-right: 15px;"
                     matTooltip="{{ 'projects.themmoiproject' | translate }}" type="button">
@@ -62,15 +64,15 @@
                     matTooltip="{{ 'projects.themmoidepartment' | translate }}" type="button">
                     <span translate="projects.themmoidepartment"></span>
                 </button>
-    
+
             </div>
             <div class="col-change-view m--margin-bottom-10-mobile itabs" style="text-align: right;">
-                <div class="icon {{ is_gird?'text-primary':'text-muted' }}" matTooltip="{{ 'GeneralKey.xemdanggird' | translate }}"
-                    (click)="view('gird')">
+                <div class="icon {{ is_gird?'text-primary':'text-muted' }}"
+                    matTooltip="{{ 'GeneralKey.xemdanggird' | translate }}" (click)="view('gird')">
                     <mat-icon>view_module</mat-icon>
                 </div>
-                <div class="icon {{ is_list?'text-primary':'text-muted' }}" matTooltip="{{ 'GeneralKey.xemdanglist' | translate }}"
-                    (click)="view('list')">
+                <div class="icon {{ is_list?'text-primary':'text-muted' }}"
+                    matTooltip="{{ 'GeneralKey.xemdanglist' | translate }}" (click)="view('list')">
                     <mat-icon>view_list</mat-icon>
                 </div>
             </div>

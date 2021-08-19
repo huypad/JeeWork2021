@@ -1602,7 +1602,7 @@ export const locale = {
       notify_titile: 'Thông báo',
     },
     workgroup: {
-      slcongviec: 'Tổng SL công việc',
+      slcongviec: 'Số lượng công việc',
       slhoanthanh: 'SL đã hoàn thành',
       title: 'Tên nhóm',
       nhomcongviec: 'Nhóm công việc'

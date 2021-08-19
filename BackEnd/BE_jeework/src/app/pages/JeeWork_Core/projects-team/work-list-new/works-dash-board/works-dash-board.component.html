@@ -206,9 +206,11 @@
                 </div> -->
 
                 <ng-container *ngFor="let item of ListProject">
-                    <div style="flex-grow: 1;margin: 25px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
+                    <div style="flex-grow: 1;margin: 25px;margin-right: 10px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
                     border-left-width: 5px; padding-left: 35px;" class="cu-list-group" >
-                        <h3 class="mt-5"> {{ item.title }} </h3>
+                        <div class="mt-5">
+                            <h3> {{ item.title }} </h3>
+                        </div>
                         <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
                     </div>
                 </ng-container>

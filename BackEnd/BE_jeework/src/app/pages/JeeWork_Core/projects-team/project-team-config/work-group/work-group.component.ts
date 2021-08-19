@@ -42,7 +42,6 @@ export class WorkGroupComponent implements OnInit {
     "nguoicapnhat",
     "nguoitheodoi",
     "tongsocongviec",
-    "soluonghoanthanh",
     "locked",
     "action",
   ];

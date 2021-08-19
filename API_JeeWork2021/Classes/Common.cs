@@ -171,7 +171,7 @@ namespace JeeWork_Core2021.Classes
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("Username", username);
-
+            DataTable quyenusers = Conn.CreateDataTable("select Id_permit from Tbl_Account_Permit where (where)", "(where)", Conds);
             DataTable quyennhom = Conn.CreateDataTable("select Id_permit from tbl_group_permit gp " +
                 "inner join tbl_group_account gu on gp.id_group=gu.id_group where Username=@Username", Conds);
             StringCollection colroles = new StringCollection();
@@ -179,6 +179,11 @@ namespace JeeWork_Core2021.Classes
             {
                 if (!colroles.Contains(quyennhom.Rows[i]["Id_permit"].ToString()))
                     colroles.Add(quyennhom.Rows[i]["Id_permit"].ToString());
+            }
+            for (int i = 0; i < quyenusers.Rows.Count; i++)
+            {
+                if (!colroles.Contains(quyenusers.Rows[i]["Id_permit"].ToString()))
+                    colroles.Add(quyenusers.Rows[i]["Id_permit"].ToString());
             }
             string[] roles = new string[colroles.Count];
             for (int i = 0; i < colroles.Count; i++)

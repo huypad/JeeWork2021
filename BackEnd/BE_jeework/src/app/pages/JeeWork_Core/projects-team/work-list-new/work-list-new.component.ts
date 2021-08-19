@@ -321,85 +321,85 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       true
     );
     this.data = [];
-    this.layoutUtilsService.showWaitingDiv();
     //get option new field
     this.GetOptions_NewField();
     //get list new field
     this.WeWorkService.GetNewField().subscribe((res) => {
       if (res && res.status == 1) {
         this.listNewField = res.data;
-      }
-    });
-    //get data work binding data
-    this._service.GetDataWorkCU(queryParams).subscribe((res) => {
-      this.layoutUtilsService.OffWaitingDiv();
-      if (res && res.status === 1) {
-        this.data = res.data;
-        this.listFilter = this.data.Filter;
-        this.ListColumns = this.data.TenCot;
-        //xóa title khỏi cột
-        var colDelete = ["title", "id_row", "id_project_team", "id_parent"];
-        colDelete.forEach((element) => {
-          var indextt = this.ListColumns.findIndex(
-            (x) => x.fieldname == element
-          );
-          if (indextt >= 0) this.ListColumns.splice(indextt, 1);
+        this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
+          if (res && res.status === 1) {
+            this.status_dynamic = res.data;
+            //load ItemFinal
+            var x = this.status_dynamic.find((val) => val.IsFinal == true);
+            if (x) {
+              this.ItemFinal = x.id_row;
+            } else {
+            }
+            // this.changeDetectorRefs.detectChanges();
+          }
         });
 
-        this.ListColumns.sort((a, b) =>
-          a.title > b.title ? 1 : b.title > a.title ? -1 : 0
-        ); // xếp theo anphabet
-        this.ListColumns.sort((a, b) =>
-          a.id_project_team > b.id_project_team
-            ? -1
-            : b.id_project_team > a.id_project_team
-              ? 1
-              : 0
-        ); // nào chọn xếp trước
-        this.ListColumns.sort((a, b) =>
-          a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
-        ); // nào bắt buộc xếp trước
-        this.ListTasks = this.data.datawork;
-        if (
-          this.filter_groupby.value == "status" &&
-          this.ListTasks.length == 0
-        ) {
-          if (this.listFilter[0]) this.newtask = this.listFilter[0].id_row;
-          this.Emtytask = true;
-        } else {
-          this.Emtytask = false;
-        }
-        this.prepareDragDrop(this.ListTasks);
-        this.ListTags = this.data.Tag;
-        this.ListUsers = this.data.User;
-        this.DataNewField = this.data.DataWork_NewField;
-        this.LoadListStatus();
-        this.changeDetectorRefs.detectChanges();
+        //Load data work group
+        this.WeWorkService.lite_workgroup(this.ID_Project).pipe(
+          tap(res => {
+            if (res && res.status === 1) {
+              this.listType = res.data;
+              this.changeDetectorRefs.detectChanges();
+            };
+          })
+        ).subscribe();
+        //get data work binding data
+        this.layoutUtilsService.showWaitingDiv();
+        this._service.GetDataWorkCU(queryParams).subscribe((res) => {
+          this.layoutUtilsService.OffWaitingDiv();
+          if (res && res.status === 1) {
+            this.data = res.data;
+            this.listFilter = this.data.Filter;
+            this.ListColumns = this.data.TenCot;
+            //xóa title khỏi cột
+            var colDelete = ["title", "id_row", "id_project_team", "id_parent"];
+            colDelete.forEach((element) => {
+              var indextt = this.ListColumns.findIndex(
+                (x) => x.fieldname == element
+              );
+              if (indextt >= 0) this.ListColumns.splice(indextt, 1);
+            });
+
+            this.ListColumns.sort((a, b) =>
+              a.title > b.title ? 1 : b.title > a.title ? -1 : 0
+            ); // xếp theo anphabet
+            this.ListColumns.sort((a, b) =>
+              a.id_project_team > b.id_project_team
+                ? -1
+                : b.id_project_team > a.id_project_team
+                  ? 1
+                  : 0
+            ); // nào chọn xếp trước
+            this.ListColumns.sort((a, b) =>
+              a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
+            ); // nào bắt buộc xếp trước
+            this.ListTasks = this.data.datawork;
+            if (
+              this.filter_groupby.value == "status" &&
+              this.ListTasks.length == 0
+            ) {
+              if (this.listFilter[0]) this.newtask = this.listFilter[0].id_row;
+              this.Emtytask = true;
+            } else {
+              this.Emtytask = false;
+            }
+            this.prepareDragDrop(this.ListTasks);
+            this.ListTags = this.data.Tag;
+            this.ListUsers = this.data.User;
+            this.DataNewField = this.data.DataWork_NewField;
+            this.LoadListStatus();
+            this.changeDetectorRefs.detectChanges();
+          }
+        });
       }
     });
 
-    this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
-      if (res && res.status === 1) {
-        this.status_dynamic = res.data;
-        //load ItemFinal
-        var x = this.status_dynamic.find((val) => val.IsFinal == true);
-        if (x) {
-          this.ItemFinal = x.id_row;
-        } else {
-        }
-        // this.changeDetectorRefs.detectChanges();
-      }
-    });
-
-    //Load data work group
-    this.WeWorkService.lite_workgroup(this.ID_Project).pipe(
-      tap(res => {
-        if (res && res.status === 1) {
-          this.listType = res.data;
-          this.changeDetectorRefs.detectChanges();
-        };
-      })
-    ).subscribe();
   }
 
   Statusdefault() {
@@ -547,7 +547,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return false;
   }
   isAssignForme(elementTask) {
-    if (this.FindUser(elementTask.User, this.UserID) || this.FindUser(elementTask.Follower, this.UserID) || this.FindUser(elementTask.UserSubtask, this.UserID)) {
+    if (elementTask.User.find((x) => x.id_user == this.UserID) || elementTask.Follower.find((x) => x.id_user == this.UserID) || elementTask.UserSubtask.find((x) => x.id_user == this.UserID)) {
       return true;
     }
     return false;

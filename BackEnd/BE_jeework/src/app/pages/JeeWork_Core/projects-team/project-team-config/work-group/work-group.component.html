@@ -28,8 +28,7 @@
         <ng-container ktPortletTitle>
             <div class="kt-form__filtration">
                 <div class="row align-items-center">
-                    <h3><span style="color: black; font-weight: bold;"
-                            translate="workgroup.nhomcongviec"></span></h3>
+                    <h3><span style="color: black; font-weight: bold;" translate="workgroup.nhomcongviec"></span></h3>
                 </div>
             </div>
         </ng-container>
@@ -70,15 +69,21 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="nguoitao">
-                    <th mat-header-cell *matHeaderCellDef style="justify-content: center ;"><span
-                            translate="filter.createdby" class="text-uppercase"></span>
+                    <th mat-header-cell *matHeaderCellDef style="justify-content: center">
+                        <span translate="filter.createdby" class="text-uppercase"></span>
+                        &nbsp;
+                        <app-sort-icon column="title" [activeColumn]="sorting.column"
+                            [activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
                     </th>
-                    <td mat-cell *matCellDef="let item" style="justify-content: center">
-                        <ng-container *ngIf="item.nguoitao && item.nguoitao.hoten">
-                            <kt-avatar-user [image]="item.nguoitao.image" [size]="35" [name]="item.nguoitao.hoten">
-                            </kt-avatar-user>
-                        </ng-container>
-
+                    <td mat-cell *matCellDef="let item" style="justify-content: center;">
+                        <div class="text-2-line" style="font-weight: bold;">
+                            <span style="color: black !important;">{{item.nguoitao.hoten}}</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 11px;">
+                                {{item.nguoitao.department}} - {{item.nguoitao.jobtitle}}
+                            </span>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="ngaycapnhat">
@@ -94,24 +99,29 @@
                         <span translate="GeneralKey.nguoicapnhat" class="text-uppercase"></span>
                     </th>
                     <td mat-cell *matCellDef="let item" style="justify-content: center;">
-                        <ng-container *ngIf="item.nguoisua && item.nguoisua.hoten">
-                            <kt-avatar-user [image]="item.nguoisua.image" [size]="35" [name]="item.nguoisua.hoten">
-                            </kt-avatar-user>
-                        </ng-container>
+                        <div class="text-2-line" style="font-weight: bold;">
+                            <span style="color: black !important;" *ngIf="item.nguoisua">{{item.nguoisua.hoten}}</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 11px;" *ngIf="item.nguoisua">
+                                {{item.nguoisua.department}} - {{item.nguoisua.jobtitle}}
+                            </span>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="nguoitheodoi">
                     <th mat-header-cell *matHeaderCellDef style="justify-content: center; "><span
                             translate="congviec.nguoitheodoi" class="text-uppercase"></span>
                     </th>
-                    <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
-                        <ng-container *ngIf="item.reviewer">
-                            <ng-container *ngIf="item.reviewer && item.reviewer.hoten">
-                                <kt-avatar-user [image]="item.reviewer.image" [size]="35" [name]="item.reviewer.hoten">
-                                </kt-avatar-user>
-                            </ng-container>
-                        </ng-container>
-
+                    <td mat-cell *matCellDef="let item" style="justify-content: center;">
+                        <div class="text-2-line" style="font-weight: bold;">
+                            <span style="color: black !important;" *ngIf="item.reviewer">{{item.reviewer.hoten}}</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 11px;" *ngIf="item.reviewer">
+                                {{item.reviewer.department}} - {{item.reviewer.jobtitle}}
+                            </span>
+                        </div>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="tongsocongviec">
@@ -119,28 +129,14 @@
                             translate="workgroup.slcongviec" class="text-uppercase"></span>
                     </th>
                     <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
-                        {{ item.Count.tong }}
+                        {{ item.Count.ht }}/{{ item.Count.tong }} hoàn thành
                     </td>
                 </ng-container>
-                <ng-container matColumnDef="soluonghoanthanh">
-                    <th mat-header-cell *matHeaderCellDef style="justify-content: center;  "><span
-                            translate="workgroup.slhoanthanh" class="text-uppercase"></span>
-                    </th>
-                    <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
-                        {{ item.Count.ht }}
-                    </td>
-                </ng-container>
-
                 <ng-container matColumnDef="locked">
                     <th mat-header-cell *matHeaderCellDef style="justify-content: center"><span
                             translate="phanquyen.khoa" class="text-uppercase"></span>
                     </th>
                     <td mat-cell *matCellDef="let item" class="sora-switch">
-                        <!-- {{item.locked}} -->
-                      <!-- <label class="switch">
-                            <input #inputlock (change)="lock1(item.id_row)" type="checkbox" [checked]="item.locked">
-                            <span (click)="inputlock.click()" class="slider round"></span>
-                        </label> -->
                         <mat-slide-toggle [checked]="item.locked" (change)="lock($event, item.id_row)">
                         </mat-slide-toggle>
                     </td>
@@ -151,10 +147,12 @@
                     </th>
                     <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
                         <div class="row">
-                            <button mat-icon-button [disabled]="(item.locked==true)" class="text-black" (click)="UpdateItem(item)">
+                            <button mat-icon-button [disabled]="(item.locked==true)" class="text-black"
+                                (click)="UpdateItem(item)">
                                 <mat-icon>edit</mat-icon>
                             </button>
-                            <button mat-icon-button [disabled]="(item.locked==true)" class="text-danger" (click)="DeleteItem(item)">
+                            <button mat-icon-button [disabled]="(item.locked==true)" class="text-danger"
+                                (click)="DeleteItem(item)">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
