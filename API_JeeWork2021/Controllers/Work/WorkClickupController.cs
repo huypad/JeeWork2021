@@ -334,8 +334,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                             {
                                 string qs = sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")";
                                 dr["UserSubtask"] = cnn.CreateDataTable(sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")", "(where)", cond);
-                                dr["DataChildren"] = dtChildren(dr["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, user_child, loginData);
-                                dr["DataStatus"] = list_status_user(dr["id_row"].ToString(), query.filter["id_project_team"], loginData, cnn, DataAccount);
+                                dr["DataChildren"] = dtChildren(dr["id_row"].ToString(), result, ConnectionString, dt_Fields, query.filter["id_project_team"], DataAccount, user_child, loginData);
+                                dr["DataStatus"] = list_status_user(dr["id_row"].ToString(), query.filter["id_project_team"], loginData, ConnectionString, DataAccount);
                             }
                         }
                         var filterTeam = " id_parent is null and id_project_team = " + (query.filter["id_project_team"]);
@@ -2184,7 +2184,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     clickup_prioritize = r["clickup_prioritize"],
                                     result = r["result"],
                                     estimates = r["estimates"],
-                                    DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, cnn, DataAccount),
+                                    DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
                                     User = from us in User.AsEnumerable()
                                            where r["id_row"].Equals(us["id_work"])
                                            select new
@@ -5388,147 +5388,154 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
             }
             return result;
         }
-        public static DataTable dtChildren(string id_parent, DataTable data, DpsConnection cnn, DataTable dataField, string id_project_team, List<AccUsernameModel> DataAccount, DataRow[] user_child, UserJWT loginData)
+        public static DataTable dtChildren(string id_parent, DataTable data, string ConnectionString, DataTable dataField, string id_project_team, List<AccUsernameModel> DataAccount, DataRow[] user_child, UserJWT loginData)
         {
-            DataTable result = new DataTable();
-            foreach (DataRow item in dataField.Rows)
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
-                DataColumnCollection columns = result.Columns;
-                if (!columns.Contains(item["fieldName"].ToString()))
+                DataTable result = new DataTable();
+                foreach (DataRow item in dataField.Rows)
                 {
-                    result.Columns.Add(item["fieldName"].ToString());
+                    DataColumnCollection columns = result.Columns;
+                    if (!columns.Contains(item["fieldName"].ToString()))
+                    {
+                        result.Columns.Add(item["fieldName"].ToString());
+                    }
                 }
-            }
-            string queryTag = @"select a.id_row,a.title,a.color,b.id_work 
+                string queryTag = @"select a.id_row,a.title,a.color,b.id_work 
                                 from we_tag a join we_work_tag b 
                                 on a.id_row=b.id_tag 
                                 where a.disabled=0 and b.disabled = 0 
                                 and a.id_project_team = " + id_project_team + " " +
-                                "and id_work = ";
-            result.Columns.Add("Tags", typeof(DataTable));
-            result.Columns.Add("User", typeof(DataTable));
-            result.Columns.Add("Follower", typeof(DataTable));
-            //result.Columns.Add("comments", typeof(string));
-            result.Columns.Add("DataChildren", typeof(DataTable));
-            result.Columns.Add("DataStatus", typeof(DataTable));
-            DataRow[] row = data.Select("id_parent in (" + id_parent + ")");
-            foreach (DataRow dr in row)
-            {
-                DataRow drow = result.NewRow();
-                foreach (DataRow field in dataField.Rows)
+                                    "and id_work = ";
+                result.Columns.Add("Tags", typeof(DataTable));
+                result.Columns.Add("User", typeof(DataTable));
+                result.Columns.Add("Follower", typeof(DataTable));
+                //result.Columns.Add("comments", typeof(string));
+                result.Columns.Add("DataChildren", typeof(DataTable));
+                result.Columns.Add("DataStatus", typeof(DataTable));
+                DataRow[] row = data.Select("id_parent in (" + id_parent + ")");
+                foreach (DataRow dr in row)
                 {
-                    if (!(bool)field["isnewfield"])
-                        drow[field["fieldName"].ToString()] = dr[field["fieldName"].ToString()];
+                    DataRow drow = result.NewRow();
+                    foreach (DataRow field in dataField.Rows)
+                    {
+                        if (!(bool)field["isnewfield"])
+                            drow[field["fieldName"].ToString()] = dr[field["fieldName"].ToString()];
+                    }
+                    drow["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
+                    drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, ConnectionString, dataField, id_project_team, DataAccount, user_child, loginData);
+                    drow["DataStatus"] = list_status_user(dr["id_row"].ToString(), id_project_team, loginData, ConnectionString, DataAccount);
+                    if (user_child.Length > 0)
+                    {
+                        DataTable user_type = user_child.CopyToDataTable();
+                        var _loai = user_type.Select("loai = 1 and id_work = " + dr["id_row"]);
+                        if (_loai.Any())
+                            drow["User"] = _loai.CopyToDataTable();
+                        _loai = user_type.Select("loai = 2  and id_work = " + dr["id_row"]);
+                        if (_loai.Any())
+                            drow["Follower"] = _loai.CopyToDataTable();
+                    }
+                    result.Rows.Add(drow);
                 }
-                drow["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
-                drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount, user_child, loginData);
-                drow["DataStatus"] = list_status_user(dr["id_row"].ToString(), id_project_team, loginData, cnn, DataAccount);
-                if (user_child.Length > 0)
-                {
-                    DataTable user_type = user_child.CopyToDataTable();
-                    var _loai = user_type.Select("loai = 1 and id_work = " + dr["id_row"]);
-                    if (_loai.Any())
-                        drow["User"] = _loai.CopyToDataTable();
-                    _loai = user_type.Select("loai = 2  and id_work = " + dr["id_row"]);
-                    if (_loai.Any())
-                        drow["Follower"] = _loai.CopyToDataTable();
-                }
-                result.Rows.Add(drow);
+                return result;
             }
-            return result;
         }
-        public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, DpsConnection cnn, List<AccUsernameModel> DataAccount)
+        public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, string ConnectionString, List<AccUsernameModel> DataAccount)
         {
-            try
+            
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
-                cnn = new DpsConnection();
-                DataTable dt = new DataTable();
-                string a = "select status from we_work where id_row = " + workid + "";
-                object status_hientai = cnn.ExecuteScalar("select status from we_work where id_row = " + workid + "");
-                if (status_hientai == null)
+                try
                 {
-                    string test = a;
-                }
-                long position = long.Parse(cnn.ExecuteScalar("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).ToString());
-                string sql = @"";
-                sql = @$"select process.id_project_team, workid, process.statusid, process.id_row as processid
+                    //cnn = new DpsConnection();
+                    DataTable dt = new DataTable();
+                    string a = "select status from we_work where id_row = " + workid + "";
+                    object status_hientai = cnn.ExecuteScalar("select status from we_work where id_row = " + workid + "");
+                    if (status_hientai == null)
+                    {
+                        string test = a;
+                    }
+                    long position = long.Parse(cnn.ExecuteScalar("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).ToString());
+                    string sql = @"";
+                    sql = @$"select process.id_project_team, workid, process.statusid, process.id_row as processid
                         , process.checker, process.change_note , statusname, color, position, _status.id_row
                         , _status.type, isdefault, isfinal, isdeadline, istodo, '' as hoten_follower
                         from we_work_process process right join we_status _status
                         on _status.id_row = process.statusid
                         where _status.id_project_team = " + id_project_team + " " +
-                            "and _status.disabled = 0 and process.disabled = 0 " +
-                            "and workid = " + workid + " " +
-                            "order by type, position ";
-                bool admin_project = false;
-                object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
-                if (project_team != null)
-                    admin_project = bool.TrueString.Equals(project_team.ToString());
-                bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
-                bool is_stop = false;
-                dt = cnn.CreateDataTable(sql);
-                dt.Columns.Add("allow_update", typeof(bool));
-                if (dt.Rows.Count > 0)
-                {
-                    foreach (DataRow item in dt.Rows)
+                                "and _status.disabled = 0 and process.disabled = 0 " +
+                                "and workid = " + workid + " " +
+                                "order by type, position ";
+                    bool admin_project = false;
+                    object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
+                    if (project_team != null)
+                        admin_project = bool.TrueString.Equals(project_team.ToString());
+                    bool admin_system = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
+                    bool is_stop = false;
+                    dt = cnn.CreateDataTable(sql);
+                    dt.Columns.Add("allow_update", typeof(bool));
+                    if (dt.Rows.Count > 0)
                     {
-                        if (admin_project || admin_system)
+                        foreach (DataRow item in dt.Rows)
                         {
-                            item["allow_update"] = true;
-                        }
-                        else
-                        {
-                            long value_table = long.Parse(item["position"].ToString());
-                            string checker = item["checker"].ToString();
-                            if (Math.Abs(value_table - position) == 0) // dòng hiện tại
+                            if (admin_project || admin_system)
                             {
                                 item["allow_update"] = true;
                             }
-                            if (Math.Abs(value_table - position) > 0) // dòng trên và dòng dưới
+                            else
                             {
-                                if (Math.Abs(value_table - position) == 1) // dòng trên + 1 và dòng dưới +1
+                                long value_table = long.Parse(item["position"].ToString());
+                                string checker = item["checker"].ToString();
+                                if (Math.Abs(value_table - position) == 0) // dòng hiện tại
                                 {
                                     item["allow_update"] = true;
-                                    if (!string.IsNullOrEmpty(checker) && !checker.Equals(loginData.UserID.ToString()))
-                                    {
-                                        is_stop = true;
-                                    }
                                 }
-                                if (is_stop) // Nếu dòng n-1 và n+1 có người check và không thuộc user đăng nhập thì dừng hẳn
+                                if (Math.Abs(value_table - position) > 0) // dòng trên và dòng dưới
                                 {
-                                    if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                    if (Math.Abs(value_table - position) == 1) // dòng trên + 1 và dòng dưới +1
                                     {
-                                        item["allow_update"] = false;
-                                    }
-                                }
-                                else
-                                {
-                                    if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
-                                    {
-                                        if (string.IsNullOrEmpty(checker) || (checker == loginData.UserID.ToString()))
+                                        item["allow_update"] = true;
+                                        if (!string.IsNullOrEmpty(checker) && !checker.Equals(loginData.UserID.ToString()))
                                         {
-                                            item["allow_update"] = true;
+                                            is_stop = true;
                                         }
-                                        else
+                                    }
+                                    if (is_stop) // Nếu dòng n-1 và n+1 có người check và không thuộc user đăng nhập thì dừng hẳn
+                                    {
+                                        if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                        {
                                             item["allow_update"] = false;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Math.Abs(value_table - position) > 1) // dòng trên + 1 và dòng dưới +1
+                                        {
+                                            if (string.IsNullOrEmpty(checker) || (checker == loginData.UserID.ToString()))
+                                            {
+                                                item["allow_update"] = true;
+                                            }
+                                            else
+                                                item["allow_update"] = false;
+                                        }
                                     }
                                 }
                             }
+                            var info = DataAccount.Where(x => item["checker"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info != null)
+                            {
+                                item["hoten_follower"] = info.FullName;
+                            }
                         }
-                        var info = DataAccount.Where(x => item["checker"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if (info != null)
-                        {
-                            item["hoten_follower"] = info.FullName;
-                        }
+                        return dt;
                     }
-                    return dt;
+                    else
+                        return new DataTable();
                 }
-                else
+                catch
+                {
                     return new DataTable();
-            }
-            catch
-            {
-                return new DataTable();
+                }
             }
         }
         public static async Task<DataSet> GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string listDept, string dieukien_where = "")
@@ -5993,7 +6000,7 @@ where u.disabled = 0 and u.loai = 2";
                              nguoisua = r["NguoiSua"],
                              clickup_prioritize = r["clickup_prioritize"],
                              comments = SoluongComment(r["id_row"].ToString(), cnn),
-                             DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, cnn, DataAccount),
+                             DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
                              User = from us in User.AsEnumerable()
                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                     select new

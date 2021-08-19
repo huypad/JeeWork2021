@@ -1445,7 +1445,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         drow[field["fieldName"].ToString()] = dr[field["fieldName"].ToString()];
                 }
                 drow["DataChildren"] = dtChildren(dr["id_row"].ToString(), data, cnn, dataField, id_project_team, DataAccount, loginData);
-                drow["DataStatus"] = WorkClickupController.list_status_user(dr["id_row"].ToString(), id_project_team, loginData, cnn, DataAccount);
+                //drow["DataStatus"] = WorkClickupController.list_status_user(dr["id_row"].ToString(), id_project_team, loginData, cnn, DataAccount);
                 result.Rows.Add(drow);
             }
             if (result.Rows.Count > 0)
