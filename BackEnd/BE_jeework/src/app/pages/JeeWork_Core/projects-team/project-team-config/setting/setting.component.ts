@@ -346,14 +346,14 @@ export class SettingComponent {
 		}
 	}
 	getTreeValue() {
-		this.danhMucChungService.Get_MaCoCauToChuc_HR().subscribe((res) => {
-			if (res.data && res.data.length > 0) {
-				this.datatree.next(res.data);
-				this.selectedNode.next({
-					RowID: "" + this.item.id_department,
-				});
-			}
-		});
+		// this.danhMucChungService.Get_MaCoCauToChuc_HR().subscribe((res) => {
+		// 	if (res.data && res.data.length > 0) {
+		// 		this.datatree.next(res.data);
+		// 		this.selectedNode.next({
+		// 			RowID: "" + this.item.id_department,
+		// 		});
+		// 	}
+		// });
 	}
 
 	GetValueNode(val: any) {

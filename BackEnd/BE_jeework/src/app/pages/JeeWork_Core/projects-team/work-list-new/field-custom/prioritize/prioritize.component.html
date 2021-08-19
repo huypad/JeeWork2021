@@ -1,0 +1,33 @@
+<div class="item-field"
+        *ngIf="role"
+        [matMenuTriggerFor]="priority">
+        <ng-container
+            *ngIf="value>0;else nosetprio">
+            <i
+                class="{{getPriority(value).icon}} pd-r-10"></i>
+        </ng-container>
+        <ng-template #nosetprio>
+            <i class="far fa-flag pd-0"
+                style="font-size: 13px;"></i>
+        </ng-template>
+    </div>
+    <div class="item-field"
+        *ngIf="!role">
+        <ng-container
+            *ngIf="value>0;else nosetprio">
+            <i
+                class="{{getPriority(value).icon}} pd-r-10"></i>
+        </ng-container>
+        <ng-template #nosetprio>
+            <i class="far fa-flag pd-0"
+                style="font-size: 13px;"></i>
+        </ng-template>
+    </div>
+    <mat-menu #priority="matMenu">
+        <button mat-menu-item *ngFor="let prio of list_priority"
+            (click)="updatePriority(prio.value)">
+            <i
+                class="{{prio.icon}} pd-r-10"></i>
+            {{ 'priority.'+prio.name | translate }}
+        </button>
+    </mat-menu>

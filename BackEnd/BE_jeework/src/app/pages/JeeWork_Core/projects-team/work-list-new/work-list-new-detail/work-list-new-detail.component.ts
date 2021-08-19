@@ -1449,6 +1449,7 @@ export class WorkListNewDetailComponent implements OnInit {
   }
 
   ReloadDatas(event) {
+    console.log('nhận lệnh reload.');
     this.LoadData();
   }
 

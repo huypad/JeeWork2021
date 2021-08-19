@@ -127,20 +127,20 @@ export class DepartmentEditComponent implements OnInit {
   };
 
   getTreeValue() {
-    this.danhMucChungService.Get_MaCoCauToChuc_HR().subscribe((res) => {
-      if (res.data && res.data.length > 0) {
-        this.datatree.next(res.data);
-        this.changeDetectorRefs.detectChanges();
-        // this.selectedNode.next({
-        // 	RowID: "" + this.item.id_cocau,
-        // });
-        // if ("" + this.item.id_cocau != undefined)
-        // 	this.ID_Struct = '' + this.item.id_cocau;
-        // else
-        // 	this.ID_Struct = '';
-        // this.loadListChucVu();
-      }
-    });
+    // this.danhMucChungService.Get_MaCoCauToChuc_HR().subscribe((res) => {
+    //   if (res.data && res.data.length > 0) {
+    //     this.datatree.next(res.data);
+    //     this.changeDetectorRefs.detectChanges();
+    //     // this.selectedNode.next({
+    //     // 	RowID: "" + this.item.id_cocau,
+    //     // });
+    //     // if ("" + this.item.id_cocau != undefined)
+    //     // 	this.ID_Struct = '' + this.item.id_cocau;
+    //     // else
+    //     // 	this.ID_Struct = '';
+    //     // this.loadListChucVu();
+    //   }
+    // });
   }
   GetValueNode(val: any) {
     this.ID_Struct = val.RowID;

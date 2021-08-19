@@ -136,7 +136,24 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		});
 		this.changeDetectorRefs.detectChanges();
 	}
-
+	UpdateTag(color,_item, withBack: boolean=false) {
+		console.log(color);
+		console.log(_item);
+		let tagItem = new TagsModel();
+		tagItem.id_row = _item.id_row;
+		tagItem.color = color;
+		tagItem.title = _item.title;
+		tagItem.id_project_team = this.id_project_Team;
+		this.TagsService.Update(tagItem).subscribe(res => {
+		  if (res && res.status === 1) {
+			this.ItemSelected.emit(true);
+			this.LoadTag();
+		  }
+		  else {
+			this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+		  }
+		});
+	  }
 	createmilestone() { }
 	Update() {
 		this.item_mile.id_project_team = this.id_project_Team;
@@ -176,9 +193,9 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	createTags() {
 		const ObjectModels = new TagsModel();
 		ObjectModels.clear();
-		this.UpdateTag(ObjectModels);
+		this.CreatedTag(ObjectModels);
 	}
-	UpdateTag(_item: TagsModel) {
+	CreatedTag(_item: TagsModel) {
 		_item.id_project_team = "" + this.id_project_Team;
 		_item.project_team = this.project_team;
 		let saveMessageTranslateParam = "";

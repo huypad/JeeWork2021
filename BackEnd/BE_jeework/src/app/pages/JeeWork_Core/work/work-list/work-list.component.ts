@@ -117,12 +117,12 @@ export class WorkListComponent implements OnInit {
 			}
 		});
 
-		this._service.myStaff().subscribe(res => {
-			if (res && res.status === 1) {
-				this.mystaff = res.data;
-			}
-			this.changeDetect.detectChanges();
-		});
+		// this._service.myStaff().subscribe(res => {
+		// 	if (res && res.status === 1) {
+		// 		this.mystaff = res.data;
+		// 	}
+		// 	this.changeDetect.detectChanges();
+		// });
 		//load ds dự án và chèn tất cả dự án vào đầu
 		this.weworkService.lite_project_team_byuser("").subscribe(res => {
 			if (res && res.status === 1) {

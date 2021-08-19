@@ -64,7 +64,6 @@ export class CuTagComponent implements OnInit {
   }
 
   checkUpdate() {
-    debugger
     var idname = "renameText" + this.tag.id_row + this.node.id_row + (this.detail ? '1' : '0');
     let ele = (<HTMLInputElement>document.getElementById(idname));
     if (ele.value.trim() == this.tag.title.trim() || ele.value == "") {
@@ -92,13 +91,13 @@ export class CuTagComponent implements OnInit {
   }
 
   Update(_item: TagsModel, withBack: boolean) {
-    debugger
+    console.log(_item);
     this._service.Update(_item).subscribe(res => {
       if (res && res.status === 1) {
         this.loadData.emit(true);
       }
       else {
-        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+        this.layoutUtilsService.showError(res.error.message);
       }
     });
   }

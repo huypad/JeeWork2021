@@ -10,7 +10,7 @@ import { FormBuilder } from '@angular/forms';
 import { DuplicateWorkComponent } from './../../../work/work-duplicate/work-duplicate.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
-import * as moment from 'moment';
+import * as moment  from 'moment';
 
 @Component({
 	selector: 'kt-duplicate-task-new',
@@ -98,18 +98,18 @@ export class DuplicateTaskNewComponent implements OnInit {
 				type: 'bool',
 				checked: false,
 			},
-			// {
-			// 	name: 'required_result',
-			// 	value: 'required_result',
-			// 	type: 'bool',
-			// 	checked: false,
-			// },
-			// {
-			// 	name: 'require',
-			// 	value: 'require',
-			// 	type: 'bool',
-			// 	checked: false,
-			// },
+			{
+				name: 'required_result',
+				value: 'required_result',
+				type: 'bool',
+				checked: false,
+			},
+			{
+				name: 'require',
+				value: 'require',
+				type: 'bool',
+				checked: false,
+			},
 		]
 	};
 
@@ -154,7 +154,7 @@ export class DuplicateTaskNewComponent implements OnInit {
 						}
 
 					} else
-						duplicate[element.value] = element.value == 'assign' ? this.getIDNV(this.ItemDuplicate.assign) : this.ItemDuplicate[element.value];
+						duplicate[element.value] = element.value == 'assign' ? this.getIDNV(this.ItemDuplicate.User) : this.ItemDuplicate[element.value];
 				}
 			}
 		})
@@ -162,9 +162,9 @@ export class DuplicateTaskNewComponent implements OnInit {
 		this.Create(duplicate);
 	}
 
-	getIDNV(assign) {
-		if (assign)
-			return assign.id_nv;
+	getIDNV(assign){
+		if(assign && assign[0].id_nv )
+			return assign[0].id_nv;
 		return 0;
 	}
 
@@ -175,8 +175,7 @@ export class DuplicateTaskNewComponent implements OnInit {
 	}
 
 	Create(_item: WorkDuplicateModel) {
-		this.ProjectsTeamService.DuplicateCU(_item).subscribe(res => {
-			;
+		this.ProjectsTeamService.DuplicateCU(_item).subscribe(res => {;
 			if (res && res.status === 1) {
 				this.layoutUtilsService.showActionNotification('Nhân bản thành công', MessageType.Read, 4000, true, false, 3000, 'top', 1);
 				this.dialogRef.close(

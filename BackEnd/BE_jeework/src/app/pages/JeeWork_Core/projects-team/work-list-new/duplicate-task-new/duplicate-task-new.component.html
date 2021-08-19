@@ -14,10 +14,29 @@
                         class="cu-form__input task-copy__input ng-valid ng-dirty ng-touched"
                         placeholder="Enter task name" type="text">
                 </div>
+
+                <div class="task-copy__location-block ng-star-inserted" *ngIf="type==2||getOnlyIDproject">
+                    <div class="task-copy__title">
+                        <span translate="work.vitri"></span>
+                    </div>
+                    <div class="task-copy__category-list">
+                        <div class="category-list">
+                            <mat-form-field appearance="fill" class="w-100">
+                                <span translate="projects.danhsachduan"></span>
+                                <mat-select [(ngModel)]="ItemDuplicate.id_project_team">
+                                    <mat-option *ngFor="let project of listProject" [value]="project.id_row">
+                                        {{project.title}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="task-copy__options-block">
                     <div class="task-copy__options-column">
                         <div class="task-copy__options-column-title">
-                            <span translate="work.whatdoyouwantcopy"></span>
+                             <span translate="work.whatdoyouwantcopy"></span>
                         </div>
                         <div class="cu-checkbox">
                             <mat-checkbox [(ngModel)]="listKeyDuplicate.checked" (ngModelChange)="updateAllComplete()"
@@ -38,27 +57,11 @@
                     </div>
                 </div>
             </ng-container>
-            <div class="task-copy__location-block ng-star-inserted" *ngIf="type==2||getOnlyIDproject">
-                <div class="task-copy__title">
-                    <span translate="work.vitri"></span>
-                </div>
-                <div class="task-copy__category-list">
-                    <div class="category-list">
-                        <mat-form-field appearance="fill" class="w-100">
-                            <span translate="projects.danhsachduan"></span>
-                            <mat-select [(ngModel)]="ItemDuplicate.id_project_team">
-                                <mat-option *ngFor="let project of listProject" [value]="project.id_row">
-                                    {{project.title}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </kt-portlet-body>
     <kt-portlet-footer>
-        <div class="kt-form__actions m-form__actions--solid">
+         <div class="kt-form__actions m-form__actions--solid">
             <div class="row text-right">
                 <div class="col-lg-12">
                     <button mat-raised-button class="jee_btn-addcontinue" (click)="DuplicateTask()"
@@ -71,6 +74,6 @@
                     </button>
                 </div>
             </div>
-        </div>
+         </div> 
     </kt-portlet-footer>
 </kt-portlet>

@@ -93,6 +93,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
   ListUsers: any = [];
   editmail = 0;
   isAssignforme = false;
+  loadding = true;
   // col
   displayedColumnsCol: string[] = [];
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -306,6 +307,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     //get data work binding data
     this._service.GetDataWorkCU(queryParams).subscribe((res) => {
       this.layoutUtilsService.OffWaitingDiv();
+      this.loadding = false;
       if (res && res.status === 1) {
         console.log('loaddata from list',res.data)
 
@@ -510,7 +512,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     return false;
   }
   isAssignForme(elementTask){
-    if(elementTask.User.find((x) => x.id_user == this.UserID) || elementTask.Follower.find((x) => x.id_user == this.UserID) || elementTask.UserSubtask.find((x) => x.id_user == this.UserID) ){
+    if(this.FindUser(elementTask.User,this.UserID) || this.FindUser(elementTask.Follower, this.UserID) || this.FindUser(elementTask.UserSubtask, this.UserID) ){
       return true;
     } 
     return false;

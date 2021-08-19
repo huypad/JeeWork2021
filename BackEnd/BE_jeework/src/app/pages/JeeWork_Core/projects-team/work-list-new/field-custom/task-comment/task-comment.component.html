@@ -1,0 +1,21 @@
+<span style="font-size: 12pt;"
+    [matMenuTriggerFor]="commentsmenu"
+    (menuOpened)="showcomment = true"
+    (menuClosed)="this.submit.emit(true);showcomment = false">
+    {{value>0?value:''}}
+    <i class="far fa-comment-dots"></i>
+</span>
+<mat-menu #commentsmenu="matMenu">
+    <div (click)="$event.stopPropagation()"
+        style="max-height:600px;min-width: 500px;min-height: 300px;">
+        <ng-container *ngIf="showcomment">
+            1
+            <app-jee-comment
+                [showonpopup]="true"
+                [showCommentDefault]="true"
+                [componentName]="compopnent">
+            </app-jee-comment>
+        </ng-container>
+
+    </div>
+</mat-menu>

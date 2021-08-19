@@ -258,12 +258,12 @@ export class DepartmentEditNewComponent implements OnInit {
 	}
 
 	getTreeValue() {
-		this.danhMucChungService.Get_MaCoCauToChuc_HR().subscribe((res) => {
-			if (res.data && res.data.length > 0) {
-				this.datatree.next(res.data);
-				this.changeDetectorRefs.detectChanges();
-			}
-		});
+		// this.danhMucChungService.Get_MaCoCauToChuc_HR().subscribe((res) => {
+		// 	if (res.data && res.data.length > 0) {
+		// 		this.datatree.next(res.data);
+		// 		this.changeDetectorRefs.detectChanges();
+		// 	}
+		// });
 	}
 	GetValueNode(val: any) {
 		if (!val) {

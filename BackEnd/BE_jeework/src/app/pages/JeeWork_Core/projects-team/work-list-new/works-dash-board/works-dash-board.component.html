@@ -94,7 +94,7 @@
                         {{ 'filter.'+item.title | translate }}</button>
                 </mat-menu>
             </div>
-            <div class="item-filter url -hover">
+            <!-- <div class="item-filter url -hover">
                 <div [matMenuTriggerFor]="filterSubtask">
                     <span class="filter-name" translate="work.subtask"></span> : {{
                     'filter.'+filter_subtask.showvalue | translate }}
@@ -138,12 +138,6 @@
                             <mat-slide-toggle [(ngModel)]="tasklocation">
                             </mat-slide-toggle>
                         </button>
-                        <!-- <button mat-menu-item>
-                            <div class="float-left" (click)="showsubtask=!showsubtask"
-                                style="line-height: 2;margin-right: 10px;">Show subtask parent name</div>
-                            <mat-slide-toggle [(ngModel)]="showsubtask" class="float-right">
-                            </mat-slide-toggle>
-                        </button> -->
                         <button mat-menu-item class="d-flex">
                             <div (click)="ShowCloseTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedtask"></span>
@@ -159,13 +153,6 @@
                             <mat-slide-toggle [(ngModel)]="showclosedsubtask">
                             </mat-slide-toggle>
                         </button>
-                        <!-- <button mat-menu-item>
-                            <div class="float-left" (click)="showtaskmutiple=!showtaskmutiple"
-                                style="line-height: 2;margin-right: 10px;">Show tasks in multiple Lists
-                            </div>
-                            <mat-slide-toggle [(ngModel)]="showtaskmutiple" class="float-right">
-                            </mat-slide-toggle>
-                        </button> -->
                         <button mat-menu-item class="d-flex">
                             <div (click)="showemptystatus=!showemptystatus"
                                 style="line-height: 2;margin-right: 10px;flex-grow: 1;">
@@ -176,7 +163,7 @@
                         </button>
                     </div>
                 </mat-menu>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -208,8 +195,8 @@
                 <ng-container *ngFor="let item of ListProject">
                     <div style="flex-grow: 1;margin: 25px;margin-right: 10px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
                     border-left-width: 5px; padding-left: 35px;" class="cu-list-group" >
-                        <div class="mt-5">
-                            <h3> {{ item.title }} </h3>
+                        <div class="mt-4">
+                            <p>Dự án &nbsp; <span class="text-dark" style="font-size: 18px;font-weight: 500;"> {{ item.title }} </span></p>
                         </div>
                         <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
                     </div>

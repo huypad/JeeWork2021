@@ -371,24 +371,6 @@ export class ProjectsTeamService {
 			params: httpParams
 		});
 	}
-	MyListNew(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
-		const url = API_work_CU + '/my-list-new';
-		return this.http.get<QueryResultsModel>(url, {
-			headers: httpHeaders,
-			params: httpParams
-		});
-	}
-	TaskinProject(queryParams: QueryParamsModelNew, projectteamID): Observable<QueryResultsModel> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
-		const url = API_work_CU + `/task-in-project/${projectteamID}`;
-		return this.http.get<QueryResultsModel>(url, {
-			headers: httpHeaders,
-			params: httpParams
-		});
-	}
 	ListByFilter(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);

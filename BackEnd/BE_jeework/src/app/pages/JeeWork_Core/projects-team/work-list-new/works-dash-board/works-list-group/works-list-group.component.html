@@ -1,4 +1,9 @@
 
+<ng-container *ngIf="loadding">
+    <mat-progress-bar mode="query"></mat-progress-bar>
+    <hr/>
+</ng-container>
+
  <ng-container *ngFor="let status of listStatus">
     <div *ngIf="(status.data.length > 0 && LoadClosedTask(status.id_row)) || (status.data.length == 0 && showemptystatus) || ( Emtytask && status.id_row == Statusdefault() ) ">
         <div class="task-list">
@@ -197,14 +202,14 @@
                         </div>
 
                         <div class="cu-task-row__container row">
-                            <div class="cu-dropdown check-list checkbox-circle"
+                            <!-- <div class="cu-dropdown check-list checkbox-circle"
                                 [ngStyle]="{'opacity': getViewCheck(node.id_row)}"
                                 *ngIf="CheckRoles(15)">
                                 <mat-checkbox class="example-margin "
                                     [checked]="getViewCheck(node.id_row)"
                                     (change)="CheckedNode($event,node)">
                                 </mat-checkbox>
-                            </div>
+                            </div> -->
                             <div class="cu-task-row__main url position-sticky">
                                 <div class="cu-task-row-status_dot cu-task-row-status">
                                     <div cudropdown="" class="cu-dropdown ng-star-inserted"
@@ -408,8 +413,7 @@
                                             </ng-template>
                                         </ng-container>
                                         <ng-template #nosetdatetime>
-                                            <ng-container
-                                                *ngIf="item.type == 'code';else noestcode">
+                                            <ng-container *ngIf="item.type == 'code';else noestcode">
                                                 <div class="item-field hide-more-text">
                                                     <span class="hide-more-text">
                                                         {{node[item.fieldname]?'#'+node[item.fieldname]:''}}
@@ -591,10 +595,14 @@
                                                             </mat-menu>
                                                         </div>
                                                     </ng-container>
-                                                    <ng-container
-                                                        *ngSwitchCase="'clickup_prioritize'">
+                                                    <ng-container *ngSwitchCase="'clickup_prioritize'">
                                                         <div class="item-field hide-more-text">
-                                                            <div class="item-field"
+                                                            <div class="item-field">
+                                                                <app-prioritize [role]="CheckRoleskeypermit(item.fieldname)"
+                                                                (submit)="updatePriority(node,item.fieldname,$event)"
+                                                                [value]="node[item.fieldname]"></app-prioritize>
+                                                            </div>
+                                                            <!-- <div class="item-field"
                                                                 *ngIf="CheckRoleskeypermit(item.fieldname)"
                                                                 [matMenuTriggerFor]="priority">
                                                                 <ng-container
@@ -613,7 +621,6 @@
                                                                     *ngIf="node[item.fieldname]>0;else nosetprio">
                                                                     <i
                                                                         class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
-                                                                    <!-- {{getPriority(node[item.fieldname]).name}} -->
                                                                 </ng-container>
                                                                 <ng-template #nosetprio>
                                                                     <i class="far fa-flag pd-0"
@@ -629,12 +636,15 @@
                                                                     {{ 'priority.'+prio.name |
                                                                     translate }}
                                                                 </button>
-                                                            </mat-menu>
+                                                            </mat-menu> -->
                                                         </div>
                                                     </ng-container>
                                                     <ng-container *ngSwitchCase="'comments'">
                                                         <div class="item-field hide-more-text">
-                                                            <span style="font-size: 12pt;"
+                                                            <app-task-comment (submit)="this.LoadData()"
+                                                                [id_row]="node.id_row"
+                                                                [value]="node[item.fieldname]"></app-task-comment>
+                                                            <!-- <span style="font-size: 12pt;"
                                                                 [matMenuTriggerFor]="commentsmenu"
                                                                 (menuOpened)="node.showcomment = true"
                                                                 (menuClosed)="this.LoadData();node.showcomment = false">
@@ -654,7 +664,7 @@
                                                                     </ng-container>
 
                                                                 </div>
-                                                            </mat-menu>
+                                                            </mat-menu> -->
                                                         </div>
                                                     </ng-container>
                                                     <ng-container *ngSwitchCase="'createdby'">

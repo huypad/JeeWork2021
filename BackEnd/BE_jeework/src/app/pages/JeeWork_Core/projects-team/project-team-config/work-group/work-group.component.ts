@@ -107,7 +107,7 @@ export class WorkGroupComponent implements OnInit {
   loadPage() {
     var arrayData = [];
     this.dataSource.entitySubject.subscribe((res) => (arrayData = res));
-    if (arrayData !== undefined && arrayData.length == 0) {
+    if (arrayData && arrayData.length == 0) {
       var totalRecord = 0;
       this.dataSource.paginatorTotal$.subscribe((tt) => (totalRecord = tt));
       if (totalRecord > 0) {
