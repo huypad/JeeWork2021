@@ -48,7 +48,7 @@ const routes: Routes = [
 	],
 	declarations: [
 		ListDepartmentComponent,
-		ListDepartmentListComponent,
+		ListDepartmentListComponent, 
 	]
 })
 export class DepartmentModule { }

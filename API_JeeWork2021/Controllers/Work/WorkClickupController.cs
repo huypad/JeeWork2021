@@ -334,7 +334,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                             DataRow[] user_child = dt_users.Select("id_parent is not null and id_parent = " + dr["id_row"]);
                             if (string.IsNullOrEmpty(dr["id_parent"].ToString()))
                             {
-                                dr["UserSubtask"] = cnn.CreateDataTable(sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")");
+                                string qs = sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")";
+                                dr["UserSubtask"] = cnn.CreateDataTable(sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")", "(where)", cond);
                                 dr["DataChildren"] = dtChildren(dr["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, user_child, loginData);
                                 dr["DataStatus"] = list_status_user(dr["id_row"].ToString(), query.filter["id_project_team"], loginData, cnn, DataAccount);
                             }
@@ -2303,17 +2304,17 @@ iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) a
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao,'' as NguoiSua from v_wework_new w 
 left join we_work_favourite fa on fa.id_work=w.id_row and fa.createdby=6 and fa.disabled=0
-where w.CreatedBy in ({listID}) and w.id_row= " + id + " or id_parent=" + id;
+where w.id_row= " + id + " or id_parent=" + id;
                     //tag
                     sqlq += @";select a.title, a.id_row, a.color 
                     from we_tag a join we_work_tag b on a.id_row=b.id_tag 
                     where a.disabled=0 and b.disabled = 0 and id_work = " + id;
                     //người theo dõi
                     sqlq += @$";select id_work,id_user as id_nv,'' as hoten,''as mobile,''as username,''as email,''as image,''as tenchucdanh from we_work_user u 
-where u.disabled = 0 and u.id_user in ({listID}) and u.loai = 2 and id_work=" + id;
+where u.disabled = 0 and u.loai = 2 and id_work=" + id;
                     //attachment
                     sqlq += @$";select a.*, '' as username from we_attachment a
-where Disabled=0 and object_type in (1,11) and a.CreatedBy in ({listID}) and object_id=" + id;
+where Disabled=0 and object_type in (1,11) and object_id=" + id;
                     // Quá trình xử lý
                     sqlq += @$";select process.*, '' as hoten, statusname, we_status.Position, we_status.color
                                 from we_work_process process

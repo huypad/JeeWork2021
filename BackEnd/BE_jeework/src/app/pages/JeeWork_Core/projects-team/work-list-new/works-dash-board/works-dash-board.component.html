@@ -1,0 +1,220 @@
+<!-- <div *ngIf="this.selection.selected.length > 0" class="w-100" style="position:absolute;top:0;z-index:1000">
+    <mat-toolbar class="bg-dark" style="height: 50px;" fxLayout="row" fxLayoutAlign="start center"
+        *ngIf="CheckRoles(15)">
+        <div style="margin: auto;">
+            <button class="text-white -hover btn hover-bg" *ngIf="CheckRoles(14)" (click)="Assignmore()"
+                matTooltip="{{ 'work.giaolaichonguoikhac' | translate}}">
+                <i class="fas fa-tasks"></i>
+            </button>
+            <button class="text-white -hover btn hover-bg" (click)="UpdateListDuplicate(1)"
+                matTooltip="{{ 'work.nhanbancongviec' | translate}}">
+                <i class="far fa-copy"></i> </button>
+            <button class="text-white -hover btn hover-bg" (click)="UpdateListDuplicate(2)"
+                matTooltip="{{ 'work.nhanbancongviecvaoprojectkhac' | translate}}">
+                <i class="fas fa-arrows-alt"></i>
+            </button>
+            <button class="text-white -hover btn hover-bg" *ngIf="CheckRoles(10)" (click)="picker1.open()"
+                matTooltip="{{ 'work.ganngaybatdaucongviec' | translate}}">
+                <i class="fas fa-inbox"></i>
+            </button>
+            <input matInput class="date-picker" [(ngModel)]="startDatelist" (ngModelChange)="updateStartDateList()"
+                style="opacity: 0;" [matDatepicker]="picker1">
+            <mat-datepicker #picker1></mat-datepicker>
+            
+            <button class="text-white -hover btn hover-bg" [matMenuTriggerFor]="prioritys"
+                *ngIf="CheckRoleskeypermit('clickup_prioritize')" matTooltip="{{ 'work.gandouutien' | translate}}">
+                <i class="far fa-arrow-alt-circle-up"></i>
+            </button>
+            <mat-menu #prioritys="matMenu">
+                <button mat-menu-item *ngFor="let prio of list_priority" (click)="updatePrioritylist(prio.value)">
+                    <i class="{{prio.icon}} pd-r-10"></i>
+                    {{ 'priority.'+prio.name | translate }}
+                </button>
+            </mat-menu>
+            <button class="text-white -hover btn hover-bg" *ngIf="CheckRoles(13)" (click)="XoaCVList()"
+                matTooltip="{{ 'work.xoacongviec' | translate}}">
+                <i class="far fa-trash-alt"></i>
+            </button>
+            
+        </div>
+    </mat-toolbar>
+    <div class="dismiss url" (click)="clearList()"> <i class="fa fa-times" aria-hidden="true"
+            style="padding-right: 10px;"></i> {{ 'work.dismiss' | translate }}
+    </div>
+</div> -->
+
+<div class="my-form-header border-bottom border-top" >
+    <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
+        <div class="cu-hidden-print cu-filter-block ng-tns-c31-5 ng-star-inserted">
+            <ng-container>
+                <div class="cu-search-filter cu-search-filter_v5" style="    padding: 0 10px;">
+                    <!-- <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
+                        (keyup.enter)="LoadData()" [(ngModel)]="keyword" type="text"
+                        placeholder="{{ 'work.filterbytaskname' | translate }}"> -->
+                    <!-- seach 1s 1 lần khi không nhập nữa -->
+                            <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" 
+                                style="border:0;outline:0" type="text" [formControl]="searchCtrl"
+                                placeholder="{{ 'work.filterbytaskname' | translate }}">
+                        
+                    <div class="cu-search-filter__extra">
+                        <div class="cu-filter-value-list-dropdown ng-star-inserted">
+                            <div class="cu-dropdown_left cu-dropdown">
+                                <i class="fas fa-filter"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div (click)="SelectFilterDate()" class="filter ">{{'filter.tu'|translate}}:
+            <em>{{ filterDay.startDate | date:'dd/MM'}} -
+                {{ filterDay.endDate | date:'dd/MM/yyyy'}}</em>
+            &nbsp;
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="filter" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+            <em>{{column_sort.title}}</em>
+            &nbsp;
+            <i class="fas fa-chevron-down"></i>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item *ngFor="let item of sortField"
+                    [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                    (click)="SelectedField(item)">{{item.title}}</button>
+            </mat-menu>
+        </div>
+        <div class="cu-filter-right row text-dark">
+            <div class="item-filter url -hover">
+                <div [matMenuTriggerFor]="groupby">
+                    <span class="filter-name" translate="filter.groupby"></span> : {{
+                    'filter.'+filter_groupby.title | translate }}
+                </div>
+                <mat-menu #groupby="matMenu">
+                    <button mat-menu-item *ngFor="let item of listFilter_Groupby" (click)="GroupBy(item)">
+                        {{ 'filter.'+item.title | translate }}</button>
+                </mat-menu>
+            </div>
+            <div class="item-filter url -hover">
+                <div [matMenuTriggerFor]="filterSubtask">
+                    <span class="filter-name" translate="work.subtask"></span> : {{
+                    'filter.'+filter_subtask.showvalue | translate }}
+                </div>
+                <mat-menu #filterSubtask>
+                    <button mat-menu-item *ngFor="let item of listFilter_Subtask" (click)="Subtask(item)">{{
+                        'filter.'+item.title | translate }}</button>
+                </mat-menu>
+            </div>
+            <div class="item-filter url">
+                <div class="cu-filter-assignees_two-rows cu-filter-assignees ng-star-inserted">
+                    <div class="cu-filter-assignees__item cu-filter-assignees__item_me -hover {{isAssignforme?'text-success':''}}"
+                        (click)="isAssignforme=true;LoadData()">
+                        <div class="cu-filter-assignees__icon cu-filter-assignees__icon_me icon">
+                            <i class="fas fa-user {{isAssignforme?'text-success':''}}"></i>
+                        </div>
+                        <div class="cu-filter-assignees__label {{isAssignforme?'text-success':''}}">
+                            Tôi
+                        </div>
+                    </div>
+                    <div class="cu-filter-assignees__item cu-filter-assignees__item_everyone cu-filter-assignees__item_selected ng-star-inserted -hover {{isAssignforme?'':'text-success'}}"
+                        (click)="isAssignforme=false;LoadData()">
+                        <div class="cu-filter-assignees__icon cu-filter-assignees__icon_team icon">
+                            <i class="fas fa-user-friends {{isAssignforme?'':'text-success'}}"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item-filter url -hover">
+                <i class="fas fa-ellipsis-h" [matMenuTriggerFor]="viewSetting"></i>
+                <mat-menu #viewSetting="matMenu">
+                    <div (click)="$event.stopPropagation()">
+                        <div class="text-muted" style="padding: 0px 15px 5px 15px; font-size: 500;">
+                            <span translate="viewsetting.title"></span>
+                        </div>
+                        <button mat-menu-item class="d-flex">
+                            <div (click)="tasklocation=!tasklocation"
+                                style="line-height: 2;margin-right: 10px;flex-grow: 1;">
+                                <span translate="viewsetting.tasklocation"></span>
+                            </div>
+                            <mat-slide-toggle [(ngModel)]="tasklocation">
+                            </mat-slide-toggle>
+                        </button>
+                        <!-- <button mat-menu-item>
+                            <div class="float-left" (click)="showsubtask=!showsubtask"
+                                style="line-height: 2;margin-right: 10px;">Show subtask parent name</div>
+                            <mat-slide-toggle [(ngModel)]="showsubtask" class="float-right">
+                            </mat-slide-toggle>
+                        </button> -->
+                        <button mat-menu-item class="d-flex">
+                            <div (click)="ShowCloseTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
+                                <span translate="viewsetting.showclosedtask"></span>
+                            </div>
+                            <mat-slide-toggle [(ngModel)]="showclosedtask">
+                            </mat-slide-toggle>
+                        </button>
+                        <button mat-menu-item class="d-flex">
+                            <div (click)="showclosedsubtask=!showclosedsubtask"
+                                style="line-height: 2;margin-right: 10px;flex-grow: 1;">
+                                <span translate="viewsetting.showclosedsubtask"></span>
+                            </div>
+                            <mat-slide-toggle [(ngModel)]="showclosedsubtask">
+                            </mat-slide-toggle>
+                        </button>
+                        <!-- <button mat-menu-item>
+                            <div class="float-left" (click)="showtaskmutiple=!showtaskmutiple"
+                                style="line-height: 2;margin-right: 10px;">Show tasks in multiple Lists
+                            </div>
+                            <mat-slide-toggle [(ngModel)]="showtaskmutiple" class="float-right">
+                            </mat-slide-toggle>
+                        </button> -->
+                        <button mat-menu-item class="d-flex">
+                            <div (click)="showemptystatus=!showemptystatus"
+                                style="line-height: 2;margin-right: 10px;flex-grow: 1;">
+                                <span translate="viewsetting.showemptystatus"></span>
+                            </div>
+                            <mat-slide-toggle [(ngModel)]="showemptystatus">
+                            </mat-slide-toggle>
+                        </button>
+                    </div>
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <kt-portlet [options]="{hideHeader: true}">
+    <kt-portlet-body class="pd-0" style="background-color: #eeeeee;" [ngStyle]="{'height.px': getHeight()}">
+        <div class="kt-form__filtration">
+            <div class="form-group kt-form__group row">
+                <div style="flex-grow: 1;margin: 25px;" >
+                    <ng-container *ngTemplateOutlet="danhsachcongviec"> </ng-container> 
+
+                </div>
+            </div>
+        </div>
+    </kt-portlet-body>
+</kt-portlet> -->
+
+<kt-portlet [options]="{hideHeader: true}">
+    <kt-portlet-body class="pd-0" style="background-color: #eeeeee;" [ngStyle]="{'height.px': getHeight()}">
+        <div class="kt-form__filtration">
+            <div class="form-group kt-form__group row">
+                <!-- <div style="flex-grow: 1;margin: 25px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
+                border-left-width: 5px;
+                padding-left: 35px;" class="cu-list-group" >
+                    <h3>Tên dự án</h3>
+                    <app-works-list-group  [ID_Project]="1" [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
+                </div> -->
+
+                <ng-container *ngFor="let item of ListProject">
+                    <div style="flex-grow: 1;margin: 25px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
+                    border-left-width: 5px; padding-left: 35px;" class="cu-list-group" >
+                        <h3 class="mt-5"> {{ item.title }} </h3>
+                        <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
+                    </div>
+                </ng-container>
+                
+            </div>
+        </div>
+    </kt-portlet-body>
+</kt-portlet>
+

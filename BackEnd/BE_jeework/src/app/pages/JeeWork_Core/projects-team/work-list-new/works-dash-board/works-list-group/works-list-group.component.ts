@@ -1,31 +1,31 @@
-import { WorkGroupEditComponent } from "./../../work/work-group-edit/work-group-edit.component";
+import { WorkGroupEditComponent } from "./../../../../work/work-group-edit/work-group-edit.component";
 import {
   LayoutUtilsService,
   MessageType,
-} from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
-import { SubheaderService } from "./../../../../_metronic/partials/layout/subheader/_services/subheader.service";
-import { TokenStorage } from "./../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
-import { QueryParamsModelNew } from "./../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
-import { MenuPhanQuyenServices } from "./../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
-import { AttachmentService } from "./../../services/attachment.service";
+} from "./../../../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { SubheaderService } from "./../../../../../../_metronic/partials/layout/subheader/_services/subheader.service";
+import { TokenStorage } from "./../../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
+import { QueryParamsModelNew } from "./../../../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
+import { MenuPhanQuyenServices } from "./../../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
+import { AttachmentService } from "./../../../../services/attachment.service";
 import {
   AttachmentModel,
   FileUploadModel,
-} from "./../Model/department-and-project.model";
-import { AddNewFieldsComponent } from "./add-new-fields/add-new-fields.component";
-import { StatusDynamicDialogComponent } from "./../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component";
-import { WorkService } from "./../../work/work.service";
-import { DuplicateTaskNewComponent } from "./duplicate-task-new/duplicate-task-new.component";
-import { WorkListNewDetailComponent } from "./work-list-new-detail/work-list-new-detail.component";
-import { DialogSelectdayComponent } from "./../../report/dialog-selectday/dialog-selectday.component";
+} from "./../../../Model/department-and-project.model";
+import { AddNewFieldsComponent } from "./../../add-new-fields/add-new-fields.component";
+import { StatusDynamicDialogComponent } from "./../../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component";
+import { WorkService } from "./../../../../work/work.service";
+import { DuplicateTaskNewComponent } from "./../../duplicate-task-new/duplicate-task-new.component";
+import { WorkListNewDetailComponent } from "./../../work-list-new-detail/work-list-new-detail.component";
+import { DialogSelectdayComponent } from "./../../../../report/dialog-selectday/dialog-selectday.component";
 import {
   WorkModel,
   UpdateWorkModel,
   UserInfoModel,
   WorkDuplicateModel,
   WorkGroupModel,
-} from "./../../work/work.model";
-import { ColumnWorkModel, DrapDropItem } from "./drap-drop-item.model";
+} from "./../../../../work/work.model";
+import { ColumnWorkModel, DrapDropItem } from "./../../drap-drop-item.model";
 import {
   filter,
   tap,
@@ -37,12 +37,12 @@ import {
   startWith,
 } from "rxjs/operators";
 import { element } from "protractor";
-import { WeWorkService } from "./../../services/wework.services";
+import { WeWorkService } from "./../../../../services/wework.services";
 import { DatePipe, DOCUMENT } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { FormBuilder, FormControl } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
-import { ProjectsTeamService } from "./../Services/department-and-project.service";
+import { ProjectsTeamService } from "./../../../Services/department-and-project.service";
 import {
   CdkDropList,
   CdkDragDrop,
@@ -59,6 +59,8 @@ import {
   Inject,
   OnChanges,
   OnDestroy,
+  SimpleChange,
+  SimpleChanges,
 } from "@angular/core";
 import { MatTable } from "@angular/material/table";
 import { MatDialog } from "@angular/material/dialog";
@@ -66,26 +68,21 @@ import { MatSort } from "@angular/material/sort";
 import { cloneDeep, find, values } from "lodash";
 import * as moment from "moment";
 import { SelectionModel } from "@angular/cdk/collections";
-import { workAddFollowersComponent } from "../../work/work-add-followers/work-add-followers.component";
-// import { WorkEditDialogComponent } from "../../work/work-edit-dialog/work-edit-dialog.component";
-import { WorkAssignedComponent } from "../../work/work-assigned/work-assigned.component";
-import { DuplicateWorkComponent } from "../../work/work-duplicate/work-duplicate.component";
+import { workAddFollowersComponent } from "../../../../work/work-add-followers/work-add-followers.component";
+// import { WorkEditDialogComponent } from "../../../work/work-edit-dialog/work-edit-dialog.component";
+import { WorkAssignedComponent } from "../../../../work/work-assigned/work-assigned.component";
+import { DuplicateWorkComponent } from "../../../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
 import { BehaviorSubject, of } from "rxjs";
-
 @Component({
-  selector: "kt-work-list-new",
-  templateUrl: "./work-list-new.component.html",
-  styleUrls: ["./work-list-new.component.scss"],
+  selector: 'app-works-list-group',
+  templateUrl: './works-list-group.component.html',
+  styleUrls: ['./works-list-group.component.scss']
 })
-
-export class WorkListNewComponent implements OnInit, OnChanges {
+export class WorksListGroupComponent implements OnInit, OnChanges {
   @Input() ID_Project: number = 0;
-
-  @ViewChild("table1", { static: true }) table1: MatTable<any>;
-  @ViewChild("table2", { static: true }) table2: MatTable<any>;
-  @ViewChild("table3", { static: true }) table3: MatTable<any>;
-  @ViewChild("list1", { static: true }) list1: CdkDropList;
+  @Input() filter: any = {};
+  @Input() groupby: string = "";
 
   ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
   data: any = [];
@@ -104,11 +101,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   addNodeitem = 0;
   newtask = -1;
   options_assign: any = {};
-  filter_groupby: any = [];
   filter_subtask: any = [];
   list_milestone: any = [];
   Assign_me = -1;
-  keyword: string = "";
   // view setting
   tasklocation = false;
   showsubtask = true;
@@ -132,12 +127,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   searchCtrl: FormControl = new FormControl();
   private readonly componentName: string = "kt-task_";
   Emtytask = false;
-  filterDay = {
-    startDate: new Date("09/01/2020"),
-    endDate: new Date("09/30/2020"),
-  };
-  IsAdminGroup = false;
   public column_sort: any = [];
+
+  IsAdminGroup = false;
   constructor(
     @Inject(DOCUMENT) private document: Document, // multi level
     private _service: ProjectsTeamService,
@@ -158,7 +150,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     private _attservice: AttachmentService
   ) {
     this.taskinsert.clear();
-    this.filter_groupby = this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
     this.list_priority = this.WeWorkService.list_priority;
     this.UserID = +localStorage.getItem("idUser");
@@ -166,27 +157,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   ngOnInit() {
 
-    this.searchCtrl.valueChanges
-    .pipe(
-      debounceTime(1000),
-      startWith("")
-    )
-    .subscribe(res => {
-      /**
-       * (keyup.enter)="LoadData()" [(ngModel)]="keyword" 
-       */
-      this.keyword = res;
-      this.LoadData();
-    });
-
-    var today = new Date();
-    var start_date = new Date();
-    this.filterDay = {
-      endDate: new Date(today.setMonth(today.getMonth() + 1)),
-      startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
-    };
-
-    this.column_sort = this.sortField[0];
     // this.selection = new SelectionModel<WorkModel>(true, []);
     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
       if (res && res.status == 1) {
@@ -197,12 +167,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.isAssignforme = true;
       }
     });
+    console.log('nhan data:',this.ID_Project)
     this.LoadData();
     this.GetField();
     this.mark_tag();
     this.LoadListAccount();
     this.LoadDetailProject();
-    // this.changeDetectorRefs.detectChanges();
 
     this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
       this.changeDetectorRefs.detectChanges();
@@ -213,7 +183,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
 
-  ngOnChanges() {}
+  ngOnChanges(changes : SimpleChanges) {
+    console.log(changes);
+    this.LoadData();
+  }
 
   LoadDetailProject() {
     this._service.DeptDetail(this.ID_Project).subscribe((res) => {
@@ -334,6 +307,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this._service.GetDataWorkCU(queryParams).subscribe((res) => {
       this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status === 1) {
+        console.log('loaddata from list',res.data)
+
         this.data = res.data;
         this.listFilter = this.data.Filter;
         this.ListColumns = this.data.TenCot;
@@ -360,15 +335,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
           a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
         ); // nào bắt buộc xếp trước
         this.ListTasks = this.data.datawork;
-        if (
-          this.filter_groupby.value == "status" &&
-          this.ListTasks.length == 0
-        ) {
-          if (this.listFilter[0]) this.newtask = this.listFilter[0].id_row;
-          this.Emtytask = true;
-        } else {
-          this.Emtytask = false;
-        }
+
         this.prepareDragDrop(this.ListTasks);
         this.ListTags = this.data.Tag;
         this.ListUsers = this.data.User;
@@ -468,13 +435,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   UpdateValue() {}
 
   filterConfiguration(): any {
-    const filter: any = {};
+    const filter: any = this.filter;
     filter.id_project_team = this.ID_Project;
-    filter.groupby = this.filter_groupby.value; //assignee
-    filter.keyword = this.keyword;
-    filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
-    filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
-    filter.collect_by = this.column_sort.value;
     return filter;
   }
 
@@ -535,7 +497,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   CheckDataStatus(valuefilter,elementTask){
-    if(this.filter_groupby.value == "status" && valuefilter.id_row == +elementTask.status){
+    if(this.groupby == "status" && valuefilter.id_row == +elementTask.status){
       if(this.isAssignforme){
         // kiểm tra có phải người được giao hay người tạo hay không
         if( this.isAssignForme(elementTask)  || elementTask.createdby == this.UserID ){
@@ -548,13 +510,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return false;
   }
   isAssignForme(elementTask){
-    if(this.FindUser(elementTask.User,this.UserID) || this.FindUser(elementTask.Follower, this.UserID) || this.FindUser(elementTask.UserSubtask, this.UserID) ){
+    if(elementTask.User.find((x) => x.id_user == this.UserID) || elementTask.Follower.find((x) => x.id_user == this.UserID) || elementTask.UserSubtask.find((x) => x.id_user == this.UserID) ){
       return true;
     } 
     return false;
   }
   CheckDataAssigne(valuefilter,elementTask){  
-    if(this.filter_groupby.value == "assignee"){
+    if(this.groupby == "assignee"){
       if(this.isAssignforme){
         if( ( this.FindUser(elementTask.User,valuefilter.id_row) && this.isAssignForme(elementTask)) || (elementTask.createdby == this.UserID && this.UserNull(elementTask.User))  ){
             return true
@@ -584,12 +546,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
   CheckDataWorkGroup(valuefilter,elementTask){ 
     /**
-     * this.filter_groupby.value == "groupwork" &&
+     * this.groupby == "groupwork" &&
         //     element.id_group == val.id_row &&
         //     (element.User.find((x) => x.id_user == this.UserID) ||
         //       element.createdby == this.UserID)
      */
-    if(this.filter_groupby.value == "groupwork" && elementTask.id_group == valuefilter.id_row){
+    if(this.groupby == "groupwork" && elementTask.id_group == valuefilter.id_row){
       if(this.isAssignforme){
         // kiểm tra có phải người được giao hay người tạo hay không
         if( this.isAssignForme(elementTask)  || elementTask.createdby == this.UserID ){
@@ -1172,13 +1134,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       value: "groupwork",
     },
   ];
-  GroupBy(item) {
-    if (item == this.filter_groupby) {
-      return;
-    }
-    this.filter_groupby = item;
-    this.LoadData();
-  }
+
 
   listFilter_Subtask = [
     {
@@ -1249,20 +1205,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     });
   }
-  SelectFilterDate() {
-    const dialogRef = this.dialog.open(DialogSelectdayComponent, {
-      width: "500px",
-      data: this.filterDay,
-    });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result != undefined) {
-        this.filterDay.startDate = new Date(result.startDate);
-        this.filterDay.endDate = new Date(result.endDate);
-        this.LoadData();
-      }
-    });
-  }
   clearList() {
     this.selection = new SelectionModel<WorkModel>(true, []);
   }
@@ -1282,21 +1225,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   UpdateStatus(task, status) {
     if (+task.status == +status.id_row) return;
-    // if (this.IsAdmin()) {
-    //   this.UpdateByKey(task, "status", status.id_row);
-    // } else {
-    //   if (status.Follower) {
-    //     if (status.Follower == this.UserID) {
-    //       this.UpdateByKey(task, "status", status.id_row);
-    //     } else {
-    //       this.layoutUtilsService.showError(
-    //         "Không có quyền thay đổi trạng thái"
-    //       );
-    //     }
-    //   } else {
-    //     this.UpdateByKey(task, "status", status.id_row);
-    //   }
-    // }
+    
     this.UpdateByKey(task, "status", status.id_row);
   }
 
@@ -1389,9 +1318,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
     dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
-        // this.ngOnInit();
       } else {
-        // this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
         this.LoadData();
       }
     });
@@ -1490,18 +1417,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (!res) {
         return;
       }
-      // this._service.DeleteWork(this.detail.id_row).subscribe(res => {
-      // 	if (res && res.status === 1) {
-      // 		this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
-      // 		let _backUrl = `tasks`;
-      // 		this.router.navigateByUrl(_backUrl);
-      // 	}
-      // 	else {
-      // 		this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
-      // 		this.ngOnInit();
-      // 	}
-
-      // });
+      
     });
   }
 
@@ -1707,10 +1623,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
   chinhsuanoidung(item) {
-    if (this.filter_groupby.value == "status") {
+    if (this.groupby == "status") {
       this.chinhsuastt(item);
     }
-    if (this.filter_groupby.value == "groupwork") {
+    if (this.groupby == "groupwork") {
       this.chinhsuaNhomCV(item);
     }
   }
@@ -1764,7 +1680,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   getNhom() {
-    return this.filter_groupby.value;
+    return this.groupby;
   }
 
   getDeadline(fieldname, date) {
@@ -1865,8 +1781,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   isUpdateStatusname(id = 1) {
     if (!(id > 0)) return false;
     if (
-      this.filter_groupby.value == "status" ||
-      this.filter_groupby.value == "groupwork"
+      this.groupby == "status" ||
+      this.groupby == "groupwork"
     ) {
       return true;
     }
@@ -1888,30 +1804,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return false;
   }
 
-  getHeight() {
-    var height = window.innerHeight - 125 - this.tokenStorage.getHeightHeader();
-    return height;
-  }
-
-  SelectedField(item) {
-    this.column_sort = item;
-    this.LoadData();
-  }
-
-  sortField = [
-    {
-      title: this.translate.instant("day.theongaytao"),
-      value: "CreatedDate",
-    },
-    {
-      title: this.translate.instant("day.theothoihan"),
-      value: "Deadline",
-    },
-    {
-      title: this.translate.instant("day.theongaybatdau"),
-      value: "StartDate",
-    },
-  ];
 
   getComponentName(id_row) {
     if (id_row) {
@@ -1926,3 +1818,4 @@ export interface DropInfo {
   targetId: string;
   action?: string;
 }
+

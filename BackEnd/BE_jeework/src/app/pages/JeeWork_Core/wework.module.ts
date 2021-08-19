@@ -1,3 +1,4 @@
+import { WorksDashBoardComponent } from './projects-team/work-list-new/works-dash-board/works-dash-board.component';
 import { TimeEstimatesViewComponent } from './projects-team/work-list-new/time-estimates-view/time-estimates-view.component';
 import { DanhsachthumucComponent } from './projects-team/danhsachthumuc/danhsachthumuc.component';
 import { CreatQuickFolderComponent } from './List-department/creat-quick-folder/creat-quick-folder.component';
@@ -306,7 +307,9 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
 		RepeatedListComponent,
+		
 		WorkListNewComponent,
+		WorksDashBoardComponent,
 		DuplicateTaskNewComponent,
 		AddStatusComponent,
 		AddTaskComponent, ColorPicker2Component,
@@ -372,6 +375,7 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
 		WorkListNewComponent,
+		WorksDashBoardComponent,
 		AddTaskComponent,
 		AddStatusComponent,
 		DuplicateTaskNewComponent,
@@ -480,7 +484,9 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
 		RepeatedListComponent,
+		
 		WorkListNewComponent,
+		WorksDashBoardComponent,
 		AddTaskComponent,
 		AddStatusComponent,
 		DuplicateTaskNewComponent, ColorPicker2Component,

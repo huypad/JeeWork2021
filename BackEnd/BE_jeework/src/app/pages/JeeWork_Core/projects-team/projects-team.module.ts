@@ -42,7 +42,8 @@ import { NgDragDropModule } from "ng-drag-drop";
 import { MatMomentDateModule } from "@angular/material-moment-adapter";
 import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { WorkProcessEditComponent } from './work-list-new/work-process-edit/work-process-edit.component';
-import { NgGanttEditorModule } from 'ng-gantt'
+import { NgGanttEditorModule } from 'ng-gantt';
+import { WorksListGroupComponent } from './work-list-new/works-dash-board/works-list-group/works-list-group.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -80,7 +81,7 @@ import { NgGanttEditorModule } from 'ng-gantt'
   ],
   entryComponents: [
     QuickStatusComponent,
-    WorkProcessEditComponent
+    WorkProcessEditComponent,
   ],
   declarations: [
     ProjectsTeamComponent,

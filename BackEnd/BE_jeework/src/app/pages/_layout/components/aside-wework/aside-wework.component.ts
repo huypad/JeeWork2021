@@ -605,7 +605,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
           );
           if (ID_Project == this.router.url.split("/")[2]) {
             this.LoadMenu();
-            this.router.navigate(["/JeeWork_Core/projects"]);
+            this.router.navigate(["wework/projects"]);
             // .then(() => {
             //   window.location.reload();
             // });

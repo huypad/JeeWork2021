@@ -1,3 +1,4 @@
+import { PageWorkDepartmentComponent } from './../page-work-department/page-work-department.component';
 import { SubheaderService } from './../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { PartialsModule } from './../../../../_metronic/jeework_old/partials/partials.module';
 import { AvatarModule } from 'ngx-avatar';
@@ -30,6 +31,10 @@ const routes: Routes = [
 			{
 				path: 'projects',
 				component: DepartmentProjectTabComponent,
+			},
+			{
+				path: 'task',
+				component: PageWorkDepartmentComponent,
 			},
 			{
 				path: 'milestones',
@@ -75,6 +80,7 @@ const routes: Routes = [
 		TabMucTieuComponent,
 		MilestoneDetailComponent,
 		ReportTabComponent,
+		PageWorkDepartmentComponent
 	]
 })
 export class DepartmentTabModule { }
