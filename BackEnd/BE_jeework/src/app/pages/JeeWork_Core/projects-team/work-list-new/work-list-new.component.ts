@@ -197,13 +197,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.isAssignforme = true;
       }
     });
-    this.LoadData();
     this.GetField();
     this.mark_tag();
     this.LoadListAccount();
     this.LoadDetailProject();
     // this.changeDetectorRefs.detectChanges();
-
+    this.LoadData();
     this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
@@ -324,6 +323,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     //get option new field
     this.GetOptions_NewField();
     //get list new field
+    this.layoutUtilsService.showWaitingDiv();
     this.WeWorkService.GetNewField().subscribe((res) => {
       if (res && res.status == 1) {
         this.listNewField = res.data;
@@ -350,7 +350,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
           })
         ).subscribe();
         //get data work binding data
-        this.layoutUtilsService.showWaitingDiv();
         this._service.GetDataWorkCU(queryParams).subscribe((res) => {
           this.layoutUtilsService.OffWaitingDiv();
           if (res && res.status === 1) {
@@ -365,7 +364,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
               );
               if (indextt >= 0) this.ListColumns.splice(indextt, 1);
             });
-
             this.ListColumns.sort((a, b) =>
               a.title > b.title ? 1 : b.title > a.title ? -1 : 0
             ); // xếp theo anphabet
@@ -399,7 +397,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         });
       }
     });
-
   }
 
   Statusdefault() {
