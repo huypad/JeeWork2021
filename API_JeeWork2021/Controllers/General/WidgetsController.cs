@@ -1170,7 +1170,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     string strW = "";
-                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), ConnectionString);
+                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), cnn);
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         strW = " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";

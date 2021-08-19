@@ -950,7 +950,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    DataTable dt = GetListField(id_project_team, ConnectionString);
+                    DataTable dt = GetListField(id_project_team, cnn);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
 
@@ -2611,46 +2611,43 @@ and IdKH={loginData.CustomerID} )";
         /// </summary>
         /// <param name="id_project_team"></param>
         /// <returns></returns>
-        public static DataTable GetListField(long id_project_team, string ConnectionString)
+        public static DataTable GetListField(long id_project_team, DpsConnection cnn)
         {
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            SqlConditions cond = new SqlConditions();
+            cond.Add("1", 1);
+            string select = "";
+            select = "select id_row, id_project_team, fieldname, disabled, objectid, position, Options " +
+                "from we_fields_project_team where (where) order by IsNewField, position";
+            DataTable dt_field = cnn.CreateDataTable(select, "(where)", cond);
+            DataTable dt = new DataTable();
+            if (dt_field.Rows.Count <= 0 || id_project_team == 0) // Dự án chưa chọn field
             {
-                SqlConditions cond = new SqlConditions();
-                cond.Add("1", 1);
-                string select = "";
-                select = "select id_row, id_project_team, fieldname, disabled, objectid, position, Options " +
-                    "from we_fields_project_team where (where) order by IsNewField, position";
-                DataTable dt_field = cnn.CreateDataTable(select, "(where)", cond);
-                DataTable dt = new DataTable();
-                if (dt_field.Rows.Count <= 0 || id_project_team == 0) // Dự án chưa chọn field
-                {
-                    cond = new SqlConditions();
-                    cond.Add("IsVisible", 0);
-                    cond.Add("IsDefault", 1);
-                    select = " select we_fields.*, " + id_project_team + " as id_project_team, type, '' as Title_NewField, ''as id_row, 0 as IsHidden " +
-                            "from we_fields " +
-                            "where (where) order by isNewField, position";
-                    dt = cnn.CreateDataTable(select, "(where)", cond);
-                }
-                else
-                {
-                    cond = new SqlConditions();
-                    cond.Add("Disabled", 0);
-                    cond.Add("isDel", 0);
-                    select = $@"select we_fields_project_team.id_row, we_fields.fieldname, we_fields.title, IsHidden
+                cond = new SqlConditions();
+                cond.Add("IsVisible", 0);
+                cond.Add("IsDefault", 1);
+                select = " select we_fields.*, " + id_project_team + " as id_project_team, type, '' as Title_NewField, ''as id_row, 0 as IsHidden " +
+                        "from we_fields " +
+                        "where (where) order by isNewField, position";
+                dt = cnn.CreateDataTable(select, "(where)", cond);
+            }
+            else
+            {
+                cond = new SqlConditions();
+                cond.Add("Disabled", 0);
+                cond.Add("isDel", 0);
+                select = $@"select we_fields_project_team.id_row, we_fields.fieldname, we_fields.title, IsHidden
                                             ,we_fields_project_team.Title as Title_NewField, we_fields.isnewfield
                                             ,type, TypeID, id_project_team, IsDefault
                                             ,we_fields.show_default_type, we_fields_project_team.position
                                              from we_fields left join we_fields_project_team
                                              on we_fields.FieldName = we_fields_project_team.fieldname 
                                             and id_project_team = " + id_project_team + " " +
-                                            "where (where) and id_project_team = " + id_project_team + " or id_project_team is null " +
-                                            "order by we_fields.isNewField, we_fields_project_team.position";
-                    dt = cnn.CreateDataTable(select, "(where)", cond);
-                }
-                cnn.Disconnect();
-                return dt;
+                                        "where (where) and id_project_team = " + id_project_team + " or id_project_team is null " +
+                                        "order by we_fields.isNewField, we_fields_project_team.position";
+                dt = cnn.CreateDataTable(select, "(where)", cond);
             }
+            cnn.Disconnect();
+            return dt;
         }
         public static bool CheckRole(long role, string user, long id_project, string ConnectionString)
         {
