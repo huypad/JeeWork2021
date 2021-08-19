@@ -797,18 +797,18 @@
                                                                         </div>
                                                                         <div class="attach-item-del">
                                                                             <a class="url" (click)="preview(att2)"
-                                                                                matTooltip="Preview">
+                                                                                matTooltip="Xem trước">
                                                                                 <i class="far fa-eye"></i>
                                                                             </a>
                                                                             <a class="url"
                                                                                 (click)="DownloadFile(att2.path)"
-                                                                                matTooltip="Download">
+                                                                                matTooltip="Tải xuống">
                                                                                 <i
                                                                                     class="fas fa-download"></i>
                                                                             </a>
                                                                             <a class="url"
                                                                                 (click)="Delete_File(att2.id_row)"
-                                                                                matTooltip="Xóa File">
+                                                                                matTooltip="Xóa">
                                                                                 <i
                                                                                     class="fas fa-trash-alt"></i>
                                                                             </a>
@@ -870,12 +870,12 @@
                                                                         </div> 
                                                                         <div class="attach-item-del">
                                                                             <a class="url" (click)="preview(att2)"
-                                                                                matTooltip="Preview">
+                                                                                matTooltip="{{ 'topic.preview' | translate}}">
                                                                                 <i class="far fa-eye"></i>
                                                                             </a>
                                                                             <a class="url"
                                                                                 (click)="DownloadFile(att2.path)"
-                                                                                matTooltip="Download">
+                                                                                matTooltip="{ 'topic.download' | translate}}">
                                                                                 <i class="fas fa-download "></i>
                                                                             </a>
                                                                             <a class="url" *ngIf="HasupdateResult()"
