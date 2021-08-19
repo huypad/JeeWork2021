@@ -5625,10 +5625,10 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 if (user_child.Length > 0)
                 {
                     DataTable user_type = user_child.CopyToDataTable();
-                    var _loai = user_type.Select("loai = 1");
+                    var _loai = user_type.Select("loai = 1 and id_work = " + dr["id_row"]);
                     if (_loai.Any())
                         drow["User"] = _loai.CopyToDataTable();
-                    _loai = user_type.Select("loai = 2");
+                    _loai = user_type.Select("loai = 2  and id_work = " + dr["id_row"]);
                     if (_loai.Any())
                         drow["Follower"] = _loai.CopyToDataTable();
                 }
