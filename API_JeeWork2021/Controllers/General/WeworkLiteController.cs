@@ -110,7 +110,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    DataTable dt = project_by_user(loginData.UserID, loginData.CustomerID, cnn);
+                    DataTable dt = project_by_user(loginData.UserID, loginData.CustomerID, cnn, keyword);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
@@ -193,21 +193,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-                    string error = "";
-                    string listID = ListAccount(HttpContext.Request.Headers, out error, _configuration);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
                     #endregion
                     SqlConditions conds = new SqlConditions();
                     conds.Add("id_user", loginData.UserID);
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
+                    string str_where = "";
+                    if (!string.IsNullOrEmpty(keyword))
+                    {
+                        str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
+                    }
                     string sqlq = @$"select distinct de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
-from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and id_row in ({listDept})";
+                                    from we_department de where de.Disabled = 0";
                     //if (!Visible)
                     //{
                     //    sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
@@ -3506,16 +3506,22 @@ and IdKH={loginData.CustomerID} )";
             }
             return Mess;
         }
-        public static DataTable project_by_user(long userid, long customerid, DpsConnection cnn)
+        public static DataTable project_by_user(long userid, long customerid, DpsConnection cnn, string keyword)
         {
             DataTable dt = new DataTable();
-            string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date, color, status, locked 
+            string str_where = "";
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
+            }
+            string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
+                                    , color, status, locked, d.title as spacename
                                     from we_project_team p
                                     join we_department d on d.id_row = p.id_department
                                     join we_project_team_user u on u.id_project_team = p.id_row
                                      where u.Disabled = 0 and id_user = " + userid + " " +
                                     "and p.Disabled = 0  and d.disabled = 0 " +
-                                    "and idkh=" + customerid + " order by title";
+                                    "and idkh=" + customerid + ""+ str_where + " order by title";
             dt = cnn.CreateDataTable(sql);
             if (cnn.LastError != null || dt == null)
                 return new DataTable();

@@ -9,7 +9,7 @@ const routes: Routes = [
     children: [
       {
         path: "",
-        redirectTo: "/tasks",
+        redirectTo: "tasks",
         // canActivate: [AdminGuard],
       },
       {

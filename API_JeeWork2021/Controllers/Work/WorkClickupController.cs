@@ -649,7 +649,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     // Phân trang
                     var dt_data = ds.Tables[0].Rows.Count;
-                    DataTable dt = WeworkLiteController.project_by_user(loginData.UserID, loginData.CustomerID, cnn);
+                    DataTable dt = WeworkLiteController.project_by_user(loginData.UserID, loginData.CustomerID, cnn, "");
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -6068,7 +6068,7 @@ where u.disabled = 0 and u.loai = 2";
         }
         public static long SoluongComment(string idwork, DpsConnection cnn)
         {
-            long comment = long.Parse(cnn.ExecuteScalar("select num_comment from we_work WHERE id_row = " + idwork).ToString());
+            long comment = long.Parse(cnn.ExecuteScalar("select iif(num_comment is null , 0 , num_comment) from we_work WHERE id_row =  " + idwork).ToString());
             return comment;
         }
         public static EnumerableRowCollection<DataRow> filterWork(EnumerableRowCollection<DataRow> enumerableRowCollections, FilterModel filter)
