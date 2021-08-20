@@ -6,18 +6,11 @@ const routes: Routes = [
   {
     path: "",
     component: LayoutComponent,
-    // data: {
-    // 	permissions: {
-    // 		only: ['ADMIN', 'USER'],
-    // 		except: ['GUEST'],
-    // 		redirectTo: 'error/403'
-    // 	}
-    // },
     children: [
       {
         path: "",
+        redirectTo: "/tasks",
         // canActivate: [AdminGuard],
-        redirectTo: "tasks",
       },
       {
         path: "builder",

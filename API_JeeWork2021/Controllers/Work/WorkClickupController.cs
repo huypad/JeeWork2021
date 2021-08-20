@@ -5455,6 +5455,22 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     {
                         string test = a;
                     }
+                    if (cnn.CreateDataTable("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).Rows.Count == 0)
+                    {
+                        string sqlq = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + id_project_team + "),0)";
+                        var statusID = long.Parse(cnn.ExecuteScalar(sqlq).ToString());
+                        Hashtable val = new Hashtable();
+                        val.Add("status", statusID);
+                        SqlConditions cond = new SqlConditions();
+                        cond.Add("id_row", workid);
+                        //cnn.BeginTransaction();
+                        if (cnn.Update(val, cond, "we_work") <= 0)
+                        {
+                            cnn.RollbackTransaction();
+                            return new DataTable();
+                        }
+                        status_hientai = cnn.ExecuteScalar("select status from we_work where id_row = " + workid + "");
+                    }
                     long position = long.Parse(cnn.ExecuteScalar("select position from we_status where id_row = " + status_hientai + " and id_project_team =" + id_project_team).ToString());
                     string sql = @"";
                     sql = @$"select process.id_project_team, workid, process.statusid, process.id_row as processid
