@@ -211,8 +211,7 @@
             <div class="form-group kt-form__group row">
                 <div style="padding: 25px;flex-grow: 1;">
                     <ng-container *ngFor="let status of listStatus">
-                        <div class="cu-list-group"
-                            *ngIf="(status.data.length > 0 && LoadClosedTask(status.id_row)) || (status.data.length == 0 && showemptystatus) || ( Emtytask && status.id_row == Statusdefault() ) ">
+                        <div class="cu-list-group" *ngIf="isShowStatus(status)">
                             <div class="task-list">
                                 <div class="task-list-header text-dark">
                                     <div class="task-list-header__actions d-none">

@@ -121,7 +121,6 @@ export class ProjectsTeamComponent implements OnInit {
   ngOnInit() {
 
     this._Services.currentMessage.subscribe(e => {
-        console.log('123:',e);
       if(e){
         this.LoadData();
       }
@@ -293,6 +292,7 @@ export class ProjectsTeamComponent implements OnInit {
         } else {
           this.isShowaddview = false;
         }
+        this.changeDetectorRefs.detectChanges();
       }
     });
     this.WeWorkService.getRolesByProjects(this.ID_Project).subscribe((res) => {

@@ -909,6 +909,7 @@ export const locale = {
       xemchitietduan: "Xem chi tiết dự án phòng ban",
       yes: "Có",
       mieutachung: "Miêu tả chung",
+      motachung: "Mô tả chung",
       tuychon: "Tùy chọn khác",
       allow_percent_done: "Cho phép hoàn thành phần trăm công việc",
       not_allow_percent_done: "Không cho phép hoàn thành phần trăm công việc",

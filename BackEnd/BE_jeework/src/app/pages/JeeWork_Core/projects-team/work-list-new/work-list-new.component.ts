@@ -80,7 +80,6 @@ import { CommunicateService } from "./work-list-new-service/communicate.service"
   templateUrl: "./work-list-new.component.html",
   styleUrls: ["./work-list-new.component.scss"],
 })
-
 export class WorkListNewComponent implements OnInit, OnChanges {
   @Input() ID_Project: number = 0;
 
@@ -168,29 +167,27 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.UserID = +localStorage.getItem("idUser");
   }
   ngOnInit() {
-
     // giao tiếp service
-    this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
-      if(message){
-        console.log('LoadData');
-        this.LoadData();
+    this.subscription = this.CommunicateService.currentMessage.subscribe(
+      (message) => {
+        if (message) {
+          console.log("LoadData");
+          this.LoadData();
+        }
       }
-    });
+    );
     //end giao tiếp service
 
     this.searchCtrl.valueChanges
-      .pipe(
-        debounceTime(1000),
-        startWith("")
-      )
-      .subscribe(res => {
+      .pipe(debounceTime(1000), startWith(""))
+      .subscribe((res) => {
         /**
-         * (keyup.enter)="LoadData()" [(ngModel)]="keyword" 
+         * (keyup.enter)="LoadData()" [(ngModel)]="keyword"
          */
         this.keyword = res;
         this.LoadData();
       });
-      
+
     var today = new Date();
     var start_date = new Date();
     this.filterDay = {
@@ -228,12 +225,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    if(this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
-  ngOnChanges() { }
+  ngOnChanges() {}
 
   LoadDetailProject() {
     this._service.DeptDetail(this.ID_Project).subscribe((res) => {
@@ -329,7 +326,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     else this.selection.selected.splice(index, 1);
   }
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() { }
+  masterToggle() {}
   LoadData() {
     this.clearList();
     const queryParams = new QueryParamsModelNew(
@@ -373,18 +370,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
           a.id_project_team > b.id_project_team
             ? -1
             : b.id_project_team > a.id_project_team
-              ? 1
-              : 0
+            ? 1
+            : 0
         ); // nào chọn xếp trước
         this.ListColumns.sort((a, b) =>
           a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
         ); // nào bắt buộc xếp trước
         this.ListTasks = this.data.datawork;
-        if (
-          this.filter_groupby.value == "status" &&
-          this.ListTasks.length == 0
-        ) {
-          if (this.listFilter[0]) this.newtask = this.listFilter[0].id_row;
+        if ( this.filter_groupby.value == "status" && this.ListTasks.length == 0 ) {
+          if (this.listFilter[0]) 
+            this.newtask = this.listFilter[0].id_row;
           this.Emtytask = true;
         } else {
           this.Emtytask = false;
@@ -412,14 +407,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
 
     //Load data work group
-    this.WeWorkService.lite_workgroup(this.ID_Project).pipe(
-      tap(res => {
-        if (res && res.status === 1) {
-          this.listType = res.data;
-          this.changeDetectorRefs.detectChanges();
-        };
-      })
-    ).subscribe();
+    this.WeWorkService.lite_workgroup(this.ID_Project)
+      .pipe(
+        tap((res) => {
+          if (res && res.status === 1) {
+            this.listType = res.data;
+            this.changeDetectorRefs.detectChanges();
+          }
+        })
+      )
+      .subscribe();
   }
 
   Statusdefault() {
@@ -478,14 +475,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   LoadNhomCongViec(id) {
-    var x = this.listType.find(x => x.id_row == id);
+    var x = this.listType.find((x) => x.id_row == id);
     if (x) {
       return x.title;
     }
-    return "Chưa phân loại"
+    return "Chưa phân loại";
   }
 
-  UpdateValue() { }
+  UpdateValue() {}
 
   filterConfiguration(): any {
     const filter: any = {};
@@ -507,12 +504,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   listField: any = [];
   GetField() {
-    this.WeWorkService.GetListField(this.ID_Project,3,false).subscribe((res) => {
-      if (res && res.status === 1) {
-        this.listField = res.data;
-        // this.changeDetectorRefs.detectChanges();
+    this.WeWorkService.GetListField(this.ID_Project, 3, false).subscribe(
+      (res) => {
+        if (res && res.status === 1) {
+          this.listField = res.data;
+          // this.changeDetectorRefs.detectChanges();
+        }
       }
-    });
+    );
   }
 
   isItemFinal(id) {
@@ -528,37 +527,61 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       val.data = [];
     });
 
-    this.ListTasks.forEach((element) => {
-      element.isExpanded =
-        this.filter_subtask.value == "show" ||
+    if(this.ListTasks && this.ListTasks.length >0){
+      this.ListTasks.forEach((element) => {
+        element.isExpanded =
+          this.filter_subtask.value == "show" ||
           this.addNodeitem == element.id_row
-          ? true
-          : false;
-      this.listFilter.forEach((val) => {
-
-        if (this.CheckDataStatus(val, element)) {
-          val.data.push(element);
-        }
-        else if (this.CheckDataAssigne(val, element)) {
-          if (element.User?.length == 1 || (this.UserNull(element.User) && val.id_row == "") || (element.User?.length > 1 && val.id_row == "0")) {
+            ? true
+            : false;
+        this.listFilter.forEach((val) => {
+          if (this.CheckDataStatus(val, element)) {
+            val.data.push(element);
+          } else if (this.CheckDataAssigne(val, element)) {
+            if (
+              element.User?.length == 1 ||
+              (this.UserNull(element.User) && val.id_row == "") ||
+              (element.User?.length > 1 && val.id_row == "0")
+            ) {
+              val.data.push(element);
+            }
+          } else if (this.CheckDataWorkGroup(val, element)) {
             val.data.push(element);
           }
-        } else if (this.CheckDataWorkGroup(val, element)) {
-          val.data.push(element);
-        }
+        });
       });
-    });
+    }
     this.listStatus = this.listFilter;
+    this.changeDetectorRefs.detectChanges();
+  }
+
+  isShowStatus(status){
+    if(status.data.length > 0 && this.LoadClosedTask(status.id_row)){
+      return true;
+    }
+    else if(status.data.length == 0 && this.showemptystatus){
+      return true;
+    }
+    else if( this.Emtytask && status.id_row == this.Statusdefault()){
+      return true;
+    }
+    return false;
   }
 
   TestUpdateKey(node) {
-    this.UpdateByKey(node, "title", node.title + ' +1');
+    this.UpdateByKey(node, "title", node.title + " +1");
   }
   CheckDataStatus(valuefilter, elementTask) {
-    if (this.filter_groupby.value == "status" && valuefilter.id_row == +elementTask.status) {
+    if (
+      this.filter_groupby.value == "status" &&
+      valuefilter.id_row == +elementTask.status
+    ) {
       if (this.isAssignforme) {
         // kiểm tra có phải người được giao hay người tạo hay không
-        if (this.isAssignForme(elementTask) || elementTask.createdby == this.UserID) {
+        if (
+          this.isAssignForme(elementTask) ||
+          elementTask.createdby == this.UserID
+        ) {
           return true;
         }
       } else {
@@ -568,7 +591,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return false;
   }
   isAssignForme(elementTask) {
-    if (this.FindUser(elementTask.User, this.UserID) || this.FindUser(elementTask.Follower, this.UserID) || this.FindUser(elementTask.UserSubtask, this.UserID)) {
+    if (
+      this.FindUser(elementTask.User, this.UserID) ||
+      this.FindUser(elementTask.Follower, this.UserID) ||
+      this.FindUser(elementTask.UserSubtask, this.UserID)
+    ) {
       return true;
     }
     return false;
@@ -576,14 +603,21 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   CheckDataAssigne(valuefilter, elementTask) {
     if (this.filter_groupby.value == "assignee") {
       if (this.isAssignforme) {
-        if ((this.FindUser(elementTask.User, valuefilter.id_row) && this.isAssignForme(elementTask)) || (elementTask.createdby == this.UserID && this.UserNull(elementTask.User))) {
-          return true
+        if (
+          (this.FindUser(elementTask.User, valuefilter.id_row) &&
+            this.isAssignForme(elementTask)) ||
+          (elementTask.createdby == this.UserID &&
+            this.UserNull(elementTask.User))
+        ) {
+          return true;
         }
       } else {
-        if (this.FindUser(elementTask.User, valuefilter.id_row) ||
+        if (
+          this.FindUser(elementTask.User, valuefilter.id_row) ||
           (this.UserNull(elementTask.User) && valuefilter.id_row == "") ||
-          (elementTask.User?.length > 1 && valuefilter.id_row == "0")) {
-          return true
+          (elementTask.User?.length > 1 && valuefilter.id_row == "0")
+        ) {
+          return true;
         }
       }
     }
@@ -609,10 +643,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         //     (element.User.find((x) => x.id_user == this.UserID) ||
         //       element.createdby == this.UserID)
      */
-    if (this.filter_groupby.value == "groupwork" && elementTask.id_group == valuefilter.id_row) {
+    if (
+      this.filter_groupby.value == "groupwork" &&
+      elementTask.id_group == valuefilter.id_row
+    ) {
       if (this.isAssignforme) {
         // kiểm tra có phải người được giao hay người tạo hay không
-        if (this.isAssignForme(elementTask) || elementTask.createdby == this.UserID) {
+        if (
+          this.isAssignForme(elementTask) ||
+          elementTask.createdby == this.UserID
+        ) {
           return true;
         }
       } else {
@@ -667,7 +707,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   DragDropItemWork(item) {
     const dropItem = new DrapDropItem();
-    this._service.DragDropItemWork(item).subscribe((res) => { });
+    this._service.DragDropItemWork(item).subscribe((res) => {});
   }
 
   UpdateCol(fieldname) {
@@ -716,8 +756,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
           a.id_project_team > b.id_project_team
             ? -1
             : b.id_project_team > a.id_project_team
-              ? 1
-              : 0
+            ? 1
+            : 0
         ); // nào chọn xếp trước
         this.ListColumns.sort((a, b) =>
           a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
@@ -760,7 +800,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     // },10);
   }
 
-  setCheckField(event) { }
+  setCheckField(event) {}
 
   onSelectFile(event) {
     if (event.target.files && event.target.files[0]) {
@@ -1008,7 +1048,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.isEdittitle = -1;
     this.UpdateByKey(node, "title", node.title);
   }
-  focusFunction(val) { }
+  focusFunction(val) {}
   CloseAddnewTask(val) {
     if (val) {
       this.addNodeitem = 0;
@@ -1140,7 +1180,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
   ViewDetai(item) {
-    this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
+    this.router.navigate([
+      "",
+      { outlets: { auxName: "aux/detail/" + item.id_row } },
+    ]);
     // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
     //   width: "90vw",
     //   height: "90vh",
@@ -1320,7 +1363,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.UpdateByKey(task, "status", status.id_row);
   }
   CreateEvent(node) {
-    this.GoogleCalender(node, "google", node.title + '+1');
+    this.GoogleCalender(node, "google", node.title + "+1");
   }
   GoogleCalender(task, key, value, isReloadData = true) {
     const item = new GoogleCalendarModel();
@@ -1377,9 +1420,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
   UpdateGroup(node, id_row) {
     if (id_row == 0) {
-      this.UpdateByKey(node, 'id_group', null);
-    } else
-      this.UpdateByKey(node, 'id_group', id_row);
+      this.UpdateByKey(node, "id_group", null);
+    } else this.UpdateByKey(node, "id_group", id_row);
   }
   updateDate(task, date, field) {
     this.UpdateByKey(task, field, moment(date).format("MM/DD/YYYY HH:mm"));

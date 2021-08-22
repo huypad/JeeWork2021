@@ -39,7 +39,7 @@
 					</mat-form-field>
 				</div>
 				<div class="col-md-12">
-					<span [translate]="'projects.mieutachung'"></span>
+					<span [translate]="'projects.motachung'"></span>
 				</div>
 				<div class="col-md-12 kt--margin-bottom-10-mobile">
 					<editor apiKey="test" formControlName="detail" [init]="tinyMCE" style="margin-bottom: 15px;">
@@ -334,13 +334,14 @@
 
 		<div class="form-group row">
 			<div class="line-title">
-				<h5 class="url" (click)="UpdateTemplate()">{{ 'projects.templatedangsudung' | translate }}:
-					{{TemplateUsed()}}</h5>
+				<h5 class="url" (click)="UpdateTemplate()">{{ 'projects.templatedangsudung' | translate }}
+					<!-- {{TemplateUsed()}} -->
+				</h5>
 			</div>
 			<div class="line-value">
 				<div class="row h-100">
 					<div class="col-12 row">
-						<div class="box-stt" style="width:20px;height:20px;" matTooltip="{{stt.StatusName}}"
+						<div class="box-stt" style="width:20px;height:20px;" matTooltip="{{stt.statusname}}"
 							matTooltipPosition="above" [ngStyle]="{'backgroundColor': stt.color }"
 							*ngFor="let stt of listSTT">
 						</div>

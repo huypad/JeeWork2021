@@ -22,7 +22,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { SelectionModel } from "@angular/cdk/collections";
 // RXJS
-import { fromEvent, merge, ReplaySubject, BehaviorSubject } from "rxjs";
+import { fromEvent, merge, ReplaySubject, BehaviorSubject, throwError } from "rxjs";
 import { TranslateService } from "@ngx-translate/core";
 
 // Models
@@ -39,6 +39,7 @@ import {
 	TagsModel,
 } from "../../Model/department-and-project.model";
 import { ProjectsTeamService } from "../../Services/department-and-project.service";
+import { tap, catchError, finalize } from 'rxjs/operators';
 
 @Component({
 	selector: "kt-setting",
@@ -139,6 +140,19 @@ export class SettingComponent {
 
 		this.LoadData();
 		this.LoadDataTemp();
+		this.LoadStatusDynamic();
+	}
+
+	LoadStatusDynamic(){
+		//list-status-dynamic
+		this.weworkService.ListStatusDynamic(this.id_project_team).pipe(
+			tap( res => {
+				this.listSTT = res.data;
+				console.log(res.data)
+			}),
+			catchError((err) => throwError(err)),
+        	finalize(() => (console.log('complete')))
+		).subscribe(res =>{})
 	}
 
 	LoadData() {
@@ -162,17 +176,17 @@ export class SettingComponent {
 	TempSelected = 0;
 	LoadDataTemp() {
 		//load lại
-		this.weworkService.ListTemplateByCustomer().subscribe((res) => {
-			if (res && res.status === 1) {
-				this.litsTemplateDemo = res.data;
-				setTimeout(() => {
-					if (this.TempSelected == 0)
-						this.TempSelected = this.litsTemplateDemo[0].id_row;
-					this.LoadListSTT();
-				}, 10);
-			}
-			this.changeDetectorRefs.detectChanges();
-		});
+		// this.weworkService.ListTemplateByCustomer().subscribe((res) => {
+		// 	if (res && res.status === 1) {
+		// 		this.litsTemplateDemo = res.data;
+		// 		setTimeout(() => {
+		// 			if (this.TempSelected == 0)
+		// 				this.TempSelected = this.litsTemplateDemo[0].id_row;
+		// 			this.LoadListSTT();
+		// 		}, 10);
+		// 	}
+		// 	this.changeDetectorRefs.detectChanges();
+		// });
 	}
 
 	TemplateUsed() {
@@ -182,15 +196,15 @@ export class SettingComponent {
 		}
 		return 'Chưa sử dụng giao diện template';
 	}
-	LoadListSTT() {
-		var x = this.litsTemplateDemo.find(
-			(x) => x.id_row == this.TempSelected
-		);
-		if (x) {
-			this.listSTT = x.status;
-		}
-		this.changeDetectorRefs.detectChanges();
-	}
+	// LoadListSTT() {
+	// 	var x = this.litsTemplateDemo.find(
+	// 		(x) => x.id_row == this.TempSelected
+	// 	);
+	// 	if (x) {
+	// 		this.listSTT = x.status;
+	// 	}
+	// 	this.changeDetectorRefs.detectChanges();
+	// }
 
 	UpdateTemplate() {
 		const dialogRef = this.dialog.open(ProjectTeamEditStatusComponent, {
@@ -414,7 +428,7 @@ export class SettingComponent {
 			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status === 1) {
 				this.ngOnInit();
-				this.Giaotiep(true);
+				this.LoadParent(true);
 			}
 			else {
 				this.layoutUtilsService.showError(res.error.message);
@@ -522,24 +536,20 @@ export class SettingComponent {
 
 		this._service.Add_View(_item).subscribe((res) => {
 			if (res && res.status == 1) {
-				this.layoutUtilsService.showActionNotification(
-					"Thêm mới thành công"
-				);
+
 			} else {
 				this.layoutUtilsService.showError(res.error.message);
 			}
+			this.LoadParent(true);
 			this.LoadData();
 		});
 	}
 
-	deleteView(view) {
-		let saveMessageTranslateParam = "";
-		saveMessageTranslateParam += "GeneralKey.capnhatthanhcong";
-		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+	deleteView(view) { 
 		this._service.Delete_View(view.id_row).subscribe((res) => {
 			if (res && res.status == 1) {
 				this.LoadData();
-				this.layoutUtilsService.showActionNotification(_saveMessage);
+				this.LoadParent(true);
 			} else {
 				this.layoutUtilsService.showError(res.error.message);
 			}
@@ -547,8 +557,7 @@ export class SettingComponent {
 		});
 	}
 
-	Giaotiep(value): void {
-		console.log(1234567890);
+	LoadParent(value): void {
 		this._service.changeMessage(value);
 	  }
 }
