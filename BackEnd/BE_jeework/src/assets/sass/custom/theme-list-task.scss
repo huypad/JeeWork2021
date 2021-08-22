@@ -1335,3 +1335,12 @@ textarea:focus{
 //     border: 1px solid hsla(0,0%,50%,.06);
 //     border-left-width: 5px;
 // }
+
+.cu-list-group .cu-task-list-header:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+}

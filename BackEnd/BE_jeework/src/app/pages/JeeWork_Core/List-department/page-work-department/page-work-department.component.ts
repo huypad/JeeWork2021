@@ -1,3 +1,5 @@
+import { tap, catchError, finalize } from 'rxjs/operators';
+import { WorkService } from './../../work/work.service';
 import { UpdateStatusProjectComponent } from './../../projects-team/update-status-project/update-status-project.component';
 import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
 import { DepartmentProjectDataSource } from './../../projects-team/Model/data-sources/department-and-project.datasource';
@@ -29,7 +31,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { SelectionModel } from "@angular/cdk/collections";
 // RXJS
-import { BehaviorSubject, fromEvent, merge } from "rxjs";
+import { BehaviorSubject, fromEvent, merge, throwError } from "rxjs";
 import { TranslateService } from "@ngx-translate/core";
 // Models
 import { DepartmentModel } from "../../List-department/Model/List-department.model";
@@ -44,32 +46,15 @@ import { WeWorkService } from "../../services/wework.services";
 export class PageWorkDepartmentComponent implements OnInit, OnChanges {
   // Table fields
   dataSource: DepartmentProjectDataSource;
-  displayedColumns = [
-    "pie",
-    "title",
-    "department",
-    "hoten",
-    "Status",
-    "Locked",
-    "TrangThai",
-  ];
-  // @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  //@ViewChild(MatSort, { static: true }) sort: MatSort;
-  sorting: SortState = new SortState();
-  // Filter fields
-  listchucdanh: any[] = [];
-  // Selection
-  selection = new SelectionModel<DepartmentModel>(true, []);
-  productsResult: DepartmentModel[] = [];
-  //=================PageSize Table=====================
-  paginatorNew: PaginatorState = new PaginatorState();
-  pageSize: number;
+ 
+  isLoading = true;
   Id_Department: number = 0;
   @Input() Values: any = {};
   flag: boolean = true;
   constructor(
     public deptService: ProjectsTeamService,
     private danhMucService: DanhMucChungService,
+    private workService: WorkService,
     public dialog: MatDialog,
     public _deptServices: ListDepartmentService,
     private route: ActivatedRoute,
@@ -90,14 +75,7 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
     }
  
     this.dataSource = new DepartmentProjectDataSource(this.deptService);
-
-    this.dataSource.entitySubject.subscribe(
-      (res) => (this.productsResult = res)
-    );
-
-    this.dataSource.paginatorTotal$.subscribe(
-      (res) => (this.paginatorNew.total = res)
-    );
+ 
     this.route.params.subscribe((params) => {
       this.loadDataList();
     });
@@ -105,20 +83,28 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
     setTimeout(() => {
       this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
     }, 3000);
+    this.LoadDataFolder();
   }
 
   ngOnChanges() {
     // if (this.dataSource) this.loadDataList();
   }
-  
+  isFolder = false;
+  LoadDataFolder() {
+    this._deptServices.DeptDetail(this.Id_Department).subscribe(res => {
+      if (res && res.status == 1) {
+        if (res.data.ParentID) {
+          this.isFolder = true;
+        }
+        this.isLoading = false;
+        this.changeDetectorRefs.detectChanges();
+      }
+    })
+  }
   
   loadDataList() {
     const queryParams = new QueryParamsModelNew(
-      this.filterConfiguration(),
-      this.sorting.direction,
-      this.sorting.column,
-      this.paginatorNew.page - 1,
-      this.paginatorNew.pageSize
+      this.filterConfiguration()
     );
     this.dataSource.loadListProjectByDepartment(queryParams);
     // setTimeout((x) => {
@@ -133,12 +119,7 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
       var totalRecord = 0;
       this.dataSource.paginatorTotal$.subscribe((tt) => (totalRecord = tt));
       const queryParams1 = new QueryParamsModelNew(
-        this.filterConfiguration(),
-        this.sorting.direction,
-        this.sorting.column,
-        this.paginatorNew.page = 0,
-        this.paginatorNew.pageSize,
-        true
+        this.filterConfiguration() 
       );
       this.dataSource.loadListProjectByDepartment(queryParams1);
     }
@@ -149,7 +130,9 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
   filterConfiguration(): any {
     let filter: any = {};
     if (this.Values) filter = this.Values;
-    if (this.Id_Department > 0) filter.id_department = this.Id_Department;
+    if (this.Id_Department > 0) {
+      filter.id_department = this.Id_Department;
+    }
     return filter;
   }
 
@@ -164,7 +147,6 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
     }
     return tmp_height - this.tokenStorage.getHeightHeader() + "px";
   }
-  
-    
+   
   
 }

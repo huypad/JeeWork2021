@@ -152,7 +152,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 DataTable dt = null;
                 using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
                 {
-                    dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten...
+                    //dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten...
                 }
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))

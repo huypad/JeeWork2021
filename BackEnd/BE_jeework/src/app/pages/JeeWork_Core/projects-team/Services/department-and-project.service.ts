@@ -4,7 +4,7 @@ import { QueryResultsModel } from './../../../../_metronic/jeework_old/core/_bas
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { QueryParamsModel } from './../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, BehaviorSubject, of } from 'rxjs';
+import { Observable, forkJoin, BehaviorSubject, of, Subject } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
@@ -21,10 +21,19 @@ const api_department = environment.APIROOTS + '/api/department';
 
 
 
-@Injectable()
+@Injectable({
+	providedIn: 'root'
+  })
 export class ProjectsTeamService {
 	lastFilter$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));
 	ReadOnlyControl: boolean;
+	// khi thao tác thay đổi thông tin dự án thì gọi subject để update dữ liệu
+	messageSource = new BehaviorSubject<any>(false);
+	currentMessage = this.messageSource.asObservable();
+	changeMessage(message) {
+			this.messageSource.next(message);
+	}
+	//end
 	constructor(private http: HttpClient,
 		private httpUtils: HttpUtilsService) { }
 
@@ -332,6 +341,13 @@ export class ProjectsTeamService {
 	_UpdateByKey(item: any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = API_work_CU + '/Update-by-key';
+		return this.http.post<QueryResultsModel>(url, item, {
+			headers: httpHeaders,
+		});
+	}
+	Google_Calender(item: any): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = API_work_CU + '/google-calender';
 		return this.http.post<QueryResultsModel>(url, item, {
 			headers: httpHeaders,
 		});

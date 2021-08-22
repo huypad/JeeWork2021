@@ -84,10 +84,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                bool Visible = false;
+                bool Visible = true;
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    Visible = Common.CheckRoleByUserID(loginData, 3900, cnn);
+                    #region Kiểm tra quyền chỉ xem
+                    Common permit = new Common(ConnectionString);
+                    if (Common.IsReadOnlyPermit("3900", loginData.Username))
+                    {
+                        Visible = false;
+                    }
+                    #endregion
                     sqlq = $@"select Id_group, GroupName, isadmin 
                             from Tbl_Group
                             where { whereStr } order by { orderByStr}";
@@ -161,6 +167,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             DataTable dt = new DataTable();
             try
             {
+
                 if (string.IsNullOrEmpty(query.filter["ID_Nhom"]))
                 {
                     model.status = 0;
@@ -184,6 +191,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                #region Kiểm tra quyền chỉ xem
+                Common permit = new Common(ConnectionString);
+                if (Common.IsReadOnlyPermit("3900", loginData.Username))
+                {
+                    Visible = false;
+                }
+                #endregion
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select * from Tbl_Group_Account
@@ -294,6 +308,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                #region Kiểm tra quyền chỉ xem
+                Common permit = new Common(ConnectionString);
+                if (Common.IsReadOnlyPermit("3900", loginData.Username))
+                {
+                    Visible = false;
+                }
+                #endregion
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select username from tbl_group_account where id_group=@ID_Nhom";
@@ -327,6 +348,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                 }
                 #endregion
+                if (!string.IsNullOrEmpty(query.filter["HoTen"]))
+                {
+                    DataRow[] filteredRows = dt_staff.Select("FullName like '%" + query.filter["HoTen"] + "%'");
+                    dt_staff = filteredRows.CopyToDataTable();
+                }
                 int total = dt_staff.Rows.Count;
                 if (total == 0)
                     return JsonResultCommon.KhongCoDuLieu(Visible);
@@ -676,8 +702,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                bool Visible = false;
+                bool Visible = true;
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                #region Kiểm tra quyền chỉ xem
+                Common permit = new Common(ConnectionString);
+                if (Common.IsReadOnlyPermit("3900", loginData.Username))
+                {
+                    Visible = false;
+                }
+                #endregion
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     Visible = Common.CheckRoleByUserID(loginData, 3900, cnn);
@@ -702,6 +735,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dt_staff.Rows.Add(row);
                     }
                     #endregion
+                }
+                if (!string.IsNullOrEmpty(query.filter["HoTen"]))
+                {
+                    DataRow[] filteredRows = dt_staff.Select("FullName like '%" + query.filter["HoTen"] + "%'");
+                    dt_staff = filteredRows.CopyToDataTable();
                 }
                 int total = dt_staff.Rows.Count;
                 if (total == 0)
@@ -860,6 +898,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                #region Kiểm tra quyền chỉ xem
+                Common permit = new Common(ConnectionString);
+                if (Common.IsReadOnlyPermit("3900", loginData.Username))
+                {
+                    Visible = false;
+                }
+                #endregion
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     sqlq = $@"select Id_permit, Tenquyen, Id_group, LangKey, IsReadPermit 

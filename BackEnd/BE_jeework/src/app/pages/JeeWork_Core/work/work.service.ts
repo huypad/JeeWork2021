@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 import { HttpUtilsService } from './../../../_metronic/jeework_old/core/_base/crud/utils/http-utils.service';
 import { QueryResultsModel } from './../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 const API_work = environment.APIROOTS + '/api/work';
@@ -20,7 +20,7 @@ const API_work_CU = environment.APIROOTS + '/api/work-click-up';
 @Injectable()
 export class WorkService {
 	lastFilter$: BehaviorSubject<QueryParamsModelNew> = new BehaviorSubject(new QueryParamsModelNew({}, 'asc', '', 0, 10));
-
+	
 	constructor(private http: HttpClient,
 		private httpUtils: HttpUtilsService) { }
 
@@ -174,8 +174,17 @@ export class WorkService {
 	UpdateWorkProcess(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_work_CU + '/update-work-process', item, { headers: httpHeaders });
+	} 
+	WorkFilter(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
+
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+		const url = API_work_CU + '/work-filter';
+		return this.http.get<QueryResultsModel>(url, {
+			headers: httpHeaders,
+			params: httpParams
+		});
 	}
-	
 	ImportData(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_work_CU + '/ImportData', item, { headers: httpHeaders });
@@ -307,5 +316,21 @@ export class WorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_repeated + '/Insert', item, { headers: httpHeaders });
 	}
+	Sysn_Google_Calender(item: any): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = API_work_CU + '/google-calender';
+		return this.http.post<QueryResultsModel>(url, item, {
+			headers: httpHeaders,
+		});
+	}
 
+	// khúc này giao tiếp service giữa các component
+	messageSource = new BehaviorSubject<string>("default message");
+  	currentMessage = this.messageSource.asObservable();
+	changeMessage(message) {
+		this.messageSource.next(message);
+	}
+	buttonSubject: Subject<any> = new Subject();
+  	buttonObservable = this.buttonSubject.asObservable();
+	//end
 }

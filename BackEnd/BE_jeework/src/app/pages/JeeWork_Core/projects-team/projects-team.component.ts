@@ -1,4 +1,4 @@
-import { filter } from "rxjs/operators";
+import { filter, takeUntil } from "rxjs/operators";
 import { MenuAsideService } from "./../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service";
 import { MenuPhanQuyenServices } from "./../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
 import { QueryParamsModelNew } from "./../../../_metronic/jeework_old/core/models/query-models/query-params.model";
@@ -8,7 +8,7 @@ import {
   MessageType,
 } from "./../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { DocumentsService } from "./../documents/documents.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { WeWorkService } from "./../services/wework.services";
 import {
   Component,
@@ -46,6 +46,7 @@ export class ProjectsTeamComponent implements OnInit {
   activeLink = "home";
   view = "";
   loadingSubject = new BehaviorSubject<boolean>(false);
+  destroy$ : Subject<boolean> = new Subject<boolean>();
   // @ViewChild('container') container : ElementRef;
   TabName: string =
     this.translate.instant("projects.congviecdangdanhsach") + "";
@@ -118,6 +119,14 @@ export class ProjectsTeamComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this._Services.currentMessage.subscribe(e => {
+        console.log('123:',e);
+      if(e){
+        this.LoadData();
+      }
+    });
+    console.log('có gì ở đây:',this._Services.currentMessage);
     this.layoutUtilsService.showWaitingDiv();
     var path = this.router.url;
     if (path) {
@@ -171,6 +180,12 @@ export class ProjectsTeamComponent implements OnInit {
     //Add 'implements AfterViewInit' to the class.
     this.layoutUtilsService.OffWaitingDiv();
     
+  }
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
 

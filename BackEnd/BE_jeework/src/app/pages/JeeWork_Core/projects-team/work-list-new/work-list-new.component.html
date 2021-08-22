@@ -478,6 +478,7 @@
                                                                             <span class=" -hover"
                                                                                 (click)="ViewDetai(node)">{{node.title}}</span>
 
+
                                                                             <ng-container
                                                                                 *ngIf="node.DataChildren.length > 0">
                                                                                 <div class="cu-task-row-subtasks-count url ng-star-inserted"
@@ -553,6 +554,7 @@
                                                                                 (RemoveTag)="RemoveTag(tag,node)">
                                                                             </kt-cu-tag>
                                                                         </ng-container>
+                                                                        <!-- <mat-icon (click)="CreateEvent(node)" class="float-right">aspect_ratio</mat-icon> -->
                                                                     </ng-container>
                                                                 </div>
                                                             </div>

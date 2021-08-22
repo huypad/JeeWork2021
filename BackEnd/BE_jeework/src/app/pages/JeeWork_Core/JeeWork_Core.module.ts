@@ -186,6 +186,7 @@ import { JeeCommentModule } from './jee-comment/jee-comment.module';
 import { ListTaskCUComponent2 } from './projects-team/work-list-new/list-task-cu-2/list-task-cu-2.component';
 import { ApplicationPipesModule } from './pipe/pipe.module';
 import { FieldsCustomModule } from './projects-team/work-list-new/field-custom/fields-custom.module';
+import { WorksListGroup2Component } from './projects-team/work-list-new/works-dash-board/works-list-group-2/works-list-group-2.component';
 @NgModule({
 	imports: [
 		JeeCommentModule,
@@ -278,7 +279,7 @@ import { FieldsCustomModule } from './projects-team/work-list-new/field-custom/f
 		WeWorkService,
 		WorkService,
 		ListDepartmentService,
-		ProjectsTeamService,
+		// ProjectsTeamService,
 		CommentService,
 		UpdateByKeyService,
 		filterService,
@@ -334,6 +335,7 @@ import { FieldsCustomModule } from './projects-team/work-list-new/field-custom/f
 		WorkListNewComponent,
 		WorksDashBoardComponent,
 		WorksListGroupComponent,
+		WorksListGroup2Component,
 		DuplicateTaskNewComponent,
 		AddStatusComponent,
 		AddTaskComponent, ColorPicker2Component,
@@ -412,6 +414,7 @@ import { FieldsCustomModule } from './projects-team/work-list-new/field-custom/f
 		WorkListNewComponent,
 		WorksDashBoardComponent,
 		WorksListGroupComponent,
+		WorksListGroup2Component,
 		AddTaskComponent,
 		AddStatusComponent,
 		DuplicateTaskNewComponent,
@@ -534,6 +537,7 @@ import { FieldsCustomModule } from './projects-team/work-list-new/field-custom/f
 		WorkListNewComponent,
 		WorksDashBoardComponent,
 		WorksListGroupComponent,
+		WorksListGroup2Component,
 		AddTaskComponent,
 		AddStatusComponent,
 		DuplicateTaskNewComponent, ColorPicker2Component,

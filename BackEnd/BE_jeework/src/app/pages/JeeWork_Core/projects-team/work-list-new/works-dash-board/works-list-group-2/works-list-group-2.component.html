@@ -1,10 +1,10 @@
-<ng-container *ngIf="loadding">
+<!-- <ng-container *ngIf="loadding">
     <mat-progress-bar mode="query"></mat-progress-bar>
     <hr />
-</ng-container>
+</ng-container> -->
 
 <ng-container *ngFor="let status of listStatus">
-    <div
+    <div class="cu-list-group"
         *ngIf="(status.data.length > 0 && LoadClosedTask(status.id_row)) || (status.data.length == 0 && showemptystatus) || ( Emtytask && status.id_row == Statusdefault() ) ">
         <div class="task-list">
             <div class="task-list-header text-dark">
@@ -358,12 +358,12 @@
                         style="width:100px;margin:0 1px;">
                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                             <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
-                                <app-task-datetime 
+                                <!-- <app-task-datetime 
                                 (ngModelChange)="updateDate(node,node[item.fieldname],item.fieldname)"
                                 [fieldname]="item.fieldname" 
                                 [(value)]="node[item.fieldname]" 
-                                [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime>
-                                <!-- <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
+                                [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime> -->
+                                <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                     <div class="item-field">
                                         <span class="hide-more-text" matTooltip="{{node[item.fieldname] | timezone}}">
                                             {{node[item.fieldname] | timezone }}
@@ -406,7 +406,7 @@
                                         style="opacity: 0;" class="date-picker position-picker" [owlDateTime]="dt1"
                                         [owlDateTimeTrigger]="dt1">
                                     <owl-date-time #dt1></owl-date-time>
-                                </ng-template> -->
+                                </ng-template>
                             </ng-container>
                             <ng-template #nosetdatetime>
                                 <ng-container *ngIf="item.type == 'code';else noestcode">

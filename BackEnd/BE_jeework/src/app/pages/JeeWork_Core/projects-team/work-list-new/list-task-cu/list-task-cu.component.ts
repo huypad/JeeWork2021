@@ -29,7 +29,8 @@ import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
 import * as moment  from 'moment';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, SubscriptionLike } from 'rxjs';
+import { CommunicateService } from '../work-list-new-service/communicate.service';
 
 @Component({
   selector: 'kt-list-task-cu',
@@ -45,6 +46,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   @Input() myWorks: boolean = false;
   @Input() getMystaff: boolean = false;
   @Input() detailWork: number = 0;
+  subscription: SubscriptionLike;
 
   @ViewChild('table1', { static: true }) table1: MatTable<any>;
   @ViewChild('table2', { static: true }) table2: MatTable<any>;
@@ -105,6 +107,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private itemFB: FormBuilder,
+    private CommunicateService: CommunicateService,
     public subheaderService: SubheaderService,
     private layoutUtilsService: LayoutUtilsService,
     private changeDetectorRefs: ChangeDetectorRef,
@@ -124,6 +127,16 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   }
 
   ngOnInit() {
+
+    // giao tiếp service
+    this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
+      if(message){
+        console.log('reload list');
+        this.LoadSampleList();
+      }
+    });
+    //end giao tiếp service
+
     // get filter groupby
     this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
@@ -189,6 +202,14 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
           });
         }
       });
+    }
+  }
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    if(this.subscription){
+      this.subscription.unsubscribe();
     }
   }
 
@@ -516,8 +537,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
 
   listField: any = [];
   GetField() {
-    const queryParams = '?id_project_team=0&isnewfield=false';
-    this.weworkService.GetListField(queryParams).subscribe(res => {
+    this.weworkService.GetListField(0,3,false).subscribe(res => {
       if (res && res.status === 1) {
         this.listField = res.data;
         //xóa title khỏi cột

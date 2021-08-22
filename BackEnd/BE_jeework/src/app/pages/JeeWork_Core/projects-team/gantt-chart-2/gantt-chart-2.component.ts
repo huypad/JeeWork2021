@@ -334,7 +334,6 @@ export class GanttChart2Component implements OnInit {
 			}
 			this.gstcState.data.config.list.rows = rows;
 			this.gstcState.data.config.chart.items = items;
-			debugger
 			this.gstcState.data.config.locale = this.locale;
 			this.gstcState.update('config', config => {
 				return config;

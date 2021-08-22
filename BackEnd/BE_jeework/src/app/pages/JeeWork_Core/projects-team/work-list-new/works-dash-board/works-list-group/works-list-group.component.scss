@@ -1082,7 +1082,7 @@ div.cu-avatar {
 
 .position-picker {
     position: absolute;
-    top: 50%;
+    top: 100%;
     left: 50%;
 }
 
@@ -1327,11 +1327,11 @@ textarea:focus{
     display: block;
 }
 
-.cu-list-group {
-    display: block;
-    margin: 0 -5px 30px -15px;
-    padding: 0 15px 0 35px;
-    border-radius: 6px;
-    border: 1px solid hsla(0,0%,50%,.06);
-    border-left-width: 5px;
-}
+// .cu-list-group {
+//     display: block;
+//     margin: 0 -5px 30px -15px;
+//     padding: 0 15px 0 35px;
+//     border-radius: 6px;
+//     border: 1px solid hsla(0,0%,50%,.06);
+//     border-left-width: 5px;
+// }

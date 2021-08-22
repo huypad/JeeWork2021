@@ -1,11 +1,11 @@
 import { QueryResultsModel } from './../../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
 import { BaseDataSource } from './../../../../../../_metronic/jeework_old/core/_base/crud/models/_base.datasource';
-import { QueryParamsModel } from './../../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model'; 
+import { QueryParamsModel } from './../../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
 import { of } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { PermissionService } from '../../Services/userright.service';
 // import { BaseDataSource } from '../../../../../../components/apps/e-commerce/_core/models/data-sources/_base.datasource';
- 
+
 export class UserRightDataSource extends BaseDataSource {
 	constructor(public permitService: PermissionService) {
 		super();

@@ -35,7 +35,7 @@ import { UserRightDataSource } from '../Model/data-sources/userright.datasource'
 export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 	// Table fields
 	dataSource: UserRightDataSource;
-	displayedColumns = ['actions', 'Username', 'MaNV', 'HoTen', 'ChucVu'];
+	displayedColumns = ['actions', 'Username', 'HoTen', 'ChucVu'];
 	paginatorNew: PaginatorState = new PaginatorState();
 	// @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 	sorting: SortState = new SortState();
@@ -43,7 +43,7 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 	filterDonVi: string = '';
 	filterPhongBan: string = '';
 	filterChucDanh: string = '';
-
+	@ViewChild('searchInputHoTen',{ static: true }) searchInputHoTen: ElementRef;
 	listDonVi: any[] = [];
 	listPhongBan: any[] = [];
 	listChucDanh: any[] = [];
@@ -81,7 +81,16 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 	ngOnInit() {
 		this.title = this.translate.instant("GeneralKey.choncocautochuc");
 		this.item = this.data._item;
-
+		fromEvent(this.searchInputHoTen.nativeElement, 'keyup')
+		.pipe(
+			debounceTime(150),
+			distinctUntilChanged(),
+			tap(() => {
+				this.paginatorNew.page = 0;
+				this.loadDataList();
+			})
+		)
+		.subscribe();
 		this.dataSource = new UserRightDataSource(this.userRightService);
 		this.dataSource.paginatorTotal$.subscribe(res => this.paginatorNew.total = res);
 		this.dataSource.entitySubject.subscribe(res => this.productsResult = res);
@@ -163,15 +172,13 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 	/** FILTRATION */
 	filterConfiguration(): any {
 		const filter: any = {};
-
+		const searchText1: string = this.searchInputHoTen.nativeElement.value;
 		filter.StructureID = '' + this.ID_Struct;
-
 		if (this.filterChucDanh && this.filterChucDanh != "-1") {
 			filter.IDChucDanh = this.filterChucDanh;
 		}
-
 		filter.ID_Nhom = this.item.ID_Nhom;
-
+		filter.HoTen = searchText1;
 		return filter;
 	}
 	/** ACTIONS */ 

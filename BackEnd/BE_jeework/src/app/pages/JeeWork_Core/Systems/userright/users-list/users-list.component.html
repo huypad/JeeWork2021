@@ -56,7 +56,7 @@
 				<div class="row align-items-center">
 					<div class="col-md-4 m--margin-bottom-10-mobile">
 						<mat-form-field class="mat-form-field-fluid ">
-							<input matInput placeholder="Search product" #searchInputHoTen
+							<input matInput placeholder="Nhập họ tên" #searchInputHoTen
 								placeholder="{{ 'phanquyen.timkiem' | translate }}"
 								class="mat-form-field mat-form-field-fluid">
 						</mat-form-field>
@@ -77,8 +77,8 @@
 					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
 						<span translate="phanquyen.hoten"></span>
 						&nbsp;
-                        <app-sort-icon column="HoTen" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+						<app-sort-icon column="HoTen" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">{{item.HoTen}}</td>
 				</ng-container>
@@ -86,8 +86,8 @@
 					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
 						<span translate="phanquyen.tendangnhap"></span>
 						&nbsp;
-                        <app-sort-icon column="Username" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+						<app-sort-icon column="Username" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">{{item.Username}}</td>
 				</ng-container>
@@ -101,8 +101,8 @@
 					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
 						<span translate="phanquyen.chucvu"></span>
 						&nbsp;
-                        <app-sort-icon column="ChucDanh" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+						<app-sort-icon column="ChucDanh" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
 						<span>{{item.ChucDanh}}</span>
@@ -125,7 +125,8 @@
 					[ngClass]="{hovered: row.hovered, highlighted: row.highlighted}"></tr>
 			</table>
 		</div>
-		<app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;" [paginator]="paginatorNew"
-        [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)"></app-paginator>
+		<app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;"
+			[paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)">
+		</app-paginator>
 	</kt-portlet-body>
 </kt-portlet>

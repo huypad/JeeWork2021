@@ -589,10 +589,10 @@ where w.disabled=0 and id_milestone = " + id;
                     string sqlq = "select ISNULL((select count(*) from we_milestone where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Mục tiêu");
-                    if (Common.TestDuplicate("", id.ToString(), "-1", "we_work", "id_milestone", "Disabled", "0", cnn, "", true) == false)
-                    {
-                        return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
-                    }
+                    //if (Common.TestDuplicate("", id.ToString(), "-1", "we_work", "id_milestone", "Disabled", "0", cnn, "", true) == false)
+                    //{
+                    //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
+                    //}
                     sqlq = "update we_milestone set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)

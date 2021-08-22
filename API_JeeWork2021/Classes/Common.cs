@@ -13,160 +13,18 @@ using Microsoft.Net.Http.Headers;
 using RestSharp;
 using Newtonsoft.Json;
 using JeeWork_Core2021.Models;
+using JeeWork_Core2021.Controllers.Wework;
 
 namespace JeeWork_Core2021.Classes
 {
     public class Common
     {
-        private static string HRCatalog
+        public static string ConnectionString;
+        public Common(string _connectionString)
         {
-            get
-            {
-                return JeeWorkConstant.getConfig("JeeWorkConfig:HRCatalog");
-            }
+            ConnectionString = _connectionString;
         }
-        private static string HRConnectionString
-        {
-            get
-            {
-                string ConnectionString = JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString");
-                return ConnectionString.Replace("jeework", HRCatalog);
-            }
-        }
-        public static LoginData _GetInfoUser(string token)
-        {
-            LoginData user = new LoginData();
-            DataTable Tb = new DataTable();
-            SqlConditions conds = new SqlConditions();
-            if (string.IsNullOrEmpty(token))
-                return null;
-            try
-            {
-                conds.Add("Token", token);
-                using (DpsConnection cnn = new DpsConnection(HRConnectionString))
-                {
-                    //Trường hợp đăng nhập thiết bị khác, đăng xuất tất cả các thiết bị
-                    string sqlq = "select ISNULL((select count(*) from LoginSection where Token = @Token),0)";
-                    if (cnn.ExecuteScalar(sqlq, conds) == null)
-                    {
-                        user.Status = 5;
-                    }
-                    else
-                    {
-                        sqlq = @$"select cus.Ngayhethan, nv.thoiviec, cus.LDAP, cus.LDAPType, cus.LDAPUsernameFormat, cus.RowID as CustemerID, acc.*, nv.holot, nv.ten, Locked, IsTrial,ExpireTrial,cus.Loaihinh
-                        from {HRCatalog}.dbo.Tbl_Account acc inner join {HRCatalog}.dbo.Tbl_Nhanvien nv on acc.id_nv=nv.id_nv join tbl_cocautochuc on nv.cocauid = tbl_cocautochuc.rowid inner join tbl_custemers cus on CustemerID=cus.RowID
-				        inner join sys_package on sys_package.RowID=PackID where nv.id_nv = isnull(( select Id from LoginSection where Locked = 0 and (ExpiryDate is NULL or ExpiryDate >= GETDATE()) and Token='" + token + "'),0)";
-                        Tb = cnn.CreateDataTable(sqlq);
-                        if (Tb == null || Tb.Rows.Count == 0)
-                            return null;
-                        user.Status = 1;
-                        //Kiểm tra khách hàng lock
-                        if (bool.TrueString.Equals(Tb.Rows[0]["Locked"].ToString())) user.Status = 0;
 
-                        //Kiểm tra nhân viên thôi việc
-                        if (bool.TrueString.Equals(Tb.Rows[0]["thoiviec"].ToString())) user.Status = 0;
-
-                        //Kiểm tra tài khoản lock
-                        if (bool.TrueString.Equals(Tb.Rows[0]["Lock"].ToString())) user.Status = 0;
-
-                        //Kiểm tra ngày hết hạn của khách hàng
-                        if (bool.TrueString.Equals(Tb.Rows[0]["istrial"].ToString()))
-                        {
-                            if (!Tb.Rows[0]["ExpireTrial"].Equals(DBNull.Value) && ((DateTime)Tb.Rows[0]["ExpireTrial"]).Date < DateTime.Now.Date) user.Status = 4;
-                        }
-                        else
-                        {
-                            if (Tb.Rows[0]["ngayhethan"] != DBNull.Value)
-                            {
-                                DateTime ngayhethan = (DateTime)Tb.Rows[0]["ngayhethan"];
-                                if (ngayhethan < DateTime.Today) user.Status = 2;
-                            }
-                        }
-                    }
-                }
-                user.FirstName = Tb.Rows[0]["ten"].ToString();
-                user.LastName = Tb.Rows[0]["holot"].ToString();
-                user.Id = Convert.ToInt64(Tb.Rows[0]["Id_nv"].ToString());
-                user.UserName = Tb.Rows[0]["Username"].ToString();
-                user.IDKHDPS = Convert.ToInt64(Tb.Rows[0]["CustemerID"].ToString());
-                user.UserType = 1;
-                user.LoaiHinh = int.Parse(Tb.Rows[0]["Loaihinh"].ToString());
-                return user;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-        public static string[] GetRolesForUser(string username)
-        {
-            SqlConditions Conds = new SqlConditions();
-            Conds.Add("Username", username);
-            using (DpsConnection ConnHR = new DpsConnection(HRConnectionString))
-            {
-                DpsConnection Conn_Work = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString"));
-                DataTable Tb = Conn_Work.CreateDataTable("select * from Tbl_Account_Permit where (where)", "(where)", Conds);
-                DataTable quyennhom = Conn_Work.CreateDataTable("select Id_permit from tbl_group_permit gp inner join tbl_group_account gu on gp.id_group=gu.id_group where (where)", "(where)", Conds);
-                DataTable Quyenmacdinh = ConnHR.CreateDataTable(@$"select chucvu.IsManager, chucvu.Yeucautuyendung, chucvu.Capnhatkehoach, chucvu.Taoquytrinh 
-                                                            from {HRCatalog}.dbo.tbl_nhanvien nv 
-                                                            join {HRCatalog}.dbo.tbl_account acc on nv.id_nv=acc.id_nv 
-                                                            join {HRCatalog}.dbo.tbl_chucdanh on nv.id_chucdanh=tbl_chucdanh.id_row 
-                                                            join {HRCatalog}.dbo.chucvu on tbl_chucdanh.id_cv=chucvu.id_cv where (where)", "(where)", Conds);
-                int soquyenmacdinh = 0;
-                bool ismanager = false;
-                bool yeucautuyendung = false;
-                bool capnhatkehoach = false;
-                bool taoquytrinh = false;
-                if (Quyenmacdinh.Rows.Count > 0)
-                {
-                    if (Quyenmacdinh.Rows[0][0] != null)
-                        ismanager = (bool)Quyenmacdinh.Rows[0][0];
-                    if (Quyenmacdinh.Rows[0][1] != DBNull.Value)
-                        yeucautuyendung = (bool)Quyenmacdinh.Rows[0][1];
-                    if (Quyenmacdinh.Rows[0][2] != DBNull.Value)
-                        capnhatkehoach = (bool)Quyenmacdinh.Rows[0][2];
-                    if (Quyenmacdinh.Rows[0][3] != DBNull.Value)
-                        taoquytrinh = (bool)Quyenmacdinh.Rows[0][3];
-                    if (ismanager) soquyenmacdinh++;
-                    if (yeucautuyendung) soquyenmacdinh++;
-                    if (capnhatkehoach) soquyenmacdinh++;
-                    if (taoquytrinh) soquyenmacdinh++;
-                }
-                StringCollection colroles = new StringCollection();
-                if (ismanager)
-                {
-                    colroles.Add("4");
-                }
-                if (yeucautuyendung)
-                {
-                    colroles.Add("7");
-                }
-                if (capnhatkehoach)
-                {
-                    colroles.Add("8");
-                }
-                if (taoquytrinh)
-                {
-                    colroles.Add("6");
-                }
-                for (int i = 0; i < Tb.Rows.Count; i++)
-                {
-                    if (!colroles.Contains(Tb.Rows[i]["Id_permit"].ToString()))
-                        colroles.Add(Tb.Rows[i]["Id_permit"].ToString());
-                }
-                for (int i = 0; i < quyennhom.Rows.Count; i++)
-                {
-                    if (!colroles.Contains(quyennhom.Rows[i]["Id_permit"].ToString()))
-                        colroles.Add(quyennhom.Rows[i]["Id_permit"].ToString());
-                }
-                string[] roles = new string[colroles.Count];
-                for (int i = 0; i < colroles.Count; i++)
-                {
-                    roles[i] = colroles[i];
-                }
-                return roles;
-            }
-        }
         public static string[] GetRolesForUser_WeWork(string username, DpsConnection Conn)
         {
             SqlConditions Conds = new SqlConditions();
@@ -191,8 +49,6 @@ namespace JeeWork_Core2021.Classes
                 roles[i] = colroles[i];
             }
             return roles;
-
-
         }
         public static string GetHeader(HttpRequest request)
         {
@@ -207,9 +63,7 @@ namespace JeeWork_Core2021.Classes
             {
                 return string.Empty;
             }
-
         }
-
         public static string GetToken(IHeaderDictionary pHeader)
         {
             if (pHeader == null) return null;
@@ -250,6 +104,29 @@ namespace JeeWork_Core2021.Classes
             }
             catch (Exception ex)
             {
+                return false;
+            }
+        }
+        public static bool IsReadOnlyPermit(string roleName, string username)
+        {
+            SqlConditions Conds = new SqlConditions();
+            Conds.Add("id_permit", roleName);
+            Conds.Add("username", username);
+            using (DpsConnection Conn = new DpsConnection(ConnectionString))
+            {
+                DataTable Tb = Conn.CreateDataTable("select edit from tbl_account_permit where (where)", "(where)", Conds);
+                if ((Tb.Rows.Count > 0) && (bool.FalseString.Equals(Tb.Rows[0][0].ToString())))
+                {
+                    return true;
+                }
+                Tb = Conn.CreateDataTable("select id_permit, edit from tbl_group_permit gp " +
+                    "join tbl_group_account gu " +
+                    "on gp.id_group=gu.id_group " +
+                    "where (where) order by edit desc", "(where)", Conds);
+                if ((Tb.Rows.Count > 0) && (bool.FalseString.Equals(Tb.Rows[0][1].ToString())))
+                {
+                    return true;
+                }
                 return false;
             }
         }
@@ -433,6 +310,108 @@ namespace JeeWork_Core2021.Classes
             }
             return result;
         }
+        /// <summary>
+        /// Lấy danh sách các phòng ban thư mục mà nhân viên có quyền truy xuất
+        /// </summary>
+        /// <param name="id_nv">Nhân viên</param>
+        public static DataSet GetWorkSpace(UserJWT loginData)
+        {
+            string sql_space = "", sql_project = "", sql_folder = "", where_dpm = "";
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                SqlConditions cond = new SqlConditions();
+                cond.Add("de.idkh", loginData.CustomerID);
+                cond.Add("de.disabled", 0);
+                sql_space = @$"select de.id_row, de.title, de.id_cocau, de.idkh, de.priority, de.disabled, de.parentid, 
+				            IIf((select type from we_department_owner do where do.disabled = 0 
+                            and do.id_user = " + loginData.UserID + " " +
+                            "and do.id_department = de.id_row) = 1,1,0) as owner " +
+                            ",IIf((select type from we_department_owner do where do.disabled = 0 " +
+                            "and do.id_user = " + loginData.UserID + " " +
+                            "and do.id_department = de.parentid) = 1,1,0) as parentowner " +
+                            "from we_department de where (where)";
+                sql_folder = ";" + sql_space;
+                where_dpm = @$"and (de.id_row in (select parentid from we_department fd where fd.disabled = 0
+                and fd.id_row in (select do.id_department from we_department_owner do 
+                where do.disabled = 0 and do.id_user = " + loginData.UserID + ") " +
+                "union all " +
+                "select p.id_department from we_project_team p" +
+                " where p.disabled = 0 " +
+                "and p.id_row in (select u.id_project_team from we_project_team_user u where u.id_user = " + loginData.UserID + " " +
+                "and u.disabled = 0)) " +
+                "or de.id_row in (select dsp.id_department from we_department_owner dsp " +
+                "where dsp.disabled = 0 and dsp.id_user = " + loginData.UserID + ") (parentid)";
+                sql_folder += " and parentid is not null (admin)";
+                sql_space += " and parentid is null (admin)";
+                sql_project = ";select p.id_row, p.icon, p.title, p.detail, p.id_department" +
+                            ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
+                            ", p.priority, p.locked, p.disabled, default_view, IIf((select admin from we_project_team_user u where u.disabled = 0 " +
+                            "and u.id_user = "+loginData.UserID+" and u.id_project_team = p.id_row)= 1,1,0) as admin_project " +
+                            "from we_project_team p " +
+                            $"where p.disabled = 0 (dk_proj)";
+                if (!MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID))
+                {
+                    string and_folder = "or de.parentid in (select dsp.id_department from we_department_owner dsp " +
+                                            "where dsp.disabled = 0 and dsp.id_user = " + loginData.UserID + "))";
+                    sql_space = sql_space.Replace("(admin)", where_dpm);
+                    sql_space = sql_space.Replace("(parentid)", ")");
+                    sql_folder = sql_folder.Replace("(admin)", where_dpm);
+                    sql_folder = sql_folder.Replace("(parentid)", and_folder);
+                    string dk_proj = @" and 
+                (id_department in (select id_row from we_department where ParentID is null and id_row in (select id_department from we_department_owner do where do.disabled = 0 and do.id_user = " + loginData.UserID + " and type = 1)) " +
+                "or id_department in (select id_row from we_department where ParentID is not null and ParentID in (select id_department from we_department_owner do where do.disabled = 0 and do.id_user = " + loginData.UserID + " and type = 1)) " +
+                "or p.id_row in (select id_project_team from we_project_team_user where id_user = " + loginData.UserID + "))";
+                    sql_project = sql_project.Replace("(dk_proj)", dk_proj);
+                }
+                else
+                {
+                    sql_space = sql_space.Replace("(admin)", "");
+                    sql_folder = sql_folder.Replace("(admin)", "");
+                    sql_project = sql_project.Replace("(dk_proj)", " ");
+                }
+                DataTable dt_space = new DataTable();
+                DataTable dt_folder = new DataTable();
+                DataTable dt_project = new DataTable();
+                dt_space = cnn.CreateDataTable(sql_space, "(where)", cond);
+                dt_folder = cnn.CreateDataTable(sql_folder, "(where)", cond);
+                dt_project = cnn.CreateDataTable(sql_project);
+                DataSet ds_workspace = new DataSet();
+                ds_workspace.Tables.Add(dt_space);
+                ds_workspace.Tables.Add(dt_folder);
+                ds_workspace.Tables.Add(dt_project);
+                return ds_workspace;
+            }
+        }
+        public static DataTable dt_datalist(string id_department, UserJWT loginData, long owner)
+        {
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                DataTable result = new DataTable();
+                string sql_project = ""; string join = ""; string str_where = " where (where)"; string col_admin = "";
+                SqlConditions conds = new SqlConditions();
+                conds.Add("id_department", id_department);
+                conds.Add("p.disabled", 0);
+                sql_project = $@"select p.id_row, p.icon, p.title, p.detail, p.id_department" +
+                          ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
+                          ", p.priority, p.locked, p.disabled, default_view, (column) " +
+                          "from we_project_team p ";
+                if (owner == 1)
+                {
+                    conds.Add("u.id_user", loginData.UserID);
+                    conds.Add("u.disabled", 0);
+                    sql_project = sql_project.Replace("(column)", "u.admin");
+                    join = " join we_project_team_user u on u.id_project_team = p.id_row";
+                }
+                else
+                {
+                    //col_admin = "ISNULL((select 1 where exists (select 1 from we_project_team where id_user = " + loginData.UserID + " and admin = 1)),0) as isadmin ";
+                    sql_project = sql_project.Replace("(column)", "1 as admin");
+                }
+
+                result = cnn.CreateDataTable(sql_project + col_admin + join + str_where, "(where)", conds);
+                return result;
+            }
+        }
         //Create by Pad: 15 Oct 02:20pm
         /// <summary>
         /// [Wework - Repeated_Task] Trả về ngày của thứ (Tuần hiện tại) truyền vào, dt: Ngày hiện tại
@@ -445,52 +424,7 @@ namespace JeeWork_Core2021.Classes
             int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
             return dt.AddDays(-1 * diff).Date;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="CustemerID">Nếu bảng đó không có customerID thì truyền - 1</param>
-        /// <param name="colKey">Áp dụng cho trường hợp xóa, nếu kiểm tra trùng thì truyền Tên cột, nếu kiểm tra xóa truyền ID (Bảng tham chiếu)</param>
-        /// <param name="valueID">Áp dụng cho trường hợp thêm/sửa, nếu không có truyền -1</param>
-        /// <param name="tableName">Tên bảng kiểm tra</param>
-        /// <param name="keyCol">Cột kiểm tra</param>
-        /// <param name="ColDisable">Nếu bảng đó có Cột Disable thì truyền tên cột, ngược lại để trống</param>
-        /// <param name="isDisable">Nếu bảng đó có cột Disable thì truyền tên cột, giá trị cột, nếu không có truyền -1</param>
-        /// <param name="cnn">Chuỗi kết nối</param>
-        /// <param name="Values">Giá trị truyền vào để kiểm tra, nếu xóa thì truyền rỗng</param>
-        /// <param name="IsDelete">Xóa thì IsDelete = true, ngược lại truyền = false</param>
-        /// <returns></returns>
-        public static bool TestDuplicate(string colKey, string valueID, string CustemerID, string tableName, string keyCol, string ColDisable, string isDisable, DpsConnection cnn, string Values, bool IsDelete)
-        {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("1", 1);
-            string select = @"select " + keyCol + " as NamesDuplicate from " + tableName + " where (CustemerID) and (where)";
-            if (!"-1".Equals(CustemerID))
-                select = select.Replace("(CustemerID) ", " (CustemerID is null or CustemerID = " + CustemerID + ") ");
-            else
-                select = select.Replace("(CustemerID) and", " ");
-            if (IsDelete) // Trường hợp kiểm tra xóa
-                if ("Tbl_Nhanvien".Equals(tableName)) // Nếu lấy dữ liệu trong bảng Tbl_Nhanvien kiểm tra thì viết lại câu select cho nhanh
-                {
-                    cond = new SqlConditions();
-                    cond.Add("thoiviec", 0);
-                    cond.Add("disable", 0);
-                    cond.Add(keyCol, valueID);
-                    select = $"select * from {HRCatalog}.dbo.Tbl_Nhanvien where (where)";
-                }
-                else // Nếu trường hợp lấy dữ liệu từ bảng khóa ngoại
-                    cond.Add(keyCol, valueID);
-            else // Trường hợp thêm mới/Chỉnh sửa
-            {
-                cond.Add(keyCol, Values);
-                cond.Add(colKey, valueID, SqlOperator.NotEquals);
-            }
-            if (!"-1".Equals(isDisable)) // Trường hợp bảng đó có cột Xóa
-                cond.Add(ColDisable, isDisable);
-            DataTable dt = cnn.CreateDataTable(select, "(where)", cond);
-            if (dt.Rows.Count > 0)
-                return false;
-            return true;
-        }
+
         /// <summary>
         /// Lấy danh sách các cơ cấu tổ chức nhân viên có quyền truy xuất
         /// </summary>
@@ -498,19 +432,19 @@ namespace JeeWork_Core2021.Classes
         public static string GetListStructureByNhanvien(string id_nv)
         {
             string list = "0";
-            using (DpsConnection cnn = new DpsConnection(HRConnectionString))
-            {
-                string custemerid = GetCustemerID(id_nv, cnn).ToString();
-                SqlConditions cond = new SqlConditions();
-                cond.Add("id_nv", id_nv);
-                DataTable dt = cnn.CreateDataTable("select cocauid from P_Phanquyenphamvi where (where)", "(where)", cond);
-                cnn.Disconnect();
-                foreach (DataRow r in dt.Rows)
-                {
-                    list += "," + r[0];
-                    list += GetListStructureByParent(r["cocauid"].ToString(), custemerid, cnn, false);
-                }
-            }
+            //using (DpsConnection cnn = new DpsConnection(HRConnectionString))
+            //{
+            //    string custemerid = GetCustemerID(id_nv, cnn).ToString();
+            //    SqlConditions cond = new SqlConditions();
+            //    cond.Add("id_nv", id_nv);
+            //    DataTable dt = cnn.CreateDataTable("select cocauid from P_Phanquyenphamvi where (where)", "(where)", cond);
+            //    cnn.Disconnect();
+            //    foreach (DataRow r in dt.Rows)
+            //    {
+            //        list += "," + r[0];
+            //        list += GetListStructureByParent(r["cocauid"].ToString(), custemerid, cnn, false);
+            //    }
+            //}
             return list;
         }
         /// <summary>
@@ -522,35 +456,35 @@ namespace JeeWork_Core2021.Classes
         {
             DataTable dt = new DataTable();
             string list = "0";
-            using (DpsConnection cnn = new DpsConnection(HRConnectionString))
-            {
-                string CustemerID = GetCustemerID(id_nv, cnn).ToString();
-                SqlConditions cond = new SqlConditions();
-                if (cocauid == GetQuyenCoCauIDTheoNhanVien(long.Parse(id_nv.ToString()), cnn))
-                {
-                    list += "," + cocauid;
-                    cond.Add("id_nv", id_nv);
-                    dt = cnn.CreateDataTable("select cocauid from P_Phanquyenphamvi where (where)", "(where)", cond);
-                    cnn.Disconnect();
-                    foreach (DataRow r in dt.Rows)
-                    {
-                        list += "," + r[0];
-                        list += GetListStructureByParent(r["cocauid"].ToString(), CustemerID, cnn, false);
-                    }
-                }
-                else
-                {
-                    cnn.ClearError();
-                    cond.Add("rowid", cocauid);
-                    cond.Add("disable", 0);
-                    dt = cnn.CreateDataTable("select rowid from tbl_cocautochuc where (where)", "(where)", cond);
-                    foreach (DataRow r in dt.Rows)
-                    {
-                        list += "," + r[0];
-                        list += GetListStructureByParent(r["rowid"].ToString(), CustemerID, cnn, false);
-                    }
-                }
-            }
+            //using (DpsConnection cnn = new DpsConnection(HRConnectionString))
+            //{
+            //    string CustemerID = GetCustemerID(id_nv, cnn).ToString();
+            //    SqlConditions cond = new SqlConditions();
+            //    if (cocauid == GetQuyenCoCauIDTheoNhanVien(long.Parse(id_nv.ToString()), cnn))
+            //    {
+            //        list += "," + cocauid;
+            //        cond.Add("id_nv", id_nv);
+            //        dt = cnn.CreateDataTable("select cocauid from P_Phanquyenphamvi where (where)", "(where)", cond);
+            //        cnn.Disconnect();
+            //        foreach (DataRow r in dt.Rows)
+            //        {
+            //            list += "," + r[0];
+            //            list += GetListStructureByParent(r["cocauid"].ToString(), CustemerID, cnn, false);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        cnn.ClearError();
+            //        cond.Add("rowid", cocauid);
+            //        cond.Add("disable", 0);
+            //        dt = cnn.CreateDataTable("select rowid from tbl_cocautochuc where (where)", "(where)", cond);
+            //        foreach (DataRow r in dt.Rows)
+            //        {
+            //            list += "," + r[0];
+            //            list += GetListStructureByParent(r["rowid"].ToString(), CustemerID, cnn, false);
+            //        }
+            //    }
+            //}
             return list;
         }
         public static string GetQuyenCoCauIDTheoNhanVien(long id_nv, DpsConnection cnn)
@@ -583,29 +517,6 @@ namespace JeeWork_Core2021.Classes
             }
             //if (list.Equals("")) list = "," + parentid;
             return list;
-        }
-        public static int GetCustemerID(string id_nv, DpsConnection cnn)
-        {
-            int result = 0;
-            SqlConditions cond = new SqlConditions();
-            cond.Add("id_nv", id_nv);
-            string select = $"select CustemerID from {HRCatalog}.dbo.Tbl_Nhanvien inner join tbl_cocautochuc on {HRCatalog}.dbo.Tbl_Nhanvien.cocauid = tbl_cocautochuc.rowid  where (where)";
-            DataTable dt = cnn.CreateDataTable(select, "(where)", cond);
-            if (dt.Rows.Count <= 0) return result;
-            int.TryParse(dt.Rows[0][0].ToString(), out result);
-            return result;
-        }
-
-        public static string GetQuyenDonViIDTheoNhanVien(long id_nv, DpsConnection cnn)
-        {
-            string id = "0";
-            DataTable dt = cnn.CreateDataTable($@"select top 1 donviid from P_Phanquyendonvi join DM_Donvisudung on rowid = donviid 
-                        where startdate <= getdate() and (expiredate is NULL or expiredate >= getdate()) and id_nv = {id_nv}");
-            if (dt.Rows.Count > 0)
-            {
-                id = dt.Rows[0][0].ToString();
-            }
-            return id;
         }
         public static DataTable ReaddataFromXLSFile(string filename, string sheetname, out string error)
         {
@@ -641,89 +552,7 @@ namespace JeeWork_Core2021.Classes
             error = tmp_error;
             return dt;
         }
-        public static DataTable GetListByManager(string Id_manager, DpsConnection cnn)
-        {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("Id_nv", Id_manager);
-            string select = $"select id_row from {HRCatalog}.dbo.tbl_chucdanh where (id_parent in (select id_chucdanh from {HRCatalog}.dbo.Tbl_Nhanvien where (where))) or (id_parent in (select id_chucdanh from lslamviec where active=1 and disable=0 and hinhthuc=3 and (where)))";
-            DataTable dt = cnn.CreateDataTable(select, "(where)", cond);
-            StringCollection id = new StringCollection();
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                DataTable t = cnn.CreateDataTable($"select id_nv, id_chucdanh,'' as image from {HRCatalog}.dbo.Tbl_Nhanvien where (thoiviec=0) and (tamnghi=0) and ((id_chucdanh=" + dt.Rows[i][0].ToString() + ") or (id_nv in (select id_nv from lslamviec where id_chucdanh=" + dt.Rows[i][0].ToString() + " and active=1 and disable=0 and hinhthuc=3)))");
-                if (t.Rows.Count <= 0)
-                {
-                    StringCollection tmp = GetListChild(dt.Rows[i][0].ToString(), cnn);
-                    for (int n = 0; n < tmp.Count; n++)
-                    {
-                        id.Add(tmp[n]);
-                    }
-                }
-                else
-                {
-                    for (int j = 0; j < t.Rows.Count; j++)
-                    {
-                        if (t.Rows[j]["id_chucdanh"].ToString().Equals(dt.Rows[i][0].ToString()))
-                            id.Add(t.Rows[j][0].ToString());
-                    }
-                }
-            }
 
-            string id_nv = "";
-            for (int k = 0; k < id.Count; k++)
-            {
-                id_nv += "," + id[k];
-            }
-            dt = new DataTable();
-            if ("".Equals(id_nv))
-            {
-                return dt;
-            }
-            id_nv = id_nv.Substring(1);
-            dt = cnn.CreateDataTable(@$"select '' as image, nv.id_nv, nv.holot + ' ' + nv.ten as hoten, {HRCatalog}.dbo.tbl_chucdanh.tenchucdanh, nv.manv, cctc.title as tenbp, ngaysinh, isnull(isdangkyfaceid,0) as isdangkyfaceid from {HRCatalog}.dbo.Tbl_Nhanvien nv join {HRCatalog}.dbo.tbl_chucdanh on nv.id_chucdanh = {HRCatalog}.dbo.tbl_chucdanh.id_row
-            join {HRCatalog}.dbo.Tbl_Cocautochuc cctc on cctc.RowID = nv.CocauID where nv.thoiviec=0 and nv.disable=0 and id_nv in (" + id_nv + ")");
-            if (cnn.LastError != null)
-            {
-                return null;
-            }
-            return dt;
-        }
-        /// <summary>
-        /// Lấy danh sách các nhân viên cấp dưới của cấp đưa vào
-        /// </summary>
-        /// <param name="id_parent"></param>
-        /// <returns>Danh sách id_nv</returns>
-        public static StringCollection GetListChild(string id_parent, DpsConnection cnn)
-        {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("id_parent", id_parent);
-            string select = $"select id_row from {HRCatalog}.dbo.tbl_chucdanh where (where)";
-            DataTable dt = cnn.CreateDataTable(select, "(where)", cond);
-            StringCollection id = new StringCollection();
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                cond = new SqlConditions();
-                cond.Add("id_chucdanh", dt.Rows[i][0].ToString());
-                DataTable t = cnn.CreateDataTable($"select id_nv, id_chucdanh from {HRCatalog}.dbo.Tbl_Nhanvien where (thoiviec=0) and (tamnghi=0) and ((id_chucdanh=" + dt.Rows[i][0].ToString() + ") or (id_nv in (select id_nv from lslamviec where id_chucdanh=" + dt.Rows[i][0].ToString() + " and active=1 and disable=0 and hinhthuc=3)))");
-                if (t.Rows.Count <= 0)
-                {
-                    StringCollection tmp = GetListChild(dt.Rows[i][0].ToString(), cnn);
-                    for (int n = 0; n < tmp.Count; n++)
-                    {
-                        id.Add(tmp[n]);
-                    }
-                }
-                else
-                {
-                    for (int j = 0; j < t.Rows.Count; j++)
-                    {
-                        if (t.Rows[j]["id_chucdanh"].ToString().Equals(dt.Rows[i][0].ToString()))
-                            id.Add(t.Rows[j][0].ToString());
-                    }
-                }
-            }
-            return id;
-        }
         public static string GetThamSo(DpsConnection cnn, string CustemerID, int id)
         {
             string result = "";
@@ -754,29 +583,7 @@ namespace JeeWork_Core2021.Classes
             }
             return result;
         }
-        public static string getErrorMessageFromBackend(string ErrorCode, string LangCode = "vi", string _space = "")
-        {
-            string Mess = "";
-            string code = ErrorCode;
-            string space = _space;
-            if (LangCode == "vi")
-            {
-                //Mess = APIModel.Controller.LocalizationUtility.GetBackendMessage(code, space, "vi");
-                //if (Mess == null)
-                //{
-                //    Mess = APIModel.Controller.LocalizationUtility.GetBackendMessage("null", "", "vi");
-                //}
-            }
-            else
-            {
-                //Mess = APIModel.Controller.LocalizationUtility.GetBackendMessage(code, space, "en");
-                //if (Mess == null)
-                //{
-                //    Mess = APIModel.Controller.LocalizationUtility.GetBackendMessage("null", "", "en");
-                //}
-            }
-            return Mess;
-        }
+
         public static string getIDUserbyUserName(string username, IHeaderDictionary pHeader, string URL)
         {
             string userID = "";

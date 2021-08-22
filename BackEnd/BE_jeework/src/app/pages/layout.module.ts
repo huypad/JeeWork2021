@@ -1,3 +1,4 @@
+import { ProjectsTeamService } from './JeeWork_Core/projects-team/Services/department-and-project.service';
 import { MenuHorizontalComponent } from './_layout/components/header/menu-horizontal/menu-horizontal.component';
 import { TokenStorage } from './../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { Store } from '@ngrx/store';
@@ -50,7 +51,8 @@ import { AvatarModule } from 'ngx-avatar';
     AsideWeworkComponent,
   ],
   providers: [
-    TokenStorage
+    TokenStorage,
+    ProjectsTeamService
   ],
   imports: [
     CommonModule,

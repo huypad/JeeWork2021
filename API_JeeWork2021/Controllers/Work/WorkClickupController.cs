@@ -21,6 +21,12 @@ using Microsoft.Extensions.Logging;
 using API_JeeWork2021.Classes;
 using DPSinfra.Kafka;
 using JeeWork_Core2021.Controller;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Auth.OAuth2;
+using System.IO;
+using Google.Apis.Services;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Util.Store;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -113,7 +119,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     string strW = "";
                     SqlConditions Conds = new SqlConditions();
-                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), cnn);
+                    DataTable dt_Fields = WeworkLiteController.ListField(int.Parse(query.filter["id_project_team"]), 3, cnn);
                     dt_new_fields = cnn.CreateDataTable(data_newfield);
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
@@ -314,7 +320,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     result.Columns.Add("User", typeof(DataTable));
                     result.Columns.Add("UserSubtask", typeof(DataTable));
                     result.Columns.Add("Follower", typeof(DataTable));
-                    result.Columns.Add("id_nv", typeof(string));
+                    DataColumnCollection columns = result.Columns;
+                    if (!columns.Contains("id_nv"))
+                    {
+                        result.Columns.Add("id_nv", typeof(string));
+                    }
                     result.Columns.Add("DataChildren", typeof(DataTable));
                     result.Columns.Add("DataStatus", typeof(DataTable));
                     if (result.Rows.Count > 0)
@@ -361,120 +371,130 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
         }
 
-        ///// <summary>
-        ///// Trang danh sách công việc chính
-        ///// </summary>
-        ///// <param name="query"></param>
-        ///// <returns></returns>
-        //[Route("work-filter")]
-        //[HttpGet]
-        //public async Task<object> WorkFilter([FromQuery] QueryParams query)
-        //{
-        //    string Token = Common.GetHeader(Request);
-        //    UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-        //    if (loginData == null)
-        //        return JsonResultCommon.DangNhap();
-        //    if (query == null)
-        //        query = new QueryParams();
-        //    bool Visible = true;
-        //    PageModel pageModel = new PageModel();
-        //    try
-        //    {
-        //        string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-        //        string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-        //        using (DpsConnection cnn = new DpsConnection(ConnectionString))
-        //        {
-        //            #region Lấy dữ liệu account từ JeeAccount
-        //            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-        //            if (DataAccount == null)
-        //                return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-        //            #endregion
-        //            long spaceid = 0; long folderid = 0;
-        //            if (!string.IsNullOrEmpty(query.filter["spaceid"]))
-        //                spaceid = int.Parse(query.filter["spaceid"]);
-        //            if (!string.IsNullOrEmpty(query.filter["folderid"]))
-        //                folderid = int.Parse(query.filter["folderid"]);
-        //            DataTable workspace = new DataTable();
-        //            workspace.Columns.Add("id_row"); // id_dự án
-        //            workspace.Columns.Add("title"); // có thể là tên phòng ban hay thư mục
-        //            workspace.Columns.Add("projectname"); // tên dự án
-        //            workspace.Columns.Add("color"); // màu sắc
-        //            workspace.Columns.Add("parentid"); // id
-        //            workspace.Columns.Add("id_department"); // link bảng we_project_team ==> we_department
-        //            DataRow _r = workspace.NewRow();
-        //            SqlConditions Conds = new SqlConditions();
-        //            Conds.Add("disabled", 0);
-        //            if (spaceid > 0)
-        //                Conds.Add("parentid", spaceid); // khi xem công việc của phòng ban
-        //            if (folderid > 0)
-        //                Conds.Add("id_row", folderid); // khi xem công việc của folder
-        //            string sql_space = "select id_row, title, parentid, templateid, id_template_list from we_department where (where)";
-        //            DataTable dt = cnn.CreateDataTable(sql_space, "(where)", Conds);
-        //            if (dt.Rows.Count > 0)
-        //            {
-        //                foreach (DataRow fd in dt.Rows)
-        //                {
-        //                    Conds = new SqlConditions();
-        //                    Conds.Add("disabled", 0);
-        //                    Conds.Add("id_department", fd["id_row"]);
-        //                    string sql_list = "select id_row, id_department, title, color from we_project_team where (where)";
-        //                    DataTable dt_list = cnn.CreateDataTable(sql_list, "(where)", Conds);
-        //                    if (dt_list.Rows.Count > 0)
-        //                    {
-        //                        foreach (DataRow _list in dt_list.Rows)
-        //                        {
-        //                            _r = workspace.NewRow();
-        //                            _r["id_row"] = _list["id_row"];
-        //                            _r["title"] = fd["title"];
-        //                            _r["projectname"] = _list["title"];
-        //                            _r["color"] = _list["color"];
-        //                            _r["parentid"] = fd["parentid"];
-        //                            _r["id_department"] = _list["id_department"];
-        //                            workspace.Rows.Add(_r);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            if (spaceid > 0) // Trường hợp dự án là con của phòng ban
-        //            {
-        //                Conds = new SqlConditions();
-        //                Conds.Add("Disabled", 0);
-        //                Conds.Add("id_department", spaceid);
-        //                string sql_list = "select id_row, id_department, title, color from we_project_team where (where)";
-        //                DataTable dt_list = cnn.CreateDataTable(sql_list, "(where)", Conds);
-        //                if (dt_list.Rows.Count > 0)
-        //                {
-        //                    foreach (DataRow _list in dt_list.Rows)
-        //                    {
-        //                        _r = workspace.NewRow();
-        //                        _r["id_row"] = _list["id_row"];
-        //                        _r["title"] = "";
-        //                        _r["projectname"] = _list["title"];
-        //                        _r["color"] = _list["color"];
-        //                        _r["parentid"] = 0;
-        //                        _r["id_department"] = _list["id_department"];
-        //                        workspace.Rows.Add(_r);
-        //                    }
-        //                }
-        //            }
-        //            var data = from r in workspace.AsEnumerable()
-        //                       select new
-        //                       {
-        //                           id_department = r["id_department"],
-        //                           projectname = r["projectname"],
-        //                           title = r["title"],
-        //                           color = r["color"],
-        //                           id_row = r["id_row"],
-        //                           project_data = GetWorkByProjects(long.Parse(r["id_row"].ToString()), cnn, query, loginData, DataAccount, "")
-        //                       };
-        //            return JsonResultCommon.ThanhCong(data, pageModel, Visible);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-        //    }
-        //}
+        /// <summary>
+        /// Danh sách công việc theo Space, Folder, Space
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("work-filter")]
+        [HttpGet]
+        public async Task<object> WorkFilter([FromQuery] QueryParams query)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    long spaceid = 0; long folderid = 0;
+                    if (!string.IsNullOrEmpty(query.filter["spaceid"]))
+                        spaceid = int.Parse(query.filter["spaceid"]);
+                    if (!string.IsNullOrEmpty(query.filter["folderid"]))
+                        folderid = int.Parse(query.filter["folderid"]);
+                    DataTable workspace = new DataTable();
+                    workspace.Columns.Add("id_row"); // id_dự án
+                    workspace.Columns.Add("title"); // có thể là tên phòng ban hay thư mục
+                    workspace.Columns.Add("projectname"); // tên dự án
+                    workspace.Columns.Add("color"); // màu sắc
+                    workspace.Columns.Add("parentid"); // id
+                    workspace.Columns.Add("id_department"); // link bảng we_project_team ==> we_department
+                    DataRow _r = workspace.NewRow();
+                    SqlConditions Conds = new SqlConditions();
+                    Conds.Add("disabled", 0);
+                    long type = 3; long id = 0;
+                    if (spaceid > 0)
+                    {
+                        Conds.Add("parentid", spaceid); // khi xem công việc của phòng ban
+                        type = 1;
+                        id = spaceid;
+                    }
+                    if (folderid > 0)
+                    {
+                        Conds.Add("id_row", folderid); // khi xem công việc của folder
+                        type = 2;
+                        id = folderid;
+                    }
+                    string sql_space = "select id_row, title, parentid, templateid, id_template_list from we_department where (where)";
+                    DataTable dt = cnn.CreateDataTable(sql_space, "(where)", Conds);
+                    if (dt.Rows.Count > 0)
+                    {
+                        foreach (DataRow fd in dt.Rows)
+                        {
+                            Conds = new SqlConditions();
+                            Conds.Add("disabled", 0);
+                            Conds.Add("id_department", fd["id_row"]);
+                            string sql_list = "select id_row, id_department, title, color from we_project_team where (where)";
+                            DataTable dt_list = cnn.CreateDataTable(sql_list, "(where)", Conds);
+                            if (dt_list.Rows.Count > 0)
+                            {
+                                foreach (DataRow _list in dt_list.Rows)
+                                {
+                                    _r = workspace.NewRow();
+                                    _r["id_row"] = _list["id_row"];
+                                    _r["title"] = fd["title"];
+                                    _r["projectname"] = _list["title"];
+                                    _r["color"] = _list["color"];
+                                    _r["parentid"] = fd["parentid"];
+                                    _r["id_department"] = _list["id_department"];
+                                    workspace.Rows.Add(_r);
+                                }
+                            }
+                        }
+                    }
+                    if (spaceid > 0) // Trường hợp dự án là con của phòng ban
+                    {
+                        Conds = new SqlConditions();
+                        Conds.Add("Disabled", 0);
+                        Conds.Add("id_department", spaceid);
+                        string sql_list = "select id_row, id_department, title, color from we_project_team where (where)";
+                        DataTable dt_list = cnn.CreateDataTable(sql_list, "(where)", Conds);
+                        if (dt_list.Rows.Count > 0)
+                        {
+                            foreach (DataRow _list in dt_list.Rows)
+                            {
+                                _r = workspace.NewRow();
+                                _r["id_row"] = _list["id_row"];
+                                _r["title"] = "";
+                                _r["projectname"] = _list["title"];
+                                _r["color"] = _list["color"];
+                                _r["parentid"] = 0;
+                                _r["id_department"] = _list["id_department"];
+                                workspace.Rows.Add(_r);
+                            }
+                        }
+                    }
+                    DataTable dt_fields = WeworkLiteController.ListField(id, 3, cnn);
+                    var data = from r in workspace.AsEnumerable()
+                               select new
+                               {
+                                   id_department = r["id_department"],
+                                   projectname = r["projectname"],
+                                   title = r["title"],
+                                   color = r["color"],
+                                   id_row = r["id_row"],
+                                   project_data = GetWorkByProjects(r["id_row"].ToString(), dt_fields, ConnectionString, query, loginData, DataAccount, type, id)
+                               };
+                    return JsonResultCommon.ThanhCong(data, pageModel, Visible);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
 
         /// <summary>
         /// Danh sách công việc cá nhân (Tôi làm/ Tôi đang theo dõi)
@@ -4550,8 +4570,181 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
+        ServiceAccountCredential credential;
+        /// <summary>
+        /// Đồng bộ dữ liệu công việc lên google
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("google-calender")]
+        [HttpPost]
+        public async Task<BaseModel<object>> Google_Calender(GoogleCalendarModel data)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    SqlConditions sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", data.id_row);
+                    sqlcond.Add("disabled", 0);
+                    string s = "select title as tencongviec_old, * from v_wework_new where (where)";
+                    DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
+                    if (old == null || old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("Công việc");
+                    SqlConditions cond_status = new SqlConditions();
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+                    string workname = "";
+                    long id_project_team = 0;
+                    long StatusPresent = 0;
+                    Post_Automation_Model postauto = new Post_Automation_Model();
+                    postauto.taskid = data.id_row; // id task
+                    postauto.userid = loginData.UserID;
+                    postauto.listid = long.Parse(old.Rows[0]["id_project_team"].ToString()); // id project team
+                    postauto.departmentid = long.Parse(old.Rows[0]["id_department"].ToString()); // id_department
+                    postauto.customerid = loginData.CustomerID;
+                    //Data datapost = new Data();
+                    DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
+                        "from we_work " +
+                        "where id_row = @id_row", new SqlConditions() { { "id_row", data.id_row } });
+                    if (dt_infowork.Rows.Count > 0)
+                    {
+                        workname = dt_infowork.Rows[0]["title"].ToString();
+                        id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
+                        StatusPresent = long.Parse(dt_infowork.Rows[0]["status"].ToString());
+                    }
+                    DataTable dt_user1 = cnn.CreateDataTable("select distinct id_nv, title, id_row from v_wework_new where id_nv is not null and (where)", "(where)", sqlcond);
+                    List<long> danhsachU = new List<long>();
+                    if (cnn.LastError is null && dt_user1.Rows.Count > 0)
+                    {
+                        danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
+                    }
+                    //CalendarService _service = this.GetCalendarService("PATHTOJSONFILE\\gsuite-migration-123456-a4556s8df.json");
+                    //CreateEvent(_service);
+                    //GetEvents(_service);
+                    var service = new CalendarService(new BaseClientService.Initializer()
+                    {
+                        HttpClientInitializer = credential,
+                        ApplicationName = "Calendar API Sample",
+                    });
+                    var ev = new Event();
+                    EventDateTime start = new EventDateTime();
+                    start.DateTime = new DateTime(2019, 3, 11, 10, 0, 0);
+                    EventDateTime end = new EventDateTime();
+                    end.DateTime = new DateTime(2019, 3, 11, 10, 30, 0);
+                    ev.Start = start;
+                    ev.End = end;
+                    ev.Summary = "New Event";
+                    ev.Description = "Description...";
+                    var calendarId = "primary";
+                    Event recurringEvent = service.Events.Insert(ev, calendarId).Execute();
+                    //Console.WriteLine("Event created: %s\n", "");
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        private CalendarService GetCalendarService(string keyfilepath)
+        {
+            try
+            {
+                string[] Scopes = {
+   CalendarService.Scope.Calendar,
+   CalendarService.Scope.CalendarEvents,
+   CalendarService.Scope.CalendarEventsReadonly
+  };
 
+                GoogleCredential credential;
+                using (var stream = new FileStream(keyfilepath, FileMode.Open, FileAccess.Read))
+                {
+                    // As we are using admin SDK, we need to still impersonate user who has admin access    
+                    //  https://developers.google.com/admin-sdk/directory/v1/guides/delegation    
+                    credential = GoogleCredential.FromStream(stream)
+                     .CreateScoped(Scopes).CreateWithUser("huytranvan1404@gmail.com");
+                }
 
+                // Create Calendar API service.    
+                var service = new CalendarService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = "Calendar Sample",
+                });
+                return service;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private void CreateEvent(CalendarService _service)
+        {
+            Event body = new Event();
+            EventAttendee a = new EventAttendee();
+            a.Email = "huytranvan1404@gmail.com";
+            EventAttendee b = new EventAttendee();
+            b.Email = "huypaddaica@gmail.com";
+            List<EventAttendee> attendes = new List<EventAttendee>();
+            attendes.Add(a);
+            attendes.Add(b);
+            body.Attendees = attendes;
+            EventDateTime start = new EventDateTime();
+            start.DateTime = Convert.ToDateTime("2019-08-28T09:00:00+0530");
+            EventDateTime end = new EventDateTime();
+            end.DateTime = Convert.ToDateTime("2019-08-28T11:00:00+0530");
+            body.Start = start;
+            body.End = end;
+            body.Location = "Avengers Mansion";
+            body.Summary = "Discussion about new Spidey suit";
+            EventsResource.InsertRequest request = new EventsResource.InsertRequest(_service, body, "huytv@dps.com.vn");
+            Event response = request.Execute();
+        }
+        private void GetEvents(CalendarService _service)
+        {
+            // Define parameters of request.    
+            EventsResource.ListRequest request = _service.Events.List("primary");
+            request.TimeMin = DateTime.Now;
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.MaxResults = 10;
+            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+
+            string eventsValue = "";
+            // List events.    
+            Events events = request.Execute();
+            eventsValue = "Upcoming events:\n";
+            if (events.Items != null && events.Items.Count > 0)
+            {
+                foreach (var eventItem in events.Items)
+                {
+                    string when = eventItem.Start.DateTime.ToString();
+                    if (String.IsNullOrEmpty(when))
+                    {
+                        when = eventItem.Start.Date;
+                    }
+                    eventsValue += string.Format("{0} ({1})", eventItem.Summary, when) + "\n";
+                }
+                //MessageBox.Show(eventsValue);
+            }
+            else
+            {
+                //MessageBox.Show("No upcoming events found.");
+            }
+        }
         /// <summary>
         /// Nhân bản công việc
         /// </summary>
@@ -5294,8 +5487,8 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         }
         public static string getColorByName(string name)
         {
-            string result = "";
-
+            string result = "rgb(0, 0, 0)";
+            name = name.ToUpper();
             switch (name)
             {
                 case "A":
@@ -5442,7 +5635,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         }
         public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, string ConnectionString, List<AccUsernameModel> DataAccount)
         {
-            
+
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 try
@@ -6100,247 +6293,253 @@ where u.disabled = 0 and u.loai = 2";
             #endregion
             return temp;
         }
-        //public object GetWorkByProjects(long id_project_team, DpsConnection cnn, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount, string dieukien_where = "")
-        //{
-        //    #region filter thời gian, keyword, group by
-        //    DateTime from = DateTime.Now;
-        //    DateTime to = DateTime.Now;
-        //    string groupby = "status";
-        //    string tableName = "";
-        //    string querySQL = "";
-        //    string data_newfield = "";
-        //    DataTable dt_filter = new DataTable();
-        //    DataTable dt_filter_tmp = new DataTable();
-        //    DataTable dt_new_fields = new DataTable();
-        //    dt_filter.Columns.Add("id_row", typeof(String));
-        //    dt_filter.Columns.Add("statusname", typeof(String));
-        //    dt_filter.Columns.Add("color", typeof(String));
-        //    dt_filter.Columns.Add("Follower", typeof(String));
-        //    dt_filter.Columns.Add("description", typeof(String));
-        //    data_newfield = "select * from we_newfileds_values where id_project_team = " + int.Parse(query.filter["id_project_team"]) + "";
-        //    #endregion
-        //    string strW = "";
-        //    SqlConditions Conds = new SqlConditions();
-        //    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), cnn);
-        //    dt_new_fields = cnn.CreateDataTable(data_newfield);
-        //    Dictionary<string, string> collect = new Dictionary<string, string>
-        //                {
-        //                    { "CreatedDate", "CreatedDate"},
-        //                    { "Deadline", "deadline"},
-        //                    { "StartDate", "start_date"}
-        //                };
-        //    string collect_by = "CreatedDate";
-        //    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-        //        collect_by = collect[query.filter["collect_by"]];
-        //    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
-        //    {
-        //        DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-        //        strW += " and w." + collect_by + ">=@from";
-        //        Conds.Add("from", from);
-        //    }
-        //    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
-        //    {
-        //        DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-        //        to = to.AddDays(1);
-        //        strW += " and w." + collect_by + "<@to";
-        //        Conds.Add("to", to);
-        //    }
-        //    if (!string.IsNullOrEmpty(query.filter["keyword"]))
-        //    {
-        //        strW += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
-        //        strW = strW.Replace("@keyword", query.filter["keyword"]);
-        //    }
-        //    if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
-        //    {
-        //        strW += " and (w.id_project_team = @id_project_team)";
-        //        strW = strW.Replace("@id_project_team", query.filter["id_project_team"]);
-        //    }
-        //    SqlConditions cond = new SqlConditions();
-        //    cond.Add("id_project_team", query.filter["id_project_team"]);
-        //    cond.Add("w_u.disabled", 0);
-        //    string sql_user = $@"select w_u.id_work, w_u.id_user, w_u.loai, id_child
-        //                                , w_u.disabled, '' as hoten, id_project_team,'' as image, w.id_parent
-        //                                from we_work_user w_u 
-        //                                join we_work w on w.id_row = w_u.id_work 
-        //                                where (where)";
-        //    DataTable dt_users = cnn.CreateDataTable(sql_user, "(where)", cond);
-        //    #region Map info account từ JeeAccount
-        //    foreach (DataRow item in dt_users.Rows)
-        //    {
-        //        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-        //        if (info != null)
-        //        {
-        //            item["hoten"] = info.FullName;
-        //            item["image"] = info.AvartarImgURL;
-        //        }
-        //    }
-        //    #endregion
-        //    if (!string.IsNullOrEmpty(query.filter["groupby"]))
-        //    {
-        //        groupby = query.filter["groupby"];
-        //        switch (groupby)
-        //        {
-        //            case "priority":
-        //                {
-        //                    dt_filter_tmp = new DataTable();
-        //                    dt_filter_tmp.Columns.Add("id_row", typeof(String));
-        //                    dt_filter_tmp.Columns.Add("statusname", typeof(String));
-        //                    dt_filter_tmp.Columns.Add("color", typeof(String));
-        //                    dt_filter_tmp.Columns.Add("Follower", typeof(String));
-        //                    dt_filter_tmp.Rows.Add(new object[] { "1", "Urgent", "#fd397a" });
-        //                    dt_filter_tmp.Rows.Add(new object[] { "2", "High", "#ffb822" });
-        //                    dt_filter_tmp.Rows.Add(new object[] { "3", "Normal", "#5578eb" });
-        //                    dt_filter_tmp.Rows.Add(new object[] { "4", "Low", "#74788d " });
-        //                    break;
-        //                }
-        //            case "status":
-        //                {
-        //                    tableName = "we_status";
-        //                    querySQL = "select id_row, statusname, color, Follower, Description from " + tableName + " " +
-        //                        "where disabled = 0 and id_project_team  = " + int.Parse(query.filter["id_project_team"]) + "";
-        //                    dt_filter_tmp = cnn.CreateDataTable(querySQL);
-        //                    break;
-        //                }
-        //            case "groupwork":
-        //                {
-        //                    tableName = "we_group";
-        //                    querySQL = "select id_row, title,'' as color, '' as Follower, '' as description from " + tableName + " " +
-        //                        "where disabled = 0 and id_project_team  = " + int.Parse(query.filter["id_project_team"]) + "";
-        //                    dt_filter_tmp = cnn.CreateDataTable(querySQL);
-        //                    DataRow newRow = dt_filter_tmp.NewRow();
-        //                    newRow[0] = 0;
-        //                    newRow[1] = "Chưa phân loại";
-        //                    dt_filter_tmp.Rows.InsertAt(newRow, 0);
-        //                    break;
-        //                }
-        //            case "assignee":
-        //                {
-        //                    dt_filter_tmp = new DataTable();
-        //                    dt_filter_tmp = cnn.CreateDataTable("select id_user as id_row from we_project_team_user where disabled = 0 and id_project_team = " + query.filter["id_project_team"]);
-        //                    dt_filter_tmp.Columns.Add("title");
-        //                    dt_filter_tmp.Columns.Add("color");
-        //                    dt_filter_tmp.Columns.Add("Follower");
-        //                    dt_filter_tmp.Columns.Add("Description");
-        //                    DataRow newRow = dt_filter_tmp.NewRow();
-        //                    foreach (DataRow item in dt_filter_tmp.Rows)
-        //                    {
-        //                        newRow = dt_filter_tmp.NewRow();
-        //                        var info = DataAccount.Where(x => item["id_row"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-        //                        if (info != null)
-        //                        {
-        //                            item["title"] = info.FullName;
-        //                            item["color"] = "";
-        //                            item["Follower"] = "";
-        //                            item["Description"] = "";
-        //                        }
-        //                    }
-        //                    newRow = dt_filter_tmp.NewRow();
-        //                    newRow[0] = "0";
-        //                    newRow[1] = "Công việc nhiều người làm";
-        //                    dt_filter_tmp.Rows.InsertAt(newRow, 0);
-        //                    dt_filter_tmp.Rows.InsertAt(dt_filter_tmp.NewRow(), 0);
-        //                    break;
-        //                }
-        //            default: break;
-        //        }
-        //    }
-        //    foreach (DataRow row in dt_filter_tmp.Rows)
-        //    {
-        //        string word = "Ă";
-        //        if (!string.IsNullOrEmpty(row[1].ToString()))
-        //        {
-        //            char[] array = row[1].ToString().Take(1).ToArray();
-        //            word = array[0].ToString();
-        //        }
-        //        dt_filter.Rows.Add(new object[] { row[0].ToString(), row[1].ToString(), row[2].ToString() == "" ? getColorByName(word) : row[2].ToString(), row[3].ToString() == "" ? "0" : row[3].ToString(), row[4].ToString() });
-        //    }
-        //    DataTable dt_tag = new DataTable();
-        //    SqlConditions conds = new SqlConditions();
-        //    string FieldsSelected = "";
-        //    List<object> FieldName_New = dt_Fields.AsEnumerable().Where(x => !(bool)x["isnewfield"]).Select(x => x["FieldName"]).ToList();
-        //    foreach (var _item in FieldName_New)
-        //    {
-        //        string fieldname = _item.ToString();
-        //        if ("tag".Equals(fieldname))
-        //        {
-        //            conds = new SqlConditions();
-        //            conds.Add("id_project_team", query.filter["id_project_team"]);
-        //            conds.Add("w_tag.Disabled", 0);
-        //            conds.Add("tag.Disabled", 0);
-        //            string select_tag = "select tag.title, tag.color, w_tag.id_row, w_tag.id_tag, w_tag.id_work " +
-        //                "from we_work_tag w_tag join we_tag tag on tag.id_row = w_tag.id_tag " +
-        //                "where (where)";
-        //            dt_tag = cnn.CreateDataTable(select_tag, "(where)", conds);
-        //        }
-        //        else
-        //        {
-        //            if ("id_row".Equals(fieldname))
-        //                fieldname = "cast(id_row as varchar) as id_row";
-        //            if ("status".Equals(fieldname))
-        //                fieldname = "cast(status as varchar) as status";
-        //            if ("comments".Equals(fieldname))
-        //                fieldname = "'' as comments";
-        //            FieldsSelected += "," + fieldname.ToLower();
-        //        }
-        //    }
-        //    if (!FieldsSelected.Equals(""))
-        //        FieldsSelected = FieldsSelected.Substring(1);
-        //    string sql = "select iIf(id_group is null,0,id_group) as id_group ,work_group, " + FieldsSelected;
-        //    sql += $@" from v_wework_clickup_new w where w.disabled = 0 " + strW;
-        //    DataTable result = new DataTable();
-        //    result = cnn.CreateDataTable(sql, Conds);
-        //    DataTable tmp = new DataTable();
-        //    //DataTable dt_comments = cnn.CreateDataTable("select id_row, object_type, object_id, comment, id_parent, Disabled " +
-        //    //   "from we_comment where disabled = 0 and object_type = 1");
-        //    DataTable dt_comments = cnn.CreateDataTable("select id_row, num_comment from we_work ");
-        //    string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a 
-        //                                join we_work_tag b on a.id_row=b.id_tag 
-        //                                where a.disabled=0 and b.disabled = 0 
-        //                                and a.id_project_team = " + query.filter["id_project_team"] + "" +
-        //                        " and id_work = ";
-        //    result.Columns.Add("Tags", typeof(DataTable));
-        //    result.Columns.Add("User", typeof(DataTable));
-        //    result.Columns.Add("UserSubtask", typeof(DataTable));
-        //    result.Columns.Add("Follower", typeof(DataTable));
-        //    result.Columns.Add("id_nv", typeof(string));
-        //    result.Columns.Add("DataChildren", typeof(DataTable));
-        //    result.Columns.Add("DataStatus", typeof(DataTable));
-        //    if (result.Rows.Count > 0)
-        //    {
-        //        foreach (DataRow dr in result.Rows)
-        //        {
-        //            dr["comments"] = dt_comments.Compute("sum(num_comment)", "id_row =" + dr["id_row"].ToString() + "").ToString();
-        //            dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
-        //            var row_user = dt_users.Select("id_parent is null and loai = 1 and id_work = " + dr["id_row"]);
-        //            if (row_user.Any())
-        //                dr["User"] = row_user.CopyToDataTable();
-        //            row_user = dt_users.Select("id_parent is null and loai = 2 and id_work = " + dr["id_row"]);
-        //            if (row_user.Any())
-        //                dr["Follower"] = row_user.CopyToDataTable();
-        //            DataRow[] user_child = dt_users.Select("id_parent is not null and id_parent = " + dr["id_row"]);
-        //            if (string.IsNullOrEmpty(dr["id_parent"].ToString()))
-        //            {
-        //                string qs = sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")";
-        //                dr["UserSubtask"] = cnn.CreateDataTable(sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")", "(where)", cond);
-        //                dr["DataChildren"] = dtChildren(dr["id_row"].ToString(), result, cnn, dt_Fields, query.filter["id_project_team"], DataAccount, user_child, loginData);
-        //                dr["DataStatus"] = list_status_user(dr["id_row"].ToString(), query.filter["id_project_team"], loginData, cnn, DataAccount);
-        //            }
-        //        }
-        //        var filterTeam = " id_parent is null and id_project_team = " + (query.filter["id_project_team"]);
-        //        var rows = result.Select(filterTeam);
-        //        if (rows.Any())
-        //            tmp = rows.CopyToDataTable();
-        //    }
-        //    var data = new
-        //    {
-        //        datawork = tmp,
-        //        TenCot = dt_Fields,
-        //        Tag = dt_tag,
-        //        Filter = dt_filter,
-        //        User = dt_users,
-        //        DataWork_NewField = dt_new_fields
-        //    };
-        //    return data;
-        //}
+        private object GetWorkByProjects(string id_project_team, DataTable dt_fields, string ConnectionString, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount, long type, long id)
+        {
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                #region filter thời gian, keyword, group by
+                DateTime from = DateTime.Now;
+                DateTime to = DateTime.Now;
+                string groupby = "status";
+                string tableName = "";
+                string querySQL = "";
+                string data_newfield = "";
+                DataTable dt_filter = new DataTable();
+                DataTable dt_filter_tmp = new DataTable();
+                DataTable dt_new_fields = new DataTable();
+                dt_filter.Columns.Add("id_row", typeof(String));
+                dt_filter.Columns.Add("statusname", typeof(String));
+                dt_filter.Columns.Add("color", typeof(String));
+                dt_filter.Columns.Add("Follower", typeof(String));
+                dt_filter.Columns.Add("description", typeof(String));
+                data_newfield = "select * from we_newfileds_values where id_project_team = " + id_project_team + "";
+                #endregion
+                string strW = "";
+                SqlConditions Conds = new SqlConditions();
+                // query.filter["id_project_team"]
+                dt_new_fields = cnn.CreateDataTable(data_newfield);
+                Dictionary<string, string> collect = new Dictionary<string, string>
+                        {
+                            { "CreatedDate", "CreatedDate"},
+                            { "Deadline", "deadline"},
+                            { "StartDate", "start_date"}
+                        };
+                string collect_by = "CreatedDate";
+                if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                    collect_by = collect[query.filter["collect_by"]];
+                if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                {
+                    DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    strW += " and w." + collect_by + ">=@from";
+                    Conds.Add("from", from);
+                }
+                if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                {
+                    DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    to = to.AddDays(1);
+                    strW += " and w." + collect_by + "<@to";
+                    Conds.Add("to", to);
+                }
+                if (!string.IsNullOrEmpty(query.filter["keyword"]))
+                {
+                    strW += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
+                    strW = strW.Replace("@keyword", query.filter["keyword"]);
+                }
+                strW += " and (w.id_project_team = @id_project_team)";
+                strW = strW.Replace("@id_project_team", id_project_team.ToString());
+                SqlConditions cond = new SqlConditions();
+                cond.Add("id_project_team", id_project_team);
+                cond.Add("w_u.disabled", 0);
+                string sql_user = $@"select w_u.id_work, w_u.id_user, w_u.loai, id_child
+                                        , w_u.disabled, '' as hoten, id_project_team,'' as image, w.id_parent
+                                        from we_work_user w_u 
+                                        join we_work w on w.id_row = w_u.id_work 
+                                        where (where)";
+                DataTable dt_users = cnn.CreateDataTable(sql_user, "(where)", cond);
+                #region Map info account từ JeeAccount
+                foreach (DataRow item in dt_users.Rows)
+                {
+                    var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info != null)
+                    {
+                        item["hoten"] = info.FullName;
+                        item["image"] = info.AvartarImgURL;
+                    }
+                }
+                #endregion
+                if (!string.IsNullOrEmpty(query.filter["groupby"]))
+                {
+                    groupby = query.filter["groupby"];
+                    switch (groupby)
+                    {
+                        case "priority":
+                            {
+                                dt_filter_tmp = new DataTable();
+                                dt_filter_tmp.Columns.Add("id_row", typeof(String));
+                                dt_filter_tmp.Columns.Add("statusname", typeof(String));
+                                dt_filter_tmp.Columns.Add("color", typeof(String));
+                                dt_filter_tmp.Columns.Add("Follower", typeof(String));
+                                dt_filter_tmp.Rows.Add(new object[] { "1", "Urgent", "#fd397a" });
+                                dt_filter_tmp.Rows.Add(new object[] { "2", "High", "#ffb822" });
+                                dt_filter_tmp.Rows.Add(new object[] { "3", "Normal", "#5578eb" });
+                                dt_filter_tmp.Rows.Add(new object[] { "4", "Low", "#74788d " });
+                                break;
+                            }
+                        case "status":
+                            {
+                                tableName = "we_status";
+                                querySQL = "select id_row, statusname, color, Follower, Description from " + tableName + " " +
+                                    "where disabled = 0 and id_project_team  = " + id_project_team + "";
+                                dt_filter_tmp = cnn.CreateDataTable(querySQL);
+                                break;
+                            }
+                        case "groupwork":
+                            {
+                                tableName = "we_group";
+                                querySQL = "select id_row, title,'' as color, '' as Follower, '' as description from " + tableName + " " +
+                                    "where disabled = 0 and id_project_team  = " + id_project_team + "";
+                                dt_filter_tmp = cnn.CreateDataTable(querySQL);
+                                DataRow newRow = dt_filter_tmp.NewRow();
+                                newRow[0] = 0;
+                                newRow[1] = "Chưa phân loại";
+                                dt_filter_tmp.Rows.InsertAt(newRow, 0);
+                                break;
+                            }
+                        case "assignee":
+                            {
+                                dt_filter_tmp = new DataTable();
+                                dt_filter_tmp = cnn.CreateDataTable("select id_user as id_row from we_project_team_user where disabled = 0 and id_project_team = " + id_project_team);
+                                dt_filter_tmp.Columns.Add("title");
+                                dt_filter_tmp.Columns.Add("color");
+                                dt_filter_tmp.Columns.Add("Follower");
+                                dt_filter_tmp.Columns.Add("Description");
+                                DataRow newRow = dt_filter_tmp.NewRow();
+                                foreach (DataRow item in dt_filter_tmp.Rows)
+                                {
+                                    newRow = dt_filter_tmp.NewRow();
+                                    var info = DataAccount.Where(x => item["id_row"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                    if (info != null)
+                                    {
+                                        item["title"] = info.FullName;
+                                        item["color"] = "";
+                                        item["Follower"] = "";
+                                        item["Description"] = "";
+                                    }
+                                }
+                                newRow = dt_filter_tmp.NewRow();
+                                newRow[0] = "0";
+                                newRow[1] = "Công việc nhiều người làm";
+                                dt_filter_tmp.Rows.InsertAt(newRow, 0);
+                                dt_filter_tmp.Rows.InsertAt(dt_filter_tmp.NewRow(), 0);
+                                break;
+                            }
+                        default: break;
+                    }
+                }
+                foreach (DataRow row in dt_filter_tmp.Rows)
+                {
+                    string word = "Ă";
+                    if (!string.IsNullOrEmpty(row[1].ToString()))
+                    {
+                        char[] array = row[1].ToString().Take(1).ToArray();
+                        word = array[0].ToString();
+                    }
+                    dt_filter.Rows.Add(new object[] { row[0].ToString(), row[1].ToString(), row[2].ToString() == "" ? getColorByName(word) : row[2].ToString(), row[3].ToString() == "" ? "0" : row[3].ToString(), row[4].ToString() });
+                }
+                DataTable dt_tag = new DataTable();
+                SqlConditions conds = new SqlConditions();
+                string FieldsSelected = "";
+                List<object> FieldName_New = dt_fields.AsEnumerable().Where(x => !(bool)x["isnewfield"]).Select(x => x["FieldName"]).ToList();
+                foreach (var _item in FieldName_New)
+                {
+                    string fieldname = _item.ToString();
+                    if ("tag".Equals(fieldname))
+                    {
+                        conds = new SqlConditions();
+                        conds.Add("id_project_team", id_project_team);
+                        conds.Add("w_tag.disabled", 0);
+                        conds.Add("tag.disabled", 0);
+                        string select_tag = "select tag.title, tag.color, w_tag.id_row, w_tag.id_tag, w_tag.id_work " +
+                            "from we_work_tag w_tag join we_tag tag on tag.id_row = w_tag.id_tag " +
+                            "where (where)";
+                        dt_tag = cnn.CreateDataTable(select_tag, "(where)", conds);
+                    }
+                    if ("id_nv".Equals(fieldname))
+                    {
+
+                    }
+                    else
+                    {
+                        if ("id_row".Equals(fieldname))
+                            fieldname = "cast(id_row as varchar) as id_row";
+                        if ("status".Equals(fieldname))
+                            fieldname = "cast(status as varchar) as status";
+                        if ("comments".Equals(fieldname))
+                            fieldname = "'' as comments";
+                        FieldsSelected += "," + fieldname.ToLower();
+                    }
+                }
+                if (!FieldsSelected.Equals(""))
+                    FieldsSelected = FieldsSelected.Substring(1);
+                string sql = "select iIf(id_group is null,0,id_group) as id_group ,work_group, " + FieldsSelected;
+                sql += $@" from v_wework_clickup_new w where w.disabled = 0 " + strW;
+                DataTable result = new DataTable();
+                result = cnn.CreateDataTable(sql, Conds);
+                DataTable tmp = new DataTable();
+                DataTable dt_comments = cnn.CreateDataTable("select id_row, num_comment from we_work ");
+                string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a 
+                                        join we_work_tag b on a.id_row=b.id_tag 
+                                        where a.disabled=0 and b.disabled = 0 
+                                        and a.id_project_team = " + id_project_team + "" +
+                                    " and id_work = ";
+                result.Columns.Add("Tags", typeof(DataTable));
+                result.Columns.Add("User", typeof(DataTable));
+                result.Columns.Add("UserSubtask", typeof(DataTable));
+                result.Columns.Add("Follower", typeof(DataTable));
+                DataColumnCollection columns = result.Columns;
+                if (!columns.Contains("id_nv"))
+                {
+                    result.Columns.Add("id_nv", typeof(string));
+                }
+                result.Columns.Add("DataChildren", typeof(DataTable));
+                result.Columns.Add("DataStatus", typeof(DataTable));
+                if (result.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in result.Rows)
+                    {
+                        dr["comments"] = dt_comments.Compute("sum(num_comment)", "id_row =" + dr["id_row"].ToString() + "").ToString();
+                        dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
+                        var row_user = dt_users.Select("id_parent is null and loai = 1 and id_work = " + dr["id_row"]);
+                        if (row_user.Any())
+                            dr["User"] = row_user.CopyToDataTable();
+                        row_user = dt_users.Select("id_parent is null and loai = 2 and id_work = " + dr["id_row"]);
+                        if (row_user.Any())
+                            dr["Follower"] = row_user.CopyToDataTable();
+                        DataRow[] user_child = dt_users.Select("id_parent is not null and id_parent = " + dr["id_row"]);
+                        if (string.IsNullOrEmpty(dr["id_parent"].ToString()))
+                        {
+                            string qs = sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")";
+                            dr["UserSubtask"] = cnn.CreateDataTable(sql_user + " and id_work in (select id_row from we_work where id_parent = " + dr["id_row"] + ")", "(where)", cond);
+                            dr["DataChildren"] = dtChildren(dr["id_row"].ToString(), result, ConnectionString, dt_fields, id_project_team.ToString(), DataAccount, user_child, loginData);
+                            dr["DataStatus"] = list_status_user(dr["id_row"].ToString(), id_project_team.ToString(), loginData, ConnectionString, DataAccount);
+                        }
+                    }
+                    var filterTeam = " id_parent is null and id_project_team = " + id_project_team;
+                    var rows = result.Select(filterTeam);
+                    if (rows.Any())
+                        tmp = rows.CopyToDataTable();
+                }
+                var data = new
+                {
+                    datawork = tmp,
+                    TenCot = dt_fields,
+                    Tag = dt_tag,
+                    Filter = dt_filter,
+                    User = dt_users,
+                    DataWork_NewField = dt_new_fields
+                };
+                return data;
+            }
+        }
     }
 }

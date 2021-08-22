@@ -412,7 +412,10 @@ export class SettingComponent {
 		this.layoutUtilsService.showWaitingDiv();
 		this._service.UpdateProjectTeam(_item).subscribe((res) => {
 			this.layoutUtilsService.OffWaitingDiv();
-			if (res && res.status === 1) this.ngOnInit();
+			if (res && res.status === 1) {
+				this.ngOnInit();
+				this.Giaotiep(true);
+			}
 			else {
 				this.layoutUtilsService.showError(res.error.message);
 			}
@@ -543,4 +546,9 @@ export class SettingComponent {
 			this.LoadData();
 		});
 	}
+
+	Giaotiep(value): void {
+		console.log(1234567890);
+		this._service.changeMessage(value);
+	  }
 }

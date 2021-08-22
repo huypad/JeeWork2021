@@ -1,1 +1,5 @@
-<app-works-dash-board [ListProject]="this.dataSource.entitySubject | async"></app-works-dash-board>
+
+
+<ng-container *ngIf="!isLoading">
+    <app-works-dash-board [isFolder]="isFolder" [Id_Department]="Id_Department" [ListProject]="this.dataSource.entitySubject | async"></app-works-dash-board>
+</ng-container>

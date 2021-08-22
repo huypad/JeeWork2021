@@ -48,6 +48,7 @@ import { SplashScreenModule } from "./_metronic/partials/layout/splash-screen/sp
 import { FakeAPIService } from "./_fake/fake-api.service";
 import { CommonService } from "./_metronic/jeework_old/core/services/common.service";
 import { MAT_DATE_LOCALE } from "@angular/material/core";
+import { CommunicateService } from "./pages/JeeWork_Core/projects-team/work-list-new/work-list-new-service/communicate.service";
 // #fake-end#
 
 function appInitializer(authService: AuthService) {
@@ -96,7 +97,7 @@ function appInitializer(authService: AuthService) {
     KtDialogService,
     DataTableService,
     SplashScreenService,
-
+    CommunicateService,
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializer,

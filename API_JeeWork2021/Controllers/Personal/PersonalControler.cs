@@ -445,7 +445,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                 DataTable dt = null;
                 using (DpsConnection cnn = new DpsConnection(_config.HRConnectionString))
                 {
-                    dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten,tenchucdanh...
+                    //dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten,tenchucdanh...
                 }
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))

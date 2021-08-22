@@ -35,6 +35,7 @@ import {
   takeUntil,
   debounceTime,
   startWith,
+  switchMap,
 } from "rxjs/operators";
 import { element } from "protractor";
 import { WeWorkService } from "./../../../services/wework.services";
@@ -59,6 +60,7 @@ import {
   Inject,
   OnChanges,
   OnDestroy,
+  SimpleChanges,
 } from "@angular/core";
 import { MatTable } from "@angular/material/table";
 import { MatDialog } from "@angular/material/dialog";
@@ -71,7 +73,8 @@ import { workAddFollowersComponent } from "../../../work/work-add-followers/work
 import { WorkAssignedComponent } from "../../../work/work-assigned/work-assigned.component";
 import { DuplicateWorkComponent } from "../../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
-import { BehaviorSubject, of } from "rxjs";
+import { BehaviorSubject, of, Subject, SubscriptionLike, throwError } from "rxjs";
+import { CommunicateService } from "../work-list-new-service/communicate.service";
 
 
 @Component({
@@ -81,6 +84,9 @@ import { BehaviorSubject, of } from "rxjs";
 })
 export class WorksDashBoardComponent implements OnInit, OnChanges {
   @Input() ListProject: any = [];
+  @Input() Id_Department: any = 0;
+  @Input() isFolder: boolean = false;
+  subscription: SubscriptionLike;
 
   ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
   data: any = [];
@@ -132,10 +138,11 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
   };
   IsAdminGroup = false;
   public column_sort: any = [];
+  onChanges = new Subject<SimpleChanges>();
   constructor(
     @Inject(DOCUMENT) private document: Document, // multi level
     private _service: ProjectsTeamService,
-    private WorkService: WorkService,
+    private workService: WorkService,
     private router: Router,
     public dialog: MatDialog,
     private route: ActivatedRoute,
@@ -148,18 +155,35 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     private tokenStorage: TokenStorage,
     private WeWorkService: WeWorkService,
     private menuServices: MenuPhanQuyenServices,
-    private overlayContainer: OverlayContainer,
+    private CommunicateService: CommunicateService,
     private _attservice: AttachmentService
   ) {
     this.filter_groupby = this.listFilter_Groupby[0];
     this.filter_subtask = this.listFilter_Subtask[0];
     this.list_priority = this.WeWorkService.list_priority;
     this.UserID = +localStorage.getItem("idUser");
+    
+    var today = new Date();
+    var start_date = new Date();
+    this.filterDay = {
+      endDate: new Date(today.setMonth(today.getMonth() + 1)),
+      startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
+    };
+
+    this.column_sort = this.sortField[0];
   }
 
   ngOnInit() {
 
-    console.log(this.ListProject)
+     // giao tiếp service
+     this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
+      if(message){
+        console.log('LoadData');
+        this.LoadData();
+      }
+    });
+    //end giao tiếp service
+    
     this.searchCtrl.valueChanges
     .pipe(
       debounceTime(1000),
@@ -169,15 +193,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
       this.keyword = res;
       this.LoadData();
     });
-
-    var today = new Date();
-    var start_date = new Date();
-    this.filterDay = {
-      endDate: new Date(today.setMonth(today.getMonth() + 1)),
-      startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
-    };
-
-    this.column_sort = this.sortField[0];
     // this.selection = new SelectionModel<WorkModel>(true, []);
     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
       if (res && res.status == 1) {
@@ -186,13 +201,45 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
       }
       
     });
-    this.LoadData();
+    // this.LoadData();
 
-    
+    // this.LoadNewList();
+    this.onChanges.subscribe((data:SimpleChanges)=>{
+      if(data.Id_Department){
+        this.LoadData();
+      }
+    });
+  }
+  listField$ = new BehaviorSubject<any>("");
+  listField : any = [];
+
+  DataSpace = new BehaviorSubject<any[]>([]);
+  LoadNewList(){
+    if(this.Id_Department <= 0)
+      return;
+    console.log(this.filterConfiguration());
+    const queryParams = new QueryParamsModelNew(
+      this.filterConfiguration()
+    );
+    this.layoutUtilsService.showWaitingDiv();
+    this.workService.WorkFilter(queryParams).pipe(
+      switchMap(resultFromServer => of(resultFromServer).pipe(
+        tap(resultFromServer => {
+          this.DataSpace.next(resultFromServer.data);
+        })
+      )),
+      catchError(err => throwError(err)),
+      finalize(() => console.log)
+    ).subscribe( () => {
+      this.layoutUtilsService.OffWaitingDiv()  
+    });
   }
 
-  ngOnChanges() {
-    console.log(this.ListProject)
+
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes,'2')
+    this.onChanges.next(changes);
   }
 
   loadSubtask() {
@@ -210,15 +257,46 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
 
     this.filter = this.filterConfiguration();
     this.data = [];
-    this.layoutUtilsService.showWaitingDiv();
+    // this.layoutUtilsService.showWaitingDiv();
     this.WeWorkService.GetNewField().subscribe((res) => {
       if (res && res.status == 1) {
         this.listNewField = res.data;
       }
     });
+
+    this.WeWorkService.GetListField(0,3,false).subscribe(res => {
+      if (res && res.status === 1) {
+         var listField = res.data;
+        //xóa title khỏi cột
+
+        var colDelete = ['title','id_row','id_parent'];
+        colDelete.forEach(element => {
+          var indextt = listField.findIndex(x => x.fieldname == element);
+          if (indextt >= 0)
+            listField.splice(indextt, 1)
+        });
+        this.listField$.next(listField);
+        this.listField= listField;
+        console.log(listField);
+        this.changeDetectorRefs.detectChanges();
+      }
+      else{
+        this.layoutUtilsService.showInfo(res.error.message);
+      }
+    })
+
+    this.LoadNewList();
     
 
 
+  }
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   LoadNhomCongViec(id){
@@ -237,8 +315,13 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     filter.keyword = this.keyword;
     filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
     filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
-    filter.collect_by = this.column_sort.value;
-    return filter;
+    filter.collect_by = this.column_sort.value?this.column_sort.value:'CreatedDate';
+    if(!this.isFolder){
+      filter.spaceid = this.Id_Department;
+    }else{
+      filter.folderid = this.Id_Department;
+    }
+      return filter;
   }
 
   SelectedField(item) {
@@ -264,7 +347,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
   }
 
   LoadUpdateCol() {
-    this.layoutUtilsService.showWaitingDiv();
+    // this.layoutUtilsService.showWaitingDiv();
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
       "",

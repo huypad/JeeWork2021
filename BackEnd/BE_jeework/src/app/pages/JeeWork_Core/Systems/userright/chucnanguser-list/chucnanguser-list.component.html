@@ -65,8 +65,8 @@
 					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
 						<span translate="phanquyen.ID"></span>
 						&nbsp;
-                        <app-sort-icon column="Username" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+						<app-sort-icon column="Username" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
 						{{item.Id_Quyen}}
@@ -76,8 +76,8 @@
 					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
 						<span translate="phanquyen.quyen"></span>
 						&nbsp;
-                        <app-sort-icon column="Username" [activeColumn]="sorting.column" [activeDirection]="sorting.direction"
-                            (sort)="sortField($event)"></app-sort-icon>
+						<app-sort-icon column="Username" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode"><span
 							translate="SubMenu.{{item.LangKey}}"></span>

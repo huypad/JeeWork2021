@@ -49,7 +49,10 @@ namespace JeeWork_Core2021.Models
         public bool urgent { get; set; }
         public bool required_result { get; set; }
     }
-
+    public class GoogleCalendarModel
+    {
+        public long id_row { get; set; }
+    }
     public class UpdateWorkModel
     {
         public long id_row { get; set; }

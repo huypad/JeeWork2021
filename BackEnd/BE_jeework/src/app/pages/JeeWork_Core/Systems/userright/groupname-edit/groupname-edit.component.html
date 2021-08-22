@@ -3,11 +3,11 @@
 	</kt-portlet-header>
 	<form [formGroup]="itemForm" *ngIf="item" class="kt-form">
 		<kt-portlet-body>
-			<div class="form-group kt-form__group w-100"> 
+			<div class="form-group kt-form__group w-100">
 				<div class="row">
 					<div class="col-md-12 kt--margin-bottokt-10-mobile">
 						<mat-form-field class="mat-form-field-fluid">
-							<input matInput placeholder="{{ 'phanquyen.tennhom' | translate }}" id="tennhom" required
+							<input matInput placeholder="{{ 'phanquyen.tennhom'|translate }}" id="tennhom" required
 								class="input-batbuoc" formControlName="tenNhom" />
 						</mat-form-field>
 					</div>
@@ -18,17 +18,16 @@
 
 	<div class="dialog-footer">
 		<!-- <div class="col-lg-12"> -->
-			<button type="button" mat-raised-button (click)="goBack()" class="jee_button jee_btn-goback"
-				[disabled]="disabledBtn"><span class="kt-hidden-mobile"
-					translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
-					class="spinner-button-pad"></div></button>&nbsp;
-			<button type="button" (click)="onSumbit(true)" [disabled]="disabledBtn" mat-raised-button
-				class="jee_button jee_btn-addclose" matTooltip="{{ 'GeneralKey.luudong' | translate }}"><span
-					translate="GeneralKey.luudong"></span></button>&nbsp;
-			<button type="button" class="jee_button jee_btn-addcontinue" (click)="onSumbit(false)" [disabled]="disabledBtn"
-				mat-raised-button *ngIf="ShowButton" matTooltip="{{ 'GeneralKey.luutieptuc' | translate }}">
-				<mat-icon class="icon-repeat">repeat</mat-icon><span translate="GeneralKey.luutieptuc"></span>
-			</button>
+		<button type="button" mat-raised-button (click)="goBack()" class="jee_button jee_btn-goback"
+			[disabled]="disabledBtn"><span class="kt-hidden-mobile" translate="GeneralKey.trolai"></span>&nbsp;&nbsp;
+			<div *ngIf="disabledBtn" class="spinner-button-pad"></div></button>&nbsp;
+		<button type="button" (click)="onSumbit(true)" [disabled]="disabledBtn" mat-raised-button
+			class="jee_button jee_btn-addclose" matTooltip="{{ 'GeneralKey.luudong' | translate }}"><span
+				translate="GeneralKey.luudong"></span></button>&nbsp;
+		<button type="button" class="jee_button jee_btn-addcontinue" (click)="onSumbit(false)" [disabled]="disabledBtn"
+			mat-raised-button *ngIf="ShowButton" matTooltip="{{ 'GeneralKey.luutieptuc' | translate }}">
+			<mat-icon class="icon-repeat">repeat</mat-icon><span translate="GeneralKey.luutieptuc"></span>
+		</button>
 		<!-- </div> -->
 	</div>
 </kt-portlet>

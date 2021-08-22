@@ -48,13 +48,10 @@ namespace JeeWork_Core2021.Controllers.Wework
             ErrorModel error = new ErrorModel();
             DataTable dt_chamcongwf = new DataTable();
             DataSet ds = new DataSet();
+            DataSet ds_workspace = new DataSet();
             string select_MainMenu = "", select_Menu = "", sql_listRole = "";
             PageModel pageModel = new PageModel();
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            DataTable dt_space = new DataTable();
-            DataTable dt_project = new DataTable();
-            DataTable dt_folder = new DataTable();
-            //JeeWorkConfig _config;
             try
             {
                 if (loginData != null)
@@ -114,45 +111,8 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             .Replace("--,title, PermissionID, page, Target, Summary, isNULL(ALink, '#') as ALink, ISNULL(Icon, 'flaticon-interface-7') as Icon", ",title, PermissionID, page, Target, Summary, isNULL(ALink, '#') as ALink, ISNULL(Icon, 'flaticon-interface-7') as Icon")
                             .Replace("--order by position", " order by position ");
                         select_MainMenu += select_Menu;
-                        string sql_space = "", sql_project = "", sql_folder = "", where_department = "";
-                        //if (v_module.ToLower().Equals("module = 'wework'"))
-                        //{
-                        where_department = @$" and (id_row in (select ParentID from we_department where Disabled = 0 and id_row in (select id_department from we_department_owner where Disabled = 0 and id_user =  { loginData.UserID})
-                                        union all select id_department from we_project_team 
-                                        where (id_row in (select id_project_team from we_project_team_user where id_user = { loginData.UserID}
-                                        and Disabled = 0) or (CreatedBy = { loginData.UserID})) and disabled = 0) or (CreatedBy = { loginData.UserID}));";
-                        sql_space = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID
-                                        from we_department
-                                        where ParentID is null and disabled = 0 
-                                        and IdKH = {loginData.CustomerID} (admin_group)";
-                        sql_project = "select p.id_row, p.icon, p.title, p.detail, p.id_department" +
-                            ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
-                            ", p.priority, p.CreatedDate, p.CreatedBy, p.Locked, p.Disabled, default_view " +
-                            "from we_project_team p (admin_group)" +
-                            $" p.Disabled = 0";
-                        //}
-                        sql_folder = @$"select id_row, title, id_cocau, IdKH, priority, disabled, ParentID 
-                                        from we_department
-                                        where ParentID is not null and disabled = 0 
-                                        and IdKH = {loginData.CustomerID} (admin_group) ";
-                        if (!CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID))
-                        {
-                            sql_space = sql_space.Replace("(admin_group)", where_department);
-                            sql_folder = sql_folder.Replace("(admin_group)", where_department);
-                            sql_project = sql_project.Replace("(admin_group)", "join we_project_team_user " +
-                            "on we_project_team_user.id_project_team = p.id_row " +
-                            "and (we_project_team_user.id_user = " + loginData.UserID + ") " +
-                            "where we_project_team_user.id_user = " + loginData.UserID + " and ");
-                        }
-                        else
-                        {
-                            sql_space = sql_space.Replace("(admin_group)", "");
-                            sql_folder = sql_folder.Replace("(admin_group)", "");
-                            sql_project = sql_project.Replace("(admin_group)", " where ");
-                        }
-                        dt_space = Conn.CreateDataTable(sql_space);
-                        dt_project = Conn.CreateDataTable(sql_project);
-                        dt_folder = Conn.CreateDataTable(sql_folder);
+                        Common permit = new Common(ConnectionString);
+                        ds_workspace = Common.GetWorkSpace(loginData);
                         DataTable tmp_ww = new DataTable();
                         ds = Conn.CreateDataSet(select_MainMenu, cond);
                         #endregion
@@ -191,7 +151,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                        Title_ = c["title_"].ToString(),
                                                    },
                                        };
-                            var menuWework = from r in dt_space.AsEnumerable()
+                            var menuWework = from r in ds_workspace.Tables[0].AsEnumerable()
                                              select new
                                              {
                                                  RowID = r["id_row"],
@@ -200,7 +160,9 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                  Priority = r["priority"],
                                                  IsFolder = false,
                                                  type = 1,
-                                                 list = from r2 in dt_project.AsEnumerable()
+                                                 parentowner = r["parentowner"],
+                                                 owner = r["owner"],
+                                                 list = from r2 in ds_workspace.Tables[2].AsEnumerable()
                                                         where r2["id_department"].ToString() == r["id_row"].ToString()
                                                         select new
                                                         {
@@ -212,8 +174,11 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                             Default_View = r2["Default_View"],
                                                             Is_Project = r2["is_project"],
                                                             type = 3,
+                                                            parentowner = r["parentowner"],
+                                                            owner = r["owner"],
+                                                            admin_project = r2["admin_project"],
                                                         },
-                                                 folder = from r3 in dt_folder.AsEnumerable()
+                                                 folder = from r3 in ds_workspace.Tables[1].AsEnumerable()
                                                           where r3["ParentID"].ToString() == r["id_row"].ToString()
                                                           select new
                                                           {
@@ -223,7 +188,9 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                               Priority = r3["priority"],
                                                               type = 2,
                                                               IsFolder = true,
-                                                              list = from r4 in dt_project.AsEnumerable()
+                                                              owner = r3["owner"],
+                                                              parentowner = r3["parentowner"],
+                                                              list = from r4 in ds_workspace.Tables[2].AsEnumerable()
                                                                      where r4["id_department"].ToString() == r3["id_row"].ToString()
                                                                      select new
                                                                      {
@@ -235,6 +202,9 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                                          Default_View = r4["Default_View"],
                                                                          type = 3,
                                                                          Is_Project = r4["is_project"],
+                                                                         owner = r3["owner"],
+                                                                         parentowner = r3["parentowner"],
+                                                                         admin_project = r4["admin_project"],
                                                                      },
                                                           },
                                              };

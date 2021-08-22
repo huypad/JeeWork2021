@@ -271,7 +271,12 @@ export class UpdateWorkModel {
 		this.IsStaff = false;
 	}
 }
-
+export class GoogleCalendarModel {
+	id_row: number;
+	clear() {
+		this.id_row = 0;
+	}
+}
 export class RepeatedModel extends BaseModel {
 	id_row: number;
 	title: string;

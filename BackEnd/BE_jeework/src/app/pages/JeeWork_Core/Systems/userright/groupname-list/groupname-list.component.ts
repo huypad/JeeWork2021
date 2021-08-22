@@ -77,7 +77,7 @@ export class GroupNameListComponent implements OnInit {
     private tokenStorage: TokenStorage,
     private changeDetectorRefs: ChangeDetectorRef,
     private danhMucChungService: DanhMucChungService
-  ) {}
+  ) { }
 
   /** LOAD DATA */
   ngOnInit() {
@@ -94,8 +94,8 @@ export class GroupNameListComponent implements OnInit {
     this.changeDetectorRefs.detectChanges();
 
     setTimeout(() => {
-			this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
-		}, 10000);
+      this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+    }, 10000);
   }
 
   getTitle(): string {
@@ -212,7 +212,7 @@ export class GroupNameListComponent implements OnInit {
       _item.ID_Nhom > 0 ? MessageType.Update : MessageType.Create;
     const dialogRef = this.dialog.open(DanhSachNguoiDungComponent, {
       data: { _item },
-      width:'1000px',
+      width: '1000px',
       height: "70%",
     });
     dialogRef.afterClosed().subscribe((res) => {

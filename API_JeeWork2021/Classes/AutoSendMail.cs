@@ -165,7 +165,7 @@ namespace JeeWork_Core2021.Classes
         {
             if (Time60IsRun) return;
             Time60IsRun = true;
-            string _connection = ""; string ham = "ThongBaoHetHan"; string idkh = "0"; string listKH = "";
+            string _connection = ""; string ham = "EveryDayReminder - Dòng 168"; string idkh = "0"; string listKH = "";
             try
             {
                 #region danh sách customer
@@ -174,26 +174,29 @@ namespace JeeWork_Core2021.Classes
                 {
                     foreach (long CustomerID in list_customer)
                     {
-                        _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
-                        if (!string.IsNullOrEmpty(_connection))
+                        if (CustomerID > 0)
                         {
-                            using (DpsConnection cnn = new DpsConnection(_connection))
+                            _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
+                            if (!string.IsNullOrEmpty(_connection))
                             {
-                                ham = "EveryDayReminder"; idkh = CustomerID.ToString();
-                                EveryDayReminder(cnn, CustomerID, _connection);
-                                if (cnn.LastError != null)
+                                using (DpsConnection cnn = new DpsConnection(_connection))
                                 {
-                                    string content = " Timer60minute. Lỗi Database: " + cnn.LastError.Message;
-                                    string error_message = "";
-                                    string CustemerID1 = "0";
-                                    //Gửi thông báo khi phát sinh lỗi
-                                    SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                    ham = "EveryDayReminder"; idkh = CustomerID.ToString();
+                                    EveryDayReminder(cnn, CustomerID, _connection);
+                                    if (cnn.LastError != null)
+                                    {
+                                        string content = " Timer60minute. Lỗi Database: " + cnn.LastError.Message;
+                                        string error_message = "";
+                                        string CustemerID1 = "0";
+                                        //Gửi thông báo khi phát sinh lỗi
+                                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            listKH += "," + CustomerID;
+                            else
+                            {
+                                listKH += "," + CustomerID;
+                            }
                         }
                     }
                     if (!listKH.Equals(""))
@@ -408,52 +411,58 @@ namespace JeeWork_Core2021.Classes
                     conds = new SqlConditions();
                     conds.Add("id_row", _item["id_row"].ToString()); // id_row table we_work - get id_project_team -for lấy status theo project
                     conds.Add("id_project_team", _item["id_project_team"].ToString());
-                    DataTable dt_status_late = cnn.CreateDataTable("select id_row, StatusName, IsDeadline,Follower,IsFinal,id_project_team " +
-                                                       "from we_status where Disabled = 0 and IsDeadline = 1 and id_project_team = @id_project_team", conds);
-                    long hoanthanh = long.Parse(cnn.ExecuteScalar("select id_row from we_status where id_project_team = @id_project_team and IsFinal = 1", conds).ToString());
-
-                    if (hoanthanh != long.Parse(_item["status"].ToString()))
+                    string sql_status = "select id_row from we_status where disabled = 0 and id_project_team = " + _item["id_project_team"].ToString();
+                    DataTable dt_status = cnn.CreateDataTable(sql_status);
+                    if (dt_status.Rows.Count > 0)
                     {
-                        has.Add("status", dt_status_late.Rows[0]["id_row"].ToString());
-                        cnn.Update(has, conds, "we_work");
-                        // nếu có người mới gửi thông báo
-                        if (_item["id_nv"] != DBNull.Value)
+                        DataRow[] done = dt_status.Select("IsFinal = 1");
+                        DataRow[] late = dt_status.Select("IsDeadline = 1");
+                        if (done.Length > 0 && late.Length > 0)
                         {
-                            var users = new List<long> { long.Parse(_item["id_nv"].ToString()) };
-                            UserJWT loginData = new UserJWT();
-                            loginData.CustomerID = int.Parse(CustemerID);
-                            loginData.LastName = "Hệ thống";
-                            loginData.UserID = 0;
-                            #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(17, ConnectionString);
-                            #endregion
-                            #region Notify nhắc nhở công việc hết hạn
-                            WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);
-                            Hashtable has_replace = new Hashtable();
-                            for (int i = 0; i < users.Count; i++)
+                            if (int.Parse(done[0][0].ToString()) != int.Parse(_item["status"].ToString()))
                             {
-                                NotifyModel notify_model = new NotifyModel();
-                                has_replace = new Hashtable();
-                                has_replace.Add("nguoigui", "Hệ thống");
-                                has_replace.Add("tencongviec", _item["title"]);
-                                notify_model.AppCode = "WORK";
-                                notify_model.From_IDNV = "";
-                                notify_model.To_IDNV = users[i].ToString();
-                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thongbaocvtrehan", "", "vi");
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", _item["title"].ToString());
-                                notify_model.ReplaceData = has_replace;
-                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", _item["id_row"].ToString());
-                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", _item["id_row"].ToString());
-
-                                List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
-                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                if (info is not null)
+                                has.Add("status", late[0][0].ToString());
+                                cnn.Update(has, conds, "we_work");
+                                // nếu có người mới gửi thông báo
+                                if (_item["id_nv"] != DBNull.Value)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    var users = new List<long> { long.Parse(_item["id_nv"].ToString()) };
+                                    UserJWT loginData = new UserJWT();
+                                    loginData.CustomerID = int.Parse(CustemerID);
+                                    loginData.LastName = "Hệ thống";
+                                    loginData.UserID = 0;
+                                    #region Lấy thông tin để thông báo
+                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(17, ConnectionString);
+                                    #endregion
+                                    #region Notify nhắc nhở công việc hết hạn
+                                    WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);
+                                    Hashtable has_replace = new Hashtable();
+                                    for (int i = 0; i < users.Count; i++)
+                                    {
+                                        NotifyModel notify_model = new NotifyModel();
+                                        has_replace = new Hashtable();
+                                        has_replace.Add("nguoigui", "Hệ thống");
+                                        has_replace.Add("tencongviec", _item["title"]);
+                                        notify_model.AppCode = "WORK";
+                                        notify_model.From_IDNV = "";
+                                        notify_model.To_IDNV = users[i].ToString();
+                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thongbaocvtrehan", "", "vi");
+                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
+                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", _item["title"].ToString());
+                                        notify_model.ReplaceData = has_replace;
+                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", _item["id_row"].ToString());
+                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", _item["id_row"].ToString());
+
+                                        List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                        if (info is not null)
+                                        {
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                        }
+                                    }
+                                    #endregion
                                 }
                             }
-                            #endregion
                         }
                     }
                 }
@@ -546,35 +555,37 @@ namespace JeeWork_Core2021.Classes
             loginData.CustomerID = int.Parse(CustemerID);
             loginData.LastName = "Hệ thống";
             loginData.UserID = 0;
-            foreach (DataRow dr in dt.Rows)
+            if (dt.Rows.Count > 0)
             {
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 41, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
-                #region Lấy thông tin để thông báo
-                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(41, ConnectionString);
-                #endregion
-                #region Notify
-                Hashtable has_replace = new Hashtable();
-                NotifyModel notify_model = new NotifyModel();
-                has_replace = new Hashtable();
-                has_replace.Add("nguoigui", loginData.Username);
-                has_replace.Add("tencongviec", dr["id_row"].ToString());
-                notify_model.AppCode = "WORK";
-                notify_model.From_IDNV = loginData.UserID.ToString();
-                notify_model.To_IDNV = dr["id_row"].ToString().ToString();
-                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thongbaocvtrehan", "", "vi");
-                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
-                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dr["id_row"].ToString());
-                notify_model.ReplaceData = has_replace;
-                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
-                notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
-
-                List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
-                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                if (info is not null)
+                foreach (DataRow dr in dt.Rows)
                 {
-                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                    WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 41, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(41, ConnectionString);
+                    #endregion
+                    #region Notify
+                    Hashtable has_replace = new Hashtable();
+                    NotifyModel notify_model = new NotifyModel();
+                    has_replace = new Hashtable();
+                    has_replace.Add("nguoigui", loginData.Username);
+                    has_replace.Add("tencongviec", dr["id_row"].ToString());
+                    notify_model.AppCode = "WORK";
+                    notify_model.From_IDNV = loginData.UserID.ToString();
+                    notify_model.To_IDNV = dr["id_row"].ToString().ToString();
+                    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thongbaocvtrehan", "", "vi");
+                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
+                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dr["id_row"].ToString());
+                    notify_model.ReplaceData = has_replace;
+                    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
+                    notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
+                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info is not null)
+                    {
+                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                    }
+                    #endregion
                 }
-                #endregion
             }
         }
         private void CongViecHetHan(DpsConnection cnn, string CustemerID, string ConnectionString)

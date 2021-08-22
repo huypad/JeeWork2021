@@ -129,7 +129,7 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
   // Text: string;
   // Attachs: Attach;
             objSave.id_topic = res.Id;
-            objSave.comment = model.Text;
+            objSave.comment = model.Text?model.Text:'has comment';
             objSave.id_parent = 0;
             objSave.object_type = 0;
             objSave.object_id_new =  model.TopicCommentID;

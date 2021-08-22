@@ -122,7 +122,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="item-filter url -hover">
                 <i class="fas fa-ellipsis-h" [matMenuTriggerFor]="viewSetting"></i>
                 <mat-menu #viewSetting="matMenu">
@@ -163,7 +163,7 @@
                         </button>
                     </div>
                 </mat-menu>
-            </div> -->
+            </div> 
         </div>
     </div>
 </div>
@@ -192,13 +192,33 @@
                     <app-works-list-group  [ID_Project]="1" [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
                 </div> -->
 
-                <ng-container *ngFor="let item of ListProject">
+                <!-- <ng-container *ngFor="let item of ListProject">
                     <div style="flex-grow: 1;margin: 25px;margin-right: 10px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
                     border-left-width: 5px; padding-left: 35px;" class="cu-list-group" >
                         <div class="mt-4">
                             <p>Dự án &nbsp; <span class="text-dark" style="font-size: 18px;font-weight: 500;"> {{ item.title }} </span></p>
                         </div>
                         <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
+                    </div>
+                </ng-container> -->
+                <ng-container *ngFor="let item of this.DataSpace | async ">
+                    <div style="flex-grow: 1;margin: 25px;margin-right: 10px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
+                    border-left-width: 5px; padding-left: 35px;" >
+                        <div class="mt-4">
+                            <p>Dự án &nbsp; <span class="text-dark" style="font-size: 18px;font-weight: 500;"> {{ item.projectname }} </span></p>
+                        </div>
+                        <!-- <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group> -->
+                        <app-works-list-group-2
+                            [showemptystatus]="showemptystatus" 
+                            [tasklocation]="tasklocation" 
+                            [showclosedtask]="showclosedtask" 
+                            [showclosedsubtask]="showclosedsubtask" 
+                            [project_data]="item.project_data" 
+                            [ID_Project]="item.id_row"  
+                            [filter]="filter" 
+                            [groupby]="filter_groupby.value" 
+                            (pageReload)="LoadNewList()"
+                            ></app-works-list-group-2>
                     </div>
                 </ng-container>
                 

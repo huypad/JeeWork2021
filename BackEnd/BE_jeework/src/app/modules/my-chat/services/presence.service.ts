@@ -161,7 +161,6 @@ reconnectToken(): void {
   }
   // //endpoints.MapHub<PresenceHub>("hubs/presence") at startup file of backend
   // createHubConnection(user: User) {
-  //   debugger
   //   // đây là nơi nó call đến BE
   //   this.hubConnection = new HubConnectionBuilder()
   //     .withUrl(this.hubUrl + 'presence', {

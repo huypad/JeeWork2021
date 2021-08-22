@@ -59,6 +59,7 @@ import {
 } from "rxjs/operators";
 import { UpdateByKeysComponent } from "./../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component";
 import { JeeCommentService } from "../../../jee-comment/jee-comment.service";
+import { CommunicateService } from '../work-list-new-service/communicate.service';
 @Component({
   selector: "kt-work-list-new-detail",
   templateUrl: "./work-list-new-detail.component.html",
@@ -143,6 +144,7 @@ export class WorkListNewDetailComponent implements OnInit {
   require_evaluate = false;
   constructor(
     private _service: WorkService,
+    private CommunicateService: CommunicateService,
     private el: ElementRef,
     private ProjectsTeamService: ProjectsTeamService,
     private danhMucService: DanhMucChungService,
@@ -167,6 +169,9 @@ export class WorkListNewDetailComponent implements OnInit {
   }
   /** LOAD DATA */
   ngOnInit() {
+    this._service.currentMessage.subscribe(message => {
+      console.log('tự nhận message mình gửi: ',message)
+    });
     this.data = this.datalog;
     if (this.data && this.data.notback) {
       this.isback = false;
@@ -901,6 +906,7 @@ export class WorkListNewDetailComponent implements OnInit {
       item.IsStaff = true;
     }
     this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
+      this.createMessage(true);
       if (res && res.status == 1) {
         this.LoadData();
       }else{
@@ -1699,5 +1705,10 @@ export class WorkListNewDetailComponent implements OnInit {
         }
       });
     }
+  };
+
+  // gửi giao tiếp tới commponent ngoài
+  createMessage(value) {
+    this.CommunicateService.changeMessage(value);
   }
 }

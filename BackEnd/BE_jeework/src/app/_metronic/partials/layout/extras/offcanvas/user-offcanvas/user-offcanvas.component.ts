@@ -61,7 +61,8 @@ export class UserOffcanvasComponent implements OnInit {
   }
 
   quanlytaikhoan(){
-    window.open("https://jeeaccount.jee.vn/Management/AccountManagement","_blank")
+    window.open(" https://app.jee.vn/ThongTinCaNhan","_blank");
+    // window.open("https://jeeaccount.jee.vn/Management/AccountManagement","_blank")
   }
   ChangeLink(item){
     if(this.AppCode == item.AppCode){

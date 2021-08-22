@@ -1170,7 +1170,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     string strW = "";
-                    DataTable dt_Fields = WeworkLiteController.GetListField(int.Parse(query.filter["id_project_team"]), cnn);
+                    DataTable dt_Fields = WeworkLiteController.ListField(long.Parse(query.filter["id_project_team"]), 3, cnn);
+
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         strW = " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
@@ -2153,7 +2154,7 @@ where Disabled = 0";
             dt = conn.CreateDataTable(sqlq, "(where)", conds);
             if (dt.Rows.Count <= 0)
             {
-                sqlq = "select fieldname, title, position, isNewField from we_fields where IsDefault = 1";
+                sqlq = "select fieldname, title, position, isNewField, fieldid from we_fields where IsDefault = 1";
                 dt = conn.CreateDataTable(sqlq);
                 if (dt.Rows.Count > 0)
                 {
@@ -2168,6 +2169,7 @@ where Disabled = 0";
                         has.Add("createddate", DateTime.Now);
                         has.Add("createdby", 0);
                         has.Add("IsNewField", 0);
+                        has.Add("fieldid", item["id_field"].ToString());
                         if (conn.Insert(has, "we_fields_project_team") != 1)
                         {
                             conn.RollbackTransaction();

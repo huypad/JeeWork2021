@@ -74,19 +74,21 @@ import { WorkAssignedComponent } from "../../../../work/work-assigned/work-assig
 import { DuplicateWorkComponent } from "../../../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
 import { BehaviorSubject, of } from "rxjs";
+
 @Component({
-  selector: 'app-works-list-group',
-  templateUrl: './works-list-group.component.html',
-  styleUrls: ['./works-list-group.component.scss']
+  selector: 'app-work-task-list',
+  templateUrl: './work-task-list.component.html',
+  styleUrls: ['./work-task-list.component.scss']
 })
-export class WorksListGroupComponent implements OnInit, OnChanges {
+export class WorkTaskListComponent implements OnInit, OnChanges {
   @Input() ID_Project: number = 0;
+  @Input() ValueStatus: any = {};
   @Input() filter: any = {};
   @Input() groupby: string = "";
+  @Input() ListColumns: any = [];
 
   ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
   data: any = [];
-  ListColumns: any = [];
   listFilter: any = [];
   ListTasks: any = [];
   ListTags: any = [];
@@ -168,8 +170,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
         this.isAssignforme = true;
       }
     });
-    console.log('nhan data:',this.ID_Project)
-    this.LoadData();
+    // this.LoadData();
     this.GetField();
     this.mark_tag();
     this.LoadListAccount();
@@ -182,11 +183,38 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
         this.changeDetectorRefs.detectChanges();
       }
     });
+
+    this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
+      if (res && res.status === 1) {
+        this.status_dynamic = res.data;
+        //load ItemFinal
+        var x = this.status_dynamic.find((val) => val.IsFinal == true);
+        if (x) {
+          this.ItemFinal = x.id_row;
+        } else {
+        }
+        // this.changeDetectorRefs.detectChanges();
+      }
+    });
+
+    //Load data work group
+    this.WeWorkService.lite_workgroup(this.ID_Project).pipe(
+      tap(res => {
+        if (res && res.status === 1) {
+          this.listType = res.data;
+          this.changeDetectorRefs.detectChanges();
+        };
+      })
+    ).subscribe();
   }
 
   ngOnChanges(changes : SimpleChanges) {
-    console.log(changes);
-    this.LoadData();
+    // this.LoadData();
+    
+    this.GetField();
+    this.mark_tag();
+    this.LoadListAccount();
+    this.LoadDetailProject();
   }
 
   LoadDetailProject() {
@@ -345,30 +373,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
         this.LoadListStatus();
         this.changeDetectorRefs.detectChanges();
       }
-    });
-
-    this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
-      if (res && res.status === 1) {
-        this.status_dynamic = res.data;
-        //load ItemFinal
-        var x = this.status_dynamic.find((val) => val.IsFinal == true);
-        if (x) {
-          this.ItemFinal = x.id_row;
-        } else {
-        }
-        // this.changeDetectorRefs.detectChanges();
-      }
-    });
-
-    //Load data work group
-    this.WeWorkService.lite_workgroup(this.ID_Project).pipe(
-      tap(res => {
-        if (res && res.status === 1) {
-          this.listType = res.data;
-          this.changeDetectorRefs.detectChanges();
-        };
-      })
-    ).subscribe();
+    }); 
   }
 
   Statusdefault() {
@@ -421,7 +426,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     _item.TypeID = field.TypeID;
     this._service.UpdateNewField(_item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -988,7 +993,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     this._service.InsertTask(task).subscribe((res) => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1090,7 +1095,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     // });
 
     // dialogRef.afterClosed().subscribe((result) => {
-    //   this.LoadData();
+    //   // this.LoadData();
     //   if (result != undefined) {
     //     // this.selectedDate.startDate = new Date(result.startDate)
     //     // this.selectedDate.endDate = new Date(result.endDate)
@@ -1191,7 +1196,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     }, 1000);
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
@@ -1201,7 +1206,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
   DeleteTask(task) {
     this._service.DeleteTask(task.id_row).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1239,11 +1244,11 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     }
     this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
       } else {
         if(isReloadData){ 
           setTimeout(() => {
-            this.LoadData();
+            // this.LoadData();
           }, 500);
         }
         this.layoutUtilsService.showError(res.error.message);
@@ -1281,9 +1286,9 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
 
   UpdateTask(task) {
     this._service.UpdateTask(task.id_row).subscribe((res) => {
-      this.LoadData();
+      // this.LoadData();
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1319,7 +1324,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe((res) => {
       if (!res) {
       } else {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1524,7 +1529,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
 
     setTimeout(() => {
       this.clearList();
-      this.LoadData();
+      // this.LoadData();
     }, time);
   }
 
@@ -1606,7 +1611,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     model.value = tag.id_row;
     this.WorkService.UpdateByKey(model).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
         // this.layoutUtilsService.showActionNotification(this.translate.instant('work.dachon'), MessageType.Read, 1000, false, false, 3000, 'top', 1);
       } else {
         this.layoutUtilsService.showActionNotification(
@@ -1639,7 +1644,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
     });
     dialogRef.afterClosed().subscribe((res) => {
       if (res) {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1674,7 +1679,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
           true,
           false
         );
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1700,7 +1705,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
       return;
     }
     this.UpdateValueField(this.textArea, idWork, item);
-    // this.LoadData();
+    // // this.LoadData();
     // đóng matmenu Textarea
   }
 
@@ -1717,7 +1722,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result != undefined) {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }
@@ -1736,7 +1741,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result != undefined) {
-        this.LoadData();
+        // this.LoadData();
       }
     });
   }

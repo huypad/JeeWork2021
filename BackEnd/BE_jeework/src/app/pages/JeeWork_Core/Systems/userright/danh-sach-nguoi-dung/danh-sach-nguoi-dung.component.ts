@@ -35,7 +35,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 	// Table fields
 	dataSource: UserRightDataSource;
 	dataSource1: UserRightDataSource;
-	displayedColumns = ['Username', 'HoTen', 'ChucDanh', 'actions'];
+	displayedColumns = ['Username', 'HoTen', 'ChucVu', 'actions'];
 	paginatorNew: PaginatorState = new PaginatorState();
 	sorting: SortState = new SortState();
 
