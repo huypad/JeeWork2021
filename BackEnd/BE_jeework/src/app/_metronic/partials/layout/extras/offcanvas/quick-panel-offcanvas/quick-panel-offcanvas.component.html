@@ -1,232 +1,36 @@
 <!--begin::Quick Panel-->
-<div
-
-  id="kt_quick_panel"
-  class="offcanvas"
-  [ngClass]="extrasQuickPanelOffcanvasDirectionCSSClass"
->
+<div id="kt_quick_panel" class="offcanvas" [ngClass]="extrasQuickPanelOffcanvasDirectionCSSClass">
   <!--begin::Header-->
-  <div
-    class="offcanvas-header offcanvas-header-navs d-flex align-items-center justify-content-between mb-5"
-  >
-    <ul style="padding: 15px;"
-      class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-10"
-      role="tablist"
-    >
-      <!-- <li class="nav-item">
-        <a
-          class="nav-link cursor-pointer"
-          data-toggle="tab"
-          [ngClass]="getActiveCSSClasses('kt_quick_panel_logs')"
-          (click)="setActiveTabId('kt_quick_panel_logs')"
-          >Audit Logs</a
-        >
-      </li> -->
-
+  <div class="offcanvas-header offcanvas-header-navs d-flex align-items-center justify-content-between">
+    <ul class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-10 mg-0">
       <li class="nav-item">
-        <a 
-          [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')"
-          ></a
-        >
+        <a [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')"></a>
         <div style="display: flex; align-items: center;">
           <h4 class="text-primary">Messages</h4>
           <a href="{{hostjeechat}}" target="_blank">
-          <button  mat-icon-button aria-label="Example icon button with a vertical three dot icon">
-              <mat-icon>fullscreen</mat-icon>
-            </button>
+            <mat-icon>fullscreen</mat-icon>
           </a>
-            <div style="    margin: 0;
+          <div style="    margin: 0;
             padding: 10px;" class="form-group has-search">
-                <span class="fa fa-search form-control-feedback"></span>
-                <input [(ngModel)]="search"  name="search"   type="text" class="form-control" placeholder="Search">
-              </div>
-      </div>
-      
+            <span class="fa fa-search form-control-feedback"></span>
+            <input [(ngModel)]="search" name="search" type="text" class="form-control" placeholder="Search">
+          </div>
+        </div>
       </li>
-      <!-- <li class="nav-item">
-        <a
-          class="nav-link cursor-pointer"
-          [ngClass]="getActiveCSSClasses('kt_quick_panel_settings')"
-          (click)="setActiveTabId('kt_quick_panel_settings')"
-          data-toggle="tab"
-          >Settings</a
-        >
-      </li> -->
     </ul>
-    <!-- <div  style="    margin-top: 10px;" class="offcanvas-close  pr-5">
-      <a
-     
-        class="btn btn-xs btn-icon btn-light btn-hover-primary"
-      >
-        <i  class="ki ki-close icon-xs text-muted"></i>
-      </a>
-
-  
-    </div> -->
-
-    
   </div>
   <!--end::Header-->
 
   <!--begin::Content-->
-  <div  class="offcanvas-content ">
-    <div class="tab-content">
-      <!--begin::Tabpane-->
-    
-      <!--end::Tabpane-->
-
-      <!--begin::Tabpane-->
-      <div
-        class="tab-pane fade pt-2 pr-5 mr-n5"
-        id="kt_quick_panel_notifications"
-        [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')"
-        role="tabpanel"
-      >
-      <!-- nơi hiển thị mess -->
-      <kt-messenger [PData]="search"  id="{{elementId}}"></kt-messenger>
- 
-        <!--begin::Nav-->
-        <!-- <div class="navi navi-icon-circle navi-spacer-x-0">
-       
-        </div> -->
-        <!--end::Nav-->
-      </div>
-      <!--end::Tabpane-->
-
-      <!--begin::Tabpane-->
-      <div
-        class="tab-pane fade pt-3 pr-5 mr-n5"
-        id="kt_quick_panel_settings"
-        [ngClass]="getActiveCSSClasses('kt_quick_panel_settings')"
-        role="tabpanel"
-      >
-        <form class="form">
-          <!--begin::Section-->
-          <div>
-            <h5 class="font-weight-bold mb-3">Customer Care</h5>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Enable Notifications:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-success switch-sm">
-                  <label>
-                    <input type="checkbox" checked="checked" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Enable Case Tracking:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-success switch-sm">
-                  <label>
-                    <input type="checkbox" name="quick_panel_notifications_2" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Support Portal:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-success switch-sm">
-                  <label>
-                    <input type="checkbox" checked="checked" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-          </div>
-          <!--end::Section-->
-
-          <div class="separator separator-dashed my-6"></div>
-
-          <!--begin::Section-->
-          <div class="pt-2">
-            <h5 class="font-weight-bold mb-3">Reports</h5>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Generate Reports:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-sm switch-danger">
-                  <label>
-                    <input type="checkbox" checked="checked" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Enable Report Export:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-sm switch-danger">
-                  <label>
-                    <input type="checkbox" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Allow Data Collection:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-sm switch-danger">
-                  <label>
-                    <input type="checkbox" checked="checked" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-          </div>
-          <!--end::Section-->
-
-          <div class="separator separator-dashed my-6"></div>
-
-          <!--begin::Section-->
-          <div class="pt-2">
-            <h5 class="font-weight-bold mb-3">Memebers</h5>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Enable Member singup:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-sm switch-primary">
-                  <label>
-                    <input type="checkbox" checked="checked" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label">Allow User Feedbacks:</label>
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-sm switch-primary">
-                  <label>
-                    <input type="checkbox" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="form-group mb-0 row align-items-center">
-              <label class="col-8 col-form-label"
-                >Enable Customer Portal:</label
-              >
-              <div class="col-4 d-flex justify-content-end">
-                <span class="switch switch-sm switch-primary">
-                  <label>
-                    <input type="checkbox" checked="checked" name="select" />
-                    <span></span>
-                  </label>
-                </span>
-              </div>
-            </div>
-          </div>
-          <!--end::Section-->
-        </form>
-      </div>
-      <!--end::Tabpane-->
+  <div class="tab-content">
+    <!--begin::Tabpane-->
+    <div class="tab-pane fade pt-2 pr-5 mr-n5" id="kt_quick_panel_notifications"
+      [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')" role="tabpanel">
+      <!--begin::Nav-->
+      <kt-messenger [PData]="search" id="{{elementId}}"></kt-messenger>
+      <!--end::Nav-->
     </div>
+    <!--end::Tabpane-->
   </div>
   <!--end::Content-->
 </div>

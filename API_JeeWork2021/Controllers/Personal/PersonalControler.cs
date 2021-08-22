@@ -153,7 +153,7 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                     string sqlq = @$"  select m.*, m.person_in_charge as id_nv, '' as hoten,'' as image, '' as mobile, '' as Username,'' as Email, '' as Tenchucdanh,
 coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m 
  left join (select count(*) as tong, COUNT(CASE WHEN w.status in ({list_Complete}) THEN 1 END) as ht,w.id_milestone from v_wework_new w group by w.id_milestone) w on m.id_row=w.id_milestone
- where m.person_in_charge=@iduser and m.person_in_charge in ({listID}) and disabled=0";
+ where m.person_in_charge=@iduser and disabled=0";
                     DataTable dt = cnn.CreateDataTable(sqlq, new SqlConditions() { { "iduser", loginData.UserID } });
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);

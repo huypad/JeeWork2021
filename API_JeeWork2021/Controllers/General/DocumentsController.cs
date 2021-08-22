@@ -105,7 +105,7 @@ filename, att.type, att.size, att.CreatedDate, att.CreatedBy, att.UpdatedDate,
 att.UpdatedBy, '' as username_tao, '' as username_sua,
 '' as hoten_nguoitao,'' as hoten_nguoisua 
 from we_attachment att join we_project_team project on att.object_id= project.id_row and object_type = 4
-where att.disabled=0 and object_type=4 and att.CreatedBy in ({listID}) ";
+where att.disabled=0 and object_type=4 ";
 
                     DataSet ds = cnn.CreateDataSet(sqlq + dieukien_where, Conds);
                     if (cnn.LastError != null || ds == null)

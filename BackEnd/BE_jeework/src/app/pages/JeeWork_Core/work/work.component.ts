@@ -98,12 +98,12 @@ export class WorkComponent implements OnInit {
 				this.listUser = res.data;
 		});
 		this.loadThongTinUser();
-		this._service.mymilestone().subscribe(res => {
-			if (res && res.status === 1) {
-				this.milestone = res.data;
-				this.changeDetect.detectChanges();
-			}
-		});
+		// this._service.mymilestone().subscribe(res => {
+		// 	if (res && res.status === 1) {
+		// 		this.milestone = res.data;
+		// 		this.changeDetect.detectChanges();
+		// 	}
+		// });
 		this.LoadFilter();
 		this.myworkSer.MyWork().subscribe(res => {
 			if (res && res.status == 1) {

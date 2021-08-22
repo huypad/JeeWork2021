@@ -265,6 +265,7 @@
     overflow: hidden;
     position: relative;
     padding: 0 5px;
+    width: auto;
 }
 
 .cu-user-and-groups-list-dropdown {
@@ -1034,6 +1035,7 @@ div.cu-avatar {
     &:hover{
         z-index: 10; 
         transition:all .05s;
+        transform: scale(1.05);
         border: 0;
         .view-hover{
             display: block;

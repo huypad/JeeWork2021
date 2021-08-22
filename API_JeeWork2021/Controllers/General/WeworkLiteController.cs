@@ -2180,9 +2180,12 @@ and IdKH={loginData.CustomerID} )";
                     bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID);
                     string sqlq = "";
                     string authorize = "";
-                    authorize = @$"select createdby from we_authorize where id_user = {loginData.UserID} and disabled =0 and start_date <= GETDATE() and end_date >= GETDATE())";
+                    authorize = @$"select createdby from we_authorize where id_user = {loginData.UserID} 
+                                and disabled =0 and start_date <= GETDATE() 
+                                and end_date >= GETDATE())";
 
-                    sqlq = "select users.admin, proj.title, proj.description, proj.start_date, proj.end_date, Iif( users.admin = 1 and id_user <> " + loginData.UserID + ",1,0 ) as isuyquyen " +
+                    sqlq = "select users.admin, proj.title, proj.description, proj.start_date, proj.end_date" +
+                        ", Iif( users.admin = 1 and id_user <> " + loginData.UserID + ",1,0 ) as isuyquyen " +
                         " from we_project_team proj join we_project_team_user users " +
                         "on proj.id_row = users.id_project_team " +
                         "where proj.disabled = 0 " +
@@ -2193,14 +2196,14 @@ and IdKH={loginData.CustomerID} )";
                     sqlq += @";select id_project_team, id_role, we_role.title
                             , admin, member, keypermit, we_role.icon, is_assign, we_role.[group]
                             from we_project_role proj join we_role on we_role.id_row = proj.id_role
-                            where we_role.Disabled = 0 and id_project_team = " + id_project_team + "";
+                            where we_role.disabled = 0 and id_project_team = " + id_project_team + "";
                     DataSet ds = Conn.CreateDataSet(sqlq);
                     DataTable dt_Project = Conn.CreateDataTable(sqlq);
                     if (Conn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, Conn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>());
+                        return JsonResultCommon.ThanhCong(new { data = new List<string>(), IsAdminGroup = IsAdmin });
                     var data =
                                 new
                                 {
@@ -2790,7 +2793,7 @@ and IdKH={loginData.CustomerID} )";
 
                 if (department > 0)
                 {
-                    sqlq = "select id_department, view_de.is_default, viewid, view_name, _view.is_default as view_default " +
+                    sqlq = "select distinct id_department, view_de.is_default, viewid, view_name, _view.is_default as view_default " +
                         "from we_department_view view_de " +
                         "join we_default_views _view on _view.id_row = view_de.viewid " +
                         "where id_department = " + department + " and view_de.disabled = 0 ";

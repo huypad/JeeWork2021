@@ -1,54 +1,54 @@
 .unread {
-    color: #000000;
-  }
-  .read {
-    color: #808080
-  }
-  .read:hover {
-    color: #7c7c7c
-  }
+  color: #000000;
+}
+.read {
+  color: #808080
+}
+.read:hover {
+  color: #7c7c7c
+}
 
-  .time-unread {
-    color: rgb(10, 170, 10)
-  }
+.time-unread {
+  color: rgb(10, 170, 10)
+}
 
-  .time-read {
-    color: rgb(124, 231, 124)
-  }
+.time-read {
+  color: rgb(124, 231, 124)
+}
 
-  .dot {
-    height: 8px;
-    width: 8px;
-    background-color: rgb(10, 170, 10);
-    border-radius: 50%;
-    display: inline-block;
-    margin-top: 18px;
-    margin-left: 36px;
-    position: absolute;
-    left: 280px; 
-  }
+.dot {
+  height: 8px;
+  width: 8px;
+  background-color: rgb(10, 170, 10);
+  border-radius: 50%;
+  display: inline-block;
+  margin-top: 18px;
+  margin-left: 36px;
+  position: absolute;
+  left: 280px; 
+}
 
-  .width {
-    width: 383px;
-  }
+.width {
+  width: 383px;
+}
 
-	a {
-      cursor: pointer;
-  }
-  
+a {
+    cursor: pointer;
+}
+
 .has-search .form-control {
-  padding-left: 2.375rem;
+padding-left: 2.375rem;
 }
 
 .has-search .form-control-feedback {
-  position: absolute;
-  z-index: 2;
-  display: block;
-  width: 2.375rem;
-  height: 2.375rem;
-  line-height: 2.375rem;
-  text-align: center;
-  pointer-events: none;
-  color: #aaa;
+position: absolute;
+z-index: 2;
+display: block;
+width: 2.375rem;
+height: 2.375rem;
+line-height: 2.375rem;
+text-align: center;
+pointer-events: none;
+color: #aaa;
 }
 

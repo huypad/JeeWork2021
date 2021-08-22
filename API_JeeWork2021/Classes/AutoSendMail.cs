@@ -165,7 +165,7 @@ namespace JeeWork_Core2021.Classes
         {
             if (Time60IsRun) return;
             Time60IsRun = true;
-            string _connection = ""; string ham = "EveryDayReminder - Dòng 168"; string idkh = "0"; string listKH = "";
+            string _connection = ""; string ham = "EveryDayReminderEveryDayReminder - Dòng 168"; string idkh = "0"; string listKH = "";
             try
             {
                 #region danh sách customer
@@ -547,7 +547,7 @@ namespace JeeWork_Core2021.Classes
             DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
             string select = @"select (SELECT datediff(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
             from v_wework_new w where disabled = 0 
-            and deadline is not null and deadline <= Getdate()
+            and deadline is not null and Id_NV is not null and deadline <= Getdate()
             and deadline >= '" + currentTime + "' " +
             "and deadline < '" + currentTime.AddDays(1) + "'";
             DataTable dt = cnn.CreateDataTable(select);

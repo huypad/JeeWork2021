@@ -333,7 +333,7 @@
                                 <img width="20" height="20" src="{{IsAdminGroup?'https://img.icons8.com/small/96/fa314a/admin-settings-male.png':'https://img.icons8.com/windows/96/4a90e2/checked-user-male--v1.png'}}" alt="">
                             </div>&nbsp;
                         </ng-container>
-                        <ng-container *ngIf="!IsAdmin()">
+                        <ng-container *ngIf="!IsAdmin() && RolesByProject">
                             <ng-container *ngFor="let item of RolesByProject;let index = index">
                                 <ng-container *ngIf="index < 5">
                                     <div class="icons-role"  matTooltip="{{item.title}}">

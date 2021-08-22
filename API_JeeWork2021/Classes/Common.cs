@@ -130,6 +130,44 @@ namespace JeeWork_Core2021.Classes
                 return false;
             }
         }
+        public static bool CheckAdminWorkSpace(long id_user, long spacetype, long id)
+        {
+            using (DpsConnection Conn = new DpsConnection(ConnectionString))
+            {
+                DataTable Tb = new DataTable();
+                string sqlid = "";
+                string sqlq = "";
+                if (spacetype < 4 && spacetype > 0)
+                {
+                    sqlq = "select Type from we_department_owner where (where)";
+                    if (spacetype == 3)
+                        sqlq = "select * from we_project_team_user where admin = 1 and id_user = " + id_user + " and id_project_team = " + id;
+                    if (spacetype < 3)
+                        sqlq = "select * from we_department_owner where admin = 1 and id_user = " + id_user + " and id_department = " + id;
+                    Tb = Conn.CreateDataTable(sqlq);
+                    if (Tb.Rows.Count == 0)
+                    {
+                        spacetype--;
+                        if (spacetype == 2 && spacetype > 0)
+                        {
+                            sqlid = "select ISNULL((select id_department from we_project_team where id_row = " + id + "),0)";
+                        }
+                        if (spacetype == 1 && spacetype > 0)
+                        {
+                            sqlid = "select ISNULL((select parentid from we_department where id_row = " + id + "),0)";
+                        }
+                        if (long.Parse(Conn.ExecuteScalar(sqlq).ToString()) > 0)
+                        {
+                            id = int.Parse(sqlid);
+                            CheckAdminWorkSpace(id_user, spacetype, id);
+                        }
+                    }
+                    else
+                        return true;
+                }
+                return false;
+            }
+        }
         public static string Format_DateHD_ExportExcel(string str = "", bool filename = false)
         {
             try
@@ -346,7 +384,7 @@ namespace JeeWork_Core2021.Classes
                 sql_project = ";select p.id_row, p.icon, p.title, p.detail, p.id_department" +
                             ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
                             ", p.priority, p.locked, p.disabled, default_view, IIf((select admin from we_project_team_user u where u.disabled = 0 " +
-                            "and u.id_user = "+loginData.UserID+" and u.id_project_team = p.id_row)= 1,1,0) as admin_project " +
+                            "and u.id_user = " + loginData.UserID + " and u.id_project_team = p.id_row)= 1,1,0) as admin_project " +
                             "from we_project_team p " +
                             $"where p.disabled = 0 (dk_proj)";
                 if (!MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID))
