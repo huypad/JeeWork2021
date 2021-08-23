@@ -314,6 +314,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , p.loai, p.start_date, p.end_date, p.color, p.template, p.status
                                     , p.stage_description, allow_percent_done, require_evaluate
                                     , evaluate_by_assignner, allow_estimate_time, 
+                                    iif(p.end_date is not null and p.end_date < getdate() and p.status = 2,1,0) islate,
                                      stop_reminder, note, is_project, period_type, p.priority
                                     , p.createddate, p.createdby, p.Locked, p.disabled, p.updatedDate
                                     , p.UpdatedBy, p.email_assign_work, p.email_update_work
@@ -327,7 +328,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     left join (select count(*) as tong
                                     , COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
                                     , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
-                                    ,w.id_project_team from we_work w where w.Disabled=0 group by w.id_project_team) w 
+                                    ,w.id_project_team from we_work w where w.disabled=0 group by w.id_project_team) w 
                                     on p.id_row=w.id_project_team 
                                     (admin)  
                                     " + dieukien_where + "  order by " + dieukienSort;
@@ -417,6 +418,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     locked = r["locked"],
                                     start_date = string.Format("{0:dd/MM/yyyy}", r["start_date"]),
                                     end_date = string.Format("{0:dd/MM/yyyy}", r["end_date"]),
+                                    islate = r["islate"],
                                     users = from u in ds.Tables[1].AsEnumerable()
                                             where u["id_project_team"].ToString() == r["id_row"].ToString()
                                             select new
