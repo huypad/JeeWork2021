@@ -411,12 +411,12 @@ namespace JeeWork_Core2021.Classes
                     conds = new SqlConditions();
                     conds.Add("id_row", _item["id_row"].ToString()); // id_row table we_work - get id_project_team -for lấy status theo project
                     conds.Add("id_project_team", _item["id_project_team"].ToString());
-                    string sql_status = "select id_row from we_status where disabled = 0 and id_project_team = " + _item["id_project_team"].ToString();
+                    string sql_status = "select id_row, isfinal, isdeadline from we_status where disabled = 0 and id_project_team = " + _item["id_project_team"].ToString();
                     DataTable dt_status = cnn.CreateDataTable(sql_status);
                     if (dt_status.Rows.Count > 0)
                     {
-                        DataRow[] done = dt_status.Select("IsFinal = 1");
-                        DataRow[] late = dt_status.Select("IsDeadline = 1");
+                        DataRow[] done = dt_status.Select("isfinal = 1");
+                        DataRow[] late = dt_status.Select("isdeadline = 1");
                         if (done.Length > 0 && late.Length > 0)
                         {
                             if (int.Parse(done[0][0].ToString()) != int.Parse(_item["status"].ToString()))
