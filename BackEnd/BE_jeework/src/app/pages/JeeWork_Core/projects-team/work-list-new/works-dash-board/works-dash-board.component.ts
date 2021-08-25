@@ -263,8 +263,18 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         this.listNewField = res.data;
       }
     });
+    this.getListField();
+    this.GetOptions_NewField();
+    this.LoadNewList(); 
+  }
 
-    this.WeWorkService.GetListField(0,3,false).subscribe(res => {
+  getListField(Loading = false){
+    if(Loading){
+      this.layoutUtilsService.showWaitingDiv();
+    }
+    this.WeWorkService.GetListField(this.Id_Department,this.isFolder?2:1,false).pipe(
+      finalize( () => { if(Loading) this.layoutUtilsService.OffWaitingDiv() } ),
+    ).subscribe(res => {
       if (res && res.status === 1) {
          var listField = res.data;
         //xóa title khỏi cột
@@ -283,12 +293,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
       else{
         this.layoutUtilsService.showInfo(res.error.message);
       }
-    })
-
-    this.LoadNewList();
-    
-
-
+    });
   }
 
   ngOnDestroy(): void {
@@ -479,6 +484,18 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
   getHeight() {
     var height = window.innerHeight - 175 - this.tokenStorage.getHeightHeader();
     return height;
+  }
+
+  listNewfield:any = [];
+  GetOptions_NewField() {
+    this.WeWorkService.GetOptions_NewField(this.Id_Department, 0, this.isFolder?2:1).subscribe(
+      (res) => {
+        if (res && res.status == 1) {
+          this.listNewfield = res.data;
+          console.log(this.listNewfield)
+        }
+      }
+    );
   }
 }
 

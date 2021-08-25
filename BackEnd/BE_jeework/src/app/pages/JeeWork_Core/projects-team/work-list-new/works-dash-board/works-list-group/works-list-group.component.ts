@@ -673,13 +673,13 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
 
   listNewfield: any = [];
   GetOptions_NewField() {
-    this.WeWorkService.GetOptions_NewField(this.ID_Project, 0).subscribe(
-      (res) => {
-        if (res && res.status == 1) {
-          this.listNewfield = res.data;
-        }
-      }
-    );
+    // this.WeWorkService.GetOptions_NewField(this.ID_Project, 0).subscribe(
+    //   (res) => {
+    //     if (res && res.status == 1) {
+    //       this.listNewfield = res.data;
+    //     }
+    //   }
+    // );
   }
 
   getDropdownField(idField) {
@@ -1769,13 +1769,13 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
       query = `id=${item.id_row}&&hidden=${hidden}`;
     }
 
-    this._service.update_hidden(query).subscribe((res) => {
-      if (res && res.status == 1) {
-        this.LoadUpdateCol();
-      } else {
-        this.layoutUtilsService.showError(res.error.message);
-      }
-    });
+    // this._service.update_hidden(query).subscribe((res) => {
+    //   if (res && res.status == 1) {
+    //     this.LoadUpdateCol();
+    //   } else {
+    //     this.layoutUtilsService.showError(res.error.message);
+    //   }
+    // });
   }
 
   isUpdateStatusname(id = 1) {

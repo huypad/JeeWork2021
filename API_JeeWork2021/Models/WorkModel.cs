@@ -103,13 +103,13 @@ namespace JeeWork_Core2021.Models
     public class ColumnWorkModel
     {
         public long id_row { get; set; } = 0;
-        public long id_project_team { get; set; }
+        public long id_project_team { get; set; } // we_fields_project_team
         public string columnname { get; set; }
         public bool isnewfield { get; set; }
         public long TypeID { get; set; }
         public List<OptionsModel> Options { get; set; }
-        public string Title { get; set; } // áp dụng cho trường hợp IsNewField = 1
-
+        public string Title { get; set; }
+        public long id_department { get; set; } // we_fields_department
     }
     public class DragDropModel
     {

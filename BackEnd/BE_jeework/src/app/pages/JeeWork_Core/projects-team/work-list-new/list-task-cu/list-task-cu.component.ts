@@ -870,9 +870,14 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
       ele.focus();
     }, 50);
   }
-  focusOutFunction(node) {
+  focusOutFunction(event,node) {
     this.isEdittitle = -1;
-    this.UpdateByKey(node, 'title', node.title)
+    //console.log(event.target.value,' -- có bằng --', node.title);
+    if(event.target.value.trim() == node.title.trim() || event.target.value.trim()==""){
+      event.target.value = node.title;
+      return;
+    }
+    this.UpdateByKey(node, "title", event.target.value.trim());
   }
   focusFunction(val) {
   }

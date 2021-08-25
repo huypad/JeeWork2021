@@ -237,8 +237,7 @@
                                                                     <input id="task{{node.id_row}}" type="text"
                                                                         class="form-control"
                                                                         [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
-                                                                        (keyup.enter)="focusOutFunction(node)"
-                                                                        (focusout)="focusOutFunction(node)"
+                                                                        (keyup.enter)="focusOutFunction($event,node)" (focusout)="focusOutFunction($event,node)"
                                                                         [(ngModel)]="node.title">
                                                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                                                         <p style="font-size: 11px;"
@@ -609,7 +608,10 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'comments'">
                                                                         <div class="item-field hide-more-text">
-                                                                            <span (menuOpened)="node.showcomment = true"
+                                                                            <app-task-comment (submit)="this.LoadData()" [id_row]="node.id_row"
+                                                                                [value]="node[item.fieldname]"></app-task-comment>
+
+                                                                            <!-- <span (menuOpened)="node.showcomment = true"
                                                                                 (menuClosed)="this.LoadData();node.showcomment = false"
                                                                                 [matMenuTriggerFor]="commentsmenu">
                                                                                 {{node[item.fieldname]>0?node[item.fieldname]:''}}
@@ -627,7 +629,7 @@
                                                                                         </app-jee-comment>
                                                                                     </div>
                                                                                 </div>
-                                                                            </mat-menu>
+                                                                            </mat-menu> -->
 
                                                                         </div>
                                                                     </ng-container>

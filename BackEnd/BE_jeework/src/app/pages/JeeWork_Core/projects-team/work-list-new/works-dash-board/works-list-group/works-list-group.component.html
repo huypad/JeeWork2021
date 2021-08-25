@@ -34,29 +34,30 @@
                                     <div class="row ">
                                         <span class=" text-uppercase" style="padding-right: 5px;">
                                             {{status.statusname?status.statusname:'Chưa giao việc'}}
+                                            <div class="cu-action-header d-none" *ngIf="IsAdmin()">
+                                                <i class="fas fa-pencil-alt" matTooltipPosition="above"
+                                                    *ngIf="isUpdateStatusname(status.id_row)"
+                                                    (click)="chinhsuanoidung(status)"
+                                                    matTooltip="{{ (this.groupby == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
+                                                <i *ngIf="status.data.length > 0" class="fas fa-check-double"
+                                                    (click)="Chontatca(status)" matTooltipPosition="above"
+                                                    matTooltip="{{ 'work.selectedall' | translate }}"></i>
+                                                <i class="fas fa-plus" (click)="chinhsuanoidung({})"
+                                                    *ngIf="isUpdateStatusname()" matTooltipPosition="above"
+                                                    matTooltip="{{ (this.groupby == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
+                                                <!-- <i class="fas fa-ellipsis-h"
+                                                    [matMenuTriggerFor]="groupoptions"
+                                                    matTooltipPosition="above"
+                                                    matTooltip="Group options"></i> -->
+                                                <!-- <mat-menu #groupoptions="matMenu">
+                                                    <button mat-menu-item> Option1 </button>
+                                                    <button mat-menu-item> Option2 </button>
+                                                    <button mat-menu-item> Option3 </button>
+                                                    <button mat-menu-item> Option4 </button>
+                                                </mat-menu> -->
+                                            </div>
                                         </span>
-                                        <div class="cu-action-header d-none" *ngIf="CheckRoles(15) && IsAdmin()">
-                                            <i class="fas fa-pencil-alt" matTooltipPosition="above"
-                                                *ngIf="isUpdateStatusname(status.id_row)"
-                                                (click)="chinhsuanoidung(status)"
-                                                matTooltip="{{ (this.groupby == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
-                                            <i *ngIf="status.data.length > 0" class="fas fa-check-double"
-                                                (click)="Chontatca(status)" matTooltipPosition="above"
-                                                matTooltip="{{ 'work.selectedall' | translate }}"></i>
-                                            <i class="fas fa-plus" (click)="chinhsuanoidung({})"
-                                                *ngIf="isUpdateStatusname()" matTooltipPosition="above"
-                                                matTooltip="{{ (this.groupby == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
-                                            <!-- <i class="fas fa-ellipsis-h"
-                                                [matMenuTriggerFor]="groupoptions"
-                                                matTooltipPosition="above"
-                                                matTooltip="Group options"></i> -->
-                                            <!-- <mat-menu #groupoptions="matMenu">
-                                                <button mat-menu-item> Option1 </button>
-                                                <button mat-menu-item> Option2 </button>
-                                                <button mat-menu-item> Option3 </button>
-                                                <button mat-menu-item> Option4 </button>
-                                            </mat-menu> -->
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>

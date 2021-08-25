@@ -48,19 +48,22 @@ export class ProjectListTabComponent implements OnInit, OnChanges {
 			var temp = this.router.url;
 			if (params.id) {
 				this.ID_Project = +params.id;
-				this.Show_10 = true;
+				// this.Show_10 = true;
 				this.router.navigateByUrl(temp+'/home/clickup');
 			}
 			else {
+				// debugger
 				var arr = temp.split("/");
 				this.ID_Project = +arr[2];// =>/home/...
-				this.Show_1 = this.Show_2 = this.Show_3 = this.Show_4 = this.Show_6 = this.Show_10 = false;
+				this.Show_1 = this.Show_2 = this.Show_3 = this.Show_4 = this.Show_6;
 				switch (params.view) {
 					case 'board': {
+						this.Show_10 = false;
 						this.Show_2 = true;
 						break;
 					}
 					case 'gantt': {
+						this.Show_10 = false;
 						this.Show_4 = true;
 						break;
 					}

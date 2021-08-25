@@ -266,7 +266,7 @@ input[type=text] {
         align-items: center;
         &:hover {
             .cu-action-header {
-                display: block!important;
+                display: inline-block!important;
             }
         }
     }
@@ -1282,16 +1282,16 @@ textarea:focus{
 }
 
 
-.mat-checkbox .mat-checkbox-frame {
-	border-radius: 50%;
-	border: 1px solid #3699FF;
-}
+// .mat-checkbox .mat-checkbox-frame {
+// 	border-radius: 50%;
+// 	border: 1px solid #3699FF;
+// }
 
-.mat-checkbox-checked .mat-checkbox-background { 
-	border-radius: 50%;
-	border: 1px solid #3699FF;
-	background-color: #3699FF;
-}
+// .mat-checkbox-checked .mat-checkbox-background { 
+// 	border-radius: 50%;
+// 	border: 1px solid #3699FF;
+// 	background-color: #3699FF;
+// }
 
 .checkbox-circle{
 	::ng-deep .mat-checkbox .mat-checkbox-frame {

@@ -1,3 +1,4 @@
+import { JeeCommentModule } from './../../../jee-comment/jee-comment.module';
 import { WorkTaskListComponent } from './../works-dash-board/work-task-list/work-task-list.component';
 import { PrioritizeComponent } from './prioritize/prioritize.component';
 import { TaskCommentComponent } from './task-comment/task-comment.component';
@@ -34,6 +35,8 @@ import { NgGanttEditorModule } from 'ng-gantt';
 import { JeeWork_CoreModule } from '../../../JeeWork_Core.module';
 import { ApplicationPipesModule } from '../../../pipe/pipe.module';
 import { TaskDatetimeComponent } from './task-datetime/task-datetime.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TasksGroupComponent } from './tasks-group/tasks-group.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -43,6 +46,7 @@ import { TaskDatetimeComponent } from './task-datetime/task-datetime.component';
     ReactiveFormsModule,
     TranslateModule.forChild(),
     //JeeWork_CoreModule,
+		MatTooltipModule,
     AngularMultiSelectModule,
     MatDatepickerModule,
     MatExpansionModule,
@@ -58,6 +62,7 @@ import { TaskDatetimeComponent } from './task-datetime/task-datetime.component';
     ApplicationPipesModule,
 		OwlDateTimeModule,
 		OwlNativeDateTimeModule,
+    JeeCommentModule
   ],
   providers: [ 
   ],
@@ -66,21 +71,24 @@ import { TaskDatetimeComponent } from './task-datetime/task-datetime.component';
     TaskCommentComponent,
     PrioritizeComponent,
     WorkTaskListComponent,
-    TaskDatetimeComponent
+    TaskDatetimeComponent,
+    TasksGroupComponent
   ],
   declarations: [ 
     UserGroupComponent,
     TaskCommentComponent,
     PrioritizeComponent,
     WorkTaskListComponent,
-    TaskDatetimeComponent
+    TaskDatetimeComponent,
+    TasksGroupComponent
   ],
   exports: [
     UserGroupComponent,
     TaskCommentComponent,
     PrioritizeComponent,
     WorkTaskListComponent,
-    TaskDatetimeComponent
+    TaskDatetimeComponent,
+    TasksGroupComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,

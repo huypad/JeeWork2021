@@ -43,7 +43,7 @@
     </div>
 </div> -->
 
-<div class="my-form-header border-bottom border-top" >
+<div class="my-form-header border-bottom border-top">
     <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
         <div class="cu-hidden-print cu-filter-block ng-tns-c31-5 ng-star-inserted">
             <ng-container>
@@ -52,10 +52,9 @@
                         (keyup.enter)="LoadData()" [(ngModel)]="keyword" type="text"
                         placeholder="{{ 'work.filterbytaskname' | translate }}"> -->
                     <!-- seach 1s 1 lần khi không nhập nữa -->
-                            <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" 
-                                style="border:0;outline:0" type="text" [formControl]="searchCtrl"
-                                placeholder="{{ 'work.filterbytaskname' | translate }}">
-                        
+                    <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
+                        type="text" [formControl]="searchCtrl" placeholder="{{ 'work.filterbytaskname' | translate }}">
+
                     <div class="cu-search-filter__extra">
                         <div class="cu-filter-value-list-dropdown ng-star-inserted">
                             <div class="cu-dropdown_left cu-dropdown">
@@ -163,7 +162,7 @@
                         </button>
                     </div>
                 </mat-menu>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
@@ -183,47 +182,45 @@
 
 <kt-portlet [options]="{hideHeader: true}">
     <kt-portlet-body class="pd-0" style="background-color: #eeeeee;" [ngStyle]="{'height.px': getHeight()}">
-        <div class="kt-form__filtration">
-            <div class="form-group kt-form__group row">
-                <!-- <div style="flex-grow: 1;margin: 25px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
-                border-left-width: 5px;
-                padding-left: 35px;" class="cu-list-group" >
-                    <h3>Tên dự án</h3>
-                    <app-works-list-group  [ID_Project]="1" [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
-                </div> -->
-
-                <!-- <ng-container *ngFor="let item of ListProject">
-                    <div style="flex-grow: 1;margin: 25px;margin-right: 10px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
-                    border-left-width: 5px; padding-left: 35px;" class="cu-list-group" >
-                        <div class="mt-4">
-                            <p>Dự án &nbsp; <span class="text-dark" style="font-size: 18px;font-weight: 500;"> {{ item.title }} </span></p>
-                        </div>
-                        <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group>
-                    </div>
-                </ng-container> -->
+        <div class="kt-form__filtration cu-if-not-task-view-scroll cu-dashboard-table__scroll">
+            <div class="cu-dashboard-table__body"> 
                 <ng-container *ngFor="let item of this.DataSpace | async ">
-                    <div style="flex-grow: 1;margin: 25px;margin-right: 10px;background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
-                    border-left-width: 5px; padding-left: 35px;" >
-                        <div class="mt-4">
-                            <p>Dự án &nbsp; <span class="text-dark" style="font-size: 18px;font-weight: 500;"> {{ item.projectname }} </span></p>
+                    <div style="flex-grow: 1; background-color: rgba(249, 217, 0, 0.06); border-left-color: rgb(249, 217, 0);
+                    border-left-width: 5px; padding-left: 35px;" class="border-list-group ">
+                        <div class="cu-list-group__header">
+                            <div class="cu-list-group__header-container">
+                                <div class="cu-list-group__header-breadcrumbs">
+                                     <div class="cu-list-group__category-name ng-star-inserted">
+                                     </div>
+                                 </div>
+                                <div class="cu-list-group__header-inner">
+                                    <div class="cu2-list-details-menu cu-list-group__name-container ng-star-inserted">
+                                        <div class="cu2-list-details-menu">
+                                            <div class="nav-menu cu-dropdown menu-options">
+                                                <div data-test="dropdown__toggle"  class="cu-dropdown__toggle"> 
+                                                    <!-- <mat-icon class="mat-icon-rtl-mirror"  
+                                                        (click)="item.expanded = !item.expanded"> 
+                                                        {{ item.expanded ? 'expand_more' : 'chevron_right'}} </mat-icon> -->
+
+                                                    <div  class="cu-list-group__name font-size-h3 font-weight-bolder">
+                                                        {{ item.projectname }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div> 
+                            </div> 
                         </div>
-                        <!-- <app-works-list-group  [ID_Project]="item.id_row"  [filter]="filter" [groupby]="filter_groupby.value"></app-works-list-group> -->
-                        <app-works-list-group-2
-                            [showemptystatus]="showemptystatus" 
-                            [tasklocation]="tasklocation" 
-                            [showclosedtask]="showclosedtask" 
-                            [showclosedsubtask]="showclosedsubtask" 
-                            [project_data]="item.project_data" 
-                            [ID_Project]="item.id_row"  
-                            [filter]="filter" 
-                            [groupby]="filter_groupby.value" 
-                            (pageReload)="LoadNewList()"
-                            ></app-works-list-group-2>
+                         <app-works-list-group-2 [showemptystatus]="showemptystatus" [tasklocation]="tasklocation"
+                            [showclosedtask]="showclosedtask" [showclosedsubtask]="showclosedsubtask"
+                            [project_data]="item.project_data" [ID_Project]="item.id_row" [filter]="filter" [Id_Department]="Id_Department" [listNewfield]="listNewfield"
+                            [listField]="listField" [groupby]="filter_groupby.value" (pageReload)="LoadNewList()" (ColReload)="getListField($event)">
+                        </app-works-list-group-2>
                     </div>
                 </ng-container>
-                
+
             </div>
         </div>
     </kt-portlet-body>
 </kt-portlet>
-

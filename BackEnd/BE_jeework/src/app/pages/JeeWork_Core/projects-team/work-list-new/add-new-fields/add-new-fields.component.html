@@ -27,7 +27,7 @@
                 <div class="form-control row" style="display: flex !important;">
                     <div [ngStyle]="{'backgroundColor': ops.Color}" style="width:10px;margin-right: 10px;"></div>
                     <div class="input-ops" style="flex-grow: 1;">
-                        <input autocomplete="off" [(ngModel)]="ops.Value" placeholder="Nhập tùy chọn dữ liệu">
+                        <input autocomplete="off" [(ngModel)]="ops.Value" placeholder="Nhập tùy chọn">
                     </div>
                     <span class="-hover url" style="padding: 0 5px;" [matMenuTriggerFor]="menuField"> Chọn màu </span>
                     <mat-menu #menuField="matMenu">
@@ -39,7 +39,7 @@
                     <i class="far fa-trash-alt -hover-remove url" *ngIf="!(ops.rowid>0)" (click)="listOptions.splice(index,1)" style="padding-left: 10px; font-size: 20px;"></i>
                 </div>
             </div>
-            <div class="btn btn-default" (click)="addRow()"><i class="fas fa-plus" ></i> Thêm dòng dữ liệu mới</div>
+            <div class="btn btn-default" (click)="addRow()"><i class="fas fa-plus" ></i> Thêm tùy chọn mới</div>
         </div>
     </div>
     <div class="card-footer text-right">

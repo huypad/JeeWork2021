@@ -767,8 +767,8 @@ namespace JeeWork_Core2021.Classes
                         DuAnHetHan(cnn, CustomerID.ToString(), ConnectionString);
                         ham = "TaoCongViecTuDong";
                         TaoCongViecTuDong(cnn, CustomerID.ToString(), ConnectionString);
-                        ham = "CapNhatCongViecTreHan";
-                        CapNhatCongViecTreHan(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "CapNhatCongViecTreHan";
+                        //CapNhatCongViecTreHan(cnn, CustomerID.ToString(), ConnectionString);
                         ham = "CapNhatDuAnTreHan";
                         CapNhatDuAnTreHan(cnn, CustomerID.ToString(), ConnectionString);
                         #endregion

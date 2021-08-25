@@ -1,0 +1,13 @@
+<div class="item-field text-2-line" [matMenuTriggerFor]="group"
+    [hidden]="!role">
+    {{LoadNhomCongViec(value)}}
+</div>
+<div class="item-field text-2-line" [hidden]="role">
+    {{LoadNhomCongViec(value)}}
+</div>
+<mat-menu #group="matMenu">
+    <ng-container *ngFor="let item of ListGroup">
+        <button mat-menu-item
+            (click)="UpdateGroup(item.id_row)">{{item.title}}</button>
+    </ng-container>
+</mat-menu>

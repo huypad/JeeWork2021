@@ -143,9 +143,9 @@ export class WeWorkService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.get<any>(API_Lite + `/list-new-field`, { headers: httpHeaders });
 	}
-	GetOptions_NewField(id_project_team, fieldID): Observable<any> {
+	GetOptions_NewField(id, fieldID, type ): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.get<any>(API_Lite + `/get-options-new-field?id_project_team=${id_project_team}&&fieldID=${fieldID}`, { headers: httpHeaders });
+		return this.http.get<any>(API_Lite + `/get-options-new-field?id=${id}&&fieldID=${fieldID}&&type=${type}`, { headers: httpHeaders });
 	}
 	//status
 	ListStatusDynamic(id_project_team: any): Observable<any> {

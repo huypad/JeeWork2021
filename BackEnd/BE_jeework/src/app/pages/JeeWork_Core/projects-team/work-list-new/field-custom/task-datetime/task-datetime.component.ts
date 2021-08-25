@@ -16,17 +16,15 @@ export class TaskDatetimeComponent implements OnInit {
   ngOnInit(): void {
   }
   getDeadline(field,value){
-    console.log('deadline:',field,value);
+    // console.log('deadline:',field,value);
 
   }
-  updateDate(field,value){
-    console.log('update date:',field,value);
+  updateDate(value){
     this.valueChange.emit(value);
   }
 
-  RemoveKey(field,value){
-    console.log('remove key:',field,value);
-    this.valueChange.emit(value);
+  RemoveKey(){
+    this.valueChange.emit(null);
 
   }
 }

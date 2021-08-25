@@ -49,7 +49,7 @@ export class AddNewFieldsComponent implements OnInit {
 		});
 		if (this.data.id_row > 0) {
 			this._service
-				.Detail_column_new_field(this.data.id_row)
+				.Detail_column_new_field(this.data.id_row,3)
 				.subscribe((res) => {
 					if (res && res.status == 1) {
 						this.listOptions = res.data.options;
@@ -68,9 +68,9 @@ export class AddNewFieldsComponent implements OnInit {
 	}
 	getTitle() {
 		if (this.data.id_row > 0) {
-			return "Chỉnh sửa dữ liệu";
+			return "Chỉnh sửa tên trường dữ liệu";
 		}
-		return "Thêm cột dữ liệu";
+		return "Nhập tên trường dữ liệu";
 	}
 	selectedCol(data) {
 		var x = this.listField.find((x) => x.fieldname == data.columnname);

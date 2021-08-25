@@ -1,6 +1,6 @@
 <ng-container>
   <div class="enter-post-comment post-comment" *ngIf="service.mainUser$ | async">
-    <div class="post-comment-avatar">
+    <div class="post-comment-avatar pr-2">
       <img id="img-avatar" src="{{ (service.mainUser$ | async).AvartarImgURL }}" />
     </div>
     <div class="post-comment-input">
@@ -12,7 +12,7 @@
         (keydown)="onKeydown($event)"
         (keyup.enter)="validateCommentAndPost()"
         [(ngModel)]="inputTextArea"
-        placeholder="Viết bình luận"
+        placeholder="Viết bình luận + camera"
         class="textarea-input"
         cdkTextareaAutosize
       >

@@ -622,7 +622,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = $@"select ISNULL((select count(*) 
-                                    from {_config.HRCatalog}.dbo.Tbl_Group_Account 
+                                    from Tbl_Group_Account 
                                     where id_group = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) > 0)
                     {

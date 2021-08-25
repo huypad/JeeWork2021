@@ -15,7 +15,8 @@ export class DrapDropItem {
 export class ColumnWorkModel
 {
     id_row:number = 0;
-    id_project_team :number;
+    id_project_team :number = 0;
+    id_department  :number = 0;
     columnname :string;
     isnewfield :boolean = false;
     Options :any;

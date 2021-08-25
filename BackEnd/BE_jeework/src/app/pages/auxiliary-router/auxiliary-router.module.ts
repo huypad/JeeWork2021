@@ -35,12 +35,10 @@ const routes: Routes = [
 		ReactiveFormsModule,
 		TranslateModule.forChild(),
 		JeeWork_CoreModule,
-		// TagInputModule,
 		AngularMultiSelectModule,
 		MatDatepickerModule,
 		MatExpansionModule,
 		DynamicComponentModule,
-		// JeeHRSubModule
 	],
 	providers: [ ProjectsTeamService,
 		SubheaderService ],

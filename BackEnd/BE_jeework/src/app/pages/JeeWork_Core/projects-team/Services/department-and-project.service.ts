@@ -366,9 +366,9 @@ export class ProjectsTeamService {
 		return this.http.get<any>(url, { headers: httpHeaders });
 	}
 	//detail column update
-	Detail_column_new_field(id: any): Observable<any> {
+	Detail_column_new_field(id: any,type:any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		const url = `${API_work_CU}/detail-column-new-field?field=${id}`;
+		const url = `${API_work_CU}/detail-column-new-field?field=${id}&type=${type}`;
 		return this.http.get<any>(url, { headers: httpHeaders });
 	}
 
@@ -406,7 +406,8 @@ export class ProjectsTeamService {
 		});
 	}
 
-	update_hidden(query): Observable<QueryResultsModel> {
+	update_hidden(id,type,hidden,isdeleted = false): Observable<QueryResultsModel> {
+		let query = `id=${id}&&type=${type}&&hidden=${hidden}&&isdeleted=${isdeleted}`;
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = API_work_CU + '/update-hidden?' + query;
 		return this.http.get<QueryResultsModel>(url, {

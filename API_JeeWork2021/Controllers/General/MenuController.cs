@@ -112,7 +112,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             .Replace("--order by position", " order by position ");
                         select_MainMenu += select_Menu;
                         Common permit = new Common(ConnectionString);
-                        ds_workspace = Common.GetWorkSpace(loginData);
+                        ds_workspace = Common.GetWorkSpace(loginData, 0, 0);
                         DataTable tmp_ww = new DataTable();
                         ds = Conn.CreateDataSet(select_MainMenu, cond);
                         #endregion

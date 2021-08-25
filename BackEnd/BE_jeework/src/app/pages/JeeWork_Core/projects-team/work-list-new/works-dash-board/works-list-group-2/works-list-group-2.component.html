@@ -34,29 +34,29 @@
                                     <div class="row ">
                                         <span class=" text-uppercase" style="padding-right: 5px;">
                                             {{status.statusname?status.statusname:'Chưa giao việc'}}
+                                            <div class="cu-action-header d-none" *ngIf=" IsAdmin()">
+                                                <i class="fas fa-pencil-alt" matTooltipPosition="above"
+                                                    *ngIf="isUpdateStatusname(status.id_row)"
+                                                    (click)="chinhsuanoidung(status)"
+                                                    matTooltip="{{ (this.groupby == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
+                                                <i *ngIf="status.data.length > 0" class="fas fa-check-double"
+                                                    (click)="Chontatca(status)" matTooltipPosition="above"
+                                                    matTooltip="{{ 'work.selectedall' | translate }}"></i>
+                                                <i class="fas fa-plus" (click)="chinhsuanoidung({})"
+                                                    *ngIf="isUpdateStatusname()" matTooltipPosition="above"
+                                                    matTooltip="{{ (this.groupby == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
+                                                <!-- <i class="fas fa-ellipsis-h"
+                                                    [matMenuTriggerFor]="groupoptions"
+                                                    matTooltipPosition="above"
+                                                    matTooltip="Group options"></i> -->
+                                                <!-- <mat-menu #groupoptions="matMenu">
+                                                    <button mat-menu-item> Option1 </button>
+                                                    <button mat-menu-item> Option2 </button>
+                                                    <button mat-menu-item> Option3 </button>
+                                                    <button mat-menu-item> Option4 </button>
+                                                </mat-menu> -->
+                                            </div>
                                         </span>
-                                        <div class="cu-action-header d-none" *ngIf="CheckRoles(15) && IsAdmin()">
-                                            <i class="fas fa-pencil-alt" matTooltipPosition="above"
-                                                *ngIf="isUpdateStatusname(status.id_row)"
-                                                (click)="chinhsuanoidung(status)"
-                                                matTooltip="{{ (this.groupby == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
-                                            <i *ngIf="status.data.length > 0" class="fas fa-check-double"
-                                                (click)="Chontatca(status)" matTooltipPosition="above"
-                                                matTooltip="{{ 'work.selectedall' | translate }}"></i>
-                                            <i class="fas fa-plus" (click)="chinhsuanoidung({})"
-                                                *ngIf="isUpdateStatusname()" matTooltipPosition="above"
-                                                matTooltip="{{ (this.groupby == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
-                                            <!-- <i class="fas fa-ellipsis-h"
-                                                [matMenuTriggerFor]="groupoptions"
-                                                matTooltipPosition="above"
-                                                matTooltip="Group options"></i> -->
-                                            <!-- <mat-menu #groupoptions="matMenu">
-                                                <button mat-menu-item> Option1 </button>
-                                                <button mat-menu-item> Option2 </button>
-                                                <button mat-menu-item> Option3 </button>
-                                                <button mat-menu-item> Option4 </button>
-                                            </mat-menu> -->
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -95,12 +95,12 @@
                     (cdkDropListDropped)="drop2($event)">
                     <ng-container *ngFor="let item of ListColumns">
                         <div class="cu-task-list-header-field" *ngIf="!(item.IsHidden && item.isnewfield)" cdkDrag>
-                            <div class="cu-dropdown-head" style="width:100px;margin:0 1px;"
-                                *ngIf="item.id_project_team==ID_Project || item.isbatbuoc">
+                            <div class="cu-dropdown-head" *ngIf="ShowCol(item,Id_Department)"
+                                style="width:100px;margin:0 1px;" >
                                 <div class="cu-task-list-header-field__title">
                                     <div class="cu-task-list-header-field__title-text text-center"
                                         *ngIf="!item.isnewfield;else isnewfield">
-                                        {{ 'filter.'+item.title | translate }}
+                                        {{ 'filter.'+item.Title | translate }}
                                     </div>
                                     <ng-template #isnewfield>
                                         <div class="cu-task-list-header-field__title-text text-center"
@@ -113,15 +113,13 @@
                                                     style="font-size: 16px;padding: 0 10px;"></i><span
                                                     translate="work.ancot"></span>
                                             </button>
-                                            <button mat-menu-item (click)="UpdateField(item)">
+                                            <!-- <button mat-menu-item (click)="UpdateField(item)">
                                                 <i class="fas fa-cogs"
                                                     style="font-size: 16px;padding: 0 10px;"></i><span
                                                     translate="work.updatecot"></span>
-                                            </button>
+                                            </button> -->
                                             <button mat-menu-item (click)="update_hidden(item,true)">
-                                                <i class="far fa-trash-alt"
-                                                    style="font-size: 16px;padding: 0 10px;"></i><span
-                                                    translate="work.xoacot"></span>
+                                                <i class="far fa-trash-alt" style="font-size: 16px;padding: 0 10px;"></i><span translate="work.xoacot"></span>
                                             </button>
                                         </mat-menu>
                                     </ng-template>
@@ -132,8 +130,9 @@
 
                 </div>
                 <div class="cu-task-list-header-settings text-muted">
-                    <div class="cu-task-list-header-settings__add -hover url " [matMenuTriggerFor]="menuField">
-                        <i class="fas fa-plus-circle"></i>
+                    <div class="cu-task-list-header-settings__add -hover url"  >
+                        <!-- [matMenuTriggerFor]="menuField" -->
+                        <!-- <i class="fas fa-plus-circle"></i> -->
                     </div>
                     <mat-menu #menuField="matMenu">
                         <div class="row" (click)="$event.stopPropagation()">
@@ -142,10 +141,10 @@
                                     <button style="min-width:150px;padding:5px" mat-menu-item
                                         [disabled]="item.isbatbuoc" *ngIf="!item.isnewfield"
                                         (click)="UpdateCol(item.fieldname);">
-                                        <span style="padding-right: 10px;">{{ 'filter.'+item.title |
+                                        <span style="padding-right: 10px;">{{ 'filter.'+item.Title |
                                             translate }}</span>
                                         <i class="fas fa-check float-right"
-                                            *ngIf="item.id_project_team==ID_Project || item.isbatbuoc"></i>
+                                            *ngIf="ShowCol(item,Id_Department)"></i>
                                     </button>
                                 </ng-container>
                                 <ng-container *ngIf="HasColunmHidden(ListColumns)">
@@ -277,9 +276,9 @@
                             <div class="cu-task-row-main__link-container row">
                                 <div class="cu-task-row-main__link-text">
                                     <input id="task{{node.id_row}}" type="text" class="form-control"
-                                        [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
-                                        (keyup.enter)="focusOutFunction(node)" (focusout)="focusOutFunction(node)"
-                                        [(ngModel)]="node.title">
+                                        [hidden]="isEdittitle != node.id_row"
+                                        (keyup.enter)="focusOutFunction($event,node)" (focusout)="focusOutFunction($event,node)"
+                                        [value]="node.title">
                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                         <p style="font-size: 11px;" class="mg-0 text-muted" *ngIf="tasklocation">
                                             {{this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}
@@ -353,17 +352,18 @@
                     </div>
                 </div>
                 <ng-container *ngFor="let item of ListColumns">
-                    <div class="text-center position-relative url -hover"
-                        *ngIf="(item.id_project_team==ID_Project || item.isbatbuoc) && !item.IsHidden"
+                    <div class="text-center position-relative url -hover" *ngIf="ShowCol(item,Id_Department)"
                         style="width:100px;margin:0 1px;">
+                        <!-- *ngIf="ShowCol(item,ID_Project)" -->
+
                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                             <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
-                                <!-- <app-task-datetime 
-                                (ngModelChange)="updateDate(node,node[item.fieldname],item.fieldname)"
+                                <app-task-datetime
+                                (valueChange)="updateDate(node,$event,item.fieldname)"
                                 [fieldname]="item.fieldname" 
                                 [(value)]="node[item.fieldname]" 
-                                [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime> -->
-                                <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
+                                [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime>
+                                <!-- <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                     <div class="item-field">
                                         <span class="hide-more-text" matTooltip="{{node[item.fieldname] | timezone}}">
                                             {{node[item.fieldname] | timezone }}
@@ -406,7 +406,7 @@
                                         style="opacity: 0;" class="date-picker position-picker" [owlDateTime]="dt1"
                                         [owlDateTimeTrigger]="dt1">
                                     <owl-date-time #dt1></owl-date-time>
-                                </ng-template>
+                                </ng-template> -->
                             </ng-container>
                             <ng-template #nosetdatetime>
                                 <ng-container *ngIf="item.type == 'code';else noestcode">
@@ -612,27 +612,6 @@
                                             <div class="item-field hide-more-text">
                                                 <app-task-comment (submit)="this.LoadData()" [id_row]="node.id_row"
                                                     [value]="node[item.fieldname]"></app-task-comment>
-                                                <!-- <span style="font-size: 12pt;"
-                                                                [matMenuTriggerFor]="commentsmenu"
-                                                                (menuOpened)="node.showcomment = true"
-                                                                (menuClosed)="this.LoadData();node.showcomment = false">
-                                                                {{node[item.fieldname]>0?node[item.fieldname]:''}}
-                                                                <i class="far fa-comment-dots"></i>
-                                                            </span>
-                                                            <mat-menu #commentsmenu="matMenu">
-                                                                <div (click)="$event.stopPropagation()"
-                                                                    style="max-height:600px;min-width: 500px;min-height: 300px;">
-                                                                    <ng-container
-                                                                        *ngIf="node.id_row && node.showcomment">
-                                                                        <app-jee-comment
-                                                                            [showonpopup]="true"
-                                                                            [showCommentDefault]="true"
-                                                                            [componentName]="getComponentName(node.id_row)">
-                                                                        </app-jee-comment>
-                                                                    </ng-container>
-
-                                                                </div>
-                                                            </mat-menu> -->
                                             </div>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'createdby'">
@@ -643,7 +622,14 @@
                                             </div>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'id_group'">
-                                            <div class="item-field" [matMenuTriggerFor]="groupid"
+                                            <app-tasks-group
+                                                [ListGroup]="listType" 
+                                                [value]="node[item.fieldname]"
+                                                (valueChange)="UpdateGroup(node,$event)"
+                                                [role]="CheckRoles(21)"
+                                            >
+                                            </app-tasks-group>
+                                            <!-- <div class="item-field" [matMenuTriggerFor]="groupid"
                                                 [hidden]="!CheckRoles(21)">
                                                 {{LoadNhomCongViec(node[item.fieldname])}}
                                             </div>
@@ -653,9 +639,9 @@
                                             <mat-menu #groupid="matMenu">
                                                 <ng-container *ngFor="let item of listType">
                                                     <button mat-menu-item
-                                                        (click)="UpdateGroup(node,item.id_row)">{{item.title}}</button>
+                                                        (click)="UpdateGroup(node,item.Id_row)">{{item.title}}</button>
                                                 </ng-container>
-                                            </mat-menu>
+                                            </mat-menu> -->
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'milestone'">
                                             <div class="item-field">
@@ -698,63 +684,68 @@
                                     <!-- the same view can be shown in more than one case -->
                                     <ng-container *ngSwitchCase="'checkbox'">
                                         <mat-checkbox class="example-margin"
-                                            [checked]="GetDataNewField(node.id_row,item.id_row)=='true'?true:false"
+                                            [checked]="GetDataNewField(node.id_row,item.Id_row)=='true'?true:false"
                                             (change)="UpdateValueField($event.checked,node.id_row,item)">
                                         </mat-checkbox>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'date'">
                                         <div class="w-100 h-100  border-hover padding-new-field item-field">
-                                            <div class="url hide-more-text "
-                                                (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)"
-                                                *ngIf="editmail != (node.id_row+item.id_row.toString())">
-                                                {{GetDataNewField(node.id_row,item.id_row)}}
+                                            <app-task-datetime 
+                                                (valueChange)="UpdateValueField($event,node.id_row,item)"
+                                                [fieldname]="'date'" 
+                                                [value]="GetDataNewField(node.id_row,item.Id_row)=='-'?'':GetDataNewField(node.id_row,item.Id_row)" 
+                                                [role]="true" ></app-task-datetime>
+                                            <!-- <div class="url hide-more-text "
+                                                (click)="editmail = (node.id_row + item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
+                                                *ngIf="editmail != (node.id_row+item.Id_row.toString())">
+                                                {{GetDataNewField(node.id_row,item.Id_row)}}
                                             </div>
-                                            <ng-container *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                            <ng-container *ngIf="editmail == (node.id_row+item.Id_row.toString())">
                                                 <app-focus-block type="date" [isbd]="true"
-                                                    [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                    [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                     (out)="UpdateValueField($event,node.id_row,item);">
                                                 </app-focus-block>
-                                            </ng-container>
+                                            </ng-container> -->
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'email'">
                                         <div class="w-100 h-100  border-hover padding-new-field item-field">
-                                            <ng-container *ngIf="editmail != (node.id_row+item.id_row.toString())">
+                                            <ng-container *ngIf="editmail != (node.id_row+item.Id_row.toString())">
                                                 <div class=" url hide-more-text"
-                                                    *ngIf="GetDataNewField(node.id_row,item.id_row)!='-'">
+                                                    *ngIf="GetDataNewField(node.id_row,item.Id_row)!='-'">
                                                     <div class="w-100 h-100 hide-more-text"
                                                         [matMenuTriggerFor]="emaillist">
                                                         {{
-                                                        GetDataNewField(node.id_row,item.id_row)
+                                                        GetDataNewField(node.id_row,item.Id_row)
                                                         }}
                                                     </div>
                                                     <mat-menu #emaillist="matMenu">
                                                         <button mat-menu-item>
                                                             <a
-                                                                href="mailto:{{GetDataNewField(node.id_row,item.id_row)}}">
+                                                                href="mailto:{{GetDataNewField(node.id_row,item.Id_row)}}">
                                                                 Gửi mail
                                                             </a>
                                                         </button>
                                                         <button mat-menu-item>
                                                             <a
-                                                                (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)">
+                                                                (click)="editmail = (node.id_row+item.Id_row.toString());focusInput(node.id_row,item.Id_row)">
                                                                 Chình sửa mail
                                                             </a>
                                                         </button>
                                                     </mat-menu>
                                                 </div>
                                                 <div class=" url hide-more-text urf"
-                                                    *ngIf="GetDataNewField(node.id_row,item.id_row)=='-'"
-                                                    (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)">
+                                                    *ngIf="GetDataNewField(node.id_row,item.Id_row)=='-'"
+                                                    (click)="editmail = (node.id_row+item.Id_row.toString());focusInput(node.id_row,item.Id_row)">
                                                     <span class="hide-more-text">
-                                                        {{GetDataNewField(node.id_row,item.id_row)}}
+                                                        {{GetDataNewField(node.id_row,item.Id_row)}}
                                                     </span>
                                                 </div>
                                             </ng-container>
 
-                                            <ng-container *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                            <ng-container *ngIf="editmail == (node.id_row+item.Id_row.toString())">
                                                 <app-focus-block type="email" [isbd]="true"
-                                                    [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                    [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                     (out)="UpdateValueField($event,node.id_row,item);">
                                                 </app-focus-block>
                                             </ng-container>
@@ -773,13 +764,13 @@
                                     <ng-container *ngSwitchCase="'number'">
                                         <div class="w-100 h-100 border-hover padding-new-field item-field">
                                             <div class="url hide-more-text"
-                                                (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)"
-                                                *ngIf="editmail != (node.id_row+item.id_row.toString())">
-                                                {{GetDataNewField(node.id_row,item.id_row)}}
+                                                (click)="editmail = (node.id_row+item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
+                                                *ngIf="editmail != (node.id_row+item.Id_row.toString())">
+                                                {{GetDataNewField(node.id_row,item.Id_row)}}
                                             </div>
-                                            <ng-container *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                            <ng-container *ngIf="editmail == (node.id_row+item.Id_row.toString())">
                                                 <app-focus-block type="number" [isbd]="true"
-                                                    [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                    [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                     (out)="UpdateValueField($event,node.id_row,item);">
                                                 </app-focus-block>
                                             </ng-container>
@@ -788,26 +779,26 @@
                                     <ng-container *ngSwitchCase="'text'">
                                         <div class="w-100 h-100  border-hover padding-new-field item-field">
                                             <div class=" url hide-more-text"
-                                                (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)"
-                                                *ngIf="editmail != (node.id_row+item.id_row.toString())">
-                                                {{GetDataNewField(node.id_row,item.id_row)}}
+                                                (click)="editmail = (node.id_row+item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
+                                                *ngIf="editmail != (node.id_row+item.Id_row.toString())">
+                                                {{GetDataNewField(node.id_row,item.Id_row)}}
                                             </div>
-                                            <ng-container *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                            <ng-container *ngIf="editmail == (node.id_row+item.Id_row.toString())">
                                                 <app-focus-block type="text" [isbd]="true"
-                                                    [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                    [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                     (out)="UpdateValueField($event,node.id_row,item);">
                                                 </app-focus-block>
                                             </ng-container>
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'textarea'">
-                                        <!-- text area . . . {{item.id_row}} -->
+                                        <!-- text area . . . {{item.Id_row}} -->
                                         <div class="w-100 h-100 border-hover padding-new-field item-field"
                                             [matMenuTriggerFor]="area"
-                                            (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.id_row))"
-                                            (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.id_row))">
+                                            (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.Id_row))"
+                                            (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.Id_row))">
                                             <div class=" url hide-more-text">
-                                                {{GetDataNewField(node.id_row,item.id_row)}}
+                                                {{GetDataNewField(node.id_row,item.Id_row)}}
                                             </div>
                                         </div>
                                         <mat-menu #area="matMenu">
@@ -820,17 +811,17 @@
                                     <!--default case when there are no matches -->
                                     <ng-container *ngSwitchDefault>
                                         <div class="w-100 h-100 border-hover padding-new-field item-field"
-                                            [ngStyle]="{'backgroundColor': GetDataNewField(node.id_row,item.id_row,true,true)}"
+                                            [ngStyle]="{'backgroundColor': GetDataNewField(node.id_row,item.Id_row,true,true)}"
                                             [matMenuTriggerFor]="dropdown">
                                             <div class="url hide-more-text"
-                                                [ngClass]="{'text-white': GetDataNewField(node.id_row,item.id_row,true) != '-'}">
+                                                [ngClass]="{'text-white': GetDataNewField(node.id_row,item.Id_row,true) != '-'}">
                                                 {{
-                                                GetDataNewField(node.id_row,item.id_row,true)
+                                                GetDataNewField(node.id_row,item.Id_row,true)
                                                 }}
                                             </div>
                                         </div>
                                         <mat-menu #dropdown="matMenu">
-                                            <button mat-menu-item *ngFor="let dr of getDropdownField(item.id_row)"
+                                            <button mat-menu-item *ngFor="let dr of getDropdownField(item.Id_row)"
                                                 (click)="UpdateValueField(dr.RowID,node.id_row,item)">
                                                 <div class="d-inline-block" [ngStyle]="{'backgroundColor': dr.Color}"
                                                     style="width:10px;margin-right: 10px;height: 10px;">

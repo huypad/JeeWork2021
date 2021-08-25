@@ -349,10 +349,13 @@ namespace JeeWork_Core2021.Classes
             return result;
         }
         /// <summary>
-        /// Lấy danh sách các phòng ban thư mục mà nhân viên có quyền truy xuất
+        /// 
         /// </summary>
-        /// <param name="id_nv">Nhân viên</param>
-        public static DataSet GetWorkSpace(UserJWT loginData)
+        /// <param name="loginData"></param>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static DataSet GetWorkSpace(UserJWT loginData, long id, long type)
         {
             string sql_space = "", sql_project = "", sql_folder = "", where_dpm = "";
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -449,6 +452,40 @@ namespace JeeWork_Core2021.Classes
                 result = cnn.CreateDataTable(sql_project + col_admin + join + str_where, "(where)", conds);
                 return result;
             }
+        }
+        public static string GetIDByWorkSpace(long id, long type, UserJWT loginData)
+        {
+            string list = "0";
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                SqlConditions cond = new SqlConditions();
+                DataTable dt = new DataTable();
+                if (type < 3)
+                {
+                    string columname = "";
+                    cond.Add("idkh", loginData.CustomerID);
+                    if (type == 2)
+                    {
+                        cond.Add("id_row", id);
+                        columname = "parentid";
+                    }
+                    if (type == 1)
+                    {
+                        cond.Add("parentid", id);
+                        columname = "id_row";
+                    }
+                    dt = cnn.CreateDataTable("select " + columname + " from we_department where (where)", "(where)", cond);
+                    if (dt.Rows.Count > 0)
+                    {
+                        foreach (DataRow r in dt.Rows)
+                        {
+                            list += "," + r[0];
+                        }
+                    }
+                }
+
+            }
+            return list;
         }
         //Create by Pad: 15 Oct 02:20pm
         /// <summary>
