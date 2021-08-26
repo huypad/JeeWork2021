@@ -566,9 +566,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                         displayChild = query.filter["displayChild"];
                     string columnName = "id_project_team";
                     string strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.Disabled = 0 and wu.Disabled = 0  and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
-                    if (!string.IsNullOrEmpty(query.filter["workother"]) && bool.Parse(query.filter["workother"]))
+                    if (!string.IsNullOrEmpty(query.filter["isassignforme"]) && bool.Parse(query.filter["isassignforme"]))
                     {
-                        strW = " and ( ( (w.createdby=@iduser or w.NguoiGiao = @iduser )and w.Id_NV not in (@iduser) and w.Id_NV is not null))";
+                        strW = " and w.id_nv=@iduser ";
                     }
                     if (!string.IsNullOrEmpty(query.filter["following"]) && bool.Parse(query.filter["following"]))
                     {
@@ -1967,7 +1967,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         /// <returns></returns>
         [Route("update-hidden")]
         [HttpGet]
-        public BaseModel<object> update_hidden(long id, long hidden, long type, bool isdeleted = false)
+        public BaseModel<object> update_hidden(long id, long hidden, bool isdeleted = false)
         {
             string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -1980,33 +1980,23 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    DataTable dt = new DataTable();
-                    dt = DataUpDateColumn(type, id, ConnectionString);
-                    if (dt.Rows.Count > 0)
+                    string sqlq = "select ISNULL((select count(*) from we_fields_project_team where disabled=0 and id_row = " + id + "),0)";
+                    if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
+                        return JsonResultCommon.KhongTonTai("Công việc");
+                    if (isdeleted)
+                        sqlq = "update we_fields_project_team set disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id + "";
+                    else
+                        sqlq = "update we_fields_project_team set IsHidden=" + hidden + ", UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id + "";
+                    SqlConditions sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", id);
+                    sqlcond.Add("disabled", 0);
+                    cnn.BeginTransaction();
+                    if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {
-                        //TableName,ID,CoumnName
-                        foreach (DataRow item in dt.Rows)
-                        {
-                            string sqlq = "select ISNULL((select count(*) from " + item["TableName"].ToString() + " where disabled=0 and id_row = " + item["ID"].ToString() + "),0)";
-                            if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
-                                return JsonResultCommon.KhongTonTai("Cột");
-                            if (isdeleted)
-                                sqlq = "update " + item["TableName"].ToString() + " set disabled=1, updateddate=getdate(), UpdatedBy=" + iduser + " where id_row = " + item["ID"].ToString() + "";
-                            else
-                                sqlq = "update " + item["TableName"].ToString() + " set ishidden=" + hidden + ", UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + item["ID"].ToString() + "";
-                            SqlConditions sqlcond = new SqlConditions();
-                            sqlcond.Add("id_row", id);
-                            sqlcond.Add("disabled", 0);
-                            cnn.BeginTransaction();
-                            if (cnn.ExecuteNonQuery(sqlq) < 1)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
-                        }
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
-
                     return JsonResultCommon.ThanhCong();
                 }
             }
@@ -3197,6 +3187,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> UpdateColumnWork(ColumnWorkModel data)
         {
+            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3204,101 +3195,90 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
+                DataTable dt = new DataTable();
+                string column_name = "id_project_team"; long WorkSpaceID = 0;
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("fieldname", data.columnname);
                     sqlcond.Add("disabled", 0);
-                    long type = 2;
-                    long WorkSpaceID = 0;
                     if (data.id_project_team > 0)
                     {
-                        type = 3;
+                        sqlcond.Add("id_project_team", data.id_project_team);
+                        column_name = "id_project_team";
                         WorkSpaceID = data.id_project_team;
                     }
                     else
-                        WorkSpaceID = data.id_department;
-                    DataTable dt = new DataTable();
-                    dt = DataUpDateColumn(type, WorkSpaceID, ConnectionString);
-                    if (dt.Rows.Count > 0)
                     {
-                        foreach (DataRow item in dt.Rows)
+                        sqlcond.Add("departmentid", data.id_department);
+                        column_name = "departmentid";
+                        WorkSpaceID = data.id_department;
+                    }
+                    string sqlq = "";
+                    sqlcond.Add("fieldname", data.columnname);
+                    sqlcond.Add("disabled", 0);
+                    sqlq = "select * from we_fields_project_team where (where)";
+                    dt = cnn.CreateDataTable(sqlq, "(where)", sqlcond);
+                    if (dt.Rows.Count == 0 || data.isnewfield)
+                    {
+                        Hashtable val = new Hashtable();
+                        val.Add("createddate", DateTime.Now);
+                        val.Add("createdby", iduser);
+                        val.Add("fieldname", data.columnname);
+                        string sql_position = "";
+                        val.Add(column_name, WorkSpaceID);
+                        sql_position = "select ISNULL((select max(position) from we_fields_project_team where " + column_name + " = " + WorkSpaceID + "),0)";
+                        long position = 0;
+                        position = long.Parse(cnn.ExecuteScalar(sql_position).ToString());
+                        val.Add("position", position + 1);
+                        val.Add("objectid", 1);
+                        val.Add("disabled", 0);
+                        if (data.isnewfield)
                         {
-                            string column_name = item["CoumnName"].ToString(), TableName = item["TableName"].ToString();
-                            long ID = long.Parse(item["ID"].ToString());
-                            string sqlq = "";
-                            sqlcond.Add("fieldname", data.columnname);
-                            sqlcond.Add("disabled", 0);
-                            sqlcond.Add(column_name, ID);
-                            sqlq = "select * from " + item["TableName"].ToString() + " where (where)";
-                            DataTable _dt = cnn.CreateDataTable(sqlq, "(where)", sqlcond);
-                            if (_dt.Rows.Count == 0 || data.isnewfield)
+                            string strRe = "";
+                            if (string.IsNullOrEmpty(data.Title))
+                                strRe += (strRe == "" ? "" : ",") + "tên cột";
+                            if (strRe != "")
+                                return JsonResultCommon.BatBuoc(strRe);
+                            val.Add("title", data.Title);
+                            val.Add("isnewfield", 1);
+                        }
+                        else
+                            val.Add("isnewfield", 0);
+                        cnn.BeginTransaction();
+                        if (cnn.Insert(val, "we_fields_project_team") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                        long FieldID = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_fields_project_team')").ToString());
+                        if (data.isnewfield)
+                        {
+                            foreach (var op in data.Options)
                             {
-                                Hashtable val = new Hashtable();
-                                val.Add("createddate", DateTime.Now);
-                                val.Add("createdby", iduser);
-                                val.Add("fieldname", data.columnname);
-                                string sql_position = "";
-                                val.Add(column_name, ID);
-                                sql_position = "select ISNULL((select max(position) from " + TableName + " where " + column_name + " = " + ID + "),0)";
-                                long position = 0;
-                                position = long.Parse(cnn.ExecuteScalar(sql_position).ToString());
-                                val.Add("position", position + 1);
-                                val.Add("objectid", 1);
-                                val.Add("disabled", 0);
-                                if (data.isnewfield)
+                                val = new Hashtable();
+                                if (data.id_project_team > 0)
                                 {
-                                    string strRe = "";
-                                    if (string.IsNullOrEmpty(data.Title))
-                                        strRe += (strRe == "" ? "" : ",") + "tên cột";
-                                    if (strRe != "")
-                                        return JsonResultCommon.BatBuoc(strRe);
-                                    val.Add("title", data.Title);
-                                    val.Add("isnewfield", 1);
+                                    val["id_project_team"] = WorkSpaceID;
                                 }
                                 else
-                                    val.Add("isnewfield", 0);
-                                if ("we_fields_project_team".Equals(TableName))
                                 {
-                                    if (data.id_department > 0)
-                                    {
-                                        val.Add("departmentid", data.id_department);
-                                    }
+                                    val["id_department"] = WorkSpaceID;
                                 }
-                                cnn.BeginTransaction();
-                                if (cnn.Insert(val, TableName) != 1)
+                                val["typeid"] = op.TypeID;
+                                val["fieldid"] = FieldID;
+                                val["value"] = op.Value;
+                                val["color"] = op.Color;
+                                if (!string.IsNullOrEmpty(op.Note))
+                                    val["note"] = op.Note;
+                                else
+                                    val["note"] = DBNull.Value;
+                                if (cnn.Insert(val, "we_newfields_options") != 1)
                                 {
                                     cnn.RollbackTransaction();
                                     return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
-                                long FieldID = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('" + TableName + "')").ToString());
-                                if (data.isnewfield)
-                                {
-                                    foreach (var op in data.Options)
-                                    {
-                                        val = new Hashtable();
-                                        val[column_name] = ID;
-                                        val["typeid"] = op.TypeID;
-                                        val["fieldid"] = FieldID;
-                                        val["value"] = op.Value;
-                                        val["color"] = op.Color;
-                                        if (!string.IsNullOrEmpty(op.Note))
-                                            val["note"] = op.Note;
-                                        else
-                                            val["note"] = DBNull.Value;
-                                        if (cnn.Insert(val, item["TableOption"].ToString()) != 1)
-                                        {
-                                            cnn.RollbackTransaction();
-                                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                cnn.ExecuteNonQuery("delete " + TableName + " where " + column_name + " = " + WorkSpaceID + " and fieldname = '" + data.columnname + "'");
-                                return JsonResultCommon.ThanhCong(data);
                             }
                         }
                         cnn.EndTransaction();
@@ -3306,8 +3286,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     else
                     {
-                        cnn.EndTransaction();
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách dữ liệu để cập nhật");
+                        //cnn.ExecuteNonQuery("delete we_fields_project_team where id_project_team =" + data.id_project_team + " and fieldname = '" + data.columnname + "'");
+                        cnn.ExecuteNonQuery("update we_fields_project_team set disabled = 1 where " + column_name + " = " + WorkSpaceID + " and fieldname = '" + data.columnname + "'");
+                        //cnn.ExecuteNonQuery("delete " + TableName+" where "+column_name+ " = " + WorkSpaceID + " and fieldname = '" + data.columnname + "'");
+                        return JsonResultCommon.ThanhCong(data);
                     }
                 }
             }
@@ -3337,19 +3319,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     string sqlq = "", columname = "", tablename = "", tablename_opts = "";
                     if (type < 3)
                     {
-                        columname = "id_department";
-                        tablename = "we_fields_department";
-                        tablename_opts = "we_newfields_options_dpm";
+                        columname = "departmentid";
                     }
                     else
                     {
                         columname = "id_project_team";
-                        tablename = "we_fields_project_team";
-                        tablename_opts = "we_newfields_options";
                     }
+                    sqlq = @"select * from we_fields_project_team where disabled=0 and id_row =" + field;
+                    sqlq += @";select * from we_newfields_options where fieldid = " + field;
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    sqlq = @"select * from " + tablename + " where disabled=0 and id_row =" + field;
-                    sqlq += @";select * from " + tablename_opts + " where fieldid = " + field;
+
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
@@ -3365,7 +3344,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     title = r["Title"],
                                     ishidden = r["IsHidden"],
                                     id_project_team = type == 3 ? r["id_project_team"] : "0",
-                                    id_department = type < 3 ? r["id_department"] : "0",
+                                    id_department = type < 3 ? r["departmentid"] : "0",
                                     options = from op in ds.Tables[1].AsEnumerable()
                                               select new
                                               {
@@ -3373,7 +3352,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                   FieldID = op["FieldID"],
                                                   TypeID = op["TypeID"],
                                                   ID_project_team = type == 3 ? r["id_project_team"] : "0",
-                                                  id_department = type < 3 ? r["id_department"] : "0",
+                                                  id_department = type < 3 ? r["departmentid"] : "0",
                                                   Value = op["Value"],
                                                   Color = op["Color"],
                                                   Note = op["Note"]
@@ -3406,100 +3385,95 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 string strRe = "";
                 if (string.IsNullOrEmpty(data.Title))
                     strRe += (strRe == "" ? "" : ",") + "tên cột";
-                if (data.columnname == "dropdown" && ( data.Options == null || data.Options.Count == 0))
+                if (data.columnname == "dropdown" && (data.Options == null || data.Options.Count == 0))
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin chi tiết";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    long type = 2, WorkSpaceID = 0;
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
                     SqlConditions sqlcond = new SqlConditions();
-                    if (data.id_project_team > 0)
+                    sqlcond.Add("id_row", data.id_row);
+                    string s = "select * from we_fields_project_team where disabled=0 and id_row=@id_row";//createdby=@CreatedBy and
+                    DataTable old = cnn.CreateDataTable(s, sqlcond);
+                    if (cnn.LastError != null || old == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    if (old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("Column");
+                    #region Trường hợp cột này được thêm từ phòng ban nhưng chọn thêm option từ dự án => cập nhật lại Id cho phòng ban
+                    if (!string.IsNullOrEmpty(old.Rows[0]["departmentid"].ToString()))
                     {
-                        type = 3;
-                        WorkSpaceID = data.id_project_team;
+                        data.id_department = long.Parse(old.Rows[0]["departmentid"].ToString());
+                        data.id_project_team = 0;
                     }
-                    else
+                    #endregion
+                    Hashtable val = new Hashtable();
+                    val.Add("title", data.Title);
+                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedBy", iduser);
+                    string strCheck = "select count(*) from we_fields_project_team where disabled =0 and title=@name and id_row<>@id_row and IsNewField = 1";// and (CreatedBy=@id_user) 
+                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.Title }, { "id_row", data.id_row } }).ToString()) > 0)
                     {
-                        type = 1;
-                        WorkSpaceID = data.id_department;
+                        return JsonResultCommon.Custom("Cột đã tồn tại");
                     }
-                    DataTable dt = new DataTable();
-                    dt = DataUpDateColumn(type, WorkSpaceID, ConnectionString);
-                    if (dt.Rows.Count > 0)
+                    cnn.BeginTransaction();
+                    if (cnn.Update(val, sqlcond, "we_fields_project_team") != 1)
                     {
-                        //TableName,ID,CoumnName,TableOption
-                        foreach (DataRow item in dt.Rows)
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+
+                    }
+                    string ids = string.Join(",", data.Options.Where(x => x.rowid > 0).Select(x => x.rowid));
+                    if (ids != "")//xóa
+                    {
+                        string strDel = "delete we_newfields_options where rowid=" + data.id_row + " and rowid not in (" + ids + ")";
+                        if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
-                            string CoumnName = item["CoumnName"].ToString(), TableName = item["TableName"].ToString(), TableOption = item["TableOption"].ToString(); long ID = long.Parse(item["ID"].ToString());
-                            long iduser = loginData.UserID;
-                            long idk = loginData.CustomerID;
-                            sqlcond = new SqlConditions();
-                            //sqlcond.Add(CoumnName, ID);
-                            sqlcond.Add("id_row", data.id_row);
-                            string s = "select * from " + TableName + " where disabled=0 and id_row=@id_row";//createdby=@CreatedBy and
-                            DataTable old = cnn.CreateDataTable(s, sqlcond);
-                            if (cnn.LastError != null || old == null)
-                                return JsonResultCommon.KhongTonTai("Cột");
-                            if (old.Rows.Count == 0)
-                                return JsonResultCommon.KhongTonTai("Column");
-                            Hashtable val = new Hashtable();
-                            val.Add("title", data.Title);
-                            val.Add("updateddate", DateTime.Now);
-                            val.Add("updatedby", iduser);
-                            if ("we_fields_project_team".Equals(TableName))
-                            {
-                                if (data.id_department > 0)
-                                {
-                                    val.Add("departmentid", data.id_department);
-                                }
-                            }
-                            string strCheck = "select count(*) from " + TableName + " where disabled =0 and title=@name and id_row<>@id_row and isnewfield = 1";// and (CreatedBy=@id_user) 
-                            if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.Title }, { "id_row", data.id_row } }).ToString()) > 0)
-                            {
-                                return JsonResultCommon.Custom("Cột đã tồn tại");
-                            }
-                            cnn.BeginTransaction();
-                            if (cnn.Update(val, sqlcond, TableName) != 1)
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    foreach (var key in data.Options)
+                    {
+                        val = new Hashtable();
+                        if (data.id_project_team > 0)
+                        {
+                            val["id_project_team"] = data.id_project_team;
+                        }
+                        else
+                        {
+                            val["id_department"] = data.id_department;
+                        }
+                        val["TypeID"] = key.TypeID;
+                        val["FieldID"] = key.FieldID;
+                        val["Value"] = key.Value;
+                        val["Color"] = key.Color;
+                        if (!string.IsNullOrEmpty(key.Note))
+                            val["Note"] = key.Note;
+                        else
+                            val["Note"] = DBNull.Value;
+                        if (key.rowid == 0)
+                        {
+                            if (cnn.Insert(val, "we_newfields_options") != 1)
                             {
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
-                            string ids = string.Join(",", data.Options.Where(x => x.rowid > 0).Select(x => x.rowid));
-                            if (ids != "")//xóa
+                        }
+                        else
+                        {
+                            sqlcond = new SqlConditions();
+                            sqlcond.Add("rowid", key.rowid);
+                            if (cnn.Update(val, sqlcond, "we_newfields_options") != 1)
                             {
-                                string strDel = "delete " + TableOption + " where rowid=" + data.id_row + " and rowid not in (" + ids + ")";
-                                if (cnn.ExecuteNonQuery(strDel) < 0)
-                                {
-                                    cnn.RollbackTransaction();
-                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                }
-                            }
-                            Hashtable val1 = new Hashtable();
-                            foreach (var key in data.Options)
-                            {
-                                if (key.rowid == 0)
-                                {
-                                    val = new Hashtable();
-                                    val["ID_project_team"] = ID;
-                                    val["TypeID"] = key.TypeID;
-                                    val["FieldID"] = key.FieldID;
-                                    val["Value"] = key.Value;
-                                    val["Color"] = key.Color;
-                                    if (!string.IsNullOrEmpty(key.Note))
-                                        val["Note"] = key.Note;
-                                    else
-                                        val["Note"] = DBNull.Value;
-                                    if (cnn.Insert(val, TableOption) != 1)
-                                    {
-                                        cnn.RollbackTransaction();
-                                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                    }
-                                }
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
+                    DataTable dt = cnn.CreateDataTable(s, sqlcond);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }

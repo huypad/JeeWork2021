@@ -68,7 +68,7 @@ export class SettingComponent {
 	tinyMCE: any = {};
 	Tags: any[];
 	_lable: string = "";
-	checkcolor: string = "";
+	checkcolor: string = "rgb(250, 162, 140)";
 	public datatree: BehaviorSubject<any[]> = new BehaviorSubject([]);
 	id_project_team: number = 0;
 	//filter list department
@@ -139,7 +139,6 @@ export class SettingComponent {
 		});
 
 		this.LoadData();
-		this.LoadDataTemp();
 		this.LoadStatusDynamic();
 	}
 
@@ -148,7 +147,7 @@ export class SettingComponent {
 		this.weworkService.ListStatusDynamic(this.id_project_team).pipe(
 			tap( res => {
 				this.listSTT = res.data;
-				console.log(res.data)
+				this.changeDetectorRefs.detectChanges();
 			}),
 			catchError((err) => throwError(err)),
         	finalize(() => (console.log('complete')))
@@ -174,20 +173,6 @@ export class SettingComponent {
 	litsTemplateDemo: any = [];
 	listSTT: any = [];
 	TempSelected = 0;
-	LoadDataTemp() {
-		//load lại
-		// this.weworkService.ListTemplateByCustomer().subscribe((res) => {
-		// 	if (res && res.status === 1) {
-		// 		this.litsTemplateDemo = res.data;
-		// 		setTimeout(() => {
-		// 			if (this.TempSelected == 0)
-		// 				this.TempSelected = this.litsTemplateDemo[0].id_row;
-		// 			this.LoadListSTT();
-		// 		}, 10);
-		// 	}
-		// 	this.changeDetectorRefs.detectChanges();
-		// });
-	}
 
 	TemplateUsed() {
 		var x = this.litsTemplateDemo.find(x => x.id_row == this.TempSelected);
@@ -261,7 +246,7 @@ export class SettingComponent {
 			end_date: [this.item.end_date],
 		});
 		this.itemForm4 = this.fb.group({
-			_label: ["", Validators.required],
+			_label: [""],
 		});
 	}
 	prepare(group): ProjectTeamModel {
@@ -346,9 +331,11 @@ export class SettingComponent {
 		this.loadingAfterSubmit = false;
 		if (group == 4) {
 			const updatedegree = this.prepareTags();
-			if (updatedegree.id_row > 0) {
-				this.update_tags(updatedegree, withBack);
-			} else this.insert_tags(updatedegree, withBack);
+			if(updatedegree.title){
+				if (updatedegree.id_row > 0) {
+					this.update_tags(updatedegree, withBack);
+				} else this.insert_tags(updatedegree, withBack);
+			}
 			return;
 		}
 		if (group == 2) {
@@ -376,7 +363,7 @@ export class SettingComponent {
 	}
 	huyTag() {
 		this.itemForm.controls["_label"].setValue(null);
-		this.checkcolor = "";
+		this.checkcolor = "rgb(250, 162, 140)";
 		this.item_lable.clear();
 	}
 	checkColor(event): any {

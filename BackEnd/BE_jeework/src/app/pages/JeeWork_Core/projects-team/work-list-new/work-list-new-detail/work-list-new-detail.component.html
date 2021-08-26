@@ -159,6 +159,14 @@
                             </button>
                         </mat-menu>
                     </div>
+                    <div class="cu-task-row-assignee ml-4 border-left url">
+                        <strong>Nhóm công việc:</strong>
+                        <app-tasks-group [ListGroup]="ListGroup"
+                        [value]="item.id_group"
+                        (valueChange)="UpdateGroup($event)"
+                        [role]="CheckRoles(21)">
+                    </app-tasks-group>
+                    </div>
                     <!-- set muc tiêu -->
                     <!-- <div class="cu-task-row-assignee">
                         <i *ngIf="CheckRoles(18)" class="fas fa-cog url -hover"
@@ -185,8 +193,11 @@
 
                     <div class="action float-right" style="flex-grow: 1;">
                         <ng-container *ngIf="IsAdmin()">
-                            <div class="title float-right" *ngIf="item.Process && item.Process.length > 0 ">
-                                <a class="action float-right">
+                            <div class="title float-right">
+                                <button class="action float-right"  mat-icon-button color="primary" [matMenuTriggerFor]="menutask">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <a class="action float-right"  *ngIf="item.Process && item.Process.length > 0 ">
                                     <button class="btn -hover text-muted"   (click)="UpdateWorkProcess();">
                                         <!-- [matMenuTriggerFor]="follower" -->
                                         <i class="fas fa-user-cog pd-0" style="font-size: 20px; color: green;"></i>
@@ -203,15 +214,19 @@
                                         <div class="point" [ngStyle]="{'backgroundColor': status.color}">
                                         </div>
                                     </div>
-                                    {{status.statusname}} {{status.hoten?('('+status.hoten+')'):''}}
-                                    <!-- <i class="fas fa-pencil-alt text-right" style="flex-grow: 1;padding-left: 20px;" (click)="$event.stopPropagation();chinhsuastt(status);"></i> -->
-                                    <!-- <i class="fas fa-pencil-alt text-right" style="flex-grow: 1;padding-left: 20px;" [matMenuTriggerFor]="assignqt"></i>
-                                    <mat-menu #assignqt="matMenu">
-                                        <button mat-menu-item *ngFor="let item of listUser" (click)="UpdateStatus_dynamic(status,item)" >
-                                            <span style="color: black;">{{ item.hoten }}</span>
-                                        </button>
-                                    </mat-menu> -->
+                                    {{status.statusname}} {{status.hoten?('('+status.hoten+')'):''}} 
                                 </div>
+                            </button>
+                        </mat-menu>
+                        <mat-menu #menutask="matMenu">
+                            <button mat-menu-item (click)="DeleteTask()" >
+                                <!-- <mat-icon color="warn" >delete</mat-icon> Xóa công việc -->
+                                <i class="flaticon2-delete"
+                                    style="color: red;"></i>&nbsp;
+                                <span>
+                                    <span style="font-size: 9pt"
+                                        translate="work.xoacongviec"></span>
+                                </span>
                             </button>
                         </mat-menu>
 
@@ -579,7 +594,6 @@
 
                                                 </div>
                                             </div>
-
                                             <div class=" check-list" style="padding-top: 20px;">
                                                 <div class="title">
                                                     <span translate="work.danhsachcankiemtra"></span>

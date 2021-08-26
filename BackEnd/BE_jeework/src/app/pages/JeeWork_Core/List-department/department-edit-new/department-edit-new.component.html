@@ -5,207 +5,12 @@
         <ng-container [ngSwitch]="step">
 
             <ng-container *ngSwitchCase="1">
-                <div class="cu-view-space" style="min-height: 350px;">
-                    <div class="close-dialog">
-                        <div class="float-left" *ngIf="isComplete">
-                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
-                        </div>
-                        <div class="float-right">
-                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <svg style="margin:auto" width="123" height="97" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><circle fill="#7B67EE" cx="61.5" cy="56.5" r="39.5"></circle><path d="M54.57 17.6A39.5 39.5 0 0 0 88.44 85.4 39.5 39.5 0 1 1 54.56 17.6z" fill="#6C5AD4"></path><path d="M22.25 49.42a39.89 39.89 0 0 0-.54 10.1c-2.55 2.88-3.67 5.68-3.01 8.16 2.2 8.19 23.14 9.7 46.77 3.36 23.64-6.34 41.02-18.11 38.83-26.3-.73-2.74-3.57-4.73-7.9-5.93a39.65 39.65 0 0 0-5.3-7.98c17.32-.7 29.74 2.67 31.64 9.76 3.04 11.32-21.92 27.84-55.75 36.9C33.17 86.57 3.3 84.74.26 73.42c-1.88-7 6.96-16 21.99-24z" fill="#C1B6FF" opacity=".4"></path><path d="M22 50.97a39.7 39.7 0 0 0-.2 1.54C12.4 58.61 7.24 65.1 8.66 70.37c2.7 10.11 28.57 11.97 57.76 4.15 29.19-7.82 50.65-22.36 47.94-32.47-1.46-5.45-9.64-8.5-21.45-8.94-.26-.36-.54-.72-.82-1.08 15.21-.26 25.97 2.95 27.68 9.36 2.89 10.77-20.86 26.49-53.03 35.11-32.18 8.62-60.6 6.88-63.5-3.89C1.55 66.3 9.04 58.26 22 50.97zm-.32 3.13c-.05.72-.07 1.45-.08 2.18-5.35 4.38-8.05 8.78-7.05 12.5 2.4 9 25.38 10.64 51.3 3.7 25.94-6.95 45.01-19.87 42.6-28.85-1.05-3.94-6.05-6.47-13.52-7.48-.36-.6-.74-1.2-1.13-1.77 9.9.72 16.67 3.57 17.95 8.36 2.58 9.62-17.83 23.44-45.58 30.88-27.76 7.44-52.35 5.67-54.92-3.95-1.24-4.6 2.81-10.19 10.43-15.57z" fill="#C1B6FF" opacity=".4"></path><circle fill="#B4A7FF" cx="34.5" cy="29.5" r="12.5"></circle><path d="M29.45 18.06a12.5 12.5 0 0 0 15.1 18.88 12.5 12.5 0 1 1-15.1-18.88z" fill="#9A8CED"></path><path d="M104.72 6.72l1.84-5.24a1 1 0 0 1 1.88 0l1.84 5.24 5.24 1.84a1 1 0 0 1 0 1.88l-5.24 1.84-1.84 5.24a1 1 0 0 1-1.88 0l-1.84-5.24-5.24-1.84a1 1 0 0 1 0-1.88l5.24-1.84zM75.93 4.93l.63-1.8a1 1 0 0 1 1.88 0l.63 1.8 1.8.63a1 1 0 0 1 0 1.88l-1.8.63-.63 1.8a1 1 0 0 1-1.88 0l-.63-1.8-1.8-.63a1 1 0 0 1 0-1.88l1.8-.63zM17.78 92.78l.28-.8a1 1 0 0 1 1.88 0l.28.8.8.28a1 1 0 0 1 0 1.88l-.8.28-.28.8a1 1 0 0 1-1.88 0l-.28-.8-.8-.28a1 1 0 0 1 0-1.88l.8-.28z" fill="#E6E2FF"></path></g></svg>
-                    </div>
-                    <h1 class="text-center" style="margin-top: 10px;margin-bottom: 10px; font-size: 35px;">
-                        <ng-container *ngIf="item.ParentID>0;else duan">
-                            {{ (item.id_row > 0 ? 'department.chinhsuafolder' : 'department.themmoifolder') |translate}}
-                        </ng-container>
-                        <ng-template #duan>
-                            {{ (item.id_row > 0 ? 'department.chinhsua' : 'department.themmoi') |translate}}
-                        </ng-template>
-                    </h1>
-                    <div class="row">
-                        <div class="themoi text-success">Thêm mới</div>
-                        <div (click)="AddTemplate()" class="btn-template text-hover-success" translate="GeneralKey.templatecenter"></div>
-                    </div>
-                    
-                    <form class="kt-form" [formGroup]="itemFormGroup">
-                        <div class="kt-form__group">
-                            <div class="row">
-                                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                                    <mat-form-field class="mat-form-field-fluid ">
-                                        <input matInput placeholder="{{ (item.ParentID>0?'department.tenfolder':'department.ten') | translate }}"
-                                            formControlName="title" class="require" required #focusInput />
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                            <!-- <div class="row">
-                                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                                    <section class="example-section">
-                                        <mat-checkbox class="example-margin" [(ngModel)]="IsDataStaff_HR"
-                                            [ngModelOptions]="{standalone: true}">
-                                            {{"department.laydulieutuphanmemnhansu" | translate}}
-                                        </mat-checkbox>
-                                    </section>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                                    <m-dropdown-tree [data]="datatree" [DropdownTitle]="title"
-                                        (SelectedItemTree)="GetValueNode($event)" formControlName="dept_name">
-                                    </m-dropdown-tree>
-                                </div>
-                            </div>
-                            <div class="row" *ngIf="IsUpdate">
-                                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                                    <section class="example-section">
-                                        <mat-checkbox class="example-margin" [(ngModel)]="ReUpdated"
-                                            [ngModelOptions]="{standalone: true}">
-                                            {{"department.capnhatdulieutuphanmemnhansu" | translate}} </mat-checkbox>
-                                    </section>
-                                </div>
-                            </div> -->
-                        </div>
-                    </form>
-
-                    <button class="btn btn-success btn-next" [disabled]="isCompleteStep1()" type="button"
-                        (click)="Next()">
-                        {{ (isComplete? 'department.trolaituychinh' : 'department.tieptheo') |translate}}
-                    </button>
-                </div>
+                <ng-container *ngTemplateOutlet="buoc1"></ng-container>
             </ng-container>
 
 
             <ng-container *ngSwitchCase="2">
-                <div class="cu-view-space">
-                    <div class="close-dialog d-flex">
-                        <div>
-                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
-                        </div>
-                        <div class="text-center" style="flex-grow: 1;">
-                            <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chonnguoithamgia'|translate}}
-                            </h1>
-                        </div>
-                        <div>
-                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
-                        </div>
-                    </div>
-                    <div class="chonnguoithamgia" style="margin-top:15px">
-                        <h3>{{ 'department.chusohuu'|translate}}</h3>
-                        <div class="row" style="margin-top: 15px;">
-                            <ng-container *ngFor="let us of getlist_Owners();let index = index">
-                                <div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
-                                    style="justify-content: flex-end;">
-                                    <ng-container>
-                                        <kt-avatar-user [image]="us.image" size="40" [name]="us.hoten">
-                                        </kt-avatar-user>
-                                    </ng-container>
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="getlist_Owners() && getlist_Owners().length > 3">
-
-                                <div class="m--img-rounded m--marginless m--img-centered background"
-                                    [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 44,'height.px':44}">
-                                    <div class="user w-100 h-100"
-                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
-                                        [ngStyle]="{'font-size.px': 20}">
-                                        +{{getlist_Owners().length-3}}
-                                    </div>
-                                </div>
-                                <mat-menu #menu1="matMenu">
-                                    <div *ngFor="let user of getlist_Owners();let index = index"
-                                        style="justify-content: flex-end;">
-                                        <ng-container *ngIf="index > 2">
-                                            <div class="position-relative">
-                                                <i class="fas fa-times scale-hover-01 url"
-                                                    style="position: absolute;top:0;right:0"
-                                                    (click)="ItemSelected(user)"></i>
-                                                <div class="row">
-                                                    <kt-avatar-user [image]="user.image" size="50" [name]="user.hoten"
-                                                        [showFull]="true" [info]="'@' + user.username">
-                                                    </kt-avatar-user>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </mat-menu>
-                            </ng-container>
-                            
-                        </div>
-                    </div>
-
-                    <mat-menu #owner="matMenu">
-                        <div class="page-work-detail">
-                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
-                                (ItemSelected)="ItemSelected($event)">
-                            </kt-choose-users>
-                        </div>
-                    </mat-menu>
-                    <div class="chonnguoithamgia" style="margin-top:15px">
-                        <h3>{{ 'department.thanhvien'|translate}}</h3>
-
-                        <div class="row" style="margin-top: 15px;">
-                            <ng-container *ngFor="let us of getlist_Assign();let index = index">
-                                <div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
-                                    style="justify-content: flex-end;">
-                                    <ng-container>
-                                        <kt-avatar-user [image]="us.image" size="40" [name]="us.hoten">
-                                        </kt-avatar-user>
-                                    </ng-container>
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="getlist_Assign() && getlist_Assign().length > 3">
-
-                                <div class="m--img-rounded m--marginless m--img-centered background"
-                                    [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 44,'height.px':44}">
-                                    <div class="user w-100 h-100"
-                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
-                                        [ngStyle]="{'font-size.px': 20}">
-                                        +{{getlist_Assign().length-3}}
-                                    </div>
-                                </div>
-                                <mat-menu #menu1="matMenu">
-                                    <div *ngFor="let user of getlist_Assign();let index = index"
-                                        style="justify-content: flex-end;">
-                                        <ng-container *ngIf="index > 2">
-                                            <div class="position-relative">
-                                                <i class="fas fa-times scale-hover-01 url"
-                                                    style="position: absolute;top:0;right:0"
-                                                    (click)="ItemSelected(user,2)"></i>
-                                                <div class="row">
-                                                    <kt-avatar-user [image]="user.image" size="50" [name]="user.hoten"
-                                                        [showFull]="true" [info]="'@' + user.username">
-                                                    </kt-avatar-user>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </mat-menu>
-                            </ng-container>
-                            <div matTooltip="Chọn người" matTooltipPosition="above" class="url user"
-                                [matMenuTriggerFor]="assignee"
-                                style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;width: 44px;height: 44px; ">
-                                <mat-icon style="font-size: 28px!important;">person_add</mat-icon>
-                            </div>
-                            <div style="    font-size: 20px; padding: 7px;">
-                                <span class="url" [matMenuTriggerFor]="assignee">{{
-                                    'department.themthanhvien'|translate}}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <mat-menu #assignee="matMenu">
-                        <div class="page-work-detail">
-                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
-                                (ItemSelected)="ItemSelected($event,2)">
-                            </kt-choose-users>
-                        </div>
-                    </mat-menu>
-
-                    <button class="btn btn-success btn-next" type="button" (click)="Next()">
-                        {{ (isComplete? 'department.trolaituychinh':'department.tieptheo') |translate}}
-                    </button>
-                </div>
+                <ng-container *ngTemplateOutlet="buoc2"></ng-container>
             </ng-container>
 
 
@@ -280,7 +85,7 @@
                             <div class="col-md-6">
                                 <div class="header-view row">
                                     <div class="header-view-title">
-                                        {{ 'department.danhsachtrangthai'|translate}}
+                                        {{ 'department.trangthaihoatdong'|translate}}
                                     </div>
                                     <ng-container *ngFor="let stt of listSTT">
                                         <div class="status-input col-12 form-control"
@@ -509,13 +314,38 @@
                                     <tr>
                                         <td class="border line-tab url" (click)="viewDetail(2)">
                                             <div class="line-title">
+                                                {{ 'department.chusohuu'|translate}}
+                                            </div>
+                                            <div class="line-value">
+                                                <div class="row">
+                                                    <ng-container *ngFor="let us of getlist_Owners();let index = index">
+                                                        <div *ngIf="index < 3" class="url row position-relative mr-2"
+                                                        style="justify-content: flex-end;">
+                                                            <div class="bg-success user-admin"></div>
+                                                            <div class="pt-2 mr-3">{{us.hoten}}</div>
+                                                            <div style="justify-content: flex-end;">
+                                                            <ng-container>
+                                                                <kt-avatar-user class="user url" [image]="us.image" size="30"
+                                                                    [name]="us.hoten">
+                                                                </kt-avatar-user>
+                                                            </ng-container>
+                                                        </div>
+                                                        </div>
+                                                    </ng-container> 
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border line-tab url" (click)="viewDetail(2)">
+                                            <div class="line-title">
                                                 {{ 'department.nguoithamgia'|translate}}
                                             </div>
                                             <div class="line-value">
                                                 <div class="row">
-                                                    <ng-container *ngFor="let us of list_Owners;let index = index">
+                                                    <ng-container *ngFor="let us of getlist_Assign();let index = index">
                                                         <div *ngIf="index < 3"
-                                                            class="user url scale-hover-02 position-relative"
+                                                            class="user url position-relative"
                                                             style="justify-content: flex-end;">
                                                             <ng-container>
                                                                 <kt-avatar-user [image]="us.image" size="30"
@@ -524,7 +354,7 @@
                                                             </ng-container>
                                                         </div>
                                                     </ng-container>
-                                                    <ng-container *ngIf="list_Owners && list_Owners.length > 3">
+                                                    <ng-container *ngIf="getlist_Assign() && getlist_Assign().length > 3">
 
                                                         <div class="m--img-rounded m--marginless m--img-centered background"
                                                             [matMenuTriggerFor]="menu1"
@@ -532,11 +362,11 @@
                                                             <div class="user w-100 h-100"
                                                                 style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                 [ngStyle]="{'font-size.px': 16}">
-                                                                +{{list_Owners.length-3}}
+                                                                +{{getlist_Assign().length-3}}
                                                             </div>
                                                         </div>
                                                         <mat-menu #menu1="matMenu">
-                                                            <div *ngFor="let user of list_Owners;let index = index"
+                                                            <div *ngFor="let user of getlist_Assign();let index = index"
                                                                 style="justify-content: flex-end;margin-bottom: 5px;">
                                                                 <ng-container *ngIf="index > 2">
                                                                     <div class="position-relative">
@@ -601,3 +431,182 @@
     </div>
 
 </div>
+
+<ng-template #buoc1>
+    <div class="cu-view-space" style="min-height: 350px;">
+        <div class="close-dialog">
+            <div class="float-left" *ngIf="isComplete">
+                <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+            </div>
+            <div class="float-right">
+                <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+            </div>
+        </div>
+        <div class="row">
+            <svg style="margin:auto" width="123" height="97" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><circle fill="#7B67EE" cx="61.5" cy="56.5" r="39.5"></circle><path d="M54.57 17.6A39.5 39.5 0 0 0 88.44 85.4 39.5 39.5 0 1 1 54.56 17.6z" fill="#6C5AD4"></path><path d="M22.25 49.42a39.89 39.89 0 0 0-.54 10.1c-2.55 2.88-3.67 5.68-3.01 8.16 2.2 8.19 23.14 9.7 46.77 3.36 23.64-6.34 41.02-18.11 38.83-26.3-.73-2.74-3.57-4.73-7.9-5.93a39.65 39.65 0 0 0-5.3-7.98c17.32-.7 29.74 2.67 31.64 9.76 3.04 11.32-21.92 27.84-55.75 36.9C33.17 86.57 3.3 84.74.26 73.42c-1.88-7 6.96-16 21.99-24z" fill="#C1B6FF" opacity=".4"></path><path d="M22 50.97a39.7 39.7 0 0 0-.2 1.54C12.4 58.61 7.24 65.1 8.66 70.37c2.7 10.11 28.57 11.97 57.76 4.15 29.19-7.82 50.65-22.36 47.94-32.47-1.46-5.45-9.64-8.5-21.45-8.94-.26-.36-.54-.72-.82-1.08 15.21-.26 25.97 2.95 27.68 9.36 2.89 10.77-20.86 26.49-53.03 35.11-32.18 8.62-60.6 6.88-63.5-3.89C1.55 66.3 9.04 58.26 22 50.97zm-.32 3.13c-.05.72-.07 1.45-.08 2.18-5.35 4.38-8.05 8.78-7.05 12.5 2.4 9 25.38 10.64 51.3 3.7 25.94-6.95 45.01-19.87 42.6-28.85-1.05-3.94-6.05-6.47-13.52-7.48-.36-.6-.74-1.2-1.13-1.77 9.9.72 16.67 3.57 17.95 8.36 2.58 9.62-17.83 23.44-45.58 30.88-27.76 7.44-52.35 5.67-54.92-3.95-1.24-4.6 2.81-10.19 10.43-15.57z" fill="#C1B6FF" opacity=".4"></path><circle fill="#B4A7FF" cx="34.5" cy="29.5" r="12.5"></circle><path d="M29.45 18.06a12.5 12.5 0 0 0 15.1 18.88 12.5 12.5 0 1 1-15.1-18.88z" fill="#9A8CED"></path><path d="M104.72 6.72l1.84-5.24a1 1 0 0 1 1.88 0l1.84 5.24 5.24 1.84a1 1 0 0 1 0 1.88l-5.24 1.84-1.84 5.24a1 1 0 0 1-1.88 0l-1.84-5.24-5.24-1.84a1 1 0 0 1 0-1.88l5.24-1.84zM75.93 4.93l.63-1.8a1 1 0 0 1 1.88 0l.63 1.8 1.8.63a1 1 0 0 1 0 1.88l-1.8.63-.63 1.8a1 1 0 0 1-1.88 0l-.63-1.8-1.8-.63a1 1 0 0 1 0-1.88l1.8-.63zM17.78 92.78l.28-.8a1 1 0 0 1 1.88 0l.28.8.8.28a1 1 0 0 1 0 1.88l-.8.28-.28.8a1 1 0 0 1-1.88 0l-.28-.8-.8-.28a1 1 0 0 1 0-1.88l.8-.28z" fill="#E6E2FF"></path></g></svg>
+        </div>
+        <h1 class="text-center" style="margin-top: 10px;margin-bottom: 10px; font-size: 35px;">
+            <ng-container *ngIf="item.ParentID>0;else duan">
+                {{ (item.id_row > 0 ? 'department.chinhsuafolder' : 'department.themmoifolder') |translate}}
+            </ng-container>
+            <ng-template #duan>
+                {{ (item.id_row > 0 ? 'department.chinhsua' : 'department.themmoi') |translate}}
+            </ng-template>
+        </h1>
+        <div class="row">
+            <div class="themoi text-success">Thêm mới</div>
+            <div (click)="AddTemplate()" class="btn-template text-hover-success" translate="GeneralKey.templatecenter"></div>
+        </div>
+        
+        <form class="kt-form" [formGroup]="itemFormGroup">
+            <div class="kt-form__group">
+                <div class="row">
+                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                        <mat-form-field class="mat-form-field-fluid ">
+                            <input matInput placeholder="{{ (item.ParentID>0?'department.tenfolder':'department.ten') | translate }}"
+                                formControlName="title" class="require" required #focusInput />
+                        </mat-form-field>
+                    </div>
+                </div> 
+            </div>
+        </form> 
+        <button class="btn btn-success btn-next" [disabled]="isCompleteStep1()" type="button"
+            (click)="Next()">
+            {{ (isComplete? 'department.trolaituychinh' : 'department.tieptheo') |translate}}
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #buoc2>
+    <div class="cu-view-space">
+        <div class="close-dialog d-flex">
+            <div>
+                <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+            </div>
+            <div class="text-center" style="flex-grow: 1;">
+                <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chonnguoithamgia'|translate}}
+                </h1>
+            </div>
+            <div>
+                <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+            </div>
+        </div>
+        <div class="chonnguoithamgia" style="margin-top:15px">
+            <h3>{{ 'department.chusohuu'|translate}}</h3>
+            <div class="row" style="margin-top: 15px;">
+                <ng-container *ngFor="let us of getlist_Owners();let index = index">
+                    <div *ngIf="index < 3" class="user url position-relative"
+                        style="justify-content: flex-end;">
+                        <ng-container>
+                            <kt-avatar-user [image]="us.image" size="35" [name]="us.hoten">
+                            </kt-avatar-user>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="getlist_Owners() && getlist_Owners().length > 3">
+                    <div class="m--img-rounded m--marginless m--img-centered background"
+                        [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 44,'height.px':44}">
+                        <div class="user w-100 h-100"
+                            style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                            [ngStyle]="{'font-size.px': 20}">
+                            +{{getlist_Owners().length-3}}
+                        </div>
+                    </div>
+                    <mat-menu #menu1="matMenu">
+                        <div *ngFor="let user of getlist_Owners();let index = index"
+                            style="justify-content: flex-end;">
+                            <ng-container *ngIf="index > 2">
+                                <div class="position-relative">
+                                    <i class="fas fa-times scale-hover-01 url"
+                                        style="position: absolute;top:0;right:0"
+                                        (click)="ItemSelected(user)"></i>
+                                    <div class="row">
+                                        <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+                                            [showFull]="true" [info]="'@' + user.username">
+                                        </kt-avatar-user>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </mat-menu>
+                </ng-container>
+                
+            </div>
+        </div>
+
+        <mat-menu #owner="matMenu">
+            <div class="page-work-detail">
+                <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                    (ItemSelected)="ItemSelected($event)">
+                </kt-choose-users>
+            </div>
+        </mat-menu>
+        <div class="chonnguoithamgia" style="margin-top:15px">
+            <h3>{{ 'department.thanhvien'|translate}}</h3>
+
+            <div class="row" style="margin-top: 15px;">
+                <ng-container *ngFor="let us of getlist_Assign();let index = index">
+                    <div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+                        style="justify-content: flex-end;height:39px;width:39px">
+                        <i class="far fa-times-circle url view-hover bg-white" (click)="ItemSelected(us,2)"
+                            style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 12pt;"></i>
+                        <ng-container>
+                            <kt-avatar-user [image]="us.image" size="35" [name]="us.hoten">
+                            </kt-avatar-user>
+                        </ng-container>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="getlist_Assign() && getlist_Assign().length > 3">
+
+                    <div class="m--img-rounded m--marginless m--img-centered background url"
+                        [matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 39,'height.px':39}">
+                        <div class="user w-100 h-100"
+                            style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                            [ngStyle]="{'font-size.px': 20}">
+                            +{{getlist_Assign().length-3}}
+                        </div>
+                    </div>
+                    <mat-menu #menu1="matMenu">
+                        <div *ngFor="let user of getlist_Assign();let index = index" class="mb-3"
+                            style="justify-content: flex-end;">
+                            <!-- [ngStyle]="{'margin-right.px': (container.offsetWidth + 15)}" -->
+                            <ng-container *ngIf="index > 2">
+                                <div class="position-relative pr-5">
+                                    <i class="fas fa-times scale-hover-01 url"
+                                        style="position: absolute;top:5px;right:0"
+                                        (click)="ItemSelected(user,2)"></i>
+                                    <div class="row">
+                                        <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+                                            [showFull]="true" [info]="'@' + user.username">
+                                        </kt-avatar-user>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </mat-menu>
+                </ng-container>
+                <div matTooltip="Chọn người" matTooltipPosition="above" class="url user"
+                    [matMenuTriggerFor]="assignee"
+                    style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;height:39px;width:39px; ">
+                    <mat-icon style="font-size: 28px!important;">person_add</mat-icon>
+                </div>
+                <div style=" font-size: 20px; padding: 7px;">
+                    <span class="url" [matMenuTriggerFor]="assignee">{{
+                        'department.themthanhvien'|translate}}</span>
+                </div>
+            </div>
+        </div>
+        <mat-menu #assignee="matMenu">
+            <div class="page-work-detail">
+                <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+                    (ItemSelected)="ItemSelected($event,2)">
+                </kt-choose-users>
+            </div>
+        </mat-menu>
+
+        <button class="btn btn-success btn-next" type="button" (click)="Next()">
+            {{ (isComplete? 'department.trolaituychinh':'department.tieptheo') |translate}}
+        </button>
+    </div>
+</ng-template>
+

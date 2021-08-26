@@ -1124,6 +1124,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     //conds.Add("disabled", 0);
                     string strCheck = @$"select id_row, idkh, phanloaiid from we_department where (where)";
                     conds.Add("idkh", loginData.CustomerID);
+                    conds.Add("id_meeting", data.meetingid);
                     DataTable dt_check = cnn.CreateDataTable(strCheck, "(where)", conds);
                     if (cnn.LastError != null || dt_check == null)
                     {

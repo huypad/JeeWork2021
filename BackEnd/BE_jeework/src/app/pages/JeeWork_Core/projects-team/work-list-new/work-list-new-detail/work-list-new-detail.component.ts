@@ -35,7 +35,7 @@ import {
   UserInfoModel,
   UpdateWorkModel,
 } from "./../../../work/work.model";
-import { BehaviorSubject, ReplaySubject, of } from "rxjs";
+import { BehaviorSubject, ReplaySubject, of, throwError } from "rxjs";
 import { FormGroup, FormControl, FormBuilder } from "@angular/forms";
 import { DialogData } from "./../../../report/report-tab-dashboard/report-tab-dashboard.component";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -56,6 +56,7 @@ import {
   tap,
   share,
   switchMap,
+  map,
 } from "rxjs/operators";
 import { UpdateByKeysComponent } from "./../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component";
 import { JeeCommentService } from "../../../jee-comment/jee-comment.service";
@@ -108,6 +109,7 @@ export class WorkListNewDetailComponent implements OnInit {
   public filteredBanks: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   public bankFilterCtrl: FormControl = new FormControl();
   listType: any[] = [];
+  ListGroup: any[] = [];
   DataID: number = 0;
   AssignTask: any = [];
   AssignChecklist: any = [];
@@ -240,8 +242,9 @@ export class WorkListNewDetailComponent implements OnInit {
     this.mark_tag();
     this.LoadLog();
 
-    this.weworkService
-      .ListStatusDynamic(this.Id_project_team)
+    this.layoutUtilsService.showWaitingDiv();
+
+    this.weworkService.ListStatusDynamic(this.Id_project_team)
       .subscribe((res) => {
         if (res && res.status === 1) {
           this.status_dynamic = res.data;
@@ -262,7 +265,6 @@ export class WorkListNewDetailComponent implements OnInit {
         this.options_assign = this.getOptions_Assign();
       });
     }, 500);
-    this.layoutUtilsService.showWaitingDiv();
     this.ProjectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
       this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status == 1) {
@@ -279,6 +281,18 @@ export class WorkListNewDetailComponent implements OnInit {
         this.changeDetectorRefs.detectChanges();
       }
     });
+
+    //Load data work group
+    this.weworkService.lite_workgroup(this.Id_project_team)
+      .pipe(
+        tap((res) => {
+          if (res && res.status === 1) {
+            this.ListGroup = res.data;
+            this.changeDetectorRefs.detectChanges();
+          }
+        })
+      )
+      .subscribe();
 
     // quyền
     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
@@ -506,6 +520,11 @@ export class WorkListNewDetailComponent implements OnInit {
   UpdateResult(value) {
     this.UpdateByKeyNew(this.item, "result", value);
     this.Update_Result();
+  }
+  UpdateGroup( id_row) {
+    if (id_row == 0) {
+      this.UpdateByKeyNew(this.item, "id_group", null);
+    } else this.UpdateByKeyNew(this.item, "id_group", id_row);
   }
   formatLabel(value: number) {
     if (value >= 1000) {
@@ -904,20 +923,28 @@ export class WorkListNewDetailComponent implements OnInit {
     item.value = value;
     if (task.assign && task.assign.id_nv > 0) {
       item.IsStaff = true;
-    }
-    this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
-      this.createMessage(true);
-      if (res && res.status == 1) {
-        this.LoadData();
-      }else{
-        // if(isReloadData){ 
-        //   setTimeout(() => {
-        //     this.LoadData();
-        //   }, 500);
-        // }
-        this.layoutUtilsService.showError(res.error.message);
-      }
-    });
+    } 
+    this.layoutUtilsService.showWaitingDiv();
+    this.ProjectsTeamService._UpdateByKey(item).pipe(
+      tap(() => {}),
+      map(res =>{
+        this.createMessage(true);
+        if (res && res.status == 1) {
+            this.ProjectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
+            if (res && res.status == 1) {
+              this.item = res.data;
+              this.changeDetectorRefs.detectChanges();
+            } else {
+              this.layoutUtilsService.showError(res.error.message);
+            }
+          });
+        }else{ 
+          this.layoutUtilsService.showError(res.error.message);
+        }
+      }),
+      catchError((err) => throwError(err) ),
+      finalize(() => this.layoutUtilsService.OffWaitingDiv),
+    ).subscribe((res) => { });
   }
 
   UpdateKey(_item: UpdateByKeyModel) {
@@ -1706,6 +1733,42 @@ export class WorkListNewDetailComponent implements OnInit {
       });
     }
   };
+
+  DeleteTask(){
+    const _title = this.translate.instant("GeneralKey.xoa");
+		const _description = this.translate.instant(
+			"GeneralKey.bancochacchanmuonxoakhong"
+		);
+		const _waitDesciption = this.translate.instant(
+			"GeneralKey.dulieudangduocxoa"
+		);
+		const _deleteMessage = this.translate.instant(
+			"GeneralKey.xoathanhcong"
+		);
+		const dialogRef = this.layoutUtilsService.deleteElement(
+			_title,
+			_description,
+			_waitDesciption
+		);
+		dialogRef.afterClosed().subscribe((res) => {
+			if (!res) {
+				return;
+			} 
+      this.ProjectsTeamService.DeleteTask(this.item.id_row).pipe(
+        tap(()=> this.layoutUtilsService.showWaitingDiv()),
+        map( (res) =>{
+          if (res && res.status == 1) {
+            this.dialogRef.close();
+          }else{
+            this.layoutUtilsService.showError(res.error.message);
+          }
+        } ),
+        catchError((err) => throwError(err)),
+        finalize(() => this.layoutUtilsService.OffWaitingDiv())
+      ).subscribe((res) => { });
+			// this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false);
+		}); 
+  }
 
   // gửi giao tiếp tới commponent ngoài
   createMessage(value) {

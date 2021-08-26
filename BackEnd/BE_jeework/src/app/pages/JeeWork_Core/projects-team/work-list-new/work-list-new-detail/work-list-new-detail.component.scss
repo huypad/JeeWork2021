@@ -899,13 +899,14 @@ div.cu-avatar {
 }
 
 // css log
+// đóng flex xếp theo bình thường - dùng flex xếp ngược lại
 .task-history__scroll-view {
     padding: 20 10 0 20px;
     box-sizing: border-box!important;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
-    // display: flex;
+    display: flex;
     flex-direction: column-reverse;
 }
 
@@ -997,6 +998,12 @@ div.cu-avatar {
             display: block;
         }
     }
+}
+.check-list{ 
+    position: relative;
+    top: auto;
+    opacity: 1;
+    transform: none;
 }
 .title-check-list{
     flex-grow: 1;

@@ -136,6 +136,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     startDate: new Date("09/01/2020"),
     endDate: new Date("09/30/2020"),
   };
+  type = 1;
   IsAdminGroup = false;
   public column_sort: any = [];
   onChanges = new Subject<SimpleChanges>();
@@ -174,6 +175,10 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
+    if(this.isFolder){
+      this.type = 2;
+    }
 
      // giao tiếp service
      this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
@@ -264,7 +269,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
       }
     });
     this.getListField();
-    this.GetOptions_NewField();
     this.LoadNewList(); 
   }
 
@@ -272,6 +276,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     if(Loading){
       this.layoutUtilsService.showWaitingDiv();
     }
+    this.GetOptions_NewField();
     this.WeWorkService.GetListField(this.Id_Department,this.isFolder?2:1,false).pipe(
       finalize( () => { if(Loading) this.layoutUtilsService.OffWaitingDiv() } ),
     ).subscribe(res => {

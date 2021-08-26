@@ -308,7 +308,7 @@
 						</kt-color-picker2>
 					</popover-content>
 					<mat-form-field class="mat-form-field-fluid " style=" margin-left: 40px;">
-						<input matInput placeholder="{{ 'projects.themnhanmoi' | translate }}" autocomplete="off"
+						<input matInput placeholder="{{ 'projects.themnhanmoi' | translate }}" (keyup.enter)="onSubmit(4)" autocomplete="off"
 							formControlName="_label" />
 					</mat-form-field>
 				</div>

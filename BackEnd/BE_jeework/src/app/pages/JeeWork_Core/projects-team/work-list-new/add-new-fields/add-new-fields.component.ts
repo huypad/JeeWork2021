@@ -1,7 +1,6 @@
 import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import { WeWorkService } from "./../../../services/wework.services";
-import { DialogData } from "./../../../report/report-tab-dashboard/report-tab-dashboard.component";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Component, OnInit, Inject } from "@angular/core";
 import { OptionsModel } from "../drap-drop-item.model";
@@ -15,6 +14,7 @@ export class AddNewFieldsComponent implements OnInit {
 	listField: any = [];
 	listOptions: any = [];
 	TypeID = 0;
+	Type = 1;
 	data: any = [];
 	public defaultColors: string[] = [
 		"rgb(187, 181, 181)",
@@ -36,11 +36,13 @@ export class AddNewFieldsComponent implements OnInit {
 		public dialogRef: MatDialogRef<AddNewFieldsComponent>,
 		public LayoutUtilsService: LayoutUtilsService,
 		public _service: ProjectsTeamService,
-		@Inject(MAT_DIALOG_DATA) public _data: DialogData
+		@Inject(MAT_DIALOG_DATA) public _data: any
 	) { }
 
 	ngOnInit() {
 		this.data = this._data;
+		this.Type = this._data.type;
+		console.log(this.Type)
 		this.weworkService.GetNewField().subscribe((res) => {
 			if (res && res.status == 1) {
 				this.listField = res.data;
@@ -49,7 +51,7 @@ export class AddNewFieldsComponent implements OnInit {
 		});
 		if (this.data.id_row > 0) {
 			this._service
-				.Detail_column_new_field(this.data.id_row,3)
+				.Detail_column_new_field(this.data.id_row,this.Type)
 				.subscribe((res) => {
 					if (res && res.status == 1) {
 						this.listOptions = res.data.options;
@@ -100,6 +102,7 @@ export class AddNewFieldsComponent implements OnInit {
 		this.listOptions.forEach((element) => {
 			element.TypeID = this.TypeID;
 			element.ID_project_team = this.data.id_project_team;
+			element.id_department = this.data.id_department;
 		});
 		this.data.Options = x;
 		if (

@@ -298,7 +298,7 @@ export class ProjectsTeamComponent implements OnInit {
     this.WeWorkService.getRolesByProjects(this.ID_Project).subscribe((res) => {
       if (res && res.status === 1) {
 		    if(res.data.data && res.data.data.data_roles){
-          this.RolesByProject = res.data.data.data_roles;
+          this.RolesByProject = res.data.data.data_roles.filter(x => x.member);
         }
       }
     });

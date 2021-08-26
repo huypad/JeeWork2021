@@ -757,6 +757,7 @@ export const locale = {
       chontrangthai: "Chọn trạng thái sử dụng",
       danhsachtemplates: "Danh sách mẫu",
       danhsachtrangthai: "Danh sách trạng thái tương ứng",
+      trangthaihoatdong: "Trạng thái hoạt động",
       themmau: "Thêm mẫu",
       doiten: "Thay đổi tên",
       doimau: "Thay đổi màu sắc",

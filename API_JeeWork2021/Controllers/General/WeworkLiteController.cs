@@ -952,12 +952,23 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     DataTable dt = ListField(id, _type, cnn);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    if (_type < 3)
+                    {
+                        string sqlq = "select id_row from we_fields_project_team " +
+                            "where isnewfield = 1 and departmentid =" + id;
+                        DataTable dt_proj = new DataTable();
+                        dt_proj = cnn.CreateDataTable(sqlq);
+                        if (dt_proj.Rows.Count > 0)
+                        {
+
+                        }
+                    }
                     var data = from r in dt.AsEnumerable()
                                select new
                                {
                                    Id_row = r["id_row"],
                                    id_project_team = _type == 3 ? r["id_project_team"] : "0",
-                                   id_department = _type < 3 ? r["id_department"] : "0",
+                                   id_department = _type < 3 ? r["departmentid"] : "0",
                                    fieldname = r["fieldname"],
                                    position = r["position"],
                                    type = r["type"],
@@ -1331,7 +1342,6 @@ and IdKH={loginData.CustomerID} )";
         [HttpGet]
         public object GetOptions_NewField(long id, long fieldID, long type)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1340,28 +1350,48 @@ and IdKH={loginData.CustomerID} )";
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sqlq = "", columname = "", tablename = "", tablename_opts = "";
+                    string sqlq = "", columname = "", listdept = "", where = "where (where)";
                     SqlConditions conditions = new SqlConditions();
+                    long id_department = 0;
                     conditions.Add("disabled", 0);
                     if (type < 3)
                     {
-                        columname = "id_department";
-                        tablename = "we_fields_department";
-                        tablename_opts = "we_newfields_options_dpm";
+                        columname = "departmentid";
                     }
                     else
                     {
                         columname = "id_project_team";
-                        tablename = "we_fields_project_team";
-                        tablename_opts = "we_newfields_options";
                     }
                     conditions.Add("f." + columname + "", id);
-                    sqlq = $@"select fo.rowid, f."+columname+",fo.fieldid, fieldname, title" +
+                    sqlq = $@"select fo.rowid, f.departmentid, f.id_project_team, fo.fieldid, fieldname, title" +
                         ", value, position, color, note, isnewfield " +
-                        "from " + tablename_opts + " fo join " + tablename + " f " +
-                        "on f.id_row = fo.fieldid " +
-                        "where (where)";
-                    DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conditions);
+                        "from we_newfields_options fo join we_fields_project_team f " +
+                        "on f.id_row = fo.fieldid ";
+                    DataTable dt = cnn.CreateDataTable(sqlq + where, "(where)", conditions);
+                    if (type == 3)
+                    {
+                        listdept = " where f.departmentid in (" + ListIDDepartment(cnn, id) + ")";
+                        sqlq += listdept;
+                        DataTable f_de = cnn.CreateDataTable(sqlq);
+                        if (f_de.Rows.Count > 0)
+                        {
+                            foreach (DataRow item in f_de.Rows)
+                            {
+                                DataRow _ravi = dt.NewRow();
+                                _ravi["rowid"] = item["rowid"].ToString();
+                                _ravi["departmentid"] = item["departmentid"].ToString();
+                                _ravi["id_project_team"] = id;
+                                _ravi["fieldid"] = long.Parse(item["fieldid"].ToString());
+                                _ravi["fieldname"] = item["fieldname"].ToString();
+                                _ravi["title"] = item["title"].ToString();
+                                _ravi["value"] = item["value"].ToString();
+                                _ravi["isnewfield"] = (bool)item["isnewfield"];
+                                _ravi["color"] = item["color"].ToString();
+                                _ravi["note"] = item["note"].ToString();
+                                dt.Rows.Add(_ravi);
+                            }
+                        }
+                    }
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = from r in dt.AsEnumerable()
@@ -1369,7 +1399,7 @@ and IdKH={loginData.CustomerID} )";
                                {
                                    RowID = r["RowID"],
                                    Id_project_team = type == 3 ? r["id_project_team"] : "0",
-                                   id_department = type < 3 ? r["id_department"] : "0",
+                                   id_department = type < 3 ? r["departmentid"] : "0",
                                    Fieldname = r["fieldname"],
                                    Position = r["position"],
                                    Color = r["Color"],
@@ -2564,21 +2594,19 @@ and IdKH={loginData.CustomerID} )";
         {
             SqlConditions cond = new SqlConditions();
             DataTable dt_fields = new DataTable();
+            DataTable dt_data = new DataTable();
+
             string select = "";
+            cond = new SqlConditions();
+            cond.Add("disabled", 0);
+            string col_name = "id_project_team";
             if (_type < 3)
             {
                 Init_Column_Department(id, cnn);
-            }
-            cond = new SqlConditions();
-            cond.Add("disabled", 0);
-            string tablename = "we_fields_project_team", col_name = "id_project_team";
-            if (_type < 3)
-            {
-                tablename = "we_fields_department";
-                col_name = "id_department";
+                col_name = "departmentid";
             }
             cond.Add(col_name, id);
-            select = "select * from " + tablename + " where (where)";
+            select = "select * from we_fields_project_team where (where)";
             dt_fields = cnn.CreateDataTable(select, "(where)", cond);
             if ((dt_fields.Rows.Count == 0 || id == 0) || (dt_fields.Rows.Count == 0 && _type < 3)) // Dự án chưa chọn field
             {
@@ -2597,15 +2625,50 @@ and IdKH={loginData.CustomerID} )";
                 cond.Add(col_name, id);
                 select = $@"select wf.id_row, f.fieldname, f.title, ishidden
                                             ,wf.title as title_newfield, f.isnewfield
-                                            ,type, typeid, " + col_name + ", isdefault, wf.fieldid" +
+                                            ,type, typeid, departmentid,id_project_team, isdefault, wf.fieldid" +
                                                 ", f.show_default_type, wf.position " +
-                                                "from we_fields f left join " + tablename + " wf " +
+                                                "from we_fields f left join we_fields_project_team wf " +
                                                  "on f.fieldname = wf.fieldname " +
                                                  "and " + col_name + " = " + id + " " +
-                                                "where (where) or "+ col_name + " is null " +
+                                                "where (where) or " + col_name + " is null " +
                                                 "order by f.isNewField, wf.position";
+
             }
-            return cnn.CreateDataTable(select, "(where)", cond);
+            dt_data = cnn.CreateDataTable(select, "(where)", cond);
+            string sql_de = "";
+            if (_type == 3)
+            {
+                sql_de = @"select wf.id_row, f.fieldname, f.title, ishidden
+                                    ,wf.title as title_newfield, f.isnewfield, departmentid
+                                    ,type, typeid, id_project_team, isdefault
+                                    , wf.fieldid, f.show_default_type, wf.position 
+                                    from we_fields f join we_fields_project_team wf 
+                                    on f.fieldname = wf.fieldname
+                                    where disabled = 0 and IsDel = 0 
+                                    and departmentid in (" + ListIDDepartment(cnn, id) + ") " +
+                                "and f.isnewfield = 1 order by f.isNewField, wf.position";
+                DataTable f_de = cnn.CreateDataTable(sql_de);
+                if (f_de.Rows.Count > 0)
+                {
+                    foreach (DataRow item in f_de.Rows)
+                    {
+                        DataRow _ravi = dt_data.NewRow();
+                        _ravi["id_row"] = item["id_row"].ToString();
+                        _ravi["fieldname"] = item["fieldname"].ToString();
+                        _ravi["title"] = item["title"].ToString();
+                        _ravi["ishidden"] = (bool)item["ishidden"];
+                        _ravi["title_newfield"] = item["title_newfield"].ToString();
+                        _ravi["isnewfield"] = (bool)item["isnewfield"];
+                        _ravi["type"] = item["type"].ToString();
+                        _ravi["typeid"] = item["typeid"].ToString();
+                        _ravi["departmentid"] = item["departmentid"].ToString();
+                        _ravi["id_project_team"] = id;
+                        _ravi["isdefault"] = (bool)item["isdefault"];
+                        dt_data.Rows.Add(_ravi);
+                    }
+                }
+            }
+            return dt_data;
         }
         public static bool CheckRole(long role, string user, long id_project, string ConnectionString)
         {
@@ -2923,8 +2986,8 @@ and IdKH={loginData.CustomerID} )";
             SqlConditions conds = new SqlConditions();
             Hashtable has = new Hashtable();
             conds.Add("disabled", 0);
-            conds.Add("id_department", id_department);
-            sqlq = "select * from we_fields_department where (where)";
+            conds.Add("departmentid", id_department);
+            sqlq = "select * from we_fields_project_team where (where)";
             dt = conn.CreateDataTable(sqlq, "(where)", conds);
             if (dt.Rows.Count <= 0)
             {
@@ -2936,7 +2999,7 @@ and IdKH={loginData.CustomerID} )";
                     foreach (DataRow item in dt.Rows)
                     {
                         has = new Hashtable();
-                        has.Add("id_department", id_department);
+                        has.Add("departmentid", id_department);
                         has.Add("fieldname", item["fieldname"].ToString());
                         has.Add("title", item["title"].ToString());
                         has.Add("disabled", 0);
@@ -2945,7 +3008,7 @@ and IdKH={loginData.CustomerID} )";
                         has.Add("createddate", DateTime.Now);
                         has.Add("createdby", 0);
                         has.Add("isnewField", 0);
-                        if (conn.Insert(has, "we_fields_department") != 1)
+                        if (conn.Insert(has, "we_fields_project_team") != 1)
                         {
                             return false;
                         }
@@ -3443,7 +3506,7 @@ and IdKH={loginData.CustomerID} )";
             else
                 max_template = cnn.ExecuteScalar("select templateid from we_department " +
                     "where disabled = 0 and id_row =" + data.id_department + "").ToString();
-            val.Add("title", "Phòng ban theo yêu cầu " + data.meetingid);
+            val.Add("title", "Cuộc họp");
             val.Add("id_cocau", 0);
             val.Add("idkh", loginData.CustomerID);
             val.Add("createddate", DateTime.Now);
@@ -3605,16 +3668,36 @@ and IdKH={loginData.CustomerID} )";
             }
             return true;
         }
-        public static List<long> ListProjectIDBySpace(DpsConnection cnn, long departmentid)
+        public static string ListIDDepartment(DpsConnection cnn, long id_project_team)
         {
-            List<long> listid = new List<long>();
+            string listid = "0";
             SqlConditions conds = new SqlConditions();
-            conds.Add("id_department", departmentid);
+            long id_department = 0;
+            conds.Add("id_row", id_project_team);
             conds.Add("disabled", 0);
-            DataTable dt = cnn.CreateDataTable($@"select id_row from we_department where (where)", "(where)", conds);
+            DataTable dt = new DataTable();
+            string sql_dept = "select ISNULL((select id_department from we_project_team where id_row = " + id_project_team + "),0)";
+            id_department = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+            string sql = "";
+            //sql = @"select id_row from we_department 
+            //        where ParentID = " + id_department + " " +
+            //        "or id_row = " + id_department + " " +
+            //"union all " +
+            //"select ParentID from we_department " +
+            //"where id_row = " + id_department + " ";
+            long ParentID = 0;
+            sql = @"select id_row from we_department 
+                    where id_row = " + id_department + "";
+            sql_dept = "select ISNULL(("+sql+"),0)";
+            ParentID = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+            if (ParentID > 0) // Tiếp tục lấy con của thư mục dưới phòng ban
+                sql += " union all select ParentID from we_department " +
+                    "where id_row = " + id_department;
+            dt = cnn.CreateDataTable(sql);
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                listid.Add(int.Parse(dt.Rows[i][0].ToString()));
+                if (!string.IsNullOrEmpty(dt.Rows[i]["id_row"].ToString()))
+                    listid += "," + dt.Rows[i]["id_row"].ToString();
             }
             return listid;
         }

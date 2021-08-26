@@ -22,9 +22,6 @@ export class AuxiliaryRouterComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
 			var ID = params.id;
       this.LoadDetailTask(ID);
-      // setTimeout(() => {
-      //   this.close();
-      // }, 1000);
 		});
   }
   LoadDetailTask(id){

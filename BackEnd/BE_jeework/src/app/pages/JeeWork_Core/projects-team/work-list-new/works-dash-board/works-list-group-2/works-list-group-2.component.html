@@ -96,7 +96,7 @@
                     <ng-container *ngFor="let item of ListColumns">
                         <div class="cu-task-list-header-field" *ngIf="!(item.IsHidden && item.isnewfield)" cdkDrag>
                             <div class="cu-dropdown-head" *ngIf="ShowCol(item,Id_Department)"
-                                style="width:100px;margin:0 1px;" >
+                                style="width:100px;margin:0 1px;">
                                 <div class="cu-task-list-header-field__title">
                                     <div class="cu-task-list-header-field__title-text text-center"
                                         *ngIf="!item.isnewfield;else isnewfield">
@@ -113,13 +113,15 @@
                                                     style="font-size: 16px;padding: 0 10px;"></i><span
                                                     translate="work.ancot"></span>
                                             </button>
-                                            <!-- <button mat-menu-item (click)="UpdateField(item)">
+                                            <button mat-menu-item (click)="UpdateField(item)">
                                                 <i class="fas fa-cogs"
                                                     style="font-size: 16px;padding: 0 10px;"></i><span
                                                     translate="work.updatecot"></span>
-                                            </button> -->
+                                            </button>
                                             <button mat-menu-item (click)="update_hidden(item,true)">
-                                                <i class="far fa-trash-alt" style="font-size: 16px;padding: 0 10px;"></i><span translate="work.xoacot"></span>
+                                                <i class="far fa-trash-alt"
+                                                    style="font-size: 16px;padding: 0 10px;"></i><span
+                                                    translate="work.xoacot"></span>
                                             </button>
                                         </mat-menu>
                                     </ng-template>
@@ -130,9 +132,9 @@
 
                 </div>
                 <div class="cu-task-list-header-settings text-muted">
-                    <div class="cu-task-list-header-settings__add -hover url"  >
+                    <div class="cu-task-list-header-settings__add -hover url" [matMenuTriggerFor]="menuField">
                         <!-- [matMenuTriggerFor]="menuField" -->
-                        <!-- <i class="fas fa-plus-circle"></i> -->
+                        <i class="fas fa-plus-circle"></i>
                     </div>
                     <mat-menu #menuField="matMenu">
                         <div class="row" (click)="$event.stopPropagation()">
@@ -143,8 +145,7 @@
                                         (click)="UpdateCol(item.fieldname);">
                                         <span style="padding-right: 10px;">{{ 'filter.'+item.Title |
                                             translate }}</span>
-                                        <i class="fas fa-check float-right"
-                                            *ngIf="ShowCol(item,Id_Department)"></i>
+                                        <i class="fas fa-check float-right" *ngIf="ShowCol(item,Id_Department)"></i>
                                     </button>
                                 </ng-container>
                                 <ng-container *ngIf="HasColunmHidden(ListColumns)">
@@ -277,8 +278,8 @@
                                 <div class="cu-task-row-main__link-text">
                                     <input id="task{{node.id_row}}" type="text" class="form-control"
                                         [hidden]="isEdittitle != node.id_row"
-                                        (keyup.enter)="focusOutFunction($event,node)" (focusout)="focusOutFunction($event,node)"
-                                        [value]="node.title">
+                                        (keyup.enter)="focusOutFunction($event,node)"
+                                        (focusout)="focusOutFunction($event,node)" [value]="node.title">
                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                         <p style="font-size: 11px;" class="mg-0 text-muted" *ngIf="tasklocation">
                                             {{this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}
@@ -358,11 +359,9 @@
 
                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                             <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
-                                <app-task-datetime
-                                (valueChange)="updateDate(node,$event,item.fieldname)"
-                                [fieldname]="item.fieldname" 
-                                [(value)]="node[item.fieldname]" 
-                                [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime>
+                                <app-task-datetime (valueChange)="updateDate(node,$event,item.fieldname)"
+                                    [fieldname]="item.fieldname" [(value)]="node[item.fieldname]"
+                                    [role]="CheckRoleskeypermit(item.fieldname)"></app-task-datetime>
                                 <!-- <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                     <div class="item-field">
                                         <span class="hide-more-text" matTooltip="{{node[item.fieldname] | timezone}}">
@@ -622,12 +621,8 @@
                                             </div>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'id_group'">
-                                            <app-tasks-group
-                                                [ListGroup]="listType" 
-                                                [value]="node[item.fieldname]"
-                                                (valueChange)="UpdateGroup(node,$event)"
-                                                [role]="CheckRoles(21)"
-                                            >
+                                            <app-tasks-group [ListGroup]="listType" [value]="node[item.fieldname]"
+                                                (valueChange)="UpdateGroup(node,$event)" [role]="CheckRoles(21)">
                                             </app-tasks-group>
                                             <!-- <div class="item-field" [matMenuTriggerFor]="groupid"
                                                 [hidden]="!CheckRoles(21)">
@@ -690,11 +685,10 @@
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'date'">
                                         <div class="w-100 h-100  border-hover padding-new-field item-field">
-                                            <app-task-datetime 
-                                                (valueChange)="UpdateValueField($event,node.id_row,item)"
-                                                [fieldname]="'date'" 
-                                                [value]="GetDataNewField(node.id_row,item.Id_row)=='-'?'':GetDataNewField(node.id_row,item.Id_row)" 
-                                                [role]="true" ></app-task-datetime>
+                                            <app-task-datetime (valueChange)="UpdateValueField($event,node.id_row,item)"
+                                                [fieldname]="'date'"
+                                                [value]="GetDataNewField(node.id_row,item.Id_row)=='-'?'':GetDataNewField(node.id_row,item.Id_row)"
+                                                [role]="true"></app-task-datetime>
                                             <!-- <div class="url hide-more-text "
                                                 (click)="editmail = (node.id_row + item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
                                                 *ngIf="editmail != (node.id_row+item.Id_row.toString())">

@@ -36,7 +36,7 @@
                             </div>
                         </div>
                     </mat-menu>
-                    <i class="far fa-trash-alt -hover-remove url" *ngIf="!(ops.rowid>0)" (click)="listOptions.splice(index,1)" style="padding-left: 10px; font-size: 20px;"></i>
+                    <i class="far fa-trash-alt -hover-remove url" (click)="listOptions.splice(index,1)" style="padding-left: 10px; font-size: 20px;"></i>
                 </div>
             </div>
             <div class="btn btn-default" (click)="addRow()"><i class="fas fa-plus" ></i> Thêm tùy chọn mới</div>

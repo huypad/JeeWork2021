@@ -20,6 +20,7 @@ export class ColumnWorkModel
     columnname :string;
     isnewfield :boolean = false;
     Options :any;
+    type :number;
     title:string;
 }
 

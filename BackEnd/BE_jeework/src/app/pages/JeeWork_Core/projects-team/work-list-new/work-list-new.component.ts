@@ -99,6 +99,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   ListUsers: any = [];
   editmail = 0;
   isAssignforme = false;
+  taskortherpeople = true;
   // col
   displayedColumnsCol: string[] = [];
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -172,7 +173,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.subscription = this.CommunicateService.currentMessage.subscribe(
       (message) => {
         if (message) {
-          console.log("LoadData");
           this.LoadData();
         }
       }
@@ -197,14 +197,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     };
 
     this.column_sort = this.sortField[0];
-    // this.selection = new SelectionModel<WorkModel>(true, []);
-    this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
+     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
       if (res && res.status == 1) {
         this.list_role = res.data.dataRole;
         this.IsAdminGroup = res.data.IsAdminGroup;
       }
       if (!this.CheckRoles(3)) {
-        this.isAssignforme = true;
+        // this.isAssignforme = true;
+        this.taskortherpeople = false
       }
     });
     this.LoadData();
@@ -223,9 +223,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
 
-  ngOnDestroy(): void {
-    //Called once, before the instance is destroyed.
-    //Add 'implements OnDestroy' to the class.
+  ngOnDestroy(): void { 
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
@@ -346,12 +344,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.listNewField = res.data;
       }
-    });
-    this.layoutUtilsService.showWaitingDiv();
+    }); 
     //get data work binding data
+    this.layoutUtilsService.showWaitingDiv();
     this._service.GetDataWorkCU(queryParams)
     .pipe(
-      tap(() => {this.layoutUtilsService.showWaitingDiv();console.log('startted',new Date())}),
+      tap(() => this.layoutUtilsService.showWaitingDiv()),
       debounceTime(1000),
       switchMap( (resultFromServer) => of(resultFromServer).pipe(
           tap( (res) => {
@@ -360,7 +358,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
               this.listFilter = this.data.Filter;
               this.ListColumns = this.data.TenCot;
               //xóa title khỏi cột
-              var colDelete = ["title", "id_row", "id_project_team", "id_parent"];
+              var colDelete = ["title"];
               colDelete.forEach((element) => {
                 var indextt = this.ListColumns.findIndex(
                   (x) => x.fieldname == element
@@ -393,6 +391,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
               this.ListTags = this.data.Tag;
               this.ListUsers = this.data.User;
               this.DataNewField = this.data.DataWork_NewField;
+              debugger
               this.LoadListStatus();
               this.changeDetectorRefs.detectChanges();
             }
@@ -400,7 +399,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         ),
       ),
       catchError((err) => throwError(err)),
-      finalize(() => {this.layoutUtilsService.OffWaitingDiv();console.log('ended',new Date())} )
+      finalize(() => this.layoutUtilsService.OffWaitingDiv() )
     )
     .subscribe((res) => { });
 
@@ -445,6 +444,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   GetDataNewField(id_work, id_field, isDropdown = false, getColor = false) {
+    debugger
     var x = this.DataNewField.find(
       (x) => x.WorkID == id_work && x.FieldID == id_field
     );
@@ -536,7 +536,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   listStatus: any = [];
-  LoadListStatus() {
+  LoadListStatus(loading = false) {
+    if(loading)
+      this.layoutUtilsService.showWaitingDiv();
     this.listFilter.forEach((val) => {
       val.data = [];
     });
@@ -566,7 +568,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       });
     }
     this.listStatus = this.listFilter;
-    console.log('done',new Date());
+    console.log(this.listStatus,'danh sach ');
+    if(loading)
+      this.layoutUtilsService.OffWaitingDiv();
     this.changeDetectorRefs.detectChanges();
   }
 
@@ -591,11 +595,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.filter_groupby.value == "status" &&
       valuefilter.id_row == +elementTask.status
     ) {
-      if (this.isAssignforme) {
+      if(this.isAssignforme){
+        if(!this.FindUser(elementTask.User, this.UserID)) 
+          return false;
+      }
+      if (!this.taskortherpeople) {
         // kiểm tra có phải người được giao hay người tạo hay không
         if (
-          this.isAssignForme(elementTask) ||
-          elementTask.createdby == this.UserID
+          this.isAssignForme(elementTask) || elementTask.createdby == this.UserID
         ) {
           return true;
         }
@@ -613,11 +620,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     ) {
       return true;
     }
-    return false;
+    return false; 
   }
   CheckDataAssigne(valuefilter, elementTask) {
     if (this.filter_groupby.value == "assignee") {
-      if (this.isAssignforme) {
+      if(this.isAssignforme){
+        if(!this.FindUser(elementTask.User, this.UserID)) 
+          return false;
+      }
+      if (!this.taskortherpeople) {
         if (
           (this.FindUser(elementTask.User, valuefilter.id_row) &&
             this.isAssignForme(elementTask)) ||
@@ -656,7 +667,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.filter_groupby.value == "groupwork" &&
       elementTask.id_group == valuefilter.id_row
     ) {
-      if (this.isAssignforme) {
+      if(this.isAssignforme){
+        if(!this.FindUser(elementTask.User, this.UserID)) 
+          return false;
+      }
+      if (!this.taskortherpeople) {
         // kiểm tra có phải người được giao hay người tạo hay không
         if (
           this.isAssignForme(elementTask) ||
@@ -728,15 +743,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     item.columnname = fieldname;
     this._service.UpdateColumnWork(item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadUpdateCol();
+        this.LoadUpdateCol(true);
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
   }
 
-  LoadUpdateCol() {
-    // this.layoutUtilsService.showWaitingDiv();
+  LoadUpdateCol(loading = false) {
+    if(loading)
+      this.layoutUtilsService.showWaitingDiv();
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
       "",
@@ -749,7 +765,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status === 1) {
         this.ListColumns = res.data["TenCot"];
         //xóa title khỏi cột
-        var colDelete = ["title", "id_row"];
+        var colDelete = ["title"];
         colDelete.forEach((element) => {
           var indextt = this.ListColumns.findIndex(
             (x) => x.fieldname == element
@@ -770,9 +786,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.ListColumns.sort((a, b) =>
           a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
         ); // nào bắt buộc xếp trước
-
-        // this.layoutUtilsService.OffWaitingDiv();
         this.changeDetectorRefs.detectChanges();
+        if(loading)
+          this.layoutUtilsService.OffWaitingDiv();
       }
     });
   }
@@ -863,9 +879,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   drop(event) {
-    if (this.CheckRoles(15)) {
-      this.isAssignforme = true;
-    }
+    // if (this.CheckRoles(15)) {
+    //   this.isAssignforme = true;
+    // }
     const itemDrop = new DrapDropItem();
     const draggedItemId = event.item.data; // get data -- id
     const parentItemId = event.previousContainer.id; // từ thằng cha hiện tại
@@ -1054,7 +1070,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
   focusOutFunction(event,node) {
     this.isEdittitle = -1;
-    //console.log(event.target.value,' -- có bằng --', node.title);
     if(event.target.value.trim() == node.title.trim() || event.target.value.trim()==""){
       event.target.value = node.title;
       return;
@@ -1888,6 +1903,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     _item.title = "";
     _item.columnname = item.fieldname;
     _item.isnewfield = true;
+    _item.type = 3;
     const dialogRef = this.dialog.open(AddNewFieldsComponent, {
       width: "600px",
       data: _item,
@@ -1907,6 +1923,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     _item.title = item.title_newfield;
     _item.columnname = item.fieldname;
     _item.isnewfield = true;
+    _item.type = 3;
     const dialogRef = this.dialog.open(AddNewFieldsComponent, {
       width: "600px",
       data: _item,
@@ -1946,7 +1963,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     this._service.update_hidden(item.id_row,3,hidden,isDelete).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadUpdateCol();
+        this.LoadUpdateCol(true);
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }

@@ -370,6 +370,7 @@ export class WorkTaskListComponent implements OnInit, OnChanges {
         this.ListTags = this.data.Tag;
         this.ListUsers = this.data.User;
         this.DataNewField = this.data.DataWork_NewField;
+        debugger
         this.LoadListStatus();
         this.changeDetectorRefs.detectChanges();
       }

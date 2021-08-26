@@ -37,6 +37,10 @@ const routes: Routes = [
 				component: PageWorkDepartmentComponent,
 			},
 			{
+				path: 'task/:id',
+				component: PageWorkDepartmentComponent,
+			},
+			{
 				path: 'milestones',
 				component: TabMucTieuComponent,
 			},

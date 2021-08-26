@@ -81,11 +81,11 @@
                                 </mat-menu>
                             </div>
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
-                                <div class="icon-user border" (click)="viewTaskOrder=false;ChangeData()">
-                                    <i class="fas fa-user" [ngClass]="{'text-success': !viewTaskOrder}"></i>
+                                <div class="icon-user border" (click)="isassignforme=true;ChangeData()">
+                                    <i class="fas fa-user" [ngClass]="{'text-success': isassignforme}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="viewTaskOrder=true;ChangeData()">
-                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': viewTaskOrder}"></i>
+                                <div class="icon-user border" (click)="isassignforme=false;ChangeData()">
+                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': !isassignforme}"></i>
                                 </div>
                             </div>
                         </ng-container>

@@ -80,7 +80,8 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   showclosedsubtask = false;
   showtaskmutiple = true;
   showemptystatus = false;
-  viewTaskOrder = false;
+  // viewTaskOrder = false;
+  isassignforme = false;
   status_dynamic: any = [];
   ListAllStatusDynamic: any = [];
   list_priority: any[];
@@ -465,7 +466,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = 1;
-    filter.workother = this.viewTaskOrder;
+    filter.isassignforme = this.isassignforme;
     filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
     filter.collect_by = this.column_sort.value;
@@ -1459,7 +1460,7 @@ export class ListTaskCUComponent implements OnInit,OnChanges {
   getHeight() {
     let tmp_height = 0;
     tmp_height = window.innerHeight - 155 - this.tokenStorage.getHeightHeader();
-    var link = this.router.url.split('/').find(x => x == 'tasks');
+    var link = this.router.url.split('/').find(x => x == 'tasks' || x == 'detail');
     if (link) {
       tmp_height += 45;
     }

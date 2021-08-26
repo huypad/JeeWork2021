@@ -212,10 +212,10 @@
                                 </div> 
                             </div> 
                         </div>
-                         <app-works-list-group-2 [showemptystatus]="showemptystatus" [tasklocation]="tasklocation"
+                         <app-works-list-group-2 [showemptystatus]="showemptystatus" [tasklocation]="tasklocation" [type]="type"
                             [showclosedtask]="showclosedtask" [showclosedsubtask]="showclosedsubtask"
                             [project_data]="item.project_data" [ID_Project]="item.id_row" [filter]="filter" [Id_Department]="Id_Department" [listNewfield]="listNewfield"
-                            [listField]="listField" [groupby]="filter_groupby.value" (pageReload)="LoadNewList()" (ColReload)="getListField($event)">
+                            [listField]="listField" [groupby]="filter_groupby.value" (pageReload)="LoadData()" (ColReload)="getListField($event)">
                         </app-works-list-group-2>
                     </div>
                 </ng-container>

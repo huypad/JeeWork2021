@@ -191,3 +191,27 @@
     font-weight: 500;
     margin-left: 15px;
 }
+
+.scale-hover-02{
+    &:hover{
+        z-index: 10;
+        transform: scale(1.05);
+        transition:all .001s;
+        border: 0;
+        .view-hover{
+            display: block;
+        }
+        &.user{
+            border-radius: 0;
+            background: rgba(253, 253, 253, 0)
+        }
+    }
+}
+.user-admin{
+    position: absolute;
+    top: 0;
+    right: 0; 
+    border-radius: 50%;
+    width:10px;
+    height:10px;
+}

@@ -96,6 +96,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   @Input() showclosedtask = true;
   @Input() showclosedsubtask = true;
   @Input() showtaskmutiple = true;
+  @Input() type = 1;
   @Output() pageReload = new EventEmitter<any>();
   @Output() ColReload = new EventEmitter<any>();
   ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
@@ -354,7 +355,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
               // this.LoadUpdateCol();
               // this.LoadUpdateColNew(data.TenCot);
 
-              this.ListTasks = data.datawork;
+              this.ListTasks = data.datawork?data.datawork:[];
               if (this.groupby == "status" && this.ListTasks.length == 0) {
                 if (this.listFilter[0])
                   this.newtask = this.listFilter[0].id_row;
@@ -1765,6 +1766,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     _item.title = "";
     _item.columnname = item.fieldname;
     _item.isnewfield = true;
+    _item.type = this.type;
     const dialogRef = this.dialog.open(AddNewFieldsComponent, {
       width: "600px",
       data: _item,
@@ -1785,6 +1787,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     _item.title = item.Title_NewField;
     _item.columnname = item.fieldname;
     _item.isnewfield = true;
+    _item.type = this.type;
     const dialogRef = this.dialog.open(AddNewFieldsComponent, {
       width: "600px",
       data: _item,
@@ -1822,7 +1825,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     } else {
       hidden = item.IsHidden ? 0 : 1; 
     }
-    this._service.update_hidden(item.Id_row,1,hidden,isDelete).subscribe((res) => {
+    this._service.update_hidden(item.Id_row,this.type,hidden,isDelete).subscribe((res) => {
       if (res && res.status == 1) {
         this.ReloadColData();
       } else {
