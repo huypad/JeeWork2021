@@ -3515,6 +3515,7 @@ and IdKH={loginData.CustomerID} )";
             val.Add("templateid", max_template);
             if (data.meetingid > 0)
             {
+                val.Add("id_meeting", data.meetingid);
                 val.Add("phanloaiid", 1);
             }
             cnn.BeginTransaction();
