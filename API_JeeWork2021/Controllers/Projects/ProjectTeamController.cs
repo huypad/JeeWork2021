@@ -1123,16 +1123,18 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     //conds.Add("meetingid", data.meetingid);
                     //conds.Add("disabled", 0);
                     string strCheck = @$"select id_row, idkh, phanloaiid from we_department where (where)";
+                    strCheck = @"select * from we_project_team where meetingid is not null 
+                                and id_department in (select id_row from we_department where idkh = "+loginData.CustomerID+")";
                     conds.Add("idkh", loginData.CustomerID);
-                    conds.Add("id_meeting", data.meetingid);
-                    DataTable dt_check = cnn.CreateDataTable(strCheck, "(where)", conds);
+                    //conds.Add("id_meeting", data.meetingid);
+                    DataTable dt_check = cnn.CreateDataTable(strCheck);
                     if (cnn.LastError != null || dt_check == null)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string error = "", departmentid = "0";
-                    if (dt_check.Rows.Count == 0) // Chưa có dự án trong cuộc họp ==> Khởi tạo dự án
+                    if (dt_check.Rows.Count == 0) // Chưa có dự án trong cuộc họp ==> Khởi tạo phòng ban => dự án
                     {
                         if (WeworkLiteController.init_space(cnn, loginData, data, out error))
                         {
@@ -1140,7 +1142,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     else
-                        departmentid = dt_check.Rows[0]["id_row"].ToString();
+                        departmentid = dt_check.Rows[0]["id_department"].ToString();
                     data.id_department = long.Parse(departmentid);
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
