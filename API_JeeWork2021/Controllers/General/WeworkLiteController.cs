@@ -3332,6 +3332,7 @@ and IdKH={loginData.CustomerID} )";
                 return "";
             }
             //return "Data Source=HUYTRAN\\SQLEXPRESS;Initial Catalog=jeework;User ID=sa;Password=sa2017";
+            //return "Data Source=202.143.110.154,1443;Initial Catalog=jeework;User ID=jeework;Password=DAtaBPssJ_3eW0rK";
         }
         public static void Insert_Template(DpsConnection cnn, string CustemerID)
         {
