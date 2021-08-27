@@ -2227,7 +2227,7 @@ and IdKH={loginData.CustomerID} )";
                     string authorize = "";
                     authorize = @$"select createdby from we_authorize where id_user = {loginData.UserID} 
                                 and disabled =0 and start_date <= GETDATE() 
-                                and end_date >= GETDATE())";
+                                and end_date >= GETDATE()";
 
                     sqlq = "select users.admin, proj.title, proj.description, proj.start_date, proj.end_date" +
                         ", Iif( users.admin = 1 and id_user <> " + loginData.UserID + ",1,0 ) as isuyquyen " +
@@ -2237,7 +2237,7 @@ and IdKH={loginData.CustomerID} )";
                         "and  users.disabled = 0 " +
                         "and locked = 0 and  proj.id_row = " + id_project_team + " " +
                         "and (id_user = " + loginData.UserID + $" " +
-                        $"or id_user in (" + authorize + ")";
+                        $"or id_user in (" + authorize + ") )";
                     sqlq += @";select id_project_team, id_role, we_role.title
                             , admin, member, keypermit, we_role.icon, is_assign, we_role.[group]
                             from we_project_role proj join we_role on we_role.id_row = proj.id_role
@@ -2636,7 +2636,7 @@ and IdKH={loginData.CustomerID} )";
             }
             dt_data = cnn.CreateDataTable(select, "(where)", cond);
             string sql_de = "";
-            if (_type == 3)
+            if (_type == 3 && id > 0)
             {
                 sql_de = @"select wf.id_row, f.fieldname, f.title, ishidden
                                     ,wf.title as title_newfield, f.isnewfield, departmentid
@@ -3515,7 +3515,7 @@ and IdKH={loginData.CustomerID} )";
             val.Add("templateid", max_template);
             if (data.meetingid > 0)
             {
-                val.Add("id_meeting", data.meetingid);
+                //val.Add("id_meeting", data.meetingid);
                 val.Add("phanloaiid", 1);
             }
             cnn.BeginTransaction();
@@ -3677,28 +3677,31 @@ and IdKH={loginData.CustomerID} )";
             conds.Add("id_row", id_project_team);
             conds.Add("disabled", 0);
             DataTable dt = new DataTable();
-            string sql_dept = "select ISNULL((select id_department from we_project_team where id_row = " + id_project_team + "),0)";
-            id_department = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
-            string sql = "";
-            //sql = @"select id_row from we_department 
-            //        where ParentID = " + id_department + " " +
-            //        "or id_row = " + id_department + " " +
-            //"union all " +
-            //"select ParentID from we_department " +
-            //"where id_row = " + id_department + " ";
-            long ParentID = 0;
-            sql = @"select id_row from we_department 
-                    where id_row = " + id_department + "";
-            sql_dept = "select ISNULL(("+sql+"),0)";
-            ParentID = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
-            if (ParentID > 0) // Tiếp tục lấy con của thư mục dưới phòng ban
-                sql += " union all select ParentID from we_department " +
-                    "where id_row = " + id_department;
-            dt = cnn.CreateDataTable(sql);
-            for (int i = 0; i < dt.Rows.Count; i++)
+            if (id_project_team > 0)
             {
-                if (!string.IsNullOrEmpty(dt.Rows[i]["id_row"].ToString()))
-                    listid += "," + dt.Rows[i]["id_row"].ToString();
+                string sql_dept = "select ISNULL((select id_department from we_project_team where id_row = " + id_project_team + "),0)";
+                id_department = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+                string sql = "";
+                //sql = @"select id_row from we_department 
+                //        where ParentID = " + id_department + " " +
+                //        "or id_row = " + id_department + " " +
+                //"union all " +
+                //"select ParentID from we_department " +
+                //"where id_row = " + id_department + " ";
+                long ParentID = 0;
+                sql = @"select id_row from we_department 
+                    where id_row = " + id_department + "";
+                sql_dept = "select ISNULL((" + sql + "),0)";
+                ParentID = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+                if (ParentID > 0) // Tiếp tục lấy con của thư mục dưới phòng ban
+                    sql += " union all select ParentID from we_department " +
+                        "where id_row = " + id_department;
+                dt = cnn.CreateDataTable(sql);
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    if (!string.IsNullOrEmpty(dt.Rows[i]["id_row"].ToString()))
+                        listid += "," + dt.Rows[i]["id_row"].ToString();
+                }
             }
             return listid;
         }
