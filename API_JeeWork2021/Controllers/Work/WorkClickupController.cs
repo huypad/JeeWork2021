@@ -3286,8 +3286,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     else
                     {
-                        //cnn.ExecuteNonQuery("delete we_fields_project_team where id_project_team =" + data.id_project_team + " and fieldname = '" + data.columnname + "'");
-                        cnn.ExecuteNonQuery("update we_fields_project_team set disabled = 1 where " + column_name + " = " + WorkSpaceID + " and fieldname = '" + data.columnname + "'");
+                        cnn.ExecuteNonQuery("delete we_fields_project_team where id_project_team =" + data.id_project_team + " and fieldname = '" + data.columnname + "'");
+                        //cnn.ExecuteNonQuery("update we_fields_project_team set disabled = 1 where " + column_name + " = " + WorkSpaceID + " and fieldname = '" + data.columnname + "'");
                         //cnn.ExecuteNonQuery("delete " + TableName+" where "+column_name+ " = " + WorkSpaceID + " and fieldname = '" + data.columnname + "'");
                         return JsonResultCommon.ThanhCong(data);
                     }
@@ -3748,6 +3748,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         // Xử lý riêng cho update status
                         if ("status".Equals(data.key))
                         {
+                            bool isTodo = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and isTodo = 1").ToString()) > 0;
                             bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsFinal = 1").ToString()) > 0;
                             bool hasDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = (select status from v_wework_clickup_new where id_row = " + data.id_row + ") and IsDeadline = 1").ToString()) > 0;
                             bool isDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsDeadline = 1").ToString()) > 0;
@@ -3759,6 +3760,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 if (StatusID != null)
                                 {
                                     val.Add(data.key, StatusID);
+                                    val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                                    val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                     data.value = StatusID;
                                 }
                             }
@@ -3779,10 +3782,17 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         if (long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + StatusID + " and IsFinal = 1").ToString()) > 0)
                                         {
                                             val.Add("end_date", DateTime.Now);
+                                            val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                                            val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                         }
                                         else
                                         {
                                             val.Add("end_date", DBNull.Value);
+                                            if (long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + StatusID + " and isTodo = 1").ToString()) > 0)
+                                            {
+                                                val.Add("activated_date", DateTime.Now); // date update isTodo = 1
+                                                val.Add("activated_by", loginData.UserID); // user update isTodo = 1
+                                            }
                                         }
                                     }
                                 }
@@ -3792,10 +3802,17 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     if (isFinal)
                                     {
                                         val.Add("end_date", DateTime.Now);
+                                        val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                                        val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                     }
                                     else
                                     {
                                         val.Add("end_date", DBNull.Value);
+                                        if (isTodo)
+                                        {
+                                            val.Add("activated_date", DateTime.Now); // date update isTodo = 1
+                                            val.Add("activated_by", loginData.UserID); // user update isTodo = 1
+                                        }
                                     }
                                 }
                             }
@@ -3815,6 +3832,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 }
                             }
                             #endregion
+                            // state_change_date
+                            val.Add("state_change_date", DateTime.Now); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
                         }
                         else
                         {
