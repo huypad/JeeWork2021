@@ -5,7 +5,7 @@
 
 <ng-container *ngFor="let status of listStatus">
     <div class="cu-list-group"
-        *ngIf="(status.data.length > 0 && LoadClosedTask(status.id_row)) || (status.data.length == 0 && showemptystatus) || ( Emtytask && status.id_row == Statusdefault() ) ">
+        *ngIf="isShowStatus(status)">
         <div class="task-list">
             <div class="task-list-header text-dark">
                 <div class="task-list-header__actions d-none">

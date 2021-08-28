@@ -168,6 +168,29 @@ namespace JeeWork_Core2021.Classes
                 return false;
             }
         }
+        public static string ListIDDepartment(DpsConnection cnn, long id_project_team)
+        {
+            string listid = "0";
+            SqlConditions conds = new SqlConditions();
+            long id_department = 0;
+            conds.Add("id_row", id_project_team);
+            conds.Add("disabled", 0);
+            DataTable dt = new DataTable();
+            string sql_dept = "select ISNULL((select id_department from we_project_team where id_row = " + id_project_team + "),0)";
+            id_department = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+            string sql = "";
+            long ParentID = 0;
+            sql = @"select id_row from we_department 
+                    where id_row = " + id_department + "";
+            sql_dept = "select ISNULL((" + sql + "),0)";
+            ParentID = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+            if (ParentID > 0) // Tiếp tục lấy con của thư mục dưới phòng ban
+                sql += " union all select ParentID from we_department " +
+                    "where id_row = " + id_department;
+            dt = cnn.CreateDataTable(sql);
+
+            return listid;
+        }
         public static string Format_DateHD_ExportExcel(string str = "", bool filename = false)
         {
             try
@@ -416,6 +439,24 @@ namespace JeeWork_Core2021.Classes
                 dt_space = cnn.CreateDataTable(sql_space, "(where)", cond);
                 dt_folder = cnn.CreateDataTable(sql_folder, "(where)", cond);
                 dt_project = cnn.CreateDataTable(sql_project);
+                dt_project.Columns.Add("parentowner");
+                dt_project.Columns.Add("owner");
+                foreach (DataRow dr in dt_project.Rows)
+                {
+                    DataRow[] dr_parent = dt_folder.Select("id_row=" + dr["id_department"]);
+                    if (dr_parent.Length > 0)
+                    {
+                        dr["parentowner"] = dr_parent[0]["parentowner"].ToString();
+                        dr["owner"] = "0";
+
+                    }
+                    DataRow[] dr_de = dt_space.Select("id_row=" + dr["id_department"]);
+                    if (dr_de.Length > 0)
+                    {
+                        dr["owner"] = dr_de[0]["owner"].ToString();
+                        dr["parentowner"] = "0";
+                    }
+                }
                 DataSet ds_workspace = new DataSet();
                 ds_workspace.Tables.Add(dt_space);
                 ds_workspace.Tables.Add(dt_folder);
@@ -527,41 +568,6 @@ namespace JeeWork_Core2021.Classes
         /// </summary>
         /// <param name="id_nv">Nhân viên</param>
         /// <param name="cocauid">Nhân viên</param>
-        public static string GetListStructureByNhanvien(string id_nv, string cocauid)
-        {
-            DataTable dt = new DataTable();
-            string list = "0";
-            //using (DpsConnection cnn = new DpsConnection(HRConnectionString))
-            //{
-            //    string CustemerID = GetCustemerID(id_nv, cnn).ToString();
-            //    SqlConditions cond = new SqlConditions();
-            //    if (cocauid == GetQuyenCoCauIDTheoNhanVien(long.Parse(id_nv.ToString()), cnn))
-            //    {
-            //        list += "," + cocauid;
-            //        cond.Add("id_nv", id_nv);
-            //        dt = cnn.CreateDataTable("select cocauid from P_Phanquyenphamvi where (where)", "(where)", cond);
-            //        cnn.Disconnect();
-            //        foreach (DataRow r in dt.Rows)
-            //        {
-            //            list += "," + r[0];
-            //            list += GetListStructureByParent(r["cocauid"].ToString(), CustemerID, cnn, false);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        cnn.ClearError();
-            //        cond.Add("rowid", cocauid);
-            //        cond.Add("disable", 0);
-            //        dt = cnn.CreateDataTable("select rowid from tbl_cocautochuc where (where)", "(where)", cond);
-            //        foreach (DataRow r in dt.Rows)
-            //        {
-            //            list += "," + r[0];
-            //            list += GetListStructureByParent(r["rowid"].ToString(), CustemerID, cnn, false);
-            //        }
-            //    }
-            //}
-            return list;
-        }
         public static string GetQuyenCoCauIDTheoNhanVien(long id_nv, DpsConnection cnn)
         {
             string id = "0";
@@ -627,7 +633,6 @@ namespace JeeWork_Core2021.Classes
             error = tmp_error;
             return dt;
         }
-
         public static string GetThamSo(DpsConnection cnn, string CustemerID, int id)
         {
             string result = "";
@@ -658,7 +663,6 @@ namespace JeeWork_Core2021.Classes
             }
             return result;
         }
-
         public static string getIDUserbyUserName(string username, IHeaderDictionary pHeader, string URL)
         {
             string userID = "";

@@ -81,7 +81,6 @@ export class WorkGroupEditComponent implements OnInit {
 		//Detail
 		this.workServices.DetailWorkGroup(this.item.id_row).subscribe(res => {
 			if (res && res.status == 1) {
-				console.log(res.data);
 				this.item = res.data;
 				this.createForm();
 			}
@@ -136,7 +135,6 @@ export class WorkGroupEditComponent implements OnInit {
 		// reviewer.id_nv = controls['reviewer'].value;
 		// reviewer.id_user = controls['reviewer'].value;
 		_item.reviewer = controls['reviewer'].value ? controls['reviewer'].value : '0';
-		console.log(_item);
 		return _item;
 	}
 	close() {

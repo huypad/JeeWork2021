@@ -183,7 +183,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
      // giao tiếp service
      this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
       if(message){
-        console.log('LoadData');
         this.LoadData();
       }
     });
@@ -222,7 +221,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
   LoadNewList(){
     if(this.Id_Department <= 0)
       return;
-    console.log(this.filterConfiguration());
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration()
     );
@@ -243,7 +241,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
 
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes,'2')
     this.onChanges.next(changes);
   }
 
@@ -292,7 +289,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         });
         this.listField$.next(listField);
         this.listField= listField;
-        console.log(listField);
         this.changeDetectorRefs.detectChanges();
       }
       else{
@@ -497,7 +493,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
       (res) => {
         if (res && res.status == 1) {
           this.listNewfield = res.data;
-          console.log(this.listNewfield)
         }
       }
     );

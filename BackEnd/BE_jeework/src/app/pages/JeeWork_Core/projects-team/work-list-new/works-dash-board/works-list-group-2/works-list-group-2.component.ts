@@ -36,6 +36,7 @@ import {
   debounceTime,
   startWith,
   switchMap,
+  map,
 } from "rxjs/operators";
 import { element } from "protractor";
 import { WeWorkService } from "../../../../services/wework.services";
@@ -168,21 +169,25 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
   ngOnInit() {
     // this.selection = new SelectionModel<WorkModel>(true, []);
-    this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
-      if (res && res.status == 1) {
-        this.list_role = res.data.dataRole;
-        this.IsAdminGroup = res.data.IsAdminGroup;
-      }
-      if (!this.CheckRoles(3)) {
-        this.isAssignforme = true;
-      }
+    this.menuServices.GetRoleWeWork("" + this.UserID)
+    .pipe(
+      map(res => {
+        if (res && res.status == 1) {
+          this.list_role = res.data.dataRole;
+          this.IsAdminGroup = res.data.IsAdminGroup;
+        }
+        if (!this.CheckRoles(3)) {
+          this.isAssignforme = true;
+          this.Emtytask = true;
+          this.LoadListStatus();
+        }
+      })
+    )
+    .subscribe(() => {
+      this.mark_tag();
+      this.LoadListAccount();
+      this.LoadDetailProject();
     });
-    // this.ReloadData(true);
-    //this.LoadData();
-    // this.GetField();
-    this.mark_tag();
-    this.LoadListAccount();
-    this.LoadDetailProject();
 
     this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
       this.changeDetectorRefs.detectChanges();
@@ -197,11 +202,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     if (changes.project_data) {
       this.dataLoader$.next("");
       this.dataLoader$.next(this.project_data);
-      // this.data = this.project_data;
       this.LoadBindingData();
     }
     if (changes.ID_Project) {
-      console.log(changes.ID_Project);
       this.LoadData();
     } 
     if (changes.listField) {  
@@ -209,7 +212,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
       this.changeDetectorRefs.detectChanges();
     } 
     if (changes.listNewfield) {  
-        console.log('list-new-field:',this.listNewfield);
+        // console.log('list-new-field:',this.listNewfield);
      }
   }
 
@@ -226,11 +229,11 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {
-        if (x.admin == true) {
+        if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         } else {
           if (roleID == 3 || roleID == 4) {
-            if (x.isuyquyen) return true;
+            if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             roleID == 7 ||
@@ -267,7 +270,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
           return true;
         } else {
           if (key == "id_nv") {
-            if (x.isuyquyen) return true;
+            if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             key == "title" ||
@@ -307,7 +310,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     else this.selection.selected.splice(index, 1);
   }
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {}
+  masterToggle() { }
   LoadData() {
     // this.clearList();
 
@@ -322,7 +325,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
       if (res && res.status === 1) {
         this.status_dynamic = res.data;
-        console.log(this.status_dynamic);
         var x = this.status_dynamic.find((val) => val.IsFinal == true);
         if (x) {
           this.ItemFinal = x.id_row;
@@ -355,14 +357,12 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
               // this.LoadUpdateCol();
               // this.LoadUpdateColNew(data.TenCot);
 
-              this.ListTasks = data.datawork?data.datawork:[];
+              this.ListTasks = data.datawork ? data.datawork : [];
+              this.Emtytask = true;
               if (this.groupby == "status" && this.ListTasks.length == 0) {
                 if (this.listFilter[0])
                   this.newtask = this.listFilter[0].id_row;
-                this.Emtytask = true;
-              } else {
-                this.Emtytask = false;
-              }
+              }  
 
               this.prepareDragDrop(this.ListTasks);
               this.ListTags = data.Tag;
@@ -419,7 +419,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
   UpdateValueField(value, idWork, field) {
     this.editmail = 0;
-    if(field!='date'){
+    if (field != 'date') {
       if (value == "" || value == null || value == undefined) {
         if (field.fieldname != "checkbox") return;
       }
@@ -430,7 +430,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     _item.Value = value;
     _item.WorkID = idWork;
     _item.TypeID = field.TypeID;
-    debugger
     this._service.UpdateNewField(_item).subscribe((res) => {
       if (res && res.status == 1) {
         this.ReloadData(true);
@@ -447,7 +446,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     return "Chưa phân loại";
   }
 
-  UpdateValue() {}
+  UpdateValue() { }
 
   filterConfiguration(): any {
     const filter: any = this.filter;
@@ -467,7 +466,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     this.WeWorkService.GetListField(this.ID_Project, 3, false).subscribe(
       (res) => {
         if (res && res.status === 1) {
-          this.listField = res.data; 
+          this.listField = res.data;
         }
       }
     );
@@ -482,6 +481,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
   listStatus: any = [];
   LoadListStatus() {
+    //reset data load
     this.listFilter.forEach((val) => {
       val.data = [];
     });
@@ -489,12 +489,13 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     this.ListTasks.forEach((element) => {
       element.isExpanded =
         this.filter_subtask.value == "show" ||
-        this.addNodeitem == element.id_row
+          this.addNodeitem == element.id_row
           ? true
           : false;
       this.listFilter.forEach((val) => {
         if (this.CheckDataStatus(val, element)) {
           val.data.push(element);
+          this.Emtytask = false;
         } else if (this.CheckDataAssigne(val, element)) {
           if (
             element.User?.length == 1 ||
@@ -510,7 +511,19 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     });
     this.listStatus = this.listFilter;
   }
-
+  isShowStatus(status){
+    if(status.data.length > 0 && this.LoadClosedTask(status.id_row)){
+      return true;
+    }
+    else if(status.data.length == 0 && this.showemptystatus){
+      return true;
+    }
+    else if( this.Emtytask && status.id_row == this.Statusdefault()){
+      this.newtask =  this.Statusdefault();
+      return true;
+    }
+    return false;
+  }
   CheckDataStatus(valuefilter, elementTask) {
     if (this.groupby == "status" && valuefilter.id_row == +elementTask.status) {
       if (this.isAssignforme) {
@@ -644,12 +657,12 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
   DragDropItemWork(item) {
     const dropItem = new DrapDropItem();
-    this._service.DragDropItemWork(item).subscribe((res) => {});
+    this._service.DragDropItemWork(item).subscribe((res) => { });
   }
 
-  UpdateCol(fieldname) { 
+  UpdateCol(fieldname) {
     const item = new ColumnWorkModel();
-    item.id_department  = +this.Id_Department;
+    item.id_department = +this.Id_Department;
     item.columnname = fieldname;
     this._service.UpdateColumnWork(item).subscribe((res) => {
       if (res && res.status == 1) {
@@ -660,41 +673,40 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
       }
     });
   }
- 
-  LoadUpdateColNew(dataCol) {
-    console.log('ds ten cot:' , dataCol)
-    this.ListColumns = dataCol;
-        //xóa title khỏi cột
-        var colDelete = [
-              "title",
-              "id_row",
-              "id_project_team",
-              "id_parent",
-            ];
-        colDelete.forEach((element) => {
-          var indextt = this.ListColumns.findIndex(
-            (x) => x.fieldname == element
-          );
-          if (indextt >= 0) this.ListColumns.splice(indextt, 1);
-        });
 
-        this.ListColumns.sort((a, b) =>
-          a.title > b.title ? 1 : b.title > a.title ? -1 : 0
-        ); // xếp theo anphabet
-        this.ListColumns.sort((a, b) =>
-          a.id_department > b.id_department
-            ? -1
-            : b.id_department > a.id_department
-            ? 1
-            : 0
-        ); // nào chọn xếp trước 
-        this.changeDetectorRefs.detectChanges();
+  LoadUpdateColNew(dataCol) {
+    this.ListColumns = dataCol;
+    //xóa title khỏi cột
+    var colDelete = [
+      "title",
+      "id_row",
+      "id_project_team",
+      "id_parent",
+    ];
+    colDelete.forEach((element) => {
+      var indextt = this.ListColumns.findIndex(
+        (x) => x.fieldname == element
+      );
+      if (indextt >= 0) this.ListColumns.splice(indextt, 1);
+    });
+
+    this.ListColumns.sort((a, b) =>
+      a.title > b.title ? 1 : b.title > a.title ? -1 : 0
+    ); // xếp theo anphabet
+    this.ListColumns.sort((a, b) =>
+      a.id_department > b.id_department
+        ? -1
+        : b.id_department > a.id_department
+          ? 1
+          : 0
+    ); // nào chọn xếp trước 
+    this.changeDetectorRefs.detectChanges();
   }
 
-  ShowCol(item,Id_Department){
-    if(!item.IsHidden){
-      if(item.id_department==Id_Department || item.isbatbuoc){
-      // if(item.id_department==Id_Department || item.isdefault){
+  ShowCol(item, Id_Department) {
+    if (!item.IsHidden) {
+      if (item.id_department == Id_Department || item.isbatbuoc) {
+        // if(item.id_department==Id_Department || item.isdefault){
         return true;
       }
     }
@@ -706,7 +718,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   //     (res) => {
   //       if (res && res.status == 1) {
   //         this.listNewfield = res.data;
-  //         console.log(this.listNewfield)
   //       }
   //     }
   //   );
@@ -732,7 +743,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     // },10);
   }
 
-  setCheckField(event) {}
+  setCheckField(event) { }
 
   onSelectFile(event) {
     if (event.target.files && event.target.files[0]) {
@@ -976,16 +987,15 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
       ele.focus();
     }, 50);
   }
-  focusOutFunction(event,node) {
+  focusOutFunction(event, node) {
     this.isEdittitle = -1;
-    //console.log(event.target.value,' -- có bằng --', node.title);
     if(event.target.value.trim() == node.title.trim() || event.target.value.trim()==""){
       event.target.value = node.title;
       return;
     }
     this.UpdateByKey(node, "title", event.target.value.trim());
   }
-  focusFunction(val) {}
+  focusFunction(val) { }
   CloseAddnewTask(val) {
     if (val) {
       this.addNodeitem = 0;
@@ -1311,15 +1321,15 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     } else this.UpdateByKey(node, "id_group", id_row);
   }
   updateDate(task, date, field) {
-    let valuedate ;
-    if(date){
+    let valuedate;
+    if (date) {
       valuedate = moment(date).format("MM/DD/YYYY HH:mm");
       // this.UpdateByKey(task, field, moment(date).format("MM/DD/YYYY HH:mm"));
-    }else{
+    } else {
       valuedate = null;
       // this.UpdateByKey(task, field, null);
     }
-    this.UpdateByKey(task, field, valuedate,false);
+    this.UpdateByKey(task, field, valuedate, false);
   }
   updatePriority(task, field, value) {
     this.UpdateByKey(task, field, value);
@@ -1820,12 +1830,12 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   }
 
   update_hidden(item, isDelete = false) {
-     var hidden = item.IsHidden ? 1 : 0;
-    if (isDelete) { 
+    var hidden = item.IsHidden ? 1 : 0;
+    if (isDelete) {
     } else {
-      hidden = item.IsHidden ? 0 : 1; 
+      hidden = item.IsHidden ? 0 : 1;
     }
-    this._service.update_hidden(item.Id_row,this.type,hidden,isDelete).subscribe((res) => {
+    this._service.update_hidden(item.Id_row, this.type, hidden, isDelete).subscribe((res) => {
       if (res && res.status == 1) {
         this.ReloadColData();
       } else {

@@ -3141,6 +3141,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                 return JsonResultCommon.Exception(_logger,ex, _config, loginData);
             }
         }
+
         #endregion
         private DataSet getWork(DpsConnection cnn, QueryParams query, long curUser, string dieukien_where = "")
         {

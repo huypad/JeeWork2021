@@ -37,6 +37,7 @@ import {
   debounceTime,
   startWith,
   switchMap,
+  map,
 } from "rxjs/operators";
 import { element } from "protractor";
 import { WeWorkService } from "./../../services/wework.services";
@@ -197,21 +198,26 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     };
 
     this.column_sort = this.sortField[0];
-     this.menuServices.GetRoleWeWork("" + this.UserID).subscribe((res) => {
-      if (res && res.status == 1) {
-        this.list_role = res.data.dataRole;
-        this.IsAdminGroup = res.data.IsAdminGroup;
-      }
-      if (!this.CheckRoles(3)) {
-        // this.isAssignforme = true;
-        this.taskortherpeople = false
-      }
+     this.menuServices.GetRoleWeWork("" + this.UserID)
+     .pipe(
+       map(res =>{
+        if (res && res.status == 1) {
+          this.list_role = res.data.dataRole;
+          this.IsAdminGroup = res.data.IsAdminGroup;
+        }
+        if (!this.CheckRoles(3)) {
+          // this.taskortherpeople = false
+        }
+       }),
+     )
+     .subscribe(() => { 
+      this.LoadData();
+      this.GetField();
+      this.mark_tag();
+      this.LoadListAccount();
+      this.LoadDetailProject();
     });
-    this.LoadData();
-    this.GetField();
-    this.mark_tag();
-    this.LoadListAccount();
-    this.LoadDetailProject();
+    
     // this.changeDetectorRefs.detectChanges();
 
     this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
@@ -244,11 +250,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {
-        if (x.admin == true) {
+        if (x.admin == true || x.admin ==1 || +x.owner ==1 || +x.parentowner ==1 ) {
           return true;
         } else {
           if (roleID == 3 || roleID == 4) {
-            if (x.isuyquyen) return true;
+            if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             roleID == 7 ||
@@ -281,11 +287,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {
-        if (x.admin == true) {
+        if (x.admin == true || x.admin ==1 || +x.owner ==1 || +x.parentowner ==1 ) {
           return true;
         } else {
           if (key == "id_nv") {
-            if (x.isuyquyen) return true;
+             if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             key == "title" ||
@@ -375,23 +381,24 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                   : b.id_project_team > a.id_project_team
                   ? 1
                   : 0
-              ); // nào chọn xếp trước
-              this.ListColumns.sort((a, b) =>
-                a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
-              ); // nào bắt buộc xếp trước
-              this.ListTasks = this.data.datawork;
+              ); // nào chọn xếp trước 
+              //this.ListTasks = this.data.datawork;
+              if (!this.CheckRoles(3)) {
+                this.ListTasks = this.data.datawork.filter(x => this.isAssignForme(x));
+              }else{
+                this.ListTasks = this.data.datawork;
+              }
+              
+              this.Emtytask = true;
               if ( this.filter_groupby.value == "status" && this.ListTasks.length == 0 ) {
                 if (this.listFilter[0]) 
                   this.newtask = this.listFilter[0].id_row;
-                this.Emtytask = true;
-              } else {
-                this.Emtytask = false;
-              }
+              } 
               this.prepareDragDrop(this.ListTasks);
               this.ListTags = this.data.Tag;
               this.ListUsers = this.data.User;
               this.DataNewField = this.data.DataWork_NewField;
-              debugger
+              
               this.LoadListStatus();
               this.changeDetectorRefs.detectChanges();
             }
@@ -444,7 +451,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   GetDataNewField(id_work, id_field, isDropdown = false, getColor = false) {
-    debugger
+    
     var x = this.DataNewField.find(
       (x) => x.WorkID == id_work && x.FieldID == id_field
     );
@@ -553,6 +560,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.listFilter.forEach((val) => {
           if (this.CheckDataStatus(val, element)) {
             val.data.push(element);
+            this.Emtytask = false;
           } else if (this.CheckDataAssigne(val, element)) {
             if (
               element.User?.length == 1 ||
@@ -568,7 +576,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       });
     }
     this.listStatus = this.listFilter;
-    console.log(this.listStatus,'danh sach ');
     if(loading)
       this.layoutUtilsService.OffWaitingDiv();
     this.changeDetectorRefs.detectChanges();
@@ -578,10 +585,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if(status.data.length > 0 && this.LoadClosedTask(status.id_row)){
       return true;
     }
-    else if(status.data.length == 0 && this.showemptystatus){
+    if(status.data.length == 0 && this.showemptystatus){
       return true;
     }
-    else if( this.Emtytask && status.id_row == this.Statusdefault()){
+    if( this.Emtytask && status.id_row == this.Statusdefault()){
+      this.newtask =  this.Statusdefault();
       return true;
     }
     return false;
@@ -786,9 +794,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.ListColumns.sort((a, b) =>
           a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
         ); // nào bắt buộc xếp trước
-        this.changeDetectorRefs.detectChanges();
         if(loading)
           this.layoutUtilsService.OffWaitingDiv();
+        this.changeDetectorRefs.detectChanges();
       }
     });
   }
@@ -1363,7 +1371,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {
-        if (x.admin == true) {
+        if (x.admin == true || x.admin ==1 || +x.owner ==1 || +x.parentowner ==1 ) {
           return true;
         }
       }

@@ -28,7 +28,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     [Route("api/widgets")]
     [EnableCors("JeeWorkPolicy")]
     /// <summary>
-    /// các ds lite dành cho wework
+    /// các ds widget dùng cho Landing Page
     /// </summary>
     public class WidgetsController : ControllerBase
     {
@@ -38,7 +38,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<WidgetsController> _logger;
-
         public WidgetsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WidgetsController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -125,17 +124,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     on p.id_row=w.id_project_team 
                                     join we_project_team_user project_user 
                                     on project_user.id_project_team = p.id_row and admin = 1 
-									and project_user.id_user = "+ loginData.UserID+ " " +
+									and project_user.id_user = " + loginData.UserID + " " +
                                     "where p.Disabled=0 and de.Disabled = 0 " +
-                                    ""+dieukien_where+ " order by " + dieukienSort;
-                                    sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh
+                                    "" + dieukien_where + " order by " + dieukienSort;
+                    sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh
                                             ,'' as mobile,'' as image
                                             from we_project_team_user u 
                                             join we_project_team p on p.id_row=u.id_project_team 
                                             where u.disabled=0 and u.Id_user in (" + listID + " )";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -216,11 +215,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
-
         /// <summary>
         /// Báo cáo chi tiết theo thành viên (Không cần tuyền params)
         /// </summary>
@@ -405,11 +402,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
-
         /// <summary>
         /// Biểu đô tròn trạng thái công việc
         /// <para/>và<para/>
@@ -483,11 +478,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     else
                     {
-                        string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration,ConnectionString);
+                        string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                         hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                         quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
                         todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
-                        strW += $" and id_department in ({listDept})"; 
+                        strW += $" and id_department in ({listDept})";
                     }
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
@@ -497,10 +492,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     from v_wework_clickup_new w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
-                   DataSet ds = cnn.CreateDataSet(sqlq, cond);
+                    DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -554,7 +549,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         public static string calPercentage(object tong, object v)
@@ -666,9 +661,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = WorkClickupController.getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -689,7 +684,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     dtNew = dtNew.Concat(dtChild);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount,loginData, ConnectionString);
+                    var Children = WorkClickupController.getChild(domain, loginData.CustomerID, "", displayChild, 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString);
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
             }
@@ -697,10 +692,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
 
 
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-        
         /// <summary>
         ///  my-list-wiget
         /// </summary>
@@ -785,16 +779,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             strW += $" and w.status not in ({quahan},{hoanthanh}) ";
                         }
-                        else if(tinhtrang == "deadline")
+                        else if (tinhtrang == "deadline")
                         {
                             strW += $" and w.status in ({quahan}) ";
                         }
-                        else {
+                        else
+                        {
                             strW += $" and w.status in ({hoanthanh}) ";
                         };
-
                     }
-                        
+
                     #region group
                     string strG = @"select distinct p.id_row, p.title from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 
@@ -807,9 +801,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = WorkClickupController.getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -836,12 +830,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-
-
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-         
         /// <summary>
         ///  my-list-wiget
         /// </summary>
@@ -916,16 +907,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             strW += $" and w.status not in ({quahan},{hoanthanh}) ";
                         }
-                        else if(tinhtrang == "deadline")
+                        else if (tinhtrang == "deadline")
                         {
                             strW += $" and w.status in ({quahan}) ";
                         }
-                        else {
+                        else
+                        {
                             strW += $" and w.status in ({hoanthanh}) ";
                         };
 
                     }
-                        
+
                     #region group
                     string strG = @"select distinct p.id_row, p.title from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 
@@ -938,9 +930,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = WorkClickupController.getWork(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
@@ -969,11 +961,9 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
 
 
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
- 
         /// <summary>
         /// Write log
         /// </summary>
@@ -1367,7 +1357,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         DataSet ds = GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept, strW);
                         if (cnn.LastError != null || ds == null)
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         dt_data = ds.Tables[0];
                         var tags = ds.Tables[1].AsEnumerable();
                     }
@@ -1400,7 +1390,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         public static DataTable dtChildren(string id_parent, DataTable data, DpsConnection cnn, DataTable dataField, string id_project_team, List<AccUsernameModel> DataAccount, UserJWT loginData)
@@ -1484,232 +1474,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             return result;
         }
-        [Route("List-activities")]
-        [HttpGet]
-        public object ListActivities([FromQuery] QueryParams query)
-        {
-            string Token = Common.GetHeader(Request);
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            if (query == null)
-                query = new QueryParams();
-            PageModel pageModel = new PageModel();
-            try
-            {
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    bool Visible = Common.CheckRoleByUserID(loginData, 3502, cnn);
-
-                    string sql = @"select distinct p.id_row, p.title, is_project from we_project_team p
-                                join we_department d on d.id_row = p.id_department
-                                join we_project_team_user u on u.id_project_team = p.id_row
-                                 where u.Disabled = 0 and id_user = " + loginData.UserID + " and p.Disabled = 0  and d.Disabled = 0 and IdKH=" + loginData.CustomerID + " (where) order by title";
-
-                    SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "id_row";
-                    if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
-                    {
-                        Conds.Add("id_project_team", query.filter["id_project_team"]);
-                        sql = sql.Replace("(where)", " and p.id_row = "+ query.filter["id_project_team"] );
-                    }    
-                    else
-                    {
-                        Conds.Add("id_project_team", 0);
-                        sql = sql.Replace("(where)", " ");
-                    }
-                    Conds.Add("IDKH", loginData.CustomerID);
-                    //load team 
-                    DataTable dt_team = cnn.CreateDataTable(sql);
-                    #region Sort data theo các dữ liệu bên dưới
-                    Dictionary<string, string> sortableFields = new Dictionary<string, string>
-                        {
-                            { "id_row", "id_row"},
-                            { "title", "title"},
-                            { "CreatedDate", "CreatedDate"}
-                        };
-                    #endregion
-                    if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
-                        dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
-                    #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = "";
-                    //if (!role.IsUserInRole(loginData.UserName, "3502"))
-                    //{
-                    sqlq = @$"exec GetActivitiesNew @IDKH, @id_project_team";
-                    //}
-                    DataSet ds = cnn.CreateDataSet(sqlq, Conds);
-                    #region Map info account từ JeeAccount
-                    ds.Tables[0].Columns.Add("hoten", typeof(string));
-                    ds.Tables[0].Columns.Add("username", typeof(string));
-                    ds.Tables[0].Columns.Add("tenchucdanh", typeof(string));
-                    ds.Tables[0].Columns.Add("mobile", typeof(string));
-                    ds.Tables[0].Columns.Add("image", typeof(string));
-                    foreach (DataRow item in ds.Tables[0].Rows)
-                    {
-                        var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
-                        if (info != null)
-                        {
-                            item["hoten"] = info.FullName;
-                            item["username"] = info.Username;
-                            item["tenchucdanh"] = info.Jobtitle;
-                            item["mobile"] = info.PhoneNumber;
-                            item["image"] = info.AvartarImgURL;
-                        }
-
-                    }
-                    #endregion
-                    if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
-                    DataTable dt = ds.Tables[0];
-                    if (dt.Rows.Count == 0)
-                        return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
-                    if (Visible)
-                    {
-                        for (int i = dt.Rows.Count - 1; i >= 0; i--)
-                        {
-                            DataRow dr = dt.Rows[i];
-                            if (int.Parse(dr["createdby"].ToString()) != loginData.UserID)
-                                dr.Delete();
-                        }
-                        dt.AcceptChanges();
-                    }
-                    var temp = dt.AsEnumerable();
-                    if (!string.IsNullOrEmpty(query.filter["keyword"]))
-                    {
-                        string keyword = query.filter["keyword"].ToLower();
-                        temp = temp.Where(x => x["title"].ToString().ToLower().Contains(keyword) ||
-                        (x["log_content"] != DBNull.Value && x["log_content"].ToString().ToLower().Contains(keyword)) ||
-                        x["action"].ToString().ToLower().Contains(keyword) ||
-                        x["action_en"].ToString().ToLower().Contains(keyword));
-                    }
-                    if (temp.Count() == 0)
-                    {
-                        return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
-                    }
-                    string sql_query = ""; // áp dụng cho trường hợp lấy dữ liệu khóa ngoại
-                    dt = temp.CopyToDataTable();
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        if (dr["sql"] != DBNull.Value)
-                        {
-                            sql_query = dr["sql"].ToString();
-                            sql_query = sql_query.Replace("$DB_HR$", _config.HRCatalog);
-                            DataTable dt_temp = cnn.CreateDataTable(sql_query, new SqlConditions() { { "old", dr["oldvalue"] }, { "new", dr["newvalue"] } });
-                            if (dt_temp == null)
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
-                            dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
-                            dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
-                        }
-                    }
-                    int total = dt.Rows.Count;
-                    if (query.more)
-                    {
-                        query.page = 1;
-                        query.record = total;
-                    }
-                    pageModel.TotalCount = total;
-                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
-                    pageModel.Size = query.record;
-                    pageModel.Page = query.page;
-                    // Phân trang
-                    dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
-                    var data = from r in dt.AsEnumerable()
-                               group r by new { a = r["object_type"], b = r["object_id"], c = r["title"], d = r["project_team"], e = r["id_project_team"] } into g
-                               select new
-                               {
-                                   object_type = g.Key.a,
-                                   object_id = g.Key.b,
-                                   title = g.Key.c,
-                                   project_team = g.Key.d,
-                                   id_project_team = g.Key.e,
-                                   Activities = from u in g
-                                                select new
-                                                {
-                                                    id_row = u["id_row"],
-                                                    action = u["action"],
-                                                    action_en = u["action_en"],
-                                                    view_detail = u["view_detail"],
-                                                    log_content = u["log_content"],
-                                                    icon = u["icon"],
-                                                    oldvalue = u["oldvalue"],
-                                                    newvalue = u["newvalue"],
-                                                    CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["CreatedDate"]),
-                                                    NguoiTao = new
-                                                    {
-                                                        id_nv = u["id_nv"],
-                                                        hoten = u["hoten"],
-                                                        username = u["username"],
-                                                        tenchucdanh = u["tenchucdanh"],
-                                                        mobile = u["mobile"],
-                                                        image = u["image"],
-                                                        //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, u["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
-                                                    }
-                                                }
-                               };
-                    var res = from t in dt_team.AsEnumerable()
-                              select new
-                              {
-                                  id_row = t["id_row"],
-                                  title = t["title"],
-                                  task = from r in dt.AsEnumerable()
-                                         group r by new { a = r["object_type"], b = r["object_id"], c = r["title"], d = r["project_team"], e = r["id_project_team"] } into g
-                                         where t["id_row"].ToString()==g.Key.e.ToString()
-                                         select new
-                                         {
-                                             object_type = g.Key.a,
-                                             object_id = g.Key.b,
-                                             title = g.Key.c,
-                                             project_team = g.Key.d,
-                                             id_project_team = g.Key.e,
-                                             Activities = from u in g
-                                                          select new
-                                                          {
-                                                              id_row = u["id_row"],
-                                                              action = u["action"],
-                                                              action_en = u["action_en"],
-                                                              view_detail = u["view_detail"],
-                                                              log_content = u["log_content"],
-                                                              icon = u["icon"],
-                                                              oldvalue = u["oldvalue"],
-                                                              newvalue = u["newvalue"],
-                                                              CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["CreatedDate"]),
-                                                              NguoiTao = new
-                                                              {
-                                                                  id_nv = u["id_nv"],
-                                                                  hoten = u["hoten"],
-                                                                  username = u["username"],
-                                                                  tenchucdanh = u["tenchucdanh"],
-                                                                  mobile = u["mobile"],
-                                                                  image = u["image"],
-                                                                  //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, u["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
-                                                              }
-                                                          }
-                                            }
-                                    };
-                    res = res.Where(x => x.task.Count() > 0);
-                    return JsonResultCommon.ThanhCong(res, pageModel, Visible);
-                }
-                #endregion
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
-            }
-        }
-
         /// <summary>
         /// get sql từ key
         /// </summary>
@@ -1776,441 +1540,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString,notifier, dtOld);
+                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, notifier, dtOld);
             }
-        }
-        /// <summary>
-        /// Lấy danh sách cột hiển thị ứng với từng project
-        /// </summary>
-        /// <param name="id_project_team"></param>
-        /// <returns></returns>
-        //public static DataTable GetListField(long id_project_team)
-        //{
-        //    using (DpsConnection cnn = new DpsConnection(JeeWorkConstant.getConfig("JeeWorkConfig:ConnectionString")))
-        //    {
-        //        SqlConditions cond = new SqlConditions();
-        //        cond.Add("1", 1);
-        //        //cond.Add("id_project_team", id_project_team);
-        //        //string select = "select id_project_team, fieldname, disabled, objectid, position " +
-        //        //    "from we_fields_project_team where (where) order by position";
-        //        string select = "";
-        //        select = "select id_project_team, fieldname, disabled, objectid, position " +
-        //            "from we_fields_project_team where (where) order by position";
-        //        //select = " select we_fields.*, id_project_team " +
-        //        //    "from we_fields left join we_fields_project_team " +
-        //        //    "on we_fields.FieldName = we_fields_project_team.fieldname and Disabled = 0 " +
-        //        //    "where (where) and (id_project_team is null or id_project_team = " + id_project_team + ") order by position ";
-        //        DataTable dt_field = cnn.CreateDataTable(select,"(where)", cond);
-        //        DataTable dt = new DataTable();
-        //        if (dt_field.Rows.Count <= 0)
-        //        {
-        //            cond = new SqlConditions();
-        //            cond.Add("IsVisible", 0);
-        //            cond.Add("isbatbuoc", 1);
-        //            select = " select we_fields.*, " + id_project_team + " as id_project_team, type " +
-        //                    "from we_fields " +
-        //                    "where (where) order by position ";
-        //        }
-        //        if (id_project_team == 0)
-        //        {
-        //            dt = cnn.CreateDataTable("select fieldname, title, isvisible, note, type, position, isbatbuoc, isnewfield, IsDefault, 0 as id_project_team " +
-        //                "from we_fields where IsDefault = 1");
-        //        }
-        //        //select = " select we_fields.*, id_project_team " +
-        //        //    "from we_fields left join we_fields_project_team " +
-        //        //    "on we_fields.FieldName = we_fields_project_team.fieldname " +
-        //        //    "where (where) and (id_project_team is null or id_project_team = "+id_project_team +") order by position ";
-        //        dt = cnn.CreateDataTable(select, "(where)", cond);
-        //        DataTable dt_field_project = cnn.CreateDataTable("select id_project_team, fieldname, ObjectID, position " +
-        //            "from we_fields_project_team " +
-        //            "where id_project_team = " + id_project_team);
-        //        if (dt_field_project.Rows.Count > 0)
-        //        {
-        //            foreach (DataRow row in dt.Rows)
-        //            {
-        //                DataRow[] dr = dt_field_project.Select("fieldname='" + row["fieldname"] + "'");
-        //                if (dr.Length > 0)
-        //                {
-        //                    row["id_project_team"] = dr[0]["id_project_team"];
-        //                }
-        //            }
-        //        }
-
-        //        //if (dt.Rows.Count == 0) // Trường hợp chưa chọn cột thì load mặc định cho người dùng
-        //        //{
-        //        //    cond = new SqlConditions();
-        //        //    cond.Add("isbatbuoc", 1);
-        //        //    cond.Add("IsNewField", 0);
-        //        //    select = "select fieldname, title, isvisible, type, position, isbatbuoc, isnewfield " +
-        //        //        "from we_fields where (where) order by position";
-        //        //    dt = cnn.CreateDataTable(select, "(where)", cond);
-        //        //}
-        //        cnn.Disconnect();
-        //        return dt;
-        //    }
-        //}
-        /// <summary>
-        /// Lấy danh sách cột hiển thị ứng với từng project
-        /// </summary>
-        /// <param name="id_project_team"></param>
-        /// <returns></returns>
-        public static DataTable GetListField(long id_project_team, string ConnectionString)
-        {
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
-            {
-                SqlConditions cond = new SqlConditions();
-                cond.Add("1", 1);
-                string select = "";
-                select = "select id_row, id_project_team, fieldname, disabled, objectid, position, Options " +
-                    "from we_fields_project_team where (where) order by IsNewField, position";
-                DataTable dt_field = cnn.CreateDataTable(select, "(where)", cond);
-                DataTable dt = new DataTable();
-                if (dt_field.Rows.Count <= 0 || id_project_team == 0) // Dự án chưa chọn field
-                {
-                    cond = new SqlConditions();
-                    cond.Add("IsVisible", 0);
-                    cond.Add("IsDefault", 1);
-                    select = " select we_fields.*, " + id_project_team + " as id_project_team, type, '' as Title_NewField, ''as id_row, 0 as IsHidden " +
-                            "from we_fields " +
-                            "where (where) order by isNewField, position";
-                    dt = cnn.CreateDataTable(select, "(where)", cond);
-                }
-                else
-                {
-                    cond = new SqlConditions();
-                    cond.Add("Disabled", 0);
-                    select = $@"select we_fields_project_team.id_row, we_fields.fieldname, we_fields.title, IsHidden
-                                            ,we_fields_project_team.Title as Title_NewField, we_fields.isnewfield
-                                            ,type, TypeID, id_project_team, IsDefault, we_fields_project_team.position
-                                             from we_fields left join we_fields_project_team
-                                             on we_fields.FieldName = we_fields_project_team.fieldname 
-                                            and id_project_team = " + id_project_team + " " +
-                                            "where (where) and id_project_team = " + id_project_team + " or id_project_team is null " +
-                                            "order by we_fields.isNewField, we_fields_project_team.position";
-                    dt = cnn.CreateDataTable(select, "(where)", cond);
-                }
-                cnn.Disconnect();
-                return dt;
-            }
-        }
-        public static bool CheckRole(long role, string user, long id_project, string ConnectionString)
-        {
-            BaseModel<object> model = new BaseModel<object>();
-            PageModel pageModel = new PageModel();
-            ErrorModel error = new ErrorModel();
-            DataTable dt_role = new DataTable();
-            DataTable dt_checkuser = new DataTable();
-            string sqlq = "";
-            SqlConditions cond = new SqlConditions();
-            try
-            {
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    cond.Add("id_project_team", id_project);
-                    cond.Add("id_user", user);
-                    cond.Add("admin", 1);
-                    cond.Add("disabled", 0);
-                    string sql_user = "";
-                    #region Check user admin trong project trước
-                    sql_user = "select * from we_project_team_user where (where)";
-                    dt_checkuser = cnn.CreateDataTable(sql_user, "(where)", cond);
-                    if (dt_checkuser.Rows.Count > 0) // thuộc project, có trong dự án và là admin
-                        return true; // Đối với admin mặc định là có quyền
-                    #endregion
-                    #region Check user thành viên trong project
-                    else
-                    {
-                        cond.Remove(cond["admin"]);
-                        dt_checkuser = cnn.CreateDataTable(sql_user, "(where)", cond);
-                        if (dt_checkuser.Rows.Count > 0) // có user trong dự án và là thành viên
-                        {
-                            #region Check các quyền của project
-                            cond.Remove(cond["id_user"]);
-                            cond.Remove(cond["disabled"]);
-                            cond.Add("id_role", role);
-                            cond.Add("member", 1);
-                            sqlq = "select id_row, id_project_team, id_role, admin, member, customer from we_project_role where (where)";
-                            dt_role = cnn.CreateDataTable(sqlq, "(where)", cond);
-                            if (dt_role.Rows.Count > 0)
-                                return true;
-                            else
-                                return false;
-                            #endregion
-                        }
-                        #endregion
-                        else // User không có trong dự án đó
-                            return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-        public static bool CheckNotify_ByConditions(long id_project, string key, bool IsProject, string ConnectionString)
-        {
-            DataTable dt_Key = new DataTable();
-            string sqlq = "";
-            SqlConditions cond = new SqlConditions();
-            try
-            {
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    cond.Add("id_project_team", id_project);
-                    cond.Add("disabled", 0);
-                    //Kiểm tra trạng thái dừng nhắc nhở trước
-                    sqlq = "select stop_reminder from we_project_team where (where)";
-                    dt_Key = cnn.CreateDataTable(sqlq, "(where)", cond);
-                    if (dt_Key.Rows.Count > 0)
-                    {
-                        if ((bool)dt_Key.Rows[0][0])
-                            return true;
-                        else // Nếu không dừng nhắc nhở => Kiểm tra những điều kiện nào được nhắc.
-                        {
-                            sqlq = "select " + key.ToLower() + " as Key_Email from we_project_team where (where)";
-                            dt_Key = cnn.CreateDataTable(sqlq, "(where)", cond);
-                            if (dt_Key.Rows.Count > 0)
-                            {
-                                if ((bool)dt_Key.Rows[0][0])
-                                    return true;
-                            }
-                            return false;
-                        }
-                    }
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-        public static DataTable StatusDynamic(long id_project, List<AccUsernameModel> DataAccount, string ConnectionString)
-        {
-            DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
-            {
-                string query = "";
-                query = $@"select id_row, StatusName, description, id_project_team,IsToDo
-,Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, '' as hoten_Follower
-from we_status 
-where Disabled = 0";
-                if (id_project > 0)
-                    query += " and id_project_team =" + id_project + "";
-                query += " order by IsFinal,id_row";
-                dt = cnn.CreateDataTable(query);
-            }
-
-            #region Map info account từ JeeAccount
-
-            foreach (DataRow item in dt.Rows)
-            {
-                var info = DataAccount.Where(x => item["Follower"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
-                if (info != null)
-                {
-                    item["hoten_Follower"] = info.FullName;
-                }
-            }
-
-            #endregion
-            return dt;
-        }
-        public static bool Init_RoleDefault(long projectid, List<long> list_roles, string ConnectionString)
-        {
-            SqlConditions cond = new SqlConditions();
-            DataTable dt = new DataTable();
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
-            {
-                string role = "";
-                for (int i = 0; i < list_roles.Count; i++)
-                {
-                    Hashtable has = new Hashtable();
-                    has.Add("id_project_team", projectid);
-                    has.Add("id_role", list_roles[i].ToString());
-                    has.Add("admin", 0);
-                    has.Add("member", 1);
-                    has.Add("customer", 0);
-                    DataTable dt_role = new DataTable();
-                    role = "select * " +
-                        "from we_project_role where id_project_team = " + projectid + " " +
-                        "and member = 1 and id_role = " + list_roles[i].ToString() + "";
-                    dt_role = cnn.CreateDataTable(role);
-                    if (dt_role.Rows.Count <= 0)
-                    {
-                        cnn.BeginTransaction();
-                        if (cnn.Insert(has, "we_project_role") != 1)
-                        {
-                            cnn.RollbackTransaction();
-                            return false;
-                        }
-                    }
-                    cnn.EndTransaction();
-                    return true;
-                }
-                return true;
-            }
-        }
-        /// <summary>
-        /// Khởi tạo View cho project
-        /// </summary>
-        /// <param name="id_project"></param>
-        /// <param name="conn"></param>
-        /// <returns></returns>
-        public static bool Init_DefaultView_Project(long id_project, DpsConnection conn)
-        {
-            SqlConditions cond = new SqlConditions();
-            DataTable dt = new DataTable();
-
-            string sqlq = ""; string sql_cmd = "";
-            SqlConditions conds = new SqlConditions();
-            Hashtable has = new Hashtable();
-            conds.Add("disabled", 0);
-            conds.Add("id_project_team", id_project);
-            sqlq = "select id_row, id_project_team, viewid, view_name_new, default_everyone, default_for_me, " +
-                "pin_view, personal_view, favourite, disabled, updateddate, updatedby, id_department " +
-                "from we_projects_view where (where)";
-            dt = conn.CreateDataTable(sqlq, "(where)", conds);
-            if (dt.Rows.Count <= 0)
-            {
-                sql_cmd = "select id_department " +
-                            "from we_project_team " +
-                            "where disabled = 0 and id_row = " + id_project + "";
-                long department = long.Parse(conn.ExecuteScalar(sql_cmd).ToString());
-
-                if (department > 0)
-                {
-                    sqlq = "select id_department, view_de.is_default, viewid, view_name, _view.is_default as view_default " +
-                        "from we_department_view view_de " +
-                        "join we_default_views _view on _view.id_row = view_de.viewid " +
-                        "where id_department = " + department + " and view_de.disabled = 0 ";
-                    dt = conn.CreateDataTable(sqlq);
-                    if (dt.Rows.Count > 0) // nếu department đã có default_views
-                    {
-                        foreach (DataRow item in dt.Rows)
-                        {
-                            has = new Hashtable();
-                            has.Add("id_project_team", id_project);
-                            has.Add("viewid", item["viewid"].ToString());
-                            has.Add("view_name_new", item["view_name"].ToString());
-                            has.Add("id_department", department);
-                            has.Add("default_view", item["is_default"].ToString());
-                            has.Add("createddate", DateTime.Now);
-                            has.Add("createdby", 0);
-                            conn.BeginTransaction();
-                            if (conn.Insert(has, "we_projects_view") != 1)
-                            {
-                                conn.RollbackTransaction();
-                                return false;
-                            }
-                        }
-                    }
-                    else // Nếu project không tham chiếu từ phòng ban
-                    {
-                        sqlq = "select id_row, view_name, description, is_default, icon from we_default_views";
-                        dt = conn.CreateDataTable(sqlq);
-                        foreach (DataRow item in dt.Rows)
-                        {
-                            has = new Hashtable();
-                            has.Add("id_project_team", id_project);
-                            has.Add("viewid", item["id_row"].ToString());
-                            has.Add("view_name_new", item["view_name"].ToString());
-                            has.Add("default_view", item["is_default"].ToString());
-                            has.Add("id_department", 0);
-                            has.Add("createddate", DateTime.Now);
-                            has.Add("createdby", 0);
-                            conn.BeginTransaction();
-                            if (conn.Insert(has, "we_projects_view") != 1)
-                            {
-                                conn.RollbackTransaction();
-                                return false;
-                            }
-                        }
-                    }
-                    conn.EndTransaction();
-                }
-            }
-            return true;
-
-        }
-        /// <summary>
-        /// Khởi tạo cột mặc định cho project
-        /// </summary>
-        /// <param name="id_project"></param>
-        /// <param name="conn"></param>
-        /// <returns></returns>
-        public static bool Init_Column_Project(long id_project, DpsConnection conn)
-        {
-            SqlConditions cond = new SqlConditions();
-            DataTable dt = new DataTable();
-
-            string sqlq = "";
-            SqlConditions conds = new SqlConditions();
-            Hashtable has = new Hashtable();
-            conds.Add("disabled", 0);
-            conds.Add("id_project_team", id_project);
-            sqlq = "select * from we_fields_project_team where (where)";
-            dt = conn.CreateDataTable(sqlq, "(where)", conds);
-            if (dt.Rows.Count <= 0)
-            {
-                sqlq = "select fieldname, title, position, isNewField, fieldid from we_fields where IsDefault = 1";
-                dt = conn.CreateDataTable(sqlq);
-                if (dt.Rows.Count > 0)
-                {
-                    foreach (DataRow item in dt.Rows)
-                    {
-                        has = new Hashtable();
-                        has.Add("id_project_team", id_project);
-                        has.Add("fieldname", item["fieldname"].ToString());
-                        has.Add("Title", item["title"].ToString());
-                        has.Add("Disabled", 0);
-                        has.Add("position", item["position"].ToString());
-                        has.Add("createddate", DateTime.Now);
-                        has.Add("createdby", 0);
-                        has.Add("IsNewField", 0);
-                        has.Add("fieldid", item["id_field"].ToString());
-                        if (conn.Insert(has, "we_fields_project_team") != 1)
-                        {
-                            conn.RollbackTransaction();
-                            return false;
-                        }
-                    }
-                }
-                conn.EndTransaction();
-            }
-            return true;
-
-        }
-        /// <summary>
-        /// Lấy danh sách view theo project
-        /// </summary>
-        /// <param name="id_project_team"></param>
-        /// <param name="isnewfield"></param>
-        /// <returns></returns>
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="TableName">Bảng lấy dữ liệu</param>
-        /// <param name="objectID">khóa chính của bảng lấy dữ liệu</param>
-        /// <param name="ColumnName">Tên cột khóa chính</param>
-        /// <param name="ColumnDateTime">Cột cần xét (Datetime)</param>
-        /// <param name="Deleted">Bảng đó có cột Xóa thì Deleted = true</param>
-        /// <param name="cnn">Chuỗi kết nối</param>
-        /// <returns></returns>
-        public static DateTime Check_ConditionDate(string TableName, string ColumnDateTime, long id, out string ngaykiemtra, DpsConnection cnn)
-        {
-            DateTime date = new DateTime();
-            ngaykiemtra = date.ToString();
-            string where = " where ";
-            string sqlq = "";
-            sqlq = "select " + ColumnDateTime + " from " + TableName + "";
-            where += "id_row = " + id + " and Disabled = 0";
-            var Value = cnn.ExecuteScalar(sqlq + where);
-            if (Value != null)
-                date = (DateTime)Value;
-            ngaykiemtra = date.ToString();
-            return date;
         }
         public static DataSet GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string listDept, string dieukien_where = "")
         {

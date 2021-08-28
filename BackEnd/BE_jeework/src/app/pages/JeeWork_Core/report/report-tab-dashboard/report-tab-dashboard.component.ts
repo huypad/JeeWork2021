@@ -83,14 +83,12 @@ export class ReportTabDashboardComponent implements OnInit {
 
   DanhSachPhongBan: any = [];
   todoItemSelectionToggle(id) {
-    console.log(id);
     // var index = this.DanhSachPhongBan.findIndex(x=> x==id);
     // if(index >= 0){
     //   this.DanhSachPhongBan.splice(index,1);
     // }else{
     //   this.DanhSachPhongBan.push(id);
     // }
-    // console.log(this.DanhSachPhongBan);
     // this.LoadData();
     id.data_folder(element => element.checked = true);
   }
@@ -249,7 +247,6 @@ export class ReportTabDashboardComponent implements OnInit {
     this.weworkService.lite_tree_department(this.ID_department).subscribe(res => {
       if (res && res.status === 1) {
         this.datatree.next(res.data);
-        console.log(res.data, '(1)')
         if (this.ID_department > 0) {
           this.Selected = res.data[0];
           this.LoadData();
@@ -264,7 +261,6 @@ export class ReportTabDashboardComponent implements OnInit {
   }
   Selected: any = null;
   selected_Dept(item) {
-    console.log(item);
     this.Selected = item;
     this.LoadData();
   }

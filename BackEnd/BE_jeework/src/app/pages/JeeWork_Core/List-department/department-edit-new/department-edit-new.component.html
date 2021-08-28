@@ -15,228 +15,7 @@
 
 
             <ng-container *ngSwitchCase="3">
-                <div class="cu-view-space" style="padding-bottom: 80px;">
-                    <div class="close-dialog d-flex">
-                        <div>
-                            <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
-                        </div>
-                        <div class="text-center" style="flex-grow: 1;">
-                            <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chontrangthai'|translate}}
-                            </h1>
-                        </div>
-                        <div>
-                            <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
-                        </div>
-                    </div>
-
-                    <div class="view-template overflow-auto" style="padding-bottom: 0;">
-                        <div class="row w-100">
-                            <div class="col-md-6">
-                                <div class="header-view-title" style="color: black;">
-                                    {{ 'department.maudangchon'|translate}}
-                                </div>
-                                <ng-container *ngFor="let demo of litsTemplateDemo">
-                                    <div class="template-selected" *ngIf="demo.id_row == TempSelected">
-                                        {{demo.title}}
-                                    </div>
-                                </ng-container>
-                                <div class="header-view" style="margin-top: 5px;">
-                                    <div class="header-view-title">
-                                        {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
-                                    </div>
-                                    <i class="fas fa-plus url text-success " (click)="addTemplate()"
-                                        style="font-size: 20px;" matTooltipPosition="above" matTooltip="{{ 'department.themmaumoi'|translate}}"></i>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 item-template"
-                                        [ngStyle]="{'color': TempSelected==demo.id_row?'green':''}"
-                                        *ngFor="let demo of litsTemplateDemo">
-                                        <div class="title-template url">
-                                            <span (click)="ChangeTemplate(demo.id_row)"
-                                                *ngIf="updateTemp!=demo.id_row;else update">{{demo.title}}</span>
-                                            <ng-template #update>
-                                                <app-focus-block type="text" isbd="true" style="width:100%"
-                                                    value="{{demo.title}}" (out)="focusOutTemp($event,demo,true);">
-                                                </app-focus-block>
-                                            </ng-template>
-                                        </div>
-                                        <div class="edit-template ">
-                                            <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
-                                                matTooltip="Chỉnh sửa">edit</mat-icon>
-                                            <mat-icon class="-hover url" (click)="Delete_Templete(demo.id_row,false)"
-                                                matTooltip="Xóa">close</mat-icon>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="add-new-template w-100">
-                                        <button class="btn text-success" (click)="addTemplate()" *ngIf="!isAddTemplate">
-                                            <i class="fas fa-plus"></i> &nbsp;
-                                            <span>{{ 'department.themmau'|translate}}</span>
-                                        </button>
-                                        <div *ngIf="isAddTemplate">
-                                            <app-focus-block type="text" isbd="true" style="width:100%"
-                                                (out)="focusOutTemp($event,{});">
-                                            </app-focus-block>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="header-view row">
-                                    <div class="header-view-title">
-                                        {{ 'department.trangthaihoatdong'|translate}}
-                                    </div>
-                                    <ng-container *ngFor="let stt of listSTT">
-                                        <div class="status-input col-12 form-control"
-                                            *ngIf="!stt.IsFinal && !stt.IsDeadline">
-                                            <mat-menu #color="matMenu" yPosition="above" xPosition="after">
-                                                <div class="row" style="width:200px;">
-                                                    <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-                                                        (click)="ChangeColor(color,stt)"
-                                                        *ngFor="let color of defaultColors">
-                                                    </div>
-                                                </div>
-                                            </mat-menu>
-                                            <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
-                                                [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
-    
-                                            </div>
-                                            <div class="input">
-                                                <input type="text" #input (focus)="sttFocus(stt.id_row)"
-                                                    (keyup.enter)="sttFocusout(stt.StatusName,stt)"
-                                                    (focusout)="sttFocusout(stt.StatusName,stt)"
-                                                    [(ngModel)]="stt.StatusName" class="">
-                                            </div>
-                                            <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
-                                                <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
-                                                    *ngIf="idfocus!=stt.id_row"></i>
-                                            </div>
-                                            <mat-menu #menu1="matMenu">
-                                                <button mat-menu-item (click)="input.focus()">
-                                                    {{ 'department.doiten'|translate}}
-    
-                                                </button>
-                                                <button mat-menu-item (click)="changeColor.click();">
-                                                    {{ 'department.doimau'|translate}}
-    
-                                                </button>
-                                                <button mat-menu-item (click)="Delete_Templete(stt.id_row,true)"
-                                                    *ngIf="!stt.IsTodo">
-                                                    {{ 'GeneralKey.xoa'|translate}}
-                                                </button>
-                                            </mat-menu>
-                                        </div>
-                                    </ng-container>
-    
-                                    <div class="status-input col-12 form-control" *ngIf="isAddStatus">
-                                        <div class="input">
-                                            <app-focus-block type="text" placeholder="Thêm trạng thái mới" isbd="true"
-                                                style="width:100%" (out)="focusOutSTT($event);">
-                                            </app-focus-block>
-                                        </div>
-                                    </div>
-    
-                                    <button class="btn btn-success" style="padding: 5px 10px;" (click)="isAddStatus=true"
-                                        *ngIf="!isAddStatus">
-                                        <i class="fas fa-plus"></i> &nbsp;
-                                        {{ 'department.themtrangthai'|translate}}
-                                    </button>
-                                </div>
-    
-                                <div class="header-view row" style="margin-top: 15px!important;">
-                                    <div class="header-view-title">
-                                        {{ 'department.trangthaitre'|translate}}
-                                    </div>
-                                    <ng-container *ngFor="let stt of listSTT">
-                                        <div class="status-input col-12   form-control" *ngIf="stt.IsDeadline">
-                                            <mat-menu #color="matMenu" yPosition="above" xPosition="after">
-                                                <div class="row" style="width:200px;">
-                                                    <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-                                                        (click)="ChangeColor(color,stt)"
-                                                        *ngFor="let color of defaultColors">
-                                                    </div>
-                                                </div>
-                                            </mat-menu>
-                                            <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
-                                                [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color"  (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
-    
-                                            </div>
-                                            <div class="input">
-                                                <input type="text" #input (focus)="sttFocus(stt.id_row)"
-                                                    (keyup.enter)="sttFocusout(stt.StatusName,stt)"
-                                                    (focusout)="sttFocusout(stt.StatusName,stt)"
-                                                    [(ngModel)]="stt.StatusName" class="">
-                                            </div>
-                                            <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
-                                                <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
-                                                    *ngIf="idfocus!=stt.id_row"></i>
-                                            </div>
-                                            <mat-menu #menu1="matMenu">
-                                                <button mat-menu-item (click)="input.focus()">
-                                                    {{ 'department.doiten'|translate}}
-                                                </button>
-                                                <button mat-menu-item (click)="changeColor.click();">
-                                                    {{ 'department.doimau'|translate}}
-                                                </button>
-    
-                                            </mat-menu>
-                                        </div>
-                                    </ng-container>
-                                </div>
-    
-                                <div class="header-view row" style="margin-top: 15px!important;">
-                                    <div class="header-view-title">
-                                        {{ 'department.trangthaidone'|translate}}
-                                    </div>
-                                    <ng-container *ngFor="let stt of listSTT">
-                                        <div class="status-input col-12 form-control" *ngIf="stt.IsFinal">
-                                            <mat-menu #color="matMenu" yPosition="above" xPosition="after">
-                                                <div class="row" style="width:200px;">
-                                                    <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-                                                        (click)="ChangeColor(color,stt)"
-                                                        *ngFor="let color of defaultColors">
-                                                    </div>
-                                                </div>
-                                            </mat-menu>
-                                            <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
-                                                [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
-    
-                                            </div>
-                                            <div class="input">
-                                                <input type="text" #input (focus)="sttFocus(stt.id_row)"
-                                                    (keyup.enter)="sttFocusout(stt.StatusName,stt)"
-                                                    (focusout)="sttFocusout(stt.StatusName,stt)"
-                                                    [(ngModel)]="stt.StatusName" class="">
-                                            </div>
-                                            <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
-                                                <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
-                                                    *ngIf="idfocus!=stt.id_row"></i>
-                                            </div>
-                                            <mat-menu #menu1="matMenu">
-                                                <button mat-menu-item (click)="input.focus()">
-                                                    {{ 'department.doiten'|translate}}
-                                                </button>
-                                                <button mat-menu-item (click)="changeColor.click();">
-                                                    {{ 'department.doimau'|translate}}
-                                                </button>
-                                            </mat-menu>
-                                        </div>
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-success btn-next" type="button" (click)="Next()">
-                        {{ (isComplete?'department.trolaituychinh':'department.tieptheo')|translate}}
-                    </button>
-                </div>
+                <ng-container *ngTemplateOutlet="chonstatus"></ng-container>
             </ng-container>
             
 
@@ -454,8 +233,8 @@
             </ng-template>
         </h1>
         <div class="row">
-            <div class="themoi text-success">Thêm mới</div>
-            <div (click)="AddTemplate()" class="btn-template text-hover-success" translate="GeneralKey.templatecenter"></div>
+            <div class="themoi text-success">{{ item.id_row > 0 ? 'Chỉnh sửa' : 'Thêm mới'}}</div>
+            <div (click)="AddTemplate()" *ngIf="!(item.id_row > 0 )" class="btn-template text-hover-success" translate="GeneralKey.templatecenter"></div>
         </div>
         
         <form class="kt-form" [formGroup]="itemFormGroup">
@@ -606,6 +385,269 @@
 
         <button class="btn btn-success btn-next" type="button" (click)="Next()">
             {{ (isComplete? 'department.trolaituychinh':'department.tieptheo') |translate}}
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #chonstatus>
+    <div class="cu-view-space" style="padding-bottom: 80px;">
+        <div class="close-dialog d-flex">
+            <div>
+                <mat-icon class="scale-2 url" (click)="Pre()">chevron_left</mat-icon>
+            </div>
+            <div class="text-center" style="flex-grow: 1;">
+                <h1 style="margin-top: -15px; font-size: 40px;">{{ 'department.chontrangthai'|translate}}
+                </h1>
+            </div>
+            <div>
+                <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
+            </div>
+        </div>
+
+        <div class="view-template overflow-auto" style="padding-bottom: 0;">
+            <div class="row w-100">
+                <div class="col-md-6">
+
+                    <div class="item-template mb-1 url" (click)="UseParentTemplate = true;LoadParentStatus()" *ngIf="this.item.ParentID>0"
+                        [ngClass]="{'template-selected': UseParentTemplate}">
+                        {{ 'department.trangthaicuaphongban'|translate}}
+                    </div>
+                    <div class="item-template mb-1 url" (click)="UseParentTemplate = false;LoadListSTT()"
+                        [ngClass]="{'template-selected': !UseParentTemplate}">
+                        <ng-container *ngFor="let demo of litsTemplateDemo">
+                            <div *ngIf="demo.id_row == TempSelected">
+                                {{demo.title}}
+                            </div>
+                        </ng-container>
+                    </div> 
+                    <!-- <div class="header-view-title" style="color: black;">
+                        {{ 'department.maudangchon'|translate}}
+                    </div> -->
+                    <ng-container *ngIf="!UseParentTemplate">
+                        <!-- <ng-container *ngFor="let demo of litsTemplateDemo">
+                            <div class="template-selected" *ngIf="demo.id_row == TempSelected">
+                                {{demo.title}}
+                            </div>
+                        </ng-container> -->
+                        <div class="header-view" style="margin-top: 5px;">
+                            <div class="header-view-title">
+                                {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
+                            </div>
+                            <i class="fas fa-plus url text-success " (click)="addTemplate()"
+                                style="font-size: 20px;" matTooltipPosition="above" matTooltip="{{ 'department.themmaumoi'|translate}}"></i>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 item-template"
+                                [ngStyle]="{'color': TempSelected==demo.id_row?'green':''}"
+                                *ngFor="let demo of litsTemplateDemo">
+                                <div class="title-template url">
+                                    <span (click)="ChangeTemplate(demo.id_row)"
+                                        *ngIf="updateTemp!=demo.id_row;else update">{{demo.title}}</span>
+                                    <ng-template #update>
+                                        <app-focus-block type="text" isbd="true" style="width:100%"
+                                            value="{{demo.title}}" (out)="focusOutTemp($event,demo,true);">
+                                        </app-focus-block>
+                                    </ng-template>
+                                </div>
+                                <div class="edit-template ">
+                                    <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
+                                        matTooltip="Chỉnh sửa">edit</mat-icon>
+                                    <mat-icon class="-hover url" (click)="Delete_Templete(demo.id_row,false)"
+                                        matTooltip="Xóa">close</mat-icon>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="add-new-template w-100">
+                                <button class="btn text-success" (click)="addTemplate()" *ngIf="!isAddTemplate">
+                                    <i class="fas fa-plus"></i> &nbsp;
+                                    <span>{{ 'department.themmau'|translate}}</span>
+                                </button>
+                                <div *ngIf="isAddTemplate">
+                                    <app-focus-block type="text" isbd="true" style="width:100%"
+                                        (out)="focusOutTemp($event,{});">
+                                    </app-focus-block>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                     
+                </div>
+                <div class="col-md-6">
+                    <ng-container *ngIf="UseParentTemplate;else templateCustom">
+                        <div class="header-view row"> 
+                            <ng-container *ngFor="let stt of listSTT">
+                                <div class="status-input col-12 form-control" > 
+                                     <div class="box-color" [ngStyle]="{'backgroundColor': stt.color }">
+                                    </div>
+                                    <div class="input">
+                                        <input type="text" disabled [(ngModel)]="stt.StatusName" class="">
+                                    </div>
+                                    <div class="action-input">
+                                        <i class="fas fa-ellipsis-h url" ></i>
+                                    </div> 
+                                </div>
+                            </ng-container> 
+                        </div>
+                    </ng-container>
+                    <ng-template #templateCustom>
+                    
+                        <div class="header-view row">
+                            <div class="header-view-title">
+                                {{ 'department.trangthaihoatdong'|translate}}
+                            </div>
+                            <ng-container *ngFor="let stt of listSTT">
+                                <div class="status-input col-12 form-control"
+                                    *ngIf="!stt.IsFinal && !stt.IsDeadline">
+                                    <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                        <div class="row" style="width:200px;">
+                                            <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                (click)="ChangeColor(color,stt)"
+                                                *ngFor="let color of defaultColors">
+                                            </div>
+                                        </div>
+                                    </mat-menu>
+                                    <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                        [matMenuTriggerFor]="color"></button>
+                                    <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
+    
+                                    </div>
+                                    <div class="input">
+                                        <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                            (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                            (focusout)="sttFocusout(stt.StatusName,stt)"
+                                            [(ngModel)]="stt.StatusName" class="">
+                                    </div>
+                                    <div class="action-input">
+                                        <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                        <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                            *ngIf="idfocus!=stt.id_row"></i>
+                                    </div>
+                                    <mat-menu #menu1="matMenu">
+                                        <button mat-menu-item (click)="input.focus()">
+                                            {{ 'department.doiten'|translate}}
+    
+                                        </button>
+                                        <button mat-menu-item (click)="changeColor.click();">
+                                            {{ 'department.doimau'|translate}}
+    
+                                        </button>
+                                        <button mat-menu-item (click)="Delete_Templete(stt.id_row,true)"
+                                            *ngIf="!stt.IsTodo">
+                                            {{ 'GeneralKey.xoa'|translate}}
+                                        </button>
+                                    </mat-menu>
+                                </div>
+                            </ng-container>
+    
+                            <div class="status-input col-12 form-control" *ngIf="isAddStatus">
+                                <div class="input">
+                                    <app-focus-block type="text" placeholder="Thêm trạng thái mới" isbd="true"
+                                        style="width:100%" (out)="focusOutSTT($event);">
+                                    </app-focus-block>
+                                </div>
+                            </div>
+    
+                            <button class="btn btn-success" style="padding: 5px 10px;" (click)="isAddStatus=true"
+                                *ngIf="!isAddStatus">
+                                <i class="fas fa-plus"></i> &nbsp;
+                                {{ 'department.themtrangthai'|translate}}
+                            </button>
+                        </div>
+    
+                        <div class="header-view row" style="margin-top: 15px!important;">
+                            <div class="header-view-title">
+                                {{ 'department.trangthaitre'|translate}}
+                            </div>
+                            <ng-container *ngFor="let stt of listSTT">
+                                <div class="status-input col-12   form-control" *ngIf="stt.IsDeadline">
+                                    <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                        <div class="row" style="width:200px;">
+                                            <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                (click)="ChangeColor(color,stt)"
+                                                *ngFor="let color of defaultColors">
+                                            </div>
+                                        </div>
+                                    </mat-menu>
+                                    <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                        [matMenuTriggerFor]="color"></button>
+                                    <div class="box-color"  (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
+    
+                                    </div>
+                                    <div class="input">
+                                        <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                            (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                            (focusout)="sttFocusout(stt.StatusName,stt)"
+                                            [(ngModel)]="stt.StatusName" class="">
+                                    </div>
+                                    <div class="action-input">
+                                        <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                        <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                            *ngIf="idfocus!=stt.id_row"></i>
+                                    </div>
+                                    <mat-menu #menu1="matMenu">
+                                        <button mat-menu-item (click)="input.focus()">
+                                            {{ 'department.doiten'|translate}}
+                                        </button>
+                                        <button mat-menu-item (click)="changeColor.click();">
+                                            {{ 'department.doimau'|translate}}
+                                        </button>
+    
+                                    </mat-menu>
+                                </div>
+                            </ng-container>
+                        </div>
+    
+                        <div class="header-view row" style="margin-top: 15px!important;">
+                            <div class="header-view-title">
+                                {{ 'department.trangthaidone'|translate}}
+                            </div>
+                            <ng-container *ngFor="let stt of listSTT">
+                                <div class="status-input col-12 form-control" *ngIf="stt.IsFinal">
+                                    <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                        <div class="row" style="width:200px;">
+                                            <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                (click)="ChangeColor(color,stt)"
+                                                *ngFor="let color of defaultColors">
+                                            </div>
+                                        </div>
+                                    </mat-menu>
+                                    <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                        [matMenuTriggerFor]="color"></button>
+                                    <div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
+    
+                                    </div>
+                                    <div class="input">
+                                        <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                            (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                            (focusout)="sttFocusout(stt.StatusName,stt)"
+                                            [(ngModel)]="stt.StatusName" class="">
+                                    </div>
+                                    <div class="action-input">
+                                        <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                        <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                            *ngIf="idfocus!=stt.id_row"></i>
+                                    </div>
+                                    <mat-menu #menu1="matMenu">
+                                        <button mat-menu-item (click)="input.focus()">
+                                            {{ 'department.doiten'|translate}}
+                                        </button>
+                                        <button mat-menu-item (click)="changeColor.click();">
+                                            {{ 'department.doimau'|translate}}
+                                        </button>
+                                    </mat-menu>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                    </ng-template>
+                    
+
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-success btn-next" type="button" (click)="Next()">
+            {{ (isComplete?'department.trolaituychinh':'department.tieptheo')|translate}}
         </button>
     </div>
 </ng-template>

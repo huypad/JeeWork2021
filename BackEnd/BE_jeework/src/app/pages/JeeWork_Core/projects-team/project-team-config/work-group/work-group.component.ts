@@ -57,7 +57,6 @@ export class WorkGroupComponent implements OnInit {
     // const queryparam = new QueryParamsModelNew(this.filterConfiguration());
     // this.workService.ListWorkGroup(queryparam).subscribe(
     //   res => {
-    //     console.log(res);
     //   }
     // )
 
@@ -143,7 +142,6 @@ export class WorkGroupComponent implements OnInit {
   }
 
   UpdateItem(item) {
-    console.log(item);
     // return;
     // this.workService.UpdateWorkGroup
     this.chinhsuaNhomCV(item);

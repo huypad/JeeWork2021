@@ -198,7 +198,6 @@ addTagName(item: any) {
     
     loadTT() {
       this.conversation_sevices.getAllUsers().subscribe(res => {
-        //  console.log(res);
         this.itemuser = res.data;
        for(let i=0;i<this.user_tam.length;i++)
        {

@@ -571,12 +571,12 @@
                                                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                                                             <ng-container
                                                                 *ngIf="item.type == 'datetime';else nosetdatetime">
-                                                                <!-- <app-task-datetime 
+                                                                <app-task-datetime 
                                                                     (valueChange)="updateDate(node,$event,item.fieldname)"
                                                                     [fieldname]="item.fieldname" 
                                                                     [(value)]="node[item.fieldname]" 
-                                                                    [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime> -->
-                                                                <ng-container
+                                                                    [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime>
+                                                                <!-- <ng-container
                                                                     *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                                                     <div class="item-field">
                                                                         <span class="hide-more-text"
@@ -629,7 +629,7 @@
                                                                         class="date-picker position-picker"
                                                                         [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
                                                                     <owl-date-time #dt1></owl-date-time>
-                                                                </ng-template>
+                                                                </ng-template> -->
                                                             </ng-container>
                                                             <ng-template #nosetdatetime>
                                                                 <ng-container

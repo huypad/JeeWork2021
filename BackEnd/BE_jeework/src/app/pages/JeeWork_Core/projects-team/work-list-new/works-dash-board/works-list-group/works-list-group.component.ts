@@ -168,7 +168,6 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
         this.isAssignforme = true;
       }
     });
-    console.log('nhan data:',this.ID_Project)
     this.LoadData();
     this.GetField();
     this.mark_tag();
@@ -185,7 +184,6 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes : SimpleChanges) {
-    console.log(changes);
     this.LoadData();
   }
 
@@ -206,7 +204,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
           return true;
         } else {
           if (roleID == 3 || roleID == 4) {
-            if (x.isuyquyen) return true;
+             if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             roleID == 7 ||
@@ -243,7 +241,7 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
           return true;
         } else {
           if (key == "id_nv") {
-            if (x.isuyquyen) return true;
+             if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             key == "title" ||
@@ -309,8 +307,6 @@ export class WorksListGroupComponent implements OnInit, OnChanges {
       this.layoutUtilsService.OffWaitingDiv();
       this.loadding = false;
       if (res && res.status === 1) {
-        console.log('loaddata from list',res.data)
-
         this.data = res.data;
         this.listFilter = this.data.Filter;
         this.ListColumns = this.data.TenCot;

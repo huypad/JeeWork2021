@@ -352,7 +352,6 @@ export class GanttChart2Component implements OnInit {
 			vEditable: true,
 			vEventsChange: {
 				taskname: () => {
-					console.log("taskname");
 				}
 			}
 		};

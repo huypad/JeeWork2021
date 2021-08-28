@@ -234,7 +234,7 @@ export class WorkTaskListComponent implements OnInit, OnChanges {
           return true;
         } else {
           if (roleID == 3 || roleID == 4) {
-            if (x.isuyquyen) return true;
+             if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             roleID == 7 ||
@@ -271,7 +271,7 @@ export class WorkTaskListComponent implements OnInit, OnChanges {
           return true;
         } else {
           if (key == "id_nv") {
-            if (x.isuyquyen) return true;
+             if (x.isuyquyen && x.isuyquyen != "0") return true;
           }
           if (
             key == "title" ||
@@ -337,8 +337,6 @@ export class WorkTaskListComponent implements OnInit, OnChanges {
       this.layoutUtilsService.OffWaitingDiv();
       this.loadding = false;
       if (res && res.status === 1) {
-        console.log('loaddata from list',res.data)
-
         this.data = res.data;
         this.listFilter = this.data.Filter;
         this.ListColumns = this.data.TenCot;
@@ -370,7 +368,6 @@ export class WorkTaskListComponent implements OnInit, OnChanges {
         this.ListTags = this.data.Tag;
         this.ListUsers = this.data.User;
         this.DataNewField = this.data.DataWork_NewField;
-        debugger
         this.LoadListStatus();
         this.changeDetectorRefs.detectChanges();
       }

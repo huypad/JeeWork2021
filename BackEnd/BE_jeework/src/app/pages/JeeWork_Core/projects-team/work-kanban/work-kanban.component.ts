@@ -558,7 +558,7 @@ export class WorkKanBanComponent implements OnInit {
     if (this.IsAdminGroup) return true;
     var x = this.list_role.find((x) => x.id_row == this.ID_Project);
     if (x) {
-      if (x.admin == true) {
+      if (x.admin == true || x.admin ==1 || +x.owner ==1 || +x.parentowner ==1 ) {
         return true;
       } else {
         if (
@@ -592,7 +592,7 @@ export class WorkKanBanComponent implements OnInit {
     if (this.list_role) {
       var x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {
-        if (x.admin == true) {
+        if (x.admin == true || x.admin ==1 || +x.owner ==1 || +x.parentowner ==1 ) {
           return true;
         } else {
           if (

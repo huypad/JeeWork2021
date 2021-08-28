@@ -31,11 +31,9 @@ export class UserOffcanvasComponent implements OnInit {
       'extras.user.offcanvas.direction'
     )}`;
     // this.user$ = this.auth.currentUserSubject.asObservable();
-    // console.log(this.user$,'user')
     this.LoadData();
     
     this.weWorkService.Get_DSNhacNho().subscribe(res => {
-      console.log('nhac nho',res);
       if (res && res.status == 1) {
         this.listNhacNho = res.data
         this.changeDetectorRefs.detectChanges();

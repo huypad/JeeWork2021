@@ -30,7 +30,6 @@ export class StatusDynamicDialogComponent implements OnInit {
 
   ngOnInit() {
     this.color_status = this.data.color ? this.data.color : "#aaa";
-    console.log(this.data);
     this.LoadListAccount();
     if (this.data.Follower) {
       this.data.Follower = this.data.Follower.toString();

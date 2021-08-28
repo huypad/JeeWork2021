@@ -224,8 +224,8 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
   
 	this._ngZone.run(() => {  
    
-	const sb=this.presence.onlineUsers$.subscribe(res=>
-	  {
+	const sb=this.presence.onlineUsers$.subscribe(res =>
+	  { 
 	   for(let i=0;i<res.length;i++)
 	   {
 		if(res[i].JoinGroup==="changeActive" )
@@ -278,7 +278,6 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
 			this.presence.connectToken();
 		}catch(err)
 		{
-			console.log(err)
 		}
 	
 	  this.GetContact();
@@ -319,7 +318,7 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
   
 	GetContact()
 	{
-	  this.listmember=[];
+	  this.listmember = [];
 		this.chatService.GetContactChatUser().subscribe(res=>{
 		  this.lstContact=res.data;
 		  this.filteredGroups.next(this.lstContact.slice());
@@ -337,9 +336,9 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
 		  this.chatBoxUsers = [];
 		}
 	
-	  if(user.UnreadMess>0)
+	  if(user.UnreadMess > 0)
 	  {
-		this.clearUnreadMessage(user.IdGroup,user.UserId);
+		this.clearUnreadMessage(user.IdGroup, user.UserId);
 	  }
 	  this.usernameActived = user.IdGroup;
 	
@@ -353,7 +352,7 @@ export class MessengerComponent implements OnInit,OnDestroy,OnChanges {
 			this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
 			this.chatBoxUsers.push(u);
 		  } else {
-			this.chatBoxUsers.push(new UserChatBox(user, 300));
+			this.chatBoxUsers.push(new UserChatBox(user, 300 + 325)); 
 		  }
 		  localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
 		  break;

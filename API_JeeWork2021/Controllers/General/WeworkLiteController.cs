@@ -3706,5 +3706,23 @@ and IdKH={loginData.CustomerID} )";
             }
             return listid;
         }
+        public static object Get_InfoUsers(string iduser, List<AccUsernameModel> DataAccount)
+        {
+            var info = DataAccount.Where(x => iduser.Contains(x.UserId.ToString())).FirstOrDefault();
+            if (info != null)
+            {
+                var data = new
+                {
+                    hoten = info.FullName,
+                    mobile = info.PhoneNumber,
+                    username = info.Username,
+                    image = info.AvartarImgURL,
+                    jobtitle = info.Jobtitle,
+                    department = info.Department,
+                };
+                return data;
+            }
+            return new { };
+        }
     }
 }

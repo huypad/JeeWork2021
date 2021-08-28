@@ -137,8 +137,6 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		this.changeDetectorRefs.detectChanges();
 	}
 	UpdateTag(color,_item, withBack: boolean=false) {
-		console.log(color);
-		console.log(_item);
 		let tagItem = new TagsModel();
 		tagItem.id_row = _item.id_row;
 		tagItem.color = color;

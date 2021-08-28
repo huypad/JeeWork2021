@@ -41,7 +41,6 @@ export class MenuConfigService {
 	}
 	async GetRole_WeWork(username) {
 		let res = await this.AllRoles_WeWork(username).then();
-		console.log("Roles new", res);
 		localStorage.setItem('WeWorkRoles', JSON.stringify(res));
 	}
 

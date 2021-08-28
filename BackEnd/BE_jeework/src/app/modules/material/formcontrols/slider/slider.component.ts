@@ -220,6 +220,5 @@ export class SliderComponent implements OnInit {
   }
 
   changeSlider() {
-    console.log('myValue', this.myValue);
   }
 }

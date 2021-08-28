@@ -1,4 +1,4 @@
-import { LayoutService } from './../../../_metronic/core/services/layout.service';
+import { LayoutService } from "./../../../_metronic/core/services/layout.service";
 import { AuthSSO } from "./../_models/authSSO.model";
 import { TokenStorage } from "./../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
 import { HttpUtilsService } from "./../../../_metronic/jeework_old/core/_base/crud/utils/http-utils.service";
@@ -148,10 +148,15 @@ import { AuthService } from "./auth.service";
 //   }
 // }
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router,
-        private TokenStorage: TokenStorage,
-        private layout: LayoutService,
-        private MenuConfigService: MenuConfigService,) {}
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private TokenStorage: TokenStorage,
+    private layout: LayoutService,
+    private MenuConfigService: MenuConfigService
+  ) {}
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -165,10 +170,7 @@ export class AuthGuard implements CanActivate {
           this.authService.getUserMeFromSSO().subscribe(
             (data: AuthSSO) => {
               if (data && data.access_token) {
-                this.authService.saveLocalStorageToken(
-                  this.authService.authLocalStorageToken,
-                  data
-                );
+                this.authService.saveLocalStorageToken( this.authService.authLocalStorageToken, data);
                 this.LoadStorage(data);
                 return resolve(true);
               }
@@ -182,11 +184,7 @@ export class AuthGuard implements CanActivate {
         } else {
           this.authService.getUserMeFromSSO().subscribe(
             (data) => {
-              if (data && data.access_token) {
-                this.authService.saveLocalStorageToken(
-                  this.authService.authLocalStorageToken,
-                  data
-                );
+              if (data && data.access_token) {this.authService.saveLocalStorageToken(this.authService.authLocalStorageToken, data);
                 this.LoadStorage(data);
                 return resolve(true);
               }
@@ -195,12 +193,9 @@ export class AuthGuard implements CanActivate {
               this.authService.refreshToken().subscribe(
                 (data: AuthSSO) => {
                   if (data && data.access_token) {
-                    this.authService.saveLocalStorageToken(
-                      this.authService.authLocalStorageToken,
-                      data
-                    );
-                this.LoadStorage(data);
-                return resolve(true);
+                    this.authService.saveLocalStorageToken( this.authService.authLocalStorageToken, data);
+                    this.LoadStorage(data);
+                    return resolve(true);
                   }
                 },
                 (error) => {
@@ -222,20 +217,17 @@ export class AuthGuard implements CanActivate {
                 this.authService.authLocalStorageToken,
                 data
               );
-                this.LoadStorage(data);
-                return resolve(true);
+              this.LoadStorage(data);
+              return resolve(true);
             }
           },
           (error) => {
             this.authService.refreshToken().subscribe(
               (data: AuthSSO) => {
                 if (data && data.access_token) {
-                  this.authService.saveLocalStorageToken(
-                    this.authService.authLocalStorageToken,
-                    data
-                  );
-                this.LoadStorage(data);
-                return resolve(true);
+                  this.authService.saveLocalStorageToken(this.authService.authLocalStorageToken, data);
+                  this.LoadStorage(data);
+                  return resolve(true);
                 }
               },
               (error) => {
@@ -250,21 +242,21 @@ export class AuthGuard implements CanActivate {
     });
   }
 
-  LoadStorage(data){
-    if(data.user.customData["jee-account"].userID){
+  LoadStorage(data) {
+    if (data.user.customData["jee-account"].userID) {
       this.TokenStorage.setIDUser(data.user.customData["jee-account"].userID);
     }
-    if(data.user.customData.personalInfo){
+    if (data.user.customData.personalInfo) {
       var i4 = data.user.customData.personalInfo;
       var info = {
         ChucVu: i4.Jobtitle,
         HoTen: i4.Fullname,
         Image: i4.Avatar,
-        Username: data.user.username
-      }
+        Username: data.user.username,
+      };
       this.TokenStorage.setUserData(info);
     }
-    if(data.user.username){
+    if (data.user.username) {
       this.TokenStorage.setUserCustomer(data.user.username);
       this.MenuConfigService.GetRole_WeWork(data.user.username);
     }

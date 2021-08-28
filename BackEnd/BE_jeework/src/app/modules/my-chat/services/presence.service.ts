@@ -70,7 +70,6 @@ try
        
          }catch(err)
          {
-          console.log(err)
          }
    
         
@@ -78,8 +77,6 @@ try
           
       this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
         this.onlineUsersSource.next([...usernames, username])
-        // console.log('UserIsOnline',this.onlineUsers$)
-     
       })
       // this.toastr.info(username.FullName+' has connect')
       // this.toastr.info(username.displayName+ ' has connect')
@@ -90,8 +87,6 @@ try
         
         this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username),User])
         // this.onlineUsersSource.next([...usernames, User])
-      
-        // console.log('UserIsOffline',this.onlineUsers$)
       })
     })
     this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
@@ -99,23 +94,19 @@ try
     })
 
     this.hubConnection.on('NewGroupChatReceived', data => {
-      // console.log('NewGroupChatReceived',data)
       this.NewGroupSource.next(data);
     })
     this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
-      // console.log('NewMessageReceived',IdGroup)
       this.OpenmessageUsernameSource.next(IdGroup)
     })
 
     
       }).catch(err => {
         //  document.write(err);
-        console.log("error",err);
       });
     }
     catch(err)
     {
-      console.log(err)
     }
 
 
@@ -132,10 +123,7 @@ disconnectToken(){
   var _token = '';
   var _userID = -1;
   const data=this.auth.getAuthFromLocalStorage();
-      console.log("data",data); 
-
          var _token =`Bearer ${data.access_token}`
-
          this.hubConnection.invoke("onDisconnectToken",_token);  
 }
 
@@ -147,17 +135,12 @@ stopHubConnection() {
 
 reconnectToken(): void {
   const data=this.auth.getAuthFromLocalStorage();
-  console.log("data",data); 
-
      var _token =`Bearer ${data.access_token}`
      this.hubConnection.start().then((data: any) => {
-      console.log('Connect with ID',data);
       this.hubConnection.invoke("ReconnectToken", _token).then(()=>{
       });
     }).catch((error: any) => {
-     console.log('Could not ReconnectToken! ',error); 
     });       
- ///  console.log('Connect with ID',this.proxy.id);
   }
   // //endpoints.MapHub<PresenceHub>("hubs/presence") at startup file of backend
   // createHubConnection(user: User) {

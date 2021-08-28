@@ -784,6 +784,8 @@ export const locale = {
       chontrangthaicv: "Chọn trạng thái công việc",
       doinguoitheodoi: "Đổi người theo dõi công việc",
       cactrangthaidangsudung: "Các trạng thái dự án đang sử dụng",
+      trangthaicuaphongban: "Trạng thái của phòng ban",
+      themmaumoi: "Thêm mẫu mới",
       cactrangthaicuamaukhac: "Các trạng thái của mẫu khác",
       task: "Công việc của phòng ban",
     },

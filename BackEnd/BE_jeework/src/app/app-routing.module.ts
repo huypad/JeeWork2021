@@ -23,7 +23,7 @@ export const routes: Routes = [
   },
 
   {
-    path: "aux",
+    path: 'aux',
     outlet: 'auxName',
     loadChildren: () => import('./pages/auxiliary-router/auxiliary-router.module').then(mod => mod.AuxiliaryRouterModule),
   },

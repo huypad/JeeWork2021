@@ -57,7 +57,6 @@ export class AuxiliaryRouterComponent implements OnInit {
     //   data: {ID} });
 		// dialogRef.afterClosed().subscribe(res => {
 		// 	setTimeout(() => {
-    //     console.log('out');
     //     this.close();
     //   }, 50);
 		// });

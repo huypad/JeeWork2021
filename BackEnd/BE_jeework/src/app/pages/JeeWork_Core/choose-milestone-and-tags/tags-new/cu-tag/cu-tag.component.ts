@@ -91,7 +91,6 @@ export class CuTagComponent implements OnInit {
   }
 
   Update(_item: TagsModel, withBack: boolean) {
-    console.log(_item);
     this._service.Update(_item).subscribe(res => {
       if (res && res.status === 1) {
         this.loadData.emit(true);

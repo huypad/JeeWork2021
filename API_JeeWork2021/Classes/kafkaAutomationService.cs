@@ -521,11 +521,25 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             string[] listTask = condition_update.Split(",");
             for (int i = 0; i < listTask.Length; i++)
             {
+                Hashtable val = new Hashtable();
                 if (columnname == "status")
                 {
                     if (!kiemtratinhtrang(data, listTask[i], cnn)) return false;
+                    bool isTodo = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data + " and isTodo = 1").ToString()) > 0;
+                    bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data + " and IsFinal = 1").ToString()) > 0;
+                    if (isTodo)
+                    {
+                        val.Add("activated_date", DateTime.Now); // date update isTodo = 1
+                        val.Add("activated_by", 0); // user update isTodo = 1
+                    }
+                    if (isFinal)
+                    {
+                        val.Add("end_date", DateTime.Now);
+                        val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                        val.Add("closed_by", 0); // user update isFilnal = 1
+                    }
+                    val.Add("state_change_date", DateTime.Now); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
                 }
-                Hashtable val = new Hashtable();
                 val.Add("UpdatedDate", DateTime.Now);
                 val.Add("UpdatedBy", 0);
                 val.Add(columnname, data);

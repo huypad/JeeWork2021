@@ -345,10 +345,14 @@
 
 
                                                         <!-- config map switch-case start-->
-                                                        <ng-container
-                                                            *ngIf="item.type == 'datetime';else nosetdatetime">
-                                                            <ng-container
-                                                                *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
+                                                        <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
+                                                            <app-task-datetime 
+                                                                    (valueChange)="updateDate(node,$event,item.fieldname)" 
+                                                                    [fieldname]="item.fieldname" 
+                                                                    [(value)]="node[item.fieldname]" 
+                                                                    [role]="CheckRoleskeypermit(item.fieldname,node.id_project_team)" ></app-task-datetime>
+                                                            <!--  updateDate(node,node[item.fieldname],item.fieldname) -->
+                                                            <!-- <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                                                 <span class="hide-more-text item-field"
                                                                     matTooltip="{{node[item.fieldname] | timezone}}">
                                                                     {{node[item.fieldname] | timezone}}
@@ -395,7 +399,7 @@
                                                                     class="date-picker position-picker"
                                                                     [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
                                                                 <owl-date-time #dt1></owl-date-time>
-                                                            </ng-template>
+                                                            </ng-template> -->
                                                         </ng-container>
                                                         <ng-template #nosetdatetime>
                                                             <ng-container *ngIf="item.type == 'code';else noestcode">

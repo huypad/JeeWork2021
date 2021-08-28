@@ -21,10 +21,7 @@ export class ConversationService {
     }
   }
   getHttpHeaders() {
-    
     const data = this.getAuthFromLocalStorage();
-    
-    // console.log('auth.token',auth.access_token)
     let result = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization':'Bearer '+data.access_token,

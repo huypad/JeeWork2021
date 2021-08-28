@@ -90,7 +90,6 @@ export class ReportTabMemberComponent implements OnInit {
       tongthanhvien: this._ThongKeHeThong.dataThongKe.Sothanhvien,
       sanhsachthanhvien: sanhsachthanhvien,
     }
-    console.log(Thongkehethong)
     this.reportService.ExportReportExcelHeThong(Thongkehethong).pipe(
       tap(res => {
         const linkSource = `data:application/octet-stream;base64,${res.data.FileContents}`;

@@ -259,17 +259,52 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             from we_project_role join we_role on we_role.id_row = we_project_role.id_role
                             where member = 1 and we_role.Disabled = 0";
                     DataSet ds = Conn.CreateDataSet(sqlq);
-                    DataTable dt_Project = Conn.CreateDataTable(sqlq);
+                   DataSet ds_workspace = Common.GetWorkSpace(loginData, 0, 0);
+                    DataTable dt_Project = ds_workspace.Tables[2];
+                    dt_Project.Columns.Add("isuyquyen");
+                    foreach(DataRow dr in dt_Project.Rows)
+                    {
+                        dr["isuyquyen"] = 0;
+                    }
+                    string listDA = string.Join(",", dt_Project.AsEnumerable().Select(x=>x["id_row"]).ToList());
+                    //Lấy danh sách được ủy quyền của người, rồi cập nhật lại cột 
+                    string sql_uq = $"select list_project,CreatedBy from we_authorize where id_user = {id_nv} and disabled =0 and start_date <= GETDATE() and end_date >= GETDATE()";// lấy danh sách các tài khoản ủy quyền cho tài khoản hiện tại trong thời gian hiện tại
+                    DataTable dtup = Conn.CreateDataTable(sql_uq);
+                    if (dtup.Rows.Count > 0)
+                    {
+                        // lây danh sách dự án được ủy quyền mà không bị trùng với dự án cá nhân.
+                        foreach (DataRow dr in dtup.Rows)
+                        { //CreatedBy
+                            string sqlistnew = @$"select p.id_row, p.icon, p.title, p.detail, p.id_department, p.loai, 
+                        p.start_date, p.end_date, p.color, p.template, p.status, 
+                        p.is_project, p.priority, p.locked, p.disabled, default_view, 
+                        IIf((select admin from we_project_team_user u where u.disabled = 0 
+                        and u.id_user = { dr["CreatedBy"] } and u.id_project_team = p.id_row)= 1,1,0) 
+                        as admin_project, 0 as parentowner,0 as owner,1 as isuyquyen from we_project_team p where p.disabled = 0 
+                        and id_row in ({ dr["list_project"] }) and id_row not in ({listDA})";
+                            DataTable dtpro = Conn.CreateDataTable(sqlistnew);
+                            if (dtpro.Rows.Count > 0)
+                            {
+                                foreach (DataRow dr1 in dtpro.Rows)
+                                { //CreatedBy
+                                    dt_Project.Rows.Add(dr1);
+                                }
+                            }
+
+                        }
+                    }
                     if (Conn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, Conn.LastError, _config, loginData, ControllerContext);
-                    DataTable dt = ds.Tables[0];
+                    DataTable dt = dt_Project;
                     bool IsAdmin = CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID);
                     var data = dt.Rows.Count > 0 ? from r in dt.AsEnumerable()
                                                    select new
                                                    {
                                                        id_row = r["id_row"],
                                                        id_user = r["title"],
-                                                       admin = int.Parse(r["isuyquyen"].ToString()) == 1 ? 0 : r["admin"],
+                                                       admin = r["admin_project"],
+                                                       parentowner = r["parentowner"],
+                                                       owner = r["owner"],
                                                        isuyquyen = r["isuyquyen"],
                                                        id_department = r["id_department"],
                                                        locked = r["locked"],

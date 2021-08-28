@@ -42,7 +42,6 @@ export class AddNewFieldsComponent implements OnInit {
 	ngOnInit() {
 		this.data = this._data;
 		this.Type = this._data.type;
-		console.log(this.Type)
 		this.weworkService.GetNewField().subscribe((res) => {
 			if (res && res.status == 1) {
 				this.listField = res.data;

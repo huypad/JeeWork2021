@@ -1,13 +1,7 @@
 import { ProjectsTeamService } from './JeeWork_Core/projects-team/Services/department-and-project.service';
 import { MenuHorizontalComponent } from './_layout/components/header/menu-horizontal/menu-horizontal.component';
 import { TokenStorage } from './../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { Store } from '@ngrx/store';
 import { PartialsModule } from './../_metronic/jeework_old/partials/partials.module';
-import { MenuPhanQuyenServices } from './../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import { MenuConfigService } from './../_metronic/jeework_old/core/_base/layout/services/menu-config.service';
-import { MenuAsideService } from './../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import { HttpUtilsService } from './../_metronic/jeework_old/core/_base/crud/utils/http-utils.service';
-import { ListDepartmentService } from './JeeWork_Core/List-department/Services/List-department.service';
 import { JeeWork_CoreModule } from './JeeWork_Core/JeeWork_Core.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -66,7 +60,7 @@ import { AvatarModule } from 'ngx-avatar';
     SubheaderModule,
     JeeWork_CoreModule,
     PartialsModule,
-    AvatarModule, 
+    AvatarModule
   ],
 })
 export class LayoutModule { }

@@ -255,68 +255,24 @@
                                 <div class="cu-task-info__key">
                                     <span translate="filter.ngaybatdau"></span>
                                 </div>
-                                <div class="remove-date url" (click)="RemoveBykey('start_date')" *ngIf="item.start_date && CheckRoles(10)">
-                                    <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
-                                </div>
-                                <div class="cu-task-info__value url" (click)="pickerstart.open()" *ngIf="CheckRoles(10)">
-                                    <ng-container *ngIf="item.start_date;else nostartdate">
-                                        {{item.start_date | date:'dd/MM/yyyy HH:mm'}}
-                                    </ng-container>
-                                    <ng-template #nostartdate>
-                                        Thêm ngày bắt đầu
-                                    </ng-template>
-                                </div>
-                                <div class="cu-task-info__value" *ngIf="!CheckRoles(10)">
-                                    <ng-container *ngIf="item.start_date;else nostartdate">
-                                        {{item.start_date | date:'dd/MM/yyyy HH:mm'}}
-                                    </ng-container>
-                                    <ng-template #nostartdate>
-                                        Chưa có ngày bắt đầu
-                                    </ng-template>
-                                </div>
+                                <app-task-datetime class="position-relative"
+                                    (valueChange)="updateDate($event,'start_date')" 
+                                    [fieldname]="'deadline'" 
+                                    [(value)]="item.start_date" 
+                                    [role]="CheckRoles(10)" ></app-task-datetime>
                             </div>
-                            <input matInput readonly
-                                [(ngModel)]="item.start_date"
-                                (ngModelChange)="updateStartDate(item.start_date)"
-                                style="opacity: 0;"
-                                class="date-picker position-picker"
-                                [owlDateTime]="pickerstart"
-                                [owlDateTimeTrigger]="pickerstart">
-                            <owl-date-time #pickerstart></owl-date-time>
                         </div>
                         <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20 position-relative">
-                            <div class="position-relative item-datetime">
+                            <div class="position-relative item-datetime text-center" style="min-width:100px">
                                 <div class="cu-task-info__key">
                                     <span translate="filter.deadline"></span>
                                 </div>
-                                <div class="remove-date url" (click)="RemoveBykey('deadline')" *ngIf="item.deadline && CheckRoles(10)">
-                                    <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
-                                </div>
-                                <div class="cu-task-info__value url" (click)="dt1.open()" *ngIf="CheckRoles(10)">
-                                    <ng-container *ngIf="item.deadline;else nodeadline">
-                                        {{item.deadline | date:'dd/MM/yyyy HH:mm'}} 
-                                    </ng-container>
-                                    <ng-template #nodeadline>
-                                        Thêm hạn chót
-                                    </ng-template>
-                                </div>
-                                <div class="cu-task-info__value" *ngIf="!CheckRoles(10)">
-                                    <ng-container *ngIf="item.deadline;else nodeadline">
-                                        {{item.deadline | date:'dd/MM/yyyy HH:mm'}}
-                                    </ng-container>
-                                    <ng-template #nodeadline>
-                                        Chưa có hạn chót
-                                    </ng-template> 
-                                </div>
-                            </div>
-                            <input matInput readonly
-                                [(ngModel)]="item.deadline"
-                                (ngModelChange)="updateDueDate(item.deadline)"
-                                style="opacity: 0;"
-                                class="date-picker position-picker"
-                                [owlDateTime]="dt1"
-                                [owlDateTimeTrigger]="dt1">
-                            <owl-date-time #dt1></owl-date-time>
+                                <app-task-datetime class="position-relative"
+                                    (valueChange)="updateDate($event,'deadline')" 
+                                    [fieldname]="'deadline'" 
+                                    [(value)]="item.deadline" 
+                                    [role]="CheckRoles(10)" ></app-task-datetime> 
+                            </div> 
                         </div>
 
                         <div style="position: relative; display: flex; flex-grow: 1;"> </div>

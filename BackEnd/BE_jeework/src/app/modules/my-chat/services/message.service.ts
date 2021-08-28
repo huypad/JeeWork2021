@@ -79,14 +79,12 @@ export class MessageService {
                      
          }catch(err)
          {
-          console.log(err)
          }
        
         
 
           // load mess khi
          this.hubConnection.on('ReceiveMessageThread', messages => {
-              console.log('ReceiveMessageThread',messages)
               const reversed = messages.reverse();
               this.messageThreadSource.next(reversed);
             })
@@ -96,7 +94,6 @@ export class MessageService {
             })
         
             this.hubConnection.on('NewMessage', message => {
-              // console.log('mesenger',message)
               // this.messageReceived.emit(message)
               this.messageThread$.pipe(take(1)).subscribe(messages => {
                 this.messageThreadSource.next([...messages, message[0]])   
@@ -105,13 +102,11 @@ export class MessageService {
             })
       }).catch(err => {
         // document.write(err);
-        console.log("error",err);
       });
 
     }
     catch(err)
     {
-      console.log(err)
     }
 
   

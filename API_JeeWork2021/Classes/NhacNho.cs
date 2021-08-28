@@ -215,8 +215,8 @@ namespace API_JeeWork2021.Classes
             SqlConditions cond = new SqlConditions();
             cond.Add("UserID", UserID);
             string sqlq = @$"select w.* from v_wework_new w 
-                                where disabled = 0 and (w.createdBy = @UserID or w.id_nv = @UserID) 
-                                and status not in (select id_row from we_status where isfinal = 1)";
+                                where disabled = 0 and  w.id_nv = @UserID 
+                                and end_date is null";
             DataTable dt = new DataTable();
             dt = cnn.CreateDataTable(sqlq, cond);
             if (cnn.LastError != null || dt.Rows.Count < 0)
@@ -240,9 +240,9 @@ namespace API_JeeWork2021.Classes
             cond.Add("UserID", UserID);
             string sqlq = @$"select w.* from v_wework_new w 
                                 where disabled = 0 
-                                and (w.CreatedBy = @UserID or w.Id_NV = @UserID) 
+                                and w.Id_NV = @UserID 
                                 and deadline is not null
-                                and status not in (select id_row from we_status where isfinal = 1 and disabled = 0)";
+                                and end_date is null ";
             sqlq += " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
             DataTable dt = new DataTable();
             dt = cnn.CreateDataTable(sqlq, cond);
@@ -266,10 +266,10 @@ namespace API_JeeWork2021.Classes
             string sqlq = @$"select w.* 
                             from v_wework_new w 
                             where disabled = 0 
-                            and (w.CreatedBy = @UserID or w.Id_NV = @UserID) 
-                            and deadline < dateadd (minute, +10, getdate())
-                            and deadline > dateadd (minute, -10, getdate())
-                            and status not in (select id_row from we_status where isfinal = 1 and Disabled = 0)";
+                            and  w.Id_NV = @UserID 
+                            and deadline < getdate() and deadline is not null and end_date is null ";
+            //    and deadline > dateadd(minute, -10, getdate())
+            //and deadline<dateadd (minute, +10, getdate())
             DataTable dt = new DataTable();
             dt = cnn.CreateDataTable(sqlq, cond);
             if (cnn.LastError != null || dt.Rows.Count < 0)
