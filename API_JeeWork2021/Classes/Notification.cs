@@ -20,8 +20,7 @@ namespace API_JeeWork2021.Classes
         public void notification(string sender, string receivers, string message, string html, NotificationMess noti_mess, IConfiguration _configuration)
         {
             string jeework_be = _configuration.GetValue<string>("Host:JeeWork_BE");
-            string appcode_jw = _configuration.GetValue<string>("AppConfig:AppCode");
-            string linkmobile = _configuration.GetValue<string>("Mobile:code");
+            string appcode_jw = _configuration.GetValue<string>("AppConfig:AppCode"); 
 
             socketMessage asyncnotice = new socketMessage()
             {
@@ -33,7 +32,7 @@ namespace API_JeeWork2021.Classes
                 osTitle = "Thông báo từ JeeWork",
                 osMessage = noti_mess.Content,
                 osWebURL = jeework_be + noti_mess.Link,
-                osAppURL = linkmobile + noti_mess.oslink,
+                osAppURL = noti_mess.oslink,
                 osIcon = noti_mess.Icon
             };
             _notifier.sendSocket(asyncnotice);

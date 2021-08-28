@@ -196,7 +196,7 @@
                                                             Yêu thích
                                                         </button>
                                                         <hr>
-                                                        <button mat-menu-item (click)="deleteView(view)">
+                                                        <button mat-menu-item (click)="deleteView(view)" *ngIf="CheckRoles(19)">
                                                             <i class="fas fa-trash text-danger"
                                                                 style="font-size: 20px;padding: 0 10px;"></i>
                                                             Xóa
@@ -300,7 +300,7 @@
                                             </mat-menu>
                                         </a>
                                     </ng-container> -->
-    
+
     
                                     <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3502).length>0"
                                         [routerLink]="['./documents']" (click)="click('documents')"

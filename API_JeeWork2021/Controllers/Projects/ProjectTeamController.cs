@@ -3398,32 +3398,35 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         #region mail thông báo
         private async void mailthongbao(long id, int id_template, UserJWT loginData, string Token, DpsConnection cnn, List<AccUsernameModel> DataAccount)
         {
-            emailMessage mailinfo2 = MailTemplate2(id_template, id, loginData, cnn, DataAccount);
-            //get nguoi nhan
-            string sqlnguoinhan = "select id_user , '' as hoten,'' as email from we_project_team_user where id_project_team = " + id;
-            DataTable dt_user = cnn.CreateDataTable(sqlnguoinhan);
-            #region Map info account người nhận từ JeeAccount 
-            foreach (DataRow item in dt_user.Rows)
+            if (WeworkLiteController.IsNotify(_configuration))
             {
-                var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                if (info != null && !string.IsNullOrEmpty(info.Email))
+                emailMessage mailinfo2 = MailTemplate2(id_template, id, loginData, cnn, DataAccount);
+                //get nguoi nhan
+                string sqlnguoinhan = "select id_user , '' as hoten,'' as email from we_project_team_user where id_project_team = " + id;
+                DataTable dt_user = cnn.CreateDataTable(sqlnguoinhan);
+                #region Map info account người nhận từ JeeAccount 
+                foreach (DataRow item in dt_user.Rows)
                 {
-                    item["hoten"] = info.FullName;
-                    item["email"] = info.Email;
-                    emailMessage asyncnotice = new emailMessage()
+                    var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info != null && !string.IsNullOrEmpty(info.Email))
                     {
-                        access_token = Token,
-                        //from = "derhades1998@gmail.com",
-                        //to = "thanhthang1798@gmail.com", //
-                        to = info.Email, //
-                        subject = mailinfo2.subject.Replace("$nguoinhan$", info.FullName),
-                        html = mailinfo2.html.Replace("$nguoinhan$", info.FullName) //nội dung html
-                    };
-                    await _notifier.sendEmail(asyncnotice);
-                }
+                        item["hoten"] = info.FullName;
+                        item["email"] = info.Email;
+                        emailMessage asyncnotice = new emailMessage()
+                        {
+                            access_token = Token,
+                            //from = "derhades1998@gmail.com",
+                            //to = "thanhthang1798@gmail.com", //
+                            to = info.Email, //
+                            subject = mailinfo2.subject.Replace("$nguoinhan$", info.FullName),
+                            html = mailinfo2.html.Replace("$nguoinhan$", info.FullName) //nội dung html
+                        };
+                        await _notifier.sendEmail(asyncnotice);
+                    }
 
+                }
+                #endregion
             }
-            #endregion
         }
         #endregion
         /// <summary>

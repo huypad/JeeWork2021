@@ -274,7 +274,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     {
                         // lây danh sách dự án được ủy quyền mà không bị trùng với dự án cá nhân.
                         foreach (DataRow dr in dtup.Rows)
-                        { //CreatedBy
+                        {
                             string sqlistnew = @$"select p.id_row, p.icon, p.title, p.detail, p.id_department, p.loai, 
                         p.start_date, p.end_date, p.color, p.template, p.status, 
                         p.is_project, p.priority, p.locked, p.disabled, default_view, 
@@ -290,7 +290,6 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                     dt_Project.Rows.Add(dr1);
                                 }
                             }
-
                         }
                     }
                     if (Conn.LastError != null || ds == null)

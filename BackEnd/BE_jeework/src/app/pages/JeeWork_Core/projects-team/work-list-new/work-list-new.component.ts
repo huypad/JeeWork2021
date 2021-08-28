@@ -99,6 +99,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   ListTags: any = [];
   ListUsers: any = [];
   editmail = 0;
+  statusDefault = 0;
   isAssignforme = false;
   taskortherpeople = true;
   // col
@@ -414,12 +415,28 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status === 1) {
         this.status_dynamic = res.data;
         //load ItemFinal
-        var x = this.status_dynamic.find((val) => val.IsFinal == true);
-        if (x) {
-          this.ItemFinal = x.id_row;
-        } else {
+        if(this.status_dynamic){
+          var x = this.status_dynamic.find((val) => val.IsFinal == true);
+          if (x) {
+            this.ItemFinal = x.id_row;
+          } else {
+          }
+
+          let itemstatusdefault = this.status_dynamic.find(
+              (x) =>
+                  x.isdefault == true &&
+                  x.IsToDo == false &&
+                  x.IsFinal == false &&
+                  x.IsDeadline == false
+          );
+          if (itemstatusdefault) {
+            this.statusDefault = x.id_row;
+          }else{
+            this.statusDefault = this.status_dynamic[0].id_row;
+          }
+          this.changeDetectorRefs.detectChanges();
         }
-        // this.changeDetectorRefs.detectChanges();
+
       }
     });
 
@@ -436,19 +453,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       .subscribe();
   }
 
-  Statusdefault() {
-    var x = this.status_dynamic.find(
-      (x) =>
-        x.isdefault == true &&
-        x.IsToDo == false &&
-        x.IsFinal == false &&
-        x.IsDeadline == false
-    );
-    if (x) {
-      return x.id_row;
-    }
-    return 0;
-  }
 
   GetDataNewField(id_work, id_field, isDropdown = false, getColor = false) {
     
@@ -588,8 +592,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if(status.data.length == 0 && this.showemptystatus){
       return true;
     }
-    if( this.Emtytask && status.id_row == this.Statusdefault()){
-      this.newtask =  this.Statusdefault();
+    if( this.Emtytask && status.id_row == this.statusDefault){
+      this.newtask =  this.statusDefault;
       return true;
     }
     return false;

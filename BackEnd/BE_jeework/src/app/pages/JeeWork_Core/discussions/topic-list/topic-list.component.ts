@@ -174,7 +174,7 @@ export class TopicListComponent {
     this.selectedItem = $event;
     let temp: any = {};
     temp.Id = this.selectedItem.id_row;
-    let _backUrl = `/JeeWork_Core/discussions/` + this.selectedItem.id_row;
+    let _backUrl = `/wework/discussions/` + this.selectedItem.id_row;
     var arr = this.router.url.split("/");
     if (arr[1] == "project")
       _backUrl =

@@ -2,7 +2,7 @@
 <ng-container *ngIf="(fieldname == 'createddate' || fieldname == 'end_date');else selectedDate">
     <div class="item-field">
         <span class="hide-more-text" matTooltip="{{value | timezone}}">
-            {{ value | timezone:'dd/MM/yyyy HH:mm' }}
+            {{ value | timezone:'DD/MM/YYYY' }}
         </span>
     </div>
 </ng-container>

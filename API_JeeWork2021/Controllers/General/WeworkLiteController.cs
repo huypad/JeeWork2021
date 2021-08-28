@@ -2236,8 +2236,7 @@ and IdKH={loginData.CustomerID} )";
                         "where proj.disabled = 0 " +
                         "and  users.disabled = 0 " +
                         "and locked = 0 and  proj.id_row = " + id_project_team + " " +
-                        "and (id_user = " + loginData.UserID + $" " +
-                        $"or id_user in (" + authorize + ") )";
+                        "and (id_user = " + loginData.UserID + $" )"; // " + $"or id_user in (" + authorize + ")
                     sqlq += @";select id_project_team, id_role, we_role.title
                             , admin, member, keypermit, we_role.icon, is_assign, we_role.[group]
                             from we_project_role proj join we_role on we_role.id_row = proj.id_role
@@ -2312,6 +2311,7 @@ and IdKH={loginData.CustomerID} )";
         {
             if (IsNotify(_configuration))
             {
+                string linkmobile = _configuration.GetValue<string>("Mobile:code");
                 string JeeWork_BE = _configuration.GetValue<string>("Host:JeeWork_BE");
                 notify = new Notification(notifier);
                 NotificationMess noti_mess = new NotificationMess();
@@ -2321,7 +2321,7 @@ and IdKH={loginData.CustomerID} )";
                 noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
                 noti_mess.Link = notify_model.To_Link_WebApp;
                 noti_mess.Domain = JeeWork_BE;
-                noti_mess.oslink = notify_model.To_Link_MobileApp;
+                noti_mess.oslink = linkmobile + notify_model.To_Link_MobileApp;
                 string html = "<h1>Gửi nội dung thông báo</h1>";
                 notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration);
                 return true;
