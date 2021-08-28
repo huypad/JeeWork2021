@@ -67,88 +67,91 @@ namespace API_JeeWork2021.Classes
             Time10IsRun = true;
             string ham = "Timer10Minute_Elapsed"; string idkh = "0"; string listKH = "";
             string ConnectionString = "";
-            try
+            if (WeworkLiteController.IsNotify(_configuration))
             {
-                List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
-                foreach (long item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
+                try
                 {
-                    if (item > 0)
+                    List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
+                    foreach (long item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
                     {
-                        ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
-                        if (!string.IsNullOrEmpty(ConnectionString))
+                        if (item > 0)
                         {
-                            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
+                            if (!string.IsNullOrEmpty(ConnectionString))
                             {
-                                try
+                                using (DpsConnection cnn = new DpsConnection(ConnectionString))
                                 {
-                                    ham = "DataAccount"; idkh = item.ToString();
-                                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
-                                    if (DataAccount != null && !string.IsNullOrEmpty(ConnectionString))
+                                    try
                                     {
-                                        foreach (var account in DataAccount)
+                                        ham = "DataAccount"; idkh = item.ToString();
+                                        List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
+                                        if (DataAccount != null && !string.IsNullOrEmpty(ConnectionString))
                                         {
-                                            ham = "SLCongviecUser"; idkh = item.ToString();
-                                            SLCongviecUser(account.UserId, account.CustomerID, cnn, _configuration, _producer);
-                                            ham = "SLCongviecQuaHan"; idkh = item.ToString();
-                                            SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
-                                            ham = "SLCongViecHetHanTrongNgay"; idkh = item.ToString();
-                                            SLCongViecHetHanTrongNgay(account.UserId, account.CustomerID, cnn, _configuration, _producer);
-                                            ham = "SLDuAnQuaHan"; idkh = item.ToString();
-                                            SLDuAnQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
-                                        }
-                                        if (cnn.LastError != null)
-                                        {
-                                            string content = " Timer10Minute_Elapsed. Lỗi Database: " + cnn.LastError.Message;
-                                            string error_message = "";
-                                            string CustemerID1 = "0";
-                                            //Gửi thông báo khi phát sinh lỗi
-                                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                            foreach (var account in DataAccount)
+                                            {
+                                                ham = "SLCongviecUser"; idkh = item.ToString();
+                                                SLCongviecUser(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                                ham = "SLCongviecQuaHan"; idkh = item.ToString();
+                                                SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                                ham = "SLCongViecHetHanTrongNgay"; idkh = item.ToString();
+                                                SLCongViecHetHanTrongNgay(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                                ham = "SLDuAnQuaHan"; idkh = item.ToString();
+                                                SLDuAnQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                            }
+                                            if (cnn.LastError != null)
+                                            {
+                                                string content = " Timer10Minute_Elapsed. Lỗi Database: " + cnn.LastError.Message;
+                                                string error_message = "";
+                                                string CustemerID1 = "0";
+                                                //Gửi thông báo khi phát sinh lỗi
+                                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                            }
                                         }
                                     }
-                                }
-                                catch (Exception ex)
-                                {
-                                    string content = " Timer10Minute_Elapsed. Lỗi Database: " + ex.Message;
-                                    string error_message = "";
-                                    string CustemerID1 = "0";
-                                    //Gửi thông báo khi phát sinh lỗi
-                                    SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                    catch (Exception ex)
+                                    {
+                                        string content = " Timer10Minute_Elapsed. Lỗi Database: " + ex.Message;
+                                        string error_message = "";
+                                        string CustemerID1 = "0";
+                                        //Gửi thông báo khi phát sinh lỗi
+                                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                    }
                                 }
                             }
+                            else
+                            {
+                                listKH += "," + item;
+                            }
                         }
-                        else
+
+                    }
+                    if (!listKH.Equals(""))
+                    {
+                        listKH = listKH.Substring(1);
+                        string content = " Timer60minute. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
+                        string error_message = "";
+                        string CustemerID1 = "0";
+                        ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
+                        using (DpsConnection cnn = new DpsConnection(ConnectionString))
                         {
-                            listKH += "," + item;
+                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                         }
                     }
-
                 }
-                if (!listKH.Equals(""))
+                catch (Exception ex)
                 {
-                    listKH = listKH.Substring(1);
-                    string content = " Timer60minute. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
+                    string error = ex.Message;
+                    string content = " Timer10Minute_Elapsed: " + ex.Message + " - Customer: " + idkh + " - Funcion: " + ham;
                     string error_message = "";
                     string CustemerID1 = "0";
-                    ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
                     using (DpsConnection cnn = new DpsConnection(ConnectionString))
                     {
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                        //Gửi thông báo khi phát sinh lỗi
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                string error = ex.Message;
-                string content = " Timer10Minute_Elapsed: " + ex.Message + " - Customer: " + idkh + " - Funcion: " + ham;
-                string error_message = "";
-                string CustemerID1 = "0";
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    //Gửi thông báo khi phát sinh lỗi
-                    SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + DateTime.Now.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
-                }
-            }
-            Time10IsRun = false;
+                Time10IsRun = false;
+            } 
         }
 
         /// <summary>
@@ -318,9 +321,12 @@ namespace API_JeeWork2021.Classes
         }
         public static void SendTestReminder(IConfiguration _configuration, IProducer _producer, Remider remider)
         {
-            string TopicCus = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeFlowUpdateReminder");
-            string obj = Newtonsoft.Json.JsonConvert.SerializeObject(remider);
-            _producer.PublishAsync(TopicCus, obj);
+            if (WeworkLiteController.IsNotify(_configuration))
+            {
+                string TopicCus = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeFlowUpdateReminder");
+                string obj = Newtonsoft.Json.JsonConvert.SerializeObject(remider);
+                _producer.PublishAsync(TopicCus, obj);
+            }
         }
         public class Remider
         {

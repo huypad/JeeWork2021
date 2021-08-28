@@ -8,20 +8,20 @@ import * as moment from 'moment';
 })
 export class TaskDatetimeComponent implements OnInit {
 
-  @Input() fieldname = "";
-  @Input() value = "";
+  @Input() fieldname = '';
+  @Input() value = '';
   @Output() valueChange = new EventEmitter<any>();
-  @Input() role = "";
+  @Input() role = '';
   isToday = false;
   constructor() { }
 
   ngOnInit(): void {
-    if(this.value){
+    if (this.value){
 
-      this.isToday = moment(this.value).format('MM/DD/YYYY')==moment(new Date()).format('MM/DD/YYYY');
+      this.isToday = moment(this.value).format('MM/DD/YYYY') === moment(new Date()).format('MM/DD/YYYY');
     }
   }
-  getDeadline(field,value){
+  getDeadline(field, value){
 
   }
   updateDate(value){
@@ -34,12 +34,13 @@ export class TaskDatetimeComponent implements OnInit {
   }
 
   GetDatetime(value){
-    if(value){
-      if(moment(value).format('MM/DD/YYYY')==moment(new Date()).format('MM/DD/YYYY')){
-        return "Hôm nay";
+    if (value){
+      if (moment(value).format('MM/DD/YYYY') === moment(new Date()).format('MM/DD/YYYY')){
+        return 'Hôm nay';
       }else{
-        if(moment(value).format('MM/DD/YYYY')!="Invalid date")
-          return moment(value).format('DD/MM/YYYY')
+        if (moment(value).format('MM/DD/YYYY') !== 'Invalid date') {
+          return moment(value).format('DD/MM/YYYY');
+        }
         return value;
       }
     }

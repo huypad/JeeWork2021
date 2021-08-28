@@ -26,6 +26,7 @@ namespace JeeWork_Core2021.Models
         public string Icon { get; set; } //kèm icon thông báo
         public string AppCode { get; set; } //gửi từ app nào
         public string Link { get; set; } //link chuyển nếu có
+        public string Domain { get; set; } //link chuyển nếu có
         public string oslink { get; set; } //link chuyển nếu có
         public int Loai { get; set; }
 

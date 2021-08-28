@@ -125,17 +125,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
 
                     #region get list trạng thái status 
-                    List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where IsFinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-                    List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-                    string strhoanthanh = string.Join(",", lstHoanthanh);
-                    string strquahan = string.Join(",", lstQuahan);
+                    //List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where IsFinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+                    //List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+                    //string strhoanthanh = string.Join(",", lstHoanthanh);
+                    //string strquahan = string.Join(",", lstQuahan);
                     #endregion
                     string sqlq = @$"select p.*, de.title as department,coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht
                                     , coalesce(w.quahan,0) as quahan, '' as NguoiTao
                                     , '' as NguoiSua from we_project_team p 
                                     join we_department de on de.id_row=p.id_department
-                                    left join (select count(*) as tong,COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
-                                    , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
+                                    left join (select count(*) as tong,COUNT(CASE WHEN w.end_date is not null THEN 1 END) as ht
+                                    , COUNT(CASE WHEN w.deadline < getdate() and w.deadline is not null and w.end_date is null THEN 1 END) as quahan
                                     ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
                                     where p.Disabled=0 and de.Disabled = 0 " + dieukien_where + "  order by " + dieukienSort;
                     sqlq += @$";select u.*,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 

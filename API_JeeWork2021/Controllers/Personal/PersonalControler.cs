@@ -131,9 +131,7 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     string list_Complete = "";
-                    list_Complete = ReportController.GetListStatusDynamic(listDept, cnn,"IsFinal");
-                    string list_Deadline = "";
-                    list_Deadline = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline");
+                    list_Complete = ReportController.GetListStatusDynamic(listDept, cnn,"IsFinal"); 
                     string list_Todo = "";
                     list_Todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo");
                     #endregion

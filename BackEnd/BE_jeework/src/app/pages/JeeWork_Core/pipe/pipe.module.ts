@@ -1,6 +1,6 @@
 import { AllowUpdateStatus } from './allow_update_status.pipe';
 import { TimezonePipe } from './timezone.pipe';
-import { NgModule } from '@angular/core'; 
+import { NgModule } from '@angular/core';
 
 // @NgModule({
 //   imports: [ TimezonePipe ],
@@ -17,7 +17,7 @@ import { NgModule } from '@angular/core';
   imports: [
     // dep modules
   ],
-  declarations: [ 
+  declarations: [
     TimezonePipe,
     AllowUpdateStatus,
   ],

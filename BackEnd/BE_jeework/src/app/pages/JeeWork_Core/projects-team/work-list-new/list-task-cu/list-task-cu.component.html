@@ -81,11 +81,19 @@
                                 </mat-menu>
                             </div>
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
-                                <div class="icon-user border" (click)="isassignforme=true;ChangeData()">
-                                    <i class="fas fa-user" [ngClass]="{'text-success': isassignforme}"></i>
+                                <div class="icon-user border" (click)="filterwork=1;ChangeData()">
+                                    <i class="fas fa-user" matTooltip="Công việc giao cho tôi"
+                                        [ngClass]="{'text-success': filterwork===1}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="isassignforme=false;ChangeData()">
-                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': !isassignforme}"></i>
+                                <div class="icon-user border" (click)="filterwork=2;ChangeData()">
+                                    <i class="fas fa-user-check" matTooltip="Công việc tôi giao"
+                                        [ngClass]="{'text-success': filterwork===2}"></i>
+                                    <!--                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': !isassignforme}"></i>-->
+                                </div>
+                                <div class="icon-user border" (click)="filterwork=0;ChangeData()">
+                                    <i class="fas fa-user-friends"
+                                        matTooltip="Công việc tôi giao đi/Tôi tạo/Tôi theo dõi/Giao cho tôi"
+                                        [ngClass]="{'text-success': filterwork===0}"></i>
                                 </div>
                             </div>
                         </ng-container>
@@ -237,7 +245,8 @@
                                                                     <input id="task{{node.id_row}}" type="text"
                                                                         class="form-control"
                                                                         [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
-                                                                        (keyup.enter)="focusOutFunction($event,node)" (focusout)="focusOutFunction($event,node)"
+                                                                        (keyup.enter)="focusOutFunction($event,node)"
+                                                                        (focusout)="focusOutFunction($event,node)"
                                                                         [(ngModel)]="node.title">
                                                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                                                         <p style="font-size: 11px;"
@@ -345,12 +354,14 @@
 
 
                                                         <!-- config map switch-case start-->
-                                                        <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
-                                                            <app-task-datetime 
-                                                                    (valueChange)="updateDate(node,$event,item.fieldname)" 
-                                                                    [fieldname]="item.fieldname" 
-                                                                    [(value)]="node[item.fieldname]" 
-                                                                    [role]="CheckRoleskeypermit(item.fieldname,node.id_project_team)" ></app-task-datetime>
+                                                        <ng-container
+                                                            *ngIf="item.type == 'datetime';else nosetdatetime">
+                                                            <app-task-datetime
+                                                                (valueChange)="updateDate(node,$event,item.fieldname)"
+                                                                [fieldname]="item.fieldname"
+                                                                [(value)]="node[item.fieldname]"
+                                                                [role]="CheckRoleskeypermit(item.fieldname,node.id_project_team)">
+                                                            </app-task-datetime>
                                                             <!--  updateDate(node,node[item.fieldname],item.fieldname) -->
                                                             <!-- <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
                                                                 <span class="hide-more-text item-field"
@@ -612,8 +623,10 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'comments'">
                                                                         <div class="item-field hide-more-text">
-                                                                            <app-task-comment (submit)="this.LoadData()" [id_row]="node.id_row"
-                                                                                [value]="node[item.fieldname]"></app-task-comment>
+                                                                            <app-task-comment (submit)="this.LoadData()"
+                                                                                [id_row]="node.id_row"
+                                                                                [value]="node[item.fieldname]">
+                                                                            </app-task-comment>
 
                                                                             <!-- <span (menuOpened)="node.showcomment = true"
                                                                                 (menuClosed)="this.LoadData();node.showcomment = false"

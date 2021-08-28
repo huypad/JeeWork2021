@@ -905,7 +905,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string query_group = "";
                     DataTable dtG = new DataTable();
                     dtG.Columns.Add("id_row", typeof(object));
-                    dtG.Columns.Add("title", typeof(string));
+                    dtG.Columns.Add("title", typeof(string)); 
+                    dtG.Columns.Add("image", typeof(string));
                     if (!string.IsNullOrEmpty(query.filter["groupby"]))
                     {
                         groupby = query.filter["groupby"];
@@ -913,7 +914,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if ("project".Equals(groupby))
                         {
                             columnName = "id_project_team";
-                            query_group = @"select distinct p.id_row, p.title from we_project_team_user u
+                            query_group = @"select distinct p.id_row, p.title,'' as image  from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 
                                     where u.disabled=0 and p.Disabled=0 and id_user=" + query.filter["id_nv"];
                             dtG = cnn.CreateDataTable(query_group);
@@ -923,6 +924,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             dtG = new DataTable();
                             dtG.Columns.Add("id_row", typeof(object));
                             dtG.Columns.Add("title", typeof(string));
+                            dtG.Columns.Add("image", typeof(string));
                             columnName = "Id_NV";
                             //using (DpsConnection cnnHR = new DpsConnection(_config.HRConnectionString))
                             //{
@@ -930,7 +932,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             //}
                             foreach (var item in DataStaff)
                             {
-                                dtG.Rows.Add(new object[] { item.UserId, item.FullName });
+                                dtG.Rows.Add(new object[] { item.UserId, item.FullName ,item.AvartarImgURL});
                             }
                         }
                     }
@@ -967,6 +969,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
+                                       image = rr["image"],
                                        data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
@@ -3752,8 +3755,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         {
                             bool isTodo = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and isTodo = 1").ToString()) > 0;
                             bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsFinal = 1").ToString()) > 0;
-                            bool hasDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = (select status from v_wework_clickup_new where id_row = " + data.id_row + ") and IsDeadline = 1").ToString()) > 0;
-                            bool isDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsDeadline = 1").ToString()) > 0;
+                            //bool hasDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = (select status from v_wework_clickup_new where id_row = " + data.id_row + ") and IsDeadline = 1").ToString()) > 0;
+                            //bool isDeadline = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsDeadline = 1").ToString()) > 0;
                             string StatusID = "";
                             if ("complete".Equals(data.status_type))
                             {
@@ -3819,20 +3822,20 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 }
                             }
                             #region gửi thông báo nhắc nhở
-                            if (isDeadline)
-                            {
-                                foreach (long idUser in danhsachU)
-                                {
-                                    NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
-                                }
-                            }
-                            if (isFinal)
-                            {
-                                foreach (long idUser in danhsachU)
-                                {
-                                    NhacNho.UpdateCVHoanthanh(idUser, loginData.CustomerID, hasDeadline, _configuration, _producer);
-                                }
-                            }
+                            //if (isDeadline)
+                            //{
+                            //    foreach (long idUser in danhsachU)
+                            //    {
+                            //        NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
+                            //    }
+                            //}
+                            //if (isFinal)
+                            //{
+                            //    foreach (long idUser in danhsachU)
+                            //    {
+                            //        NhacNho.UpdateCVHoanthanh(idUser, loginData.CustomerID, hasDeadline, _configuration, _producer);
+                            //    }
+                            //}
                             #endregion
                             // state_change_date
                             val.Add("state_change_date", DateTime.Now); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
@@ -3843,7 +3846,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 val.Add(data.key, DBNull.Value);
                             else
                                 val.Add(data.key, data.value);
-                            #region Nếu key là deadline thì kiểm tra rồi cập nhật status tương ứng (Nếu đã trễ thì update IsDeadline, ngược lại update IsTodo)
+                            #region Nếu key là deadline thì kiểm tra rồi cập nhật trạng thái tương ứng
                             if ("deadline".Equals(data.key) && data.value != null)
                             {
                                 #region kiểm tra cv hoàn thành hay chưa
@@ -3857,34 +3860,15 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     {
                                         if (deadline > DateTime.Now)
                                         {
-                                            #region Kiểm tra Nếu công việc trước đó có IsDeadline = 1
-                                            var statusNew = cnn.ExecuteScalar("select * from we_status where disabled=0 " +
-                                                "and id_project_team = " + id_project_team + " and id_row = " + StatusPresent + " and (IsDeadline = 1)");
-                                            #endregion
-                                            if (statusNew != null)
+                                            val.Add("islate", DBNull.Value);
+                                            foreach (long idUser in danhsachU)
                                             {
-                                                #region Trường hợp công việc từ deadline giãn ngày ra
-                                                DataRow[] RowStatus = dt_StatusID.Select("IsToDo = 1");
-                                                if (RowStatus.Length > 0)
-                                                {
-                                                    StatusPresent = long.Parse(RowStatus[0]["id_row"].ToString());
-                                                }
-                                                #endregion
-                                                val.Add("status", StatusPresent);
-                                                foreach (long idUser in danhsachU)
-                                                {
-                                                    NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "-", _configuration, _producer);
-                                                }
+                                                NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "-", _configuration, _producer);
                                             }
                                         }
                                         else
                                         {
-                                            DataRow[] RowStatus = dt_StatusID.Select("IsDeadline = 1");
-                                            if (RowStatus.Length > 0)
-                                            {
-                                                StatusPresent = long.Parse(RowStatus[0]["id_row"].ToString());
-                                            }
-                                            val.Add("status", StatusPresent);
+                                            val.Add("islate", 1);
                                             foreach (long idUser in danhsachU)
                                             {
                                                 NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
@@ -6384,7 +6368,7 @@ where u.disabled = 0 and u.loai = 2";
                 #endregion
                 if (columnName.ToLower() == "id_nv")
                 {
-                    DataRow[] dr = dt_Users.Select("w_user.id_user=" + id);
+                    DataRow[] dr = dt_Users.Select("id_user=" + id);
                     if (dr.Length > 0)
                     {
                         dt_User2 = dr.CopyToDataTable();

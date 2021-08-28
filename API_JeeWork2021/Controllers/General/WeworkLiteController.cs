@@ -2310,19 +2310,22 @@ and IdKH={loginData.CustomerID} )";
         //}
         public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
         {
-            string jeeglobal_be = _configuration.GetValue<string>("Host:jeeglobal_be");
-            string appcode_land = _configuration.GetValue<string>("AppConfig:AppCode_Land");
-
-            notify = new Notification(notifier);
-            NotificationMess noti_mess = new NotificationMess();
-            noti_mess.AppCode = notify_model.AppCode;
-            noti_mess.Content = notify_model.TitleLanguageKey;
-            noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
-            noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
-            noti_mess.Link = notify_model.To_Link_WebApp;
-            noti_mess.oslink = notify_model.To_Link_MobileApp;
-            string html = "<h1>Gửi nội dung thông báo</h1>";
-            notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration);
+            if (IsNotify(_configuration))
+            {
+                string JeeWork_BE = _configuration.GetValue<string>("Host:JeeWork_BE");
+                notify = new Notification(notifier);
+                NotificationMess noti_mess = new NotificationMess();
+                noti_mess.AppCode = notify_model.AppCode;
+                noti_mess.Content = notify_model.TitleLanguageKey;
+                noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
+                noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
+                noti_mess.Link = notify_model.To_Link_WebApp;
+                noti_mess.Domain = JeeWork_BE;
+                noti_mess.oslink = notify_model.To_Link_MobileApp;
+                string html = "<h1>Gửi nội dung thông báo</h1>";
+                notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration);
+                return true;
+            }
             return true;
         }
         /// <summary>
@@ -2551,7 +2554,10 @@ and IdKH={loginData.CustomerID} )";
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
+                if (IsNotify(_configuration))
+                { 
+                    NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
+                }
             }
         }
         /// <summary>
@@ -3331,8 +3337,22 @@ and IdKH={loginData.CustomerID} )";
             {
                 return "";
             }
-            //return "Data Source=HUYTRAN\\SQLEXPRESS;Initial Catalog=jeework;User ID=sa;Password=sa2017";
-            //return "Data Source=202.143.110.154,1443;Initial Catalog=jeework;User ID=jeework;Password=DAtaBPssJ_3eW0rK";
+        }
+        public static bool IsNotify(IConfiguration _configuration)
+        {
+            try
+            {
+                var x = _configuration.GetValue<string>("AppConfig:IsOnlineDB");
+                if (string.IsNullOrEmpty(x))
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
         public static void Insert_Template(DpsConnection cnn, string CustemerID)
         {

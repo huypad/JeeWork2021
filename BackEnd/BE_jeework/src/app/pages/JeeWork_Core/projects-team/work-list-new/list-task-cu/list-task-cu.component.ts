@@ -107,7 +107,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   showtaskmutiple = true;
   showemptystatus = false;
   // viewTaskOrder = false;
-  isassignforme = false;
+  filterwork = 0;
   status_dynamic: any = [];
   ListAllStatusDynamic: any = [];
   list_priority: any[];
@@ -539,11 +539,13 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = 1;
-    if (this.isassignforme){
-      filter.filter = 1;
+    // công việc assign cho tôi = 1
+    if (this.filterwork > 0){
+      filter.filter = this.filterwork;
     }
+    // công việc tôi theo dõi = 3
     if (this.selectedTab == 3){
-      filter.filter = 2;
+      filter.filter = 3;
     }
     filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
     filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
