@@ -10,12 +10,6 @@
                         <span style="font-size: 20px;font-weight: 500;">{{ 'summary.boloctuychinh' | translate }}:
                             <span class="-hover url" [matMenuTriggerFor]="menu"> {{showTitleFilter(idFilter)}} </span>
                         </span>
-                        <!-- <span style="font-size: 20px;font-weight: 500;"
-                            [popover]="myPopover"
-                            [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true"
-                            >{{ 'summary.boloctuychinhpopover' | translate }}: 
-                            <span class="-hover url"> {{showTitleFilter(idFilter)}} </span>
-                        </span> -->
                     </div>
                     <mat-menu #menu="matMenu">
                         <ng-container *ngFor="let f of danhsachboloc">
@@ -29,18 +23,6 @@
                             {{ 'work.themboloctuychinh' | translate }}
                         </button>
                     </mat-menu>
-                    <!-- <div class="popover-menu"> 
-                        <popover-content #myPopover [closeOnMouseOutside]="true" placement="left-bottom"
-                            style="z-index: 999999999;">
-                            <ng-container *ngFor="let f of danhsachboloc">
-                                <a (click)="ChangeFilter(f.id_row)">{{f.title}}</a>
-                            </ng-container>
-                            <a style="border-top:solid 1px #eee" href="javascript:;" (click)="UpdateFilter()">{{
-                                'work.suaboloctuychinhhientai' | translate }}</a>
-                            <a style="border-top:solid 1px #eee" href="javascript:;" (click)="addFilter()">{{
-                                'work.themboloctuychinh' | translate }}</a>
-                        </popover-content>
-                    </div> -->
                 </ng-container>
                 <ng-template #normal>
                     <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
@@ -81,19 +63,18 @@
                                 </mat-menu>
                             </div>
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
-                                <div class="icon-user border" (click)="filterwork=1;ChangeData()">
-                                    <i class="fas fa-user" matTooltip="Công việc giao cho tôi"
-                                        [ngClass]="{'text-success': filterwork===1}"></i>
+                                <div class="icon-user border" (click)="filterwork=1;ChangeData()"
+                                    matTooltip="Công việc giao cho tôi">
+                                    <i class="fas fa-user" [ngClass]="{'text-success': filterwork===1}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="filterwork=2;ChangeData()">
-                                    <i class="fas fa-user-check" matTooltip="Công việc tôi giao"
+                                <div class="icon-user border" (click)="filterwork=2;ChangeData()"
+                                    matTooltip="Công việc tôi giao đi">
+                                    <i class="fas fa-user-plus"
                                         [ngClass]="{'text-success': filterwork===2}"></i>
-                                    <!--                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': !isassignforme}"></i>-->
                                 </div>
-                                <div class="icon-user border" (click)="filterwork=0;ChangeData()">
-                                    <i class="fas fa-user-friends"
-                                        matTooltip="Công việc tôi giao đi/Tôi tạo/Tôi theo dõi/Giao cho tôi"
-                                        [ngClass]="{'text-success': filterwork===0}"></i>
+                                <div class="icon-user border" (click)="filterwork=0;ChangeData()"
+                                    matTooltip="Danh sách công việc">
+                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': filterwork===0}"></i>
                                 </div>
                             </div>
                         </ng-container>
@@ -172,7 +153,7 @@
                                             <div class="cu-dropdown-head" style="width:100px">
                                                 <div class="cu-task-list-header-field__title">
                                                     <div class="cu-task-list-header-field__title-text text-center">
-                                                        {{ 'filter.'+item.fieldname | translate }}
+                                                        {{ 'filter.' + item.fieldname | translate }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -415,7 +396,7 @@
                                                         <ng-template #nosetdatetime>
                                                             <ng-container *ngIf="item.type == 'code';else noestcode">
                                                                 <span class="hide-more-text">
-                                                                    {{node[item.fieldname]?'#'+node[item.fieldname]
+                                                                    {{node[item.fieldname] ? '#' + node[item.fieldname]
                                                                     : ''}}
                                                                 </span>
                                                             </ng-container>
@@ -439,7 +420,8 @@
                                                                             <div class="text-white text-uppercase cu-task-row-status1"
                                                                                 matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
                                                                                 <span
-                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,node[item.fieldname])}}</span>
+                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,
+                                                                                    node[item.fieldname])}}</span>
 
                                                                             </div>
                                                                         </div>
@@ -450,7 +432,8 @@
                                                                             <div class="text-white text-uppercase cu-task-row-status1"
                                                                                 matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
                                                                                 <span
-                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,node[item.fieldname])}}</span>
+                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,
+                                                                                    node[item.fieldname])}}</span>
 
                                                                             </div>
                                                                         </div>
@@ -500,7 +483,7 @@
                                                                                     <div class="user w-100"
                                                                                         style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                                         [ngStyle]="{'font-size.px': 15}">
-                                                                                        +{{node.User.length-3}}
+                                                                                        +{{node.User.length - 3}}
                                                                                     </div>
                                                                                 </div>
                                                                                 <mat-menu #menu1="matMenu">
@@ -558,7 +541,7 @@
                                                                                     <div class="user w-100"
                                                                                         style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                                         [ngStyle]="{'font-size.px': 15}">
-                                                                                        +{{node.User.length-3}}
+                                                                                        +{{node.User.length - 3}}
                                                                                     </div>
                                                                                 </div>
                                                                             </ng-container>
@@ -616,7 +599,7 @@
                                                                                 *ngFor="let prio of list_priority"
                                                                                 (click)="updatePriority(node,item.fieldname,prio.value)">
                                                                                 <i class="{{prio.icon}} pd-r-10"></i>
-                                                                                {{ 'priority.'+prio.name |
+                                                                                {{ 'priority.' + prio.name |
                                                                                 translate }}
                                                                             </button>
                                                                         </mat-menu>
@@ -843,7 +826,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="cu-task-list-footer__items"> </div>
+                                        <div class="cu-task-list-footer__items"></div>
                                     </div>
                                 </ng-container>
 
