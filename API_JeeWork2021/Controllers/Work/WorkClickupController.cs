@@ -905,7 +905,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string query_group = "";
                     DataTable dtG = new DataTable();
                     dtG.Columns.Add("id_row", typeof(object));
-                    dtG.Columns.Add("title", typeof(string)); 
+                    dtG.Columns.Add("title", typeof(string));
                     dtG.Columns.Add("image", typeof(string));
                     if (!string.IsNullOrEmpty(query.filter["groupby"]))
                     {
@@ -932,7 +932,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             //}
                             foreach (var item in DataStaff)
                             {
-                                dtG.Rows.Add(new object[] { item.UserId, item.FullName ,item.AvartarImgURL});
+                                dtG.Rows.Add(new object[] { item.UserId, item.FullName, item.AvartarImgURL });
                             }
                         }
                     }
@@ -5372,7 +5372,28 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    string strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.Disabled = 0 and wu.Disabled = 0  and id_user = @iduser ))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    string strW = " "; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    //strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser and Disabled = 0 union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    if (!string.IsNullOrEmpty(query.filter["forme"]) && !string.IsNullOrEmpty(query.filter["assign"]) && !string.IsNullOrEmpty(query.filter["following"]))
+                    {
+                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser and Disabled = 0 union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    }
+                    if (string.IsNullOrEmpty(query.filter["forme"]) && string.IsNullOrEmpty(query.filter["assign"]) && string.IsNullOrEmpty(query.filter["following"]))
+                    {
+                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser and Disabled = 0 union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["forme"]))//được giao
+                    {
+                        strW += " and (w.id_nv=@iduser)";
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["assign"]))//giao đi
+                    {
+                        strW += " and (w.nguoigiao=@iduser)";
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["following"]))// theo dõi
+                    {
+                        strW += $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = { loginData.UserID }))";
+                    }
                     DataSet ds = GetWorkByEmployee(cnn, query, loginData.UserID, DataAccount, strW);//" and w.id_nv=@iduser"
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);

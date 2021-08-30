@@ -146,12 +146,19 @@ namespace JeeWork_Core2021.ConsumerServices
         public void getMessUpdateAdmin(string message)
         {
             try
-            {
+            { 
+                var d1 = new GeneralLog()
+                {
+                    name = "jee-work",
+                    data = message,
+                    message = "jeeplatform.updateadmin"
+                };
+                _logger.LogTrace(JsonConvert.SerializeObject(d1));
                 var kq = JsonConvert.DeserializeObject<UpdateAdminMessage>(message);
                 var topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
                 string roles = "";
 
-                if (kq.AppCode == "WORK")
+                if (kq.AppCode == _config.GetValue<string>("AppConfig:AppCode"))
                 {
                     string conn = _cache.GetConnectionString(kq.CustomerID);
                     List<string> roles_ad = ConsumerHelper.getRoles(conn);
@@ -179,6 +186,27 @@ namespace JeeWork_Core2021.ConsumerServices
                             return;
                         }
                     }
+                    var dataRoles = new
+                    {
+                        roles = roles
+                    };
+                    UpdateMessage updateMess = new UpdateMessage();
+                    var topicUpdateAccount = topic;
+                    updateMess.userID = kq.UserID;
+                    updateMess.updateField = _config.GetValue<string>("KafkaConfig:ProjectName");
+                    updateMess.fieldValue = dataRoles;
+                    var mess_send = JsonConvert.SerializeObject(updateMess);
+                    _producer.PublishAsync(topicUpdateAccount, mess_send);
+                    Console.WriteLine("====================");
+                    Console.WriteLine(roles);
+                    var d2 = new GeneralLog()
+                    {
+                        name = "jee-work",
+                        data = mess_send,
+                        message = topicUpdateAccount
+                    };
+                    _logger.LogTrace(JsonConvert.SerializeObject(d2));
+
                     ConsumerHelper.publishUpdateCustom(_producer, topic, kq.UserID, roles);
                     return;
                 }
