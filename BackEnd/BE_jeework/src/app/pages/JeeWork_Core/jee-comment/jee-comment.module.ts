@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { JeeCommentEnterCommentContentComponent } from './enter-comment-content/enter-comment-content.component';
 import { ClickOutsideDirective } from './enter-comment-content/click-outside.directive';
+import {JeeCommentSignalrService} from './jee-comment-signalr.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { ClickOutsideDirective } from './enter-comment-content/click-outside.dir
     MatFormFieldModule, MatTooltipModule, FormsModule, PickerModule
   ],
   providers: [
-    JeeCommentService],
+    JeeCommentService, JeeCommentSignalrService],
   entryComponents: [JeeCommentComponent, JeeCommentPostContentComponent, JeeCommentReactionContentComponent, JeeCommentReactionShowComponent],
   exports: [JeeCommentComponent, JeeCommentPostContentComponent, JeeCommentReactionContentComponent, JeeCommentEnterCommentContentComponent, JeeCommentReactionShowComponent],
 })

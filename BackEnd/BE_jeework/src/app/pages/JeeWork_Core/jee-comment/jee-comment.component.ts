@@ -26,6 +26,7 @@ import {
   TopicCommentDTO,
   ChangeComment,
 } from "./jee-comment.model";
+import {JeeCommentSignalrService} from './jee-comment-signalr.service';
 
 @Component({
   selector: "app-jee-comment",
@@ -74,6 +75,7 @@ export class JeeCommentComponent implements OnInit {
   constructor(
     public service: JeeCommentService,
     public cd: ChangeDetectorRef,
+    public signalrService: JeeCommentSignalrService,
     private elementRef: ElementRef
   ) {}
 
@@ -90,21 +92,55 @@ export class JeeCommentComponent implements OnInit {
       this.LoadObjectID();
     }
   }
+  hubConnectionShowChangeTopic() {
+    if (this.objectID) {
+      this.signalrService.connectToken(this.objectID);
+    } else {
+      this._errorMessage$.next('Topic comment là bắt buộc');
+    }
+  }
   clickButtonComment() {
     if (this.isFirstTime) {
       this.ShowSpinner$.next(true);
       if (this.objectID) {
         this.getShowTopic();
-        const source = interval(2000);
-        source.pipe(takeUntil(this.onDestroy)).subscribe(() => {
-          if (
-            this._errorMessage$.value == "" &&
-            this.isScrolledViewElement() &&
-            this._isLoading$.value === false
-          ) {
-            this.getShowChangeTopic();
-          }
-        });
+        this.hubConnectionShowChangeTopic();
+        setTimeout(() => {
+          this._isLoading$.next(true);
+          this.signalrService.showChange$
+              .pipe(
+                  tap((result: ReturnFilterComment) => {
+                    if (result) {
+                      if (result.LstCreate.length > 0 || result.LstEdit.length > 0 || result.LstDelete.length > 0) {
+                        if (result.LstCreate.length > 0) {
+                          this.pushItemCommentInTopicComemnt(this.item, result.LstCreate);
+                        }
+                        if (result.LstEdit.length > 0) {
+                          this.editItemCommentInTopicComemnt(this.item, result.LstEdit);
+                        }
+                        if (result.LstDelete.length > 0) {
+                          this.deleteItemCommentInTopicComemnt(this.item, result.LstDelete);
+                        }
+                        this.filterDate = new Date();
+                        this.isDeteachChange$.next(true);
+                      }
+                    }
+                  }),
+                  catchError((err) => {
+                    console.log(err);
+                    this._isLoading$.next(false);
+                    this.signalrService.disconnectToken(this.objectID);
+                    this._errorMessage$.next(err);
+                    return of();
+                  }),
+                  finalize(() => {
+                    this._isLoading$.next(false);
+                    this.cd.detectChanges();
+                  }),
+                  takeUntil(this.onDestroy)
+              )
+              .subscribe();
+        }, 500);
       } else {
         this.ShowSpinner$.next(false);
         this.isFirstTime = false;
@@ -360,6 +396,8 @@ export class JeeCommentComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.onDestroy.next();
+    this.onDestroy.complete();
+    this.signalrService.disconnectToken(this.objectID);
   }
 
   isScrolledViewElement() {

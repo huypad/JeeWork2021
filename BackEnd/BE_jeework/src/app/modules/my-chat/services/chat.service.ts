@@ -16,7 +16,7 @@ export class ChatService {
   public reload$ = new BehaviorSubject<boolean>(false);
   public InforUserChatWith$ = new BehaviorSubject<any>([]);
 
-  public OpenMiniChat$ = new BehaviorSubject<boolean>(false);
+  public OpenMiniChat$ = new BehaviorSubject<any>(null);
 
 
 

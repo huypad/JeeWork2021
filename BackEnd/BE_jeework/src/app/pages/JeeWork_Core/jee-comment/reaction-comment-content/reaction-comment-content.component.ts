@@ -38,7 +38,6 @@ export class JeeCommentReactionContentComponent implements OnInit {
     this.userReaction = react;
     const model = this.prepareModel();
     this.postReactionComment(model);
-    this.changeValue.emit(true);
   }
 
   postReactionComment(model: ReactionCommentModel) {
@@ -54,11 +53,11 @@ export class JeeCommentReactionContentComponent implements OnInit {
           setTimeout(() => {
             this._isLoading$.next(false);
           }, 1000);
-          console.log(err); return of()
+          console.log(err); return of();
         }),
       ),
       takeUntil(this.onDestroy),
-    ).subscribe();
+    ).subscribe(() =>     this.changeValue.emit(true) );
   }
 
   prepareModel(): ReactionCommentModel {

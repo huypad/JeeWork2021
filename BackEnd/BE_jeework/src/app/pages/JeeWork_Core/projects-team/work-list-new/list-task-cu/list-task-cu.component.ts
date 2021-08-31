@@ -60,7 +60,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   ) {
     this.taskinsert.clear();
     // this.filter_groupby = this.getMystaff?this.listFilter_Groupby[1]:this.listFilter_Groupby[0];
-    // this.filter_subtask = this.listFilter_Subtask[0];
+    this.filter_subtask = this.listFilter_Subtask[1];
     this.list_priority = this.weworkService.list_priority;
     this.UserID = +localStorage.getItem('idUser');
   }
@@ -170,14 +170,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
   listFilter_Subtask = [
     {
-      title: 'showtask',
-      showvalue: 'showtask',
-      value: 'hide',
+      title: 'Không xem công việc con',
+      value: '0',
     },
     {
-      title: 'expandall',
-      showvalue: 'expandall',
-      value: 'show',
+      title: 'Xem tất cả công việc (bao gồm công việc con)',
+      value: '1',
     },
   ];
   colorName = '';
@@ -212,7 +210,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     // get filter groupby
     this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
-    this.filter_subtask = this.listFilter_Subtask[0];
 
     const today = new Date();
     const start_date = new Date();
@@ -517,6 +514,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   filterConfiguration(): any {
     const filter: any = {};
     filter.id_project_team = this.ID_Project;
+    filter.displayChild = this.filter_subtask.value;
     filter.groupby = 'status'; // assignee
     filter.keyword = this.keyword;
     return filter;
@@ -526,7 +524,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     filter.groupby = this.filter_groupby.value; // assignee
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
-    filter.displayChild = 1;
+    filter.displayChild = this.filter_subtask.value;
     if (this.idFilter > 0) {
       filter.id_filter = this.idFilter;
     }
@@ -538,7 +536,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     filter.groupby = this.filter_groupby.value;
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
-    filter.displayChild = 1;
+    filter.displayChild = this.filter_subtask.value;
     // công việc assign cho tôi = 1
     if (this.filterwork > 0){
       filter.filter = this.filterwork;
@@ -1145,12 +1143,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
 
   ExpandNode(node) {
-    if (this.filter_subtask.value == 'show') {
-      return;
-    }
-    else {
-      node.isExpanded = !node.isExpanded;
-    }
+    node.isExpanded = !node.isExpanded;
   }
 
   ShowCloseTask() {
@@ -1163,20 +1156,13 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     return val;
   }
 
-  loadSubtask() {
-    const isExpanded = this.filter_subtask.value == 'show' ? true : false;
-    for (const i of this.listStatus) {
-      i.data.forEach(element => {
-        element.isExpanded = isExpanded;
-      });
-    }
-  }
+ 
   Subtask(item) {
     if (item.value == this.filter_subtask.value) {
       return;
     }
     this.filter_subtask = item;
-    this.loadSubtask();
+    this.LoadSampleList();
   }
 
   CreateTask(val) {

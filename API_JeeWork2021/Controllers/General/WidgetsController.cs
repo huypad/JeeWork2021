@@ -917,9 +917,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             strW += $" and w.status in ({hoanthanh}) ";
                         };
-
                     }
-
                     #region group
                     string strG = @"select distinct p.id_row, p.title from we_project_team_user u
                                     join we_project_team p on p.id_row=u.id_project_team 

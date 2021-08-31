@@ -69,10 +69,10 @@ import {CommunicateService} from '../work-list-new-service/communicate.service';
 })
 export class WorkListNewDetailComponent implements OnInit {
     constructor(
-        private _service: WorkService,
-        private CommunicateService: CommunicateService,
+        private workService: WorkService,
+        private communicateService: CommunicateService,
         private el: ElementRef,
-        private ProjectsTeamService: ProjectsTeamService,
+        private projectsTeamService: ProjectsTeamService,
         private danhMucService: DanhMucChungService,
         public dialog: MatDialog,
         private itemFB: FormBuilder,
@@ -83,7 +83,7 @@ export class WorkListNewDetailComponent implements OnInit {
         public datepipe: DatePipe,
         private activatedRoute: ActivatedRoute,
         public weworkService: WeWorkService,
-        public JeeCommentService: JeeCommentService,
+        public jeeCommentService: JeeCommentService,
         private updatebykeyService: UpdateByKeyService,
         private _attservice: AttachmentService,
         public dialogRef: MatDialogRef<WorkListNewDetailComponent>,
@@ -102,10 +102,6 @@ export class WorkListNewDetailComponent implements OnInit {
     hasFormErrors = false;
     item: any = {};
     oldItem: WorkModel;
-    item_User: UserInfoModel;
-    item_file: UserInfoModel;
-    // itemHD: HopDongModel;
-    // oldItemHD: HopDongModel;
     selectedTab = 0;
     // ========================================================
     Visible = false;
@@ -172,7 +168,7 @@ export class WorkListNewDetailComponent implements OnInit {
     loadTags = false;
     require_evaluate = false;
     newtask = true;
-
+    loading = true;
     TenFile = '';
     File = '';
     filemodel: any;
@@ -195,16 +191,19 @@ export class WorkListNewDetailComponent implements OnInit {
 
     /** LOAD DATA */
     ngOnInit() {
-        this._service.currentMessage.subscribe(message => {
+        this.workService.currentMessage.subscribe(message => {
         });
         this.data = this.datalog;
         if (this.data && this.data.notback) {
             this.isback = false;
         }
+        if (this.data && this.data.notloading) {
+            this.loading = false;
+        }
         this.DataID = this.data.id_row;
         this.Id_project_team = this.data.id_project_team;
         this.UserInfo = JSON.parse(localStorage.getItem('UserInfo'));
-        this.ProjectsTeamService.DeptDetail(this.Id_project_team).subscribe(
+        this.projectsTeamService.DeptDetail(this.Id_project_team).subscribe(
             (res) => {
                 if (res && res.status == 1) {
                     this.require_evaluate = res.data.require_evaluate;
@@ -229,7 +228,7 @@ export class WorkListNewDetailComponent implements OnInit {
             50,
             true
         );
-        this._service.CheckList(queryParams).subscribe((res) => {
+        this.workService.CheckList(queryParams).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
             if (res && res.status === 1) {
                 // res.data.forEach(element => {
@@ -253,7 +252,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
     LoadLog() {
         // get LogDetailCU
-        this.ProjectsTeamService.LogDetailCU(this.DataID).subscribe((res) => {
+        this.projectsTeamService.LogDetailCU(this.DataID).subscribe((res) => {
             if (res && res.status === 1) {
                 this.LogDetail = res.data;
                 this.resetComment();
@@ -268,7 +267,8 @@ export class WorkListNewDetailComponent implements OnInit {
         this.mark_tag();
         this.LoadLog();
 
-        this.layoutUtilsService.showWaitingDiv();
+        if(this.loading)
+            this.layoutUtilsService.showWaitingDiv();
 
         this.weworkService.ListStatusDynamic(this.Id_project_team)
             .subscribe((res) => {
@@ -291,7 +291,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.options_assign = this.getOptions_Assign();
             });
         }, 500);
-        this.ProjectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
+        this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
                 this.item = res.data;
@@ -515,7 +515,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 item.IsStaff = true;
             }
         }
-        this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
+        this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
             } else {
@@ -625,7 +625,7 @@ export class WorkListNewDetailComponent implements OnInit {
         model.id_row = this.item.id_row;
         model.key = 'assign';
         model.value = val.id_nv;
-        this._service.UpdateByKey(model).subscribe((res) => {
+        this.workService.UpdateByKey(model).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
             if (res && res.status == 1) {
                 this.layoutUtilsService.showActionNotification(
@@ -671,7 +671,7 @@ export class WorkListNewDetailComponent implements OnInit {
             if (!res) {
                 return;
             }
-            this._service.Delete_Followers(this.item.Id, val).subscribe((res) => {
+            this.workService.Delete_Followers(this.item.Id, val).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.layoutUtilsService.showActionNotification(
                         _deleteMessage,
@@ -709,7 +709,7 @@ export class WorkListNewDetailComponent implements OnInit {
         model.id_row = this.item.id_row;
         model.key = 'status';
         model.value = val;
-        this._service.UpdateByKey(model).subscribe((res) => {
+        this.workService.UpdateByKey(model).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
             if (res && res.status == 1) {
                 this.item.status = val;
@@ -762,7 +762,7 @@ export class WorkListNewDetailComponent implements OnInit {
         setTimeout(() => {
             this.newtask = true;
         }, 1000);
-        this.ProjectsTeamService.InsertTask(val).subscribe((res) => {
+        this.projectsTeamService.InsertTask(val).subscribe((res) => {
             if (res && res.status == 1) {
                 // this.CloseAddnewTask(true);
                 this.LoadData();
@@ -848,7 +848,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     refreshData() {
-        this._service.WorkDetail(this.item.id_row).subscribe((res) => {
+        this.workService.WorkDetail(this.item.id_row).subscribe((res) => {
             if (res && res.status == 1) {
                 this.ngOnInit();
                 this.changeDetectorRefs.detectChanges();
@@ -920,7 +920,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     this.changeDetectorRefs.detectChanges();
                     if (res && res.status === 1) {
                         this.IsShow_MoTaCV = !this.IsShow_MoTaCV;
-                        this._service.WorkDetail(model.id_row).subscribe((res) => {
+                        this.workService.WorkDetail(model.id_row).subscribe((res) => {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
                                 this.refreshData();
@@ -992,15 +992,16 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.assign && task.assign.id_nv > 0) {
             item.IsStaff = true;
         }
+        if(this.loading)
         this.layoutUtilsService.showWaitingDiv();
-        this.ProjectsTeamService._UpdateByKey(item).pipe(
+        this.projectsTeamService._UpdateByKey(item).pipe(
             tap(() => {
             }),
             map(res => {
                 if (res && res.status == 1) {
                     this.createMessage(true);
                     this.LoadLog();
-                    this.ProjectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
+                    this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
                         if (res && res.status == 1) {
                             this.item = res.data;
                             this.changeDetectorRefs.detectChanges();
@@ -1089,7 +1090,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const item = new ChecklistModel();
         item.id_row = _item.id_row;
         item.title = _item.title;
-        this._service.Update_CheckList(item).subscribe((res) => {
+        this.workService.Update_CheckList(item).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
             if (res && res.status === 1) {
                 // this.layoutUtilsService.showActionNotification('Update thành công', MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
@@ -1115,7 +1116,7 @@ export class WorkListNewDetailComponent implements OnInit {
         item.title = _item.title;
         item.id_checklist = id_checklist;
         item.checker = _item.checker ? 1 : 0;
-        this._service.Update_CheckList_Item(item).subscribe((res) => {
+        this.workService.Update_CheckList_Item(item).subscribe((res) => {
             if (res && res.status === 1) {
                 // this.layoutUtilsService.showActionNotification('Update thành công', MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
             } else {
@@ -1229,7 +1230,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 return;
             }
 
-            this._service.Delete_CheckList(_item.id_row).subscribe((res) => {
+            this.workService.Delete_CheckList(_item.id_row).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.layoutUtilsService.showActionNotification(
                         _deleteMessage,
@@ -1278,7 +1279,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.refreshData();
                 return;
             }
-            this._service.DeleteItem(_item.id_row).subscribe((res) => {
+            this.workService.DeleteItem(_item.id_row).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.layoutUtilsService.showActionNotification(
                         _deleteMessage,
@@ -1339,7 +1340,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 item.id_row = this.item.id_row;
                 item.key = type == '1' ? 'Attachments' : 'Attachments_result';
                 item.values = new Array<FileUploadModel>(ct);
-                this.ProjectsTeamService._UpdateByKey(item).subscribe((res) => {
+                this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
                     if (res && res.status == 1) {
                         this.LoadData();
                     }
@@ -1423,10 +1424,10 @@ export class WorkListNewDetailComponent implements OnInit {
         model.id_parent = this.item.id_row;
         model.id_project_team = this.item.id_project_team;
         this.changeDetectorRefs.detectChanges();
-        this._service.InsertWork(model).subscribe((res) => {
+        this.workService.InsertWork(model).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
             if (res && res.status === 1) {
-                model;
+                // model;
                 // this.changeDetectorRefs.detectChanges();
             } else {
                 this.viewLoading = false;
@@ -1525,7 +1526,7 @@ export class WorkListNewDetailComponent implements OnInit {
         model.id_row = this.item.id_row;
         model.key = 'Tags';
         model.value = tag.id_row;
-        this._service.UpdateByKey(model).subscribe((res) => {
+        this.workService.UpdateByKey(model).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
                 this.changeDetectorRefs.detectChanges();
@@ -1597,7 +1598,7 @@ export class WorkListNewDetailComponent implements OnInit {
         item.Id_project_team = _item.id_project_team;
         item.Follower = user.id_nv;
         item.Type = '1';
-        this.ProjectsTeamService.UpdateStatus(item).subscribe((res) => {
+        this.projectsTeamService.UpdateStatus(item).subscribe((res) => {
             if (res && res.status == 1) {
                 this.layoutUtilsService.showActionNotification(
                     this.translate.instant('GeneralKey.capnhatthanhcong'),
@@ -1645,7 +1646,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
     LoadObjectID() {
         if (this.getComponentName()) {
-            this.JeeCommentService.getTopicObjectIDByComponentName(
+            this.jeeCommentService.getTopicObjectIDByComponentName(
                 this.getComponentName()
             )
                 .pipe(
@@ -1666,7 +1667,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     LoadFullcomment() {
-        this.JeeCommentService.showTopicCommentByObjectID(
+        this.jeeCommentService.showTopicCommentByObjectID(
             this.objectID,
             this.filterTopic()
         )
@@ -1693,7 +1694,7 @@ export class WorkListNewDetailComponent implements OnInit {
         if (this.objectID && id_topic) {
             if (!this.ListChild[id_topic] && !this.IsLoading[id_topic]) {
                 this.IsLoading[id_topic] = true;
-                this.JeeCommentService.showFullComment(
+                this.jeeCommentService.showFullComment(
                     this.objectID,
                     id_topic,
                     this.filterTopic()
@@ -1726,8 +1727,15 @@ export class WorkListNewDetailComponent implements OnInit {
         }
     }
 
+    ChangeValue(value:any){
+        value = false;
+        setTimeout((x) => {
+            value = true;
+        },500);
+    }
+
     CheckedChecklist(items) {
-        this._service.CheckedItem(items.id_row).subscribe((res) => {
+        this.workService.CheckedItem(items.id_row).subscribe((res) => {
             if (res && res.status === 1) {
                 items.checked = !items.checked;
             } else {
@@ -1751,7 +1759,7 @@ export class WorkListNewDetailComponent implements OnInit {
         if (listSub) {
             listSub.forEach((element) => {
                 if (this.objectID) {
-                    this.JeeCommentService.showFullComment(
+                    this.jeeCommentService.showFullComment(
                         this.objectID,
                         element,
                         this.filterTopic()
@@ -1793,8 +1801,8 @@ export class WorkListNewDetailComponent implements OnInit {
             if (!res) {
                 return;
             }
-            this.ProjectsTeamService.DeleteTask(this.item.id_row).pipe(
-                tap(() => this.layoutUtilsService.showWaitingDiv()),
+            this.projectsTeamService.DeleteTask(this.item.id_row).pipe(
+                tap(() => {if(this.loading) this.layoutUtilsService.showWaitingDiv()}),
                 map((res) => {
                     if (res && res.status == 1) {
                         this.dialogRef.close();
@@ -1804,7 +1812,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 }),
                 catchError((err) => throwError(err)),
                 finalize(() => this.layoutUtilsService.OffWaitingDiv())
-            ).subscribe((res) => {
+            ).subscribe(() => {
             });
             // this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false);
         });
@@ -1812,6 +1820,6 @@ export class WorkListNewDetailComponent implements OnInit {
 
     // gửi giao tiếp tới commponent ngoài
     createMessage(value) {
-        this.CommunicateService.changeMessage(value);
+        this.communicateService.changeMessage(value);
     }
 }

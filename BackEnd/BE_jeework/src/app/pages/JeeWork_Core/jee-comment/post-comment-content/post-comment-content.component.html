@@ -91,7 +91,7 @@
             </li>
             <li>
               <span>
-                {{ comment.DateCreated | date: 'dd/MM/yyyy HH:mm:ss' }}
+                {{ comment.DateCreated | date: 'dd/MM/yyyy HH:mm:ss a' }}
               </span>
             </li>
             <li *ngIf="comment.IsEdit">

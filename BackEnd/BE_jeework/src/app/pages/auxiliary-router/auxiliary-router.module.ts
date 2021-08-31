@@ -4,7 +4,7 @@ import {AuxiliaryRouterComponent} from './auxiliary-router.component';
 import {AuxiliaryRouterJWComponent} from './auxiliary-router-jw.component';
 import {JeeWork_CoreModule} from './../JeeWork_Core/JeeWork_Core.module';
 import {NgModule} from '@angular/core';
-import {CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
@@ -12,7 +12,71 @@ import {TranslateModule} from '@ngx-translate/core';
 import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {DynamicComponentModule} from 'dps-lib';
+import {DropdownTreeModule, DynamicComponentModule} from 'dps-lib';
+import {JeeCommentModule} from '../JeeWork_Core/jee-comment/jee-comment.module';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatSelectModule} from '@angular/material/select';
+import {MatInputModule} from '@angular/material/input';
+import {MatTableModule} from '@angular/material/table';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatIconModule} from '@angular/material/icon';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatCardModule} from '@angular/material/card';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatSortModule} from '@angular/material/sort';
+import {MatListModule} from '@angular/material/list';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatMomentDateModule} from '@angular/material-moment-adapter';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {DndModule} from 'ngx-drag-drop';
+import {MatSliderModule} from '@angular/material/slider';
+import {OwlDateTimeModule, OwlNativeDateTimeModule} from 'ng-pick-datetime';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {NgbModule, NgbProgressbarModule} from '@ng-bootstrap/ng-bootstrap';
+import {MatTreeModule} from '@angular/material/tree';
+import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
+import {EditorModule} from '@tinymce/tinymce-angular';
+import {PopoverModule} from 'ngx-smart-popover';
+import {MatChipsModule} from '@angular/material/chips';
+import {ChartsModule} from 'ng2-charts';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {AvatarModule} from 'ngx-avatar';
+import {FullCalendarModule} from '@fullcalendar/angular';
+import {CRUDTableModule} from '../../_metronic/shared/crud-table';
+import {NgxPrintModule} from 'ngx-print';
+import {ApplicationPipesModule} from '../JeeWork_Core/pipe/pipe.module';
+import {FieldsCustomModule} from '../JeeWork_Core/projects-team/work-list-new/field-custom/fields-custom.module';
+import {HttpUtilsService} from '../../_metronic/jeework_old/core/utils/http-utils.service';
+import {DanhMucChungService} from '../../_metronic/jeework_old/core/services/danhmuc.service';
+import {TypesUtilsService} from '../../_metronic/jeework_old/core/_base/crud';
+import {LayoutUtilsService} from '../../_metronic/jeework_old/core/utils/layout-utils.service';
+import {WeWorkService} from '../JeeWork_Core/services/wework.services';
+import {WorkService} from '../JeeWork_Core/work/work.service';
+import {ListDepartmentService} from '../JeeWork_Core/List-department/Services/List-department.service';
+import {CommentService} from '../JeeWork_Core/comment/comment.service';
+import {UpdateByKeyService} from '../JeeWork_Core/update-by-keys/update-by-keys.service';
+import {filterService} from '../JeeWork_Core/filter/filter.service';
+import {TagsService} from '../JeeWork_Core/tags/tags.service';
+import {AngularGanttScheduleTimelineCalendarModule} from 'angular-gantt-schedule-timeline-calendar';
+import {CommonService} from '../../_metronic/jeework_old/core/services/common.service';
+import {AuthService} from '../../modules/auth';
+import {TokenStorage} from '../../_metronic/jeework_old/core/auth/_services';
+import {AttachmentService} from '../JeeWork_Core/services/attachment.service';
+import {TemplateCenterService} from '../JeeWork_Core/template-center/template-center.service';
+import {AutomationService} from '../JeeWork_Core/automation/automation.service';
+
 const routes: Routes = [
     {
         path: 'task/:id',
@@ -26,20 +90,84 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CommonModule,
-        HttpClientModule,
         RouterModule.forChild(routes),
-        FormsModule,
+        JeeCommentModule,
+        MatFormFieldModule,
+        CommonModule,
+        RouterModule,
         ReactiveFormsModule,
         TranslateModule.forChild(),
-        JeeWork_CoreModule,
-        AngularMultiSelectModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatInputModule,
+        MatTableModule,
+        MatAutocompleteModule,
+        MatRadioModule,
+        MatIconModule,
+        MatNativeDateModule,
+        MatProgressBarModule,
         MatDatepickerModule,
+        MatCardModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatListModule,
+        MatCheckboxModule,
+        MatProgressSpinnerModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatStepperModule,
+        MatTooltipModule,
+        MatMomentDateModule,
+        NgxMatSelectSearchModule,
+        MatSidenavModule,
+        MatSlideToggleModule,
+        MatSidenavModule,
+        DndModule,
+        MatSliderModule,
+        OwlDateTimeModule,
+        OwlNativeDateTimeModule,
+        DragDropModule,
+        NgbModule,
+        NgbProgressbarModule,
+        MatProgressBarModule,
+        DropdownTreeModule,
+        MatTreeModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatTooltipModule,
+        MatMomentDateModule,
+        NgxMatSelectSearchModule,
         MatExpansionModule,
         DynamicComponentModule,
+        PerfectScrollbarModule,
+        EditorModule,
+        MatChipsModule,
+        MatToolbarModule,
+        AvatarModule,
+        ApplicationPipesModule,
+        FieldsCustomModule
     ],
-    providers: [ProjectsTeamService,
-        SubheaderService],
+    providers: [
+        ProjectsTeamService,
+        SubheaderService,
+        HttpUtilsService,
+        TypesUtilsService,
+        LayoutUtilsService,
+        WeWorkService,
+        WorkService,
+        ListDepartmentService,
+        CommentService,
+        UpdateByKeyService,
+        filterService,
+        TagsService,
+        CommonService,
+         TokenStorage,
+        AttachmentService,
+        TemplateCenterService,
+        AutomationService,
+    ],
     entryComponents: [],
     declarations: [AuxiliaryRouterComponent, AuxiliaryRouterJWComponent]
 })

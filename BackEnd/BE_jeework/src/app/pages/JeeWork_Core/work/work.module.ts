@@ -31,10 +31,6 @@ const routes: Routes = [
 		path: '',
 		component: WorkComponent,
 		children: [
-		// {
-		// 	path: '',
-		// 	redirectTo: 'calendar'
-		// },
 		{
 			path: '',
 			loadChildren: () =>  import('./work-list/work-list.module').then(m => m.WorkListModule),

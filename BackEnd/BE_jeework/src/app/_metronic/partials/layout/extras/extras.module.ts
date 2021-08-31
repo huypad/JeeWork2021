@@ -40,6 +40,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NgxAutoScrollModule } from 'ngx-auto-scroll';
+import { RemindService } from 'src/app/modules/auth/_services/remind.service';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
 };
@@ -92,6 +93,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG,
     },
     SocketioService,
+    RemindService,
   ],
   entryComponents: [CreateConvesationGroupComponent,CreateConversationUserComponent],
   exports: [

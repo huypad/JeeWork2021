@@ -37,6 +37,7 @@ import { ApplicationPipesModule } from '../../../pipe/pipe.module';
 import { TaskDatetimeComponent } from './task-datetime/task-datetime.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TasksGroupComponent } from './tasks-group/tasks-group.component';
+import {TimeEstimatesViewComponent} from '../time-estimates-view/time-estimates-view.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -72,7 +73,8 @@ import { TasksGroupComponent } from './tasks-group/tasks-group.component';
     PrioritizeComponent,
     WorkTaskListComponent,
     TaskDatetimeComponent,
-    TasksGroupComponent
+    TasksGroupComponent,
+    TimeEstimatesViewComponent,
   ],
   declarations: [ 
     UserGroupComponent,
@@ -80,6 +82,7 @@ import { TasksGroupComponent } from './tasks-group/tasks-group.component';
     PrioritizeComponent,
     WorkTaskListComponent,
     TaskDatetimeComponent,
+    TimeEstimatesViewComponent,
     TasksGroupComponent
   ],
   exports: [
@@ -88,6 +91,7 @@ import { TasksGroupComponent } from './tasks-group/tasks-group.component';
     PrioritizeComponent,
     WorkTaskListComponent,
     TaskDatetimeComponent,
+    TimeEstimatesViewComponent,
     TasksGroupComponent
   ],
   schemas: [

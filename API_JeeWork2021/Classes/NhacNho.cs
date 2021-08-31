@@ -90,11 +90,11 @@ namespace API_JeeWork2021.Classes
                                             foreach (var account in DataAccount)
                                             {
                                                 ham = "SLCongviecUser"; idkh = item.ToString();
-                                                SLCongviecUser(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                                SLCongviecUser(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
                                                 ham = "SLCongviecQuaHan"; idkh = item.ToString();
-                                                SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                                SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
                                                 ham = "SLCongViecHetHanTrongNgay"; idkh = item.ToString();
-                                                SLCongViecHetHanTrongNgay(account.UserId, account.CustomerID, cnn, _configuration, _producer);
+                                                SLCongViecHetHanTrongNgay(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
                                                 ham = "SLDuAnQuaHan"; idkh = item.ToString();
                                                 SLDuAnQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
                                             }
@@ -213,30 +213,25 @@ namespace API_JeeWork2021.Classes
             SendTestReminder(_configuration, _producer, demo);
         }
 
-        public static long SLCongviecUser(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer)
+        public static long SLCongviecUser(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("UserID", UserID);
-            string sqlq = @$"select w.* from v_wework_new w 
-                                where disabled = 0 and  w.id_nv = @UserID 
-                                and end_date is null";
-            DataTable dt = new DataTable();
-            dt = cnn.CreateDataTable(sqlq, cond);
-            if (cnn.LastError != null || dt.Rows.Count < 0)
-                return 0;
+            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount);
+            var cvdanglam = ds.Tables[0].Compute("count(id_row) ", " Doing = 1 ");
             var demo = new Remider()
             {
                 PhanLoaiID = 503,
-                SoLuong = dt.Rows.Count,
+                SoLuong = int.Parse(cvdanglam.ToString()),
+                //SoLuong = dt.Rows.Count,
                 UserID = UserID,
                 CustomerID = CustomerID,
                 DataField = "Sophu1",
             };
             SendTestReminder(_configuration, _producer, demo);
-            return dt.Rows.Count;
+            return int.Parse(cvdanglam.ToString());
         }
-        public static long SLCongViecHetHanTrongNgay(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer)
+        public static long SLCongViecHetHanTrongNgay(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
+            //DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount);
             DateTime today = DateTime.Now;
             DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
             SqlConditions cond = new SqlConditions();
@@ -262,34 +257,24 @@ namespace API_JeeWork2021.Classes
             SendTestReminder(_configuration, _producer, demo);
             return dt.Rows.Count;
         }
-        public static long SLCongviecQuaHan(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer)
+        public static long SLCongviecQuaHan(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("UserID", UserID);
-            string sqlq = @$"select w.* 
-                            from v_wework_new w 
-                            where disabled = 0 
-                            and  w.Id_NV = @UserID 
-                            and deadline < getdate() and deadline is not null and end_date is null ";
-            //    and deadline > dateadd(minute, -10, getdate())
-            //and deadline<dateadd (minute, +10, getdate())
-            DataTable dt = new DataTable();
-            dt = cnn.CreateDataTable(sqlq, cond);
-            if (cnn.LastError != null || dt.Rows.Count < 0)
-                return 0;
+            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount);
+            var cvquahan = ds.Tables[0].Compute("count(id_row) ", " TreHan = 1 ");
             var demo = new Remider()
             {
                 PhanLoaiID = 802,
-                SoLuong = dt.Rows.Count,
+                SoLuong = int.Parse(cvquahan.ToString()),
+                //SoLuong = dt.Rows.Count,
                 UserID = UserID,
                 CustomerID = CustomerID,
                 DataField = "Sophu1",
             };
             SendTestReminder(_configuration, _producer, demo);
-            return dt.Rows.Count;
+            return int.Parse(cvquahan.ToString());
         }
 
-        public static long SLDuAnQuaHan(long UserID, long IdKH, DpsConnection cnn, IConfiguration _configuration, IProducer _producer)
+        public static long SLDuAnQuaHan(long UserID, long IdKH, DpsConnection cnn, IConfiguration _configuration, IProducer _producer )
         {
             SqlConditions cond = new SqlConditions();
             cond.Add("UserID", UserID);

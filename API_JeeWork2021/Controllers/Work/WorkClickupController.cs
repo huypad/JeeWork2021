@@ -561,23 +561,32 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
+                    string strW_parent = "";
+                    string strW = "";
                     if (!string.IsNullOrEmpty(query.filter["id_nv"]))
                         IDNV = long.Parse(query.filter["id_nv"]);
-                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                        displayChild = query.filter["displayChild"];
-                    string columnName = "id_project_team";
-                    string strW = "";
-                    strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser and Disabled = 0 union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
                     if (!string.IsNullOrEmpty(query.filter["filter"]))
                     {
                         if (query.filter["filter"] == "1")//được giao
-                            strW = " and (w.id_nv=@iduser) ";
+                            strW = " and (w.id_nv=@iduser (parent)) ";
                         if (query.filter["filter"] == "2")//giao đi
-                            strW = " and (w.nguoigiao=@iduser)";
+                            strW = " and (w.nguoigiao=@iduser (parent))";
                         if (query.filter["filter"] == "3")// theo dõi
-                            strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = { loginData.UserID }))";
+                            strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser ) (parent))";
                     }
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                    {
+                        displayChild = query.filter["displayChild"];
+                        strW = strW.Replace("(parent)", " ");
+                    }
+                    else
+                    {
+                        strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser)";
+                        strW = strW.Replace("(parent)", strW_parent);
+                    }
+                    string columnName = "id_project_team";
                     #region group
                     string strG = @$"select distinct p.id_row, p.title 
                                     from we_project_team_user u
@@ -1143,7 +1152,6 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         foreach (DataRow item in ds.Tables[1].Rows)
                         {
                             var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                             if (info != null)
                             {
                                 item["hoten"] = info.FullName;
@@ -5353,7 +5361,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    #region filter thời gian , keyword
+                    #region filter thời gian, keyword
                     DateTime from = DateTime.Now;
                     DateTime to = DateTime.Now;
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
@@ -5369,11 +5377,10 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     }
                     #endregion
-                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    string displayChild = "1";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    string strW = " "; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
-                    //strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser and Disabled = 0 union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    string strW = " ";
                     if (!string.IsNullOrEmpty(query.filter["forme"]) && !string.IsNullOrEmpty(query.filter["assign"]) && !string.IsNullOrEmpty(query.filter["following"]))
                     {
                         strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser and Disabled = 0 union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
@@ -5398,21 +5405,22 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable(), query.filter);//k bao gồm con
-                    //var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
-                    var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
                     int total = temp.Count();
                     if (total == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
-                    var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
+                    //var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     var Children = from rr in temp
                                    select new
                                    {
                                        id_row = rr["id_row"],
                                        start = rr["start_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["start_date"]) : "",
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
+                                       deadline = rr["deadline"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["deadline"]) : "",
                                        title = rr["title"],
                                        classNames = "",
+                                       id_nv = rr["id_nv"],
+                                       phanloai = calendar_getphanloai(rr["id_row"].ToString(), loginData, ConnectionString)
                                        //imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
@@ -6098,8 +6106,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
         public static DataSet GetWorkByEmployee(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-            string ListID = string.Join(",", nvs);
-
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
             string dieukienSort = "id_row";
@@ -6168,14 +6174,14 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
                             ,w.status,w.result,w.createddate,w.createdby,
                             w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department
-                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao,'' as Id_NV,''as hoten
+                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
                             , Iif(fa.id_row is null ,0,1) as favourite 
                             ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
                           ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is null),0) as TreHan-- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
-                            ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as HT_QuaHan--Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
+                            ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
                             ,isnull((select count(*) from we_work v where ((deadline >= getdate() and deadline is not null) or deadline is null) and w.id_row = v.id_row and v.end_date is null),0) as Doing--Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
@@ -6185,15 +6191,16 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             left join we_work_favourite fa 
                             on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
                             where 1=1 " + dieukien_where + "  order by " + dieukienSort;
+
             sqlq += ";select id_work, id_tag,color, title " +
-                "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.Disabled=0 and t.Disabled=0";
+                "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.disabled=0 and t.disabled=0";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
                 sqlq += " and id_project_team=" + query.filter["id_project_team"];
             //người theo dõi
             sqlq += @$";select id_work,id_user,'' as hoten from we_work_user u 
                         where u.disabled = 0 and u.loai = 2";
-
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
+            ds.Tables[0].Columns.Add("PhanLoai");
             #region Map info account từ JeeAccount
             foreach (DataRow item in ds.Tables[0].Rows)
             {
@@ -6217,8 +6224,8 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 {
                     item["hoten"] = infoId_NV.FullName;
                 }
-            }
 
+            }
             foreach (DataRow item in ds.Tables[2].Rows)
             {
                 var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6300,7 +6307,7 @@ w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize
 , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
 w.activated_by, w.closed_by, closed, closed_work_date, closed_work_by
 ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is null),0) as TreHan-- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
-,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as HT_QuaHan--Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
+,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
 ,isnull((select count(*) from we_work v where ((deadline >= getdate() and deadline is not null) or deadline is null) and w.id_row = v.id_row and v.end_date is null),0) as Doing--Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
 from v_wework_new w 
 left join (select count(*) as count,object_id 
@@ -6395,7 +6402,6 @@ where u.disabled = 0 and u.loai = 2";
                         dt_User2 = dr.CopyToDataTable();
                     }
                 }
-                //int b = User2.Rows.Count;
                 //columnName="" : không group
                 // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))
                 // k có phần này thì workclickup lấy dữ liệu không map theo id dự án
@@ -6422,7 +6428,7 @@ where u.disabled = 0 and u.loai = 2";
                              num_file = r["num_file"],
                              num_com = r["num_com"],
                              trehan = r["TreHan"],
-                             htquahan = r["HT_QuaHan"],
+                             hoanthanh = r["done"],
                              danglam = r["Doing"],
                              closed = r["closed"],
                              closed_work_date = r["closed_work_date"],
@@ -6842,6 +6848,48 @@ where u.disabled = 0 and u.loai = 2";
                 return result;
             }
         }
-
+        private object calendar_getphanloai(string id_row, UserJWT loginData, string ConnectionString)
+        {
+            DataTable dt = new DataTable();
+            List<int> ListPhanLoai = new List<int>();
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                SqlConditions conds = new SqlConditions();
+                DataTable dt_follow = new DataTable();
+                conds.Add("w.id_work", id_row);
+                conds.Add("w.disabled", 0);
+                int assign = 0, forme = 0, following = 0, loai = 0; string sql = "";
+                sql = @"select id_user, createdby, loai from we_work_user w where (where)";
+                dt = cnn.CreateDataTable(sql, "(where)", conds);
+                if (dt.Rows.Count > 0)
+                {
+                    foreach (DataRow item in dt.Rows)
+                    {
+                        loai = int.Parse(item["loai"].ToString());
+                        forme = int.Parse(item["id_user"].ToString()); // type 41
+                        assign = int.Parse(item["createdby"].ToString()); // type 42
+                        following = int.Parse(item["id_user"].ToString()); // type 43
+                        if (loai == 1 && forme == loginData.UserID)
+                        {
+                            ListPhanLoai.Add(41);
+                        }
+                        if (loai == 2 && following == loginData.UserID)
+                        {
+                            ListPhanLoai.Add(43);
+                        }
+                        if (assign == loginData.UserID)
+                        {
+                            ListPhanLoai.Add(42);
+                        }
+                    }
+                    ListPhanLoai.Sort();
+                }
+            }
+            var data = new
+            {
+                ListID = ListPhanLoai.ToArray()
+            };
+            return data;
+        }
     }
 }

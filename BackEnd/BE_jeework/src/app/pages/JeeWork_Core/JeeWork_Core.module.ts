@@ -1,6 +1,5 @@
 import {WorksListGroupComponent} from './projects-team/work-list-new/works-dash-board/works-list-group/works-list-group.component';
 import {WorksDashBoardComponent} from './projects-team/work-list-new/works-dash-board/works-dash-board.component';
-import {TimeEstimatesViewComponent} from './projects-team/work-list-new/time-estimates-view/time-estimates-view.component';
 import {DanhsachthumucComponent} from './projects-team/danhsachthumuc/danhsachthumuc.component';
 import {CreatQuickFolderComponent} from './List-department/creat-quick-folder/creat-quick-folder.component';
 import {AutomationService} from './automation/automation.service';
@@ -352,7 +351,6 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         AutomationTabBrowseComponent,
         AutomationTabManageComponent,
         DanhsachthumucComponent,
-        TimeEstimatesViewComponent,
     ],
     declarations: [
         RepeatedListComponent,
@@ -434,7 +432,6 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         AutomationTabManageComponent,
         AutomationLabelComponent,
         DanhsachthumucComponent,
-        TimeEstimatesViewComponent,
     ],
     exports: [
         JeeCommentModule,
@@ -555,7 +552,6 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         AutomationTabManageComponent,
         DanhsachthumucComponent,
         ApplicationPipesModule,
-        TimeEstimatesViewComponent,
         FieldsCustomModule
     ]
 })

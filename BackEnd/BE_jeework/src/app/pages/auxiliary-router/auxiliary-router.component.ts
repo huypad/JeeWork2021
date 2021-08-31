@@ -1,64 +1,59 @@
-import { ProjectsTeamService } from './../JeeWork_Core/projects-team/Services/department-and-project.service';
-import { MatDialog } from '@angular/material/dialog';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
-import { WorkListNewDetailComponent } from '../JeeWork_Core/projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
+import {ProjectsTeamService} from './../JeeWork_Core/projects-team/Services/department-and-project.service';
+import {MatDialog} from '@angular/material/dialog';
+import {Router, ActivatedRoute} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {WorkListNewDetailComponent} from '../JeeWork_Core/projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
 
 @Component({
-  selector: 'app-auxiliary-router',
-  templateUrl: './auxiliary-router.component.html',
-  styleUrls: ['./auxiliary-router.component.scss']
+    selector: 'app-auxiliary-router',
+    templateUrl: './auxiliary-router.component.html',
+    styleUrls: ['./auxiliary-router.component.scss']
 })
 export class AuxiliaryRouterComponent implements OnInit {
 
-  constructor(
-    private router: Router,
-    public dialog: MatDialog,
-    public ProjectsTeamService: ProjectsTeamService,
-    private activatedRoute: ActivatedRoute
-  ) { }
+    constructor(
+        private router: Router,
+        public dialog: MatDialog,
+        public projectsTeamService: ProjectsTeamService,
+        private activatedRoute: ActivatedRoute
+    ) {
+    }
 
-  ngOnInit() {
-    this.activatedRoute.params.subscribe(params => {
-			var ID = params.id;
-      this.LoadDetailTask(ID);
-		});
-  }
-  LoadDetailTask(id){
-    this.ProjectsTeamService.WorkDetail(id).subscribe(res => {
-      if(res && res.status==1){
-        this.openDialog(res.data);
-      }else{
-        alert(res.error.message);
-        this.router.navigate(['/error'])
-      }
-    })
-  }
+    ngOnInit() {
+        this.activatedRoute.params.subscribe(params => {
+            const ID = params.id;
+            this.LoadDetailTask(ID);
+        });
+    }
 
-  close() {
-    // this.router.navigate([{ outlets: { aux: null } }])
-    this.router.navigate(['', {outlets: {auxName: null}}]);
-  }
+    LoadDetailTask(id) {
+        this.projectsTeamService.WorkDetail(id).subscribe(res => {
+            if (res && res.status === 1) {
+                this.openDialog(res.data);
+            } else {
+                alert(res.error.message);
+                this.router.navigate(['/error']);
+            }
+        });
+    }
 
-  openDialog(item){
-    item.notback = true;
-    const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-      width: '100vw',
-      height: '100vh',
-      data: item
-    });
+    close() {
+        // this.router.navigate([{ outlets: { aux: null } }])
+        this.router.navigate(['', {outlets: {auxName: null}}]);
+    }
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.close();
-    });
-    // const dialogRef = this.dialog.open(WorkListNewDetailComponent, { 
-    //   width: "40vw",
-    //   minHeight: "60vh",
-    //   data: {ID} });
-		// dialogRef.afterClosed().subscribe(res => {
-		// 	setTimeout(() => {
-    //     this.close();
-    //   }, 50);
-		// });
-  }
+    openDialog(item) {
+        item.notback = true;
+        item.notloading = true;
+        const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+            width: '100vw',
+            maxWidth: '100vw',
+            height: '100vh',
+            data: item
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            this.close();
+        });
+    }
 }
