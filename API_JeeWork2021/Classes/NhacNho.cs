@@ -215,7 +215,8 @@ namespace API_JeeWork2021.Classes
 
         public static long SLCongviecUser(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
-            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount);
+            string StrW = " and id_nv = " + UserID +" ";
+            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount, StrW );
             var cvdanglam = ds.Tables[0].Compute("count(id_row) ", " Doing = 1 ");
             var demo = new Remider()
             {
@@ -231,19 +232,24 @@ namespace API_JeeWork2021.Classes
         }
         public static long SLCongViecHetHanTrongNgay(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
-            //DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount);
             DateTime today = DateTime.Now;
             DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
-            SqlConditions cond = new SqlConditions();
-            cond.Add("UserID", UserID);
-            string sqlq = @$"select w.* from v_wework_new w 
-                                where disabled = 0 
-                                and w.Id_NV = @UserID 
-                                and deadline is not null
-                                and end_date is null ";
-            sqlq += " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
-            DataTable dt = new DataTable();
-            dt = cnn.CreateDataTable(sqlq, cond);
+            //SqlConditions cond = new SqlConditions();
+            //cond.Add("UserID", UserID);
+            //string sqlq = @$"select w.* from v_wework_new w 
+            //                    where disabled = 0 
+            //                    and w.Id_NV = @UserID 
+            //                    and deadline is not null
+            //                    and end_date is null ";
+            //sqlq += " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
+            //DataTable dt = new DataTable();
+            //dt = cnn.CreateDataTable(sqlq, cond);
+            //if (cnn.LastError != null || dt.Rows.Count < 0)
+            //    return 0;
+
+            string StrW = " and id_nv = "+ UserID + " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
+            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount, StrW);
+            var dt = ds.Tables[0];
             if (cnn.LastError != null || dt.Rows.Count < 0)
                 return 0;
             var demo = new Remider()
@@ -259,7 +265,8 @@ namespace API_JeeWork2021.Classes
         }
         public static long SLCongviecQuaHan(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
-            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount);
+            string StrW = " and id_nv = " + UserID + " ";
+            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount, StrW);
             var cvquahan = ds.Tables[0].Compute("count(id_row) ", " TreHan = 1 ");
             var demo = new Remider()
             {

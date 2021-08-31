@@ -6169,6 +6169,11 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Trả dữ liệu về backend để hiển thị lên giao diện 
             //, nv.holot+' '+nv.ten as hoten_nguoigiao -- w.NguoiGiao,
+            /*
+                          ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is null),0) as TreHan-- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
+                            ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
+                            ,isnull((select count(*) from we_work v where ((deadline >= getdate() and deadline is not null) or deadline is null) and w.id_row = v.id_row and v.end_date is null),0) as Doing--Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
+             */
             string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group
                             ,w.deadline,w.id_milestone,w.milestone,
                             w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
@@ -6180,9 +6185,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
-                          ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is null),0) as TreHan-- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
-                            ,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
-                            ,isnull((select count(*) from we_work v where ((deadline >= getdate() and deadline is not null) or deadline is null) and w.id_row = v.id_row and v.end_date is null),0) as Doing--Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
+                            ,iIf(  w.deadline < getdate() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
+                            ,iIf( w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
+                            ,iIf( ( (deadline >= getdate() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
