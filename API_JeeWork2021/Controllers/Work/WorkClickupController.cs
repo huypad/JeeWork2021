@@ -578,9 +578,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                             strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser ) (parent))";
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                    displayChild = query.filter["displayChild"];
+                    if (displayChild.ToString() == "0")
                     {
-                        displayChild = query.filter["displayChild"];
                         strW = strW.Replace("(parent)", " ");
                     }
                     else

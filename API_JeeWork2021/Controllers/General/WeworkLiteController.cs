@@ -2309,6 +2309,8 @@ and IdKH={loginData.CustomerID} )";
         //}
         public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
         {
+            if(sender == receivers)
+                return true;
             if (IsNotify(_configuration))
             {
                 string linkmobile = _configuration.GetValue<string>("Mobile:code");
