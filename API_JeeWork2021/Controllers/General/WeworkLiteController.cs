@@ -2619,7 +2619,7 @@ and IdKH={loginData.CustomerID} )";
                 cond = new SqlConditions();
                 //cond.Add("isvisible", 0);
                 cond.Add("isdefault", 1);
-                select = "select we_fields.*," + id + " as id_project_team, " + id + " as id_department,  type, '' as title_newfield, ''as id_row, 0 as ishidden " +
+                select = "select we_fields.*," + id + " as id_project_team, " + id + " as departmentid,  type, '' as title_newfield, ''as id_row, 0 as ishidden " +
                         "from we_fields " +
                         "where (where) order by id_row";
             }
