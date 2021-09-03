@@ -8,6 +8,7 @@
   }
 
   .menu-text {
+    font-size: 13px;
     white-space: nowrap;
     margin-left: -5px;
   }
@@ -57,6 +58,10 @@
   /* margin: -2px 3px; */
   border: 1px solid;
   border-radius: 5px;
-  font-size: 10pt;
+  font-size: 9pt;
   justify-content: center;
 }
+.active-btn {
+  color: orange;
+  // background-color: blue;
+} 

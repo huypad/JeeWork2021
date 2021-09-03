@@ -1,0 +1,32 @@
+<div class="card card-custom">
+  <div class="card-header">
+    <div class="card-title">
+      <input [formControl]="searchControl" type="text" class="form-control" style="width: 400px;"
+        placeholder="{{'jeechat.timkiem' | translate}}">
+    </div>
+    <div class="card-toolbar">
+      <mat-icon (click)="goBack()" style="cursor: pointer;">close</mat-icon>
+    </div>
+  </div>
+  <div class="card-body">
+    <div style=" max-height:40vh; position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+      <div *ngFor="let item of filteredGroups | async;let vi=index">
+        <div class="kt-notification__item-details list home-links" style="display: flex;align-items: center;">
+          <div (click)="CreateConverSation(item)" class="li" style="border-radius: 5px; width: 95%;">
+            <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
+            <ng-template #e2>
+              <ngx-avatar size="50" src="{{item.Avatar}}"></ngx-avatar>
+            </ng-template>
+            <ng-template #e1>
+              <ngx-avatar size="50" [name]="getNameUser(item)" bgColor="{{getColorNameUser(item)}}">
+              </ngx-avatar>
+            </ng-template>
+            <span style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
+              {{item.FullName}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<style>
+    .post {
+        text-align: center;
+
+        height: 35px;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        border-radius: 5px;
+        /* background-color:lightgreen;
+            color:#FFf; */
+        color: white;
+        background-color: green;
+        border: none;
+
+
+    }
+
+    ::placeholder {
+        color: black;
+        padding: 10px;
+    }
+
+    .mat-form-field-wrapper {
+        padding-bottom: none !important;
+    }
+
+    .avatar {
+        border-radius: 50%;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        width: 42px;
+        height: 40px;
+        background-size: cover;
+    }
+</style>
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3><span translate="jeechat.taonhom"></span></h3>
+        </div>
+        <div class="card-toolbar">
+            <mat-icon (click)="goBack()" style="cursor: pointer;">close</mat-icon>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="textarea" style=" position: relative">
+            <div style="padding-bottom: 10px;" class="form-group">
+                <div style="display: flex; align-items: center;">
+                    <span *ngIf="listTT_user.Avatar===null ||listTT_user.Avatar==='';then e1; else e2"></span>
+                    <ng-template #e2>
+                        <ngx-avatar size="50" src="{{listTT_user.Avatar}}"></ngx-avatar>
+                    </ng-template>
+                    <ng-template #e1>
+                        <ngx-avatar size="50" [name]="_user.user.customData.personalInfo.Name.slice(0,1)" *ngIf="user$ as _user"
+                            bgColor="{{_user.user.customData.personalInfo.BgColor}}"></ngx-avatar>
+                    </ng-template>
+                    <div style="display: flex;flex-direction: column;" *ngIf="user$ as _user">
+                        <span
+                            style="font-weight: bold; margin-left: 12px;">{{_user.user.customData.personalInfo.Fullname
+                            }}</span>
+                        <span style="margin-left: 12px;">Quản trị viên</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border: 1px solid lightblue;border-radius: 5px; border-radius: 10px; padding: 0 10px;">
+                <mat-form-field style="width: 100%;">
+                    <input [(ngModel)]="ten_group" required #noidungInput="ngModel" matInput
+                        placeholder="{{'jeechat.tennhom' | translate}}" class="require">
+                </mat-form-field>
+            </div>
+            <div style="padding-top: 20px;">
+                <mat-form-field style="border-radius: 10px;
+                            border: 1px solid lightgray; width: 100%; padding: 0 10px 0 10px;">
+                    <mat-chip-list #chipList>
+                        <mat-chip *ngFor="let dlht of user_tam" [selectable]="selectable" [removable]="removable"
+                            (removed)="remove(dlht)">
+                            {{dlht.Fullname}}
+                            <mat-icon matChipRemove *ngIf="removable">cancel
+                            </mat-icon>
+                        </mat-chip>
+                        <input [formControl]="userControl" [matChipInputFor]="chipList"
+                            placeholder="{{'jeechat.moithanhvien' | translate}}"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                    </mat-chip-list>
+                </mat-form-field>
+
+                <div style=" max-height:40vh; position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+                    <div *ngFor="let item of listUser | async;let vi=index">
+                        <div class="kt-notification__item-details list home-links"
+                            style="display: flex;align-items: center;">
+                            <div (click)="addTagName(item)" class="li" style="border-radius: 5px; width: 95%;">
+                                <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
+                                <ng-template #e2>
+                                    <ngx-avatar size="50" src="{{item.Avatar}}"></ngx-avatar>
+                                </ng-template>
+
+                                <ng-template #e1>
+                                    <ngx-avatar size="50" [name]="getNameUser(item)"
+                                        bgColor="{{getColorNameUser(item)}}">
+                                    </ngx-avatar>
+                                </ng-template>
+                                <span style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
+                                    {{item.Fullname}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dialog-footer">
+        <button mat-raised-button [disabled]="noidungInput.errors?.required" style="width: 100%;" (click)="submit()"
+            class="post">
+            <span style="font-size:18px;" translate="jeechat.tao"></span>
+        </button>
+    </div>
+</div>

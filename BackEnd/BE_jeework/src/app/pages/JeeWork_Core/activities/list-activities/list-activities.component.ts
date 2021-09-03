@@ -210,7 +210,7 @@ export class ListActivitiesComponent {
 	}
 
 	Viewdetail(item){
-		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.id_row }, }]);
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.object_id }, }]);
 		// this.data = this.datalog;
 		// this.DataID = this.data.id_row;
 		// this.Id_project_team = this.data.id_project_team;

@@ -42,7 +42,6 @@ export class JeeCommentSignalrService {
           });
         })
         .catch((err) => {
-          console.log('error', err);
           this.hubConnection.stop();
         });
   }

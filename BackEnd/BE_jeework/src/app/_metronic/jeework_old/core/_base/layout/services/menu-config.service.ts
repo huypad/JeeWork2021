@@ -35,7 +35,6 @@ export class MenuConfigService {
 		return menu;
 		// return this.menuConfig;
 	}
-
 	layMenu() {
 		return this.menuPhanQuyenServices.layMenuChucNang(Module).toPromise();
 	}
@@ -63,44 +62,43 @@ export class MenuConfigService {
 			let spaceww = res.data.dataww;
 			let arr = [];
 			// Menu chính
-			if (dt.length > 0) {
-				dt.forEach((item, index) => {
-					//Có quyền thêm quy trình động mới hiển thị nút thêm
-					if (!item.IsShowAdd && +item.GroupName > 0 && item.Child.length == 0) return;
-					let src = "";
-					if (item.Title != "" && item.Title != null) {//menu gốc
-						src = this.translate.instant('MainMenu.' + '' + item.Title);
-					} else {//menu phân loại
-						src = item.Title_;
-					}
-					let parentMenu = {
-						title: src,
-						root: item.Child.length == 0,
-						icon: '' + item.Icon,
-						page: '',
-						target: '' + item.Target, // bổ sung vào để phân biệt kiểu target
-						id_phanloai: +item.GroupName ? +item.GroupName : -1, //ID theo phân loại
-						isproject: +item.GroupName ? false : true, //ID theo phân loại
-						showAdd: item.IsShowAdd, //hiển thị icon để thêm nhiệm vụ theo phân loại, có quyền thiết lập quy trình động
-						alignment: 'left',//dành cho header menu
-					};
-					if (item.Child && item.Child.length > 0) {
-						parentMenu["bullet"] = 'dot';
-						parentMenu["submenu"] = [];
-						item.Child.forEach((itemE, indexE) => {
-							let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
-							let child = {
-								title: '' + srcSub,
-								page: '' + itemE.ALink,
-								target: '' + itemE.Target // bổ sung vào để phân biệt kiểu target
-							};
-							parentMenu["submenu"].push(child);
-						});
-					}
-					config.aside.items.push(parentMenu);
-					config.header.items.push(parentMenu);
-				});
-			}
+			// if (dt.length > 0) {
+			// 	dt.forEach((item, index) => {
+			// 		if (!item.IsShowAdd && +item.GroupName > 0 && item.Child.length == 0) return;
+			// 		let src = "";
+			// 		if (item.Title != "" && item.Title != null) {//menu gốc
+			// 			src = this.translate.instant('MainMenu.' + '' + item.Title);
+			// 		} else {//menu phân loại
+			// 			src = item.Title_;
+			// 		}
+			// 		let parentMenu = {
+			// 			title: src,
+			// 			root: item.Child.length == 0,
+			// 			icon: '' + item.Icon,
+			// 			page: '',
+			// 			target: '' + item.Target, // bổ sung vào để phân biệt kiểu target
+			// 			id_phanloai: +item.GroupName ? +item.GroupName : -1, //ID theo phân loại
+			// 			isproject: +item.GroupName ? false : true, //ID theo phân loại
+			// 			showAdd: item.IsShowAdd, //hiển thị icon để thêm nhiệm vụ theo phân loại, có quyền thiết lập quy trình động
+			// 			alignment: 'left',//dành cho header menu
+			// 		};
+			// 		if (item.Child && item.Child.length > 0) {
+			// 			parentMenu["bullet"] = 'dot';
+			// 			parentMenu["submenu"] = [];
+			// 			item.Child.forEach((itemE, indexE) => {
+			// 				let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
+			// 				let child = {
+			// 					title: '' + srcSub,
+			// 					page: '' + itemE.ALink,
+			// 					target: '' + itemE.Target // bổ sung vào để phân biệt kiểu target
+			// 				};
+			// 				parentMenu["submenu"].push(child);
+			// 			});
+			// 		}
+			// 		config.aside.items.push(parentMenu);
+			// 		config.header.items.push(parentMenu);
+			// 	});
+			// }
 			// Các menu project wework
 			if (spaceww.length > 0) {
 				spaceww.forEach((item, index) => {

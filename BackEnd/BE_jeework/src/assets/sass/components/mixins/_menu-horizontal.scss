@@ -452,7 +452,6 @@
 					z-index: get($config, build, layout, item, submenu, self, zindex);
 					position: absolute;
 					top: 100%;
-
 					@include fix-animation-lags();
 					@include border-radius(get($config, build, layout, item, submenu, self, border-radius));
 					@include attr(margin, get($config, build, layout, item, submenu, self, margin));

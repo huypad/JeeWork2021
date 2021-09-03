@@ -1,6 +1,3 @@
-import { MessengerComponent } from './dropdown-inner/messenger/messenger.component';
-import { ChatBoxComponent } from './dropdown-inner/chat-box/chat-box.component';
-import { CreateConvesationGroupComponent } from './create-convesation-group/create-convesation-group.component';
 import { JeeWork_CoreModule } from "./../../../../pages/JeeWork_Core/JeeWork_Core.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -35,12 +32,20 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FilterPipe } from './filter,pipe';
-import { CreateConversationUserComponent } from './create-conversation-user/create-conversation-user.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NgxAutoScrollModule } from 'ngx-auto-scroll';
 import { RemindService } from 'src/app/modules/auth/_services/remind.service';
+import {CreateConversationUserComponent} from './jee-chat/create-conversation-user/create-conversation-user.component';
+import {CreateConvesationGroupComponent} from './jee-chat/create-convesation-group/create-convesation-group.component';
+import {ChatBoxComponent} from './jee-chat/chat-box/chat-box.component';
+import {ThanhVienGroupComponent} from './jee-chat/thanh-vien-group/thanh-vien-group.component';
+import {EditGroupNameComponent} from './jee-chat/edit-group-name/edit-group-name.component';
+import {InsertThanhvienComponent} from './jee-chat/insert-thanhvien/insert-thanhvien.component';
+import {TimeAgoPipe} from './time-ago.pipe';
+import {TimeLastPipe} from './time-lastmess.pipe';
+import {MessengerComponent} from './jee-chat/messenger/messenger.component';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
 };
@@ -65,7 +70,13 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ToolbarComponent,
     CreateConvesationGroupComponent,
     ChatBoxComponent,
-    MessengerComponent
+    MessengerComponent,
+    FilterPipe,//Dùng cho JeeChat
+    TimeAgoPipe,
+    TimeLastPipe,
+    InsertThanhvienComponent,//Dùng cho JeeChat
+    EditGroupNameComponent,//Dùng cho JeeChat
+    ThanhVienGroupComponent,//Dùng cho JeeChat
   ],
   imports: [
     // npm lại nó mới ăn cái thư viện ở module ko pk sao luôn
@@ -95,7 +106,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     SocketioService,
     RemindService,
   ],
-  entryComponents: [CreateConvesationGroupComponent,CreateConversationUserComponent],
+  entryComponents: [CreateConvesationGroupComponent,EditGroupNameComponent,CreateConversationUserComponent,InsertThanhvienComponent,ThanhVienGroupComponent],
   exports: [
     SearchDropdownInnerComponent,
     NotificationsDropdownInnerComponent,
@@ -112,7 +123,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ScrollTopComponent,
     CreateConvesationGroupComponent,
     ChatBoxComponent,
-    MessengerComponent
+    MessengerComponent,
+    FilterPipe,//Dùng cho JeeChat
+    TimeAgoPipe,
+    TimeLastPipe,
   ],
 })
 export class ExtrasModule {}

@@ -19,7 +19,7 @@ export class TimezonePipe implements PipeTransform {
     }
 
     DMYtoMDY(value) {
-        const cutstring = value.split('/');
+        const cutstring = value.toString().split('/');
         if (cutstring.length === 3) {
             return cutstring[1] + '/' + cutstring[0] + '/' + cutstring[2];
         }
@@ -34,9 +34,9 @@ export class TimezonePipe implements PipeTransform {
         if (moment(d + 'z').format(fm) === 'Invalid date') {
             return d;
         }
-        if (!isServer) {
-            return moment(d).format(fm);
-        }
+        // if (!isServer) {
+        //     return moment(d).format(fm);
+        // }
         return moment(d + 'z').format(fm);
     }
 

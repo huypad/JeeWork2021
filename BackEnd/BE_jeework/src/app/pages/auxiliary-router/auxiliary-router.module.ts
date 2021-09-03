@@ -15,7 +15,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {DropdownTreeModule, DynamicComponentModule} from 'dps-lib';
 import {JeeCommentModule} from '../JeeWork_Core/jee-comment/jee-comment.module';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatDialogModule} from '@angular/material/dialog';
+import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule} from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
@@ -23,8 +23,8 @@ import {MatInputModule} from '@angular/material/input';
 import {MatTableModule} from '@angular/material/table';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatIconModule} from '@angular/material/icon';
-import {MatNativeDateModule} from '@angular/material/core';
+import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
+import {DateAdapter, MAT_DATE_LOCALE, MatNativeDateModule} from '@angular/material/core';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatCardModule} from '@angular/material/card';
 import {MatPaginatorModule} from '@angular/material/paginator';
@@ -36,7 +36,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
+import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -76,6 +76,7 @@ import {TokenStorage} from '../../_metronic/jeework_old/core/auth/_services';
 import {AttachmentService} from '../JeeWork_Core/services/attachment.service';
 import {TemplateCenterService} from '../JeeWork_Core/template-center/template-center.service';
 import {AutomationService} from '../JeeWork_Core/automation/automation.service';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef} from '@angular/material/bottom-sheet';
 
 const routes: Routes = [
     {
@@ -150,6 +151,21 @@ const routes: Routes = [
         FieldsCustomModule
     ],
     providers: [
+        {provide: MAT_DATE_LOCALE, useValue: 'vi'},
+        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+        {
+            provide: MAT_DIALOG_DEFAULT_OPTIONS,
+            useValue: {
+                hasBackdrop: true,
+                panelClass: 'kt-mat-dialog-container__wrapper',
+                height: 'auto',
+                width: '700px'
+            }
+        },
+        MatIconRegistry,
+        {provide: MatBottomSheetRef, useValue: {}},
+        {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}},
+        {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}},
         ProjectsTeamService,
         SubheaderService,
         HttpUtilsService,

@@ -43,6 +43,8 @@ import * as objectPath from 'object-path';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ProjectTeamModel } from 'src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model';
+import { Observable } from 'rxjs';
+import { MenuPhanQuyenServices } from 'src/app/_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 
 @Component({
   selector: 'app-aside-wework',
@@ -67,7 +69,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     public _Services: ProjectsTeamService,
     private changeDetectorRefs: ChangeDetectorRef,
     public commonService: CommonService,
-    public WeWorkService: WeWorkService
+    public WeWorkService: WeWorkService,
+    private menuPhanQuyenServices: MenuPhanQuyenServices,
+
   ) { }
   @ViewChild('asideMenu', { static: true }) asideMenu: ElementRef;
 
@@ -131,7 +135,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   asideSelfMinimizeToggle = false;
   isFavourite = false;
   currentUrl: string;
-
+  menuData2: Observable<any[]>;
+  menuData: any;
   ngAfterViewInit(): void { }
 
   ngOnInit(): void {
@@ -162,7 +167,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         this.currentRouteUrl = this.router.url.split(/[?#]/)[0];
         this.cdr.markForCheck();
       });
-    const config = this.layoutConfigService.getConfig();
+    // const config = this.layoutConfigService.getConfig();
     // if (objectPath.get(config, 'aside.menu.dropdown') !== true && objectPath.get(config, 'aside.self.fixed')) {
     // 	this.render.setAttribute(this.asideMenu.nativeElement, 'data-ktmenu-scroll', '1');
     // }
@@ -172,10 +177,24 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     // 	// tslint:disable-next-line:max-line-length
     // 	this.render.setAttribute(this.asideMenu.nativeElement, 'data-ktmenu-dropdown-timeout', objectPath.get(config, 'aside.menu.submenu.dropdown.hover-timeout'));
     // }
+    this.menuPhanQuyenServices.layMenuChucNang('wework').subscribe(r => {
+      if (r && r.status == 1) {
+        this.menuData = r.data;
+      }
+      else
+        this.menuData = [];
+      //this.menuData2.next(this.menuData);
+      this.menuData2 = new Observable((observer) => { observer.next(this.menuData.data); })
+    });
   }
-
+  handleSVG(svg: SVGElement, parent: Element | null): SVGElement {
+    console.log('Loaded SVG: ', svg, parent);
+    svg.setAttribute('width', '100');
+    return svg;
+  }
   LoadMenu() {
     this.menuAsideService.loadMenu();
+    debugger
   }
 
   private getLogo() {
@@ -225,12 +244,29 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       this.changeDetectorRefs.detectChanges();
     });
   }
+  getSideBarMenuItemClass(item, isMenuActive) {
+    let menuCssClass = 'm-menu__item';
 
+    if (item.items.length) {
+      menuCssClass += ' m-menu__item--submenu';
+      //expand process menu by default
+      if (item.name == 'Process') {
+        //set expanded, but not active
+        menuCssClass += ' m-menu__item--open m-menu__item--expanded';
+      }
+    }
+    if (isMenuActive) {
+      menuCssClass += ' m-menu__item--open m-menu__item--expanded m-menu__item--active';
+    }
+
+    return menuCssClass;
+  }
   /**
    * Check Menu is active
    * @param item: any
    */
   isMenuItemIsActive(item): boolean {
+    debugger
     if (item.submenu) {
       return this.isMenuRootItemIsActive(item);
     }
@@ -248,7 +284,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
    */
   isMenuRootItemIsActive(item): boolean {
     let result = false;
-
+    debugger
     for (const subItem of item.submenu) {
       result = this.isMenuItemIsActive(subItem);
       if (result) {
@@ -270,7 +306,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         clearTimeout(this.outsideTm);
         this.outsideTm = null;
       }
-
       this.insideTm = setTimeout(() => {
         // if the left aside menu is minimized
         if (
@@ -321,7 +356,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       classes += ' kt-menu__item--submenu';
     }
 
+
     if (!item.submenu && this.isMenuItemIsActive(item)) {
+
       classes += ' kt-menu__item--active kt-menu__item--here';
     }
 
@@ -992,4 +1029,16 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
       }
     });
   }
+  folderOpen = false;
+  btnClick($event) {
+    this.folderOpen = !this.folderOpen;
+  }
+  getActiveClass(_show) {
+    if (_show) {
+      return 'fa fa-folder-open';
+    }
+    return 'fa fa-folder';
+  }
+
+   
 }

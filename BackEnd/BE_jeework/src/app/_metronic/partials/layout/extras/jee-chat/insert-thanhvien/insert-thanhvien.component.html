@@ -45,7 +45,7 @@
                     <div id="post-status" class="__apdialog" title="">
                         <div class="title">
     
-                            <span style="font-size:20px;text-align:center;">Tạo Nhóm </span>
+                            <span style="font-size:20px;text-align:center;">Thêm thành viên</span>
                         
                             
                             <button (click)="goBack()" style="float: right;margin-top: -5px;"  mat-button
@@ -66,20 +66,12 @@
                                             <div  style="display: flex;
                                             align-items: center;">
             
-                                                <span *ngIf="listTT_user.Avatar===null ||listTT_user.Avatar==='';then e1; else e2"></span>
-                                                <ng-template #e2>
-                                                    <img src="{{listTT_user.Avatar}}" class="icon">
-                
-                                                </ng-template>
-                
-                                                <ng-template #e1>
-                
-                                                    <img src="./assets/user.png'" class="icon">
-                
-                                                </ng-template>
+            <ngx-avatar [size]="45" src="{{ listTT_user.Avatar }}" *ngIf="listTT_user.Avatar"></ngx-avatar>
+            <ngx-avatar [size]="45" [name]="listTT_user.Name.slice(0, 1)" bgColor="{{ listTT_user.BgColor }}" *ngIf="!listTT_user.Avatar"></ngx-avatar>
+                                                
                                                 <div  style="display: flex;flex-direction: column;" 
-                                                *ngIf="user$ | async as _user">
-                                                <span style="font-weight: bold; margin-left: 12px;">{{_user}}</span>
+                                               >
+                                                <span style="font-weight: bold; margin-left: 12px;">{{name}}</span>
                                                 <span style="margin-left: 12px;">Quản trị viên</span>
                                              
                                             </div>
@@ -90,7 +82,7 @@
             
                                         </div>
                                        
-                                        <div style="border: 1px solid lightblue;border-radius: 5px;     border-radius: 10px;
+                                        <!-- <div style="border: 1px solid lightblue;border-radius: 5px;     border-radius: 10px;
                                         padding: 0 10px;" class="example-form">
                                             <mat-form-field appearance="none" style="width: 100%;">
                                                 <mat-label style="padding-top: 5px;">Tên Nhóm</mat-label>
@@ -100,7 +92,7 @@
                                           
                                           
                                           </div>
-            
+             -->
                                         <div style="padding-top: 20px;" >
                                             <div class="ct_user">
                                         
@@ -126,7 +118,7 @@
                                                 </mat-form-field>
                                             </div>
                                         
-                                         <div  style=" max-height:40vh; position: relative;"  [perfectScrollbar]="{wheelPropagation: false}">
+                                        <div  style=" max-height:40vh; position: relative;"  [perfectScrollbar]="{wheelPropagation: false}">
                                         
                                         
                                         <div  *ngFor="let item of listUser | async;let vi=index">
@@ -138,17 +130,10 @@
                                            ">
                                         
                                             
-                                                <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
-                                                <ng-template #e2>
-                                                  <img class="avatar" src="{{item.Avatar}}">
-                                        
-                                                </ng-template>
-                                        
-                                                <ng-template #e1>
-                                        
-                                                  <img class="avatar" src="./assets/user.png">
-                                        
-                                                </ng-template>
+
+                                        <ngx-avatar [size]="45" src="{{ item.Avatar }}" *ngIf="item.Avatar"></ngx-avatar>
+                                        <ngx-avatar [size]="45" [name]="item.Fullname.slice(0, 1)" bgColor="{{ item.BgColor }}" *ngIf="!item.Avatar"></ngx-avatar>
+                                                
                                                 <span  style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
                                                     {{item.Fullname}}
                                                 </span>
@@ -156,19 +141,18 @@
                                             </div>
                                             </div>
                                             </div>
-                                       </div>
+                                        </div>
                                         </div>
                                      
             
                                         <div class="is-disabled" style="display: flex;">
             
             
-                                            <button  mat-raised-button [disabled]="noidungInput.errors?.required" style="width: 100%;" (click)="submit()"
+                                            <button  mat-raised-button [disabled]="user_tam.length==0" style="width: 100%;" (click)="submit()"
                                                 class="post">
-                                                <!-- <meta charset="utf-8"> -->
-                                                <!-- <span> {{htmlContent}}</span>  -->
+                                                <span *ngIf="active" style="    margin-right: 10px;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             
-                                                <span style="font-size:18px;">Tạo</span>
+                                                <span style="font-size:18px;">Thêm</span>
                                             </button>
                                         </div>
             

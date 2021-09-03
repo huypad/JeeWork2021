@@ -263,6 +263,7 @@
                                 <app-task-datetime class="position-relative"
                                                    (valueChange)="updateDate($event,'start_date')"
                                                    [fieldname]="'deadline'"
+                                                   [showall]="false"
                                                    [(value)]="item.start_date"
                                                    [role]="CheckRoles(10)"></app-task-datetime>
                             </div>
@@ -275,6 +276,7 @@
                                 <app-task-datetime class="position-relative"
                                                    (valueChange)="updateDate($event,'deadline')"
                                                    [fieldname]="'deadline'"
+                                                   [showall]="false"
                                                    [(value)]="item.deadline"
                                                    [role]="CheckRoles(10)"></app-task-datetime>
                             </div>
@@ -956,8 +958,22 @@
                                         <div class="task-history-item__content row">
                                             <b>{{log.NguoiTao.hoten}}</b> &nbsp; {{getActionActivities(log)}}
 
-                                            <ng-container
-                                                    *ngIf="log.id_action != 1 && log.id_action != 9 && log.id_action != 8">
+                                            <ng-container *ngIf="log.id_action == 11 || log.id_action == 4;else actionlog">
+                                                <!-- trường hợp log ngày bắt đầu và kết thúc thì thay đổi thành timezone -->
+                                                <ng-container *ngIf="log.oldvalue">
+                                                    từ &nbsp;
+                                                    <span style="font-weight: 600;">
+                                                        {{log.oldvalue | timezone}}
+                                                    </span> &nbsp;
+                                                </ng-container>
+                                                <ng-container *ngIf="log.newvalue">
+                                                    thành &nbsp;
+                                                    <span style="font-weight: 600;">
+                                                        {{log.newvalue | timezone}}
+                                                    </span>
+                                                </ng-container>
+                                            </ng-container>
+                                            <ng-template #actionlog>
                                                 <ng-container *ngIf="log.oldvalue">
                                                     từ &nbsp;
                                                     <ng-container *ngIf="log.colorold">
@@ -978,8 +994,7 @@
                                                         {{log.newvalue}}
                                                     </span>
                                                 </ng-container>
-                                            </ng-container>
-
+                                            </ng-template>
                                         </div>
                                         <div class="task-history-item__date">
                                             {{log.CreatedDate | timezone}}

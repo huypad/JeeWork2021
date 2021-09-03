@@ -65,6 +65,7 @@
     "ng-apexcharts": "^1.5.1",
     "ng-copytoclipboard": "^1.1.1",
     "ng-drag-drop": "^5.0.0",
+    "ng-gallery": "^5.0.0",
     "ng-gantt": "^2.5.0",
     "ng-inline-svg": "^10.1.0",
     "ng-packagr": "^11.2.4",

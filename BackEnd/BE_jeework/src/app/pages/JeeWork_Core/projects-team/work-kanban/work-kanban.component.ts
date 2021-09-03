@@ -193,9 +193,9 @@ export class WorkKanBanComponent implements OnInit {
         //xóa title khỏi cột
         var indextt = this.ListColumns.findIndex((x) => x.fieldname == "title");
         if (indextt >= 0) this.ListColumns.splice(indextt, 1);
-        this.ListColumns.sort((a, b) =>
-          a.title > b.title ? 1 : b.title > a.title ? -1 : 0
-        ); // xếp theo anphabet
+        // this.ListColumns.sort((a, b) =>
+        //   a.title > b.title ? 1 : b.title > a.title ? -1 : 0
+        // ); // xếp theo anphabet
         this.ListColumns.sort((a, b) =>
           a.id_project_team > b.id_project_team
             ? -1
@@ -203,9 +203,9 @@ export class WorkKanBanComponent implements OnInit {
               ? 1
               : 0
         ); // nào chọn xếp trước
-        this.ListColumns.sort((a, b) =>
-          a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
-        ); // nào bắt buộc xếp trước
+        // this.ListColumns.sort((a, b) =>
+        //   a.isbatbuoc > b.isbatbuoc ? -1 : b.isbatbuoc > a.isbatbuoc ? 1 : 0
+        // ); // nào bắt buộc xếp trước
         this.ListTasks = this.data.datawork;
         //   this.prepareDragDrop(this.ListTasks);// load list kéo thả
         this.ListTags = this.data.Tag;

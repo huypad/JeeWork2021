@@ -122,10 +122,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   IsAdminGroup = false;
   public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filterDay = {
-      startDate: new Date('09/01/2020'),
-      endDate: new Date('09/30/2020'),
-    };
-    public column_sort: any = [];
+    startDate: new Date('09/01/2020'),
+    endDate: new Date('09/30/2020'),
+  };
+  public column_sort: any = [];
 
   DanhsSachCongViec: any = [];
 
@@ -202,7 +202,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     // giao tiếp service
     this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
-      if (message){
+      if (message) {
         this.LoadSampleList();
       }
     });
@@ -253,7 +253,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    if (this.detailWork > 0){
+    if (this.detailWork > 0) {
       this._service.WorkDetail(this.detailWork).subscribe(res => {
         if (res && res.status == 1) {
           const item = res.data;
@@ -276,7 +276,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   ngOnDestroy(): void {
     // Called once, before the instance is destroyed.
     // Add 'implements OnDestroy' to the class.
-    if (this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
@@ -370,22 +370,22 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     if (this.IsAdminGroup) { return true; }
     const x = this.list_role.find(x => x.id_row == id_project_team);
     if (x) {
-      if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1 ) {
+      if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
         return true;
       }
       else {
-        if (roleID == 3 || roleID == 4){
+        if (roleID == 3 || roleID == 4) {
           if (x.isuyquyen) {
             return true;
           }
         }
-        if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13){
+        if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
           if (x.Roles.find((r) => r.id_role == 15)) { return false; }
         }
-        if (roleID == 10){
+        if (roleID == 10) {
           if (x.Roles.find((r) => r.id_role == 16)) { return false; }
         }
-        if (roleID == 4 || roleID == 14){
+        if (roleID == 4 || roleID == 14) {
           if (x.Roles.find((r) => r.id_role == 17)) { return false; }
         }
         const r = x.Roles.find(r => r.id_role == roleID);
@@ -404,38 +404,38 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   CheckRoleskeypermit(key, id_project_team) {
     if (this.IsAdminGroup) { return true; }
     if (this.list_role) {
-    const x = this.list_role.find(x => x.id_row == id_project_team);
-    if (x) {
-      if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1 ) {
-        return true;
-      }
-      else {
-        if (key == 'id_nv'){
-          if (x.isuyquyen) {
-            return true;
-          }
-        }
-        if (key == 'title' || key == 'description' || key == 'status' || key == 'checklist' || key == 'delete'){
-          if (x.Roles.find((r) => r.id_role == 15)) { return false; }
-        }
-        if (key == 'deadline'){
-          if (x.Roles.find((r) => r.id_role == 16)) { return false; }
-        }
-        if (key == 'id_nv' || key == 'assign'){
-          if (x.Roles.find((r) => r.id_role == 17)) { return false; }
-        }
-        const r = x.Roles.find(r => r.keypermit == key);
-        if (r) {
+      const x = this.list_role.find(x => x.id_row == id_project_team);
+      if (x) {
+        if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         }
         else {
-          return false;
+          if (key == 'id_nv') {
+            if (x.isuyquyen) {
+              return true;
+            }
+          }
+          if (key == 'title' || key == 'description' || key == 'status' || key == 'checklist' || key == 'delete') {
+            if (x.Roles.find((r) => r.id_role == 15)) { return false; }
+          }
+          if (key == 'deadline') {
+            if (x.Roles.find((r) => r.id_role == 16)) { return false; }
+          }
+          if (key == 'id_nv' || key == 'assign') {
+            if (x.Roles.find((r) => r.id_role == 17)) { return false; }
+          }
+          const r = x.Roles.find(r => r.keypermit == key);
+          if (r) {
+            return true;
+          }
+          else {
+            return false;
+          }
         }
       }
-    }
-    else {
-      return false;
-    }
+      else {
+        return false;
+      }
     }
     return false;
   }
@@ -486,9 +486,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
           this.ListColumns.splice(indextt, 1);
         }
 
-        this.ListColumns.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0)); // xếp theo anphabet
+        // this.ListColumns.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0)); // xếp theo anphabet
         this.ListColumns.sort((a, b) => (a.id_project_team > b.id_project_team) ? -1 : ((b.id_project_team > a.id_project_team) ? 1 : 0)); // nào chọn xếp trước
-        this.ListColumns.sort((a, b) => (a.isbatbuoc > b.isbatbuoc) ? -1 : ((b.isbatbuoc > a.isbatbuoc) ? 1 : 0)); // nào bắt buộc xếp trước
+        // this.ListColumns.sort((a, b) => (a.isbatbuoc > b.isbatbuoc) ? -1 : ((b.isbatbuoc > a.isbatbuoc) ? 1 : 0)); // nào bắt buộc xếp trước
         this.ListTasks = this.LoadClosedTask(this.data.datawork);
         this.prepareDragDrop(this.ListTasks); // load list kéo thả
         this.ListTags = this.data.Tag;
@@ -538,11 +538,11 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     filter.id_nv = this.ID_NV;
     filter.displayChild = this.filter_subtask.value;
     // công việc assign cho tôi = 1
-    if (this.filterwork > 0){
+    if (this.filterwork > 0) {
       filter.filter = this.filterwork;
     }
     // công việc tôi theo dõi = 3
-    if (this.selectedTab == 3){
+    if (this.selectedTab == 3) {
       filter.filter = 3;
     }
     filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
@@ -559,25 +559,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     this.filteredDanhSachCongViec.next(
       this.DanhsSachCongViec
     );
-    // if (this.viewTaskOrder) {
-    //   this.reloadData = true;
-    //   this.DanhsSachCongViec.forEach(element => {
-    //     if(element.data && element.data.length > 0){
-    //       element.data = element.data.filter(x=>x.User.find(x1=>+x1.id_nv != +this.UserID));
-    //     }
-    //   });
-    //   this.filteredDanhSachCongViec.next(
-    //     this.DanhsSachCongViec
-    //   );
-    // } else{
-    //   if(this.reloadData){
-    //     this.reloadData = false;
-    //     this.LoadSampleList();
-    //   }
-    // }
   }
 
-  ChangeData(){
+  ChangeData() {
     this.LoadSampleList();
   }
   getColorStatus(id_project_team, val) {
@@ -630,7 +614,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         //   this.listField.splice(indextt, 1)
         this.changeDetectorRefs.detectChanges();
       }
-      else{
+      else {
         this.layoutUtilsService.showInfo(res.error.message);
       }
     });
@@ -701,7 +685,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     nodes.forEach(node => {
       this.dropTargetIds.push(node.id_row);
       this.nodeLookup[node.id_row] = node;
-      this.prepareDragDrop(node.DataChildren);
+      if (node.DataChildren != null) {
+        this.prepareDragDrop(node.DataChildren);
+      }
     });
   }
 
@@ -941,7 +927,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
   focusOutFunction(event, node) {
     this.isEdittitle = -1;
-    if (event.target.value.trim() == node.title.trim() || event.target.value.trim() == ''){
+    if (event.target.value.trim() == node.title.trim() || event.target.value.trim() == '') {
       event.target.value = node.title;
       return;
     }
@@ -1027,7 +1013,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
   // Assign
   ItemSelected(val: any, task) { // chọn item
-    if (val.id_user){
+    if (val.id_user) {
       val.id_nv = val.id_user;
     }
     this.UpdateByKey(task, 'assign', val.id_nv);
@@ -1046,7 +1032,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
       this.options_assign = this.getOptions_Assign();
     });
   }
-  loadOptionprojectteam(node){
+  loadOptionprojectteam(node) {
     const id_project_team = node.id_project_team;
     this.LoadUserByProject(id_project_team);
   }
@@ -1156,7 +1142,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     return val;
   }
 
- 
+
   Subtask(item) {
     if (item.value == this.filter_subtask.value) {
       return;
@@ -1167,17 +1153,17 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
   CreateTask(val) {
     const x = this.newtask;
-		  this.CloseAddnewTask(true);
-		  setTimeout(() => {
-			this.newtask = x;
-		}, 1000);
+    this.CloseAddnewTask(true);
+    setTimeout(() => {
+      this.newtask = x;
+    }, 1000);
     this._service.InsertTask(val).subscribe(res => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
         this.LoadData();
         this.LoadSampleList();
       }
-      else{
+      else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
@@ -1192,19 +1178,19 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     });
   }
 
-  IsAdmin(id_project_team){
+  IsAdmin(id_project_team) {
     if (this.IsAdminGroup) { return true; }
     if (this.list_role) {
       const x = this.list_role.find((x) => x.id_row == id_project_team);
       if (x) {
-        if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1 ) {
+        if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         }
       }
     }
     return false;
   }
-  Updateestimates(task, event){
+  Updateestimates(task, event) {
     this.UpdateByKey(task, 'estimates', event);
   }
   UpdateStatus(task, status) {
@@ -1236,7 +1222,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.LoadData();
         this.LoadSampleList();
-      }else {
+      } else {
         this.LoadSampleList();
         this.layoutUtilsService.showError(res.error.message);
       }
@@ -1257,7 +1243,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
 
   updateDate(task, date, field) {
-    if (date){
+    if (date) {
       this.UpdateByKey(task, field, moment(date).format('MM/DD/YYYY HH:mm'));
     }
     else {
@@ -1352,10 +1338,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     const item = this.options_assign;
     const dialogRef = this.dialog.open(WorkAssignedComponent, {
       width: '500px',
-      data: { item, ID_Project : node.id_project_team }
+      data: { item, ID_Project: node.id_project_team }
     });
     dialogRef.afterClosed().subscribe(res => {
-      if (res){
+      if (res) {
         this.UpdateByKey(node, 'assign', res.id_nv);
       }
     });
@@ -1519,10 +1505,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     return '';
   }
 
-  Nguoitaocv(id){
-    if (this.listUser){
+  Nguoitaocv(id) {
+    if (this.listUser) {
       const x = this.listUser.find(x => x.id_nv == id);
-      if (x){
+      if (x) {
         return x;
       }
     }

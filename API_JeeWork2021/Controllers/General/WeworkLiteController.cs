@@ -26,6 +26,7 @@ using DPSinfra.Logger;
 using Microsoft.Extensions.Logging;
 using DPSinfra.Utils;
 using JeeWork_Core2021.Controller;
+using System.Threading.Tasks;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -615,6 +616,51 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                         Email = r.Email,
                                     }).Distinct();
                     return JsonResultCommon.ThanhCong(danhsach);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// DS account
+        /// </summary>
+        /// <returns></returns>
+        [Route("list-account")]
+        [HttpGet]
+        public object Get_List_Account()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    var data = (from r in DataAccount
+                                select new
+                                {
+                                    userid = r.UserId,
+                                    fullname = r.FullName,
+                                    username = r.Username,
+                                    mobile = r.PhoneNumber,
+                                    tenchucdanh = r.Jobtitle,
+                                    image = r.AvartarImgURL,
+                                    email = r.Email,
+                                    isadmin = r.isAdmin,
+                                    bgcolor = r.BgColor,
+                                    ngaysinh = r.NgaySinh,
+                                    customerid = r.CustomerID
+                                }).Distinct();
+                    return JsonResultCommon.ThanhCong(data);
                 }
             }
             catch (Exception ex)
@@ -2309,7 +2355,7 @@ and IdKH={loginData.CustomerID} )";
         //}
         public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
         {
-            if(sender == receivers)
+            if (sender == receivers)
                 return true;
             if (IsNotify(_configuration))
             {
@@ -2557,7 +2603,7 @@ and IdKH={loginData.CustomerID} )";
                     }
                 }
                 if (IsNotify(_configuration))
-                { 
+                {
                     NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
                 }
             }
@@ -2621,6 +2667,7 @@ and IdKH={loginData.CustomerID} )";
                 cond = new SqlConditions();
                 //cond.Add("isvisible", 0);
                 cond.Add("isdefault", 1);
+                cond.Add("isdel", 0);
                 select = "select we_fields.*," + id + " as id_project_team, " + id + " as departmentid,  type, '' as title_newfield, ''as id_row, 0 as ishidden " +
                         "from we_fields " +
                         "where (where) order by id_row";
@@ -2634,13 +2681,12 @@ and IdKH={loginData.CustomerID} )";
                 select = $@"select wf.id_row, f.fieldname, f.title, ishidden
                                             ,wf.title as title_newfield, f.isnewfield
                                             ,type, typeid, departmentid,id_project_team, isdefault, wf.fieldid" +
-                                                ", f.show_default_type, wf.position " +
+                                                ", f.show_default_type, f.position " +
                                                 "from we_fields f left join we_fields_project_team wf " +
                                                  "on f.fieldname = wf.fieldname " +
                                                  "and " + col_name + " = " + id + " " +
-                                                "where (where) or " + col_name + " is null " +
-                                                "order by f.isNewField, wf.position";
-
+                                                "where (where) or (" + col_name + " is null and isdel = 0) " +
+                                                "order by id_project_team desc, f.isNewField, f.position";
             }
             dt_data = cnn.CreateDataTable(select, "(where)", cond);
             string sql_de = "";
@@ -2649,12 +2695,12 @@ and IdKH={loginData.CustomerID} )";
                 sql_de = @"select wf.id_row, f.fieldname, f.title, ishidden
                                     ,wf.title as title_newfield, f.isnewfield, departmentid
                                     ,type, typeid, id_project_team, isdefault
-                                    , wf.fieldid, f.show_default_type, wf.position 
+                                    , wf.fieldid, f.show_default_type, f.position 
                                     from we_fields f join we_fields_project_team wf 
                                     on f.fieldname = wf.fieldname
-                                    where disabled = 0 and IsDel = 0 
+                                    where disabled = 0 and isdel = 0 
                                     and departmentid in (" + ListIDDepartment(cnn, id) + ") " +
-                                "and f.isnewfield = 1 order by f.isNewField, wf.position";
+                                "and f.isnewfield = 1 order by id_project_team desc, f.isNewField, f.position";
                 DataTable f_de = cnn.CreateDataTable(sql_de);
                 if (f_de.Rows.Count > 0)
                 {
@@ -3226,6 +3272,28 @@ and IdKH={loginData.CustomerID} )";
             else
                 return null;
         }
+        public static List<AccUsernameModel> GetAccount(IHeaderDictionary pHeader, IConfiguration _configuration)
+        {
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+            IHeaderDictionary _d = pHeader;
+            string _bearer_token;
+            _bearer_token = _d[HeaderNames.Authorization].ToString();
+            string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
+            string link_api = API_Account + "/api/accountmanagement/usernamesByCustermerID";
+            var client = new RestClient(link_api);
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("Authorization", _bearer_token);
+            IRestResponse response = client.Execute(request);
+            var model = JsonConvert.DeserializeObject<BaseModel<List<AccUsernameModel>>>(response.Content);
+            if (model != null && model.status == 1)
+            {
+                return model.data;
+            }
+            else
+                return null;
+        }
+
         public static List<AccountManagementDTO> GetListAccountManagement(IHeaderDictionary pHeader, IConfiguration _configuration)
         {
             if (pHeader == null) return null;

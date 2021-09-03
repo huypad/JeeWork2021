@@ -276,18 +276,11 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     //  const start = moment()
     const start = moment();
     if (moment(this.selectedDate.startDate).format('MM/DD/YYYY') != "Invalid date")
-      task.start_date = moment(this.selectedDate.startDate).format('MM/DD/YYYY');
+      task.start_date = moment(this.selectedDate.startDate).utc().format('MM/DD/YYYY HH:mm:ss');
     if (moment(this.selectedDate.endDate).format('MM/DD/YYYY') != "Invalid date") {
-      task.deadline = moment(this.selectedDate.endDate).format('MM/DD/YYYY');
+      task.deadline = moment(this.selectedDate.endDate).utc().format('MM/DD/YYYY HH:mm:ss');
     }
     this.dataTask.emit(task);
-    // this.LoadData();
-    // this._service.InsertTask(task).subscribe(res => {
-    //   if (res && res.status == 1) {
-    //     this.CloseAddnewTask();
-    //     this.LoadData();
-    //   }
-    // })
 
   }
 

@@ -525,7 +525,7 @@ export class ReportTabDashboardComponent implements OnInit {
   chartLegend4 = false;
   chartColor4 = [{
     backgroundColor: this.listColorChart4,
-  }];;
+  }];
   chartType4 = 'pie';
   getChart4() {
     const queryParams = new QueryParamsModelNew(

@@ -908,6 +908,7 @@ export class WorkListNewDetailComponent implements OnInit {
                         if (res && res.status === 1) {
                             this.IsShow_CheckList = !this.IsShow_CheckList;
                             this.LoadChecklist();
+                            this.refreshData();
                             this.changeDetectorRefs.detectChanges();
                         } else {
                             this.layoutUtilsService.showError(
@@ -993,7 +994,7 @@ export class WorkListNewDetailComponent implements OnInit {
             item.IsStaff = true;
         }
         if(this.loading)
-        this.layoutUtilsService.showWaitingDiv();
+        // this.layoutUtilsService.showWaitingDiv();
         this.projectsTeamService._UpdateByKey(item).pipe(
             tap(() => {
             }),
@@ -1014,7 +1015,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 }
             }),
             catchError((err) => throwError(err)),
-            finalize(() => this.layoutUtilsService.OffWaitingDiv),
+            finalize(() => this.layoutUtilsService.OffWaitingDiv()),
         ).subscribe((res) => {
         });
     }
@@ -1479,7 +1480,7 @@ export class WorkListNewDetailComponent implements OnInit {
             this.UpdateByKeyNew(
                 this.item,
                 field,
-                moment(event).format('MM/DD/YYYY HH:mm')
+                event
             );
         } else {
             this.UpdateByKeyNew(

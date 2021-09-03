@@ -571,65 +571,12 @@
                                                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                                                             <ng-container
                                                                 *ngIf="item.type == 'datetime';else nosetdatetime">
-                                                                <app-task-datetime 
+                                                                <app-task-datetime
                                                                     (valueChange)="updateDate(node,$event,item.fieldname)"
-                                                                    [fieldname]="item.fieldname" 
-                                                                    [(value)]="node[item.fieldname]" 
-                                                                    [role]="CheckRoleskeypermit(item.fieldname)" ></app-task-datetime>
-                                                                <!-- <ng-container
-                                                                    *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
-                                                                    <div class="item-field">
-                                                                        <span class="hide-more-text"
-                                                                            matTooltip="{{node[item.fieldname] | timezone}}">
-                                                                            {{node[item.fieldname] | timezone }}
-                                                                        </span>
-                                                                    </div>
-                                                                </ng-container>
-
-                                                                <ng-template #selectedDate>
-                                                                    <div (click)="dt1.open()"
-                                                                        class="item-field item-datetime"
-                                                                        *ngIf="CheckRoleskeypermit(item.fieldname)">
-                                                                        <div class="remove-date url"
-                                                                            (click)="UpdateByKey(node,item.fieldname,null)"
-                                                                            [hidden]="!node[item.fieldname]">
-                                                                            <i class="fas fa-times-circle"
-                                                                                style="color: #28a745 ;"></i>
-                                                                        </div>
-                                                                        <span
-                                                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
-                                                                            matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
-                                                                            *ngIf="node[item.fieldname];else setDate">
-                                                                            {{node[item.fieldname] |
-                                                                            date:'dd/MM/yyyy'}}
-                                                                        </span>
-                                                                        <ng-template #setDate>
-                                                                            <i class="far fa-calendar-alt"
-                                                                                style="font-size: 18px;"></i>
-                                                                        </ng-template>
-                                                                    </div>
-                                                                    <div class="item-field"
-                                                                        *ngIf="!CheckRoleskeypermit(item.fieldname)">
-                                                                        <span
-                                                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
-                                                                            matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
-                                                                            *ngIf="node[item.fieldname];else setDate">
-                                                                            {{node[item.fieldname] |
-                                                                            date:'dd/MM/yyyy'}}
-                                                                        </span>
-                                                                        <ng-template #setDate>
-                                                                            <i class="far fa-calendar-alt"
-                                                                                style="font-size: 18px;"></i>
-                                                                        </ng-template>
-                                                                    </div>
-                                                                    <input matInput readonly
-                                                                        [(ngModel)]="node[item.fieldname]"
-                                                                        (ngModelChange)="updateDate(node,node[item.fieldname],item.fieldname)"
-                                                                        style="opacity: 0;"
-                                                                        class="date-picker position-picker"
-                                                                        [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
-                                                                    <owl-date-time #dt1></owl-date-time>
-                                                                </ng-template> -->
+                                                                    [fieldname]="item.fieldname"
+                                                                    [(value)]="node[item.fieldname]"
+                                                                    [role]="CheckRoleskeypermit(item.fieldname)">
+                                                                </app-task-datetime>
                                                             </ng-container>
                                                             <ng-template #nosetdatetime>
                                                                 <ng-container
@@ -863,27 +810,6 @@
                                                                                     [id_row]="node.id_row"
                                                                                     [value]="node[item.fieldname]">
                                                                                 </app-task-comment>
-                                                                                <!-- <span style="font-size: 12pt;"
-                                                                                    [matMenuTriggerFor]="commentsmenu"
-                                                                                    (menuOpened)="node.showcomment = true"
-                                                                                    (menuClosed)="this.LoadData();node.showcomment = false">
-                                                                                    {{node[item.fieldname]>0?node[item.fieldname]:''}}
-                                                                                    <i class="far fa-comment-dots"></i>
-                                                                                </span>
-                                                                                <mat-menu #commentsmenu="matMenu">
-                                                                                    <div (click)="$event.stopPropagation()"
-                                                                                        style="max-height:600px;min-width: 500px;min-height: 300px;">
-                                                                                        <ng-container
-                                                                                            *ngIf="node.id_row && node.showcomment">
-                                                                                            <app-jee-comment
-                                                                                                [showonpopup]="true"
-                                                                                                [showCommentDefault]="true"
-                                                                                                [componentName]="getComponentName(node.id_row)">
-                                                                                            </app-jee-comment>
-                                                                                        </ng-container>
-
-                                                                                    </div>
-                                                                                </mat-menu> -->
                                                                             </div>
                                                                         </ng-container>
                                                                         <ng-container *ngSwitchCase="'createdby'">
@@ -895,28 +821,38 @@
                                                                                 </kt-avatar-user>
                                                                             </div>
                                                                         </ng-container>
+                                                                        <ng-container *ngSwitchCase="'closed'">
+                                                                            <div class="item-field hide-more-text">
+                                                                                <mat-checkbox class="example-margin "
+                                                                                    [checked]="node[item.fieldname]"
+                                                                                    (change)="ClosedTask($event.checked,node)">
+                                                                                </mat-checkbox>
+                                                                            </div>
+                                                                        </ng-container>
+                                                                        <ng-container *ngSwitchCase="'closed_work_by'">
+                                                                            <div class="item-field">
+                                                                                <kt-avatar-user
+                                                                                    [image]="Nguoitaocv(node[item.fieldname]).image"
+                                                                                    size="25"
+                                                                                    [name]="Nguoitaocv(node[item.fieldname]).hoten">
+                                                                                </kt-avatar-user>
+                                                                            </div>
+                                                                        </ng-container>
+                                                                        <ng-container
+                                                                            *ngSwitchCase="'closed_work_date'">
+                                                                            <div class="w-100 h-100 item-field">
+                                                                                <app-task-datetime
+                                                                                    [fieldname]="'createddate'"
+                                                                                    [(value)]="node[item.fieldname]">
+                                                                                </app-task-datetime>
+                                                                            </div>
+                                                                        </ng-container>
                                                                         <ng-container *ngSwitchCase="'id_group'">
                                                                             <app-tasks-group [ListGroup]="listType"
                                                                                 [value]="node[item.fieldname]"
                                                                                 (valueChange)="UpdateGroup(node,$event)"
                                                                                 [role]="CheckRoles(21)">
                                                                             </app-tasks-group>
-                                                                            <!-- <div class="item-field"
-                                                                                [matMenuTriggerFor]="groupid"
-                                                                                [hidden]="!CheckRoles(21)">
-                                                                                {{LoadNhomCongViec(node[item.fieldname])}}
-                                                                            </div>
-                                                                            <div class="item-field"
-                                                                                [hidden]="CheckRoles(21)">
-                                                                                {{LoadNhomCongViec(node[item.fieldname])}}
-                                                                            </div>
-                                                                            <mat-menu #groupid="matMenu">
-                                                                                <ng-container
-                                                                                    *ngFor="let item of listType">
-                                                                                    <button mat-menu-item
-                                                                                        (click)="UpdateGroup(node,item.id_row)">{{item.title}}</button>
-                                                                                </ng-container>
-                                                                            </mat-menu> -->
                                                                         </ng-container>
                                                                         <ng-container *ngSwitchCase="'milestone'">
                                                                             <div class="item-field">

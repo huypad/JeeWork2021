@@ -737,9 +737,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
       if (indextt >= 0) { this.ListColumns.splice(indextt, 1); }
     });
 
-    this.ListColumns.sort((a, b) =>
-      a.title > b.title ? 1 : b.title > a.title ? -1 : 0
-    ); // xếp theo anphabet
+    // this.ListColumns.sort((a, b) =>
+    //   a.title > b.title ? 1 : b.title > a.title ? -1 : 0
+    // ); // xếp theo anphabet
     this.ListColumns.sort((a, b) =>
       a.id_department > b.id_department
         ? -1
@@ -760,15 +760,15 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     return false;
   }
 
-  // GetOptions_NewField() {
-  //   this.WeWorkService.GetOptions_NewField(this.ID_Project, 0).subscribe(
-  //     (res) => {
-  //       if (res && res.status == 1) {
-  //         this.listNewfield = res.data;
-  //       }
-  //     }
-  //   );
-  // }
+  ClosedTask(value,node){
+    this._service.ClosedTask(node.id_row,value).subscribe((res) => {
+      this.ReloadData(true);
+      if (res && res.status == 1) {
+      } else {
+        this.layoutUtilsService.showError(res.error.message);
+      }
+    });
+  }
 
   getDropdownField(idField) {
     const list = this.listNewfield.filter((x) => x.FieldID == idField);

@@ -19,7 +19,7 @@ import { NavigationEnd, Router } from '@angular/router';
 // RxJS
 import { filter } from 'rxjs/operators';
 // Object-Path
-import * as objectPath from 'object-path'; 
+import * as objectPath from 'object-path';
 // HTML Class
 // import { HtmlClassService } from '../../html-class.service';
 
@@ -130,11 +130,10 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 */
 	getItemCssClasses(item) {
 		let classes = 'kt-menu__item';
-
+		debugger
 		if (objectPath.get(item, 'submenu')) {
 			classes += ' kt-menu__item--submenu';
 		}
-
 		if (!item.submenu && this.isMenuItemIsActive(item)) {
 			classes += ' kt-menu__item--active kt-menu__item--here';
 		}
@@ -171,6 +170,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 */
 	getItemAttrSubmenuToggle(item) {
 		let toggle = 'hover';
+		debugger
 		if (objectPath.get(item, 'toggle') === 'click') {
 			toggle = 'click';
 		} else if (objectPath.get(item, 'submenu.type') === 'tabs') {
@@ -188,13 +188,11 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 */
 	getItemMenuSubmenuClass(item) {
 		let classes = '';
-
+		debugger
 		const alignment = objectPath.get(item, 'alignment') || 'right';
-
 		if (alignment) {
 			classes += ' kt-menu__submenu--' + alignment;
 		}
-
 		const type = objectPath.get(item, 'type') || 'classic';
 		if (type === 'classic') {
 			classes += ' kt-menu__submenu--classic';
@@ -220,6 +218,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 * @param item: any
 	 */
 	isMenuItemIsActive(item): boolean {
+		debugger
 		if (item.submenu) {
 			return this.isMenuRootItemIsActive(item);
 		}
@@ -236,6 +235,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 * @param item: any
 	 */
 	isMenuRootItemIsActive(item): boolean {
+		debugger
 		if (item.submenu.items) {
 			for (const subItem of item.submenu.items) {
 				if (this.isMenuItemIsActive(subItem)) {
@@ -275,20 +275,20 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 		}
 	}
 
-	currentUrl :string;
+	currentUrl: string;
 	isMenuItemActive(path) {
+		debugger
 		if (!this.currentUrl || !path) {
-		  return false;
+			return false;
 		}
-	
+
 		if (this.currentUrl === path) {
-		  return true;
+			return true;
 		}
-	
+
 		if (this.currentUrl.indexOf(path) > -1) {
-		  return true;
+			return true;
 		}
-	
 		return false;
-	  }
+	}
 }

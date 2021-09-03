@@ -24,7 +24,7 @@
   >
     <ul class="navi navi-hover py-4">
       <ng-container *ngFor="let language of languages">
-        <li class="navi-item" [ngClass]="{ active: language.active }">
+        <li class="navi-item"[ngClass ]="{ active: language.active }">
           <a
             href="javascript:;"
             (click)="setLanguageWithRefresh(language.lang)"

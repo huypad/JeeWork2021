@@ -624,19 +624,31 @@
                                             <app-tasks-group [ListGroup]="listType" [value]="node[item.fieldname]"
                                                 (valueChange)="UpdateGroup(node,$event)" [role]="CheckRoles(21)">
                                             </app-tasks-group>
-                                            <!-- <div class="item-field" [matMenuTriggerFor]="groupid"
-                                                [hidden]="!CheckRoles(21)">
-                                                {{LoadNhomCongViec(node[item.fieldname])}}
+                                        </ng-container>
+                                        <ng-container *ngSwitchCase="'closed'">
+                                            <div class="item-field hide-more-text">
+                                                <mat-checkbox class="example-margin "
+                                                              [checked]="node[item.fieldname]"
+                                                              (change)="ClosedTask($event.checked,node)">
+                                                </mat-checkbox>
                                             </div>
-                                            <div class="item-field" [hidden]="CheckRoles(21)">
-                                                {{LoadNhomCongViec(node[item.fieldname])}}
+                                        </ng-container>
+                                        <ng-container *ngSwitchCase="'closed_work_by'">
+                                            <div class="item-field">
+                                                <kt-avatar-user
+                                                        [image]="Nguoitaocv(node[item.fieldname]).image"
+                                                        size="25"
+                                                        [name]="Nguoitaocv(node[item.fieldname]).hoten">
+                                                </kt-avatar-user>
                                             </div>
-                                            <mat-menu #groupid="matMenu">
-                                                <ng-container *ngFor="let item of listType">
-                                                    <button mat-menu-item
-                                                        (click)="UpdateGroup(node,item.Id_row)">{{item.title}}</button>
-                                                </ng-container>
-                                            </mat-menu> -->
+                                        </ng-container>
+                                        <ng-container *ngSwitchCase="'closed_work_date'">
+                                            <div  class="w-100 h-100 item-field">
+                                                <app-task-datetime
+                                                        [fieldname]="item.fieldname"
+                                                        [(value)]="node[item.fieldname]"
+                                                ></app-task-datetime>
+                                            </div>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'milestone'">
                                             <div class="item-field">

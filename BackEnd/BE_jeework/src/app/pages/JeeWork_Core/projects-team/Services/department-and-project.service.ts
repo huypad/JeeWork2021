@@ -345,6 +345,13 @@ export class ProjectsTeamService {
 			headers: httpHeaders,
 		});
 	}
+	ClosedTask(id,closed): Observable<any> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = API_work_CU + `/Close?id=${id}&closed=${closed}`;
+		return this.http.get<any>(url, {
+			headers: httpHeaders,
+		});
+	}
 	Google_Calender(item: any): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const url = API_work_CU + '/google-calender';

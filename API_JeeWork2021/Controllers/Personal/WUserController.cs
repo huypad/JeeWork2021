@@ -749,43 +749,44 @@ and ( (start_date <= @from and end_date >= @from ) or (start_date <= @to and end
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        //[Route("thong-tin-reminder")]
-        //[HttpGet]
-        //public BaseModel<object> reminder()
-        //{
-        //    UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-        //    if (loginData == null)
-        //        return JsonResultCommon.DangNhap();
-        //    try
-        //    {
-        //        long iduser = loginData.UserID;
-        //        long idk = loginData.CustomerID;
-        //        string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-        //        using (DpsConnection cnn = new DpsConnection(ConnectionString))
-        //        {
-        //            #region Lấy dữ liệu account từ JeeAccount
-        //            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-        //            if (DataAccount == null)
-        //                return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-        //            #endregion
-        //            var data = from r in DataAccount
-        //                       select new
-        //                       {
-        //                           UserID = r.UserId,
-        //                           Fullname = r.FullName,
-        //                           congviecphutrach = NhacNho.SLCongviecUser(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
-        //                           congviecquahan = NhacNho.SLCongviecQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
-        //                           congviechethantrongngay = NhacNho.SLCongViecHetHanTrongNgay(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
-        //                           duanquahan = NhacNho.SLDuAnQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer),
-        //                       };
-        //            return JsonResultCommon.ThanhCong(data);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return JsonResultCommon.Custom(ex.Message);
-        //    }
-        //}
+        [Route("thong-tin-reminder")]
+        [HttpGet]
+        public BaseModel<object> reminder()
+        {
+            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            //if (loginData == null)
+            //    return JsonResultCommon.DangNhap();
+            try
+            {
+                long iduser = 56609;
+                long idk = 1119;
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, idk, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, idk);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    //var data = from r in DataAccount
+                    //           select new
+                    //           {
+                    //               UserID = r.UserId,
+                    //               Fullname = r.FullName,
+                    //               congviecphutrach = NhacNho.SLCongviecUser(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
+                    //               congviecquahan = NhacNho.SLCongviecQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
+                    //               congviechethantrongngay = NhacNho.SLCongViecHetHanTrongNgay(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
+                    //               duanquahan = NhacNho.SLDuAnQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer),
+                    //           };
+                    var data = NhacNho.SLCongviecUser(iduser, idk, cnn, _configuration, _producer, DataAccount);
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Custom(ex.Message);
+            }
+        }
 
         /// <summary>
         /// 

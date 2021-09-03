@@ -1,0 +1,16 @@
+.list.home-links .li:hover{
+    background-color:#E4E6E9;
+    color:#65676B;
+    font-weight: bold;
+  }
+  .list.home-links .li{
+    outline: none;
+    padding: 11px 16px 11px 0;
+    position: relative;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    // border-bottom: 1px solid #eee;
+   
+  }

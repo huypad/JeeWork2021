@@ -121,16 +121,10 @@ export const locale = {
     SubMenu: {
       // Thống nhất đặt tên cho resource menu: Viết liền không dấu, mọi ký tự đều viết thường.
       //=============Workflow====================
-      quytrinhdong: "Thiết lập quy trình động",
-      danhmucdoituong: "Danh mục đối tượng",
-      taocongviec: "Tạo nhiệm vụ",
-      nhiemvu: "Nhiệm vụ của tôi",
       congviec: "Công việc của tôi",
-      danhmucloaiquytrinh: "Danh mục loại quy trình",
       //=============We work====================
       listdepartment: "Danh sách phòng ban",
       listproject: "Dự án và phòng ban",
-      phanquyentaikhoan: "Phân quyền tài khoản",
       tasks: "Công việc",
       users: "Thành viên",
       reports: "Báo cáo",
@@ -148,9 +142,6 @@ export const locale = {
       thaoluan: "Xem và thảo luận trong topic của dự án/phòng ban tham gia",
       thaoluan_admin:
         "Xem và thảo luận trong topic của dự án/phòng ban khi không phải thành viên",
-      //=============Quản lý tài sản===============
-      dangkyxe: "Đăng ký xe",
-      yeucaukhaibaots: "Yêu cầu cấp phát tài sản",
     },
     phanquyen: {
       tieude1: "Quản lý nhóm người dùng",
@@ -282,6 +273,7 @@ export const locale = {
       khongduyet: "Không duyệt",
       khongxacnhan: "Không xác nhận",
       khoiduan: "Khỏi dự án",
+      khonggianlamviec: 'Không gian làm việc',
       // L
       luu: "Lưu",
       luudong: "Lưu & đóng",
@@ -1139,6 +1131,9 @@ export const locale = {
       soduan: "số dự án",
       sophongban: "Số phòng ban",
       id_group: "Nhóm công việc",
+      closed: 'Đóng',
+      closed_work_date: 'Ngày đóng',
+      closed_work_by: 'Người đóng'
     },
     priority: {
       Urgent: "Khẩn cấp",

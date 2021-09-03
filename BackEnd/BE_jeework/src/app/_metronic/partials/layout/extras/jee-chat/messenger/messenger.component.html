@@ -1,0 +1,249 @@
+<!-- called in app.component.html -->
+<style>
+    .displayNameGroup {
+        padding-top: 10px;
+    }
+
+    .displayDanhBa {
+        padding-top: 10px;
+    }
+
+    .avatar-group {
+        display: flex;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        flex-wrap: wrap;
+    }
+
+    .lastmess {
+        color: #ABABAB;
+        font-size: 12px;
+        display: flex;
+    }
+
+    .unread {
+        font-weight: bold;
+        color: black !important;
+        display: flex
+    }
+
+    .dot {
+        height: 3px;
+        width: 3px;
+        background-color: #bbb;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+</style>
+<div class="card friend-list">
+
+    <div style="padding: 0 0 0 20px;
+    " class="card-header">
+
+        <div style="display: flex; align-items: center; flex-direction: row-reverse;">
+
+            <button matTooltip="Tạo Nhóm Chat" style="padding: 5px;" (click)="CreaterGroupChat()"
+                style="margin-top: -7px;" mat-icon-button aria-label="Example icon-button with a heart icon">
+                <mat-icon>group_add</mat-icon>
+            </button>
+
+            <button matTooltip="Chat User" style="padding: 5px;" (click)="CreaterUserChat()" style="margin-top: -7px;"
+                mat-icon-button aria-label="Example icon-button with a heart icon">
+                <mat-icon>person_add</mat-icon>
+            </button>
+
+        </div>
+    </div>
+    <perfect-scrollbar style="height: auto;position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+        <div *ngFor="let item of lstContact | filter: searchText; let i = index">
+            <ul *ngIf="!item.isGroup" id="contact" style="padding-left: 0px;">
+
+                <li class="pd-contact" *ngFor="let user of  item.InfoGroupUser" (click)="selectUser(item)">
+                    <div class="d-flex">
+                        <div style="position: relative;margin-right: 10px;">
+                            <span *ngIf="item.Active===1;then online;else offline">
+
+                            </span>
+                            <ng-template #online>
+
+
+                                <div class="online">
+                                    <ngx-avatar [size]="45" src="{{user.Avatar}}">
+                                    </ngx-avatar>
+                                    <ngx-avatar [size]="45" [name]="user.Fullname.slice(0, 1)"
+                                        bgColor="{{ user.BgColor }}" *ngIf="!user.Avatar"></ngx-avatar>
+
+
+                                </div>
+                            </ng-template>
+
+                            <ng-template #offline>
+
+                                <div class="offline">
+
+
+
+                                    <ngx-avatar [size]="45" src="{{user.Avatar}}">
+                                    </ngx-avatar>
+                                    <ngx-avatar [size]="45" [name]="user.Fullname.slice(0, 1)"
+                                        bgColor="{{ user.BgColor }}" *ngIf="!user.Avatar"></ngx-avatar>
+
+                                </div>
+                            </ng-template>
+
+                        </div>
+                        <div>
+
+                            <span class="displayName">{{user.Fullname}}</span>
+                            <div [ngClass]="getClass(item.UnreadMess)" *ngFor="let lastmess of item.LastMess">
+
+                                <span *ngIf="lastmess.UserName===userCurrent">Bạn:</span>
+                                <span
+                                    *ngIf="lastmess.UserName!==userCurrent&&lastmess.InfoUser.length>0">{{lastmess.InfoUser[0].Fullname}}:</span>
+                                <p *ngIf="lastmess.isFile">Đính kèm 1 file</p>
+                                <span *ngIf="lastmess.Content_mess.length>10&&!lastmess.isFile">
+                                    {{lastmess.Content_mess| slice:0:10}}...</span>
+                                <span *ngIf="lastmess.Content_mess.length<10&&!lastmess.isFile">
+                                    {{lastmess.Content_mess}}</span>
+                                <div style="padding-left: 5px;display: flex; align-items: center;"
+                                    *ngIf="item.LastMess.length>0">
+                                    <p class="dot"></p>
+                                    <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'}}</p>
+<!--                                    <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'| timelast}}</p>-->
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div style="display: flex;
+                        padding-left: 10px;
+                        align-items: center;">
+
+
+                            <button style="    display: flex;
+                        width: 30px;
+                        height: 30px;
+                        padding: 0;
+                        color: white;
+                        align-items: center;
+                        background-color: #AD3838;
+                        justify-content: center;" *ngIf="item.UnreadMess>0" mat-mini-fab
+                                aria-label="Example icon button with a plus one icon">
+                                {{item.UnreadMess}}
+                            </button>
+                        </div>
+                        <!-- <span style="float: right;"  matBadge="2" matBadgeColor="warn">{{item.UnreadMess}}</span> -->
+
+                    </div>
+                </li>
+
+                <div class="more">
+                    <div class="more-string">
+                        <div>
+                            <ng-container>
+                                <button style="float: right;" mat-icon-button [matMenuTriggerFor]="menu"
+                                    aria-label="Example icon-button with a menu">
+                                    <mat-icon class="action" style="font-size: 22px;">more_horiz</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+
+                                    <button mat-menu-item (click)="DeleteGroupChat(item)">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Xóa cuộc hội thoại</span>
+                                    </button>
+                                </mat-menu>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+
+            <ul *ngIf="item.isGroup" id="contact" style="padding-left: 0px;">
+
+                <li class="pd-contact" (click)="selectUser(item)">
+                    <div class="d-flex">
+                        <div style="position: relative; margin-right: 10px;">
+                            <div class="avatar-group">
+                                <div *ngFor="let mb of item.ListMember | slice:0:4;let i=index">
+
+                                    <div *ngFor="let it of mb.InfoMemberUser ">
+                                        <div *ngIf="i>=0&&i<3">
+                                            <ngx-avatar [size]="25" [name]="it.Fullname.slice(0, 1)"
+                                                bgColor="{{ it.BgColor }}" *ngIf="!it.Avatar"></ngx-avatar>
+                                            <ngx-avatar [size]="25" src="{{ it.Avatar }}" *ngIf="it.Avatar">
+                                            </ngx-avatar>
+                                        </div>
+                                        <ngx-avatar *ngIf="i==3&&item.ListMember.length>=4" [size]="25"
+                                            value="{{item.ListMember.length-3}}" bgColor="#ad3838"></ngx-avatar>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex;">
+                            <div>
+                                <span class="displayNameGroup">{{item.GroupName}}</span>
+                                <div [ngClass]="getClass(item.UnreadMess)" *ngFor="let lastmess of item.LastMess">
+
+                                    <span *ngIf="lastmess.UserName===userCurrent">Bạn:</span>
+                                    <span
+                                        *ngIf="lastmess.UserName!==userCurrent&&lastmess.InfoUser.length>0">{{lastmess.InfoUser[0].Fullname}}:</span>
+                                    <p *ngIf="lastmess.isFile">Đính kèm 1 file</p>
+                                    <span *ngIf="lastmess.Content_mess.length>10&&!lastmess.isFile">
+                                        {{lastmess.Content_mess| slice:0:10}}...</span>
+                                    <span *ngIf="lastmess.Content_mess.length<10&&!lastmess.isFile">
+                                        {{lastmess.Content_mess}}</span>
+                                    <div style="padding-left: 5px;display: flex; align-items: center;"
+                                        *ngIf="item.LastMess.length>0">
+                                        <p class="dot"></p>
+                                        <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'}}</p>
+<!--                                        <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'| timelast}}</p>-->
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div style="display: flex;
+                                padding-left: 10px;
+                                align-items: center;">
+                                <button style="    display: flex;
+                                    width: 30px;
+                                    height: 30px;
+                                    padding: 0;
+                                    color: white;
+                                    align-items: center;
+                                    background-color: #AD3838;
+                                    justify-content: center;" *ngIf="item.UnreadMess>0" mat-mini-fab
+                                    aria-label="Example icon button with a plus one icon">
+                                    {{item.UnreadMess}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <div class="more">
+                    <div class="more-string">
+                        <div>
+                            <ng-container>
+                                <button style="float: right;" mat-icon-button [matMenuTriggerFor]="menu"
+                                    aria-label="Example icon-button with a menu">
+                                    <mat-icon class="action" style="font-size: 22px;">more_horiz</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+
+                                    <button mat-menu-item (click)="DeleteGroupChat(item)">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Xóa cuộc hội thoại</span>
+                                    </button>
+                                </mat-menu>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </div>
+    </perfect-scrollbar>
+</div>

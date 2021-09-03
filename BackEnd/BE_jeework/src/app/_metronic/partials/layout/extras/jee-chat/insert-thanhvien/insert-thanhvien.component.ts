@@ -1,8 +1,6 @@
-import { ConversationService } from './../../../../../modules/my-chat/services/conversation.service';
-import { ConversationModel } from './../../../../../modules/my-chat/models/conversation';
-import { AuthService } from './../../../../../modules/auth/_services/auth.service';
-import { environment } from './../../../../../../environments/environment';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AuthService } from 'src/app/modules/auth';
+
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -10,14 +8,18 @@ import { map, startWith } from 'rxjs/operators';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { environment } from 'src/environments/environment';
+import { ConversationService } from '../my-chat/services/conversation.service';
+import { ConversationModel } from '../my-chat/models/conversation';
 @Component({
-  selector: 'app-create-convesation-group',
-  templateUrl: './create-convesation-group.component.html',
-  styleUrls: ['./create-convesation-group.component.scss']
+  selector: 'app-insert-thanhvien',
+  templateUrl: './insert-thanhvien.component.html',
+  styleUrls: ['./insert-thanhvien.component.scss']
 })
-export class CreateConvesationGroupComponent implements OnInit {
+export class InsertThanhvienComponent implements OnInit {
   itemuser: any[] = [];
+  active:boolean=false;
   list_Tag_edit: any = {}
   user_tam: any[] = []
   list_remove_tam: any[] = [];
@@ -30,7 +32,7 @@ export class CreateConvesationGroupComponent implements OnInit {
   removable = true;
   @ViewChild('userInput', { static: false }) userInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete;
-  user$: Observable<any>;
+  name:string;
   ten_group:string;
   listTT_user:any={};
   authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
@@ -39,9 +41,11 @@ export class CreateConvesationGroupComponent implements OnInit {
     private auth:AuthService,
     private changeDetectorRefs: ChangeDetectorRef,
     private conversation_sevices:ConversationService,
-    private dialogRef:MatDialogRef<CreateConvesationGroupComponent>,) {
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef:MatDialogRef<InsertThanhvienComponent>,) {
 
-    this.user$ = this.auth.currentUserSubject.asObservable();
+      const user = this.auth.getAuthFromLocalStorage()['user'];
+      this.name=user['customData']['personalInfo']['Fullname'];
    }
  
    CloseDia(data = undefined)
@@ -58,8 +62,6 @@ export class CreateConvesationGroupComponent implements OnInit {
     ItemConversation(): ConversationModel
     {
       const item = new ConversationModel();
-      item.GroupName=this.ten_group;
-      item.IsGroup=true;
       if(this.user_tam.length>0)
       {
         item.ListMember=this.user_tam.slice();
@@ -69,14 +71,15 @@ export class CreateConvesationGroupComponent implements OnInit {
     }
     
     
-    CreateConverSation()
+    InsertThanhVien()
     {
   
       let  data=this.ItemConversation();
-      this.conversation_sevices.CreateConversation(data).subscribe(res=>
+      this.conversation_sevices.InsertThanhVien(this.data,data).subscribe(res=>
         {
+          console.log('create InsertThanhVien',res)
           if (res && res.status === 1) {
-            this.CloseDia(res.data);
+            this.CloseDia(res);
           }
         })
       
@@ -84,7 +87,8 @@ export class CreateConvesationGroupComponent implements OnInit {
     
 submit()
 {
- this.CreateConverSation();
+  this.active=true;
+ this.InsertThanhVien();
 }
 
 
@@ -94,7 +98,7 @@ addTagName(item: any) {
       this.user_tam.push(tam);
        for(let i=0;i< this.user_tam.length;i++)
        {
-        let index=this.itemuser.findIndex(x=>x.Username== this.user_tam[i].Username)
+        let index=this.itemuser.findIndex(x=>x.UserName== this.user_tam[i].UserName)
         vitri=index;
        }  
        this.itemuser.splice(vitri, 1);
@@ -112,7 +116,7 @@ addTagName(item: any) {
   
     }
     remove(user: string): void {
-  
+
       const index = this.user_tam.indexOf(user);
   
       if (index >= 0) {
@@ -166,6 +170,28 @@ addTagName(item: any) {
       }
       else {
   
+        // let index=this.data_user.findIndex(x => x.hoten == event.option.viewValue);
+  
+        // this.list_load_user_chose.push(
+        // {
+        // id:this.data_user[index].id_user,
+        // hoten:this.data_user[index].hoten,
+        // avatar:this.data_user[index].avatar
+  
+        //}
+  
+        // )
+  
+        //  for(let i=0;i<this.list_load_user_chose.length;i++)
+        //  {
+        //   this.chuoi_user=this.chuoi_user+" "+this.list_load_user_chose[i].hoten+",";
+        //   // this.chuoi_user=this.list_load_user_chose[i].hoten;
+        //   this.danhsach_user=trim(this.chuoi_user,",");
+        //  }
+  
+  
+  
+  
         this.user_tam.push(
           {
             //  ID_NV:this.id_nv.value,
@@ -191,13 +217,15 @@ addTagName(item: any) {
       return value.toLowerCase().replace(/\s/g, '');
     }
     private _filterStates(value: string): any[] {
+      // 
       //	const filterValue = value.toLowerCase();
       const filterValue = this._normalizeValue(value);
       return this.itemuser.filter(state => this._normalizeValue(state.Fullname).includes(filterValue));
     }
     
     loadTT() {
-      this.conversation_sevices.getAllUsers().subscribe(res => {
+      this.conversation_sevices.getDSThanhVienNotInGroup(this.data).subscribe(res => {
+         console.log(res.data);
         this.itemuser = res.data;
        for(let i=0;i<this.user_tam.length;i++)
        {
@@ -231,5 +259,4 @@ addTagName(item: any) {
    this.loadTT();
     this.loadTTuser();
   }
-
 }

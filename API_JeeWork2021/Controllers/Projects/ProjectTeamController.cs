@@ -3075,7 +3075,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
-                    if (Visible)
+                    if (!Visible)
                     {
                         for (int i = dt.Rows.Count - 1; i >= 0; i--)
                         {
