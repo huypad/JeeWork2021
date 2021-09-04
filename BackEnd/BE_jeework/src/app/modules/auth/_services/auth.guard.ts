@@ -156,7 +156,7 @@ export class AuthGuard implements CanActivate {
     private layout: LayoutService,
     private MenuConfigService: MenuConfigService
   ) {}
-
+  appCode = environment.APPCODE;
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -172,6 +172,7 @@ export class AuthGuard implements CanActivate {
               if (data && data.access_token) {
                 this.authService.saveLocalStorageToken( this.authService.authLocalStorageToken, data);
                 this.LoadStorage(data);
+                this.canPassGuardAccessToken(data);
                 return resolve(true);
               }
             },
@@ -186,6 +187,7 @@ export class AuthGuard implements CanActivate {
             (data) => {
               if (data && data.access_token) {this.authService.saveLocalStorageToken(this.authService.authLocalStorageToken, data);
                 this.LoadStorage(data);
+                this.canPassGuardAccessToken(data);
                 return resolve(true);
               }
             },
@@ -195,6 +197,7 @@ export class AuthGuard implements CanActivate {
                   if (data && data.access_token) {
                     this.authService.saveLocalStorageToken( this.authService.authLocalStorageToken, data);
                     this.LoadStorage(data);
+                    this.canPassGuardAccessToken(data);
                     return resolve(true);
                   }
                 },
@@ -218,6 +221,7 @@ export class AuthGuard implements CanActivate {
                 data
               );
               this.LoadStorage(data);
+              this.canPassGuardAccessToken(data);
               return resolve(true);
             }
           },
@@ -227,6 +231,7 @@ export class AuthGuard implements CanActivate {
                 if (data && data.access_token) {
                   this.authService.saveLocalStorageToken(this.authService.authLocalStorageToken, data);
                   this.LoadStorage(data);
+                  this.canPassGuardAccessToken(data);
                   return resolve(true);
                 }
               },
@@ -240,6 +245,45 @@ export class AuthGuard implements CanActivate {
         );
       }
     });
+  } 
+
+  canPassGuardAccessToken(data) {
+    return new Promise<boolean>((resolve, reject) => {
+      if (data && data.access_token) {
+        this.authService.saveLocalStorageToken(this.authService.authLocalStorageToken, data);
+        const lstAppCode: string[] = (data['user']['customData']['jee-account']['appCode']);
+        if (lstAppCode) {
+          if (lstAppCode.indexOf(this.appCode) === -1) {
+            return this.unAppCodeAuthorizedGuard();
+          } else {
+            return resolve(true);
+          }
+        }
+        else {
+          return this.unAppCodeAuthorizedGuard();
+        }
+      } else {
+        localStorage.clear();
+        this.authService.logout();
+        return resolve(false);
+      }
+    });
+  }
+
+  unauthorizedGuard() {
+    return new Promise<boolean>((resolve, reject) => {
+      localStorage.clear();
+      this.authService.logout();
+      return resolve(false);
+    });
+  }
+
+  unAppCodeAuthorizedGuard() {
+    return new Promise<boolean>((resolve, reject) => {
+      //Chuyển hướng về trang app.jee.vn
+      this.authService.loginapp();
+      return resolve(false);
+    })
   }
 
   LoadStorage(data) {

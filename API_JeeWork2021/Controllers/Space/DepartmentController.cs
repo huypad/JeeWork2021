@@ -506,6 +506,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "phòng ban");
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
@@ -537,6 +538,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "phòng ban");
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
@@ -777,6 +779,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "phòng ban");
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
@@ -807,6 +810,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "phòng ban");
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
@@ -1018,6 +1022,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "phòng ban");
                             notify_model.ReplaceData = has_replace;
                             notify_model.ComponentName = "";
                             notify_model.Component = "";
@@ -1051,6 +1056,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "phòng ban");
                             notify_model.ReplaceData = has_replace;
 
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());

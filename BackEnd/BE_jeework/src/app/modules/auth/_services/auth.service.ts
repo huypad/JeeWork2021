@@ -164,7 +164,11 @@ export class AuthService implements OnDestroy {
     let url = redirectUrl + document.location.protocol + '//' + document.location.hostname + ':' + document.location.port;
     window.location.href = url;
   }
-
+  loginapp() {
+    let url = environment.HOST_JEELANDINGPAGE;
+    window.location.href = url;
+  }
+  
   getParamsSSO() {
     const url = window.location.href;
     let paramValue = undefined;

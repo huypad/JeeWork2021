@@ -72,12 +72,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   @Input() myWorks = false;
   @Input() getMystaff = false;
   @Input() detailWork = 0;
-  subscription: SubscriptionLike;
-
-  @ViewChild('table1', { static: true }) table1: MatTable<any>;
-  @ViewChild('table2', { static: true }) table2: MatTable<any>;
-  @ViewChild('table3', { static: true }) table3: MatTable<any>;
-  @ViewChild('list1', { static: true }) list1: CdkDropList;
+  subscription: SubscriptionLike; 
 
   dataSource;
   dataSource2;
