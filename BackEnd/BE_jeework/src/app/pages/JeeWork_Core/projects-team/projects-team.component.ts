@@ -1,15 +1,15 @@
-import {filter, takeUntil} from 'rxjs/operators';
-import {MenuAsideService} from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import {MenuPhanQuyenServices} from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {QueryParamsModelNew} from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {CommonService} from './../../../_metronic/jeework_old/core/services/common.service';
+import { filter, takeUntil } from 'rxjs/operators';
+import { MenuAsideService } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
+import { MenuPhanQuyenServices } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { CommonService } from './../../../_metronic/jeework_old/core/services/common.service';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {DocumentsService} from './../documents/documents.service';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {WeWorkService} from './../services/wework.services';
+import { DocumentsService } from './../documents/documents.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { WeWorkService } from './../services/wework.services';
 import {
     Component,
     OnInit,
@@ -19,22 +19,22 @@ import {
     ViewChild,
     ElementRef,
 } from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {ClosedProjectComponent} from './closed-project/closed-project.component';
-import {DuplicateProjectComponent} from './duplicate-project/duplicate-project.component';
-import {MatDialog} from '@angular/material/dialog';
-import {ProjectTeamEditComponent} from './project-team-edit/project-team-edit.component';
-import {ProjectsTeamService} from './Services/department-and-project.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { ClosedProjectComponent } from './closed-project/closed-project.component';
+import { DuplicateProjectComponent } from './duplicate-project/duplicate-project.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ProjectTeamEditComponent } from './project-team-edit/project-team-edit.component';
+import { ProjectsTeamService } from './Services/department-and-project.service';
 import {
     MilestoneModel,
     ProjectTeamDuplicateModel,
     ProjectTeamModel,
     ProjectViewsModel,
 } from './Model/department-and-project.model';
-import {DepartmentModel} from '../List-department/Model/List-department.model';
-import {UpdateStatusProjectComponent} from './update-status-project/update-status-project.component';
-import {milestoneDetailEditComponent} from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import { DepartmentModel } from '../List-department/Model/List-department.model';
+import { UpdateStatusProjectComponent } from './update-status-project/update-status-project.component';
+import { milestoneDetailEditComponent } from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
 
 @Component({
     selector: 'kt-projects-team',
@@ -588,7 +588,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(ClosedProjectComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -627,7 +627,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = _item.id > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(DuplicateProjectComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -688,7 +688,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(ProjectTeamEditComponent, {
-            data: {_item, _IsEdit: _item.IsEdit, is_project: _item.is_project},
+            data: { _item, _IsEdit: _item.IsEdit, is_project: _item.is_project },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -721,7 +721,7 @@ export class ProjectsTeamComponent implements OnInit {
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
 
         const dialogRef = this.dialog.open(UpdateStatusProjectComponent, {
-            data: {_item, _IsEdit: _item.IsEdit},
+            data: { _item, _IsEdit: _item.IsEdit },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -892,7 +892,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(milestoneDetailEditComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {

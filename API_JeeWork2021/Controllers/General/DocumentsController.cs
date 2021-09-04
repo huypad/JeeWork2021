@@ -101,11 +101,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "";
                     sqlq = @$"select att.id_row, att.object_type, att.object_id, att.path,
-filename, att.type, att.size, att.CreatedDate, att.CreatedBy, att.UpdatedDate,
-att.UpdatedBy, '' as username_tao, '' as username_sua,
-'' as hoten_nguoitao,'' as hoten_nguoisua 
-from we_attachment att join we_project_team project on att.object_id= project.id_row and object_type = 4
-where att.disabled=0 and object_type=4 ";
+                            filename, att.type, att.size, att.CreatedDate, att.CreatedBy, att.UpdatedDate,
+                            att.UpdatedBy, '' as username_tao, '' as username_sua,
+                            '' as hoten_nguoitao,'' as hoten_nguoisua 
+                            from we_attachment att join we_project_team project 
+                            on att.object_id= project.id_row and object_type = 4
+                            where att.disabled=0 and object_type=4";
 
                     DataSet ds = cnn.CreateDataSet(sqlq + dieukien_where, Conds);
                     if (cnn.LastError != null || ds == null)
@@ -142,7 +143,6 @@ where att.disabled=0 and object_type=4 ";
                         query.page = 1;
                         query.record = total;
                     }
-
                     pageModel.TotalCount = total;
                     pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
                     pageModel.Size = query.record;
