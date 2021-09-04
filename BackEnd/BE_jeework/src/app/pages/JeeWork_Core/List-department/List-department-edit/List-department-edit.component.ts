@@ -50,7 +50,7 @@ export class DepartmentEditComponent implements OnInit {
   //====================Người Áp dụng====================
   public bankFilterCtrlAD: FormControl = new FormControl();
   public filteredBanksAD: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
-
+  UserId: any = 0;
   //====================Người theo dõi===================
   public bankFilterCtrlTD: FormControl = new FormControl();
   public filteredBanksTD: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
@@ -84,7 +84,9 @@ export class DepartmentEditComponent implements OnInit {
     private danhMucChungService: DanhMucChungService,
     public weworkService: WeWorkService,
     private router: Router
-  ) {}
+  ) {
+    this.UserId = localStorage.getItem("idUser");
+  }
   /** LOAD DATA */
   ngOnInit() {
     this.title = this.translate.instant("GeneralKey.choncocautochuc") + "";
@@ -194,6 +196,7 @@ export class DepartmentEditComponent implements OnInit {
           ct.id_row = item.id_row;
           ct.id_department = this.item.id_row;
           ct.id_user = item.id_nv;
+          ct.type = 2;
           this.listChiTiet.push(ct);
         } else {
           const ct = new DepartmentOwnerModel();
@@ -201,6 +204,7 @@ export class DepartmentEditComponent implements OnInit {
           ct.id_row = item.id_row;
           ct.id_department = this.item.id_row;
           ct.id_user = item.id_nv;
+          ct.type = 2;
           this.listChiTiet.push(ct);
         }
       });
@@ -366,6 +370,9 @@ export class DepartmentEditComponent implements OnInit {
     this.myPopover.hide();
   }
   ItemselectedUser(data) {
+    if (data.id_nv == this.UserId) {
+      return;
+    }
     this.IsChangeUser = true;
 
     var index = this.selectedUser.findIndex((x) => x.id_nv == data.id_nv);

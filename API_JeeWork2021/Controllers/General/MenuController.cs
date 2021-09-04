@@ -152,6 +152,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                    },
                                        };
                             var menuWework = from r in ds_workspace.Tables[0].AsEnumerable()
+                                             orderby r["title"]
                                              select new
                                              {
                                                  RowID = r["id_row"],
@@ -164,6 +165,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                  owner = r["owner"],
                                                  list = from r2 in ds_workspace.Tables[2].AsEnumerable()
                                                         where r2["id_department"].ToString() == r["id_row"].ToString()
+                                                        orderby r2["Title"]
                                                         select new
                                                         {
                                                             ID_Row = r2["id_row"],
@@ -180,6 +182,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                         },
                                                  folder = from r3 in ds_workspace.Tables[1].AsEnumerable()
                                                           where r3["ParentID"].ToString() == r["id_row"].ToString()
+                                                          orderby r3["Title"]
                                                           select new
                                                           {
                                                               RowID = r3["id_row"],
@@ -192,6 +195,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                               parentowner = r3["parentowner"],
                                                               list = from r4 in ds_workspace.Tables[2].AsEnumerable()
                                                                      where r4["id_department"].ToString() == r3["id_row"].ToString()
+                                                                     orderby r4["Title"]
                                                                      select new
                                                                      {
                                                                          ID_Row = r4["id_row"],
@@ -259,7 +263,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             from we_project_role join we_role on we_role.id_row = we_project_role.id_role
                             where member = 1 and we_role.Disabled = 0";
                     DataSet ds = Conn.CreateDataSet(sqlq);
-                   DataSet ds_workspace = Common.GetWorkSpace(loginData, 0, 0);
+                    DataSet ds_workspace = Common.GetWorkSpace(loginData, 0, 0);
                     DataTable dt_Project = ds_workspace.Tables[2];
                     dt_Project.Columns.Add("isuyquyen");
                     //foreach(DataRow dr in dt_Project.Rows)

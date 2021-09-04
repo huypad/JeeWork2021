@@ -62,7 +62,7 @@ namespace JeeWork_Core2021.Models
         public string code { get; set; }
         public string LastError { get; set; }
     }
-    
+
     public class PageModel
     {
         public int Page { get; set; } = 1;
@@ -118,7 +118,7 @@ namespace JeeWork_Core2021.Models
                 return null;
             }
         }
-       
+
     }
     public class UpdateMessage
     {
@@ -150,5 +150,13 @@ namespace JeeWork_Core2021.Models
         public int status { get; set; }
         public object data { get; set; }
         public ErrorModel error { get; set; }
+    }
+    public class GetDateTime
+    {
+        public DateTime Date { get; private set; }
+        public GetDateTime()
+        {
+            this.Date = DateTime.UtcNow;
+        }
     }
 }

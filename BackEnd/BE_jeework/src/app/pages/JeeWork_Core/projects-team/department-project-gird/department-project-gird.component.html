@@ -16,7 +16,7 @@
             </button>
         </ng-container>
     </kt-portlet-header>
-    <kt-portlet-body class="pd-0 grid-project"  [ngStyle]="{'height': getHeight()}">
+    <kt-portlet-body class="pd-0 grid-project" [ngStyle]="{'height': getHeight()}">
         <form [formGroup]="itemForm" style="background-color: #eee;" class="kt-form kt-forkt--group-seperator-dashed">
             <div class="row" style="padding-bottom: 20px !important; ">
                 <div class="colum-in-grid" style="padding: 15px;" *ngFor="let list of listproject">
@@ -25,38 +25,64 @@
                             <perfect-scrollbar class="kt-scrollable kt-scroller"
                                 style="padding-left: 25px; padding-right: 25px;">
                                 <div class="row row-class item-header">
-                                    <div class="col-md-12 ngay-css title" style="font-size: 1.125rem"
+                                    <div class="col-md-12 ngay-css title"
                                         [ngStyle]="{'font-weight': buildStyle(thongbao)}">
                                         <a [routerLink]="['/project', list.id_row]" matTooltip="{{list.description}}">
-                                            {{list.title}}
+                                            <span style="font-size: 12pt; color: rgb(6, 117, 6) !important">
+                                                {{list.title}}
+                                            </span>
                                         </a>
-                                        <div style="font-size: 10pt; color: black; font-style: italic !important;">
+                                        <div style="font-size: 10pt; color: black;">
                                             <span>
-                                                {{ 'workprocess.taoboi' | translate}} @{{list.NguoiTao}}
+                                                {{ 'workprocess.taoboi' | translate}} {{list.NguoiTao}}
                                                 {{ 'workprocess.luc' | translate}} {{list.CreatedDate}}</span> &nbsp;
+                                        </div>
+                                        <div *ngIf="list.spacename=='-1'">
+                                            <i style="color: #079407" class="{{list.icon_space}}"></i>&nbsp;<a
+                                                [routerLink]="['/depts', list.id_department]"
+                                                class="url">
+                                                <span style="font-size: 10pt; color: black; ">
+                                                    {{list.department}}
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div *ngIf="list.spacename!='-1'">
+                                            <div>
+                                                <i style="color: #c99505" class="{{list.icon_folder}}"></i>&nbsp;<a
+                                                    [routerLink]="['/depts', list.id_department]"
+                                                    class="url">
+                                                    <span style="font-size: 10pt; color: black;">
+                                                        {{list.department}}
+                                                    </span></a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row row-class item-users">
                                     <div class="col-md-12 show-more-people">
-                                        <kt-avatar-list-users [ListUser]="list.users" MaxSize="3" iconSize="30"></kt-avatar-list-users>
+                                        <kt-avatar-list-users [ListUser]="list.users" MaxSize="3" iconSize="25">
+                                        </kt-avatar-list-users>
                                     </div>
                                 </div>
                                 <div class="row item-status" style="font-size: 11px; color: black;">
                                     <div class="col-md-6">
                                         <span style="font-weight: bold;">
-                                            {{list.Count.ht}}</span>/<span style="font-weight: bold;">{{list.Count.tong}}</span>&nbsp;
-                                            <span translate="filter.hoanthanh"></span>
+                                            {{list.Count.ht}}</span>/<span
+                                            style="font-weight: bold;">{{list.Count.tong}}</span>&nbsp;
+                                        <span translate="filter.hoanthanh"></span>
                                     </div>
                                     <div class="col-md-6" style="text-align: right;">
-                                        <span style="font-weight: bold;">{{list.Count.quahan}} <span
+                                        <span >{{list.Count.quahan}} <span
                                                 translate="filter.quahan"></span></span>
                                     </div>
                                 </div>
                                 <div class="row row-class item-footer">
                                     <div class="col-md-12">
-                                        <mat-progress-bar mode="determinate" [value]="list.Count.percentage">
-                                        </mat-progress-bar>
+                                        <!-- <mat-progress-bar mode="determinate" [value]="list.Count.percentage">
+                                        </mat-progress-bar> -->
+                                        <ngb-progressbar height="4px"
+                                            type="{{getColorProgressbar(list.Count.percentage)}}"
+                                            [value]="list.Count.percentage"></ngb-progressbar>
                                     </div>
                                 </div>
                             </perfect-scrollbar>

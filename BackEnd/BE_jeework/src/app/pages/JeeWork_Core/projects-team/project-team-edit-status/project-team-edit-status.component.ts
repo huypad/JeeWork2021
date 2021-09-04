@@ -107,7 +107,12 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       }
     }
   }
-
+  listSTTDeadline(){
+    return this.listSTT.filter(x=>x.IsDeadline);
+  }
+  listSTTFinal(){
+    return this.listSTT.filter(x=>x.IsFinal);
+  }
   LoadStatusDuan() {
     if (this.listStatus && this.isStatusNow) {
       // this.listSTT = this.listStatus;

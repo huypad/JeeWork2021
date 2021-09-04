@@ -128,7 +128,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //if (string.IsNullOrEmpty(query.filter["TenNguoiSua"]))
                     //    temp = temp.Where(x => x["TenNguoiSua"].ToString().Contains(query.filter["TenNguoiSua"]));
                     #endregion
-
                     #region Map info account từ JeeAccount
                     foreach (DataRow item in dt.Rows)
                     {
@@ -157,10 +156,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                         query.page = 1;
                         query.record = pageModel.TotalCount;
                     }
-
-                    // Phân trang
                     string icon_folder = "fa fa-folder-open";
-                    string icon_space = "fa fa-space-shuttle";
+                    string icon_space = "fas fa-rocket";
                     dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
                     var data = from r in dt.AsEnumerable()
                                where DBNull.Value.Equals(r["parentid"])
@@ -317,7 +314,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                  id_user = rr["id_nv"],
                                                  id_nv = rr["id_nv"],
                                                  hoten = rr["hoten"],
-                                                 Username = rr["Username"],
+                                                 username = rr["Username"],
                                                  mobile = rr["mobile"],
                                                  type = rr["type"],
                                                  image = rr["image"],

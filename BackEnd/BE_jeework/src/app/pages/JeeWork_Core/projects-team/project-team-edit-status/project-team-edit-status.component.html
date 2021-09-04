@@ -149,11 +149,11 @@
                                     </button>
                                 </div>
 
-                                <div class="header-view row" style="margin-top: 15px!important;">
+                                <div class="header-view row" style="margin-top: 15px!important;" *ngIf="listSTTDeadline() && listSTTDeadline().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaitre'|translate}}
                                     </div>
-                                    <ng-container *ngFor="let stt of listSTT">
+                                    <ng-container *ngFor="let stt of listSTTDeadline()">
                                         <div class="status-input col-12 form-control" *ngIf="stt.IsDeadline">
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                                 <div class="row" style="width:200px;">
@@ -194,11 +194,11 @@
                                     </ng-container>
                                 </div>
 
-                                <div class="header-view row" style="margin-top: 15px!important;">
+                                <div class="header-view row" style="margin-top: 15px!important;" *ngIf="listSTTFinal() && listSTTFinal().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaidone'|translate}}
                                     </div>
-                                    <ng-container *ngFor="let stt of listSTT">
+                                    <ng-container *ngFor="let stt of listSTTFinal()">
                                         <div class="status-input col-12 form-control" *ngIf="stt.IsFinal">
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                                 <div class="row" style="width:200px;">

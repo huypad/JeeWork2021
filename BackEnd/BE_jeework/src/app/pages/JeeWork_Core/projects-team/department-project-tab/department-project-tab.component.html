@@ -19,21 +19,40 @@
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="title">
-                            <th mat-header-cell *matHeaderCellDef style="justify-content: center">
+                            <th mat-header-cell *matHeaderCellDef style="justify-content: center; flex: 0 0 20%">
                                 <span translate="department.project" class="text-uppercase"></span>
                                 &nbsp;
                                 <app-sort-icon column="title" [activeColumn]="sorting.column"
                                     [activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
                             </th>
-                            <td mat-cell *matCellDef="let item" style="justify-content: center;">
-                                <div class="text-2-line" style="font-weight: bold; font-size: 14px;">
+                            <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 20%">
+                                <div class="text-2-line" style="font-weight: bold; font-size: 15px;">
                                     <a [routerLink]="['/project', item.id_row]"
                                         matTooltip="{{ 'department.xemchitietduan' | translate }}">
-                                        <span style="color: black !important; font-size: 13pt">{{item.title}}</span>
+                                        <span style="color: rgb(33, 126, 5) !important; font-size: 13pt">{{item.title}}</span>
                                     </a>&nbsp;
                                 </div>
                                 <div>
-                                    {{item.description}} - {{'wuser.capnhat' | translate}} {{item.UpdatedDate}}
+                                    <span style="color: black; font-size: 10pt">
+                                        {{ 'workprocess.taoboi' | translate}}
+                                    </span>
+                                    <span style="color: black; font-size: 10pt; font-weight: bold;">
+                                       {{item.NguoiTao}}
+                                    </span>
+                                    <span style="color: black; font-size: 10pt">
+                                        {{'workprocess.luc' | translate}} {{item.CreatedDate}}
+                                    </span>
+                                </div>
+                                <div *ngIf="item.NguoiSua">
+                                    <span style="color: black; font-size: 10pt">
+                                        {{ 'wuser.capnhat' | translate}}
+                                    </span>
+                                    <span style="color: black; font-size: 10pt; font-weight: bold;">
+                                       {{item.NguoiSua}}
+                                    </span>
+                                    <span style="color: black; font-size: 10pt">
+                                        {{'workprocess.luc' | translate}} {{item.UpdatedDate}}
+                                    </span>
                                 </div>
                             </td>
                         </ng-container>
@@ -42,11 +61,25 @@
                                     translate="department.department" class="text-uppercase"></span>
                             </th>
                             <td mat-cell *matCellDef="let item" style="justify-content: center">
-                                <a [routerLink]="['/depts', item.id_department]"
-                                    class="url"><b>{{item.department}}</b></a>
-                                <span style="color: red;" *ngIf="!item.department">
+                                <div *ngIf="item.spacename=='-1'">
+                                    <i style="color: #079407" class="{{item.icon_space}}"></i>&nbsp;<a
+                                        [routerLink]="['/depts', item.id_department]"
+                                        class="url"><b>{{item.department}}</b></a>
+                                </div>
+                                <!-- <span style="color: red;" *ngIf="!item.department">
                                     Chưa có department
-                                </span>
+                                </span> -->
+                                <div *ngIf="item.spacename!='-1'">
+                                    <div>
+                                        <i style="color: #c99505" class="{{item.icon_folder}}"></i>&nbsp;<a
+                                            [routerLink]="['/depts', item.id_department]"
+                                            class="url"><b>{{item.department}}</b></a>
+                                    </div>
+                                    <div>
+                                        <i style="color: #079407" class="{{item.icon_space}}"></i>&nbsp;<span
+                                            style="color: rgb(1, 27, 139); font-size: 10pt; font-weight: bold;">{{item.spacename}}</span>
+                                    </div>
+                                </div>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="hoten">
@@ -141,7 +174,7 @@
                             <th mat-header-cell *matHeaderCellDef style="justify-content: center;width:200px">
                                 <span translate="department.thongke" class="text-uppercase"></span>
                             </th>
-                            <td mat-cell *matCellDef="let item" style="justify-content: center; font-size: 10px;">
+                            <td mat-cell *matCellDef="let item" style="justify-content: center; font-size: 11px;">
                                 <div class="row">
                                     <div class="w-50 hide-more-text" matTooltip="{{'filter.hoanthanh'|translate}}">
                                         <b> {{item.Count.ht}}/{{item.Count.tong}}</b> {{'filter.hoanthanh'|translate}}
@@ -158,7 +191,7 @@
                             <th mat-header-cell *matHeaderCellDef style="justify-content: center;">
                                 <span translate="GeneralKey.trangthai" class="text-uppercase"></span>
                             </th>
-                            <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 12%">
+                            <td mat-cell *matCellDef="let item" style="justify-content: center; flex: 0 0 10%">
                                 <div class="chip-nowrap" style="display: flex;">
                                     <mat-chip-list style="padding-top: 5px; padding-right: 8px;"
                                         aria-label="Fish selection">

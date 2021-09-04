@@ -3814,5 +3814,26 @@ and IdKH={loginData.CustomerID} )";
             }
             return new { };
         }
+        public static string Get_SpaceName(string id_parent, string ConnectionString)
+        {
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                string spacename = "-1";
+                SqlConditions conds = new SqlConditions();
+                conds.Add("parentid", id_parent);
+                conds.Add("disabled", 0);
+                DataTable dt = new DataTable();
+                if (!string.IsNullOrEmpty(id_parent) || !"0".Equals(id_parent))
+                {
+                    string sql_dept = "select id_row, title from we_department where (where)";
+                    dt = cnn.CreateDataTable(sql_dept, "(where)", conds);
+                    if (dt.Rows.Count <= 0)
+                        spacename = "-1";
+                    else
+                        spacename = dt.Rows[0]["title"].ToString();
+                }
+                return spacename;
+            }
+        }
     }
 }

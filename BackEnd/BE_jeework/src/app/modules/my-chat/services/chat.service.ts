@@ -19,7 +19,6 @@ export class ChatService {
   public OpenMiniChat$ = new BehaviorSubject<any>(null);
 
 
-
   private unreadmessageSource = new ReplaySubject<number>(1);
   countUnreadmessage$ = this.unreadmessageSource.asObservable();
 

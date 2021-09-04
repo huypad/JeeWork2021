@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { SubheaderService } from './../../../../_metronic/partials/layout/subheader/_services/subheader.service';
 
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
@@ -85,7 +85,7 @@ export class DepartmentProjecGirdComponent implements OnInit {
 	// }
 	/** LOAD DATA */
 	ngOnInit() {
-		
+
 		var a = this.ShowHead;
 		this.loadingSubject.next(true);
 		this.reset();
@@ -180,11 +180,11 @@ export class DepartmentProjecGirdComponent implements OnInit {
 		let obj = window.location.href.split("/").find(x => x == "tabs-references");
 		if (obj) {
 			let tmp_height = 0;
-			tmp_height = window.innerHeight - 354-this.tokenStorage.getHeightHeader();
+			tmp_height = window.innerHeight - 354 - this.tokenStorage.getHeightHeader();
 			return tmp_height + 'px';
 		} else {
 			let tmp_height = 0;
-			tmp_height = window.innerHeight - 120-this.tokenStorage.getHeightHeader();
+			tmp_height = window.innerHeight - 120 - this.tokenStorage.getHeightHeader();
 			return tmp_height + 'px';
 		}
 	}
@@ -215,6 +215,12 @@ export class DepartmentProjecGirdComponent implements OnInit {
 			else {
 			}
 		})
+	}
+	
+	getColorProgressbar(status: number = 0): string {
+		if (status < 50) return "metal";
+		else if (status < 100) return "brand";
+		else return "success";
 	}
 	Update(_item: DepartmentModel) {
 		let saveMessageTranslateParam = '';

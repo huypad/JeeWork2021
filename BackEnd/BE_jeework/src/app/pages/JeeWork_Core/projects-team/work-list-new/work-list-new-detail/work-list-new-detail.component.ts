@@ -993,8 +993,9 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.assign && task.assign.id_nv > 0) {
             item.IsStaff = true;
         }
-        if(this.loading)
-        // this.layoutUtilsService.showWaitingDiv();
+        if(this.loading){
+            // this.layoutUtilsService.showWaitingDiv();
+        }
         this.projectsTeamService._UpdateByKey(item).pipe(
             tap(() => {
             }),

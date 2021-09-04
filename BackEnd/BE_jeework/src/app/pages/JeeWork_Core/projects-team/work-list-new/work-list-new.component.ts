@@ -430,7 +430,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
               x.IsDeadline == false
           );
           if (itemstatusdefault) {
-            this.statusDefault = x.id_row;
+            this.statusDefault = itemstatusdefault.id_row;
           } else {
             this.statusDefault = this.status_dynamic[0].id_row;
           }

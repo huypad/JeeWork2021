@@ -234,11 +234,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 
 	//end phần get danh bạ và tạo conversation 
 	ngOnInit(): void {
-		try {
-			this.presence.connectToken();
-		} catch (err) {
-			console.log(err)
-		}
+		
 
 		this.GetContact();
 		this.subscribeToEvents();
@@ -288,7 +284,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 					this.chatBoxUsers.push(u);
 				} else {
 					this.chatBoxUsers.push(new UserChatBox(user, 625 + 325));
-					this.chatService.OpenMiniChat$.next(new UserChatBox(user, 625 + 325));
+				this.chatService.OpenMiniChat$.next(new UserChatBox(user, 625 + 325));
 				}
 				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
 				break;
@@ -305,14 +301,18 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
 				break;
 			}
-			default: {//0
+			default: {//0 nó vào đây trc nếu có 1 hội thoại để xem thử 
 				var u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
 				if (u != undefined) {
 					this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
 					this.chatBoxUsers.push(u);
 				} else {
+					console.log("USERRRR",user)
 					this.chatBoxUsers.push(new UserChatBox(user, 300));
-					this.chatService.OpenMiniChat$.next(new UserChatBox(user, 300));
+					let item =new UserChatBox(user, 300);
+					console.log("ITEMMMM",item)
+					this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
+					//this.chatService.OpenMiniChat$.next(item);
 				}
 				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
 				break;

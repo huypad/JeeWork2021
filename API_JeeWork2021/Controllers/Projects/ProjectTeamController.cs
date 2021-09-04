@@ -96,7 +96,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom(error);
                     #endregion
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "title", dieukien_where = " ";
+                    string dieukienSort = "ht", dieukien_where = " ";
                     if (string.IsNullOrEmpty(query.filter["id_department"]))
                         return JsonResultCommon.Custom("Ban bắt buộc nhập");
                     dieukien_where += " and id_department=@id_department";
@@ -160,12 +160,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                         query.record = pageModel.TotalCount;
                     }
                     #region Map info account từ JeeAccount
-
                     foreach (DataRow item in ds.Tables[0].Rows)
                     {
                         var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (infoNguoiTao != null)
                         {
                             item["NguoiTao"] = infoNguoiTao.FullName;
@@ -175,12 +173,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                             item["NguoiSua"] = infoNguoiSua.FullName;
                         }
                     }
-
-
                     foreach (DataRow item in ds.Tables[1].Rows)
                     {
                         var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;
@@ -201,7 +196,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    description = r["description"],
                                    id_department = r["id_department"],
                                    department = r["department"],
+                                   spacename = WeworkLiteController.Get_SpaceName(r["id_department"].ToString(), ConnectionString),
                                    CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
+                                   icon_folder = "fa fa-folder-open",
+                                   icon_space = "fas fa-rocket",
                                    CreatedBy = r["CreatedBy"],
                                    NguoiTao = r["NguoiTao"],
                                    UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
@@ -265,7 +263,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     bool Visible = Common.CheckRoleByUserID(loginData, 3500, cnn);
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "tong desc", dieukien_where = " p.disabled=0 and de.disabled = 0 and idkh = " + loginData.CustomerID + "";
+                    string dieukienSort = "ht desc", dieukien_where = " p.disabled=0 and de.disabled = 0 and idkh = " + loginData.CustomerID + "";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         dieukien_where += " and (p.title like N'%@keyword%' or p.description like N'%@keyword%')";
@@ -373,6 +371,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel);
                     #region Map info account từ JeeAccount
+                    foreach (DataRow item in ds.Tables[0].Rows)
+                    {
+                        var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (infoNguoiTao != null)
+                        {
+                            item["NguoiTao"] = infoNguoiTao.FullName;
+                        }
+                        if (infoNguoiSua != null)
+                        {
+                            item["NguoiSua"] = infoNguoiSua.FullName;
+                        }
+                    }
                     foreach (DataRow item in ds.Tables[1].Rows)
                     {
                         var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -408,6 +419,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     description = r["description"],
                                     id_department = r["id_department"],
                                     department = r["department"],
+                                    spacename = WeworkLiteController.Get_SpaceName(r["id_department"].ToString(), ConnectionString),
+                                    icon_folder = "fa fa-folder-open",
+                                    icon_space = "fas fa-rocket",
                                     CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
                                     CreatedBy = r["CreatedBy"],
                                     NguoiTao = r["NguoiTao"],
@@ -433,7 +447,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                 mobile = u["mobile"],
                                                 image = u["image"],
                                                 favourite = u["favourite"],
-                                                //image = WeworkLiteController.genLinkImage(domain, 1119, "16116", _hostingEnvironment.ContentRootPath)
                                             },
                                     Count = new
                                     {
@@ -1124,7 +1137,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     //conds.Add("disabled", 0);
                     string strCheck = @$"select id_row, idkh, phanloaiid from we_department where (where)";
                     strCheck = @"select * from we_project_team where meetingid is not null 
-                                and id_department in (select id_row from we_department where idkh = "+loginData.CustomerID+")";
+                                and id_department in (select id_row from we_department where idkh = " + loginData.CustomerID + ")";
                     conds.Add("idkh", loginData.CustomerID);
                     //conds.Add("id_meeting", data.meetingid);
                     DataTable dt_check = cnn.CreateDataTable(strCheck);
@@ -2407,7 +2420,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         #region quản lý thành viên
 
         /// <summary>
@@ -2832,7 +2844,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
         }
         #endregion
-
         #region config email
         /// <summary>
         /// 
@@ -2879,7 +2890,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
         }
         #endregion
-
         #region phân quyền
         /// <summary>
         /// DS phân quyền theo id_project_team
@@ -3031,7 +3041,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         Conds.Add("id_project_team", query.filter["id_project_team"]);
                     else
                         Conds.Add("id_project_team", 0);
-                    Conds.Add("IDKH", loginData.CustomerID );
+                    Conds.Add("IDKH", loginData.CustomerID);
                     #region Sort data theo các dữ liệu bên dưới
                     Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
@@ -3110,7 +3120,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
-
                             if (int.Parse(dr["id_action"].ToString()) == 9) // Đối với tag gắn title
                             {
                                 if (dt_temp.Rows.Count > 0)
@@ -3119,7 +3128,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                     dr["action"] = dr["action"].ToString().Replace("{0}", "");
                             }
                         }
-
                         #region Map info account từ JeeAccount  
                         if (dr["id_action"].ToString().Equals("15") || dr["id_action"].ToString().Equals("55") || dr["id_action"].ToString().Equals("56") || dr["id_action"].ToString().Equals("57"))
                         {
@@ -3528,7 +3536,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 title = title.Replace(key, val);
                 template = template.Replace(key, val);
             }
-
             #region nội dung info mail
             mailinfo.html = template;
             mailinfo.subject = title;

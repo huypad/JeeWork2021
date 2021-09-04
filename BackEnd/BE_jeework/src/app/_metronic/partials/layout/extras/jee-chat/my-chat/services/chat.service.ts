@@ -1,3 +1,4 @@
+import { UserChatBox } from './../models/user-chatbox';
 import { AuthService } from 'src/app/modules/auth';
 import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
@@ -16,7 +17,10 @@ export class ChatService {
   public InforUserChatWith$ = new BehaviorSubject<any>([]);
 
   public OpenMiniChat$ = new BehaviorSubject<any>(null);
-
+  ChangeDatachat(data){
+    console.log('data service:',data);
+    this.OpenMiniChat$.next(data);
+  }
 
 
   private unreadmessageSource = new ReplaySubject<number>(1);

@@ -764,7 +764,12 @@ export class DepartmentEditNewComponent implements OnInit {
     _item.id_template = this.TempSelected;
     this.UpdateQuick(_item);
   }
-
+  listSTTDeadline(){
+    return this.listSTT.filter(x=>x.IsDeadline);
+  }
+  listSTTFinal(){
+    return this.listSTT.filter(x=>x.IsFinal);
+  }
   SubmitData() {
     const controls = this.itemFormGroup.controls;
     if (this.itemFormGroup.invalid) {

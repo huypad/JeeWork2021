@@ -1,3 +1,4 @@
+import { PresenceService } from './../../_metronic/partials/layout/extras/jee-chat/my-chat/services/presence.service';
 import { ChatService } from 'src/app/modules/my-chat/services/chat.service';
 import { environment } from 'src/environments/environment';
 import {
@@ -52,6 +53,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     private initService: LayoutInitService,
     private layout: LayoutService,
 		private _ngZone: NgZone,
+    private presence:PresenceService,
     private chatService:ChatService,
     private changeDetectorRefs: ChangeDetectorRef,
 
@@ -60,7 +62,13 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
+    setTimeout(() => {
+      const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
+    if (userChatBox) {
+    this.chatBoxUsers = userChatBox;
+    }
+    }, 500);
+    
     this.layout.setConfig(this.layout.getConfig());
     // build view by layout config settings
     this.selfLayout = this.layout.getProp('self.layout');
@@ -115,6 +123,11 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     this.extrasScrollTopDisplay = this.layout.getProp(
       'extras.scrolltop.display'
     );
+    try {
+			this.presence.connectToken();
+		} catch (err) {
+			console.log(err)
+		}
     this.subscribeToEvents();
 
   }
@@ -236,28 +249,31 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 	}
   private subscribeToEvents(): void {  
   
-  
- 
-
-    this._ngZone.run(() => {  
+   
    
     this.chatService.OpenMiniChat$.subscribe(res=>
       {  
-          const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
-          if (userChatBox) {
-          this.chatBoxUsers = userChatBox;
+        console.log("TTTTTTTTTTT",res)
+        // chỗ này null nên nó ko add vào đc nên nó ko hiện lên..ko pk sao nó null nữa trong khi bên kia chọn có dữ liệu //
+        // chỗ này chạy lại khúc lấy localstorage được k
+        // ko đc đâu anh..ví dụ có nhiều cái chat mini.nếu anh chọn thêm 1 cái nữa thì nó gọi toàn bộ lại mấy cái kia..
+        
+        
+      if(res)
+      {
+        console.log("Co Res",res)
+         this.chatBoxUsers.push(res);
           this.changeDetectorRefs.detectChanges();
           } else {
           this.chatBoxUsers = [];
           }
       })
       
-    })
-
- 
+   
   }
 }
 
+ 
 export class UserChatBox{
   user: any;
   right: number;//position
