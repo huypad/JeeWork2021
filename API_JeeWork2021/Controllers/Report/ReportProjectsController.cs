@@ -1558,7 +1558,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                                         join we_project_team p on m.id_project_team=p.id_row
                                                         left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
+                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and and ht > 0 order by title", cond);
                     bool hasValue = dt_data.Rows.Count > 0;
                     #region Map info account từ JeeAccount
 
