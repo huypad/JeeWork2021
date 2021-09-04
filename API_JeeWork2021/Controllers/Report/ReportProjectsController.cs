@@ -1553,12 +1553,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         displayChild = query.filter["displayChild"];
                     // #update status động
                     DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
-                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua from we_milestone m 
+                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
                                                         join we_project_team p on m.id_project_team=p.id_row
                                                         left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and and ht > 0 order by title", cond);
+                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and ht > 0 order by title", cond);
                     bool hasValue = dt_data.Rows.Count > 0;
                     #region Map info account từ JeeAccount
 
