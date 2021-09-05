@@ -78,6 +78,7 @@ export class WorkKanBanComponent implements OnInit {
   tasklocation = false;
   addNodeitem: number = -1;
   IsAdminGroup = false;
+  taskortherpeople = true;
   @Input() ID_Project: number = 0;
   constructor(
     public _service: ProjectsTeamService,
@@ -240,47 +241,198 @@ export class WorkKanBanComponent implements OnInit {
   }
 
   listStatus: any = [];
-  LoadListStatus() {
-    this.ListTasks.forEach((element) => {
-      element.isExpanded = false;
-      this.listFilter.forEach((val) => {
-        if (!val.data) {
-          val.data = [];
-        }
-        if (this.isAssignforme) {
-          if (
-            +val.id_row == +element.status &&
-            element.User.find((x) => x.id_user == this.UserID)
-          ) {
+  // LoadListStatus() {
+  //   this.ListTasks.forEach((element) => {
+  //     element.isExpanded = false;
+  //     this.listFilter.forEach((val) => {
+  //       if (!val.data) {
+  //         val.data = [];
+  //       }
+  //       if (this.isAssignforme) {
+  //         if (
+  //           +val.id_row == +element.status &&
+  //           element.User.find((x) => x.id_user == this.UserID)
+  //         ) {
+  //           val.data.push(element);
+  //         } else if (
+  //           element.User.find((x) => x.id_user == val.id_row) &&
+  //           element.User.find((x) => x.id_user == this.UserID)
+  //         ) {
+  //           if (element.User.length == 1) {
+  //             val.data.push(element);
+  //           }
+  //         }
+  //       } else {
+  //         if (+val.id_row == +element.status) {
+  //           val.data.push(element);
+  //         } else if (
+  //           element.User.find((x) => x.id_user == val.id_row) ||
+  //           (element.User.length == 0 && val.id_row == "") ||
+  //           (element.User.length > 1 && val.id_row == "0")
+  //         ) {
+  //           if (
+  //             element.User.length == 1 ||
+  //             (element.User.length == 0 && val.id_row == "") ||
+  //             (element.User.length > 1 && val.id_row == "0")
+  //           ) {
+  //             val.data.push(element);
+  //           }
+  //         }
+  //       }
+  //     });
+  //   });
+  //   this.listStatus = this.listFilter;
+  // }
+  LoadListStatus(loading = false) {
+    if (loading)
+      this.layoutUtilsService.showWaitingDiv();
+    this.listFilter.forEach((val) => {
+      val.data = [];
+    });
+
+    if (this.ListTasks && this.ListTasks.length > 0) {
+      
+      this.ListTasks.forEach((element) => {
+        element.isExpanded =
+          this.filter_subtask.value == "show" ||
+            this.addNodeitem == element.id_row
+            ? true
+            : false;
+        this.listFilter.forEach((val) => {
+          if (this.CheckDataStatus(val, element)) {
             val.data.push(element);
-          } else if (
-            element.User.find((x) => x.id_user == val.id_row) &&
-            element.User.find((x) => x.id_user == this.UserID)
-          ) {
-            if (element.User.length == 1) {
-              val.data.push(element);
-            }
-          }
-        } else {
-          if (+val.id_row == +element.status) {
-            val.data.push(element);
-          } else if (
-            element.User.find((x) => x.id_user == val.id_row) ||
-            (element.User.length == 0 && val.id_row == "") ||
-            (element.User.length > 1 && val.id_row == "0")
-          ) {
+            // this.Emtytask = false;
+          } else if (this.CheckDataAssigne(val, element)) {
             if (
-              element.User.length == 1 ||
-              (element.User.length == 0 && val.id_row == "") ||
-              (element.User.length > 1 && val.id_row == "0")
+              element.User?.length == 1 ||
+              (this.UserNull(element.User) && val.id_row == "") ||
+              (element.User?.length > 1 && val.id_row == "0")
             ) {
               val.data.push(element);
             }
+          } else if (this.CheckDataWorkGroup(val, element)) {
+            val.data.push(element);
           }
-        }
+        });
       });
-    });
+    }
     this.listStatus = this.listFilter;
+    if (loading)
+      this.layoutUtilsService.OffWaitingDiv();
+    this.changeDetectorRefs.detectChanges();
+  }
+
+  // isShowStatus(status) {
+  //   if (status.data.length > 0 && this.LoadClosedTask(status.id_row)) {
+  //     return true;
+  //   }
+  //   if (status.data.length == 0 && this.showemptystatus) {
+  //     return true;
+  //   }
+  //   if (this.Emtytask && status.id_row == this.statusDefault) {
+  //     this.newtask = this.statusDefault;
+  //     return true;
+  //   }
+  //   return false;
+  // }
+
+  TestUpdateKey(node) {
+    this.UpdateByKey(node, "title", node.title + " +1");
+  }
+  CheckDataStatus(valuefilter, elementTask) {
+    if (
+      this.filter_groupby.value == "status" &&
+      valuefilter.id_row == +elementTask.status
+    ) {
+      if (this.isAssignforme) {
+        if (!this.FindUser(elementTask.User, this.UserID))
+          return false;
+      }
+      if (!this.taskortherpeople) {
+        // kiểm tra có phải người được giao hay người tạo hay không
+        if (
+          this.isAssignForme(elementTask) || elementTask.createdby == this.UserID
+        ) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+  isAssignForme(elementTask) {
+    if (
+      this.FindUser(elementTask.User, this.UserID) ||
+      this.FindUser(elementTask.Follower, this.UserID) ||
+      this.FindUser(elementTask.UserSubtask, this.UserID)
+    ) {
+      return true;
+    }
+    return false;
+  }
+  CheckDataAssigne(valuefilter, elementTask) {
+    if (this.filter_groupby.value == "assignee") {
+      if (this.isAssignforme) {
+        if (!this.FindUser(elementTask.User, this.UserID))
+          return false;
+      }
+      if (!this.taskortherpeople) {
+        if (
+          (this.FindUser(elementTask.User, valuefilter.id_row) &&
+            this.isAssignForme(elementTask)) ||
+          (elementTask.createdby == this.UserID &&
+            this.UserNull(elementTask.User))
+        ) {
+          return true;
+        }
+      } else {
+        if (
+          this.FindUser(elementTask.User, valuefilter.id_row) ||
+          (this.UserNull(elementTask.User) && valuefilter.id_row == "") ||
+          (elementTask.User?.length > 1 && valuefilter.id_row == "0")
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  FindUser(listUser, iduser) {
+    if (listUser) {
+      var x = listUser.find((x) => x.id_user == iduser);
+      if (x) return true;
+    }
+    return false;
+  }
+  UserNull(listUser) {
+    if (listUser) {
+      if (listUser.length > 0) return false;
+    }
+    return true;
+  }
+  CheckDataWorkGroup(valuefilter, elementTask) {
+    if (
+      this.filter_groupby.value == "groupwork" &&
+      elementTask.id_group == valuefilter.id_row
+    ) {
+      if (this.isAssignforme) {
+        if (!this.FindUser(elementTask.User, this.UserID))
+          return false;
+      }
+      if (!this.taskortherpeople) {
+        // kiểm tra có phải người được giao hay người tạo hay không
+        if (
+          this.isAssignForme(elementTask) ||
+          elementTask.createdby == this.UserID
+        ) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+    return false;
   }
 
   CloseAddnewTask(val) {
