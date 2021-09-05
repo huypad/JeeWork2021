@@ -11,12 +11,12 @@ import { JeeWork_CoreModule } from '../../JeeWork_Core.module';
 	imports: [
 		CommonModule,
 		FieldsCustomModule,
-    JeeWork_CoreModule
+		JeeWork_CoreModule,
 	],
 	providers: [
 	],
 	entryComponents: [
-		
+
 		WorksDashBoardComponent,
 		WorksListGroup2Component,
 	],
@@ -24,7 +24,7 @@ import { JeeWork_CoreModule } from '../../JeeWork_Core.module';
 		WorksDashBoardComponent,
 		WorksListGroup2Component,
 	],
-	exports: [ 
+	exports: [
 		WorksDashBoardComponent,
 		WorksListGroup2Component,
 	]

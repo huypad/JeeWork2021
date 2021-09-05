@@ -373,11 +373,11 @@
         </div>
         <div class="cu-template-center-selected-template__bot">
             <div class="cu-template-center-selected-template__includes ps" style="overflow-y: auto !important;">
-                <div class="cu-template-center-selected-template__includes-header"> {{ 'template.includes' | translate
-                    }}
+                <div class="cu-template-center-selected-template__includes-header"> {{ 'template.includes' | translate }}
                 </div>
                 <mat-accordion class="example-headers-align" multi>
-                    <mat-expansion-panel *ngIf="TemplateDetail.data_status && TemplateDetail.data_status.length > 0">
+                    <!-- ẩn group -->
+                    <mat-expansion-panel *ngIf="TemplateDetail.data_status && TemplateDetail.data_status.length > 0 && false" >
                         <mat-expansion-panel-header>
                             <mat-panel-title>
                                 <div class="text-uppercase" *ngIf="TemplateDetail.data_status">
@@ -418,9 +418,10 @@
                                     <div
                                         class="cu-template-center-selected-template__includes-item-bot-item cu-template-center-selected-template__includes-item-bot-item-view not-show-lasted">
                                         <div class="cu-template-center-selected-template__includes-item-bot-item-name">
-                                            {{field.fieldname}} </div>
-                                        <div
-                                            class="cu-template-center-selected-template__includes-item-bot-item-spacer">
+                                            <!-- {{field.fieldname}}  -->
+                                            {{ 'filter.'+field.title | translate }}
+                                        </div>
+                                        <div class="cu-template-center-selected-template__includes-item-bot-item-spacer">
                                             <div class="hide">•</div>
                                         </div>
                                     </div>

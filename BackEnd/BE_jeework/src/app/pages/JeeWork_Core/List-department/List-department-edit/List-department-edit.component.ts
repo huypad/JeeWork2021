@@ -376,9 +376,12 @@ export class DepartmentEditComponent implements OnInit {
     this.IsChangeUser = true;
 
     var index = this.selectedUser.findIndex((x) => x.id_nv == data.id_nv);
-
     if (index >= 0) {
-      this.selectedUser.splice(index, 1);
+      if(this.selectedUser[index] && this.selectedUser[index].type == 1){
+        return;
+      }else{
+        this.selectedUser.splice(index, 1);
+      }
     } else {
       this.selectedUser.push(data);
     }

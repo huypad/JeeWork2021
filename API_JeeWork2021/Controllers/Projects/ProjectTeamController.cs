@@ -1462,7 +1462,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
-                    long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,1) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
+                    long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
                     if (TemplateID > 0)
                     {
                         sql_insert = "";
@@ -1476,6 +1476,34 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                         WeworkLiteController.update_position_status(idc, cnn);
+                    }
+                    else
+                    {
+                        // Tạo status mặc định cho project này nếu department không có view lấy mẫu template đầu tiên của customerid đó
+                        SqlConditions conds = new SqlConditions(); string sql = "";
+                        conds.Add("Disabled", 0);
+                        conds.Add("is_template_center", 0);
+                        conds.Add("CustomerID", loginData.CustomerID);
+                        sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
+                            "from we_template_customer " +
+                            "where (where) ";
+                        DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                        if(cnn.LastError == null && dt_template.Rows.Count > 0)
+                        {
+                            TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
+                            sql_insert = "";
+                            sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                            sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                            WeworkLiteController.update_position_status(idc, cnn);
+                        }
+
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Init_Column_Project(idc, cnn))
@@ -3149,12 +3177,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             {
                                 dr["action"] = dr["action"].ToString().Replace("{0}", infoUser.FullName);
                                 dr["action_en"] = dr["action_en"].ToString().Replace("{0}", infoUser.FullName);
-
                             }
-
                             dr["oldvalue"] = DBNull.Value;
                             dr["newvalue"] = DBNull.Value;
-
                         }
                         #endregion
                     }

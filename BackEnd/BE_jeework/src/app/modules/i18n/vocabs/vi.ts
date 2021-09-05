@@ -1086,6 +1086,7 @@ export const locale = {
       luc: "lúc",
       hoac: "hoặc",
       logdetail: "Chi tiết log",
+      logdetaildescription: "Chi tiết log chỉnh sửa mô tả",
       chonduan: "Chọn dự án",
       tatcaphongban: "Tất cả phòng ban",
       tatcacongviec: "Tất cả công việc",

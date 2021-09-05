@@ -272,7 +272,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
               // RemoveAssign subaction 2
               var listID = [];
               element.data.Tags2.forEach((element) => {
-                listID.push(element.id_nv);
+                listID.push(element.id_row);
               });
               const itemsub = new Automation_SubAction_Model();
               itemsub.clear();

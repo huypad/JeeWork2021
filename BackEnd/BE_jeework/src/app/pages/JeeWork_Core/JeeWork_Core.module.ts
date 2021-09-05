@@ -173,7 +173,7 @@ import {ListTaskCUComponent2} from './projects-team/work-list-new/list-task-cu-2
 import {ApplicationPipesModule} from './pipe/pipe.module';
 import {FieldsCustomModule} from './projects-team/work-list-new/field-custom/fields-custom.module';
 import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash-board/works-list-group-2/works-list-group-2.component';
-
+import { LogWorkDescriptionComponent } from './log-work-description/log-work-description.component';
 @NgModule({
     imports: [
         JeeCommentModule,
@@ -337,6 +337,7 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         StatusDynamicDialogComponent,
         // ChangeReivewerComponent
         CheckListEditComponent,
+        LogWorkDescriptionComponent,
         ChangeReivewerComponent,
         CuTagComponent,
         AddNewFieldsComponent,
@@ -417,6 +418,7 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         StatusDynamicDialogComponent,
         InputCustomComponent,
         CheckListEditComponent,
+        LogWorkDescriptionComponent,
         ChangeReivewerComponent,
         CuTagComponent,
         AddNewFieldsComponent,
@@ -536,6 +538,7 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         ListTaskCUComponent,
         ListTaskCUComponent2,
         CheckListEditComponent,
+        LogWorkDescriptionComponent,
         ChangeReivewerComponent,
         CuTagComponent,
         AddNewFieldsComponent,
@@ -552,7 +555,7 @@ import {WorksListGroup2Component} from './projects-team/work-list-new/works-dash
         AutomationTabManageComponent,
         DanhsachthumucComponent,
         ApplicationPipesModule,
-        FieldsCustomModule
+        FieldsCustomModule,
     ]
 })
 export class JeeWork_CoreModule {

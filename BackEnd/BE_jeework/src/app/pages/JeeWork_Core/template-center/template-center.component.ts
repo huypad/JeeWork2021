@@ -38,7 +38,6 @@ import {
   styleUrls: ["./template-center.component.scss"],
 })
 export class TemplateCenterComponent implements OnInit {
-  @ViewChild(MatAccordion) accordion: MatAccordion;
   public userFilterCtrl: FormControl = new FormControl();
   public filteredUsecase: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   ItemParentID: any = {};
@@ -60,6 +59,9 @@ export class TemplateCenterComponent implements OnInit {
   start_date = "";
   end_date = "";
   UserID = localStorage.getItem("idUser");
+  iconspace = "https://cdn1.iconfinder.com/data/icons/space-exploration-and-next-big-things-5/512/676_Astrology_Planet_Space-512.png";
+  iconfolder = "https://png.pngtree.com/png-vector/20190215/ourlarge/pngtree-vector-folder-icon-png-image_554064.jpg";
+  iconlist = "https://img.pngio.com/list-icons-free-download-png-and-svg-list-icon-png-256_256.png";
   constructor(
     public dialogRef: MatDialogRef<TemplateCenterComponent>,
     private layoutUtilsService: LayoutUtilsService,
@@ -283,20 +285,15 @@ export class TemplateCenterComponent implements OnInit {
     // kiểm tra chọn parent
     if (this.TemplateDetail.types > 1) {
       if (this.ItemParentID.type > 0) {
-        if (this.TemplateDetail.types == 2) { // folder
-          if (this.ItemParentID.type != 1) {
-            this.layoutUtilsService.showError("Vị trí lưu trữ không hợp lệ.");
-            return;
-          } else {
-            TCinsert.ParentID = this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
-          }
-        }
-        if (this.TemplateDetail.types == 3) { // list
+        if (this.ItemParentID.type >= this.TemplateDetail.types) {
+          this.layoutUtilsService.showError("Vị trí lưu trữ không hợp lệ.");
+          return;
+        } else {
           TCinsert.ParentID = this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
-        }
+        } 
       } else {
         this.layoutUtilsService.showError(
-          "Bắt buộc chọn Folder hoặc Space để nhận dữ liệu parent"
+          "Vị trí lưu trữ không được để trống."
         );
         return;
       }
@@ -358,67 +355,7 @@ export class TemplateCenterComponent implements OnInit {
 
     setTimeout(() => {
       this.SudungMau(TCinsert, istemplatelist);
-    }, 5);
-    // return;
-
-    // if(!this.TemplateDetail.istemplatelist)
-    // { 
-    //   this.SudungMau(TCinsert,this.TemplateDetail.istemplatelist);
-    //   return;
-    // }
-
-    // if (TCinsert.types == 3) {
-    //   const _item = new ProjectTeamModel();
-    //   _item.templatecenter = TCinsert;
-    //   _item.id_department = "" + TCinsert.ParentID;
-    //   _item.title = TCinsert.title;
-    //   _item.description = this.TemplateDetail.description?this.TemplateDetail.description:'';
-    //   _item.loai = "1";
-    //   _item.is_project = true;
-    //   const ct = new ProjectTeamUserModel();
-    //   ct.clear();
-    //   ct.id_user = +localStorage.getItem("idUser");
-    //   ct.admin = true;
-    //   _item.Users.push(ct);
-    //   // if ( this.TemplateDetail.data_views && this.TemplateDetail.data_views.length > 0 ) {
-    //   //   this.TemplateDetail.data_views.map((item, index) => {
-    //   //     const dv = new DepartmentViewModel();
-    //   //     dv.clear();
-    //   //     dv.viewid = item.id_row;
-    //   //     dv.is_default = item.is_default;
-    //   //     _item.DefaultView.push(dv);
-    //   //   });
-    //   // }
-
-    //   this.CreateProject(_item, false);
-    // } else {
-    //   const _item = new DepartmentModel();
-    //   _item.clear();
-    //   _item.templatecenter = TCinsert;
-    //   _item.ParentID = TCinsert.ParentID;
-    //   _item.title = TCinsert.title;
-    //   _item.Owners = [];
-    //   const ct = new DepartmentOwnerModel();
-    //   ct.clear();
-    //   ct.id_user = +localStorage.getItem("idUser");
-    //   _item.Owners.push(ct);
-    //   _item.DefaultView = [];
-    //   if (
-    //     this.TemplateDetail.data_views &&
-    //     this.TemplateDetail.data_views.length > 0
-    //   ) {
-    //     this.TemplateDetail.data_views.map((item, index) => {
-    //       const dv = new DepartmentViewModel();
-    //       dv.clear();
-    //       dv.viewid = item.id_row;
-    //       dv.is_default = item.is_default;
-    //       _item.DefaultView.push(dv);
-    //     });
-    //   }
-    //   _item.TemplateID = TCinsert.templateid;
-    //   this.Create(_item, false);
-    // }
-    // // this.Create(_item, false);
+    }, 5); 
   }
   SudungMau(_item: TemplateCenterModel, istemplatelist) {
     this.disabledBtn = true;
@@ -551,18 +488,19 @@ export class TemplateCenterComponent implements OnInit {
     }
     return "Phòng ban";
   }
+
   getIconTemplate(item) {
     if (item.types == 1) {
       // space
-      return "https://cdn1.iconfinder.com/data/icons/space-exploration-and-next-big-things-5/512/676_Astrology_Planet_Space-512.png";
+      return this.iconspace;
     } else if (item.types == 2) {
       // folder
-      return "https://png.pngtree.com/png-vector/20190215/ourlarge/pngtree-vector-folder-icon-png-image_554064.jpg";
+      return this.iconfolder;
     } else if (item.types == 3) {
       // list
-      return "https://img.pngio.com/list-icons-free-download-png-and-svg-list-icon-png-256_256.png";
+      return this.iconlist;
     }
-    return "https://cdn1.iconfinder.com/data/icons/space-exploration-and-next-big-things-5/512/676_Astrology_Planet_Space-512.png";
+    return this.iconspace;
   }
   countID(str) {
     if (str == "") return 0;

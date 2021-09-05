@@ -351,7 +351,7 @@
                                 </ng-container>
 
                                 <ng-template #showstatus>
-                                    <div class="cu-task-row-status1" style="width:20px;padding-right:10px">
+                                    <div class="cu-task-row-status1" style="width:20px;padding-right:8px">
                                         <div class="point" style="height: 12px;"
                                             [ngStyle]="{'backgroundColor': this.value.status.color}">
                                         </div>
@@ -376,7 +376,7 @@
                 <button mat-menu-item *ngFor="let status of listStatus" (click)="UpdateStatus(status)"
                 [ngStyle]="{color: status.color}">
                 <div class="row" style="align-items: center;">
-                    <div class="cu-task-row-status1" style="width:20px;padding-right:12px">
+                    <div class="cu-task-row-status1" style="width:20px;padding-right:8px">
                         <div class="point" [ngStyle]="{'backgroundColor': status.color}">
                         </div>
                     </div>

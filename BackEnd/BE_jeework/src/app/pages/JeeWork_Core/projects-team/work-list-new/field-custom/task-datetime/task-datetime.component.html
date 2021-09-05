@@ -23,7 +23,7 @@
             {{ GetDatetime(value) }}
         </span>
         <ng-template #setDate>
-            <i class="flaticon-calendar-3" style="font-size: 1.5rem"></i>
+            <i class="{{ getIconCalendar() }}" style="font-size: 1.5rem"></i>
         </ng-template>
     </div>
     <div class="item-field " *ngIf="!role">
@@ -36,7 +36,7 @@
             {{ GetDatetime(value) }}
         </span>
         <ng-template #setDate>
-             <i class="flaticon-calendar-3" style="font-size: 1.5rem"></i>
+             <i class="{{ getIconCalendar() }}" style="font-size: 1.5rem"></i>
         </ng-template>
     </div>
 </ng-template>

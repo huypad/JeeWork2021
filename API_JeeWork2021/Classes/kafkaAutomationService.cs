@@ -653,6 +653,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
                 return false;
             }
             DataRow dr = dt.Rows[0];
+            GetDateTime UTCdate = new GetDateTime();
             Hashtable val = new Hashtable();
             if (!string.IsNullOrEmpty(dr["id_parent"].ToString()))
                 val.Add("id_parent", dr["id_parent"]);
@@ -679,10 +680,10 @@ where AutoID = " + AutoID+ " order by RowID desc";
                 switch (int.Parse(dr["StartDate_Type"].ToString()))
                 {
                     case 1:
-                        val.Add("start_date", DateTime.Now.AddDays(int.Parse(dr["start_date"].ToString())));
+                        val.Add("start_date", UTCdate.Date.AddDays(int.Parse(dr["start_date"].ToString())));
                         break;
                     case 2:
-                        val.Add("start_date", DateTime.Now);
+                        val.Add("start_date", UTCdate.Date);
                         break;
                     case 3:
                         val.Add("start_date", dr["start_date"]);
@@ -694,10 +695,10 @@ where AutoID = " + AutoID+ " order by RowID desc";
                 switch (int.Parse(dr["Deadline_Type"].ToString()))
                 {
                     case 1:
-                        val.Add("deadline", DateTime.Now.AddDays(int.Parse(dr["deadline"].ToString())));
+                        val.Add("deadline", UTCdate.Date.AddDays(int.Parse(dr["deadline"].ToString())));
                         break;
                     case 2:
-                        val.Add("deadline", DateTime.Now);
+                        val.Add("deadline", UTCdate.Date);
                         break;
                     case 3:
                         val.Add("deadline", dr["deadline"]);
@@ -707,7 +708,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
 
             //if (!string.IsNullOrEmpty(dr["id_group"].ToString()))
             //    val.Add("id_group", dr["id_group"].ToString());
-            val.Add("CreatedDate", DateTime.Now);
+            val.Add("CreatedDate", UTCdate.Date);
             val.Add("CreatedBy", userid);
             val.Add("clickup_prioritize", dr["priority"]);
             cnn.BeginTransaction();
@@ -724,7 +725,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
 
                 Hashtable valU = new Hashtable();
                 valU["id_work"] = weworkID;
-                valU["CreatedDate"] = DateTime.Now;
+                valU["CreatedDate"] = UTCdate.Date;
                 valU["CreatedBy"] = userid;
                 foreach (DataRow user in dtUser.Rows)
                 {
@@ -753,7 +754,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
                         val.Add("checker", DBNull.Value);
                     else
                         val.Add("checker", item["follower"]);
-                    val.Add("createddate", DateTime.Now);
+                    val.Add("createddate", UTCdate.Date);
                     val.Add("createdby", 0);
                     if (cnn.Insert(val, "we_work_process") != 1)
                     {
@@ -768,7 +769,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
                         val.Add("new_checker", DBNull.Value);
                     }
 
-                    val.Add("createddate", DateTime.Now);
+                    val.Add("createddate", UTCdate.Date);
                     val.Add("createdby", 0);
                     if (cnn.Insert(val, "we_work_process_log") != 1)
                     {

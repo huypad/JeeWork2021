@@ -40,7 +40,7 @@
                                        {{item.NguoiTao}}
                                     </span>
                                     <span style="color: black; font-size: 10pt">
-                                        {{'workprocess.luc' | translate}} {{item.CreatedDate}}
+                                        {{'workprocess.luc' | translate}} {{item.CreatedDate | timezone}}
                                     </span>
                                 </div>
                                 <div *ngIf="item.NguoiSua">
@@ -51,7 +51,7 @@
                                        {{item.NguoiSua}}
                                     </span>
                                     <span style="color: black; font-size: 10pt">
-                                        {{'workprocess.luc' | translate}} {{item.UpdatedDate}}
+                                        {{'workprocess.luc' | translate}} {{item.UpdatedDate | timezone}}
                                     </span>
                                 </div>
                             </td>

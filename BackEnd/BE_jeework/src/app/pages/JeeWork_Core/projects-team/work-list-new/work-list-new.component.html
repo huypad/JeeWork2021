@@ -909,31 +909,22 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'date'">
                                                                         <div
-                                                                            class="w-100 h-100  border-hover padding-new-field item-field">
-                                                                            <!-- <div class="url hide-more-text " 
-                                                                                *ngIf="editmail != (node.id_row+item.id_row.toString())">
-                                                                                {{GetDataNewField(node.id_row,item.id_row)}}
-                                                                            </div> -->
+                                                                            class="w-100 h-100 padding-new-field item-field"> 
+                                                                            <!-- border-hover  -->
 
                                                                             <app-task-datetime
                                                                                 (valueChange)="UpdateValueField($event,node.id_row,item)"
                                                                                 [fieldname]="'date'"
                                                                                 [value]="GetDataNewField(node.id_row,item.id_row)=='-'?'':GetDataNewField(node.id_row,item.id_row)"
                                                                                 [role]="true"></app-task-datetime>
-
-                                                                            <!-- <ng-container
-                                                                                *ngIf="editmail == (node.id_row+item.id_row.toString())">
-                                                                                <app-focus-block type="date"
-                                                                                    [isbd]="true"
-                                                                                    [value]="GetDataNewField(node.id_row,item.id_row)"
-                                                                                    (out)="UpdateValueField($event,node.id_row,item);">
-                                                                                </app-focus-block>
-                                                                            </ng-container> -->
+ 
                                                                         </div>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'email'">
                                                                         <div
-                                                                            class="w-100 h-100  border-hover padding-new-field item-field">
+                                                                            class="w-100 h-100 padding-new-field item-field">
+                                                                            <!-- border-hover  -->
+
                                                                             <ng-container
                                                                                 *ngIf="editmail != (node.id_row+item.id_row.toString())">
                                                                                 <div class=" url hide-more-text"
@@ -980,7 +971,8 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'files'">
                                                                         <div class="w-100 h-100">
-                                                                            <div class="border-hover url"
+                                                                            <!-- border-hover  -->
+                                                                            <div class="url"
                                                                                 (click)="file.click()"
                                                                                 *ngIf="editmail != node.id_row">
                                                                                 -
@@ -992,7 +984,8 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'number'">
                                                                         <div
-                                                                            class="w-100 h-100 border-hover padding-new-field item-field">
+                                                                            class="w-100 h-100 padding-new-field item-field">
+                                                                            <!-- border-hover  -->
                                                                             <div class="url hide-more-text"
                                                                                 (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)"
                                                                                 *ngIf="editmail != (node.id_row+item.id_row.toString())">
@@ -1010,7 +1003,8 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'text'">
                                                                         <div
-                                                                            class="w-100 h-100  border-hover padding-new-field item-field">
+                                                                            class="w-100 h-100  padding-new-field item-field">
+                                                                            <!-- border-hover  -->
                                                                             <div class=" url hide-more-text"
                                                                                 (click)="editmail = (node.id_row+item.id_row.toString());focusInput(node.id_row,item.id_row)"
                                                                                 *ngIf="editmail != (node.id_row+item.id_row.toString())">
@@ -1028,7 +1022,8 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'textarea'">
                                                                         <!-- text area . . . {{item.id_row}} -->
-                                                                        <div class="w-100 h-100 border-hover padding-new-field item-field"
+                                                                        <!-- border-hover  (down)-->
+                                                                        <div class="w-100 h-100 padding-new-field item-field"
                                                                             [matMenuTriggerFor]="area"
                                                                             (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.id_row))"
                                                                             (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.id_row))">
@@ -1046,7 +1041,8 @@
                                                                     </ng-container>
                                                                     <!--default case when there are no matches -->
                                                                     <ng-container *ngSwitchDefault>
-                                                                        <div class="w-100 h-100 border-hover padding-new-field item-field"
+                                                                        <!-- border-hover  -->
+                                                                        <div class="w-100 h-100 padding-new-field item-field"
                                                                             [ngStyle]="{'backgroundColor': GetDataNewField(node.id_row,item.id_row,true,true)}"
                                                                             [matMenuTriggerFor]="dropdown">
                                                                             <div class="url hide-more-text"

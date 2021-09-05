@@ -210,7 +210,6 @@ namespace JeeWork_Core2021.Classes
                 return str;
             }
         }
-
         public static string Format_Currency(string str)//truyền 1 chuỗi dãy số vào
         {
             var t = "";
@@ -221,7 +220,6 @@ namespace JeeWork_Core2021.Classes
             }
             return t;
         }
-
         public static double Format_Double(string str)//truyền 1 chuỗi dãy số vào
         {
             var t = 0.0;
@@ -229,7 +227,6 @@ namespace JeeWork_Core2021.Classes
                 t = double.Parse(str);
             return t;
         }
-
         public static string Filter_SoDienThoai(string p_Input = "")
         {
             try
@@ -243,7 +240,6 @@ namespace JeeWork_Core2021.Classes
                 return "";
             }
         }
-
         public static string FormatDate_UTC(string p_Input = "")
         {
             try
@@ -273,7 +269,6 @@ namespace JeeWork_Core2021.Classes
                 return "";
             }
         }
-
         public static string Remove_Last_Phay(string p_Input = "")
         {
             try
@@ -288,7 +283,6 @@ namespace JeeWork_Core2021.Classes
                 return p_Input;
             }
         }
-
         public static string ConvertDateTimeToString(object obj, bool cothoigian = false, bool hiennamtruoc = false)
         {
             if (obj == null || string.IsNullOrEmpty(obj.ToString()))

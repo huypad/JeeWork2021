@@ -361,51 +361,7 @@
                             <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
                                 <app-task-datetime (valueChange)="updateDate(node,$event,item.fieldname)"
                                     [fieldname]="item.fieldname" [(value)]="node[item.fieldname]"
-                                    [role]="CheckRoleskeypermit(item.fieldname)"></app-task-datetime>
-                                <!-- <ng-container *ngIf="(item.fieldname == 'createddate' || item.fieldname == 'end_date');else selectedDate">
-                                    <div class="item-field">
-                                        <span class="hide-more-text" matTooltip="{{node[item.fieldname] | timezone}}">
-                                            {{node[item.fieldname] | timezone }}
-                                        </span>
-                                    </div>
-                                </ng-container>
-
-                                <ng-template #selectedDate>
-                                    <div (click)="dt1.open()" class="item-field item-datetime"
-                                        *ngIf="CheckRoleskeypermit(item.fieldname)">
-                                        <div class="remove-date url" (click)="UpdateByKey(node,item.fieldname,null)"
-                                            [hidden]="!node[item.fieldname]">
-                                            <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
-                                        </div>
-                                        <span
-                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
-                                            matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
-                                            *ngIf="node[item.fieldname];else setDate">
-                                            {{node[item.fieldname] |
-                                            date:'dd/MM/yyyy'}}
-                                        </span>
-                                        <ng-template #setDate>
-                                            <i class="far fa-calendar-alt" style="font-size: 18px;"></i>
-                                        </ng-template>
-                                    </div>
-                                    <div class="item-field" *ngIf="!CheckRoleskeypermit(item.fieldname)">
-                                        <span
-                                            class="{{getDeadline(item.fieldname,node[item.fieldname])}} hide-more-text"
-                                            matTooltip="{{node[item.fieldname] | date:'dd/MM/yyyy HH:mm'}}"
-                                            *ngIf="node[item.fieldname];else setDate">
-                                            {{node[item.fieldname] |
-                                            date:'dd/MM/yyyy'}}
-                                        </span>
-                                        <ng-template #setDate>
-                                            <i class="far fa-calendar-alt" style="font-size: 18px;"></i>
-                                        </ng-template>
-                                    </div>
-                                    <input matInput readonly [(ngModel)]="node[item.fieldname]"
-                                        (ngModelChange)="updateDate(node,node[item.fieldname],item.fieldname)"
-                                        style="opacity: 0;" class="date-picker position-picker" [owlDateTime]="dt1"
-                                        [owlDateTimeTrigger]="dt1">
-                                    <owl-date-time #dt1></owl-date-time>
-                                </ng-template> -->
+                                    [role]="CheckRoleskeypermit(item.fieldname)"></app-task-datetime> 
                             </ng-container>
                             <ng-template #nosetdatetime>
                                 <ng-container *ngIf="item.type == 'code';else noestcode">
@@ -569,42 +525,7 @@
                                                     <app-prioritize [role]="CheckRoleskeypermit(item.fieldname)"
                                                         (submit)="updatePriority(node,item.fieldname,$event)"
                                                         [value]="node[item.fieldname]"></app-prioritize>
-                                                </div>
-                                                <!-- <div class="item-field"
-                                                                *ngIf="CheckRoleskeypermit(item.fieldname)"
-                                                                [matMenuTriggerFor]="priority">
-                                                                <ng-container
-                                                                    *ngIf="node[item.fieldname]>0;else nosetprio">
-                                                                    <i
-                                                                        class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
-                                                                </ng-container>
-                                                                <ng-template #nosetprio>
-                                                                    <i class="far fa-flag pd-0"
-                                                                        style="font-size: 13px;"></i>
-                                                                </ng-template>
-                                                            </div>
-                                                            <div class="item-field"
-                                                                *ngIf="!CheckRoleskeypermit(item.fieldname)">
-                                                                <ng-container
-                                                                    *ngIf="node[item.fieldname]>0;else nosetprio">
-                                                                    <i
-                                                                        class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
-                                                                </ng-container>
-                                                                <ng-template #nosetprio>
-                                                                    <i class="far fa-flag pd-0"
-                                                                        style="font-size: 13px;"></i>
-                                                                </ng-template>
-                                                            </div>
-                                                            <mat-menu #priority="matMenu">
-                                                                <button mat-menu-item
-                                                                    *ngFor="let prio of list_priority"
-                                                                    (click)="updatePriority(node,item.fieldname,prio.value)">
-                                                                    <i
-                                                                        class="{{prio.icon}} pd-r-10"></i>
-                                                                    {{ 'priority.'+prio.name |
-                                                                    translate }}
-                                                                </button>
-                                                            </mat-menu> -->
+                                                </div> 
                                             </div>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'comments'">
@@ -696,26 +617,15 @@
                                         </mat-checkbox>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'date'">
-                                        <div class="w-100 h-100  border-hover padding-new-field item-field">
+                                        <div class="w-100 h-100   padding-new-field item-field">
                                             <app-task-datetime (valueChange)="UpdateValueField($event,node.id_row,item)"
                                                 [fieldname]="'date'"
                                                 [value]="GetDataNewField(node.id_row,item.Id_row)=='-'?'':GetDataNewField(node.id_row,item.Id_row)"
-                                                [role]="true"></app-task-datetime>
-                                            <!-- <div class="url hide-more-text "
-                                                (click)="editmail = (node.id_row + item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
-                                                *ngIf="editmail != (node.id_row+item.Id_row.toString())">
-                                                {{GetDataNewField(node.id_row,item.Id_row)}}
-                                            </div>
-                                            <ng-container *ngIf="editmail == (node.id_row+item.Id_row.toString())">
-                                                <app-focus-block type="date" [isbd]="true"
-                                                    [value]="GetDataNewField(node.id_row,item.Id_row)"
-                                                    (out)="UpdateValueField($event,node.id_row,item);">
-                                                </app-focus-block>
-                                            </ng-container> -->
+                                                [role]="true"></app-task-datetime> 
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'email'">
-                                        <div class="w-100 h-100  border-hover padding-new-field item-field">
+                                        <div class="w-100 h-100   padding-new-field item-field">
                                             <ng-container *ngIf="editmail != (node.id_row+item.Id_row.toString())">
                                                 <div class=" url hide-more-text"
                                                     *ngIf="GetDataNewField(node.id_row,item.Id_row)!='-'">
@@ -759,7 +669,7 @@
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'files'">
                                         <div class="w-100 h-100">
-                                            <div class="border-hover url" (click)="file.click()"
+                                            <div class=" url" (click)="file.click()"
                                                 *ngIf="editmail != node.id_row">
                                                 -
                                             </div>
@@ -768,7 +678,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'number'">
-                                        <div class="w-100 h-100 border-hover padding-new-field item-field">
+                                        <div class="w-100 h-100  padding-new-field item-field">
                                             <div class="url hide-more-text"
                                                 (click)="editmail = (node.id_row+item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
                                                 *ngIf="editmail != (node.id_row+item.Id_row.toString())">
@@ -783,7 +693,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'text'">
-                                        <div class="w-100 h-100  border-hover padding-new-field item-field">
+                                        <div class="w-100 h-100   padding-new-field item-field">
                                             <div class=" url hide-more-text"
                                                 (click)="editmail = (node.id_row+item.Id_row.toString());focusInput(node.id_row,item.Id_row)"
                                                 *ngIf="editmail != (node.id_row+item.Id_row.toString())">
@@ -799,7 +709,7 @@
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'textarea'">
                                         <!-- text area . . . {{item.Id_row}} -->
-                                        <div class="w-100 h-100 border-hover padding-new-field item-field"
+                                        <div class="w-100 h-100  padding-new-field item-field"
                                             [matMenuTriggerFor]="area"
                                             (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.Id_row))"
                                             (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.Id_row))">
@@ -816,7 +726,7 @@
                                     </ng-container>
                                     <!--default case when there are no matches -->
                                     <ng-container *ngSwitchDefault>
-                                        <div class="w-100 h-100 border-hover padding-new-field item-field"
+                                        <div class="w-100 h-100  padding-new-field item-field"
                                             [ngStyle]="{'backgroundColor': GetDataNewField(node.id_row,item.Id_row,true,true)}"
                                             [matMenuTriggerFor]="dropdown">
                                             <div class="url hide-more-text"

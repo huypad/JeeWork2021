@@ -1,0 +1,91 @@
+<style>
+	.header-log {
+		font-size: 14px;
+		color: rgb(226, 3, 14);
+		font-weight: bold;
+	}
+
+	.line-1 {
+		border-top: 1px solid #f5f5f5;
+	}
+</style>
+<div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form">
+		<div class="kt-portlet__body">
+			<div class="tao-status">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-2 row align-items-center">
+							<span class="header-log">{{ 'GeneralKey.ngaycapnhat' |
+								translate }}</span>
+						</div>
+						<div class="col-2 row align-items-center">
+							<span class="header-log">{{ 'GeneralKey.nguoicapnhat' |
+								translate }}</span>
+						</div>
+						<div class="col-7 row align-items-center">
+							<span class="header-log">{{ 'GeneralKey.mota' | translate
+								}}</span>
+						</div>
+						<div class="col-1">
+						</div>
+					</div>
+				</div>
+				<ng-container *ngFor="let active of item">
+					<div class="form-group">
+						<div class="row line-1">
+							<div class="col-2 row align-items-center">
+								<span style="font-size: 14px; color: rgb(19, 1, 1);">{{active.CreatedDate}}</span>
+							</div>
+							<div class="col-1 row align-items-center">
+								<ng-container>
+									<ngx-avatar size="25" matTooltip="{{active.NguoiTao.hoten}}"
+										src="{{active.NguoiTao.image}}" *ngIf="active.NguoiTao.image;else bindText">
+									</ngx-avatar>
+								</ng-container>
+								<ng-template #bindText>
+									<ngx-avatar textSizeRatio="2.5" matTooltip="{{active.NguoiTao.hoten}}" size="25"
+										[name]="WeWorkService.getNameUser(active.NguoiTao.hoten)"
+										bgColor="{{WeWorkService.getColorNameUser(active.NguoiTao.hoten)}}">
+									</ngx-avatar>
+								</ng-template>
+							</div>
+							<div class="col-7 row align-items-center">
+								<span style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>
+								<span *ngIf="show_detail && active.id_row == id"
+									style="font-size: 14px; color: rgb(223, 3, 14); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;
+							</div>
+							<div class="col-2 row align-items-center">
+								<button mat-icon-button *ngIf="active.oldvalue != ''"
+									(click)="ShowDetail(active.id_row)">
+									<i class="fa fa-arrow-down" style="font-size: 16px; color: rgb(25, 168, 6);"></i>
+								</button>&nbsp;
+								<button mat-icon-button (click)="ShowDetail(active.id_row)">
+									<i class="fas fa-history pd-0" style="font-size: 16px; color: rgb(218, 163, 13);"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</ng-container>
+			</div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

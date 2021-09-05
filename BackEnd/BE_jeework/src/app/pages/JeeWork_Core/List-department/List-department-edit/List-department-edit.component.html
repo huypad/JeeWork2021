@@ -1,26 +1,30 @@
 <div class="kt-portlet" [ngClass]="{ 'kt-portlet--body-progress kt-portlet--body-progress-overlay' : viewLoading }">
-    <div class="kt-portlet__head kt-portlet__head__custom">
-        <div class="kt-portlet__head-label">
-            <h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
-        </div>
-    </div>
-    <form class="kt-form" [formGroup]="itemForm">
-        <div class="kt-form__group">
-            <div class="row">
-                <div class="col-md-12 kt--margin-bottom-10-mobile">
-                    <mat-form-field class="mat-form-field-fluid ">
-                        <input matInput placeholder="{{ 'department.ten' | translate }}" formControlName="title"
-                            class="require" required #focusInput />
-                    </mat-form-field>
-                </div>
-            </div>
+	<div class="kt-portlet__head kt-portlet__head__custom">
+		<div class="kt-portlet__head-label">
+			<h5 class="kt-portlet__head-title">{{getTitle()}}</h5>
+		</div>
+	</div>
+	<form class="kt-form" [formGroup]="itemForm">
+		<div class="kt-form__group">
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid ">
+						<input matInput placeholder="{{ 'department.ten' | translate }}" formControlName="title"
+							class="require" required #focusInput />
+					</mat-form-field>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-md-12 row kt--margin-bottom-10-mobile">
-					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{ 'projects.members' | translate }} : </span>
+					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{
+						'projects.members' | translate }} : </span>
 					<div class="row" style="flex-grow: 1;">
 						<ng-container *ngFor="let us of this.selectedUser;let index = index">
 							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
 								style="justify-content: flex-end;">
+								<i class="far fa-times-circle url view-hover bg-white" *ngIf="us.type!=1"
+									(click)="ItemselectedUser(us)"
+									style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 9pt;"></i>
 								<ng-container>
 									<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
 									</kt-avatar-user>
@@ -29,7 +33,7 @@
 						</ng-container>
 						<ng-container *ngIf="this.selectedUser && this.selectedUser.length > 3">
 
-							<div class="m--img-rounded m--marginless m--img-centered background"
+							<div class="m--img-rounded m--marginless m--img-centered background url"
 								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
 								<div class="user w-100 h-100"
 									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
@@ -38,17 +42,19 @@
 								</div>
 							</div>
 							<mat-menu #menu1="matMenu">
-								<div *ngFor="let user of this.selectedUser;let index = index"
-									style="justify-content: flex-end;">
-									<ng-container *ngIf="index > 2">
-										<div class="position-relative">
-											<i class="fas fa-times scale-hover-01 url"
-												style="position: absolute;top:0;right:0"
-												(click)="ItemselectedUser(user)"></i>
-											<div class="row">
-												<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
-													[showFull]="true" [info]="'@' + user.username">
-												</kt-avatar-user>
+								<div [ngStyle]="{'max-height.px': 215}">
+									<ng-container *ngFor="let user of this.selectedUser;let index = index">
+										<div *ngIf="index > 2" style="justify-content: flex-end;">
+											<div class="position-relative mb-2"
+												[ngStyle]="{'padding-right.px': (icondel.offsetWidth + 5)}">
+												<i class="fas fa-times scale-hover-01 url" #icondel
+													style="position: absolute;top: 5px;;right:0"
+													(click)="ItemselectedUser(user)"></i>
+												<div class="row">
+													<kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
+														[showFull]="true" [info]="'@' + user.username">
+													</kt-avatar-user>
+												</div>
 											</div>
 										</div>
 									</ng-container>
@@ -62,32 +68,32 @@
 						</div>
 					</div>
 					<mat-menu #member="matMenu">
-                        <div class="page-work-detail">
-                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
-                                (ItemSelected)="ItemselectedUser($event)">
-                            </kt-choose-users>
-                        </div>
-                    </mat-menu>
+						<div class="page-work-detail">
+							<kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+								(ItemSelected)="ItemselectedUser($event)">
+							</kt-choose-users>
+						</div>
+					</mat-menu>
 				</div>
 			</div>
-        </div>
-    </form>
-    <div class="kt-portlet__foot">
-        <div class="kt-form__actions kt-form__actions--solid">
-            <div class="row text-right">
-                <div class="col-lg-12">
-                    <button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
-                        cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
-                        <span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
-                            class="spinner-button-pad"></div>
-                    </button>&nbsp;
-                    <button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)" *ngIf="IsEdit"
-                        [disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luudong' | translate }}">
-                        <span translate="GeneralKey.luudong"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
-                            class="spinner-button-pad"></div>
-                    </button> &nbsp;
-                </div>
-            </div>
-        </div>
-    </div>
+		</div>
+	</form>
+	<div class="kt-portlet__foot">
+		<div class="kt-form__actions kt-form__actions--solid">
+			<div class="row text-right">
+				<div class="col-lg-12">
+					<button type="button" class="mat-raised-button" (click)="close()" [disabled]="disabledBtn"
+						cdkFocusInitial matTooltip="{{ 'GeneralKey.trolai' | translate }}">
+						<span translate="GeneralKey.trolai"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button>&nbsp;
+					<button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)"
+						*ngIf="IsEdit" [disabled]="disabledBtn" matTooltip="{{ 'GeneralKey.luudong' | translate }}">
+						<span translate="GeneralKey.luudong"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+							class="spinner-button-pad"></div>
+					</button> &nbsp;
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

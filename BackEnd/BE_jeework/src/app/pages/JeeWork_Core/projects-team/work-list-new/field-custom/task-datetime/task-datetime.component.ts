@@ -26,6 +26,15 @@ export class TaskDatetimeComponent implements OnInit,OnChanges {
   ngOnInit(): void {
   }
 
+  getIconCalendar(){
+    if(this.fieldname == 'deadline')
+      return 'flaticon-calendar-3';
+    else if(this.fieldname == 'start_date')
+      return 'flaticon-calendar-2';
+    else
+      return 'flaticon-calendar-1';
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (this.value){
       this.isToday = moment(this.value).format('MM/DD/YYYY') === moment(new Date()).utc().format('MM/DD/YYYY');
@@ -38,7 +47,7 @@ export class TaskDatetimeComponent implements OnInit,OnChanges {
     if(this.fieldname == 'deadline' && moment(this.value).format('MM/DD/YYYY HH:mm:ss') < moment(new Date()).utc().format('MM/DD/YYYY HH:mm:ss')){
       return 'trehan';
     }
-    if(this.isToday)
+    if(this.fieldname == 'deadline' && this.isToday)
       return 'homnay';
     return '';
   }
@@ -54,7 +63,7 @@ export class TaskDatetimeComponent implements OnInit,OnChanges {
 
   GetDatetime(value){
     if (value){
-      if (moment(value).format('MM/DD/YYYY') === moment(new Date()).format('MM/DD/YYYY')){
+      if (moment(value).format('MM/DD/YYYY') === moment(new Date()).format('MM/DD/YYYY') && this.fieldname == 'deadline'){
         return 'Hôm nay';
       }else{
         if (moment(value).format('MM/DD/YYYY') !== 'Invalid date') {
@@ -63,5 +72,6 @@ export class TaskDatetimeComponent implements OnInit,OnChanges {
         return value;
       }
     }
+    return value;
   }
 }

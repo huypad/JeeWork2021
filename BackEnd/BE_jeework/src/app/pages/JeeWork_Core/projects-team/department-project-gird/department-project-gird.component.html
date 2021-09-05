@@ -35,7 +35,7 @@
                                         <div style="font-size: 10pt; color: black;">
                                             <span>
                                                 {{ 'workprocess.taoboi' | translate}} {{list.NguoiTao}}
-                                                {{ 'workprocess.luc' | translate}} {{list.CreatedDate}}</span> &nbsp;
+                                                {{ 'workprocess.luc' | translate}} {{list.CreatedDate | timezone}}</span> &nbsp;
                                         </div>
                                         <div *ngIf="list.spacename=='-1'">
                                             <i style="color: #079407" class="{{list.icon_space}}"></i>&nbsp;<a

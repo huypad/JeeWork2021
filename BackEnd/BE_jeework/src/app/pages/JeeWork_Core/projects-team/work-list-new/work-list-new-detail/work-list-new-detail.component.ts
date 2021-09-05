@@ -61,6 +61,7 @@ import {
 import {UpdateByKeysComponent} from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
 import {JeeCommentService} from '../../../jee-comment/jee-comment.service';
 import {CommunicateService} from '../work-list-new-service/communicate.service';
+import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
 
 @Component({
     selector: 'kt-work-list-new-detail',
@@ -255,6 +256,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.projectsTeamService.LogDetailCU(this.DataID).subscribe((res) => {
             if (res && res.status === 1) {
                 this.LogDetail = res.data;
+				this.LogDetail = this.LogDetail.filter(x=>x.id_action != 16).sort();
                 this.resetComment();
                 this.changeDetectorRefs.detectChanges();
             } else {
@@ -262,7 +264,23 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         });
     }
-
+    View_Log_Description() {
+        var ID_log = this.item.id_row;
+		let saveMessageTranslateParam = '';
+		saveMessageTranslateParam += ID_log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
+		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+		const _messageType = this.item.id_row > 0 ? MessageType.Update : MessageType.Create;
+		const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log } });
+		dialogRef.afterClosed().subscribe(res => {
+			if (!res) {
+				// this.ngOnInit();
+			}
+			else {
+				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+				// this.ngOnInit();
+			}
+		});
+	}
     LoadData() {
         this.mark_tag();
         this.LoadLog();

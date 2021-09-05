@@ -921,11 +921,11 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                         has["id_parent"] = _t.id_parent;
                     //else
                     //    has["id_parent"] = DBNull.Value;
-                    if (_t.startdate_type == "3")
+                    if (!string.IsNullOrEmpty(_t.start_date))
                     {
                         has["start_date"] = _t.start_date;
                     }
-                    if (_t.deadline_type == "3")
+                    if (!string.IsNullOrEmpty(_t.deadline))
                     {
                         has["deadline"] = _t.deadline;
                     }

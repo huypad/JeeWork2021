@@ -382,5 +382,19 @@ export class WorkService {
     changeMessage(message) {
         this.messageSource.next(message);
     }
+    LogDetail(id: any): Observable<QueryResultsModel> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = API_work_CU + '/log-detail?id=' + id;
+		return this.http.get<QueryResultsModel>(url, {
+			headers: httpHeaders,
+		});
+	}
+    LogDetailByWork(id: any): Observable<QueryResultsModel> {
+		const httpHeaders = this.httpUtils.getHTTPHeaders();
+		const url = API_work_CU + '/log-detail-by-work?id=' + id;
+		return this.http.get<QueryResultsModel>(url, {
+			headers: httpHeaders,
+		});
+	}
     // end
 }

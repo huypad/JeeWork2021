@@ -56,14 +56,17 @@
 								</div>
 								<div style="flex-grow: 1 !important;">
 									<a>
-										<span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+										<span
+											style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
 										- <span
 											style="cursor: pointer; font-size:12pt; color: black;">{{getActionActivities(active)}}</span>&nbsp;
 										<ng-container *ngIf="active.oldvalue">
-											<span style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
+											<span
+												style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
 										</ng-container>
 										<ng-container *ngIf="active.newvalue">
-											<span style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
+											<span
+												style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
 										</ng-container>
 										<span style="font-size: 14px; color: #aaa;">{{active.CreatedDate}}</span>
 									</a>
