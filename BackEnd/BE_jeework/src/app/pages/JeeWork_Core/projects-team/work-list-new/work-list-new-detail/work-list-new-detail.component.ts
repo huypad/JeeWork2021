@@ -241,14 +241,78 @@ export class WorkListNewDetailComponent implements OnInit {
         });
     }
 
-    Refesh(val) {
-        this.LoadData();
+
+    KiemTraThayDoiCongViec(item,key){
+        if(this.IsAdmin()) return true;
+        else if(item.CreatedBy == this.UserID) return true;
+        else if(item.CreatedBy == this.UserID) return true;
+        else {
+            if(item.User){
+                const index = item.User.findIndex(x=>x.id_nv == this.UserID);
+                if(index >= 0) return true;
+            }
+        };
+        var txtError = "";
+        switch (key)
+        {
+            case 'assign':
+                txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
+                break;
+            case 'status':
+                txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này.';
+                break;
+            case 'estimates':
+                txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này.';
+                break;
+            case 'checklist':
+                txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này.';
+                break;
+            case 'title':
+                txtError = 'Bạn không có quyền đổi tên của công việc này.';
+                break;
+            case 'description':
+                txtError = 'Bạn không có quyền đổi mô tả của công việc này.';
+                break;
+            default:
+                txtError = 'Bạn không có quyền chỉnh sửa công việc này.';
+                break;
+        }
+        this.layoutUtilsService.showError(txtError);
+        return false;
+
+    }
+    IsCheck(){
+        var item = this.item;
+        if(this.IsAdmin()) return true;
+        else if(item.CreatedBy == this.UserID) return true;
+        else if(item.CreatedBy == this.UserID) return true;
+        else {
+            if(item.User){
+                const index = item.User.findIndex(x=>x.id_nv == this.UserID);
+                if(index >= 0) return true;
+            }
+        };
+        return false;
+
     }
 
     LoadChild(item) {
-        this.DataID = item.id_row;
-        this.LoadData();
-        this.LoadChecklist();
+        // this.DataID = item.id_row;
+        // this.LoadData();
+        // this.LoadChecklist();
+        const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
+          width: "90vw",
+          height: "85vh",
+          data: item,
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+          this.LoadData();
+          if (result != undefined) {
+            // this.selectedDate.startDate = new Date(result.startDate)
+            // this.selectedDate.endDate = new Date(result.endDate)
+          }
+        });
     }
 
     LoadLog() {
@@ -374,15 +438,15 @@ export class WorkListNewDetailComponent implements OnInit {
         if (this.IsAdmin()) {
             return true;
         }
-        if (this.require_evaluate) {
-            return true;
-        }
-        if (this.item.Followers) {
-            const x = this.item.Followers.find((x) => x.id_nv == this.UserID);
-            if (x) {
-                return true;
-            }
-        }
+        // if (this.require_evaluate) {
+        //     return true;
+        // }
+        // if (this.item.Followers) {
+        //     const x = this.item.Followers.find((x) => x.id_nv == this.UserID);
+        //     if (x) {
+        //         return true;
+        //     }
+        // }
         return false;
     }
 
@@ -522,6 +586,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     NextStatus(type) {
+        if(!this.KiemTraThayDoiCongViec(this.item,'status')){
+            return;
+        }
         const item = new UpdateWorkModel();
         item.id_row = this.item.id_row;
         item.key = 'status';
@@ -536,6 +603,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
+                this.SendMessage(true);
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -784,6 +852,7 @@ export class WorkListNewDetailComponent implements OnInit {
             if (res && res.status == 1) {
                 // this.CloseAddnewTask(true);
                 this.LoadData();
+                this.SendMessage(true);
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -908,6 +977,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateByKey(id_log_action: string, key: string, IsQuick: boolean) {
+        if(!this.KiemTraThayDoiCongViec(this.item,id_log_action == '0'?'checklist':key)){
+            return;
+        }
         this.Get_ValueByKey(id_log_action);
         const model = new UpdateByKeyModel();
         if (IsQuick) {
@@ -986,6 +1058,12 @@ export class WorkListNewDetailComponent implements OnInit {
             return;
         }
         if (ele.value.toString().trim() != this.item.title.toString().trim()) {
+
+            if(!this.KiemTraThayDoiCongViec(this.item,'title')){
+                ele.value = this.item.title;
+                return;
+            }
+
             this.item.title = ele.value;
             this.UpdateByKeyNew(this.item, 'title', this.item.title);
         }
@@ -995,15 +1073,22 @@ export class WorkListNewDetailComponent implements OnInit {
         // description
         const x = document.getElementById('txtdescription');
         const ele = document.getElementById('txtdescription') as HTMLInputElement;
-        if (
-            ele.value.toString().trim() != this.item.description.toString().trim()
-        ) {
+        if ( ele.value.toString().trim() != this.item.description.toString().trim() ) {
+
+            if(!this.KiemTraThayDoiCongViec(this.item,'description')){
+                ele.value = this.item.description;
+                return;
+            }
+
             this.item.description = ele.value;
             this.UpdateByKeyNew(this.item, 'description', this.item.description);
         }
     }
 
     UpdateByKeyNew(task, key, value) {
+        if(!this.KiemTraThayDoiCongViec(task,key)){
+            return;
+        }
         const item = new UpdateWorkModel();
         item.id_row = task.id_row;
         item.key = key;
@@ -1019,16 +1104,17 @@ export class WorkListNewDetailComponent implements OnInit {
             }),
             map(res => {
                 if (res && res.status == 1) {
-                    this.createMessage(true);
-                    this.LoadLog();
-                    this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
-                        if (res && res.status == 1) {
-                            this.item = res.data;
-                            this.changeDetectorRefs.detectChanges();
-                        } else {
-                            this.layoutUtilsService.showError(res.error.message);
-                        }
-                    });
+                    this.SendMessage(true);
+                    // this.LoadLog();
+                    this.LoadData();
+                    // this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
+                    //     if (res && res.status == 1) {
+                    //         this.item = res.data;
+                    //         this.changeDetectorRefs.detectChanges();
+                    //     } else {
+                    //         this.layoutUtilsService.showError(res.error.message);
+                    //     }
+                    // });
                 } else {
                     this.layoutUtilsService.showError(res.error.message);
                 }
@@ -1363,6 +1449,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
                     if (res && res.status == 1) {
                         this.LoadData();
+                        this.SendMessage(true);
                     }
                 });
             }, 50);
@@ -1466,6 +1553,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     Updateestimates(event) {
+        this.item.estimates = event
         this.UpdateByKeyNew(this.item, 'estimates', event);
     }
 
@@ -1539,9 +1627,13 @@ export class WorkListNewDetailComponent implements OnInit {
 
     ReloadDatas(event) {
         this.LoadData();
+        this.SendMessage(true);
     }
 
     RemoveTag(tag) {
+        if(!this.KiemTraThayDoiCongViec(this.item,'tags')){
+            return;
+        }
         const model = new UpdateWorkModel();
         model.id_row = this.item.id_row;
         model.key = 'Tags';
@@ -1549,6 +1641,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.workService.UpdateByKey(model).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
+                this.SendMessage(true);
                 this.changeDetectorRefs.detectChanges();
             } else {
                 this.layoutUtilsService.showActionNotification(
@@ -1575,6 +1668,7 @@ export class WorkListNewDetailComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe((res) => {
             this.LoadData();
+            this.SendMessage(true);
         });
     }
 
@@ -1588,6 +1682,7 @@ export class WorkListNewDetailComponent implements OnInit {
         dialogRef.afterClosed().subscribe((res) => {
             if (res) {
                 this.LoadData();
+                this.SendMessage(true);
             }
         });
     }
@@ -1606,44 +1701,6 @@ export class WorkListNewDetailComponent implements OnInit {
         } else {
             this.layoutUtilsService.ViewDoc(file.path);
         }
-    }
-
-    UpdateStatus_dynamic(_item, user) {
-        const item = new StatusDynamicModel();
-        item.clear();
-        item.Id_row = _item.id_row;
-        item.StatusName = _item.statusname;
-        item.Color = _item.color;
-        item.Description = _item.description;
-        item.Id_project_team = _item.id_project_team;
-        item.Follower = user.id_nv;
-        item.Type = '1';
-        this.projectsTeamService.UpdateStatus(item).subscribe((res) => {
-            if (res && res.status == 1) {
-                this.layoutUtilsService.showActionNotification(
-                    this.translate.instant('GeneralKey.capnhatthanhcong'),
-                    MessageType.Read,
-                    3000,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    1
-                );
-                this.LoadData();
-            } else {
-                this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
-            }
-        });
     }
 
     getDate(date) {
@@ -1839,7 +1896,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     // gửi giao tiếp tới commponent ngoài
-    createMessage(value) {
+    SendMessage(value) {
         this.communicateService.changeMessage(value);
     }
 }

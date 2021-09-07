@@ -65,7 +65,7 @@ namespace JeeAccount.Services.CommentService
             }
         }
 
-        public void UpdateTopicID(string componenName, string topicID, string _connectionString)
+        public void UpdateTopicID(DpsConnection cnn,string componenName, string topicID)
         {
             Hashtable val = new Hashtable();
             SqlConditions conditions = new SqlConditions();
@@ -73,13 +73,11 @@ namespace JeeAccount.Services.CommentService
             {
                 val.Add($"{COMMENT_TABLE_FIELD_OBJECTID}", topicID);
                 conditions.Add($"{COMMENT_TABLE_FIELD_COMPONENTNAME}", componenName);
-                using (DpsConnection cnn = new DpsConnection(_connectionString))
+
+                int x = cnn.Update(val, conditions, $"{COMMENT_TABLE_NAME}");
+                if (x <= 0)
                 {
-                    int x = cnn.Update(val, conditions, $"{COMMENT_TABLE_NAME}");
-                    if (x <= 0)
-                    {
-                        throw cnn.LastError;
-                    }
+                    throw cnn.LastError;
                 }
             }
             catch (Exception)
@@ -102,7 +100,7 @@ namespace JeeAccount.Services.CommentService
                     var dt = cnn.CreateDataTable(sql);
                     if (dt.Rows.Count > 0)
                     {
-                        UpdateTopicID(componenName, topicID,_connectionString);
+                        UpdateTopicID(cnn,componenName, topicID);
                         return;
                     }
 

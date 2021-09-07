@@ -73,7 +73,7 @@
 	</button> -->
 	<div class="status-input col-12 form-control" (click)="stopPropagation($event)">
 		<mat-menu #color="matMenu" yPosition="above" xPosition="after">
-			<kt-color-picker2 [selected]="'red'" (click)="stopPropagation($event)" (ItemSelected)="colorNew = $event">
+			<kt-color-picker2 [selected]="'red'" (click)="$event.stopPropagation()" (ItemSelected)="colorNew = $event">
 			</kt-color-picker2>
 		</mat-menu>
 		<button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor

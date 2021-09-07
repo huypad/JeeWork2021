@@ -169,6 +169,7 @@ namespace JeeWork_Core2021.Classes
         /// <returns></returns>
         public static bool UploadFile(string strBase64, string filename, string folder, string ContentRootPath, ref string filepath, IConfiguration _configuration)
         {
+            GetDateTime UTCdate = new GetDateTime();
             error = "";
             if (string.IsNullOrEmpty(strBase64))
             {
@@ -187,7 +188,7 @@ namespace JeeWork_Core2021.Classes
                 string Base_Path = Path.Combine(ContentRootPath, path);
                 if (!Directory.Exists(Base_Path)) //tạo thư mục nếu chưa có
                     Directory.CreateDirectory(Base_Path);
-                filename = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + filename;
+                filename = UTCdate.Date.ToString("yyyyMMddHHmmss") + "_" + filename;
                 //filename = checkFilename(filename, path);
                 path += filename;
                 File.WriteAllBytes(path, bytes);

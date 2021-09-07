@@ -128,6 +128,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 				this.presence.NewGroup(data.access_token, res[0], res[0])
 				// this.GetContact();
 				// this.subscribeToEvents();
+				debugger
 				this.selectUser(res[0]);
 				this.GetContact();
 				this.changeDetectorRefs.detectChanges();
@@ -311,8 +312,8 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 					this.chatBoxUsers.push(new UserChatBox(user, 300));
 					let item =new UserChatBox(user, 300);
 					console.log("ITEMMMM",item)
-					this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
-					//this.chatService.OpenMiniChat$.next(item);
+					//this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
+					this.chatService.OpenMiniChat$.next(item);
 				}
 				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
 				break;

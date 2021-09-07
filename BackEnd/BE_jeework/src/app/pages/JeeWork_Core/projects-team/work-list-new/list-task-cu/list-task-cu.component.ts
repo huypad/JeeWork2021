@@ -303,7 +303,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.DanhsSachCongViec = res.data;
             this.filterDanhSach();
             this.changeDetectorRefs.detectChanges();
-            // this.ProjectTeam = res.data
           }
         });
       } else {
@@ -313,7 +312,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.DanhsSachCongViec = res.data;
             this.filterDanhSach();
             this.changeDetectorRefs.detectChanges();
-            // this.ProjectTeam = res.data
           }
         });
       }
@@ -369,11 +367,11 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         return true;
       }
       else {
-        if (roleID == 3 || roleID == 4) {
-          if (x.isuyquyen) {
-            return true;
-          }
-        }
+        // if (roleID == 3 || roleID == 4) {
+        //   if (x.isuyquyen) {
+        //     return true;
+        //   }
+        // }
         if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
           if (x.Roles.find((r) => r.id_role == 15)) { return false; }
         }
@@ -405,11 +403,11 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
           return true;
         }
         else {
-          if (key == 'id_nv') {
-            if (x.isuyquyen) {
-              return true;
-            }
-          }
+          // if (key == 'id_nv') {
+          //   if (x.isuyquyen) {
+          //     return true;
+          //   }
+          // }
           if (key == 'title' || key == 'description' || key == 'status' || key == 'checklist' || key == 'delete') {
             if (x.Roles.find((r) => r.id_role == 15)) { return false; }
           }
@@ -419,7 +417,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
           if (key == 'id_nv' || key == 'assign') {
             if (x.Roles.find((r) => r.id_role == 17)) { return false; }
           }
-          const r = x.Roles.find(r => r.keypermit == key);
+          const r = x.Roles.find(role => role.keypermit === key);
           if (r) {
             return true;
           }
@@ -456,41 +454,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
   LoadData() {
 
-    const queryParams = new QueryParamsModelNew(
-      this.filterConfiguration(),
-      '',
-      '',
-      0,
-      50,
-      true
-    );
     this.data = [];
-    // this.layoutUtilsService.showWaitingDiv();
-    this._service.GetDataWorkCU(queryParams).subscribe(res => {
-      setTimeout(() => {
-        this.layoutUtilsService.OffWaitingDiv();
-      }, 1000);
-      if (res && res.status === 1) {
-        this.data = res.data;
-        this.listFilter = this.data.Filter;
-
-        this.ListColumns = this.data.TenCot;
-        // xóa title khỏi cột
-        const indextt = this.ListColumns.findIndex(x => x.fieldname == 'title');
-        if (indextt >= 0) {
-          this.ListColumns.splice(indextt, 1);
-        }
-
-        // this.ListColumns.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0)); // xếp theo anphabet
-        this.ListColumns.sort((a, b) => (a.id_project_team > b.id_project_team) ? -1 : ((b.id_project_team > a.id_project_team) ? 1 : 0)); // nào chọn xếp trước
-        // this.ListColumns.sort((a, b) => (a.isbatbuoc > b.isbatbuoc) ? -1 : ((b.isbatbuoc > a.isbatbuoc) ? 1 : 0)); // nào bắt buộc xếp trước
-        this.ListTasks = this.LoadClosedTask(this.data.datawork);
-        this.prepareDragDrop(this.ListTasks); // load list kéo thả
-        this.ListTags = this.data.Tag;
-        this.LoadListStatus();
-        // this.changeDetectorRefs.detectChanges();
-      }
-    });
 
     this.weworkService.ListStatusDynamic(this.ID_Project).subscribe(res => {
       if (res && res.status === 1) {
@@ -506,20 +470,22 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     });
   }
 
-  filterConfiguration(): any {
-    const filter: any = {};
-    filter.id_project_team = this.ID_Project;
-    filter.displayChild = this.filter_subtask.value;
-    filter.groupby = 'status'; // assignee
-    filter.keyword = this.keyword;
-    return filter;
-  }
+  // filterConfiguration(): any {
+  //   const filter: any = {};
+  //   filter.id_project_team = this.ID_Project;
+  //   filter.displayChild = this.filter_subtask.value;
+  //   filter.groupby = 'status'; // assignee
+  //   filter.keyword = this.keyword;
+  //   return filter;
+  // }
   filterConfiguration2(): any {
     const filter: any = {};
     filter.groupby = this.filter_groupby.value; // assignee
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = this.filter_subtask.value;
+    filter.subtask_done = this.showclosedsubtask?1:0;
+    filter.task_done = this.showclosedtask?1:0;
     if (this.idFilter > 0) {
       filter.id_filter = this.idFilter;
     }
@@ -532,6 +498,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     filter.keyword = this.keyword;
     filter.id_nv = this.ID_NV;
     filter.displayChild = this.filter_subtask.value;
+    filter.subtask_done = this.showclosedsubtask?1:0;
+    filter.task_done = this.showclosedtask?1:0;
     // công việc assign cho tôi = 1
     if (this.filterwork > 0) {
       filter.filter = this.filterwork;
@@ -573,13 +541,16 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
   }
   getTasklocation(id_project_team) {
-    const item = this.ListAllStatusDynamic.find(x => +x.id_row == id_project_team);
-    if (item) {
-      return item.title;
+    if (this.ListAllStatusDynamic) {
+      const item = this.ListAllStatusDynamic.find(x => +x.id_row == id_project_team);
+      if (item) {
+        return item.title;
+      }
+      else {
+        return '';
+      }
     }
-    else {
-      return '';
-    }
+    return '';
   }
 
   getListStatus(team) {
@@ -595,7 +566,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     this.weworkService.GetListField(0, 3, false).subscribe(res => {
       if (res && res.status === 1) {
         this.listField = res.data;
-        // xóa title khỏi cột
 
         const colDelete = ['title', 'id_row', 'id_parent'];
         colDelete.forEach(element => {
@@ -604,9 +574,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.listField.splice(indextt, 1);
           }
         });
-        // var indextt = this.listField.findIndex(x => x.fieldname == "title");
-        // if (indextt != -1)
-        //   this.listField.splice(indextt, 1)
         this.changeDetectorRefs.detectChanges();
       }
       else {
@@ -620,35 +587,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
       return true;
     }
     return false;
-  }
-  LoadListStatus() {
-    this.ListTasks.forEach(element => {
-      element.isExpanded = false;
-      this.listFilter.forEach(val => {
-        if (!val.data) {
-          val.data = [];
-        }
-        if (this.myWorks) {
-          if (+val.id_row == +element.status && this.UserID == +element.id_nv) {
-            val.data.push(element);
-          }
-          else if (+val.id_row == +element.id_nv && this.UserID == +element.id_nv) {
-            val.data.push(element);
-          }
-        }
-        else {
-          if (+val.id_row == +element.status) {
-            val.data.push(element);
-          }
-          else if (+val.id_row == +element.id_nv) {
-            val.data.push(element);
-          }
-        }
-      });
-    });
-    this.listStatus = this.listFilter;
-
-    this.changeDetectorRefs.detectChanges();
   }
 
   drop1(event: CdkDragDrop<string[]>) {
@@ -689,21 +627,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   DragDropItemWork(item) {
     const dropItem = new DrapDropItem();
     this._service.DragDropItemWork(item).subscribe(res => {
-    });
-  }
-
-  UpdateCol(fieldname) {
-    // var item:any=[];
-    // item.id_project_team = this.ID_Project;
-    // item.columnname = fieldname;
-    const item = new ColumnWorkModel();
-    item.id_project_team = +this.ID_Project;
-    item.columnname = fieldname;
-
-    this._service.UpdateColumnWork(item).subscribe(res => {
-      if (res && res.status == 1) {
-        this.LoadData();
-      }
     });
   }
 
@@ -775,16 +698,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     const targetListId = this.getParentNodeId(this.dropActionTodo.targetId, listDatanew, 'main'); // thằng cha mới nếu ngoài cùng thì = main
 
-    // get list data nơi muốn đến
-    // if(targetListId=='main' && parentItemId!='main' ){
-    //   //get list muốn đến
-    //   // draggedItem.status = id_row?
-    //   var stt = draggedItem.status;
-    //   var newArr = this.listStatus.find(x => x.id_row == stt);
-    //   if(newArr){
-    //     listDatanew = newArr.data;
-    //   }
-    // }
+
     const text = '\nmoving\n[' + draggedItemId + '] from list [' + parentItemId + ']' + ',,,' +
       '\n[' + this.dropActionTodo.action + ']\n[' + this.dropActionTodo.targetId + '] from list [' + targetListId + ']';
     itemDrop.id_from = draggedItemId;
@@ -936,36 +850,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
       this.newtask = -1;
     }
   }
-  AddTask(item) {
-    // WorkModel
-
-    const task = new WorkModel();
-    task.status = item.id_row;
-    task.title = this.taskinsert.title;
-    task.id_project_team = this.ID_Project;
-    task.Users = [];
-    if (this.Assign.id_nv > 0) {
-      const assign = this.AssignInsert(this.Assign);
-      task.Users.push(assign);
-    }
-    const start = moment();
-    if (moment(this.selectedDate.startDate).format('MM/DD/YYYY') != 'Invalid date') {
-      task.start_date = moment(this.selectedDate.startDate).format('MM/DD/YYYY');
-    }
-    if (moment(this.selectedDate.endDate).format('MM/DD/YYYY') != 'Invalid date') {
-      task.end_date = moment(this.selectedDate.endDate).format('MM/DD/YYYY');
-      task.deadline = moment(this.selectedDate.endDate).format('MM/DD/YYYY');
-    }
-
-    this._service.InsertTask(task).subscribe(res => {
-      if (res && res.status == 1) {
-        this.CloseAddnewTask(true);
-        this.LoadData();
-        this.LoadSampleList();
-      }
-    });
-
-  }
 
   AssignInsert(assign) {
     let NV = new UserInfoModel();
@@ -1085,20 +969,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
   ViewDetai(item) {
     this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
-    // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-    //   width: '90vw',
-    //   height: '90vh',
-    //   data: item
-    // });
-
-    // dialogRef.afterClosed().subscribe(result => {
-    //   this.LoadData();
-    //   if (result != undefined) {
-
-    //     // this.selectedDate.startDate = new Date(result.startDate)
-    //     // this.selectedDate.endDate = new Date(result.endDate)
-    //   }
-    // });
   }
 
   f_convertDate(v: any) {
@@ -1129,6 +999,11 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
   ShowCloseTask() {
     this.showclosedtask = !this.showclosedtask;
+    this.LoadSampleList();
+  }
+  ShowClosesubTask() {
+    this.showclosedsubtask = !this.showclosedsubtask;
+    this.LoadSampleList();
   }
   LoadClosedTask(val) {
     if (this.showclosedtask) {
@@ -1190,22 +1065,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
   UpdateStatus(task, status) {
     if (+task.status == +status.id_row) { return; }
-    // if(this.IsAdmin(task.id_project_team)){
-    //   this.UpdateByKey(task, "status", status.id_row);
-    // }else{
-    //   if(status.Follower){
-    //     if(status.Follower == this.UserID){
-    //       this.UpdateByKey(task, "status", status.id_row);
-    //     }else{
-    //       this.layoutUtilsService.showError("Không có quyền thay đổi trạng thái");
-    //     }
-    //   }else{
-    //     this.UpdateByKey(task, "status", status.id_row);
-    //   }
-    // }
     this.UpdateByKey(task, 'status', status.id_row);
   }
   UpdateByKey(task, key, value) {
+    if(!this.KiemTraThayDoiCongViec(task,key,task.id_project_team)){
+      return;
+    }
     const item = new UpdateWorkModel();
     item.id_row = task.id_row;
     item.key = key;
@@ -1238,6 +1103,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
   }
 
   updateDate(task, date, field) {
+    if(!this.KiemTraThayDoiCongViec(task,'datetime',task.id_project_team)){
+      return;
+    }
     if (date) {
       this.UpdateByKey(task, field, moment(date).format('MM/DD/YYYY HH:mm'));
     }
@@ -1515,5 +1383,47 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     } else {
       return '';
     }
+  }
+
+
+  KiemTraThayDoiCongViec(item,key,id_project_team){
+    if(this.IsAdmin(id_project_team)) return true;
+    else if(item.createdby?.userid == this.UserID) return true;
+    else {
+      if(item.User){
+        const index = item.User.findIndex(x=>x.id_nv == this.UserID);
+        if(index >= 0) return true;
+      }
+    };
+    var txtError = "";
+    switch (key)
+    {
+      case 'assign':
+        txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
+        break;
+      case 'id_group':
+        txtError = 'Bạn không có quyền thay đổi nhóm công việc của công việc này.';
+        break;
+      case 'status':
+        txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này.';
+        break;
+      case 'estimates':
+        txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này.';
+        break;
+      case 'checklist':
+        txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này.';
+        break;
+      case 'title':
+        txtError = 'Bạn không có quyền đổi tên của công việc này.';
+        break;
+      case 'description':
+        txtError = 'Bạn không có quyền đổi mô tả của công việc này.';
+        break;
+      default:
+        txtError = 'Bạn không có quyền chỉnh sửa công việc này.';
+        break;
+    }
+    this.layoutUtilsService.showError(txtError);
+    return false;
   }
 }

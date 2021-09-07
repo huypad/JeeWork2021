@@ -106,7 +106,7 @@
                     <div class="example-custom-placeholder">
                         <div class="row " style="padding-top: 5px;">
                             <p style="font-size: 11px;" class="mg-0 text-muted col-md-12 pd-0" *ngIf="tasklocation">
-                                {{this.ProjectTeam.title}}
+                                {{_children.department?_children.department:this.ProjectTeam.title}}
                             </p>
                             <div class="col-md-11" style="padding: 0;">
 

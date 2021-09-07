@@ -282,12 +282,12 @@
                                         (focusout)="focusOutFunction($event,node)" [value]="node.title">
                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                         <p style="font-size: 11px;" class="mg-0 text-muted" *ngIf="tasklocation">
-                                            {{this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}
+                                            {{node.department?node.department:this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}
                                         </p>
                                         <span class=" cu-task-row-main__link-text-inner position-relative">
                                             <span class=" -hover" (click)="ViewDetai(node)">{{node.title}}</span>
 
-                                            <ng-container *ngIf="node.DataChildren.length > 0">
+                                            <ng-container *ngIf="node.DataChildren && node.DataChildren.length > 0">
                                                 <div class="cu-task-row-subtasks-count url ng-star-inserted"
                                                     style="font-size: 15px;">
                                                     <div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
@@ -318,6 +318,7 @@
                                                     [matMenuTriggerFor]="tag" (menuOpened)="node.showtag = true"
                                                     (menuClosed)="node.showtag = false"></i>
                                                 <i class="fas fa-pencil-alt" (click)="editTitle(node.id_row)"
+                                                   *ngIf=" CheckRoles(7)"
                                                     matTooltip="{{ 'work.chinhsuatencongviec' | translate }}"></i>
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     *ngIf="!(node.id_parent>0) && node.DataChildren.length == 0"
@@ -360,8 +361,8 @@
                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                             <ng-container *ngIf="item.type == 'datetime';else nosetdatetime">
                                 <app-task-datetime (valueChange)="updateDate(node,$event,item.fieldname)"
-                                    [fieldname]="item.fieldname" [(value)]="node[item.fieldname]"
-                                    [role]="CheckRoleskeypermit(item.fieldname)"></app-task-datetime> 
+                                    [fieldname]="item.fieldname" [value]="node[item.fieldname]"
+                                    [role]="CheckRoles(10)"></app-task-datetime>
                             </ng-container>
                             <ng-template #nosetdatetime>
                                 <ng-container *ngIf="item.type == 'code';else noestcode">
@@ -531,7 +532,7 @@
                                         <ng-container *ngSwitchCase="'comments'">
                                             <div class="item-field hide-more-text">
                                                 <app-task-comment (submit)="this.LoadData()" [id_row]="node.id_row"
-                                                    [value]="node[item.fieldname]"></app-task-comment>
+                                                    [value]="node.num_comment"></app-task-comment>
                                             </div>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'createdby'">
@@ -567,7 +568,7 @@
                                             <div  class="w-100 h-100 item-field">
                                                 <app-task-datetime
                                                         [fieldname]="item.fieldname"
-                                                        [(value)]="node[item.fieldname]"
+                                                        [value]="node[item.fieldname]"
                                                 ></app-task-datetime>
                                             </div>
                                         </ng-container>
@@ -816,7 +817,7 @@
 
         <!-- ở dưới bind thằng con -->
 
-        <div *ngIf="!node.id_parent && node.isExpanded  && (node.DataChildren.length || addNodeitem==node.id_row)"
+        <div *ngIf="!node.id_parent && node.isExpanded  && (node.DataChildren?.length || addNodeitem==node.id_row)"
             class="node-children" cdkDropList [cdkDropListData]="node.DataChildren" [id]="node.id_row"
             [cdkDropListConnectedTo]="dropTargetIds" (cdkDropListDropped)="drop($event)"
             [cdkDropListSortingDisabled]="true">

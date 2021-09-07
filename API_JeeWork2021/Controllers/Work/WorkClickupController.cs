@@ -314,8 +314,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                     else
                     {
                         strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser)";
+                        if (query.filter["filter"] == "1")//được giao
+                            strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 1 and id_user = @iduser)";
+                       if (query.filter["filter"] == "2")//giao đi
+                            strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.CreatedBy = @iduser)";
+                        if (query.filter["filter"] == "3")// theo dõi
+                            strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 2 and id_user = @iduser)";
                         strW = strW.Replace("(parent)", strW_parent);
                     }
+                    if (query.filter["subtask_done"] == "0")// task con
+                        strW += $" and w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is not null ) ";
+                    if (query.filter["task_done"] == "0")// task
+                        strW += $" and  w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is null ) ";
                     #endregion
 
                     string columnName = "id_project_team";
@@ -1782,6 +1792,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
@@ -1795,7 +1806,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     #endregion
                     string sql = $@"";
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,estimates,
+                    string sqlq = @$"select distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,estimates,w.id_nv,
 w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w.result,w.CreatedDate,w.CreatedBy,
 w.UpdatedDate,w.UpdatedBy,w.NguoiGiao, w.project_team,w.id_department,w.clickup_prioritize 
 , '' as hoten_nguoigiao, Iif(fa.id_row is null ,0,1) as favourite,
@@ -1935,6 +1946,8 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                                 , loai, start_date, end_date, color, status 
                                                                 , is_project, Locked, Disabled 
                                                                 from we_project_team where Disabled = 0");
+                    Common comm = new Common(ConnectionString);
+                    bool rs = Common.CheckRoleByProject(ds.Tables[0].Rows[0]["id_project_team"].ToString(),loginData,cnn);
 
                     var data = (from r in ds.Tables[0].AsEnumerable()
                                     //where r["id_parent"] == DBNull.Value
@@ -2088,7 +2101,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                      }
                                                  },
                                     Childs = from rr in ds.Tables[0].AsEnumerable()
-                                             where rr["id_parent"].Equals(r["id_row"])
+                                             where rr["id_parent"].Equals(r["id_row"]) && (rs || (!rs && (rr["id_nv"].ToString() == loginData.UserID.ToString() || rr["CreatedBy"].ToString() == loginData.UserID.ToString() || r["id_nv"].ToString() == loginData.UserID.ToString()  )))
                                              select new
                                              {
                                                  id_parent = rr["id_parent"],
@@ -2528,6 +2541,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    Common comm = new Common(ConnectionString);
+                    // quyền 1 : tạo mới công việc
+                    bool rs = Common.CheckPermitUpdate(data.id_project_team.ToString(), 1, loginData, cnn);
+                    if (!rs)
+                    {
+                        return JsonResultCommon.Custom("Bạn không có quyền tạo mới công việc");
+                    }
+
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -3477,6 +3498,68 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     postauto.listid = long.Parse(old.Rows[0]["id_project_team"].ToString()); // id project team
                     postauto.departmentid = long.Parse(old.Rows[0]["id_department"].ToString()); // id_department
                     postauto.customerid = loginData.CustomerID;
+                    if (data.id_role > 0)
+                    {
+                        Common comm = new Common(ConnectionString);
+                        bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn);
+                        if (!rs)
+                        {
+                            var txterror = "";
+                            switch (data.key)
+                            {
+                                //case "status": return value.ToString() == "2" ? 2 : 3;//1: đang làm, 2: hoàn thành, 3: chờ review
+                                case "deadline":
+                                    txterror = "Bạn không có quyền thay đổi hạn chót";
+                                    break;
+                                //case "clickup_prioritize": return 8;
+                                case "Tags":
+                                    txterror = "Bạn không có quyền thay đổi nhãn";
+                                    break;
+                                //case "Attachments": return 10;
+                                case "start_date":
+                                    txterror = "Bạn không có quyền sửa ngày bắt đầu";
+                                    break;
+                                case "id_group":
+                                    txterror = "Bạn không có quyền sửa nhóm công việc";
+                                    break;
+                                //case "Attachments_result": return 13;
+                                //case "result": return 14;
+                                case "assign":
+                                    txterror = "Bạn không có quyền sửa người làm";
+                                    break;
+                                case "follower":
+                                    txterror = "Bạn không có quyền sửa người theo dõi";
+                                    break;
+                                case "deleteassign":
+                                    txterror = "Bạn không có quyền xóa người làm";
+                                    break;
+                                case "deletefollower":
+                                    txterror = "Bạn không có quyền xóa người theo dõi";
+                                    break;
+                                case "description":
+                                    txterror = "Bạn không có quyền chỉnh sửa mô tả";
+                                    break;
+                                case "title":
+                                    txterror = "Bạn không có quyền chỉnh sửa tên công việc";
+                                    break;
+                                //case "subtasks": return 40;
+                                //case "moved": return 41;
+                                // case "dublicate": return 42;
+                                //case "favorites": return 43;
+                                case "status":
+                                    txterror = "Bạn không có quyền thay đổi trạng thái công việc";
+                                    break;
+                                //case "new_field": return 1;
+                                case "estimates":
+                                    txterror = "Bạn không có quyền thay đổi thời gian làm của công việc";
+                                    break;
+                                default:
+                                    txterror = "Bạn không có quyền thay đổi nội dung của công việc này";
+                                    break;
+                            }
+                            return JsonResultCommon.Custom(txterror);
+                        }
+                    }
                     //Data datapost = new Data();
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
                         "from we_work " +
@@ -5137,8 +5220,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     #endregion
                     string strW_parent = "";
                     string strW = " ";
-                    if ((string.IsNullOrEmpty(query.filter["forme"]) && string.IsNullOrEmpty(query.filter["assign"]) && string.IsNullOrEmpty(query.filter["following"])) ||
-                        (!string.IsNullOrEmpty(query.filter["forme"]) && !string.IsNullOrEmpty(query.filter["assign"]) && !string.IsNullOrEmpty(query.filter["following"])))
+                    if (!string.IsNullOrEmpty(query.filter["forme"]) && !string.IsNullOrEmpty(query.filter["assign"]) && !string.IsNullOrEmpty(query.filter["following"]))
+                    {
+                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                    }
+                    if (string.IsNullOrEmpty(query.filter["forme"]) && string.IsNullOrEmpty(query.filter["assign"]) && string.IsNullOrEmpty(query.filter["following"]))
                     {
                         strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
                     }
@@ -5922,7 +6008,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             left join we_work_favourite fa 
                             on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
                             where 1=1 " + dieukien_where + "  order by " + dieukienSort;
-
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.disabled=0 and t.disabled=0";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -6293,6 +6378,8 @@ where u.disabled = 0 and u.loai = 2";
                     dt_filter.Columns.Add("color", typeof(String));
                     dt_filter.Columns.Add("Follower", typeof(String));
                     dt_filter.Columns.Add("description", typeof(String));
+                    bool rs = Common.CheckRoleByProject(id_project_team, loginData, cnn);
+
                     data_newfield = "select * from we_newfileds_values where id_project_team = " + id_project_team + "";
                     #endregion
                     string strW = "";
@@ -6446,6 +6533,12 @@ where u.disabled = 0 and u.loai = 2";
                     }
                     if (!FieldsSelected.Equals(""))
                         FieldsSelected = FieldsSelected.Substring(1);
+                    if (!rs)
+                    {
+                        long userid = loginData.UserID;
+                        strW += @$" and w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = {userid}
+ union all select id_row from v_wework_new where id_nv = {userid} or createdby = {userid} )";
+                    }
                     string sql = "select iIf(id_group is null,0,id_group) as id_group, work_group, closed, closed_work_date, closed_work_by, " + FieldsSelected;
                     sql += $@" from v_wework_clickup_new w where w.disabled = 0 " + strW;
                     DataTable result = new DataTable();
@@ -6488,18 +6581,36 @@ where u.disabled = 0 and u.loai = 2";
                             {
                                 #region Lấy thông tin subtask tương ứng
                                 dt_parent = r_parent.CopyToDataTable();
-                                dt_parent.Rows[0]["Tags"] = cnn.CreateDataTable(queryTag + dt_parent.Rows[0]["id_row"]);
-                                row_user = dt_users.Select("id_parent is not null and loai = 1 and id_work = " + dt_parent.Rows[0]["id_row"]);
-                                if (row_user.Any())
-                                    dt_parent.Rows[0]["User"] = row_user.CopyToDataTable();
-                                row_user = dt_users.Select("id_parent is not null and loai = 2 and id_work = " + dt_parent.Rows[0]["id_row"]);
-                                if (row_user.Any())
-                                    dt_parent.Rows[0]["Follower"] = row_user.CopyToDataTable();
-                                dt_parent.Rows[0]["UserSubtask"] = new DataTable();
-                                dt_parent.Rows[0]["DataStatus"] = list_status_user(dt_parent.Rows[0]["id_row"].ToString(), id_project_team, loginData, ConnectionString, DataAccount);
-                                dt_parent.AcceptChanges();
-                                dr["DataChildren"] = dt_parent;
+                                for (int i = 0;i < dt_parent.Rows.Count; i++)
+                                {
+                                    dt_parent.Rows[i]["Tags"] = cnn.CreateDataTable(queryTag + dt_parent.Rows[i]["id_row"]);
+                                    row_user = dt_users.Select("id_parent is not null and loai = 1 and id_work = " + dt_parent.Rows[i]["id_row"]);
+                                    if (row_user.Any())
+                                        dt_parent.Rows[i]["User"] = row_user.CopyToDataTable();
+                                    row_user = dt_users.Select("id_parent is not null and loai = 2 and id_work = " + dt_parent.Rows[i]["id_row"]);
+                                    if (row_user.Any())
+                                        dt_parent.Rows[i]["Follower"] = row_user.CopyToDataTable();
+                                    dt_parent.Rows[i]["UserSubtask"] = new DataTable();
+                                    dt_parent.Rows[i]["DataStatus"] = list_status_user(dt_parent.Rows[i]["id_row"].ToString(), id_project_team, loginData, ConnectionString, DataAccount);
+                                    dt_parent.AcceptChanges();
+                                    //dr["DataChildren"] = dt_parent;
+                                }
                                 #endregion
+                                dr["DataChildren"] = dt_parent;
+                                //foreach (DataRow item in dt_parent)
+                                //{
+                                //    dt_parent.Rows[0]["Tags"] = cnn.CreateDataTable(queryTag + dt_parent.Rows[0]["id_row"]);
+                                //    row_user = dt_users.Select("id_parent is not null and loai = 1 and id_work = " + dt_parent.Rows[0]["id_row"]);
+                                //    if (row_user.Any())
+                                //        dt_parent.Rows[0]["User"] = row_user.CopyToDataTable();
+                                //    row_user = dt_users.Select("id_parent is not null and loai = 2 and id_work = " + dt_parent.Rows[0]["id_row"]);
+                                //    if (row_user.Any())
+                                //        dt_parent.Rows[0]["Follower"] = row_user.CopyToDataTable();
+                                //    dt_parent.Rows[0]["UserSubtask"] = new DataTable();
+                                //    dt_parent.Rows[0]["DataStatus"] = list_status_user(dt_parent.Rows[0]["id_row"].ToString(), id_project_team, loginData, ConnectionString, DataAccount);
+                                //    dt_parent.AcceptChanges();
+                                //    dr["DataChildren"] = dt_parent;
+                                //}
                             }
                             else
                                 dr["DataChildren"] = dt_parent;
@@ -6509,6 +6620,12 @@ where u.disabled = 0 and u.loai = 2";
                         if (rows.Any())
                             tmp = rows.CopyToDataTable();
                     }
+
+                    if (!rs)
+                    { // không có quyền xem công việc người khác
+
+                    }
+
                     var data = new
                     {
                         datawork = tmp,

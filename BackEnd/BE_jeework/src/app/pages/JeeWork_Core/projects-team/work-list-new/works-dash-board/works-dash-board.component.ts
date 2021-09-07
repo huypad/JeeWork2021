@@ -322,6 +322,8 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
     filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
     filter.collect_by = this.column_sort.value?this.column_sort.value:'CreatedDate';
+    // filter.subtask_done = this.showclosedsubtask?1:0;
+    // filter.task_done = this.showclosedtask?1:0;
     if(!this.isFolder){
       filter.spaceid = this.Id_Department;
     }else{

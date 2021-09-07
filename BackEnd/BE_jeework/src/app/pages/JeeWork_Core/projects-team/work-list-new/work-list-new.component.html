@@ -142,7 +142,7 @@
                     <div class="cu-filter-assignees__item cu-filter-assignees__item_everyone cu-filter-assignees__item_selected ng-star-inserted -hover {{isAssignforme?'':'text-success'}}"
                         (click)="isAssignforme=false;LoadListStatus(true)">
                         <div class="cu-filter-assignees__icon cu-filter-assignees__icon_team icon">
-                            <i class="fas fa-user-friends {{isAssignforme?'':'text-success'}}"></i>
+                            <i class="fas fa-users {{isAssignforme?'':'text-success'}}"></i>
                         </div>
                     </div>
                 </div>
@@ -172,15 +172,15 @@
                             <div (click)="ShowCloseTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedtask">
+                            <mat-slide-toggle [(ngModel)]="showclosedtask" >
                             </mat-slide-toggle>
                         </button>
                         <button mat-menu-item class="d-flex">
-                            <div (click)="showclosedsubtask=!showclosedsubtask"
+                            <div (click)="ShowClosesubTask()"
                                 style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedsubtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedsubtask">
+                            <mat-slide-toggle [(ngModel)]="showclosedsubtask" >
                             </mat-slide-toggle>
                         </button>
                         <!-- <button mat-menu-item>
@@ -469,12 +469,12 @@
                                                                         [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
                                                                         (keyup.enter)="focusOutFunction($event,node)"
                                                                         (focusout)="focusOutFunction($event,node)"
-                                                                        [(ngModel)]="node.title">
+                                                                        [value]="node.title">
                                                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                                                         <p style="font-size: 11px;"
                                                                             class="mg-0 text-muted"
                                                                             *ngIf="tasklocation">
-                                                                            {{this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}
+                                                                            {{node.department?node.department:this.ProjectTeam.title}}&nbsp;{{getNhomCV(node)}}
                                                                         </p>
                                                                         <span
                                                                             class=" cu-task-row-main__link-text-inner position-relative">
@@ -520,6 +520,7 @@
                                                                                     (menuOpened)="node.showtag = true"
                                                                                     (menuClosed)="node.showtag = false"></i>
                                                                                 <i class="fas fa-pencil-alt"
+                                                                                    *ngIf=" CheckRoles(7)"
                                                                                     (click)="editTitle(node.id_row)"
                                                                                     matTooltip="{{ 'work.chinhsuatencongviec' | translate }}"></i>
                                                                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -574,8 +575,8 @@
                                                                 <app-task-datetime
                                                                     (valueChange)="updateDate(node,$event,item.fieldname)"
                                                                     [fieldname]="item.fieldname"
-                                                                    [(value)]="node[item.fieldname]"
-                                                                    [role]="CheckRoleskeypermit(item.fieldname)">
+                                                                    [value]="node[item.fieldname]"
+                                                                    [role]="CheckRoles(10)">
                                                                 </app-task-datetime>
                                                             </ng-container>
                                                             <ng-template #nosetdatetime>
@@ -808,7 +809,7 @@
                                                                                 <app-task-comment
                                                                                     (submit)="this.LoadData()"
                                                                                     [id_row]="node.id_row"
-                                                                                    [value]="node[item.fieldname]">
+                                                                                    [value]="node.num_comment">
                                                                                 </app-task-comment>
                                                                             </div>
                                                                         </ng-container>
@@ -843,7 +844,7 @@
                                                                             <div class="w-100 h-100 item-field">
                                                                                 <app-task-datetime
                                                                                     [fieldname]="'createddate'"
-                                                                                    [(value)]="node[item.fieldname]">
+                                                                                    [value]="node[item.fieldname]">
                                                                                 </app-task-datetime>
                                                                             </div>
                                                                         </ng-container>
@@ -904,7 +905,7 @@
                                                                     <ng-container *ngSwitchCase="'checkbox'">
                                                                         <mat-checkbox class="example-margin"
                                                                             [checked]="GetDataNewField(node.id_row,item.id_row)=='true'?true:false"
-                                                                            (change)="UpdateValueField($event.checked,node.id_row,item)">
+                                                                            (change)="UpdateValueField($event.checked,node,item)">
                                                                         </mat-checkbox>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'date'">
@@ -913,7 +914,7 @@
                                                                             <!-- border-hover  -->
 
                                                                             <app-task-datetime
-                                                                                (valueChange)="UpdateValueField($event,node.id_row,item)"
+                                                                                (valueChange)="UpdateValueField($event,node,item)"
                                                                                 [fieldname]="'date'"
                                                                                 [value]="GetDataNewField(node.id_row,item.id_row)=='-'?'':GetDataNewField(node.id_row,item.id_row)"
                                                                                 [role]="true"></app-task-datetime>
@@ -964,7 +965,7 @@
                                                                                 <app-focus-block type="email"
                                                                                     [isbd]="true"
                                                                                     [value]="GetDataNewField(node.id_row,item.id_row)"
-                                                                                    (out)="UpdateValueField($event,node.id_row,item);">
+                                                                                    (out)="UpdateValueField($event,node,item);">
                                                                                 </app-focus-block>
                                                                             </ng-container>
                                                                         </div>
@@ -996,7 +997,7 @@
                                                                                 <app-focus-block type="number"
                                                                                     [isbd]="true"
                                                                                     [value]="GetDataNewField(node.id_row,item.id_row)"
-                                                                                    (out)="UpdateValueField($event,node.id_row,item);">
+                                                                                    (out)="UpdateValueField($event,node,item);">
                                                                                 </app-focus-block>
                                                                             </ng-container>
                                                                         </div>
@@ -1015,7 +1016,7 @@
                                                                                 <app-focus-block type="text"
                                                                                     [isbd]="true"
                                                                                     [value]="GetDataNewField(node.id_row,item.id_row)"
-                                                                                    (out)="UpdateValueField($event,node.id_row,item);">
+                                                                                    (out)="UpdateValueField($event,node,item);">
                                                                                 </app-focus-block>
                                                                             </ng-container>
                                                                         </div>
@@ -1055,7 +1056,7 @@
                                                                         <mat-menu #dropdown="matMenu">
                                                                             <button mat-menu-item
                                                                                 *ngFor="let dr of getDropdownField(item.id_row)"
-                                                                                (click)="UpdateValueField(dr.RowID,node.id_row,item)">
+                                                                                (click)="UpdateValueField(dr.RowID,node,item)">
                                                                                 <div class="d-inline-block"
                                                                                     [ngStyle]="{'backgroundColor': dr.Color}"
                                                                                     style="width:10px;margin-right: 10px;height: 10px;">

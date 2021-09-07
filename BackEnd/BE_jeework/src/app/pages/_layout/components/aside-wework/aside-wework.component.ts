@@ -999,7 +999,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 
   getText(item) {
     if (item.title) {
-      return item.title[0];
+      return item.title.trim()[0];
     }
     return 'N';
   }

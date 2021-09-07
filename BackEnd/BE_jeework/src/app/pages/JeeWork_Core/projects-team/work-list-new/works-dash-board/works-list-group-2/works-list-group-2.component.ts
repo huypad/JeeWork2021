@@ -288,9 +288,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         } else {
-          if (roleID == 3 || roleID == 4) {
-            if (x.isuyquyen && x.isuyquyen != '0') { return true; }
-          }
+          // if (roleID == 3 || roleID == 4) {
+          //   if (x.isuyquyen && x.isuyquyen != '0') { return true; }
+          // }
           if (
             roleID == 7 ||
             roleID == 9 ||
@@ -325,9 +325,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         if (x.admin == true) {
           return true;
         } else {
-          if (key == 'id_nv') {
-            if (x.isuyquyen && x.isuyquyen != '0') { return true; }
-          }
+          // if (key == 'id_nv') {
+          //   if (x.isuyquyen && x.isuyquyen != '0') { return true; }
+          // }
           if (
             key == 'title' ||
             key == 'description' ||
@@ -695,11 +695,13 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   }
 
   prepareDragDrop(nodes: any[]) {
-    nodes.forEach((node) => {
-      this.dropTargetIds.push(node.id_row);
-      this.nodeLookup[node.id_row] = node;
-      this.prepareDragDrop(node.DataChildren);
-    });
+    if(nodes){
+      nodes.forEach((node) => {
+        this.dropTargetIds.push(node.id_row);
+        this.nodeLookup[node.id_row] = node;
+        this.prepareDragDrop(node.DataChildren);
+      });
+    }
   }
 
   DragDropItemWork(item) {
@@ -1292,6 +1294,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   }
 
   UpdateByKey(task, key, value, isReloadData = true) {
+    if(!this.KiemTraThayDoiCongViec(task,key)){
+      return;
+    }
     const item = new UpdateWorkModel();
     item.id_row = task.id_row;
     item.key = key;
@@ -1301,9 +1306,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
     this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
-        if (isReloadData) {
+        // if (isReloadData) {
           this.ReloadData(true);
-        }
+        // }
         // this.LoadData();
       } else {
         this.ReloadData(true);
@@ -1324,6 +1329,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     return list[list.length - 1];
   }
   Updateestimates(task, event) {
+    if(!this.KiemTraThayDoiCongViec(task,'estimates')){
+      return;
+    }
     this.UpdateByKey(task, 'estimates', event);
   }
   UpdateGroup(node, id_row) {
@@ -1349,7 +1357,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   UpdateTask(task) {
     this._service.UpdateTask(task.id_row).subscribe((res) => {
       this.ReloadData(true);
-      // this.LoadData();
       if (res && res.status == 1) {
         this.ReloadData(true);
         // this.LoadData();
@@ -1358,6 +1365,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
   }
 
   DeleteByKey(task, field) {
+    if(!this.KiemTraThayDoiCongViec(task,field)){
+      return;
+    }
     this.UpdateByKey(task, field, null);
   }
   getAssignee(id_nv) {
@@ -1883,6 +1893,48 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
       return '';
     }
   }
+
+  KiemTraThayDoiCongViec(item,key){
+    if(this.IsAdmin()) return true;
+    else if(item.createdby == this.UserID) return true;
+    else {
+      if(item.User){
+        const index = item.User.findIndex(x=>x.id_user == this.UserID);
+        if(index >= 0) return true;
+      }
+    };
+    var txtError = "";
+    switch (key)
+    {
+      case 'assign':
+        txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
+        break;
+      case 'id_group':
+        txtError = 'Bạn không có quyền thay đổi nhóm công việc của công việc này.';
+        break;
+      case 'status':
+        txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này.';
+        break;
+      case 'estimates':
+        txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này.';
+        break;
+      case 'checklist':
+        txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này.';
+        break;
+      case 'title':
+        txtError = 'Bạn không có quyền đổi tên của công việc này.';
+        break;
+      case 'description':
+        txtError = 'Bạn không có quyền đổi mô tả của công việc này.';
+        break;
+      default:
+        txtError = 'Bạn không có quyền chỉnh sửa công việc này.';
+        break;
+    }
+    this.layoutUtilsService.showError(txtError);
+    return false;
+  }
+
 }
 
 export interface DropInfo {

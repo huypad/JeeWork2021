@@ -313,11 +313,12 @@ namespace JeeWork_Core2021.Classes
         }
         public static string GetFormatDate(DateTime tungay, DateTime denngay, string tugio, string dengio)
         {
+            GetDateTime UTCdate = new GetDateTime();
             if (denngay.Date.Equals(DateTime.MinValue))
-                return $"{GetDayOfWeek(tungay)} {(tungay.Year.Equals(DateTime.Now.Year) ? string.Format("{0:dd/MM}", tungay) : string.Format("{0:dd/MM/yyyy}", tungay))}";
+                return $"{GetDayOfWeek(tungay)} {(tungay.Year.Equals(UTCdate.Date.Year) ? string.Format("{0:dd/MM}", tungay) : string.Format("{0:dd/MM/yyyy}", tungay))}";
             if (tungay.Date.Equals(denngay.Date))
-                return $"{GetDayOfWeek(tungay)} {(tungay.Year.Equals(DateTime.Now.Year) ? string.Format("{0:dd/MM}", tungay) : string.Format("{0:dd/MM/yyyy}", tungay))} {tugio} - {dengio}";
-            return $"{GetDayOfWeek(tungay)} {(tungay.Year.Equals(DateTime.Now.Year) ? string.Format("{0:dd/MM}", tungay) : string.Format("{0:dd/MM/yyyy}", tungay))} {tugio} - {GetDayOfWeek(denngay)} {(denngay.Year.Equals(DateTime.Now.Year) ? string.Format("{0:dd/MM}", denngay) : string.Format("{0:dd/MM/yyyy}", denngay))} { dengio}";
+                return $"{GetDayOfWeek(tungay)} {(tungay.Year.Equals(UTCdate.Date.Year) ? string.Format("{0:dd/MM}", tungay) : string.Format("{0:dd/MM/yyyy}", tungay))} {tugio} - {dengio}";
+            return $"{GetDayOfWeek(tungay)} {(tungay.Year.Equals(UTCdate.Date.Year) ? string.Format("{0:dd/MM}", tungay) : string.Format("{0:dd/MM/yyyy}", tungay))} {tugio} - {GetDayOfWeek(denngay)} {(denngay.Year.Equals(DateTime.Now.Year) ? string.Format("{0:dd/MM}", denngay) : string.Format("{0:dd/MM/yyyy}", denngay))} { dengio}";
         }
         public static string GetFormatDate(DateTime ngay, string format)
         {
@@ -719,6 +720,51 @@ namespace JeeWork_Core2021.Classes
                 return null;
             }
             return model.data;
+        }
+        public static bool CheckRoleByProject(string id_project_team, UserJWT loginData, DpsConnection Conn)
+        {
+            bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID);
+            DataSet ds = GetWorkSpace(loginData, 0, 0);
+            if (Conn.LastError != null || ds == null)
+                return false;
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_project_team", id_project_team);
+            conds.Add("member", 1);
+            conds.Add("id_role", 3);
+            string sql_role = "select * from we_project_role where (where)";
+            // Quyền xem công việc của người khác
+            DataTable dt_view_task = Conn.CreateDataTable(sql_role, "(where)", conds);
+            // Quyền giao công việc của người khác
+            conds.Remove(conds["id_role"]);
+            conds.Add("id_role", 4);
+            DataTable dt_assign_task = Conn.CreateDataTable(sql_role, "(where)", conds);
+            if (ds.Tables.Count == 3)
+            {
+                DataRow[] dr = ds.Tables[2].Select("id_row =" + id_project_team + " and (owner = 1 or parentowner = 1 or admin_project = 1)");
+                if (dr.Length > 0 || IsAdmin || dt_view_task.Rows.Count > 0 || dt_assign_task.Rows.Count > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        public static bool CheckPermitUpdate(string id_project_team, long id_role, UserJWT loginData, DpsConnection cnn)
+        {
+            // Kiểm tra các role admin của tk đăng nhập
+            if (CheckRoleByProject(id_project_team, loginData, cnn))
+            {
+                return true;
+            }
+            // Nếu không có các quyền admin, kiểm tra quyền đc cập nhật trong dự án
+            string sql_role = "select * from we_project_role where (where)";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_project_team", id_project_team);
+            conds.Add("member", 1);
+            conds.Add("id_role", id_role);
+            DataTable dt = cnn.CreateDataTable(sql_role, "(where)", conds);
+            if (dt.Rows.Count > 0) return true;
+            return false;
         }
     }
 }

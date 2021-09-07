@@ -1,7 +1,7 @@
 import { environment } from 'src/environments/environment';
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ChatService } from 'src/app/modules/my-chat/services/chat.service';
 import { LayoutService } from '../../../../../core';
+import {ChatService} from '../../jee-chat/my-chat/services/chat.service';
 const   HOST_JEEChat=environment.HOST_JEECHAT;
 @Component({
   selector: 'app-quick-panel-offcanvas',

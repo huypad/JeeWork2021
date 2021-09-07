@@ -31,6 +31,7 @@ namespace API_JeeWork2021.Classes
         private IProducer _producer;
         private IConnectionCache _cache;
         private readonly ILogger<kafkaAutomationService> _logger;
+        private GetDateTime UTCdate = new GetDateTime();
         public kafkaAutomationService(IConfiguration config, IProducer producer, IConnectionCache connectionCache, ILogger<kafkaAutomationService> logger, INotifier notifier)
         {
             _cache = connectionCache;
@@ -197,7 +198,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                     DataTable dt = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = "+ listTask[i]);
                     #endregion
                     Hashtable val2 = new Hashtable();
-                    val2["UpdatedDate"] = DateTime.Now;
+                    val2["UpdatedDate"] = UTCdate.Date;
                     val2["UpdatedBy"] = 0;
                     val2["Disabled"] = 1;
                     SqlConditions cond = new SqlConditions();
@@ -249,7 +250,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     {
                                         has = new Hashtable();
                                         has["id_work"] = listTask[i];
-                                        has["createddate"] = DateTime.Now;
+                                        has["createddate"] = UTCdate.Date;
                                         has["createdby"] = 0;
                                         has["id_user"] = item;
                                         has["loai"] = 1;
@@ -277,7 +278,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     DataTable dtu = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i] + " and id_user = " + item);
                                     #endregion
                                     Hashtable val2 = new Hashtable();
-                                    val2["UpdatedDate"] = DateTime.Now;
+                                    val2["UpdatedDate"] = UTCdate.Date;
                                     val2["UpdatedBy"] = 0;
                                     val2["Disabled"] = 1;
                                     SqlConditions cond = new SqlConditions();
@@ -304,7 +305,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                 DataTable dt = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i]);
                                 #endregion
                                 Hashtable val2 = new Hashtable();
-                                val2["UpdatedDate"] = DateTime.Now;
+                                val2["UpdatedDate"] = UTCdate.Date;
                                 val2["UpdatedBy"] = 0;
                                 val2["Disabled"] = 1;
                                 SqlConditions cond = new SqlConditions();
@@ -340,7 +341,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     {
                                         has = new Hashtable();
                                         has["id_work"] = listTask[i];
-                                        has["createddate"] = DateTime.Now;
+                                        has["createddate"] = UTCdate.Date;
                                         has["createdby"] = 0;
                                         has["id_user"] = item;
                                         has["loai"] = 1;
@@ -370,7 +371,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     {
                                         val2 = new Hashtable();
                                         val2["id_work"] = listTask[i];
-                                        val2["CreatedDate"] = DateTime.Now;
+                                        val2["CreatedDate"] = UTCdate.Date;
                                         val2["CreatedBy"] = 0;
                                         val2["id_tag"] = item;
                                         if (cnn.Insert(val2, "we_work_tag") != 1)
@@ -401,7 +402,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     if (int.Parse(f.ToString()) > 0) // Tag đã có => Delete
                                     {
                                         val2 = new Hashtable();
-                                        val2["UpdatedDate"] = DateTime.Now;
+                                        val2["UpdatedDate"] = UTCdate.Date;
                                         val2["UpdatedBy"] = 0;
                                         val2["Disabled"] = 1;
                                         SqlConditions cond = new SqlConditions();
@@ -481,6 +482,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
         }
         public static bool insertComment(long userid, string data, string condition_update, DpsConnection cnn)
         {
+            GetDateTime UTCdate = new GetDateTime();
             string[] listTask = condition_update.Split(",");
             for (int i = 0; i < listTask.Length; i++)
             {
@@ -488,7 +490,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 val.Add("comment", data);
                 val.Add("object_type", 1);
                 val.Add("object_id", listTask[i]);
-                val.Add("CreatedDate", DateTime.Now);
+                val.Add("CreatedDate", UTCdate.Date);
                 val.Add("CreatedBy", userid);
                 if (cnn.Insert(val, "we_comment") != 1)
                 {
@@ -507,11 +509,11 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 string value = list[1];
                 if (type == 1)
                 {
-                    data = DateTime.Now.AddDays(int.Parse(value)).ToString();
+                    data = UTCdate.Date.AddDays(int.Parse(value)).ToString();
                 }
                 else if (type == 2)
                 {
-                    data = DateTime.Now.ToString();
+                    data = UTCdate.Date.ToString();
                 }
                 else
                 {
@@ -529,18 +531,18 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                     bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data + " and IsFinal = 1").ToString()) > 0;
                     if (isTodo)
                     {
-                        val.Add("activated_date", DateTime.Now); // date update isTodo = 1
+                        val.Add("activated_date", UTCdate.Date); // date update isTodo = 1
                         val.Add("activated_by", 0); // user update isTodo = 1
                     }
                     if (isFinal)
                     {
-                        val.Add("end_date", DateTime.Now);
-                        val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                        val.Add("end_date", UTCdate.Date);
+                        val.Add("closed_date", UTCdate.Date); // date update isFilnal = 1
                         val.Add("closed_by", 0); // user update isFilnal = 1
                     }
-                    val.Add("state_change_date", DateTime.Now); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
+                    val.Add("state_change_date", UTCdate.Date); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
                 }
-                val.Add("UpdatedDate", DateTime.Now);
+                val.Add("UpdatedDate", UTCdate.Date);
                 val.Add("UpdatedBy", 0);
                 val.Add(columnname, data);
                 SqlConditions sqlcond = new SqlConditions();

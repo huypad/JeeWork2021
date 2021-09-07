@@ -3803,6 +3803,7 @@ and IdKH={loginData.CustomerID} )";
             {
                 var data = new
                 {
+                    userid = info.UserId,
                     hoten = info.FullName,
                     mobile = info.PhoneNumber,
                     username = info.Username,
@@ -3835,5 +3836,8 @@ and IdKH={loginData.CustomerID} )";
                 return spacename;
             }
         }
+        
     }
 }
+
+

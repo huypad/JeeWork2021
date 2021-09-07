@@ -438,43 +438,34 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string strW = "";
                 DateTime from = DateTime.Now;
                 DateTime to = DateTime.Now;
-                if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                if (!from1)
-                    return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
-                bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                if (!to1)
-                    return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
-                if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
-                {
-                    strW += " and id_project_team=@id_projectteam";
-                    cond.Add("id_projectteam", query.filter["id_projectteam"]);
-                }
-                if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                {
-                    strW += " and status=@status";
-                    cond.Add("status", query.filter["status"]);
-                }
-                string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                    displayChild = query.filter["displayChild"];
-
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        if (!from1)
+                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                        strW += " and w." + collect_by + ">=@from";
+                        cond.Add("from", from);
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        if (!to1)
+                            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+                        strW += " and w." + collect_by + "<@to";
+                        cond.Add("to", to);
+                    }
+                    string id_project_team = "0";
                     string hoanthanh = "";
                     string quahan = "";
                     string todo = "";
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
-                        hoanthanh = ReportByProjectController.GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn).ToString();
-                        quahan = ReportByProjectController.GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn).ToString();
-                        todo = ReportByProjectController.GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn).ToString();
+                        id_project_team = query.filter["id_projectteam"].ToString();
+                        strW += " and id_project_team=@id_projectteam";
+                        cond.Add("id_projectteam", query.filter["id_projectteam"]);
                     }
                     else
                     {
@@ -484,12 +475,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                         todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
                         strW += $" and id_department in ({listDept})";
                     }
-
-                    #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select id_row, id_nv, status,iIf(w.Status in ({hoanthanh}) and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status in ({hoanthanh}) and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                    iIf(w.Status in ({quahan}), 1, 0) as is_quahan, deadline 
-                                    from v_wework_clickup_new w where 1=1 " + strW;
+                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+                    {
+                        strW += " and status=@status";
+                        cond.Add("status", query.filter["status"]);
+                    }
+                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                        displayChild = query.filter["displayChild"];
+                    string sqlq = "";
+                    sqlq = @$"select id_row, id_nv, status, deadline, end_date from v_wework_clickup_new w where disabled = 0 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
@@ -499,50 +494,35 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
-                    int ht = (int)dtW.Compute("count(id_row)", "is_ht=1");
-                    int htm = (int)dtW.Compute("count(id_row)", " is_htquahan=1 ");
-                    int dth = (int)dtW.Compute("count(id_row)", " status not in ( " + hoanthanh + "," + quahan + ")");
-                    int qh = (int)dtW.Compute("count(id_row)", " is_quahan=1 ");
-                    int khong = (int)dtW.Compute("count(id_row)", " deadline is null ");
-                    data.Add(new
+                    cond = new SqlConditions();
+                    cond.Add("disabled", 0);
+                    cond.Add("id_project_team", id_project_team);
+                    List<int> list_count = new List<int>();
+                    List<string> statusnameList = new List<string>();
+                    List<string> Color = new List<string>();
+                    DataTable dt_status = cnn.CreateDataTable("select id_row, statusname, color, type from we_status where (where) order by type, statusname", "(where)", cond);
+                    if (dt_status.Rows.Count > 0)
                     {
-                        trangthai = "Hoàn thành đúng hạn",
-                        value = ht
-                    });
-                    data.Add(new
-                    {
-                        trangthai = "Hoàn thành muộn",
-                        value = htm
-                    });
-                    data.Add(new
-                    {
-                        trangthai = "Đang thực hiện",
-                        value = dth
-                    });
-                    data.Add(new
-                    {
-                        trangthai = "Quá hạn",
-                        value = qh
-                    });
-                    var listValue = new List<int>() { ht, htm, dth, qh };
+                        foreach (DataRow item in dt_status.Rows)
+                        {
+                            statusnameList.Add(item["statusname"].ToString());
+                            Color.Add(item["color"].ToString());
+                            list_count.Add((int)dtW.Compute("count(id_row)", "status=" + item["id_row"].ToString()));
+                            data.Add(new
+                            {
+                                trangthai = item["statusname"].ToString(),
+                                value = (int)dtW.Compute("count(id_row)", "status=" + item["id_row"].ToString()),
+                                color = item["color"].ToString()
+                            });
+                        }
+                    }
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
                     return JsonResultCommon.ThanhCong(new
                     {
-                        TrangThaiCongViec = data,
-                        DataTrangThaiCongViec = listValue,
-                        KhongDungHan = new
-                        {
-                            pie1 = new List<object>()
-                            {
-                                new{trangthai = "Hoàn thành",value = (ht+htm)},
-                                new {trangthai = "Hoàn thành muộn",value = htm}
-                            },
-                            pie2 = new List<object>()
-                            {
-                                new{trangthai = "Đang thực hiện",value = (dth+qh)},
-                                new {trangthai = "Quá hạn",value = qh}
-                            },
-                            khong = khong
-                        }
+                        TrangThaiCongViec = statusnameList,
+                        ColorList = Color,
+                        DataTrangThaiCongViec = list_count,
+                        DataBarChart = data,
                     });
                     #endregion
                 }
@@ -1306,7 +1286,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     if (!FieldsSelected.Equals(""))
-                        FieldsSelected = FieldsSelected.Substring(1);
+                        FieldsSelected = FieldsSelected.Substring(1); 
+                    // kiểm tra quyền xem công việc người khác
+                    new Common(ConnectionString);
+                    bool rs = Common.CheckRoleByProject(query.filter["id_project_team"].ToString(), loginData, cnn);
+                    if (!rs)
+                    {
+                        long userid = loginData.UserID;
+                        strW += @$" and w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = {userid}
+ union all select id_row from v_wework_new where id_nv = {userid} or createdby = {userid} )";
+                    }
+
                     string sql = "Select  iIf(id_group is null,0,id_group) as id_group ,work_group, " + FieldsSelected;
                     sql += $@" from v_wework_clickup_new w where w.Disabled = 0 " + strW;
                     DataTable result = new DataTable();
@@ -1315,9 +1305,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                        "from we_comment where disabled = 0 and object_type = 1");
                     string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a join we_work_tag b on a.id_row=b.id_tag 
                                                     where a.disabled=0 and b.disabled = 0 and a.id_project_team = " + query.filter["id_project_team"] + "and id_work = ";
-                    string queryUser = $@"select w_user.id_work, w_user.id_user, w_user.loai, id_child, w_user.Disabled, '' as hoten, id_project_team
+                    string queryUser = $@"select w_user.id_work, w_user.id_user, w_user.loai, id_child, w_user.Disabled, '' as hoten,'' as image,'' as username,'' as tenchucdanh , id_project_team
                                                     from we_work_user w_user join we_work on we_work.id_row = w_user.id_work 
-                                                    where w_user.Disabled = 0 and we_work.id_project_team = " + query.filter["id_project_team"] + "and id_work = ";
+                                                    where w_user.Disabled = 0 and w_user.loai = 1 and we_work.id_project_team = " + query.filter["id_project_team"] + "and id_work = ";
                     result.Columns.Add("Tags", typeof(DataTable));
                     result.Columns.Add("User", typeof(DataTable));
                     result.Columns.Add("id_nv", typeof(string));
@@ -1336,6 +1326,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 if (info != null)
                                 {
                                     item["hoten"] = info.FullName;
+                                    item["image"] = info.AvartarImgURL;
+                                    item["username"] = info.Username;
+                                    item["tenchucdanh"] = info.Jobtitle;
                                 }
                             }
                             #endregion
@@ -1348,6 +1341,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (result.Rows.Count > 0)
                     {
                         var filterTeam = " id_parent is null and id_project_team = " + (query.filter["id_project_team"]);
+                        
                         var rows = result.Select(filterTeam);
                         if (rows.Any())
                             tmp = rows.CopyToDataTable();
@@ -1524,9 +1518,41 @@ namespace JeeWork_Core2021.Controllers.Wework
                             DataTable dt_temp = cnn.CreateDataTable(sql_query, new SqlConditions() { { "old", dr["oldvalue"] }, { "new", dr["newvalue"] } });
                             if (dt_temp == null)
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+
+                            if (int.Parse(dr["id_action"].ToString()) == 9 || int.Parse(dr["id_action"].ToString()) == 5 || int.Parse(dr["id_action"].ToString()) == 6) // Đối với tag gắn title
+                            {
+                                if (dt_temp.Rows.Count > 0)
+                                    dr["action"] = dr["action"].ToString().Replace("{0}", dt_temp.Rows[0]["title"].ToString());
+                                else
+                                    dr["action"] = dr["action"].ToString().Replace("{0}", "");
+                            }
+
                             dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         }
+                        #region Map info account từ JeeAccount 
+                        var info = DataAccount.Where(x => dr["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+
+                        if (dr["id_action"].ToString().Equals("15") || dr["id_action"].ToString().Equals("55") || dr["id_action"].ToString().Equals("56") || dr["id_action"].ToString().Equals("57"))
+                        {
+                            var infoUser = DataAccount.Where(x => dr["newvalue"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (infoUser != null)
+                            {
+                                dr["action"] = dr["action"].ToString().Replace("{0}", infoUser.FullName);
+                                dr["action_en"] = dr["action_en"].ToString().Replace("{0}", infoUser.FullName);
+                            }
+                            dr["oldvalue"] = DBNull.Value;
+                            dr["newvalue"] = DBNull.Value;
+
+                        }
+                        #endregion
+                        #region Map info account từ JeeAccount 
+                        if (dr["object_type"].ToString().Equals("3"))
+                        {
+                            dr["oldvalue"] = DBNull.Value;
+                            dr["newvalue"] = DBNull.Value;
+                        }
+                        #endregion
                     }
                     int total = dt.Rows.Count;
                     if (query.more)

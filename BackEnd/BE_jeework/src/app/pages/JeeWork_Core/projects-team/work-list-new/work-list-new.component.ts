@@ -16,7 +16,6 @@ import { AddNewFieldsComponent } from "./add-new-fields/add-new-fields.component
 import { StatusDynamicDialogComponent } from "./../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component";
 import { WorkService } from "./../../work/work.service";
 import { DuplicateTaskNewComponent } from "./duplicate-task-new/duplicate-task-new.component";
-import { WorkListNewDetailComponent } from "./work-list-new-detail/work-list-new-detail.component";
 import { DialogSelectdayComponent } from "./../../report/dialog-selectday/dialog-selectday.component";
 import {
   WorkModel,
@@ -66,11 +65,9 @@ import {
 import { MatTable } from "@angular/material/table";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
-import { cloneDeep, find, values } from "lodash";
 import * as moment from "moment";
 import { SelectionModel } from "@angular/cdk/collections";
 import { workAddFollowersComponent } from "../../work/work-add-followers/work-add-followers.component";
-// import { WorkEditDialogComponent } from "../../work/work-edit-dialog/work-edit-dialog.component";
 import { WorkAssignedComponent } from "../../work/work-assigned/work-assigned.component";
 import { DuplicateWorkComponent } from "../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
@@ -181,15 +178,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     );
     //end giao tiếp service
 
-    // this.searchCtrl.valueChanges
-    //   .pipe(debounceTime(1000), startWith(""))
-    //   .subscribe((res) => {
-    //     /**
-    //      * (keyup.enter)="LoadData()" [(ngModel)]="keyword"
-    //      */
-    //     this.keyword = res;
-    //     this.LoadData();
-    //   });
 
     var today = new Date();
     var start_date = new Date();
@@ -254,9 +242,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         } else {
-          if (roleID == 3 || roleID == 4) {
-            if (x.isuyquyen && x.isuyquyen != "0") return true;
-          }
+          // if (roleID == 3 || roleID == 4) {
+          //   if (x.isuyquyen && x.isuyquyen != "0") return true;
+          // }
           if (
             roleID == 7 ||
             roleID == 9 ||
@@ -291,9 +279,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         } else {
-          if (key == "id_nv") {
-            if (x.isuyquyen && x.isuyquyen != "0") return true;
-          }
+          // if (key == "id_nv") {
+          //   if (x.isuyquyen && x.isuyquyen != "0") return true;
+          // }
           if (
             key == "title" ||
             key == "description" ||
@@ -454,6 +442,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   ClosedTask(value, node) {
+    if(!this.KiemTraThayDoiCongViec(node,'closetask')){
+      return;
+    }
     this._service.ClosedTask(node.id_row, value).subscribe((res) => {
       this.LoadData();
       if (res && res.status == 1) {
@@ -487,14 +478,18 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     // if()
   }
 
-  UpdateValueField(value, idWork, field) {
+  UpdateValueField(value, node, field) {
     this.editmail = 0;
     if (field != 'date') {
       if (value == "" || value == null || value == undefined) {
         if (field.fieldname != "checkbox") return;
       }
     }
+    if(!this.KiemTraThayDoiCongViec(node,field.fieldname)){
+      return;
+    }
 
+    var idWork = node.id_row;
     const _item = new UpdateWorkModel();
     _item.clear();
     _item.FieldID = field.id_row;
@@ -526,6 +521,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
     filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
     filter.collect_by = this.column_sort.value;
+    // filter.subtask_done = this.showclosedsubtask?1:0;
+    // filter.task_done = this.showclosedtask?1:0;
     return filter;
   }
 
@@ -1099,6 +1096,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     if (event.target.value.trim() == node.title.trim() || event.target.value.trim() == "") {
       event.target.value = node.title;
       return;
+    }else{
+      node.title = event.target.value;
     }
     this.UpdateByKey(node, "title", event.target.value.trim());
   }
@@ -1238,19 +1237,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       "",
       { outlets: { auxName: "aux/detail/" + item.id_row } },
     ]);
-    // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-    //   width: "90vw",
-    //   height: "90vh",
-    //   data: item,
-    // });
-
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   this.LoadData();
-    //   if (result != undefined) {
-    //     // this.selectedDate.startDate = new Date(result.startDate)
-    //     // this.selectedDate.endDate = new Date(result.endDate)
-    //   }
-    // });
   }
 
   f_convertDate(v: any) {
@@ -1319,6 +1305,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   ShowCloseTask() {
     this.showclosedtask = !this.showclosedtask;
+    // this.LoadData();
+  }
+  ShowClosesubTask() {
+    this.showclosedsubtask = !this.showclosedsubtask;
+    // this.LoadData();
   }
 
   LoadClosedTask(val) {
@@ -1439,6 +1430,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     });
   }
   UpdateByKey(task, key, value, isReloadData = true) {
+    if(!this.KiemTraThayDoiCongViec(task,key)){
+      return;
+    }
     const item = new UpdateWorkModel();
     item.id_row = task.id_row;
     item.key = key;
@@ -1450,11 +1444,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.LoadData();
       } else {
-        if (isReloadData) {
+        // if (isReloadData) {
           setTimeout(() => {
             this.LoadData();
           }, 500);
-        }
+        // }
         this.layoutUtilsService.showError(res.error.message);
       }
     });
@@ -2056,6 +2050,47 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     } else {
       return "";
     }
+  }
+
+  KiemTraThayDoiCongViec(item,key){
+    if(this.IsAdmin()) return true;
+    else if(item.createdby == this.UserID) return true;
+    else {
+      if(item.User){
+        const index = item.User.findIndex(x=>x.id_user == this.UserID);
+        if(index >= 0) return true;
+      }
+    };
+    var txtError = "";
+    switch (key)
+    {
+      case 'assign':
+        txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
+        break;
+      case 'id_group':
+        txtError = 'Bạn không có quyền thay đổi nhóm công việc của công việc này.';
+        break;
+      case 'status':
+        txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này.';
+        break;
+      case 'estimates':
+        txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này.';
+        break;
+      case 'checklist':
+        txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này.';
+        break;
+      case 'title':
+        txtError = 'Bạn không có quyền đổi tên của công việc này.';
+        break;
+      case 'description':
+        txtError = 'Bạn không có quyền đổi mô tả của công việc này.';
+        break;
+      default:
+        txtError = 'Bạn không có quyền chỉnh sửa công việc này.';
+        break;
+    }
+    this.layoutUtilsService.showError(txtError);
+    return false;
   }
 }
 

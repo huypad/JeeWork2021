@@ -69,21 +69,20 @@
                                 </div>
                                 <div class="icon-user border" (click)="filterwork=2;ChangeData()"
                                     matTooltip="Công việc tôi giao đi">
-                                    <i class="fas fa-user-plus"
-                                        [ngClass]="{'text-success': filterwork===2}"></i>
+                                    <i class="fas fa-user-check" [ngClass]="{'text-success': filterwork===2}"></i>
                                 </div>
                                 <div class="icon-user border" (click)="filterwork=0;ChangeData()"
                                     matTooltip="Danh sách công việc">
-                                    <i class="fas fa-user-friends" [ngClass]="{'text-success': filterwork===0}"></i>
+                                    <i class="fas fa-users" [ngClass]="{'text-success': filterwork===0}"></i>
                                 </div>
                             </div>
                         </ng-container>
-                        <div class="cu-filter-right row text-dark" *ngIf="getMystaff">
+                        <div class="cu-filter-right row text-dark">
                             <div class="item-filter url -hover">
                                 <i class="fas fa-ellipsis-h" [matMenuTriggerFor]="viewSetting"></i>
                                 <mat-menu #viewSetting="matMenu">
                                     <div (click)="$event.stopPropagation()">
-                                        <div class="text-muted" style="padding: 0px 15px 5px 15px; font-size: 500;">
+                                        <div class="text-muted" style="padding: 0px 15px 5px 15px; font-size: 500 ;">
                                             <span translate="viewsetting.title"></span>
                                         </div>
                                         <button mat-menu-item (click)="tasklocation=!tasklocation">
@@ -92,12 +91,30 @@
                                             <mat-slide-toggle [(ngModel)]="tasklocation" class="float-right">
                                             </mat-slide-toggle>
                                         </button>
-                                        <button mat-menu-item (click)="showemptystatus=!showemptystatus">
-                                            <div class="float-left" style="line-height: 2;margin-right: 10px;"><span
-                                                    translate="viewsetting.showemptystatus"></span></div>
-                                            <mat-slide-toggle [(ngModel)]="showemptystatus" class="float-right">
+                                        <button mat-menu-item class="d-flex">
+                                            <div style="line-height: 2;margin-right: 10px;flex-grow: 1;"
+                                                (click)="ShowCloseTask()">
+                                                <span translate="viewsetting.showclosedtask"></span>
+                                            </div>
+                                            <mat-slide-toggle [(ngModel)]="showclosedtask"
+                                                (ngModelChange)="LoadSampleList()">
                                             </mat-slide-toggle>
                                         </button>
+                                        <button mat-menu-item class="d-flex">
+                                            <div style="line-height: 2;margin-right: 10px;flex-grow: 1;"
+                                                (click)="ShowClosesubTask()">
+                                                <span translate="viewsetting.showclosedsubtask"></span>
+                                            </div>
+                                            <mat-slide-toggle [(ngModel)]="showclosedsubtask"
+                                                (ngModelChange)="LoadSampleList()">
+                                            </mat-slide-toggle>
+                                        </button>
+                                        <!--                                        <button mat-menu-item (click)="showemptystatus=!showemptystatus">-->
+                                        <!--                                            <div class="float-left" style="line-height: 2;margin-right: 10px;"><span-->
+                                        <!--                                                    translate="viewsetting.showemptystatus"></span></div>-->
+                                        <!--                                            <mat-slide-toggle [(ngModel)]="showemptystatus" class="float-right">-->
+                                        <!--                                            </mat-slide-toggle>-->
+                                        <!--                                        </button>-->
                                     </div>
                                 </mat-menu>
                             </div>
@@ -233,7 +250,10 @@
                                                                         <p style="font-size: 11px;"
                                                                             class="mg-0 text-muted"
                                                                             *ngIf="tasklocation">
-                                                                            {{getTasklocation(node.id_project_team)}}
+                                                                            <!--                                                                            {{getTasklocation(node.id_project_team)}}-->
+                                                                            {{
+                                                                            node.department?node.department:getTasklocation(node.id_project_team)
+                                                                            }}
                                                                         </p>
                                                                         <span
                                                                             class=" cu-task-row-main__link-text-inner position-relative  url">
@@ -272,7 +292,7 @@
                                                                                 </div>
                                                                             </ng-container>
                                                                             <span class="action-inline text-muted"
-                                                                                *ngIf="CheckRoles(15,node.id_project_team)">
+                                                                                *ngIf="CheckRoles(7,node.id_project_team)">
                                                                                 <i class="fas fa-pencil-alt"
                                                                                     (click)="editTitle(node.id_row)"
                                                                                     matTooltip="{{ 'work.renametask' | translate }}"></i>
@@ -339,10 +359,10 @@
                                                             <app-task-datetime
                                                                 (valueChange)="updateDate(node,$event,item.fieldname)"
                                                                 [fieldname]="item.fieldname"
-                                                                [(value)]="node[item.fieldname]"
-                                                                [role]="CheckRoleskeypermit(item.fieldname,node.id_project_team)">
+                                                                [value]="node[item.fieldname]"
+                                                                [role]="CheckRoles(10,node.id_project_team)">
                                                             </app-task-datetime>
-                                                             
+
                                                         </ng-container>
                                                         <ng-template #nosetdatetime>
                                                             <ng-container *ngIf="item.type == 'code';else noestcode">

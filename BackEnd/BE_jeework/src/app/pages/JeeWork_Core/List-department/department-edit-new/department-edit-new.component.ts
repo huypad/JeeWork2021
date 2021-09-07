@@ -284,12 +284,14 @@ export class DepartmentEditNewComponent implements OnInit {
         this.hasFormErrors = true;
         return true;
       }
-      if (
-        this.IsDataStaff_HR &&
-        this.itemFormGroup.controls["dept_name"].value == ""
-      ) {
+      if(this.itemFormGroup.controls["title"].value.trim() == "")
         return true;
-      }
+      // if (
+      //   this.IsDataStaff_HR &&
+      //   this.itemFormGroup.controls["dept_name"].value == ""
+      // ) {
+      //   return true;
+      // }
     }
 
     return false;
@@ -352,7 +354,7 @@ export class DepartmentEditNewComponent implements OnInit {
     _item.id_cocau = controls["dept_name"].value
       ? controls["dept_name"].value
       : 0;
-    _item.title = controls["title"].value;
+    _item.title = controls["title"].value.trim();
     _item.Owners = [];
 
     this.list_Owners.map((item, index) => {

@@ -11,6 +11,8 @@ import { PopoverContentComponent } from 'ngx-smart-popover';
 import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.component';
 import { ProjectsTeamService } from '../../Services/department-and-project.service';
 import { WeWorkService } from '../../../services/wework.services';
+import {UserChatBox} from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/user-chatbox';
+import {ChatService} from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
 @Component({
 	selector: 'kt-members',
 	templateUrl: './members.component.html',
@@ -32,6 +34,7 @@ export class MembersComponent {
 		private translate: TranslateService,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
+		private chatService: ChatService,
 		public WeWorkService: WeWorkService,
 		private tokenStorage: TokenStorage) {
 	}
@@ -155,4 +158,70 @@ export class MembersComponent {
 		})
 		//this.layoutUtilsService.showInfo("updateRule " + id_row + ", " + admin);
 	}
+
+
+	//chat nhanh
+	chatBoxUsers = [];
+
+	selectUser(user: any) {
+		const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
+		if (userChatBox) {
+			this.chatBoxUsers = userChatBox;
+		} else {
+			this.chatBoxUsers = [];
+		}
+
+		// if (user.UnreadMess > 0) {
+		// 	this.UpdateUnreadMess(user.IdGroup, user.UserId, user.UnreadMess);
+		// }
+		// this.usernameActived = user.IdGroup;
+
+		switch (this.chatBoxUsers.length) {
+
+			case 2: {
+				var u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
+				if (u != undefined) {
+					this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
+					this.chatBoxUsers.push(u);
+				} else {
+					this.chatBoxUsers.push(new UserChatBox(user, 625 + 325));
+					this.chatService.OpenMiniChat$.next(new UserChatBox(user, 625 + 325));
+				}
+				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+				break;
+			}
+			case 1: {
+				var u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
+				if (u != undefined) {
+					this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
+					this.chatBoxUsers.push(u);
+				} else {
+					this.chatBoxUsers.push(new UserChatBox(user, 300 + 325));
+					this.chatService.OpenMiniChat$.next(new UserChatBox(user, 300 + 325));
+				}
+				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+				break;
+			}
+			default: {//0 nó vào đây trc nếu có 1 hội thoại để xem thử
+				var u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
+				if (u != undefined) {
+					this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
+					this.chatBoxUsers.push(u);
+				} else {
+					console.log("USERRRR",user)
+					this.chatBoxUsers.push(new UserChatBox(user, 300));
+					let item =new UserChatBox(user, 300);
+					console.log("ITEMMMM",item)
+					//this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
+					this.chatService.OpenMiniChat$.next(item);
+				}
+				localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+				break;
+			}
+		}
+		// this.searchText = "";
+		this.chatService.search$.next('activechat')
+		this.changeDetectorRefs.detectChanges();
+	}
+
 }

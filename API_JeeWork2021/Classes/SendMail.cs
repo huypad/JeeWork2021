@@ -81,6 +81,7 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, string ConnectionString)
         {
+            GetDateTime UTCdate = new GetDateTime();
             if (mailTo.Count <= 0)
             {
                 ErrorMessage = "Email không hợp lệ";
@@ -162,7 +163,7 @@ namespace JeeWork_Core2021.Classes
                     if (!"".Equals(guikem)) guikem = guikem.Substring(1);
                     val.Add("Cc", guikem);
                     val.Add("Contents", contents);
-                    val.Add("SendTime", DateTime.Now);
+                    val.Add("SendTime", UTCdate.Date);
                     val.Add("SendDate", DateTime.Today);
                     val.Add("SendFrom", email);
                     val.Add("CustemerID", CustemerID);
@@ -177,7 +178,7 @@ namespace JeeWork_Core2021.Classes
                         val.Add("Title", title);
                         val.Add("Email", guiden);
                         val.Add("Contents", contents);
-                        val.Add("LastSend", DateTime.Now);
+                        val.Add("LastSend", UTCdate.Date);
                         val.Add("Lan", 1);
                         val.Add("Error", ex.Message);
                         val.Add("CustemerID", CustemerID);
@@ -221,7 +222,8 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool SendWithConnection(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, DpsConnection cnn, string ConnectionString)
         {
-                string email = "hrm@dps.com.vn";
+            GetDateTime UTCdate = new GetDateTime();
+            string email = "hrm@dps.com.vn";
                 string username = "hrm@dps.com.vn";
                 string SmtpClient = "smtp.gmail.com";
                 bool EnableSSL = true;
@@ -264,7 +266,7 @@ namespace JeeWork_Core2021.Classes
                     if (!"".Equals(guikem)) guikem = guikem.Substring(1);
                     val.Add("Cc", guikem);
                     val.Add("Contents", contents);
-                    val.Add("SendTime", DateTime.Now);
+                    val.Add("SendTime", UTCdate.Date);
                     val.Add("SendDate", DateTime.Today);
                     val.Add("SendFrom", email);
                     val.Add("CustemerID", CustemerID);
@@ -278,7 +280,7 @@ namespace JeeWork_Core2021.Classes
                         val.Add("Title", title);
                         val.Add("Email", guiden);
                         val.Add("Contents", contents);
-                        val.Add("LastSend", DateTime.Now);
+                        val.Add("LastSend", UTCdate.Date);
                         val.Add("Lan", 1);
                         val.Add("Error", ex.Message);
                         val.Add("CustemerID", CustemerID);
@@ -342,11 +344,12 @@ namespace JeeWork_Core2021.Classes
         }
         private static void SaveMailCannotSend(string title, MailAddressCollection mailTo, string contents, string error, MailAddressCollection cc, string CustemerID, string ConnectionString)
         {
+            GetDateTime UTCdate = new GetDateTime();
             Hashtable val = new Hashtable();
             val.Add("Title", title);
             val.Add("Email", mailTo);
             val.Add("Contents", contents);
-            val.Add("LastSend", DateTime.Now);
+            val.Add("LastSend", UTCdate.Date);
             val.Add("Lan", 1);
             val.Add("Error", error);
             val.Add("CustemerID", CustemerID);
@@ -382,6 +385,7 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool Send(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString)
         {
+            GetDateTime UTCdate = new GetDateTime();
             if (mailTo.Count <= 0)
             {
                 ErrorMessage = "Email không hợp lệ";
@@ -447,7 +451,7 @@ namespace JeeWork_Core2021.Classes
                         if (!"".Equals(guikem)) guikem = guikem.Substring(1);
                         val.Add("Cc", guikem);
                         val.Add("Contents", contents);
-                        val.Add("SendTime", DateTime.Now);
+                        val.Add("SendTime", UTCdate.Date);
                         val.Add("SendDate", DateTime.Today);
                         val.Add("SendFrom", email);
                         val.Add("CustemerID", CustemerID);
@@ -462,7 +466,7 @@ namespace JeeWork_Core2021.Classes
                             val.Add("Title", title);
                             val.Add("Email", guiden);
                             val.Add("Contents", contents);
-                            val.Add("LastSend", DateTime.Now);
+                            val.Add("LastSend", UTCdate.Date);
                             val.Add("Lan", 1);
                             val.Add("Error", ex.Message);
                             val.Add("CustemerID", CustemerID);
@@ -493,6 +497,7 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool Send_Synchronized(MailAddressCollection mailTo, string title, MailAddressCollection cc, string contents, string CustemerID, string AttacheFile, bool SaveCannotSend, out string ErrorMessage, MailInfo MInfo, string ConnectionString, INotifier _notifier)
         {
+            GetDateTime UTCdate = new GetDateTime();
             if (mailTo.Count <= 0)
             {
                 ErrorMessage = "Email không hợp lệ";
@@ -567,7 +572,7 @@ namespace JeeWork_Core2021.Classes
                     if (!"".Equals(guikem)) guikem = guikem.Substring(1);
                     val.Add("Cc", guikem);
                     val.Add("Contents", contents);
-                    val.Add("SendTime", DateTime.Now);
+                    val.Add("SendTime", UTCdate.Date);
                     val.Add("SendDate", DateTime.Today);
                     val.Add("SendFrom", email);
                     val.Add("CustemerID", CustemerID);
@@ -582,7 +587,7 @@ namespace JeeWork_Core2021.Classes
                         val.Add("Title", title);
                         val.Add("Email", guiden);
                         val.Add("Contents", contents);
-                        val.Add("LastSend", DateTime.Now);
+                        val.Add("LastSend", UTCdate.Date);
                         val.Add("Lan", 1);
                         val.Add("Error", ex.Message);
                         val.Add("CustemerID", CustemerID);

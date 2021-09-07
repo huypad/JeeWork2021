@@ -19,7 +19,7 @@ export class TimeEstimatesViewComponent implements OnInit {
   submitOut(){
     if(this.times.nativeElement.value){ 
       this.submit.emit(this.times.nativeElement.value)
-      this.time = this.times.nativeElement.value;
+      // this.time = this.times.nativeElement.value;
     }
   }
 

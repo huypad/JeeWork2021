@@ -94,6 +94,38 @@ namespace JeeWork_Core2021.Models
                 }
             }
         }
+        public int id_role
+        {
+            get
+            {
+                switch (key)
+                {
+                    //case "status": return value.ToString() == "2" ? 2 : 3;//1: đang làm, 2: hoàn thành, 3: chờ review
+                    case "deadline": return 10; 
+                    //case "clickup_prioritize": return 8;
+                    case "Tags": return 20;
+                    //case "Attachments": return 10;
+                    case "start_date": return 10;
+                    case "id_group": return 21;
+                    //case "Attachments_result": return 13;
+                    //case "result": return 14;
+                    case "assign": return 4;
+                    case "follower": return 4;
+                    case "deleteassign": return 4;
+                    case "deletefollower": return 4;
+                    case "description": return 9;
+                    case "title": return 7;
+                    //case "subtasks": return 40;
+                    //case "moved": return 41;
+                   // case "dublicate": return 42;
+                    //case "favorites": return 43;
+                    case "status": return 11;
+                    //case "new_field": return 1;
+                    case "estimates": return 19;
+                    default: return 0;
+                }
+            }
+        }
         public string status_type { get; set; }
         public long FieldID { get; set; } // dùng cho new field (id_row của we_fields_project_team)
         public string Value { get; set; } // dùng cho new field (nếu có options thì truyền ID không truyền text)
