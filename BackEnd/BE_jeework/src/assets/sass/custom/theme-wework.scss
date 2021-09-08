@@ -2946,6 +2946,12 @@ $main-color: #16a850; // màu chính
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 }
+.text-n-line {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+}
 
 .text-3-line {
 	overflow: hidden;

@@ -17,6 +17,7 @@ import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/mo
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { LogActivitiesComponent } from '../log-activities/log-activities.component';
 import { ActivitiesService } from '../activities.service';
+import {WeWorkService} from '../../services/wework.services';
 
 @Component({
 	selector: 'kt-list-activities',
@@ -37,6 +38,7 @@ export class ListActivitiesComponent {
 	pageSize: number;
 	pageLength: number;
 	item: any;
+	list_priority: any = [];
 	percentage: any;
 	id_project_team: number = 0;
 	language = 'vi';
@@ -51,12 +53,14 @@ export class ListActivitiesComponent {
 	constructor(public _actServices: ActivitiesService,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
+		private weworkService: WeWorkService,
 		private translate: TranslateService,
 		private activatedRoute: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
 		private tokenStorage: TokenStorage,) {
-	this.language = localStorage.getItem('language');
+		this.language = localStorage.getItem('language');
+		this.list_priority = this.weworkService.list_priority;
 	}
 
 	getActionActivities(value) {
@@ -211,30 +215,22 @@ export class ListActivitiesComponent {
 
 	Viewdetail(item){
 		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+item.object_id }, }]);
-		// this.data = this.datalog;
-		// this.DataID = this.data.id_row;
-		// this.Id_project_team = this.data.id_project_team;
-		// var _item = {
-		// 	id_row : item.object_id,
-		// 	id_project_team : item.id_project_team,
-		// }
-		// const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-		// 	width: '90vw',
-		// 	height: '90vh',
-		// 	data: _item
-		//   });
-	  
-		//   dialogRef.afterClosed().subscribe(result => {
-		// 	if (result != undefined) {
-		// 	  // this.selectedDate.startDate = new Date(result.startDate)
-		// 	  // this.selectedDate.endDate = new Date(result.endDate)
-		// 	}
-		// });
+	}
+
+	getPriority(id){
+		if(+id > 0 && this.list_priority){
+			const prio = this.list_priority.find(x => x.value === +id);
+			if(prio)
+				return prio;
+		}
+		return {
+			name: 'Noset',
+			value: 0,
+			icon: 'far fa-flag',
+		};
 	}
 
 	getHeight() {
-		// if (window.location.href.split("/").find(x => x == "wework"))
-		// 	return (window.innerHeight - 120) + 'px';
 		return (window.innerHeight - 120 - this.tokenStorage.getHeightHeader()) + 'px';
 	}
 }

@@ -4882,7 +4882,7 @@
     box-shadow: 0 0 0 1px #384047, 0 0 0 3px #7b68ee
 }
 
-@supports (--theme-main-color:#7b68ee) {
+@supports (--theme-main-color:#301da0) {
     .dark-theme .cu-project-avatar_selected {
         box-shadow: 0 0 0 1px #384047, 0 0 0 3px var(--theme-main-color)
     }

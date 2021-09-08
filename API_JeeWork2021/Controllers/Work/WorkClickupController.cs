@@ -3498,68 +3498,76 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     postauto.listid = long.Parse(old.Rows[0]["id_project_team"].ToString()); // id project team
                     postauto.departmentid = long.Parse(old.Rows[0]["id_department"].ToString()); // id_department
                     postauto.customerid = loginData.CustomerID;
-                    if (data.id_role > 0)
+
+                    Common comm = new Common(ConnectionString);
+                    bool istaskuser = Common.CheckTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID,data.id_row, loginData, cnn);
+                    if (!istaskuser)
                     {
-                        Common comm = new Common(ConnectionString);
-                        bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn);
-                        if (!rs)
+                        var txterror = "Bạn không có quyền thay đổi nội dung của công việc này";
+                        if (data.id_role > 0)
                         {
-                            var txterror = "";
+                            bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn);
                             switch (data.key)
                             {
                                 //case "status": return value.ToString() == "2" ? 2 : 3;//1: đang làm, 2: hoàn thành, 3: chờ review
                                 case "deadline":
-                                    txterror = "Bạn không có quyền thay đổi hạn chót";
+                                    txterror = "Bạn không có quyền thay đổi hạn chót của công việc này";
                                     break;
                                 //case "clickup_prioritize": return 8;
                                 case "Tags":
-                                    txterror = "Bạn không có quyền thay đổi nhãn";
+                                    txterror = "Bạn không có quyền thay đổi nhãn của công việc này";
                                     break;
                                 //case "Attachments": return 10;
                                 case "start_date":
-                                    txterror = "Bạn không có quyền sửa ngày bắt đầu";
+                                    txterror = "Bạn không có quyền sửa ngày bắt đầu của công việc này";
                                     break;
                                 case "id_group":
-                                    txterror = "Bạn không có quyền sửa nhóm công việc";
+                                    txterror = "Bạn không có quyền sửa nhóm công việc của công việc này";
                                     break;
                                 //case "Attachments_result": return 13;
                                 //case "result": return 14;
                                 case "assign":
-                                    txterror = "Bạn không có quyền sửa người làm";
+                                    txterror = "Bạn không có quyền sửa người làm của công việc này";
                                     break;
                                 case "follower":
-                                    txterror = "Bạn không có quyền sửa người theo dõi";
+                                    txterror = "Bạn không có quyền sửa người theo dõi của công việc này";
                                     break;
                                 case "deleteassign":
-                                    txterror = "Bạn không có quyền xóa người làm";
+                                    txterror = "Bạn không có quyền xóa người làm của công việc này";
                                     break;
                                 case "deletefollower":
-                                    txterror = "Bạn không có quyền xóa người theo dõi";
+                                    txterror = "Bạn không có quyền xóa người theo dõi của công việc này";
                                     break;
                                 case "description":
-                                    txterror = "Bạn không có quyền chỉnh sửa mô tả";
+                                    txterror = "Bạn không có quyền chỉnh sửa mô tả của công việc này";
                                     break;
                                 case "title":
-                                    txterror = "Bạn không có quyền chỉnh sửa tên công việc";
+                                    txterror = "Bạn không có quyền chỉnh sửa tên công việc của công việc này";
                                     break;
                                 //case "subtasks": return 40;
                                 //case "moved": return 41;
                                 // case "dublicate": return 42;
                                 //case "favorites": return 43;
                                 case "status":
-                                    txterror = "Bạn không có quyền thay đổi trạng thái công việc";
+                                    txterror = "Bạn không có quyền thay đổi trạng thái công việc của công việc này";
                                     break;
                                 //case "new_field": return 1;
                                 case "estimates":
-                                    txterror = "Bạn không có quyền thay đổi thời gian làm của công việc";
+                                    txterror = "Bạn không có quyền thay đổi thời gian làm của công việc của công việc này";
                                     break;
                                 default:
-                                    txterror = "Bạn không có quyền thay đổi nội dung của công việc này";
+                                    txterror = "Bạn không có quyền thay đổi nội dung của công việc này của công việc này";
                                     break;
                             }
-                            return JsonResultCommon.Custom(txterror);
+
+                            if (!rs)
+                            { 
+                                return JsonResultCommon.Custom(txterror);
+                            }
                         }
+                        return JsonResultCommon.Custom(txterror);
                     }
+                    
                     //Data datapost = new Data();
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
                         "from we_work " +
@@ -3601,6 +3609,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 if (StatusID != null)
                                 {
                                     val.Add(data.key, StatusID);
+                                    val.Add("end_date", DateTime.Now);
                                     val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
                                     val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                     data.value = StatusID;
@@ -3631,6 +3640,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             val.Add("end_date", DBNull.Value);
                                             if (long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + StatusID + " and isTodo = 1").ToString()) > 0)
                                             {
+                                                val.Add("start_date", DateTime.Now); // start_date isTodo = 1
                                                 val.Add("activated_date", DateTime.Now); // date update isTodo = 1
                                                 val.Add("activated_by", loginData.UserID); // user update isTodo = 1
                                             }
@@ -3651,6 +3661,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         val.Add("end_date", DBNull.Value);
                                         if (isTodo)
                                         {
+                                            val.Add("start_date", DateTime.Now); // start_date isTodo = 1
                                             val.Add("activated_date", DateTime.Now); // date update isTodo = 1
                                             val.Add("activated_by", loginData.UserID); // user update isTodo = 1
                                         }

@@ -241,7 +241,6 @@ namespace JeeWork_Core2021.Classes
             {
                 if (pHeader == null) return null;
                 if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
-
                 IHeaderDictionary _d = pHeader;
                 string bearer_token, username, customdata;
                 bearer_token = _d[HeaderNames.Authorization].ToString().Replace("Bearer ", "");

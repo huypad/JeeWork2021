@@ -1464,6 +1464,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     ds.Tables[0].Columns.Add("tenchucdanh", typeof(string));
                     ds.Tables[0].Columns.Add("mobile", typeof(string));
                     ds.Tables[0].Columns.Add("image", typeof(string));
+                    ds.Tables[0].Columns.Add("ColorStatus_Old", typeof(string));
+                    ds.Tables[0].Columns.Add("ColorStatus_New", typeof(string));
+
                     foreach (DataRow item in ds.Tables[0].Rows)
                     {
                         var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -1527,6 +1530,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     dr["action"] = dr["action"].ToString().Replace("{0}", "");
                             }
 
+                            if (int.Parse(dr["id_action"].ToString()) == 44) // Đối với status trả về thêm Color
+                            {
+                                dr["ColorStatus_Old"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
+                                dr["ColorStatus_New"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
+                            }
+
                             dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         }
@@ -1544,6 +1553,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                             dr["oldvalue"] = DBNull.Value;
                             dr["newvalue"] = DBNull.Value;
 
+                        }
+                        #endregion
+                        #region Load dữ liệu hiển thị gắn thẻ quan trong 
+                        if (dr["id_action"].ToString().Equals("8"))
+                        {
+                            dr["oldvalue"] = ProjectTeamController.getDouutien(dr["oldvalue"].ToString());
+                            dr["newvalue"] = ProjectTeamController.getDouutien(dr["newvalue"].ToString());
                         }
                         #endregion
                         #region Map info account từ JeeAccount 
@@ -1584,6 +1600,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                     view_detail = u["view_detail"],
                                                     log_content = u["log_content"],
                                                     icon = u["icon"],
+                                                    id_action = u["id_action"],
+                                                    ColorStatus_Old = u["ColorStatus_Old"],
+                                                    ColorStatus_New = u["ColorStatus_New"],
                                                     oldvalue = u["oldvalue"],
                                                     newvalue = u["newvalue"],
                                                     CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["CreatedDate"]),

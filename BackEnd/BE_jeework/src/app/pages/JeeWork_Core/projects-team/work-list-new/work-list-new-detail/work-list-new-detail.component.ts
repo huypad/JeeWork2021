@@ -1,44 +1,44 @@
-import {WorkProcessEditComponent} from './../work-process-edit/work-process-edit.component';
-import {QueryFilterComment} from './../../../jee-comment/jee-comment.model';
-import {DanhMucChungService} from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import {QueryParamsModelNew} from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {MenuPhanQuyenServices} from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {SubheaderService} from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
+import { WorkProcessEditComponent } from './../work-process-edit/work-process-edit.component';
+import { QueryFilterComment } from './../../../jee-comment/jee-comment.model';
+import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {StatusDynamicModel} from './../../Model/status-dynamic.model';
-import {StatusDynamicDialogComponent} from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
-import {ProjectsTeamService} from './../../Services/department-and-project.service';
+import { StatusDynamicModel } from './../../Model/status-dynamic.model';
+import { StatusDynamicDialogComponent } from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import {
     AttachmentModel,
     FileUploadModel,
 } from './../../Model/department-and-project.model';
-import {CheckListEditComponent} from './../../../work/check-list-edit/check-list-edit.component';
+import { CheckListEditComponent } from './../../../work/check-list-edit/check-list-edit.component';
 import {
     UpdateByKeyModel,
     ChecklistModel,
     ChecklistItemModel,
 } from './../../../update-by-keys/update-by-keys.model';
-import {MatDialog} from '@angular/material/dialog';
-import {WeWorkService} from './../../../services/wework.services';
-import {AttachmentService} from './../../../services/attachment.service';
-import {UpdateByKeyService} from './../../../update-by-keys/update-by-keys.service';
-import {DatePipe} from '@angular/common';
-import {ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {WorkService} from './../../../work/work.service';
-import {PopoverContentComponent} from 'ngx-smart-popover';
+import { MatDialog } from '@angular/material/dialog';
+import { WeWorkService } from './../../../services/wework.services';
+import { AttachmentService } from './../../../services/attachment.service';
+import { UpdateByKeyService } from './../../../update-by-keys/update-by-keys.service';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { WorkService } from './../../../work/work.service';
+import { PopoverContentComponent } from 'ngx-smart-popover';
 import {
     WorkModel,
     UserInfoModel,
     UpdateWorkModel,
 } from './../../../work/work.model';
-import {BehaviorSubject, ReplaySubject, of, throwError} from 'rxjs';
-import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
-import {DialogData} from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { BehaviorSubject, ReplaySubject, of, throwError } from 'rxjs';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { DialogData } from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     Component,
     OnInit,
@@ -58,11 +58,12 @@ import {
     switchMap,
     map,
 } from 'rxjs/operators';
-import {UpdateByKeysComponent} from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
-import {JeeCommentService} from '../../../jee-comment/jee-comment.service';
-import {CommunicateService} from '../work-list-new-service/communicate.service';
+import { UpdateByKeysComponent } from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
+import { JeeCommentService } from '../../../jee-comment/jee-comment.service';
+import { CommunicateService } from '../work-list-new-service/communicate.service';
 import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
-
+import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
+import { DomSanitizer } from '@angular/platform-browser';
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
@@ -89,7 +90,8 @@ export class WorkListNewDetailComponent implements OnInit {
         private _attservice: AttachmentService,
         public dialogRef: MatDialogRef<WorkListNewDetailComponent>,
         @Inject(MAT_DIALOG_DATA) public datalog: DialogData,
-        private menuServices: MenuPhanQuyenServices
+        private menuServices: MenuPhanQuyenServices,
+        private sanitizer: DomSanitizer
     ) {
         this.list_priority = this.weworkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
@@ -139,10 +141,10 @@ export class WorkListNewDetailComponent implements OnInit {
     AssignChecklist: any = [];
     list_priority: any = [];
     options_assign: any = {};
-    @ViewChild('Assign', {static: true})
+    @ViewChild('Assign', { static: true })
     myPopover_Assign: PopoverContentComponent;
     selected_Assign: any[] = [];
-    @ViewChild('hiddenText_Assign', {static: true}) text_Assign: ElementRef;
+    @ViewChild('hiddenText_Assign', { static: true }) text_Assign: ElementRef;
     _Assign = '';
     list_Assign: any[] = [];
     status_dynamic: any[] = [];
@@ -173,8 +175,9 @@ export class WorkListNewDetailComponent implements OnInit {
     TenFile = '';
     File = '';
     filemodel: any;
-    @ViewChild('csvInput', {static: true}) myInputVariable: ElementRef;
-    @ViewChild('resultInput', {static: true}) result: ElementRef;
+    tinyMCE = {};
+    @ViewChild('csvInput', { static: true }) myInputVariable: ElementRef;
+    @ViewChild('resultInput', { static: true }) result: ElementRef;
 
     list_User: any[] = [];
 
@@ -189,11 +192,12 @@ export class WorkListNewDetailComponent implements OnInit {
 
     ListChild: any = {};
     IsLoading: any = [];
-
+    description_tiny: string;
     /** LOAD DATA */
     ngOnInit() {
         this.workService.currentMessage.subscribe(message => {
         });
+
         this.data = this.datalog;
         if (this.data && this.data.notback) {
             this.isback = false;
@@ -211,6 +215,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 }
             }
         );
+        this.tinyMCE = tinyMCE;
         this.LoadData();
         this.LoadChecklist();
         this.LoadObjectID();
@@ -245,16 +250,14 @@ export class WorkListNewDetailComponent implements OnInit {
     KiemTraThayDoiCongViec(item,key){
         if(this.IsAdmin()) return true;
         else if(item.CreatedBy == this.UserID) return true;
-        else if(item.CreatedBy == this.UserID) return true;
         else {
-            if(item.User){
-                const index = item.User.findIndex(x=>x.id_nv == this.UserID);
-                if(index >= 0) return true;
+            if (item.User) {
+                const index = item.User.findIndex(x => x.id_nv == this.UserID);
+                if (index >= 0) return true;
             }
         };
         var txtError = "";
-        switch (key)
-        {
+        switch (key) {
             case 'assign':
                 txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
                 break;
@@ -281,15 +284,15 @@ export class WorkListNewDetailComponent implements OnInit {
         return false;
 
     }
-    IsCheck(){
+    IsCheck() {
         var item = this.item;
-        if(this.IsAdmin()) return true;
-        else if(item.CreatedBy == this.UserID) return true;
-        else if(item.CreatedBy == this.UserID) return true;
+        if (this.IsAdmin()) return true;
+        else if (item.CreatedBy == this.UserID) return true;
+        else if (item.CreatedBy == this.UserID) return true;
         else {
-            if(item.User){
-                const index = item.User.findIndex(x=>x.id_nv == this.UserID);
-                if(index >= 0) return true;
+            if (item.User) {
+                const index = item.User.findIndex(x => x.id_nv == this.UserID);
+                if (index >= 0) return true;
             }
         };
         return false;
@@ -301,17 +304,17 @@ export class WorkListNewDetailComponent implements OnInit {
         // this.LoadData();
         // this.LoadChecklist();
         const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-          width: "90vw",
-          height: "85vh",
-          data: item,
+            width: "90vw",
+            height: "85vh",
+            data: item,
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-          this.LoadData();
-          if (result != undefined) {
-            // this.selectedDate.startDate = new Date(result.startDate)
-            // this.selectedDate.endDate = new Date(result.endDate)
-          }
+            this.LoadData();
+            if (result != undefined) {
+                // this.selectedDate.startDate = new Date(result.startDate)
+                // this.selectedDate.endDate = new Date(result.endDate)
+            }
         });
     }
 
@@ -320,7 +323,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.projectsTeamService.LogDetailCU(this.DataID).subscribe((res) => {
             if (res && res.status === 1) {
                 this.LogDetail = res.data;
-				this.LogDetail = this.LogDetail.filter(x=>x.id_action != 16).sort();
+                this.LogDetail = this.LogDetail.filter(x => x.id_action != 16).sort();
                 this.resetComment();
                 this.changeDetectorRefs.detectChanges();
             } else {
@@ -330,26 +333,26 @@ export class WorkListNewDetailComponent implements OnInit {
     }
     View_Log_Description() {
         var ID_log = this.item.id_row;
-		let saveMessageTranslateParam = '';
-		saveMessageTranslateParam += ID_log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
-		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-		const _messageType = this.item.id_row > 0 ? MessageType.Update : MessageType.Create;
-		const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log } });
-		dialogRef.afterClosed().subscribe(res => {
-			if (!res) {
-				// this.ngOnInit();
-			}
-			else {
-				this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
-				// this.ngOnInit();
-			}
-		});
-	}
+        let saveMessageTranslateParam = '';
+        saveMessageTranslateParam += ID_log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
+        const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+        const _messageType = this.item.id_row > 0 ? MessageType.Update : MessageType.Create;
+        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log } });
+        dialogRef.afterClosed().subscribe(res => {
+            if (!res) {
+                // this.ngOnInit();
+            }
+            else {
+                this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
+                // this.ngOnInit();
+            }
+        });
+    }
     LoadData() {
         this.mark_tag();
         this.LoadLog();
 
-        if(this.loading)
+        if (this.loading)
             this.layoutUtilsService.showWaitingDiv();
 
         this.weworkService.ListStatusDynamic(this.Id_project_team)
@@ -377,18 +380,19 @@ export class WorkListNewDetailComponent implements OnInit {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
                 this.item = res.data;
+                this.description_tiny = this.item.description;
                 this.changeDetectorRefs.detectChanges();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
-        this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
-            this.changeDetectorRefs.detectChanges();
-            if (res && res.status === 1) {
-                this.listType = res.data;
-                this.changeDetectorRefs.detectChanges();
-            }
-        });
+        // this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
+        //     this.changeDetectorRefs.detectChanges();
+        //     if (res && res.status === 1) {
+        //         this.listType = res.data;
+        //         this.changeDetectorRefs.detectChanges();
+        //     }
+        // });
 
         // Load data work group
         this.weworkService.lite_workgroup(this.Id_project_team)
@@ -586,7 +590,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     NextStatus(type) {
-        if(!this.KiemTraThayDoiCongViec(this.item,'status')){
+        if (!this.KiemTraThayDoiCongViec(this.item, 'status')) {
             return;
         }
         const item = new UpdateWorkModel();
@@ -977,7 +981,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateByKey(id_log_action: string, key: string, IsQuick: boolean) {
-        if(!this.KiemTraThayDoiCongViec(this.item,id_log_action == '0'?'checklist':key)){
+        if (!this.KiemTraThayDoiCongViec(this.item, id_log_action == '0' ? 'checklist' : key)) {
             return;
         }
         this.Get_ValueByKey(id_log_action);
@@ -1059,7 +1063,7 @@ export class WorkListNewDetailComponent implements OnInit {
         }
         if (ele.value.toString().trim() != this.item.title.toString().trim()) {
 
-            if(!this.KiemTraThayDoiCongViec(this.item,'title')){
+            if (!this.KiemTraThayDoiCongViec(this.item, 'title')) {
                 ele.value = this.item.title;
                 return;
             }
@@ -1068,6 +1072,20 @@ export class WorkListNewDetailComponent implements OnInit {
             this.UpdateByKeyNew(this.item, 'title', this.item.title);
         }
     }
+
+    getAttrFromString(str, node, attr) {
+        var regex = new RegExp('<' + node + ' .*?' + attr + '="(.*?)"', "gi"), result, res = [];
+        while ((result = regex.exec(str))) {
+            res.push(result[1]);
+        }
+        return res;
+    }
+
+    // arrayOfImageSrcs = getAttrFromString(
+    //     '<img src="http://placekitten.com/350/300"><img src="http://placekitten.com/350/300">',
+    //     'img',
+    //     'src'
+    // );
 
     UpdateDescription() {
         // description
@@ -1086,7 +1104,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateByKeyNew(task, key, value) {
-        if(!this.KiemTraThayDoiCongViec(task,key)){
+        if (!this.KiemTraThayDoiCongViec(task, key)) {
             return;
         }
         const item = new UpdateWorkModel();
@@ -1096,7 +1114,7 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.assign && task.assign.id_nv > 0) {
             item.IsStaff = true;
         }
-        if(this.loading){
+        if (this.loading) {
             // this.layoutUtilsService.showWaitingDiv();
         }
         this.projectsTeamService._UpdateByKey(item).pipe(
@@ -1135,7 +1153,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(UpdateByKeysComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1171,7 +1189,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
-            data: {_item, IsCheckList: true},
+            data: { _item, IsCheckList: true },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1252,7 +1270,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
-            data: {_item, IsCheckList: false},
+            data: { _item, IsCheckList: false },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1631,7 +1649,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     RemoveTag(tag) {
-        if(!this.KiemTraThayDoiCongViec(this.item,'tags')){
+        if (!this.KiemTraThayDoiCongViec(this.item, 'tags')) {
             return;
         }
         const model = new UpdateWorkModel();
@@ -1664,7 +1682,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const dialogRef = this.dialog.open(WorkProcessEditComponent, {
             // width: "40vw",
             // minHeight: "200px",
-            data: {Process: this.item.Process, id_project_team: this.Id_project_team},
+            data: { Process: this.item.Process, id_project_team: this.Id_project_team },
         });
         dialogRef.afterClosed().subscribe((res) => {
             this.LoadData();
@@ -1804,11 +1822,11 @@ export class WorkListNewDetailComponent implements OnInit {
         }
     }
 
-    ChangeValue(value:any){
+    ChangeValue(value: any) {
         value = false;
         setTimeout((x) => {
             value = true;
-        },500);
+        }, 500);
     }
 
     CheckedChecklist(items) {
@@ -1879,7 +1897,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 return;
             }
             this.projectsTeamService.DeleteTask(this.item.id_row).pipe(
-                tap(() => {if(this.loading) this.layoutUtilsService.showWaitingDiv()}),
+                tap(() => { if (this.loading) this.layoutUtilsService.showWaitingDiv() }),
                 map((res) => {
                     if (res && res.status == 1) {
                         this.dialogRef.close();

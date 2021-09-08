@@ -1,7 +1,8 @@
 <kt-portlet [options]="{hideHeader: true}" class="h-100">
     <kt-portlet-header [sticky]="true" title="Chi tiết công việc" [class]="'kt-portlet__head--lg'">
         <ng-container ktPortletTools>
-            <button mat-raised-button [ngClass]="{'d-none': !isback}" matTooltip="{{ 'GeneralKey.trolai' | translate }}" type="button" (click)="this.dialogRef.close();">
+            <button mat-raised-button [ngClass]="{'d-none': !isback}" matTooltip="{{ 'GeneralKey.trolai' | translate }}"
+                type="button" (click)="this.dialogRef.close();">
                 <span translate="GeneralKey.trolai"></span>
             </button>
         </ng-container>
@@ -162,7 +163,7 @@
                         </mat-menu>
                     </div>
                     <div class="cu-task-row-assignee ml-4 border-left url">
-                        <strong>Nhóm công việc:</strong>
+                        <strong>Nhóm công việc:</strong>&nbsp;
                         <app-tasks-group [ListGroup]="ListGroup" [value]="item.id_group"
                             (valueChange)="UpdateGroup($event)" [role]="CheckRoles(21)">
                         </app-tasks-group>
@@ -257,7 +258,7 @@
                                     <span translate="filter.ngaybatdau"></span>
                                 </div>
                                 <app-task-datetime class="position-relative"
-                                    (valueChange)="updateDate($event,'start_date')" [fieldname]="'deadline'"
+                                    (valueChange)="updateDate($event,'start_date')" [fieldname]="'start_date'"
                                     [showall]="false" [value]="item.start_date" [role]="CheckRoles(10)">
                                 </app-task-datetime>
                             </div>
@@ -293,7 +294,8 @@
                                         <div class="kt-form__group" style="padding: 15px; line-height: 25px;">
 
                                             <div class="row" style="margin-bottom: 10px!important;">
-                                                <div class="border-tag url" *ngIf="CheckRoles(20)  && this.IsCheck();else templatetags"
+                                                <div class="border-tag url"
+                                                    *ngIf="CheckRoles(20)  && this.IsCheck();else templatetags"
                                                     [matMenuTriggerFor]="tag" (menuOpened)="loadTags = true"
                                                     (menuClosed)="loadTags = false"
                                                     matTooltip="{{ 'work.chinhsuatag' | translate}}">
@@ -307,7 +309,8 @@
 
                                                 <ng-container *ngFor="let tag of item.Tags">
                                                     <kt-cu-tag [node]="item" [tag]="tag" [detail]="true"
-                                                        [role]="CheckRoles(20) && this.IsCheck()" (RemoveTag)="RemoveTag(tag)">
+                                                        [role]="CheckRoles(20) && this.IsCheck()"
+                                                        (RemoveTag)="RemoveTag(tag)">
                                                     </kt-cu-tag>
                                                 </ng-container>
 
@@ -336,14 +339,16 @@
                                                     id="txtdescription" [value]="item.description"
                                                     [disabled]="!CheckRoles(9)" (focusout)="UpdateDescription()"
                                                     class="form-control" rows="10"></textarea>
-                                                    <div class="action float-right" style="flex-grow: 1; text-align: right;">
-                                                        <button class="btn -hover text-muted" (click)="View_Log_Description();">
-                                                            <i class="fas fa-history pd-0"
-                                                                style="font-size: 16px; color: rgb(23, 75, 245);"></i>
-                                                        </button>
-                                                    </div>
+                                                <div class="action float-right"
+                                                    style="flex-grow: 1; text-align: right;">
+                                                    <button class="btn -hover text-muted"
+                                                        (click)="View_Log_Description();">
+                                                        <i class="fas fa-history pd-0"
+                                                            style="font-size: 16px; color: rgb(23, 75, 245);"></i>
+                                                    </button>
+                                                </div>
                                             </div>
-                                           
+
                                             <div class="row" style="margin-bottom: 20px!important;"
                                                 *ngIf="!item.id_parent">
                                                 <div class="task-todo w-100">
@@ -360,9 +365,8 @@
                                                     </div>
                                                     <div class="task-todo__subtitle-row">
                                                         <div class="task-todo__subtitle">
-                                                            {{item.Childs ? item.Childs.length : '0'}} {{'work.subtask'
-                                                            |
-                                                            translate}}
+                                                            {{item.Childs ? item.Childs.length : '0'}}
+                                                            {{'work.subtask'|translate}}
                                                         </div>
                                                     </div>
                                                     <div class="list-sub-task task-todo__section">
@@ -535,7 +539,8 @@
                                                                         class="cu-todo-list__container-items cu-todo-list__container-items_middle">
                                                                         <div class="task-todo-item__name subtask">
                                                                             <span class="task-todo-item__name-text">
-                                                                                <span class="task-todo-item__name-text-inner url"
+                                                                                <span
+                                                                                    class="task-todo-item__name-text-inner url"
                                                                                     (click)="LoadChild(child)">
                                                                                     {{child.title}}
                                                                                 </span>
@@ -993,7 +998,8 @@
                                     </ng-container>
                                     <ng-template #comment>
                                         <ng-container *ngIf="LoadComment(log.newvalue)">
-                                            <jeecomment-post-comment-content class="w-100" (changeValue)="LoadLog();this.SendMessage(true);"
+                                            <jeecomment-post-comment-content class="w-100"
+                                                (changeValue)="LoadLog();this.SendMessage(true);"
                                                 [isDeteachChange$]="isDeteachChange$" [inputLstObjectID]="lstObjectID"
                                                 [comment]="LoadComment(log.newvalue)">
                                             </jeecomment-post-comment-content>
@@ -1006,8 +1012,8 @@
                     <div class="task-column__footer second cu-hidden-print ng-tns-c150-53 ng-star-inserted">
                         <div class="task-comment pd-0 border-top">
                             <ng-container *ngIf="this.objectID">
-                                <jeecomment-enter-comment-content (valuecomment)="LoadLog();this.SendMessage(true);" class="w-100"
-                                    [objectID]="this.objectID"></jeecomment-enter-comment-content>
+                                <jeecomment-enter-comment-content (valuecomment)="LoadLog();this.SendMessage(true);"
+                                    class="w-100" [objectID]="this.objectID"></jeecomment-enter-comment-content>
                             </ng-container>
 
                         </div>

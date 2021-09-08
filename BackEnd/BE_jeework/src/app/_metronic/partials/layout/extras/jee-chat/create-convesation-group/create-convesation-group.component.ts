@@ -160,7 +160,6 @@ export class CreateConvesationGroupComponent implements OnInit {
     return value.toLowerCase().replace(/\s/g, '');
   }
   private _filterStates(value: string): any[] {
-    // debugger
     //	const filterValue = value.toLowerCase();
     const filterValue = this._normalizeValue(value);
     return this.itemuser.filter(state => this._normalizeValue(state.Fullname).includes(filterValue));

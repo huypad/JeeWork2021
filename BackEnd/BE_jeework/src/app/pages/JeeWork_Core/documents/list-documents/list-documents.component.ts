@@ -13,9 +13,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { DocumentsService } from "./../documents.service";
 import { BehaviorSubject } from "rxjs";
 import { Component, OnInit, ChangeDetectorRef, ViewChild } from "@angular/core";
-import { DocumentDataSource } from "../Model/data-source/document.datasource";
-import { merge } from 'lodash';
-import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import {ProjectsTeamService} from '../../projects-team/Services/department-and-project.service';
 
 @Component({
 	selector: "kt-list-documents",
@@ -36,6 +34,7 @@ export class ListDocumentsComponent implements OnInit {
 	documentResult: any = [];
 	constructor(
 		private DocumentsService: DocumentsService,
+		private projectsTeamService: ProjectsTeamService,
 		private activatedRoute: ActivatedRoute,
 		private router: Router,
 		private translate: TranslateService,
@@ -98,15 +97,8 @@ export class ListDocumentsComponent implements OnInit {
 			//Nếu có file
 			var size = evt.target.files[0].size;
 			if (size / 1024 / 1024 > 3) {
-				this.LayoutUtilsService.showActionNotification(
-					"File upload không được vượt quá 3 MB",
-					MessageType.Read,
-					9999999999,
-					true,
-					false,
-					3000,
-					"top",
-					0
+				this.LayoutUtilsService.showError(
+					"File upload không được vượt quá 3 MB"
 				);
 				return;
 			}
@@ -131,29 +123,17 @@ export class ListDocumentsComponent implements OnInit {
 				this._attservice.Upload_attachment(_model).subscribe((res) => {
 					if (res && res.status === 1) {
 						this.LoadData();
+						this.LoadParent(true);
 						const _messageType = this.translate.instant(
 							"GeneralKey.capnhatthanhcong"
 						);
-						this.LayoutUtilsService.showActionNotification(
-							_messageType,
-							MessageType.Update,
-							4000,
-							true,
-							false
+						this.LayoutUtilsService.showInfo(
+							_messageType
 						)
 							.afterDismissed()
 							.subscribe((tt) => { });
 					} else {
-						this.LayoutUtilsService.showActionNotification(
-							res.error.message,
-							MessageType.Read,
-							9999999999,
-							true,
-							false,
-							3000,
-							"top",
-							0
-						);
+						this.LayoutUtilsService.showError( res.error.message );
 					}
 					this.changeDetectorRefs.detectChanges();
 				});
@@ -188,25 +168,15 @@ export class ListDocumentsComponent implements OnInit {
 			this._attservice.delete_attachment(val).subscribe((res) => {
 				this.LayoutUtilsService.OffWaitingDiv();
 				if (res && res.status === 1) {
-					this.ngOnInit();
+					this.LoadData();
+					this.LoadParent(true);
 					this.changeDetectorRefs.detectChanges();
-					this.LayoutUtilsService.showActionNotification(
-						_deleteMessage,
-						MessageType.Delete,
-						4000,
-						true,
-						false
+					this.LayoutUtilsService.showInfo(
+						_deleteMessage
 					);
 				} else {
-					this.LayoutUtilsService.showActionNotification(
-						res.error.message,
-						MessageType.Read,
-						999999999,
-						true,
-						false,
-						3000,
-						"top",
-						0
+					this.LayoutUtilsService.showError(
+						res.error.message
 					);
 				}
 			});
@@ -219,5 +189,9 @@ export class ListDocumentsComponent implements OnInit {
 
 	preview(link) {
 		this.LayoutUtilsService.ViewDoc(link);
+	}
+
+	LoadParent(value): void {
+		this.projectsTeamService.changeMessage(value);
 	}
 }

@@ -1142,6 +1142,7 @@ export const locale = {
             Normal: 'Bình thường',
             Low: 'Thấp',
             Clear: 'Xóa',
+            Noset: 'Không xét',
         },
         viewsetting: {
             title: 'Cài đặt giao diện',

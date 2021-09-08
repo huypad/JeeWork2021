@@ -130,7 +130,6 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 */
 	getItemCssClasses(item) {
 		let classes = 'kt-menu__item';
-		debugger
 		if (objectPath.get(item, 'submenu')) {
 			classes += ' kt-menu__item--submenu';
 		}
@@ -170,7 +169,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 */
 	getItemAttrSubmenuToggle(item) {
 		let toggle = 'hover';
-		debugger
+		
 		if (objectPath.get(item, 'toggle') === 'click') {
 			toggle = 'click';
 		} else if (objectPath.get(item, 'submenu.type') === 'tabs') {
@@ -188,7 +187,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 */
 	getItemMenuSubmenuClass(item) {
 		let classes = '';
-		debugger
+		
 		const alignment = objectPath.get(item, 'alignment') || 'right';
 		if (alignment) {
 			classes += ' kt-menu__submenu--' + alignment;
@@ -218,7 +217,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 * @param item: any
 	 */
 	isMenuItemIsActive(item): boolean {
-		debugger
+		
 		if (item.submenu) {
 			return this.isMenuRootItemIsActive(item);
 		}
@@ -235,7 +234,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 	 * @param item: any
 	 */
 	isMenuRootItemIsActive(item): boolean {
-		debugger
+		
 		if (item.submenu.items) {
 			for (const subItem of item.submenu.items) {
 				if (this.isMenuItemIsActive(subItem)) {
@@ -277,7 +276,7 @@ export class MenuHorizontalComponent implements OnInit, AfterViewInit {
 
 	currentUrl: string;
 	isMenuItemActive(path) {
-		debugger
+		
 		if (!this.currentUrl || !path) {
 			return false;
 		}

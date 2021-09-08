@@ -194,7 +194,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
   }
   LoadMenu() {
     this.menuAsideService.loadMenu();
-    debugger
   }
 
   private getLogo() {
@@ -266,7 +265,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
    * @param item: any
    */
   isMenuItemIsActive(item): boolean {
-    debugger
     if (item.submenu) {
       return this.isMenuRootItemIsActive(item);
     }
@@ -284,7 +282,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
    */
   isMenuRootItemIsActive(item): boolean {
     let result = false;
-    debugger
     for (const subItem of item.submenu) {
       result = this.isMenuItemIsActive(subItem);
       if (result) {

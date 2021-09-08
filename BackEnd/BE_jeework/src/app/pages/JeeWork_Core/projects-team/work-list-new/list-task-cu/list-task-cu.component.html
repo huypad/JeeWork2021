@@ -250,10 +250,7 @@
                                                                         <p style="font-size: 11px;"
                                                                             class="mg-0 text-muted"
                                                                             *ngIf="tasklocation">
-                                                                            <!--                                                                            {{getTasklocation(node.id_project_team)}}-->
-                                                                            {{
-                                                                            node.department?node.department:getTasklocation(node.id_project_team)
-                                                                            }}
+                                                                            {{ node.department?node.department:getTasklocation(node.id_project_team) }}
                                                                         </p>
                                                                         <span
                                                                             class=" cu-task-row-main__link-text-inner position-relative  url">
@@ -367,8 +364,7 @@
                                                         <ng-template #nosetdatetime>
                                                             <ng-container *ngIf="item.type == 'code';else noestcode">
                                                                 <span class="hide-more-text item-field">
-                                                                    {{node[item.fieldname] ? '#' + node[item.fieldname]
-                                                                    : ''}}
+                                                                    {{node[item.fieldname] ? '#' + node[item.fieldname] : ''}}
                                                                 </span>
                                                             </ng-container>
 
@@ -391,8 +387,7 @@
                                                                             <div class="text-white text-uppercase cu-task-row-status1"
                                                                                 matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
                                                                                 <span
-                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,
-                                                                                    node[item.fieldname])}}</span>
+                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team, node[item.fieldname])}}</span>
 
                                                                             </div>
                                                                         </div>
@@ -403,8 +398,7 @@
                                                                             <div class="text-white text-uppercase cu-task-row-status1"
                                                                                 matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
                                                                                 <span
-                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,
-                                                                                    node[item.fieldname])}}</span>
+                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team, node[item.fieldname])}}</span>
 
                                                                             </div>
                                                                         </div>
@@ -570,37 +564,16 @@
                                                                                 *ngFor="let prio of list_priority"
                                                                                 (click)="updatePriority(node,item.fieldname,prio.value)">
                                                                                 <i class="{{prio.icon}} pd-r-10"></i>
-                                                                                {{ 'priority.' + prio.name |
-                                                                                translate }}
+                                                                                {{ 'priority.' + prio.name |translate }}
                                                                             </button>
                                                                         </mat-menu>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'comments'">
                                                                         <div class="item-field hide-more-text">
-                                                                            <app-task-comment (submit)="this.LoadData()"
+                                                                            <app-task-comment (submit)="this.LoadSampleList()"
                                                                                 [id_row]="node.id_row"
                                                                                 [value]="node[item.fieldname]">
                                                                             </app-task-comment>
-
-                                                                            <!-- <span (menuOpened)="node.showcomment = true"
-                                                                                (menuClosed)="this.LoadData();node.showcomment = false"
-                                                                                [matMenuTriggerFor]="commentsmenu">
-                                                                                {{node[item.fieldname]>0?node[item.fieldname]:''}}
-                                                                                <i class="far fa-comment-dots"></i>
-                                                                            </span>
-                                                                            <mat-menu #commentsmenu="matMenu">
-                                                                                <div (click)="$event.stopPropagation()"
-                                                                                    style="max-height:600px;min-width: 500px;min-height: 300px;">
-                                                                                    <div *ngIf="node.id_row && node.showcomment"
-                                                                                        class="card card-custom">
-                                                                                        <app-jee-comment
-                                                                                            [showonpopup]="true"
-                                                                                            [showCommentDefault]="true"
-                                                                                            [componentName]="getComponentName(node.id_row)">
-                                                                                        </app-jee-comment>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </mat-menu> -->
 
                                                                         </div>
                                                                     </ng-container>
@@ -646,16 +619,14 @@
                                                                         *ngIf="CheckRoles(7,node.id_project_team)">
                                                                         <i class="fas fa-pencil-alt"></i>&nbsp;
                                                                         <span class="icon-custom -hover"
-                                                                            style="font-size: 9pt"> {{ 'work.renametask'
-                                                                            | translate }} </span>
+                                                                            style="font-size: 9pt"> {{ 'work.renametask'| translate }} </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
                                                                         (click)="AddnewTask(node.id_row);node.isExpanded=true"
                                                                         *ngIf="CheckRoles(1,node.id_project_team) && !node.id_parent">
                                                                         <i class="fas fa-plus"></i>&nbsp;
                                                                         <span class="icon-custom -hover"
-                                                                            style="font-size: 9pt"> {{ 'work.addsubtask'
-                                                                            | translate }}
+                                                                            style="font-size: 9pt"> {{ 'work.addsubtask'| translate }}
                                                                         </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
@@ -663,8 +634,7 @@
                                                                         *ngIf="CheckRoles(1,node.id_project_team) && node.id_parent">
                                                                         <i class="fas fa-exchange-alt"></i>&nbsp;
                                                                         <span class="icon-custom -hover"
-                                                                            style="font-size: 9pt"> {{
-                                                                            'work.converttotask' | translate }}
+                                                                            style="font-size: 9pt"> {{'work.converttotask' | translate }}
                                                                         </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
@@ -738,8 +708,7 @@
                                                         style="padding-bottom: 3px;">
                                                         <span class="cu-dropdown-head text-muted -hover"
                                                             (click)="AddnewTask(node.id_row);logItem(node)">
-                                                            <i class="fas fa-plus"></i> {{ 'work.addsubtask' | translate
-                                                            }}
+                                                            <i class="fas fa-plus"></i> {{ 'work.addsubtask' | translate}}
                                                         </span>
                                                     </div>
                                                     <ng-container *ngIf="addNodeitem==node.id_row">
@@ -764,8 +733,7 @@
                                 </ng-template>
 
                                 <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="lstcongviec.data"
-                                    [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
-                                    (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
+                                    [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds" [cdkDropListSortingDisabled]="true">
 
                                     <div class="cu-task-row row"
                                         *ngFor="let node of lstcongviec.data;trackBy: trackByFn">

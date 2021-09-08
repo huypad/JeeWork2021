@@ -1,82 +1,155 @@
 <kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
-	<kt-portlet-header class="activities" [sticky]="true" style="height: 60px;" [class]="'kt-portlet__head--lg'">
-		<ng-container ktPortletTitle>
-			<div class="kt-form__filtration">
-				<h4>
-					<i class="far fa-file-alt text-dark" style="padding-right: 5px;"></i>
-					<b class="url text-dark">{{ 'projects.hoatdong' | translate }}</b>
-				</h4>
-			</div>
-		</ng-container>
-		<ng-container ktPortletTools>
-			<div class="search-box" style="margin-right:20px">
-				<div class="search">
-					<div class="input">
+    <kt-portlet-header class="activities" [sticky]="true" style="height: 60px;" [class]="'kt-portlet__head--lg'">
+        <ng-container ktPortletTitle>
+            <div class="kt-form__filtration">
+                <h4>
+                    <i class="far fa-file-alt text-dark" style="padding-right: 5px;"></i>
+                    <b class="url text-dark">{{ 'projects.hoatdong' | translate }}</b>
+                </h4>
+            </div>
+        </ng-container>
+        <ng-container ktPortletTools>
+            <div class="search-box" style="margin-right:20px">
+                <div class="search">
+                    <div class="input">
 						<span class="las la-search url"
-							style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
-						<input type="text" (keyup.enter)="applyFilter($event.target.value)"
-							placeholder="{{ 'filter.filterhoatdong' | translate }}" style="overflow: hidden;" #keyword>
-					</div>
-				</div>
-			</div>
-		</ng-container>
-	</kt-portlet-header>
-	<kt-portlet-body class="bg-hoatdong pd-0" [ngStyle]="{'height': getHeight()}">
-		<div class="workflow-hoatdong">
-			<div class="row hoatdong-body">
-				<div class="hoatdong-body-1" *ngFor="let item of ListData">
-					<div class="hoatdong-header">
-						<div>
-							<mat-icon class="icon-header">check_circle</mat-icon>&nbsp;<span style="color: #aaa">
+                              style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
+                        <input type="text" (keyup.enter)="applyFilter($event.target.value)"
+                               placeholder="{{ 'filter.filterhoatdong' | translate }}" style="overflow: hidden;"
+                               #keyword>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </kt-portlet-header>
+    <kt-portlet-body class="bg-hoatdong pd-0" [ngStyle]="{'height': getHeight()}">
+        <div class="workflow-hoatdong">
+            <div class="row hoatdong-body">
+                <div class="hoatdong-body-1" *ngFor="let item of ListData">
+                    <div class="hoatdong-header">
+                        <div>
+                            <mat-icon class="icon-header">check_circle</mat-icon>&nbsp;<span style="color: #aaa">
 								{{ 'filter.congviectrong' | translate }}
 							</span>&nbsp;
-							<a [routerLink]="['/project',item.id_project_team]">
-								<span class="sub-title" style="color: rgb(253, 169, 13);">{{item.project_team}}</span>
-							</a>
-						</div>
-						<div>
-							<a class="title url" (click)="Viewdetail(item)">
-								{{ 'work.tencongviec' | translate }}:
-								<span>{{item.title}}</span>
-							</a>
-						</div>
-						<!-- <div>
-							<span style="font-size: 14px; color: #aaa;">
-								[{{item.project_team}}] - <span translate="workprocess.taoboi"></span>
-								{{item.Activities[0].NguoiTao.hoten}}
-							</span>
-						</div> -->
-					</div>
-					<div *ngFor="let active of item.Activities">
-						<div class="row">
-							<div class="col-md-12" style="display: flex;">
-								<div style="width: 100px;">
-									<img src="{{active.icon}}" width="32px" height="32px" class="icon"
-										style="border-radius: 0;">
-								</div>
-								<div style="flex-grow: 1 !important;">
-									<a>
-										<span
-											style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
-										- <span
-											style="cursor: pointer; font-size:12pt; color: black;">{{getActionActivities(active)}}</span>&nbsp;
-										<ng-container *ngIf="active.oldvalue">
-											<span
-												style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
-										</ng-container>
-										<ng-container *ngIf="active.newvalue">
-											<span
-												style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
-										</ng-container>
-										<span style="font-size: 14px; color: #aaa;">{{active.CreatedDate}}</span>
-									</a>
-									<br>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</kt-portlet-body>
+                            <a [routerLink]="['/project',item.id_project_team]">
+                                <span class="sub-title" style="color: rgb(253, 169, 13);">{{item.project_team}}</span>
+                            </a>
+                        </div>
+                        <div>
+                            <a class="title url" (click)="Viewdetail(item)">
+                                {{ 'work.tencongviec' | translate }}:
+                                <span>{{item.title}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div *ngFor="let active of item.Activities">
+                        <div class="row mb-2">
+                            <div class="col-md-12" style="display: flex;">
+                                <div style="width: 100px;">
+                                    <!--									<img src="{{active.icon}}" width="32px" height="32px" class="icon"-->
+                                    <!--										style="border-radius: 0;">-->
+                                    <kt-avatar-user class="float-right mr-2"
+                                                    [image]="active.NguoiTao.image" size="25"
+                                                    [name]="active.NguoiTao.hoten">
+                                    </kt-avatar-user>
+                                </div>
+                                <div style="flex: 1;word-break: break-all;" class="{{ active.id_action != 16?'text-n-line':active.showmore?'text-n-line mr-5':'hide-more-text mr-5' }}">
+                                    <ng-container [ngSwitch]="active.id_action">
+                                        <ng-container *ngSwitchCase="44">
+                                            <a>
+                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                <span class="cu-notification-item__text"
+                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                <ng-container *ngIf="active.oldvalue">
+                                                    <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
+                                                        <div class="status status_block"
+                                                             [ngStyle]="{'backgroundColor':active.ColorStatus_Old}"
+                                                        > {{active.oldvalue}}
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                                <i class="fa fa-long-arrow-alt-right"></i>
+                                                <ng-container *ngIf="active.newvalue">
+                                                    <div class="cu-notification-item__status d-inline">
+                                                        <div class="status status_block"
+                                                             [ngStyle]="{'backgroundColor':active.ColorStatus_New}"
+                                                        > {{active.newvalue}}
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>
+                                            </a>
+                                        </ng-container>
+                                        <ng-container *ngSwitchCase="16">
+                                            <a>
+                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                <span class="cu-notification-item__text"
+                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+
+                                                <ng-container *ngIf="active.newvalue">
+                                                    <span style="font-size: 14px; color: black;background-color: #28a7455e;">{{active.newvalue}}</span>&nbsp;-
+                                                </ng-container>
+
+                                                <ng-container *ngIf="active.oldvalue">
+                                                    <span style="font-size: 14px; color: black;background-color: #d6081f6b;">{{active.oldvalue}}</span>&nbsp;-
+                                                </ng-container>
+                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>
+                                            </a>
+<!--                                            <button mat-fab color="warn" (click)="active.showmore = !active.showmore" style=" position: absolute;top: 0; right: -5px;" >-->
+<!--                                                <mat-icon> {{!active.showmore?'keyboard_arrow_left':'keyboard_arrow_down'}}</mat-icon>-->
+<!--                                            </button>  -->
+                                            <button class="btn btn-sm url" (click)="active.showmore = !active.showmore"  style="     position: absolute;
+                                                    top: -12px;
+                                                    right: -10px;
+                                                    font-size: 25px!important;">
+                                                <mat-icon class="mat-icon-rtl-mirror"  > {{ active.showmore ? 'expand_more' : 'chevron_right'}} </mat-icon>
+                                            </button>
+                                        </ng-container>
+                                        <ng-container *ngSwitchCase="8">
+                                            <a>
+                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                <span class="cu-notification-item__text"
+                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                <ng-container *ngIf="active.oldvalue">
+                                                    <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
+                                                        <i class="{{getPriority(active.oldvalue).icon}}"></i>
+                                                        &nbsp;
+                                                        {{ 'priority.' + getPriority(active.oldvalue).name | translate }}
+                                                    </div>
+                                                </ng-container>
+                                                <i class="fa fa-long-arrow-alt-right"></i>
+                                                <ng-container *ngIf="active.newvalue">
+                                                    <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
+                                                        <i class="{{getPriority(active.newvalue).icon}}"></i>
+                                                        &nbsp;
+                                                        {{ 'priority.' + getPriority(active.newvalue).name | translate }}
+                                                    </div>
+                                                </ng-container>
+                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>
+                                            </a>
+                                        </ng-container>
+                                        <ng-container *ngSwitchDefault>
+                                            <a>
+                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                <span class="cu-notification-item__text"
+                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                <ng-container *ngIf="active.oldvalue">
+                                                    <span style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
+                                                </ng-container>
+                                                <ng-container *ngIf="active.newvalue">
+                                                    <span style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
+                                                </ng-container>
+                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>
+                                            </a>
+                                        </ng-container>
+                                    </ng-container>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </kt-portlet-body>
 </kt-portlet>

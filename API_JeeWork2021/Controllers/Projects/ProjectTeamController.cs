@@ -3104,6 +3104,8 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     ds.Tables[0].Columns.Add("tenchucdanh", typeof(string));
                     ds.Tables[0].Columns.Add("mobile", typeof(string));
                     ds.Tables[0].Columns.Add("image", typeof(string));
+                    ds.Tables[0].Columns.Add("ColorStatus_Old", typeof(string));
+                    ds.Tables[0].Columns.Add("ColorStatus_New", typeof(string));
                     foreach (DataRow item in ds.Tables[0].Rows)
                     {
                         var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -3157,8 +3159,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             DataTable dt_temp = cnn.CreateDataTable(sql_query, new SqlConditions() { { "old", dr["oldvalue"] }, { "new", dr["newvalue"] } });
                             if (dt_temp == null)
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
-                            dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             if (int.Parse(dr["id_action"].ToString()) == 9) // Đối với tag gắn title
                             {
                                 if (dt_temp.Rows.Count > 0)
@@ -3166,6 +3166,14 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                 else
                                     dr["action"] = dr["action"].ToString().Replace("{0}", "");
                             }
+                            if (int.Parse(dr["id_action"].ToString()) == 44) // Đối với status trả về thêm Color
+                            {
+                                dr["ColorStatus_Old"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
+                                dr["ColorStatus_New"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
+                            }
+
+                            dr["oldvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
+                            dr["newvalue"] = dt_temp.AsEnumerable().Where(x => x[0].ToString() == dr["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                         }
                         #region Map info account từ JeeAccount  
                         if (dr["id_action"].ToString().Equals("15") || dr["id_action"].ToString().Equals("55") || dr["id_action"].ToString().Equals("56") || dr["id_action"].ToString().Equals("57"))
@@ -3178,6 +3186,20 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                 dr["action"] = dr["action"].ToString().Replace("{0}", infoUser.FullName);
                                 dr["action_en"] = dr["action_en"].ToString().Replace("{0}", infoUser.FullName);
                             }
+                            dr["oldvalue"] = DBNull.Value;
+                            dr["newvalue"] = DBNull.Value;
+                        }
+                        #endregion
+                        #region Load dữ liệu hiển thị gắn thẻ quan trong 
+                        //if (dr["id_action"].ToString().Equals("8"))
+                        //{ 
+                        //    dr["oldvalue"] = getDouutien(dr["oldvalue"].ToString());
+                        //    dr["newvalue"] = getDouutien(dr["newvalue"].ToString());
+                        //}
+                        #endregion
+                        #region chỉ hiện thị tên ở type = 3 
+                        if (dr["object_type"].ToString().Equals("3"))
+                        {
                             dr["oldvalue"] = DBNull.Value;
                             dr["newvalue"] = DBNull.Value;
                         }
@@ -3214,6 +3236,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                                                     view_detail = u["view_detail"],
                                                     log_content = u["log_content"],
                                                     icon = u["icon"],
+                                                    id_action = u["id_action"],
+                                                    ColorStatus_Old = u["ColorStatus_Old"],
+                                                    ColorStatus_New = u["ColorStatus_New"],
                                                     oldvalue = u["oldvalue"],
                                                     newvalue = u["newvalue"],
                                                     CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["CreatedDate"]),
@@ -3438,7 +3463,29 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             {
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
-        }         
-       
+        }
+
+        public static string getDouutien(string id)
+        {
+            switch (id)
+            {
+                case "1":
+                    return "Khẩn cấp";
+                    break;
+                case "2":
+                    return "Cao";
+                    break;
+                case "3":
+                    return "Bình thường";
+                    break;
+                case "4":
+                    return "Thấp";
+                    break;
+                default:
+                    return "Không xét";
+                    break;
+            }
+            return "Không xét";
+        }
     }
 }

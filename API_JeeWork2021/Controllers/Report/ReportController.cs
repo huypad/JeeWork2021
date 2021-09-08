@@ -44,9 +44,11 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<ReportController> _logger;
-        string sqltrehan = " and w.deadline < getdate() and w.deadline is not null and w.end_date is null ";
-        string sqldanglam = " and (deadline >= getdate() and deadline is not null) or deadline is null) and w.end_date is null";
-        string sqlhoanthanh = " and w.end_date is not null";
+        string sql_isquahan = " w.deadline < getdate() and w.deadline is not null and w.end_date is null ";
+        string sql_dangthuchien = "((w.deadline >= getdate() and deadline is not null) or deadline is null ) and w.end_date is null";
+        string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
+        string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
+        string sqlhoanthanh = " w.end_date is not null ";
 
         public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportController> logger)
         {
@@ -139,7 +141,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
 
                     string list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
-                    string  list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
+                    string list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
                     string list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
@@ -168,9 +170,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     COUNT(CASE WHEN ParentID is not null THEN 1 END) as ThuMuc 
                                     from we_department d
                                     where d.Disabled=0  " + strD;
-                    sqlq += @";select count(*) as Tong, COUNT(CASE WHEN w.status in (" + list_Complete + @") THEN 1 END) as HoanThanh
-                                    ,COUNT(CASE WHEN w.status not in (" + list_Complete + "," + list_Deadline + @") THEN 1 END) as DangThucHien,
-                                    COUNT(CASE WHEN w.status in (" + list_Deadline + @") THEN 1 END) as TreHan from v_wework_clickup_new w
+                    //sqlq += @";select count(*) as Tong, COUNT(CASE WHEN w.status in (" + list_Complete + @") THEN 1 END) as HoanThanh
+                    //                ,COUNT(CASE WHEN w.status not in (" + list_Complete + "," + list_Deadline + @") THEN 1 END) as DangThucHien,
+                    //                COUNT(CASE WHEN w.status in (" + list_Deadline + @") THEN 1 END) as TreHan from v_wework_clickup_new w
+                    //    join we_project_team p on p.id_row = w.id_project_team
+                    //    where w.disabled=0" + strW;
+                    sqlq += @$";select count(*) as Tong, COUNT(CASE WHEN { sqlhoanthanh } THEN 1 END) as HoanThanh
+                                    ,COUNT(CASE WHEN {sql_dangthuchien} THEN 1 END) as DangThucHien,
+                                    COUNT(CASE WHEN {sql_isquahan} THEN 1 END) as TreHan from v_wework_clickup_new w
                         join we_project_team p on p.id_row = w.id_project_team
                         where w.disabled=0" + strW;
                     //sqlq += @";select count(*) as Tong, COUNT(CASE WHEN deadline>=getdate() THEN 1 END) as HoanThanh
@@ -256,7 +263,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
                     Dictionary<string, string> collect = new Dictionary<string, string>
@@ -286,22 +293,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("to", to);
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        strW += " and  id_department in (" + query.filter["id_department"] + ") ";
+                        listDept  = " and  id_department in (" + query.filter["id_department"] + ") ";
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
-                    //if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    //{
-                    //    if (query.filter["status"].ToString().Equals(1.ToString()))
-                    //    {
-                    //        strW += $" and w.status not in ({list_Complete})";
-                    //    }
-                    //    else if (query.filter["status"].ToString().Equals(2.ToString()))
-                    //    {
-                    //        strW += $" and w.status in ({list_Complete})";
-                    //    }
 
-                    //}
+                    if (listDept != "")
+                    {
+                        strW += " and id_department in (" + listDept + ") "; 
+                    }
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @"select status, count(*) as value 
@@ -531,11 +531,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status,
-                                    iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-                                    iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, deadline 
+                    //string sqlq = @"select id_row, id_nv, status,
+                    //                iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, deadline 
+                    //                from v_wework_clickup_new  w where 1=1 " + strW;
+                    string sqlq = @$"select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
                                     from v_wework_clickup_new  w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -680,10 +686,17 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan ,
-                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-                                    iIf(w.Status in (" + list_Complete + @") ,1,0) as is_ht
+                    //string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,
+                    //                iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan ,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Complete + @") ,1,0) as is_ht
+                    //                from v_wework_clickup_new  w where 1=1 " + strW;
+                    string sqlq = @$"select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
                                     from v_wework_clickup_new  w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -816,10 +829,16 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline ,
-                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-                                    iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan ,
-                                    iIf(w.Status in (" + list_Complete + @") ,1,0) as is_ht
+                    //string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline ,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan ,
+                    //                iIf(w.Status in (" + list_Complete + @") ,1,0) as is_ht
+                    //                from v_wework_clickup_new  w where 1=1 " + strW;
+                    string sqlq = @$"select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
                                     from v_wework_clickup_new  w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -940,11 +959,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
-                    sqlq += @";select distinct id_row , status, CreatedDate, Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
-                                from v_wework_new w where 1=1 " + strW;
+                    //sqlq += @";select distinct id_row , status, CreatedDate, Deadline,
+                    //                iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
+                    //            from v_wework_new w where 1=1 " + strW;
+                    sqlq += @$";select distinct id_row , status, CreatedDate, Deadline, id_department,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_new  w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
@@ -1044,7 +1070,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -1101,12 +1127,19 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                                     on p.id_row=u.id_project_team 
                                     where p.disabled=0 and u.disabled=0  " +
                                     "group by u.id_user";
-                    sqlq += @";select id_row, id_nv, status, iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-                                    iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
-                                    from v_wework_new w 
-                                    where 1=1 " + strW + " (parent)";
+                    //sqlq += @";select id_row, id_nv, status, 
+                    //                iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
+                    //                from v_wework_new w  where 1=1 " + strW + " (parent)";
+                    sqlq += @$";select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_new  w where 1=1 " + strW + " (parent) ";
+
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -1287,7 +1320,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -1308,12 +1341,20 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department
                                     on p.id_row=u.id_project_team 
                                     where p.disabled=0 and u.disabled=0  " +
                                     "group by u.id_user";
-                    sqlq += @";select id_row, id_nv, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
-                                    from v_wework_new w 
-                                    where 1=1  " + strW + " (parent)";
+                    //sqlq += @";select id_row, id_nv, status,
+                    //                iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
+                    //                from v_wework_new w 
+                    //                where 1=1  " + strW + " (parent)";
+                    sqlq += @$";select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_new  w where 1=1 " + strW + " (parent)";
+
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -1332,7 +1373,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     {
                         if (dtW.Rows.Count > 0)
                         {
-                            DataRow[] row = dtW.Select("id_nv=" + dr["id_nv"].ToString());
+                            DataRow[] row = dtW.Select("id_nv = " + dr["id_nv"].ToString());
                             if (row.Length > 0)
                             {
                                 dr["tong"] = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + dr["id_nv"].ToString()) : 0);
@@ -1397,7 +1438,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                                     percentageexcellent = long.Parse(r["tong"].ToString()) == 0 ? 0 : (long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString()) * 100 / long.Parse(r["tong"].ToString()))
                                 });
                     if ("excellent".Equals(query.filter["type"]))
-                        data = data.OrderByDescending(x => x.percentageexcellent); 
+                        data = data.OrderByDescending(x => x.percentageexcellent);
                     else
                         if ("most".Equals(query.filter["type"]))
                         data = data.OrderByDescending(x => x.danglam);
@@ -1485,7 +1526,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -1501,8 +1542,12 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         }
 
                     }
-                    string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
-                                    ,iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan
+                    //string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
+                    //                ,iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan
+                    //                from v_wework_clickup_new  w 
+                    //                where disabled = 0" + strW;
+                    string sqlq = @$"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
+                                    ,iIf( {sql_isquahan} , 1, 0) as is_quahan
                                     from v_wework_clickup_new  w 
                                     where disabled = 0" + strW;
                     if (displayChild == "0")
@@ -1619,7 +1664,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -1637,11 +1682,18 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         }
 
                     }
+                    //DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
+                    //                                    m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
+                    //                                    from we_milestone m 
+                    //                                    join we_project_team p on m.id_project_team=p.id_row
+                    //                                    left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
+                    //                                    ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
+                    //                                    $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW1 + " order by title", cond);
                     DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                                                         m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
                                                         join we_project_team p on m.id_project_team=p.id_row
-                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
+                                                        left join (select count(*) as tong, COUNT(CASE WHEN {sqlhoanthanh} THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
                                                         $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW1 + " order by title", cond);
                     #region Map info account từ JeeAccount
@@ -1793,7 +1845,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -1809,20 +1861,20 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                         }
 
                     }
-                    DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
-                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
-                                                        from we_milestone m 
-                                                        join we_project_team p on m.id_project_team=p.id_row
-                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
-                                                        ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
                     //DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
                     //                                    m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                     //                                    from we_milestone m 
                     //                                    join we_project_team p on m.id_project_team=p.id_row
-                    //                                    left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
+                    //                                    left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
                     //                                    ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                    //                                    $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW + " order by title", cond);
+                    //                                    $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
+                    DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
+                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
+                                                        from we_milestone m 
+                                                        join we_project_team p on m.id_project_team=p.id_row
+                                                        left join (select count(*) as tong, COUNT(CASE WHEN {sqlhoanthanh} THEN 1 END) as ht
+                                                        ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
+                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW + " order by title", cond);
                     #region Map info account từ JeeAccount
 
                     foreach (DataRow item in dt_data.Rows)
@@ -1962,7 +2014,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -2004,10 +2056,16 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
                     string ids = string.Join(",", ID);
 
                     string sqlq = "";
-                    sqlq += @";select id_row, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
+//                    sqlq += @";select id_row, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+//iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+//iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+//iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
+//                                    from v_wework_clickup_new w 
+//                                    where disabled = 0 " + strW;
+                    sqlq += @$";select id_row, status,iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+iIf( {sqlhoanthanhdunghan} ,1,0) as is_ht,
+iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
                                     from v_wework_clickup_new w 
                                     where disabled = 0 " + strW;
                     if (displayChild == "0")
@@ -2050,7 +2108,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string rowheight = "18.5";
                     excel_project = ExportExcelHelper.ExportToExcel(dt, title, header, width, rowheight, "26", format);
                     var data = from r in dt.AsEnumerable()
-                               where total > 0
+                               where long.Parse(r["tong"].ToString()) > 0
                                select new
                                {
                                    id_row = r["id_row"],
@@ -2062,7 +2120,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                                    ht_quahan = r["ht_quahan"],
                                    quahan = r["quahan"],
                                    description = (key.Equals("id_project_team") ? r["description"] : ""),
-                                   percentage = total == 0 ? 0 : (success * 100 / total)
+                                   percentage = long.Parse(r["tong"].ToString()) == 0 ? 0 : (long.Parse(r["ht"].ToString()) * 100 / long.Parse(r["tong"].ToString()))
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -2139,7 +2197,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -2183,10 +2241,16 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string ids = string.Join(",", ID);
 
                     string sqlq = "";
-                    sqlq += @";select id_row, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
+//                    sqlq += @";select id_row, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+//iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+//iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+//iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
+//                                    from v_wework_clickup_new w 
+//                                    where disabled = 0 " + strW;
+                    sqlq += @$";select id_row, status,iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+iIf( {sqlhoanthanhdunghan} ,1,0) as is_ht,
+iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
                                     from v_wework_clickup_new w 
                                     where disabled = 0 " + strW;
                     if (displayChild == "0")
@@ -2328,7 +2392,7 @@ from we_department where Disabled = 0";
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -2358,10 +2422,16 @@ from we_department where Disabled = 0";
                                                               (select id_row from we_project_team where id_department in (" + ids + "))");
                     bool is_group = dt_group.Rows.Count > 0;
                     string sqlq = "";
-                    sqlq += @"select id_row, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
+//                    sqlq += @"select id_row, status,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+//iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+//iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+//iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id_project_team
+//                                    from v_wework_clickup_new w 
+//                                    where disabled = 0 " + strW;
+                    sqlq += @$"select id_row, status,iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+iIf( {sqlhoanthanhdunghan} ,1,0) as is_ht,
+iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
                                     from v_wework_clickup_new w 
                                     where disabled = 0 " + strW;
                     if (displayChild == "0")
@@ -2449,7 +2519,7 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -2467,11 +2537,16 @@ iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan, id_department, id
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
-                    sqlq += @";select id_row, id_nv, status, CreatedDate
-                            ,Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
+//                    sqlq += @";select id_row, id_nv, status, CreatedDate
+//                            ,Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+//iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+//iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+//iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
+//                            from v_wework_new w where 1=1 " + strW;
+                    sqlq += @$";select id_row, id_nv, status, CreatedDate ,Deadline,iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+iIf( {sqlhoanthanhdunghan} ,1,0) as is_ht,
+iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department 
                             from v_wework_new w where 1=1 " + strW;
                     string sql_comment = @$"select iif(sum(num_comment)>0,sum(num_comment),0) from we_work where id_row in (select distinct id_row
 from v_wework_new w where 1=1 {strW})";
@@ -2586,7 +2661,7 @@ where u.Disabled = 0 and p.Disabled = 0 and p.id_department in (" + listDept + "
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
                     #endregion
@@ -2605,11 +2680,17 @@ where u.Disabled = 0 and p.Disabled = 0 and p.id_department in (" + listDept + "
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlthongkechung = @"select id_row, title,Locked from we_project_team p where disabled=0 " + strP;
                     sqlthongkechung += @";select id_row, title from we_department d where d.disabled=0 " + strD;
-                    sqlthongkechung += @";select id_row, id_nv, status, CreatedDate,id_parent
-                            ,Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
+//                    sqlthongkechung += @";select id_row, id_nv, status, CreatedDate,id_parent
+//                            ,Deadline,iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+//iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+//iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+//iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan,id_department 
+//                            from v_wework_new w where 1=1 " + strW + " (parent)";
+                    sqlthongkechung += @$";select id_row, id_nv, status, CreatedDate,id_parent, Deadline,
+iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+iIf( {sqlhoanthanhdunghan} ,1,0) as is_ht,
+iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department 
                             from v_wework_new w where 1=1 " + strW + " (parent)";
                     sqlthongkechung += @";select * from we_project_team_user u join we_project_team p on
 u.id_project_team = p.id_row where u.Disabled = 0 and p.Disabled = 0 " + strP;
@@ -2660,10 +2741,16 @@ u.id_project_team = p.id_row where u.Disabled = 0 and p.Disabled = 0 " + strP;
                                     on p.id_row=u.id_project_team 
                                     where p.disabled=0 and u.disabled=0  " +
                                     "group by u.id_user";
-                    sqlq += @";select id_row, id_nv, status, iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-                                    iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
+                    //sqlq += @";select id_row, id_nv, status, iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
+                    //                iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
+                    //                from v_wework_new w 
+                    //                where 1=1 " + strW + " (parent)";
+                    sqlq += @$";select id_row, id_nv, status, iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf( {sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
                                     from v_wework_new w 
                                     where 1=1 " + strW + " (parent)";
                     sqlq += @"; select * from we_project_team_user u join we_project_team p on
@@ -2816,7 +2903,7 @@ and o.Disabled = 0 and d.Disabled = 0 " + strD;
                     string list_Complete = "";
                     list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                     string list_Deadline = "";
-                     list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
+                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline "); // IsDeadline
                     string list_Todo = "";
                     list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo "); // IsTodo
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong

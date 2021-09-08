@@ -766,5 +766,41 @@ namespace JeeWork_Core2021.Classes
             if (dt.Rows.Count > 0) return true;
             return false;
         }
+        public static bool CheckTaskUser(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn)
+        {
+            if (IsAdminTeam(id_project_team, loginData, cnn))
+            {
+                return true;
+            }
+            // kiểm tra công việc đó của mình hay không
+            SqlConditions conds = new SqlConditions();
+            conds.Add("userid", id_user);
+            conds.Add("id_work", id_work);
+            string sql = "select * from v_wework_new where id_row = @id_work and ( createdby = @userid or id_nv = @userid)";
+            DataTable dt = cnn.CreateDataTable(sql,conds);
+            if(dt.Rows.Count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        public static bool IsAdminTeam(string id_project_team , UserJWT loginData, DpsConnection cnn)
+        {
+
+            bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
+            DataSet ds = GetWorkSpace(loginData, 0, 0);
+            if (cnn.LastError != null || ds == null)
+                return false;
+            if (ds.Tables.Count == 3)
+            {
+                DataRow[] dr = ds.Tables[2].Select("id_row =" + id_project_team + " and (owner = 1 or parentowner = 1 or admin_project = 1)");
+                if (dr.Length > 0 || IsAdmin)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
     }
 }
