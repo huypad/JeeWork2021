@@ -14,6 +14,9 @@ using Microsoft.Extensions.Options;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Drawing;
+using Microsoft.AspNetCore.Http;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -44,7 +47,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public BaseModel<object> Insert([FromBody] AttachmentModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -52,7 +54,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache,loginData.CustomerID, _configuration);
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "a";
@@ -137,7 +139,35 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
+        [Route("upload-img")]
+        [HttpPost]
+        public async Task<object> uploadImg(IFormFile file)
+        {
+            string message;
+            var dirPath = Path.Combine(_hostingEnvironment.ContentRootPath, "Upload\\editor\\");
+            var saveimg = Path.Combine(dirPath, file.FileName);
+            string imgext = Path.GetExtension(file.FileName);
+            if (imgext == ".jpg" || imgext == ".png")
+            {
+                using (var uploadimg = new FileStream(saveimg, FileMode.Create))
+                {
+                    await file.CopyToAsync(uploadimg);
+                    //message = "The selected file" + file.FileName + " is save";
+                    return new
+                    {
+                        succeeded = true,
+                        imageUrl = file.Name
+                    };
+                }
+            }
+            else
+            {
+                return (new
+                {
+                    succeeded = false,
+                });
+            }
+        }
         /// <summary>
         /// 
         /// </summary>

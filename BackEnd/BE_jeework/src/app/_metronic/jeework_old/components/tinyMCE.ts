@@ -1,59 +1,36 @@
+import { AttachmentModel, FileUploadModel } from 'src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model';
 import { environment } from 'src/environments/environment';
 
 const tinyMCE = {
 
-	plugins: 'paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
+	plugins: 'autosave paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
 	toolbar: 'undo redo | styleselect |  fontselect| bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
 	image_uploadtab: true,
 	paste_as_text: true,
+	paste_data_images: true,
+	// paste_block_drop: true, // Dán hình ảnh đã screenshot
+	// paste_filter_drop: true,
+	// smart_paste: true,  // note: default value for smart_paste is true
+	// image_file_types: 'jpg,svg,webp',
 	height: 400,
 	language: 'vi',
+	// link_default_protocol: 'https', // Link mặc định
+	// default_link_target: '_blank',
 	// language_url : './assets/js/global/components/base/vi.js',
-	language_url : './assets/tinymce/langs/vi.js',
+	language_url: './assets/tinymce/langs/vi.js',
 	font_formats: 'Helvetica=Helvetica;UTM Avo=UTMAvo;',
-	images_upload_url: environment.APIROOTS + '/Tool/upload-img?filename=' + 'GuideLine',
-	automatic_uploads: true,
-	images_upload_base_path: '/images',
-	images_upload_credentials: true,
-	//file_picker_callback: function (cb, value, meta) {
-	//// Provide file and text for the link dialog
+	images_upload_url: environment.APIROOTS + '/api/attachment/upload-img',
+	// automatic_uploads: true,
+	// images_upload_base_path: '/images',
+	// images_upload_credentials: true,
+	// autosave_ask_before_unload: true, // Tự động save
+	// autosave_interval: '10s', // thời gian tự động save
 
-	//		if (meta.filetype == 'image') {
-	//			var input = document.createElement('input');
-	//			input.setAttribute('type', 'file');
-	//			input.setAttribute('accept', 'image/*');
-
-	//			// Note: In modern browsers input[type="file"] is functional without 
-	//			// even adding it to the DOM, but that might not be the case in some older
-	//			// or quirky browsers like IE, so you might want to add it to the DOM
-	//			// just in case, and visually hide it. And do not forget do remove it
-	//			// once you do not need it anymore.
-
-	//			input.onchange = function () {
-	//				var res = <HTMLInputElement>this;
-	//				var file: File = res.files[0];
-	//				var reader = new FileReader();
-	//				const uploadData: FormData = new FormData();
-	//				uploadData.append('file', file, file.name);
-
-	//				reader.onload = function () {
-
-	//				};
-	//				reader.readAsDataURL(file);
-	//			};
-
-	//			input.click();
-	//		}
-
-
-	//},
 	images_upload_handler: function (blobInfo, success, failure) {
 		var xhr, formData;
-
 		xhr = new XMLHttpRequest();
 		xhr.withCredentials = false;
-		xhr.open('POST', environment.APIROOTS + '/Tool/upload-img?filename=' + 'GuideLine');
-
+		xhr.open('POST', environment.APIROOTS + '/api/attachment/upload-img');
 		xhr.onload = function () {
 			var json;
 
@@ -77,7 +54,7 @@ const tinyMCE = {
 	},
 	init_instance_callback: function () {
 		var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
-		if(freeTiny)
+		if (freeTiny)
 			freeTiny.style.display = 'none';
 	},
 	content_style: '.tox-notification--in{display:none};'
