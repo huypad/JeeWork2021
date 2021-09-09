@@ -1776,176 +1776,177 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Top_done_milestone([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                if (query == null)
-                    query = new QueryParams();
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+            //string Token = Common.GetHeader(Request);
+            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            //if (loginData == null)
+            //    return JsonResultCommon.DangNhap();
+            //try
+            //{
+            //    if (query == null)
+            //        query = new QueryParams();
+            //    string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+            //    string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+            //    using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            //    {
+            //        #region Lấy dữ liệu account từ JeeAccount
+            //        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+            //        if (DataAccount == null)
+            //            return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
-                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-                    //string ids = string.Join(",", nvs);
-                    string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+            //        //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
+            //        //string ids = string.Join(",", nvs);
+            //        string error = "";
+            //        string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+            //        if (error != "")
+            //            return JsonResultCommon.Custom(error);
+            //        #endregion
+            //        string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
 
-                    Dictionary<string, string> collect = new Dictionary<string, string>
-                        {
-                            { "CreatedDate", "CreatedDate"},
-                            { "Deadline", "Deadline"},
-                            { "StartDate", "StartDate"}
-                        };
-                    string collect_by = "CreatedDate";
-                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
-                        collect_by = collect[query.filter["collect_by"]];
-                    SqlConditions cond = new SqlConditions();
-                    string strW = "";
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
-                    if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
-                        return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
-                    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                    if (!from1)
-                        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                    strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", from);
-                    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                    if (!to1)
-                        return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
-                    strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", to);
-                    if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                    {
-                        listDept = query.filter["id_department"];
-                        //strW += " and id_department=@id_department";
-                        //cond.Add("id_department", query.filter["id_department"]);
-                    }
+            //        Dictionary<string, string> collect = new Dictionary<string, string>
+            //            {
+            //                { "CreatedDate", "CreatedDate"},
+            //                { "Deadline", "Deadline"},
+            //                { "StartDate", "StartDate"}
+            //            };
+            //        string collect_by = "CreatedDate";
+            //        if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+            //            collect_by = collect[query.filter["collect_by"]];
+            //        SqlConditions cond = new SqlConditions();
+            //        string strW = "";
+            //        DateTime from = DateTime.Now;
+            //        DateTime to = DateTime.Now;
+            //        if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
+            //            return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
+            //        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+            //        if (!from1)
+            //            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+            //        strW += " and w." + collect_by + ">=@from";
+            //        cond.Add("from", from);
+            //        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+            //        if (!to1)
+            //            return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
+            //        strW += " and w." + collect_by + "<@to";
+            //        cond.Add("to", to);
+            //        if (!string.IsNullOrEmpty(query.filter["id_department"]))
+            //        {
+            //            listDept = query.filter["id_department"];
+            //            //strW += " and id_department=@id_department";
+            //            //cond.Add("id_department", query.filter["id_department"]);
+            //        }
 
-                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                    if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                        displayChild = query.filter["displayChild"];
-                    #region danh sách department, list status hoàn thành, trễ,đang làm
-                    if (listDept != "")
-                    {
-                        strW += " and id_department in (" + listDept + ") ";
-                    }
-                    string list_Complete = "";
-                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
-                    string list_Deadline = "";
-                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
-                    string list_Todo = "";
-                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
-                    #endregion
-                    if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
-                    {
-                        if (query.filter["status"].ToString().Equals(1.ToString()))
-                        {
-                            strW += $" and w.status not in ({list_Complete})";
-                        }
-                        else if (query.filter["status"].ToString().Equals(2.ToString()))
-                        {
-                            strW += $" and w.status in ({list_Complete})";
-                        }
+            //        string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+            //        if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+            //            displayChild = query.filter["displayChild"];
+            //        #region danh sách department, list status hoàn thành, trễ,đang làm
+            //        if (listDept != "")
+            //        {
+            //            strW += " and id_department in (" + listDept + ") ";
+            //        }
+            //        string list_Complete = "";
+            //        list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
+            //        string list_Deadline = "";
+            //        list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
+            //        string list_Todo = "";
+            //        list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
+            //        #endregion
+            //        if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
+            //        {
+            //            if (query.filter["status"].ToString().Equals(1.ToString()))
+            //            {
+            //                strW += $" and w.status not in ({list_Complete})";
+            //            }
+            //            else if (query.filter["status"].ToString().Equals(2.ToString()))
+            //            {
+            //                strW += $" and w.status in ({list_Complete})";
+            //            }
 
-                    }
-                    //DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
-                    //                                    m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
-                    //                                    from we_milestone m 
-                    //                                    join we_project_team p on m.id_project_team=p.id_row
-                    //                                    left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
-                    //                                    ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                    //                                    $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
-                    DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
-                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
-                                                        from we_milestone m 
-                                                        join we_project_team p on m.id_project_team=p.id_row
-                                                        left join (select count(*) as tong, COUNT(CASE WHEN {sqlhoanthanh} THEN 1 END) as ht
-                                                        ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW + " order by title", cond);
-                    #region Map info account từ JeeAccount
+            //        }
+            //        //DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
+            //        //                                    m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
+            //        //                                    from we_milestone m 
+            //        //                                    join we_project_team p on m.id_project_team=p.id_row
+            //        //                                    left join (select count(*) as tong, COUNT(CASE WHEN w.Status in (" + list_Complete + @") THEN 1 END) as ht
+            //        //                                    ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
+            //        //                                    $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) and ht > 0 order by title", cond);
+            //        DataTable dt_data = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
+            //                                            m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
+            //                                            from we_milestone m 
+            //                                            join we_project_team p on m.id_project_team=p.id_row
+            //                                            left join (select count(*) as tong, COUNT(CASE WHEN {sqlhoanthanh} THEN 1 END) as ht
+            //                                            ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
+            //                                            $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW + " order by title", cond);
+            //        #region Map info account từ JeeAccount
 
-                    foreach (DataRow item in dt_data.Rows)
-                    {
-                        var info = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+            //        foreach (DataRow item in dt_data.Rows)
+            //        {
+            //            var info = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+            //            var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+            //            var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
 
-                        if (info != null)
-                        {
-                            item["hoten"] = info.FullName;
-                            item["mobile"] = info.PhoneNumber;
-                            item["username"] = info.Username;
-                            item["image"] = info.AvartarImgURL;
-                            item["Tenchucdanh"] = info.Jobtitle;
-                        }
-                        if (infoNguoiSua != null)
-                        {
-                            item["NguoiSua"] = infoNguoiSua.Username;
-                        }
-                        if (infoNguoiTao != null)
-                        {
-                            item["NguoiTao"] = infoNguoiTao.Username;
-                        }
-                    }
-                    #endregion
+            //            if (info != null)
+            //            {
+            //                item["hoten"] = info.FullName;
+            //                item["mobile"] = info.PhoneNumber;
+            //                item["username"] = info.Username;
+            //                item["image"] = info.AvartarImgURL;
+            //                item["Tenchucdanh"] = info.Jobtitle;
+            //            }
+            //            if (infoNguoiSua != null)
+            //            {
+            //                item["NguoiSua"] = infoNguoiSua.Username;
+            //            }
+            //            if (infoNguoiTao != null)
+            //            {
+            //                item["NguoiTao"] = infoNguoiTao.Username;
+            //            }
+            //        }
+            //        #endregion
 
-                    bool hasValue = dt_data.Rows.Count > 0;
-                    DataView view = new DataView(dt_data.Copy());
-                    DataTable dt = view.ToTable(true, new string[8] { "id_nv", "username", "mobile", "email", "hoten", "image", "tong", "ht" });
+            //        bool hasValue = dt_data.Rows.Count > 0;
+            //        DataView view = new DataView(dt_data.Copy());
+            //        DataTable dt = view.ToTable(true, new string[8] { "id_nv", "username", "mobile", "email", "hoten", "image", "tong", "ht" });
 
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        if (dt_data.Rows.Count > 0)
-                        {
-                            DataRow[] row = dt_data.Select("person_in_charge=" + dr["id_nv"].ToString());
-                            if (row.Length > 0)
-                            {
-                                dr["tong"] = row.Sum(x => int.Parse(x["tong"].ToString()));
-                                dr["ht"] = row.Sum(x => int.Parse(x["ht"].ToString()));
+            //        foreach (DataRow dr in dt.Rows)
+            //        {
+            //            if (dt_data.Rows.Count > 0)
+            //            {
+            //                DataRow[] row = dt_data.Select("person_in_charge=" + dr["id_nv"].ToString());
+            //                if (row.Length > 0)
+            //                {
+            //                    dr["tong"] = row.Sum(x => int.Parse(x["tong"].ToString()));
+            //                    dr["ht"] = row.Sum(x => int.Parse(x["ht"].ToString()));
 
-                            }
-                            else
-                            {
-                                dr["tong"] = dr["ht"] = dr["percentage"] = 0;
-                            }
-                        }
-                        double total = int.Parse(dr["tong"].ToString());
-                        if ((total) <= 0)
-                        {
-                            dr.Delete();
-                        }
-                    }
-                    dt.AcceptChanges();
-                    var data = from r in dt.AsEnumerable()
-                               select new
-                               {
-                                   id_nv = r["id_nv"],
-                                   hoten = r["hoten"],
-                                   username = r["username"],
-                                   mobile = r["mobile"],
-                                   percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"]),
-                                   image = r["image"],
-                               };
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
+            //                }
+            //                else
+            //                {
+            //                    dr["tong"] = dr["ht"] = dr["percentage"] = 0;
+            //                }
+            //            }
+            //            double total = int.Parse(dr["tong"].ToString());
+            //            if ((total) <= 0)
+            //            {
+            //                dr.Delete();
+            //            }
+            //        }
+            //        dt.AcceptChanges();
+            //        var data = from r in dt.AsEnumerable()
+            //                   select new
+            //                   {
+            //                       id_nv = r["id_nv"],
+            //                       hoten = r["hoten"],
+            //                       username = r["username"],
+            //                       mobile = r["mobile"],
+            //                       percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"]),
+            //                       image = r["image"],
+            //                   };
+            //        return JsonResultCommon.ThanhCong(data);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            //}
+            return JsonResultCommon.ThanhCong();
         }
         /// <summary>
         /// Báo cáo theo project team

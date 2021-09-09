@@ -56,17 +56,18 @@
 									</ngx-avatar>
 								</ng-template>
 							</div>
-							<div class="col-7 row align-items-center" style="word-break: break-all;">
-								<span style="font-size: 12px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>
-								<span *ngIf="show_detail && active.id_row == id"
-									style="font-size: 12px; color: rgb(223, 3, 14); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;
+							<div class="col-7 row align-items-center w-100 overflow-auto" style="word-break: break-all;">
+<!--								<span style="font-size: 12px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>-->
+								<span style="font-size: 12px; color: rgb(7, 116, 7)" [innerHtml]="active.newvalue"></span>
+								<span *ngIf="active.show"
+									style="font-size: 12px; color: rgb(223, 3, 14); text-decoration: line-through;" [innerHtml]="active.oldvalue" ></span>&nbsp;
 							</div>
 							<div class="col-2 row align-items-center">
 								<button mat-icon-button *ngIf="active.oldvalue != ''"
-									(click)="ShowDetail(active.id_row)">
-									<i *ngIf="!show_detail" matTooltip="Xem lịch sử trước đó"
+									(click)="active.show=!active.show">
+									<i *ngIf="!active.show" matTooltip="Xem lịch sử trước đó"
 										class="fa fa-angle-double-down" style="font-size: 16px"></i>
-									<i *ngIf="show_detail" matTooltip="Thu gọn" class="fa fa-angle-double-up"
+									<i *ngIf="active.show" matTooltip="Thu gọn" class="fa fa-angle-double-up"
 										style="font-size: 16px"></i>
 								</button>&nbsp;
 								<button mat-icon-button (click)="ShowDetail(active.id_row)">

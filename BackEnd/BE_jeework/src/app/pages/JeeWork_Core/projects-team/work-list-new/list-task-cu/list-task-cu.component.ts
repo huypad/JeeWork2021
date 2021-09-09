@@ -361,38 +361,41 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
   CheckRoles(roleID: number, id_project_team) {
     if (this.IsAdminGroup) { return true; }
-    const x = this.list_role.find(x => x.id_row == id_project_team);
-    if (x) {
-      if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
-        return true;
-      }
-      else {
-        // if (roleID == 3 || roleID == 4) {
-        //   if (x.isuyquyen) {
-        //     return true;
-        //   }
-        // }
-        if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
-          if (x.Roles.find((r) => r.id_role == 15)) { return false; }
-        }
-        if (roleID == 10) {
-          if (x.Roles.find((r) => r.id_role == 16)) { return false; }
-        }
-        if (roleID == 4 || roleID == 14) {
-          if (x.Roles.find((r) => r.id_role == 17)) { return false; }
-        }
-        const r = x.Roles.find(r => r.id_role == roleID);
-        if (r) {
+    if(this.list_role){
+      const x = this.list_role.find(x => x.id_row == id_project_team);
+      if (x) {
+        if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
           return true;
         }
         else {
-          return false;
+          // if (roleID == 3 || roleID == 4) {
+          //   if (x.isuyquyen) {
+          //     return true;
+          //   }
+          // }
+          if (roleID == 7 || roleID == 9 || roleID == 11 || roleID == 12 || roleID == 13) {
+            if (x.Roles.find((r) => r.id_role == 15)) { return false; }
+          }
+          if (roleID == 10) {
+            if (x.Roles.find((r) => r.id_role == 16)) { return false; }
+          }
+          if (roleID == 4 || roleID == 14) {
+            if (x.Roles.find((r) => r.id_role == 17)) { return false; }
+          }
+          const r = x.Roles.find(r => r.id_role == roleID);
+          if (r) {
+            return true;
+          }
+          else {
+            return false;
+          }
         }
       }
+      else {
+        return false;
+      }
     }
-    else {
-      return false;
-    }
+    return false;
   }
   CheckRoleskeypermit(key, id_project_team) {
     if (this.IsAdminGroup) { return true; }

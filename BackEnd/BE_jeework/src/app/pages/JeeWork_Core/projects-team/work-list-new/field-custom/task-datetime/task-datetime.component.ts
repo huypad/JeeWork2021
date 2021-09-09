@@ -66,10 +66,10 @@ export class TaskDatetimeComponent implements OnInit,OnChanges {
       if (moment(value).format('MM/DD/YYYY') === moment(new Date()).format('MM/DD/YYYY') && this.fieldname == 'deadline'){
         return 'Hôm nay';
       }else{
-        if (moment(value).format('MM/DD/YYYY') !== 'Invalid date') {
-          return moment(value).format('DD/MM/YYYY');
-        }
-        return value;
+        // if (this.pipetimezone.transform(value,'YYYY-MM-DD') !== 'Invalid date') {
+        //   return moment(value).format('DD/MM/YYYY');
+        // }
+        return this.pipetimezone.transform(value,'DD/MM/YYYY');
       }
     }
     return value;

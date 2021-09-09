@@ -96,7 +96,6 @@ export class WorkListNewDetailComponent implements OnInit {
         this.list_priority = this.weworkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
     }
-
     selectedItem: any = undefined;
     itemForm: FormGroup;
     loadingSubject = new BehaviorSubject<boolean>(false);
@@ -178,9 +177,7 @@ export class WorkListNewDetailComponent implements OnInit {
     tinyMCE = {};
     @ViewChild('csvInput', { static: true }) myInputVariable: ElementRef;
     @ViewChild('resultInput', { static: true }) result: ElementRef;
-
     list_User: any[] = [];
-
     selectedDate: any = {
         startDate: '',
         endDate: '',
@@ -247,9 +244,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
 
-    KiemTraThayDoiCongViec(item,key){
-        if(this.IsAdmin()) return true;
-        else if(item.CreatedBy == this.UserID) return true;
+    KiemTraThayDoiCongViec(item, key) {
+        if (this.IsAdmin()) return true;
+        else if (item.CreatedBy == this.UserID) return true;
         else {
             if (item.User) {
                 const index = item.User.findIndex(x => x.id_nv == this.UserID);
@@ -337,7 +334,7 @@ export class WorkListNewDetailComponent implements OnInit {
         saveMessageTranslateParam += ID_log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = this.item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log } });
+        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log } ,width : '1000px'});
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 // this.ngOnInit();
@@ -411,6 +408,7 @@ export class WorkListNewDetailComponent implements OnInit {
             if (res && res.status == 1) {
                 this.list_role = res.data.dataRole;
                 this.IsAdminGroup = res.data.IsAdminGroup;
+                this.CheckUserInProject(res.data);
             }
         });
 
@@ -421,6 +419,20 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.changeDetectorRefs.detectChanges();
             }
         });
+    }
+    CheckUserInProject(data) {
+        if (data.IsAdminGroup) {
+            return true;
+        }
+        if (data.dataRole) {
+            const x = data.dataRole.find((x) => x.id_row === this.Id_project_team);
+            if (x) {
+                return true;
+            }else{
+                this.dialogRef.close();
+            }
+        }
+        return false;
     }
 
     IsAdmin() {
@@ -1018,6 +1030,7 @@ export class WorkListNewDetailComponent implements OnInit {
                         this.workService.WorkDetail(model.id_row).subscribe((res) => {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
+                                this.description_tiny = this.description;
                                 this.refreshData();
                                 // this.checklist = res.data.description;
                                 this.ngOnInit();
@@ -1055,9 +1068,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateTitle() {
-        const ele = document.getElementById('txttitle') as HTMLInputElement;
+        const ele = document.getElementById('txttitle'+this.DataID) as HTMLInputElement;
         if (ele.value.toString().trim() == '') {
-            this.layoutUtilsService.showError('Tên công việc không được trống');
+            // this.layoutUtilsService.showError('Tên công việc không được trống');
             ele.value = this.item.title;
             return;
         }
@@ -1073,33 +1086,15 @@ export class WorkListNewDetailComponent implements OnInit {
         }
     }
 
-    getAttrFromString(str, node, attr) {
-        var regex = new RegExp('<' + node + ' .*?' + attr + '="(.*?)"', "gi"), result, res = [];
-        while ((result = regex.exec(str))) {
-            res.push(result[1]);
-        }
-        return res;
-    }
-
-    // arrayOfImageSrcs = getAttrFromString(
-    //     '<img src="http://placekitten.com/350/300"><img src="http://placekitten.com/350/300">',
-    //     'img',
-    //     'src'
-    // );
-
     UpdateDescription() {
-        // description
-        const x = document.getElementById('txtdescription');
-        const ele = document.getElementById('txtdescription') as HTMLInputElement;
-        if ( ele.value.toString().trim() != this.item.description.toString().trim() ) {
-
-            if(!this.KiemTraThayDoiCongViec(this.item,'description')){
-                ele.value = this.item.description;
+        if (this.item.description.trim() != this.description_tiny.trim())
+        {
+            if (!this.KiemTraThayDoiCongViec(this.item, 'description')) {
+                this.description_tiny = this.item.description;
                 return;
             }
-
-            this.item.description = ele.value;
-            this.UpdateByKeyNew(this.item, 'description', this.item.description);
+            this.item.description =  this.description_tiny;
+            this.UpdateByKeyNew(this.item, 'description', this.description_tiny);
         }
     }
 
@@ -1917,4 +1912,8 @@ export class WorkListNewDetailComponent implements OnInit {
     SendMessage(value) {
         this.communicateService.changeMessage(value);
     }
+    imagesUploadHandler = (blobInfo, success, failure) => {
+        debugger
+    }
+
 }

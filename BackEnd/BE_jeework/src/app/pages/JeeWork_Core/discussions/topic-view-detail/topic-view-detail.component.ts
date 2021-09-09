@@ -7,7 +7,7 @@ import {
   ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  OnChanges,OnDestroy
+  OnChanges, OnDestroy
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 // Material
@@ -53,7 +53,7 @@ import { AttachmentModel } from "../../projects-team/Model/department-and-projec
   templateUrl: "./topic-view-detail.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ViewTopicDetailComponent implements OnInit,OnDestroy {
+export class ViewTopicDetailComponent implements OnInit, OnDestroy {
   // Table fields
   listNam: any[] = [];
   // Filter fields
@@ -108,7 +108,7 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
     private activatedRoute: ActivatedRoute,
     public WeWorkService: WeWorkService,
     private router: Router
-  ) {}
+  ) { }
 
   /** LOAD DATA */
   ngOnInit() {
@@ -120,7 +120,7 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
     this.activatedRoute.params.subscribe((params) => {
       this.loadingSubject.next(false);
       this.ItemData.Id = params["id"];
-      const componentName = this.componentName + this.ItemData.Id ; 
+      const componentName = this.componentName + this.ItemData.Id;
       this._service.TopicDetail(this.ItemData.Id).subscribe((res) => {
         if (res && res.status == 1) {
           this.item = res.data;
@@ -153,21 +153,21 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
         }
       });
       this.WeWorkService.getTopicObjectIDByComponentName(componentName)
-      .pipe(
-        tap((res) => {
-          this.topicObjectID$.next("");
-          setTimeout(() => {
-            this.topicObjectID$.next(res);
-          }, 50);
-        }),
-        catchError((err) => {
-          return of();
-        }),
-        finalize(() => {}),
-        share(),
-        takeUntil(this.onDestroy)
-      )
-      .subscribe();
+        .pipe(
+          tap((res) => {
+            this.topicObjectID$.next("");
+            setTimeout(() => {
+              this.topicObjectID$.next(res);
+            }, 50);
+          }),
+          catchError((err) => {
+            return of();
+          }),
+          finalize(() => { }),
+          share(),
+          takeUntil(this.onDestroy)
+        )
+        .subscribe();
     });
 
   }
@@ -531,7 +531,7 @@ export class ViewTopicDetailComponent implements OnInit,OnDestroy {
                 false
               )
               .afterDismissed()
-              .subscribe((tt) => {});
+              .subscribe((tt) => { });
           } else {
             this.layoutUtilsService.showActionNotification(
               res.error.message,

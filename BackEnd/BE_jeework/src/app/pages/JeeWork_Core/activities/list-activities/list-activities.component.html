@@ -53,7 +53,7 @@
                                                     [name]="active.NguoiTao.hoten">
                                     </kt-avatar-user>
                                 </div>
-                                <div style="flex: 1;word-break: break-all;" class="{{ active.id_action != 16?'text-n-line':active.showmore?'text-n-line mr-5':'hide-more-text mr-5' }}">
+                                <div style="flex: 1;word-break: break-all;" class="{{ active.id_action != 16?'text-n-line':active.showmore?'text-n-line mr-5':'hide-more-text mr-5 max-height-50px' }}">
                                     <ng-container [ngSwitch]="active.id_action">
                                         <ng-container *ngSwitchCase="44">
                                             <a>
@@ -87,17 +87,14 @@
                                                       style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
 
                                                 <ng-container *ngIf="active.newvalue">
-                                                    <span style="font-size: 14px; color: black;background-color: #28a7455e;">{{active.newvalue}}</span>&nbsp;-
+                                                    <span class="d-block overflow-auto" style="font-size: 14px; color: rgb(7, 116, 7);" [innerHtml]="active.newvalue"></span>
                                                 </ng-container>
-
+                                                <hr/>
                                                 <ng-container *ngIf="active.oldvalue">
-                                                    <span style="font-size: 14px; color: black;background-color: #d6081f6b;">{{active.oldvalue}}</span>&nbsp;-
+                                                    <span class="d-block overflow-auto" style="font-size: 14px;color: rgb(223, 3, 14);text-decoration: line-through;" [innerHtml]="active.oldvalue"></span>
                                                 </ng-container>
                                                 <span class="date-type">{{active.CreatedDate | timezone}}</span>
                                             </a>
-<!--                                            <button mat-fab color="warn" (click)="active.showmore = !active.showmore" style=" position: absolute;top: 0; right: -5px;" >-->
-<!--                                                <mat-icon> {{!active.showmore?'keyboard_arrow_left':'keyboard_arrow_down'}}</mat-icon>-->
-<!--                                            </button>  -->
                                             <button class="btn btn-sm url" (click)="active.showmore = !active.showmore"  style="     position: absolute;
                                                     top: -12px;
                                                     right: -10px;

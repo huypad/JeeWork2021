@@ -211,6 +211,27 @@ namespace JeeWork_Core2021.Controllers
                 //return BadRequest(MessageReturnHelper.Exception(ex));
             }
         }
+
+        [HttpGet]
+        [Route("test-utc-time")]
+        public string TestUTCTime()
+        {
+            string _k = "09/10/2021 15:05:29";
+            string _p = "2021-09-10T15:05:29.000";
+            DateTime dt1 = DateTime.Parse(_k);
+            DateTime dt2 = DateTime.Parse(_p);
+            DateTime dt3 = DateTime.Parse(_k).ToUniversalTime();
+            var _header = Request.Headers;
+            string _time = _header["CurrentTime"].ToString();
+            int _timeZone = int.Parse(_header["TimeZone"].ToString());
+            _timeZone /= -60;
+            DateTime dt = DateTime.Parse(_time);
+            int _currentTZ = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
+            int _chl = Math.Abs(_currentTZ - _timeZone);
+            var _currentLocalTime = dt.AddHours(_chl);
+            return _currentLocalTime.ToString();
+        }
+
         public class AutomaticModel
         {
             public long EventID { get; set; }

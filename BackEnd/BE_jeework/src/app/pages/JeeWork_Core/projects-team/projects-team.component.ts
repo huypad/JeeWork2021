@@ -1,15 +1,15 @@
-import { filter, takeUntil } from 'rxjs/operators';
-import { MenuAsideService } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import { MenuPhanQuyenServices } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { CommonService } from './../../../_metronic/jeework_old/core/services/common.service';
+import {filter, takeUntil} from 'rxjs/operators';
+import {MenuAsideService} from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
+import {MenuPhanQuyenServices} from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import {QueryParamsModelNew} from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import {CommonService} from './../../../_metronic/jeework_old/core/services/common.service';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { DocumentsService } from './../documents/documents.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { WeWorkService } from './../services/wework.services';
+import {DocumentsService} from './../documents/documents.service';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {WeWorkService} from './../services/wework.services';
 import {
     Component,
     OnInit,
@@ -19,22 +19,22 @@ import {
     ViewChild,
     ElementRef,
 } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { ClosedProjectComponent } from './closed-project/closed-project.component';
-import { DuplicateProjectComponent } from './duplicate-project/duplicate-project.component';
-import { MatDialog } from '@angular/material/dialog';
-import { ProjectTeamEditComponent } from './project-team-edit/project-team-edit.component';
-import { ProjectsTeamService } from './Services/department-and-project.service';
+import {Router, ActivatedRoute} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {ClosedProjectComponent} from './closed-project/closed-project.component';
+import {DuplicateProjectComponent} from './duplicate-project/duplicate-project.component';
+import {MatDialog} from '@angular/material/dialog';
+import {ProjectTeamEditComponent} from './project-team-edit/project-team-edit.component';
+import {ProjectsTeamService} from './Services/department-and-project.service';
 import {
     MilestoneModel,
     ProjectTeamDuplicateModel,
     ProjectTeamModel,
     ProjectViewsModel,
 } from './Model/department-and-project.model';
-import { DepartmentModel } from '../List-department/Model/List-department.model';
-import { UpdateStatusProjectComponent } from './update-status-project/update-status-project.component';
-import { milestoneDetailEditComponent } from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import {DepartmentModel} from '../List-department/Model/List-department.model';
+import {UpdateStatusProjectComponent} from './update-status-project/update-status-project.component';
+import {milestoneDetailEditComponent} from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
 
 @Component({
     selector: 'kt-projects-team',
@@ -60,6 +60,7 @@ export class ProjectsTeamComponent implements OnInit {
         this.language = localStorage.getItem('language');
         this.UserID = +localStorage.getItem('idUser');
     }
+
     ID_Project: number;
     activeLink = 'home';
     view = '';
@@ -299,148 +300,170 @@ export class ProjectsTeamComponent implements OnInit {
         this.router.navigateByUrl(_backUrl);
     }
 
+    CheckUserInProject() {
+        if (this.IsAdminGroup) {
+            return true;
+        }
+        if (this.list_role) {
+            const x = this.list_role.find((x) => x.id_row === this.ID_Project);
+            if (x) {
+                return true;
+            }else{
+                this.router.navigate(['']);
+                this.menuAsideService.loadMenu();
+            }
+        }
+        return false;
+    }
+
     LoadData() {
+
+
+        if(this.ID_Project){
+
+            this.WeWorkService.ListViewByProject(this.ID_Project).subscribe((res) => {
+                if (res && res.status === 1) {
+                    this.listDefaultView = res.data;
+                    const x = this.listDefaultView.find((x) => x.id_project_team === null);
+                    if (x) {
+                        this.isShowaddview = true;
+                        this.selectedNewView(x.view_name_new, x.image, x.viewid);
+                    } else {
+                        this.isShowaddview = false;
+                    }
+                    this.changeDetectorRefs.detectChanges();
+                }
+            });
+            this.WeWorkService.getRolesByProjects(this.ID_Project).subscribe((res) => {
+                if (res && res.status === 1) {
+                    if (res.data.data && res.data.data.data_roles) {
+                        this.RolesByProject = res.data.data.data_roles.filter(x => x.member);
+                    }
+                }
+            });
+
+            this._Services.OverView(this.ID_Project).subscribe((res) => {
+                if (res && res.status === 1) {
+                    this.overview = res.data;
+                }
+            });
+            this._Services.MyWork().subscribe((res) => {
+                if (res && res.status === 1) {
+                    this.mywork = res.data;
+                }
+            });
+            this._Services.DeptDetail(this.ID_Project).subscribe((res) => {
+                if (res && res.status === 1) {
+                    this.item = res.data;
+                    this.loaded = true;
+                    if (this.item.icon != '') {
+                        this.ShowImage = true;
+                    }
+                    this.GetColorName(this.item.title.slice(0, 1));
+                    this.item.Users.forEach((element) => {
+                        if (element.id_nv === +localStorage.getItem('idUser')) {
+                            this.isFavourite = element.favourite;
+                        }
+                    });
+                    this.changeDetectorRefs.detectChanges();
+                    this.ShowFull = true;
+                    this.item.default_view = 10;
+                    switch (this.item.default_view) {
+                        case 3: {
+                            this.view = 'board';
+                            break;
+                        }
+                        case 5: {
+                            this.view = 'gantt';
+                            break;
+                        }
+                        case 1: {
+                            this.view = 'stream';
+                            break;
+                        }
+                        case 6: {
+                            this.view = 'calendar';
+                            break;
+                        }
+                        case 2: {
+                            this.view = 'period';
+                            break;
+                        }
+                        case 10: {
+                            this.view = 'clickup';
+                            break;
+                        }
+                        default: {
+                            this.view = 'home';
+                            break;
+                        }
+                    }
+                    if (this.activeLink === '' || this.activeLink === 'home') {
+                        let view_type = '1';
+                        switch (this.view) {
+                            case 'board': {
+                                view_type = '3';
+                                break;
+                            }
+                            case 'gantt': {
+                                view_type = '5';
+                                break;
+                            }
+                            case 'stream': {
+                                view_type = '1';
+                                break;
+                            }
+                            case 'calendar': {
+                                view_type = '6';
+                                break;
+                            }
+                            case 'period': {
+                                view_type = '2';
+                                break;
+                            }
+                            case 'clickup': {
+                                view_type = '10';
+                                break;
+                            }
+                            default: {
+                                view_type = '4';
+                                break;
+                            }
+                        }
+                        this.ClickShow('' + this.item.default_view);
+                    } else {
+                        this.ShowFull = true;
+                    }
+                    // 		}
+                } else {
+                    this.router.navigate(['']);
+                }
+            });
+
+            const queryParams = new QueryParamsModelNew(
+                this.filterConfiguration(),
+                '',
+                '',
+                1,
+                50,
+                true
+            );
+            this.DocumentsService.ListDocuments(queryParams).subscribe((res) => {
+                if (res && res.status === 1) {
+                    this.listDocument = res.data;
+                }
+                this.changeDetectorRefs.detectChanges();
+            });
+        }
 
         this.menuServices.GetRoleWeWork('' + this.UserID).subscribe((res) => {
             if (res && res.status === 1) {
                 this.list_role = res.data.dataRole;
                 this.IsAdminGroup = res.data.IsAdminGroup;
+                this.CheckUserInProject();
             }
         });
 
-        this.WeWorkService.ListViewByProject(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
-                this.listDefaultView = res.data;
-                const x = this.listDefaultView.find((x) => x.id_project_team === null);
-                if (x) {
-                    this.isShowaddview = true;
-                    this.selectedNewView(x.view_name_new, x.image, x.viewid);
-                } else {
-                    this.isShowaddview = false;
-                }
-                this.changeDetectorRefs.detectChanges();
-            }
-        });
-        this.WeWorkService.getRolesByProjects(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
-                if (res.data.data && res.data.data.data_roles) {
-                    this.RolesByProject = res.data.data.data_roles.filter(x => x.member);
-                }
-            }
-        });
-
-        this._Services.OverView(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
-                this.overview = res.data;
-            }
-        });
-        this._Services.MyWork().subscribe((res) => {
-            if (res && res.status === 1) {
-                this.mywork = res.data;
-            }
-        });
-        this._Services.DeptDetail(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
-                this.item = res.data;
-                this.loaded = true;
-                if (this.item.icon != '') {
-                    this.ShowImage = true;
-                }
-                this.GetColorName(this.item.title.slice(0, 1));
-                this.item.Users.forEach((element) => {
-                    if (element.id_nv === +localStorage.getItem('idUser')) {
-                        this.isFavourite = element.favourite;
-                    }
-                });
-                this.changeDetectorRefs.detectChanges();
-                this.ShowFull = true;
-                this.item.default_view = 10;
-                switch (this.item.default_view) {
-                    case 3: {
-                        this.view = 'board';
-                        break;
-                    }
-                    case 5: {
-                        this.view = 'gantt';
-                        break;
-                    }
-                    case 1: {
-                        this.view = 'stream';
-                        break;
-                    }
-                    case 6: {
-                        this.view = 'calendar';
-                        break;
-                    }
-                    case 2: {
-                        this.view = 'period';
-                        break;
-                    }
-                    case 10: {
-                        this.view = 'clickup';
-                        break;
-                    }
-                    default: {
-                        this.view = 'home';
-                        break;
-                    }
-                }
-                if (this.activeLink === '' || this.activeLink === 'home') {
-                    let view_type = '1';
-                    switch (this.view) {
-                        case 'board': {
-                            view_type = '3';
-                            break;
-                        }
-                        case 'gantt': {
-                            view_type = '5';
-                            break;
-                        }
-                        case 'stream': {
-                            view_type = '1';
-                            break;
-                        }
-                        case 'calendar': {
-                            view_type = '6';
-                            break;
-                        }
-                        case 'period': {
-                            view_type = '2';
-                            break;
-                        }
-                        case 'clickup': {
-                            view_type = '10';
-                            break;
-                        }
-                        default: {
-                            view_type = '4';
-                            break;
-                        }
-                    }
-                    this.ClickShow('' + this.item.default_view);
-                } else {
-                    this.ShowFull = true;
-                }
-                // 		}
-            } else {
-                this.router.navigate(['']);
-            }
-        });
-
-        const queryParams = new QueryParamsModelNew(
-            this.filterConfiguration(),
-            '',
-            '',
-            1,
-            50,
-            true
-        );
-        this.DocumentsService.ListDocuments(queryParams).subscribe((res) => {
-            if (res && res.status === 1) {
-                this.listDocument = res.data;
-            }
-            this.changeDetectorRefs.detectChanges();
-        });
     }
 
     filterConfiguration(): any {
@@ -588,7 +611,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(ClosedProjectComponent, {
-            data: { _item },
+            data: {_item},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -627,7 +650,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = _item.id > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(DuplicateProjectComponent, {
-            data: { _item },
+            data: {_item},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -688,7 +711,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(ProjectTeamEditComponent, {
-            data: { _item, _IsEdit: _item.IsEdit, is_project: _item.is_project },
+            data: {_item, _IsEdit: _item.IsEdit, is_project: _item.is_project},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -721,7 +744,7 @@ export class ProjectsTeamComponent implements OnInit {
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
 
         const dialogRef = this.dialog.open(UpdateStatusProjectComponent, {
-            data: { _item, _IsEdit: _item.IsEdit },
+            data: {_item, _IsEdit: _item.IsEdit},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -892,7 +915,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(milestoneDetailEditComponent, {
-            data: { _item },
+            data: {_item},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {

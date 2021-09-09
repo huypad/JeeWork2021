@@ -147,24 +147,48 @@ namespace JeeWork_Core2021.Controllers.Wework
             var dirPath = Path.Combine(_hostingEnvironment.ContentRootPath, "Upload\\editor\\");
             var saveimg = Path.Combine(dirPath, file.FileName);
             string imgext = Path.GetExtension(file.FileName);
-            if (imgext == ".jpg" || imgext == ".png")
+            
+            if (imgext.ToLower() == ".jpg" || imgext.ToLower() == ".png")
             {
-                using (var uploadimg = new FileStream(saveimg, FileMode.Create))
+                //using (var uploadimg = new FileStream(saveimg, FileMode.Create))
+                //{
+                //    await file.CopyToAsync(uploadimg);
+                //    //message = "The selected file" + file.FileName + " is save";
+                //    return new
+                //    {
+                //        succeeded = true,
+                //        imageUrl = file.Name
+                //    };
+                //}
+                using (var ms = new MemoryStream())
                 {
-                    await file.CopyToAsync(uploadimg);
-                    //message = "The selected file" + file.FileName + " is save";
+                    file.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    string s = Convert.ToBase64String(fileBytes);
+
+                    string x = "";
+                    string folder = "/attachment/" + getFolderByType(1) + "/";
+                    if (!UploadHelper.UploadFile(s, file.FileName, folder, _hostingEnvironment.ContentRootPath, ref x, _configuration))
+                    {
+                        return (new
+                        {
+                            succeeded = false,
+                        });
+                    }
+                    await Task.Delay(1000);
                     return new
                     {
                         succeeded = true,
-                        imageUrl = file.Name
+                        imageUrl = WeworkLiteController.genLinkAttachment(_configuration, x)
                     };
+                    // act on the Base64 data
                 }
             }
             else
             {
                 return (new
                 {
-                    succeeded = false,
+                    ERROR = "Định dạng không hợp lệ",
                 });
             }
         }

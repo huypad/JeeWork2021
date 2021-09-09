@@ -64,7 +64,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             PageModel pageModel = new PageModel();
             try
             {
-
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -73,7 +72,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
@@ -81,7 +79,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "CreatedDate", dieukien_where = " ";
                     if (string.IsNullOrEmpty(query.filter["object_type"]) || string.IsNullOrEmpty(query.filter["object_id"]))
@@ -89,7 +86,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     dieukien_where += " and object_type=@object_type and object_id=@object_id";
                     Conds.Add("object_type", query.filter["object_type"]);
                     Conds.Add("object_id", query.filter["object_id"]);
-
                     if (!string.IsNullOrEmpty(query.filter["LastID"]))
                     {
 
@@ -120,23 +116,20 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dieukienSort = "CreatedDate desc";
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select c.*,c.CreatedBy as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, coalesce(tong,0) as reply from we_comment c
-left join (select count(*) as tong, id_parent from we_comment where disabled=0 group by id_parent) child on child.id_parent=c.id_row where c.disabled=0 and c.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
+                                    left join (select count(*) as tong, id_parent from we_comment where disabled=0 group by id_parent) child on child.id_parent=c.id_row where c.disabled=0 and c.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
                     sqlq += $";select att.*,att.createdby as id_nv, '' as username from we_attachment att where disabled=0 and att.createdby in ({listID}) and object_type=3";
                     sqlq += @$";select l.*, ico.title, ico.icon, '' as hoten from we_comment_like l 
-join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabled = 0 and l.createdby in ({listID})";
+                            join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabled = 0 and l.createdby in ({listID})";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
-
                     #region Map info account từ JeeAccount
-
                     foreach (DataRow item in ds.Tables[0].Rows)
                     {
                         var info = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;
@@ -149,7 +142,6 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                     foreach (DataRow item in ds.Tables[1].Rows)
                     {
                         var info = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (info != null)
                         {
                             item["username"] = info.Username;
@@ -158,7 +150,6 @@ join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabl
                     foreach (DataRow item in ds.Tables[2].Rows)
                     {
                         var info = DataAccount.Where(x => item["createdby"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;

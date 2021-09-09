@@ -3,16 +3,17 @@ import { environment } from 'src/environments/environment';
 
 const tinyMCE = {
 
-	plugins: 'autosave paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
+	plugins: 'autoresize autosave paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
 	toolbar: 'undo redo | styleselect |  fontselect| bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
 	image_uploadtab: true,
 	paste_as_text: true,
 	paste_data_images: true,
 	// paste_block_drop: true, // Dán hình ảnh đã screenshot
 	// paste_filter_drop: true,
-	// smart_paste: true,  // note: default value for smart_paste is true
+	smart_paste: true,  // Phát hiện văn bản giống với một URL và thay đổi văn bản thành siêu liên kết.	Phát hiện văn bản giống với URL của hình ảnh và sẽ cố gắng thay thế văn bản bằng hình ảnh.
 	// image_file_types: 'jpg,svg,webp',
-	height: 400,
+	// height: 400,
+	autoresize_on_init: true,
 	language: 'vi',
 	// link_default_protocol: 'https', // Link mặc định
 	// default_link_target: '_blank',
@@ -23,8 +24,8 @@ const tinyMCE = {
 	// automatic_uploads: true,
 	// images_upload_base_path: '/images',
 	// images_upload_credentials: true,
-	// autosave_ask_before_unload: true, // Tự động save
-	// autosave_interval: '10s', // thời gian tự động save
+	autosave_ask_before_unload: true, // Tự động save
+	autosave_interval: '30s', // thời gian tự động save
 
 	images_upload_handler: function (blobInfo, success, failure) {
 		var xhr, formData;
@@ -56,6 +57,37 @@ const tinyMCE = {
 		var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
 		if (freeTiny)
 			freeTiny.style.display = 'none';
+	},
+	// setup = editor => {
+	setup : function(editor) {
+		editor.on('BeforeSetContent', e => {
+			if (e.content && e.content.includes('blob:')) {
+				const s = e.content
+					.substr(e.content.indexOf('blob'), e.content.length)
+					.replace('/>', '')
+					.replace('>', '')
+					.replace('"', '')
+					.trim();
+				// debugger
+				if (e.target.editorUpload.blobCache.getByUri(s)) {
+					let size = e.target.editorUpload.blobCache.getByUri(s).blob().size;
+					const allowedSize = 100; // KB
+					size = size / 1024; // KB
+					if (size > allowedSize) {
+						// alert('Hình ảnh đã vượt qua kích thước tối đa.');
+						editor.windowManager.alert('Hình ảnh đã vượt qua kích thước tối đa.');
+						// editor.notificationManager.open({
+						// 	text: 'An error occurred.',
+						// 	type: 'error'
+						// });
+
+						console.log('Max size Error');
+						e.preventDefault();
+						e.stopPropagation();
+					}
+				}
+			}
+		});
 	},
 	content_style: '.tox-notification--in{display:none};'
 };

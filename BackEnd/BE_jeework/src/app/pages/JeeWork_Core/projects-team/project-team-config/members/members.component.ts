@@ -13,6 +13,7 @@ import { ProjectsTeamService } from '../../Services/department-and-project.servi
 import { WeWorkService } from '../../../services/wework.services';
 import {UserChatBox} from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/user-chatbox';
 import {ChatService} from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
+import {MenuAsideService, MenuPhanQuyenServices} from '../../../../../_metronic/jeework_old/core/_base/layout';
 @Component({
 	selector: 'kt-members',
 	templateUrl: './members.component.html',
@@ -25,15 +26,18 @@ export class MembersComponent {
 	options: any = {};
 	IsAdmin: boolean = false;
 	customStyle:any = {};
-
+	UserID: any = localStorage.getItem('idUser');
 	@ViewChild('myPopoverA', { static: true }) myPopoverA: PopoverContentComponent;
 	constructor(public _services: ProjectsTeamService,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
 		private activatedRoute: ActivatedRoute,
+		private menuServices: MenuPhanQuyenServices,
+		private menuAsideService: MenuAsideService,
 		private translate: TranslateService,
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
+				private _service: ProjectsTeamService,
 		private chatService: ChatService,
 		public WeWorkService: WeWorkService,
 		private tokenStorage: TokenStorage) {
@@ -49,10 +53,44 @@ export class MembersComponent {
 			if (res && res.status == 1) {
 				this.admins = res.data.filter(x => x.admin);
 				this.members = res.data.filter(x => !x.admin);
+				this.changeDetectorRefs.detectChanges();
 			}
 			this.changeDetectorRefs.detectChanges();
 		});
+		// kiểm tra quyền của tài khoản
+		this.menuServices.GetRoleWeWork(this.UserID).subscribe((res) => {
+			if (res && res.status === 1) {
+				this.CheckAdmin(res.data);
+			} else {
+				this.router.navigate(['']);
+				this.menuAsideService.loadMenu();
+			}
+		});
 	}
+
+	CheckAdmin(data) {
+		if (data.IsAdminGroup) {
+			return true;
+		}
+		const list_role = data.dataRole;
+		if (list_role) {
+			const x = list_role.find((x) => x.id_row === this.id_project_team);
+			if (x) {
+				if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+					return true;
+				}else{
+					this.router.navigate(['project', this.id_project_team]);
+					return;
+				}
+			}else{
+				this.router.navigate(['']);return;
+				this.menuAsideService.loadMenu();
+			}
+		}
+		return false;
+	}
+
+
 	getOptions() {
 		var options: any = {};
 		var filter: any = {};
@@ -105,8 +143,10 @@ export class MembersComponent {
 		}
 		this._services.Add_user(data).subscribe(res => {
 			this.layoutUtilsService.OffWaitingDiv();
-			if (res && res.status == 1)
+			if (res && res.status == 1){
+				this.LoadParent(true);
 				this.ngOnInit();
+			}
 			else
 				this.layoutUtilsService.showError(res.error.message);
 		})
@@ -124,7 +164,10 @@ export class MembersComponent {
 		this._services.Add_user(data).subscribe(res => {
 			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status == 1)
+			{
 				this.ngOnInit();
+				this.LoadParent(true);
+			}
 			else
 				this.layoutUtilsService.showError(res.error.message);
 		})
@@ -140,8 +183,10 @@ export class MembersComponent {
 		this.layoutUtilsService.showWaitingDiv();
 		this._services.Delete_user(id_row).subscribe(res => {
 			this.layoutUtilsService.OffWaitingDiv();
-			if (res && res.status == 1)
+			if (res && res.status == 1){
 				this.ngOnInit();
+				this.LoadParent(true);
+			}
 			else
 				this.layoutUtilsService.showError(res.error.message);
 		})
@@ -151,8 +196,10 @@ export class MembersComponent {
 		this.layoutUtilsService.showWaitingDiv();
 		this._services.update_user(id_row, admin).subscribe(res => {
 			this.layoutUtilsService.OffWaitingDiv();
-			if (res && res.status == 1)
+			if (res && res.status == 1){
 				this.ngOnInit();
+				this.LoadParent(true);
+			}
 			else
 				this.layoutUtilsService.showError(res.error.message);
 		})
@@ -223,5 +270,11 @@ export class MembersComponent {
 		this.chatService.search$.next('activechat')
 		this.changeDetectorRefs.detectChanges();
 	}
+
+	LoadParent(value): void {
+		this._service.changeMessage(value);
+	}
+
+
 
 }

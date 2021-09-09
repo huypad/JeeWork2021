@@ -11,7 +11,7 @@ namespace JeeWork_Core2021.Models
     {
         public long id_row { get; set; }
         public string title { get; set; }
-        public DateTime deadline { get; set; }
+        public DateTime deadline { get; set; } //yyyy-MM-ddTHH:mm:ss.fff
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
         public string description { get; set; }

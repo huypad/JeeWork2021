@@ -481,11 +481,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     where Username = @Username";
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     string role = "";
-                    foreach (DataRow vr in dt.Rows)
+                   if(dt.Rows.Count > 0)
                     {
-                        role += (vr["id_permit"] + ",");
+                        List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                        role = string.Join(",", listrole);
                     }
-                    role = role.Substring(0, role.Length - 1);
                     ObjCustomData objCustomData = new ObjCustomData();
                     objCustomData.userId = Common.getIDUserbyUserName(data.UserName, HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
                     objCustomData.updateField = "jee-work";
@@ -565,12 +565,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     join tbl_Group_Account g_a  on g.id_group=g_a.id_group 
                                     where Username = @Username";
                     DataTable dts = cnn.CreateDataTable(sqlq, Conds);
-                    string role = "";
-                    foreach (DataRow vr in dts.Rows)
+                    string role = ""; 
+                    if (dt.Rows.Count > 0)
                     {
-                        role += (vr["id_permit"] + ",");
+                        List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                        role = string.Join(",", listrole);
                     }
-                    if (role != "") { role = role.Substring(0, role.Length - 1); }
 
                     ObjCustomData objCustomData = new ObjCustomData();
                     objCustomData.userId = Common.getIDUserbyUserName(data.UserName, HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
@@ -1100,11 +1100,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     where Username = @Username";
                         DataTable dts = cnn.CreateDataTable(sqlq, Conds);
                         string role = "";
-                        foreach (DataRow vr in dts.Rows)
+                        if (dt.Rows.Count > 0)
                         {
-                            role += (vr["id_permit"] + ",");
+                            List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                            role = string.Join(",", listrole);
                         }
-                        role = role.Substring(0, role.Length - 1);
                         ObjCustomData objCustomData = new ObjCustomData();
                         objCustomData.userId = Common.getIDUserbyUserName(arr_data[0].ID.ToString(), HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
                         objCustomData.updateField = "jee-work";
@@ -1137,11 +1137,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     where Username = @Username";
                             DataTable dts = cnn.CreateDataTable(sqlq, Conds);
                             string role = "";
-                            foreach (DataRow vr in dts.Rows)
+                            if (dt.Rows.Count > 0)
                             {
-                                role += (vr["id_permit"] + ",");
+                                List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                                role = string.Join(",", listrole);
                             }
-                            role = role.Substring(0, role.Length - 1);
                             ObjCustomData objCustomData = new ObjCustomData();
                             objCustomData.userId = Common.getIDUserbyUserName(vts["Username"].ToString(), HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
                             objCustomData.updateField = "jee-work";

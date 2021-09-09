@@ -14,6 +14,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using JeeWork_Core2021.Models;
 using JeeWork_Core2021.Controllers.Wework;
+using System.Globalization;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -419,7 +420,7 @@ namespace JeeWork_Core2021.Classes
                     string dk_proj = @" and 
                 (id_department in (select id_row from we_department where ParentID is null and id_row in (select id_department from we_department_owner do where do.disabled = 0 and do.id_user = " + loginData.UserID + " and type = 1)) " +
                 "or id_department in (select id_row from we_department where ParentID is not null and ParentID in (select id_department from we_department_owner do where do.disabled = 0 and do.id_user = " + loginData.UserID + " and type = 1)) " +
-                "or p.id_row in (select id_project_team from we_project_team_user where id_user = " + loginData.UserID + "))";
+                "or p.id_row in (select id_project_team from we_project_team_user where id_user = " + loginData.UserID + "  and Disabled = 0 ))";
                     sql_project = sql_project.Replace("(dk_proj)", dk_proj);
                 }
                 else
@@ -593,6 +594,14 @@ namespace JeeWork_Core2021.Classes
             }
             //if (list.Equals("")) list = "," + parentid;
             return list;
+        }
+        public static DateTime convertStringToDatetime(string strNgay)
+        {
+            string[] formats = new string[] { "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH", "dd/MM/yyyy",
+                                                        "yyyy-MM-dd'T'00:00:00:000'Z'", "d/MM/yyyy", "dd/M/yyyy", "d/M/yyyy" };
+            DateTime ngay = new DateTime();
+            DateTime.TryParseExact(strNgay, formats, null, DateTimeStyles.None, out ngay);
+            return ngay;
         }
         public static DataTable ReaddataFromXLSFile(string filename, string sheetname, out string error)
         {
