@@ -498,8 +498,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                     if (dataJA == null)
                     {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.ThatBai("Lỗi cập nhật quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                        //cnn.RollbackTransaction();
+                        //return JsonResultCommon.ThatBai("Lỗi cập nhật quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
                     }
                     cnn.EndTransaction();
                     #endregion
@@ -568,10 +568,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string role = ""; 
                     if (dt.Rows.Count > 0)
                     {
-                        List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                        List<string> listrole = dts.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
                         role = string.Join(",", listrole);
                     }
-
                     ObjCustomData objCustomData = new ObjCustomData();
                     objCustomData.userId = Common.getIDUserbyUserName(data.UserName, HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
                     objCustomData.updateField = "jee-work";
@@ -584,8 +583,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                     if (dataJA == null)
                     {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.ThatBai("Lỗi cập nhật dữ liệu quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                        //cnn.RollbackTransaction();
+                        //return JsonResultCommon.ThatBai("Lỗi cập nhật dữ liệu quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
                     }
                     cnn.EndTransaction();
 
@@ -1089,7 +1088,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #region update customdata
-
                     if (ColumnKey == "username")
                     {
                         Conds = new SqlConditions();
@@ -1102,7 +1100,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         string role = "";
                         if (dt.Rows.Count > 0)
                         {
-                            List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                            List<string> listrole = dts.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
                             role = string.Join(",", listrole);
                         }
                         ObjCustomData objCustomData = new ObjCustomData();
@@ -1117,8 +1115,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                         var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                         if (dataJA == null)
                         {
-                            cnn.RollbackTransaction();
-                            return JsonResultCommon.ThatBai("Lỗi cập nhật nhóm quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                            //cnn.RollbackTransaction();
+                            //return JsonResultCommon.ThatBai("Lỗi cập nhật nhóm quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
                         }
                     }
                     else
@@ -1139,7 +1137,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             string role = "";
                             if (dt.Rows.Count > 0)
                             {
-                                List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
+                                List<string> listrole = dts.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
                                 role = string.Join(",", listrole);
                             }
                             ObjCustomData objCustomData = new ObjCustomData();
@@ -1150,12 +1148,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 WeWorkRoles = role
                             };
                             objCustomData.fieldValue = datas;
-
                             var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                             if (dataJA == null)
                             {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.ThatBai("Lỗi cập nhật username vào nhóm lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
+                                //cnn.RollbackTransaction();
+                                //return JsonResultCommon.ThatBai("Lỗi cập nhật username vào nhóm lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
                             }
                         }
                     }
