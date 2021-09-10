@@ -155,6 +155,8 @@ export class WorkListNewDetailComponent implements OnInit {
     UserID = 0;
     list_milestone: any = [];
     showChucnang = false;
+    disabledBtn = false;
+    showsuccess = false;
     private readonly componentName: string = 'kt-task_';
     isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
         false
@@ -278,6 +280,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 break;
         }
         this.layoutUtilsService.showError(txtError);
+        this.disabledBtn = false;
         return false;
 
     }
@@ -1089,6 +1092,7 @@ export class WorkListNewDetailComponent implements OnInit {
     UpdateDescription() {
         if (this.item.description.trim() != this.description_tiny.trim())
         {
+            this.disabledBtn = true;
             if (!this.KiemTraThayDoiCongViec(this.item, 'description')) {
                 this.description_tiny = this.item.description;
                 return;
@@ -1118,16 +1122,7 @@ export class WorkListNewDetailComponent implements OnInit {
             map(res => {
                 if (res && res.status == 1) {
                     this.SendMessage(true);
-                    // this.LoadLog();
                     this.LoadData();
-                    // this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
-                    //     if (res && res.status == 1) {
-                    //         this.item = res.data;
-                    //         this.changeDetectorRefs.detectChanges();
-                    //     } else {
-                    //         this.layoutUtilsService.showError(res.error.message);
-                    //     }
-                    // });
                 } else {
                     this.layoutUtilsService.showError(res.error.message);
                 }
@@ -1135,6 +1130,15 @@ export class WorkListNewDetailComponent implements OnInit {
             catchError((err) => throwError(err)),
             finalize(() => this.layoutUtilsService.OffWaitingDiv()),
         ).subscribe((res) => {
+            if(key == 'description'){
+                this.showsuccess = true;
+                setTimeout(()=>{
+                    this.showsuccess = false;
+                    this.disabledBtn = false;
+                },2000);
+            }
+        },(error) => {
+            this.disabledBtn = false;
         });
     }
 
