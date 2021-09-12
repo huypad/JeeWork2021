@@ -1,6 +1,7 @@
 import { WorkService } from "./../work.service";
 import { ActivatedRoute } from "@angular/router";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import {AuthService} from '../../../../modules/auth';
 
 @Component({
   selector: "kt-my-works",
@@ -17,9 +18,10 @@ export class MyWorksComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private _service: WorkService,
     private route: ActivatedRoute,
+    private auth: AuthService,
     private changeDetect: ChangeDetectorRef
   ) {
-    this.UserID = +localStorage.getItem("idUser");
+    this.UserID = this.auth.getUserId();
   }
 
   ngOnInit() {

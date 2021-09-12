@@ -35,6 +35,10 @@ import {
 import {DepartmentModel} from '../List-department/Model/List-department.model';
 import {UpdateStatusProjectComponent} from './update-status-project/update-status-project.component';
 import {milestoneDetailEditComponent} from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import {AutomationComponent} from '../automation/automation.component';
+import {TemplateCenterComponent} from '../template-center/template-center.component';
+import {TemplateCenterUpdateComponent} from '../template-center/template-center-update/template-center-update.component';
+import {ProjectTeamEditStatusComponent} from './project-team-edit-status/project-team-edit-status.component';
 
 @Component({
     selector: 'kt-projects-team',
@@ -155,12 +159,13 @@ export class ProjectsTeamComponent implements OnInit {
         this.activatedRoute.params.subscribe((params) => {
             this.ID_Project = +params.id;
             this.LoadData();
-            this.activeLink = 'home/clickup';
+            // this.activeLink = 'home/clickup';
+            this.activeLink = 'home';
             path = this.router.url;
             if (path) {
                 const arr = path.split('/');
                 if (arr.length > 3) {
-                    this.activeLink = arr[3] + (arr[4] ? '/' + arr[4] : '');
+                    this.activeLink = arr[3];
                 }
                 if (
                     this.activeLink === 'clickup' ||
@@ -308,7 +313,7 @@ export class ProjectsTeamComponent implements OnInit {
             const x = this.list_role.find((x) => x.id_row === this.ID_Project);
             if (x) {
                 return true;
-            }else{
+            } else {
                 this.router.navigate(['']);
                 this.menuAsideService.loadMenu();
             }
@@ -319,7 +324,7 @@ export class ProjectsTeamComponent implements OnInit {
     LoadData() {
 
 
-        if(this.ID_Project){
+        if (this.ID_Project) {
 
             this.WeWorkService.ListViewByProject(this.ID_Project).subscribe((res) => {
                 if (res && res.status === 1) {
@@ -972,11 +977,74 @@ export class ProjectsTeamComponent implements OnInit {
     ViewReport() {
         const url = 'project/' + this.ID_Project + '/report/' + this.ID_Project;
         this.router.navigateByUrl(url);
-        // this._Services.FindDepartmentFromProjectteam(this.ID_Project).subscribe(res => {
-        // 	if (res && res.status === 1) {
-        // 		const url = 'project/' + this.ID_Project + '/report/' + res.data; ///project/1/activities
-        // 		this.router.navigateByUrl(url);
-        // 	}
-        // })
     }
+
+    AddAutomation() {
+        const item = this.item;
+        item.id = this.item.id_row;
+        item.type = 3;
+        const dialogRef = this.dialog.open(AutomationComponent, {
+            data: {item},
+            width: '1240px',
+            height: '95vh',
+        });
+        dialogRef.afterClosed().subscribe((res) => {
+            if (!res) {
+                return;
+            } else {
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
+    }
+
+    AddTemplate() {
+        const item = 'Danh sách giao diện template';
+        const dialogRef = this.dialog.open(TemplateCenterComponent, {
+            data: {item},
+            width: '50vw',
+            height: '95vh',
+        });
+        dialogRef.afterClosed().subscribe((res) => {
+            if (!res) {
+                return;
+            } else {
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
+    }
+
+    UpdateTemplate(value) {
+        const item = this.item;
+        item.id = this.item.id_row;
+        item.type = 3;
+        const dialogRef = this.dialog.open(TemplateCenterUpdateComponent, {
+            data: {item, buocthuchien: value},
+            width: '50vw',
+            height: '95vh',
+        });
+        dialogRef.afterClosed().subscribe((res) => {
+            if (!res) {
+                return;
+            } else {
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
+    }
+
+    UpdateStatus() {
+        const dialogRef = this.dialog.open(ProjectTeamEditStatusComponent, {
+            data: this.item,
+            minWidth: '800px',
+        });
+        dialogRef.afterClosed().subscribe((res) => {
+            if (!res) {
+                return;
+            } else {
+                this.LoadData();
+            }
+            location.reload();
+        });
+        this.changeDetectorRefs.detectChanges();
+    }
+
 }

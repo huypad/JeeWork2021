@@ -392,8 +392,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     AccUsernameModel infoAccount = DataAccount.Where(x => id.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = $"";
-                    sqlq += @"select w.*, IIF(w.Status = 1 and getdate() > w.deadline,1,0) as is_quahan,
-IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETDATE(),103),1,0) as is_moigiao
+                    sqlq += @"select w.*, IIF(w.Status = 1 and GETUTCDATE() > w.deadline,1,0) as is_quahan,
+IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETUTCDATE(),103),1,0) as is_moigiao
 from v_wework_new w where w.disabled=0 and id_nv = " + id;
                     sqlq += @$";select a.id_user as id_nv, '' as hoten, '' as username, '' as image, '' as Tenchucdanh, '' as mobile from we_authorize a
 where disabled = 0 and a.CreatedBy = " + id;
@@ -641,7 +641,7 @@ and authorize.Createdby =" + loginData.UserID + " " +
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     //Update lại những người đã ủy quyền trước đó
-                    //object deleted_old = cnn.ExecuteNonQuery("update we_authorize set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where (CreatedBy = " + iduser + ")");
+                    //object deleted_old = cnn.ExecuteNonQuery("update we_authorize set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where (CreatedBy = " + iduser + ")");
                     SqlConditions cond = new SqlConditions();
                     cond.Add("from", data.start_date);
                     cond.Add("to", data.end_date);
@@ -689,7 +689,7 @@ and ( (start_date <= @from and end_date >= @from ) or (start_date <= @to and end
                     val.Add("start_date", data.start_date);
                     val.Add("end_date", data.end_date);
                     val.Add("id_user", data.id_user);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_authorize") != 1)

@@ -258,7 +258,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                         " from we_project_team join we_project_team_user " +
                         "on we_project_team.id_row = we_project_team_user.id_project_team " +
                         "where we_project_team.disabled = 0 and we_project_team_user.disabled = 0 " +
-                        "and locked = 0 and id_user = " + id_nv + $" or id_user in (select CreatedBy from we_authorize where id_user = {id_nv} and disabled =0 and start_date <= GETDATE() and end_date >= GETDATE() );";
+                        "and locked = 0 and id_user = " + id_nv + $" or id_user in (select CreatedBy from we_authorize where id_user = {id_nv} and disabled =0 and start_date <= GETUTCDATE() and end_date >= GETUTCDATE() );";
                     sqlq += @"select we_project_role.id_row,id_project_team,id_role, admin, member,customer, KeyPermit 
                             from we_project_role join we_role on we_role.id_row = we_project_role.id_role
                             where member = 1 and we_role.Disabled = 0";
@@ -272,7 +272,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                     //}
                     //string listDA = string.Join(",", dt_Project.AsEnumerable().Select(x=>x["id_row"]).ToList());
                     ////Lấy danh sách được ủy quyền của người, rồi cập nhật lại cột 
-                    //string sql_uq = $"select list_project,CreatedBy from we_authorize where id_user = {id_nv} and disabled =0 and start_date <= GETDATE() and end_date >= GETDATE()";// lấy danh sách các tài khoản ủy quyền cho tài khoản hiện tại trong thời gian hiện tại
+                    //string sql_uq = $"select list_project,CreatedBy from we_authorize where id_user = {id_nv} and disabled =0 and start_date <= GETUTCDATE() and end_date >= GETUTCDATE()";// lấy danh sách các tài khoản ủy quyền cho tài khoản hiện tại trong thời gian hiện tại
                     //DataTable dtup = Conn.CreateDataTable(sql_uq);
                     //if (dtup.Rows.Count > 0)
                     //{

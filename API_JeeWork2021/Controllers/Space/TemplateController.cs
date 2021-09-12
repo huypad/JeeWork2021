@@ -77,7 +77,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("CustomerID", loginData.CustomerID);
                     if (!string.IsNullOrEmpty(data.color))
                         val.Add("color", data.color);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     val.Add("IsDefault", 0);
                     string strCheck = "select count(*) from we_template_customer where Disabled=0 and (CustomerID=@customerid) and title=@name";
@@ -96,7 +96,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         Hashtable has = new Hashtable();
                         has["TemplateID"] = idc;
-                        has["CreatedDate"] = DateTime.Now;
+                        has["CreatedDate"] = Common.GetDateTime();
                         has["CreatedBy"] = iduser;
                         foreach (var item in data.Status)
                         {
@@ -176,7 +176,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("CustomerID", loginData.CustomerID);
                     if (!string.IsNullOrEmpty(data.color))
                         val.Add("color", data.color);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     val.Add("IsDefault", 0);
                     string strCheck = "select count(*) from we_Template_Status where Disabled=0 and (customerid=@customerid) and title=@name and id_row<>@id";
@@ -205,7 +205,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             has["color"] = item.color;
                             if (item.id_row > 0)
                             {
-                                has["UpdatedDate"] = DateTime.Now;
+                                has["UpdatedDate"] = Common.GetDateTime();
                                 has["UpdatedBy"] = iduser;
                                 if (cnn.Update(has, sqlcond, "we_Template_Status") != 1)
                                 {
@@ -221,7 +221,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 has["IsTodo"] = 0;
                                 has["Type"] = item.Type;
                                 has["IsDefault"] = 0;
-                                has["CreatedDate"] = DateTime.Now;
+                                has["CreatedDate"] = Common.GetDateTime();
                                 has["CreatedBy"] = iduser;
                                 if (cnn.Insert(has, "we_Template_Status") != 1)
                                 {
@@ -391,7 +391,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                         if (old == null || old.Rows.Count == 0)
                             return JsonResultCommon.KhongTonTai("Template");
-                        val.Add("UpdatedDate", DateTime.Now);
+                        val.Add("UpdatedDate", Common.GetDateTime());
                         val.Add("UpdatedBy", iduser);
                         if (cnn.Update(val, sqlcond, tablename) != 1)
                         {
@@ -417,7 +417,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     else
                     {
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("CreatedBy", iduser);
                         if (cnn.Insert(val, tablename) != 1)
                         {
@@ -922,7 +922,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     else
                         val.Add("description", DBNull.Value);
                     val.Add("customerid", loginData.CustomerID);
-                    val.Add("createddate", DateTime.Now);
+                    val.Add("createddate", Common.GetDateTime());
                     val.Add("createdby", iduser);
                     val.Add("isdefault", 0);
                     val.Add("is_template_center", 1);
@@ -960,7 +960,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     #region insert we_template_library
                     val = new Hashtable();
                     val.Add("id_template", idc);
-                    val.Add("createddate", DateTime.Now);
+                    val.Add("createddate", Common.GetDateTime());
                     val.Add("createdby", iduser);
                     val.Add("disabled", 0);
                     val.Add("id_user", loginData.UserID);
@@ -1029,7 +1029,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title); 
                     val.Add("customerid", loginData.CustomerID);
-                    val.Add("createddate", DateTime.Now);
+                    val.Add("createddate", Common.GetDateTime());
                     val.Add("createdby", iduser);
                     val.Add("isdefault", 0);
                     val.Add("is_template_center", 1);
@@ -1118,7 +1118,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         if (!string.IsNullOrEmpty(data.field_id)) val.Add("field_id", data.field_id);
                         val.Add("share_with", data.share_with);
                         val.Add("updatedby", iduser);
-                        val.Add("updateddate", DateTime.Now);
+                        val.Add("updateddate", Common.GetDateTime());
                         cnn.BeginTransaction();
                         if (cnn.Update(val, sqlcond, "we_template_customer") != 1)
                         {
@@ -1138,7 +1138,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         }
                         Hashtable val1 = new Hashtable();
                         val1["id_template"] = data.id_row;
-                        val1["createddate"] = DateTime.Now;
+                        val1["createddate"] = Common.GetDateTime();
                         val1["createdby"] = iduser;
                         foreach (var owner in data.list_share)
                         {
@@ -1233,7 +1233,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         }
                         Hashtable val1 = new Hashtable();
                         val1["id_template"] = idc;
-                        val1["createddate"] = DateTime.Now;
+                        val1["createddate"] = Common.GetDateTime();
                         val1["createdby"] = iduser;
                         foreach (var owner in data.list_share)
                         {
@@ -1506,7 +1506,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             conds.Add("title", title);
             conds.Add("idparent", idparent);
             conds.Add("CreatedBy", loginData.UserID);
-            conds.Add("CreatedDate", DateTime.Now);
+            conds.Add("CreatedDate", Common.GetDateTime());
             conds.Add("IDKH", loginData.CustomerID);
             DataTable dt = cnn.CreateDataTable(sql, conds);
             if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)

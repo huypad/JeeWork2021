@@ -1335,3 +1335,9 @@ textarea:focus{
 //     border: 1px solid hsla(0,0%,50%,.06);
 //     border-left-width: 5px;
 // }
+
+.block-list-field{
+    max-height: 500px;
+    overflow: auto;
+    padding-right: 10px!important;
+}

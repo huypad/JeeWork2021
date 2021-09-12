@@ -22,6 +22,7 @@ import {
 } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { AuthorizeModel } from "../Model/user.model";
 import { AuthorizeEditComponent } from "../authorize-edit/authorize-edit.component";
+import {AuthService} from '../../../../modules/auth';
 
 @Component({
   selector: "kt-user-detail",
@@ -59,6 +60,7 @@ export class UserDetailComponent implements OnInit {
     private changeDetect: ChangeDetectorRef,
     private translate: TranslateService,
     private router: Router,
+    private auth: AuthService,
     private layoutUtilsService: LayoutUtilsService,
     public dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
@@ -84,40 +86,22 @@ export class UserDetailComponent implements OnInit {
       this.TuNgay = moment(now).add(-1, "months");
       this.UserID = res.idu;
       this._Services.Detail(this.UserID).subscribe((res) => {
-        if (res && res.status == 1) this.item = res.data;
-        this.projects = this.item.projects;
-        this.Count = this.item.Count;
-        this.staffs = this.item.staffs;
-        this.uyquyens = this.item.uyquyens;
-        this.hoten = this.item.hoten;
-        this.tenchucdanh = this.item.tenchucdanh;
-        this.image = this.item.image;
-        this.loadDataList();
-        this.changeDetect.detectChanges();
+        if (res && res.status == 1) {
+          this.item = res.data;
+          this.projects = this.item.projects;
+          this.Count = this.item.Count;
+          this.staffs = this.item.staffs;
+          this.uyquyens = this.item.uyquyens;
+          this.hoten = this.item.hoten;
+          this.tenchucdanh = this.item.tenchucdanh;
+          this.image = this.item.image;
+          this.loadDataList();
+          this.changeDetect.detectChanges();
+        }
+
       });
     });
-    this.tokenStore.getIDUser().subscribe((res) => {
-      id = +res;
-      // this.userProfileService.getHinhAnhByID(+id).subscribe(res => {
-
-      // 	this.profile = res;
-      // 	let UserData = {
-      // 		HoTen: res.HoTen,
-      // 		Image: res.Image,
-      // 		ChucVu: res.ChucVu,
-      // 		Username: localStorage.getItem('Username')
-      // 	};
-      // 	this.tokenStore.setUserData(UserData);
-      // 	if (this.profile == undefined) {
-      // 	}
-      // 	else {
-      // 		this.Image = this.profile.Image;
-      // 		this.Ten = this.profile.HoTen;
-      // 		this.ChucVu = this.profile.ChucVu;
-      // 	}
-      // 	this.changeDetect.detectChanges();
-      // });
-    });
+    id = this.auth.getUserId();
     if (this.UserID == id) this.Is_authorize = true;
     this.loadDataAuthorize();
   }

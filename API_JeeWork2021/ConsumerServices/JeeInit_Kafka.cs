@@ -13,6 +13,7 @@ using static API_JeeWork2021.Classes.NhacNho;
 using Microsoft.Extensions.Logging;
 using DPSinfra.Logger;
 using JeeWork_Core2021.Controllers.Wework;
+using JeeWork_Core2021.Classes;
 
 namespace JeeWork_Core2021.ConsumerServices
 {
@@ -90,7 +91,7 @@ namespace JeeWork_Core2021.ConsumerServices
 
                     List<string> roles_ad = ConsumerHelper.getRoles(conn);
                     Console.WriteLine("New customer has in app !!");
-                    Console.WriteLine(DateTime.Now);
+                    Console.WriteLine(Common.GetDateTime());
                     Console.WriteLine(roles);
 
                     if (kq.IsInitial) //cấp luôn roles Admin

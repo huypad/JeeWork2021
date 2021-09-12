@@ -1,44 +1,44 @@
-import { WorkProcessEditComponent } from './../work-process-edit/work-process-edit.component';
-import { QueryFilterComment } from './../../../jee-comment/jee-comment.model';
-import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
+import {WorkProcessEditComponent} from './../work-process-edit/work-process-edit.component';
+import {QueryFilterComment} from './../../../jee-comment/jee-comment.model';
+import {DanhMucChungService} from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import {QueryParamsModelNew} from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import {MenuPhanQuyenServices} from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import {SubheaderService} from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { StatusDynamicModel } from './../../Model/status-dynamic.model';
-import { StatusDynamicDialogComponent } from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
-import { ProjectsTeamService } from './../../Services/department-and-project.service';
+import {StatusDynamicModel} from './../../Model/status-dynamic.model';
+import {StatusDynamicDialogComponent} from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+import {ProjectsTeamService} from './../../Services/department-and-project.service';
 import {
     AttachmentModel,
     FileUploadModel,
 } from './../../Model/department-and-project.model';
-import { CheckListEditComponent } from './../../../work/check-list-edit/check-list-edit.component';
+import {CheckListEditComponent} from './../../../work/check-list-edit/check-list-edit.component';
 import {
     UpdateByKeyModel,
     ChecklistModel,
     ChecklistItemModel,
 } from './../../../update-by-keys/update-by-keys.model';
-import { MatDialog } from '@angular/material/dialog';
-import { WeWorkService } from './../../../services/wework.services';
-import { AttachmentService } from './../../../services/attachment.service';
-import { UpdateByKeyService } from './../../../update-by-keys/update-by-keys.service';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { WorkService } from './../../../work/work.service';
-import { PopoverContentComponent } from 'ngx-smart-popover';
+import {MatDialog} from '@angular/material/dialog';
+import {WeWorkService} from './../../../services/wework.services';
+import {AttachmentService} from './../../../services/attachment.service';
+import {UpdateByKeyService} from './../../../update-by-keys/update-by-keys.service';
+import {DatePipe} from '@angular/common';
+import {ActivatedRoute} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {WorkService} from './../../../work/work.service';
+import {PopoverContentComponent} from 'ngx-smart-popover';
 import {
     WorkModel,
     UserInfoModel,
     UpdateWorkModel,
 } from './../../../work/work.model';
-import { BehaviorSubject, ReplaySubject, of, throwError } from 'rxjs';
-import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
-import { DialogData } from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {BehaviorSubject, ReplaySubject, of, throwError} from 'rxjs';
+import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
+import {DialogData} from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {
     Component,
     OnInit,
@@ -58,12 +58,13 @@ import {
     switchMap,
     map,
 } from 'rxjs/operators';
-import { UpdateByKeysComponent } from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
-import { JeeCommentService } from '../../../jee-comment/jee-comment.service';
-import { CommunicateService } from '../work-list-new-service/communicate.service';
-import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
-import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
-import { DomSanitizer } from '@angular/platform-browser';
+import {UpdateByKeysComponent} from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
+import {JeeCommentService} from '../../../jee-comment/jee-comment.service';
+import {CommunicateService} from '../work-list-new-service/communicate.service';
+import {LogWorkDescriptionComponent} from '../../../log-work-description/log-work-description.component';
+import {tinyMCE} from 'src/app/_metronic/jeework_old/components/tinyMCE';
+import {DomSanitizer} from '@angular/platform-browser';
+
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
@@ -96,6 +97,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.list_priority = this.weworkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
     }
+
     selectedItem: any = undefined;
     itemForm: FormGroup;
     loadingSubject = new BehaviorSubject<boolean>(false);
@@ -140,10 +142,10 @@ export class WorkListNewDetailComponent implements OnInit {
     AssignChecklist: any = [];
     list_priority: any = [];
     options_assign: any = {};
-    @ViewChild('Assign', { static: true })
+    @ViewChild('Assign', {static: true})
     myPopover_Assign: PopoverContentComponent;
     selected_Assign: any[] = [];
-    @ViewChild('hiddenText_Assign', { static: true }) text_Assign: ElementRef;
+    @ViewChild('hiddenText_Assign', {static: true}) text_Assign: ElementRef;
     _Assign = '';
     list_Assign: any[] = [];
     status_dynamic: any[] = [];
@@ -177,8 +179,8 @@ export class WorkListNewDetailComponent implements OnInit {
     File = '';
     filemodel: any;
     tinyMCE = {};
-    @ViewChild('csvInput', { static: true }) myInputVariable: ElementRef;
-    @ViewChild('resultInput', { static: true }) result: ElementRef;
+    @ViewChild('csvInput', {static: true}) myInputVariable: ElementRef;
+    @ViewChild('resultInput', {static: true}) result: ElementRef;
     list_User: any[] = [];
     selectedDate: any = {
         startDate: '',
@@ -192,6 +194,7 @@ export class WorkListNewDetailComponent implements OnInit {
     ListChild: any = {};
     IsLoading: any = [];
     description_tiny: string;
+
     /** LOAD DATA */
     ngOnInit() {
         this.workService.currentMessage.subscribe(message => {
@@ -247,15 +250,25 @@ export class WorkListNewDetailComponent implements OnInit {
 
 
     KiemTraThayDoiCongViec(item, key) {
-        if (this.IsAdmin()) return true;
-        else if (item.CreatedBy == this.UserID) return true;
-        else {
+        if (!this.CheckClosedTask()) {
+            this.layoutUtilsService.showError('Công việc đã đóng');
+            return false;
+        }
+
+        if (this.IsAdmin()) {
+            return true;
+        } else if (item.CreatedBy == this.UserID) {
+            return true;
+        } else {
             if (item.User) {
                 const index = item.User.findIndex(x => x.id_nv == this.UserID);
-                if (index >= 0) return true;
+                if (index >= 0) {
+                    return true;
+                }
             }
-        };
-        var txtError = "";
+        }
+        ;
+        var txtError = '';
         switch (key) {
             case 'assign':
                 txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
@@ -284,17 +297,24 @@ export class WorkListNewDetailComponent implements OnInit {
         return false;
 
     }
+
     IsCheck() {
         var item = this.item;
-        if (this.IsAdmin()) return true;
-        else if (item.CreatedBy == this.UserID) return true;
-        else if (item.CreatedBy == this.UserID) return true;
-        else {
+        if (this.IsAdmin()) {
+            return true;
+        } else if (item.CreatedBy == this.UserID) {
+            return true;
+        } else if (item.CreatedBy == this.UserID) {
+            return true;
+        } else {
             if (item.User) {
                 const index = item.User.findIndex(x => x.id_nv == this.UserID);
-                if (index >= 0) return true;
+                if (index >= 0) {
+                    return true;
+                }
             }
-        };
+        }
+        ;
         return false;
 
     }
@@ -304,8 +324,8 @@ export class WorkListNewDetailComponent implements OnInit {
         // this.LoadData();
         // this.LoadChecklist();
         const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-            width: "90vw",
-            height: "85vh",
+            width: '90vw',
+            height: '85vh',
             data: item,
         });
 
@@ -331,29 +351,31 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         });
     }
+
     View_Log_Description() {
         var ID_log = this.item.id_row;
         let saveMessageTranslateParam = '';
         saveMessageTranslateParam += ID_log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = this.item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log } ,width : '1000px'});
+        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, {data: {ID_log}, width: '1000px'});
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 // this.ngOnInit();
-            }
-            else {
+            } else {
                 this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
                 // this.ngOnInit();
             }
         });
     }
+
     LoadData() {
         this.mark_tag();
         this.LoadLog();
 
-        if (this.loading)
+        if (this.loading) {
             this.layoutUtilsService.showWaitingDiv();
+        }
 
         this.weworkService.ListStatusDynamic(this.Id_project_team)
             .subscribe((res) => {
@@ -423,6 +445,7 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         });
     }
+
     CheckUserInProject(data) {
         if (data.IsAdminGroup) {
             return true;
@@ -431,7 +454,7 @@ export class WorkListNewDetailComponent implements OnInit {
             const x = data.dataRole.find((x) => x.id_row === this.Id_project_team);
             if (x) {
                 return true;
-            }else{
+            } else {
                 this.dialogRef.close();
             }
         }
@@ -456,25 +479,43 @@ export class WorkListNewDetailComponent implements OnInit {
     HasupdateResult() {
         if (this.IsAdmin()) {
             return true;
+        } else if (this.item.CreatedBy == this.UserID) {
+            return true;
+        } else {
+            if (this.item.User) {
+                const index = this.item.User.findIndex(x => x.id_nv == this.UserID);
+                if (index >= 0) {
+                    return true;
+                }
+            }
         }
-        // if (this.require_evaluate) {
-        //     return true;
-        // }
-        // if (this.item.Followers) {
-        //     const x = this.item.Followers.find((x) => x.id_nv == this.UserID);
-        //     if (x) {
-        //         return true;
-        //     }
-        // }
+        ;
         return false;
     }
 
+    CheckClosedTask() {
+        if (this.IsAdminGroup) {
+            return true;
+        }
+        if (this.item.closed) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     CheckRoles(roleID: number) {
+        const x = this.list_role.find((res) => res.id_row == this.Id_project_team);
+        if (x) {
+            if (x.locked) {
+                return false;
+            }
+        }
         if (this.IsAdminGroup) {
             return true;
         }
         if (this.list_role) {
-            const x = this.list_role.find((x) => x.id_row == this.Id_project_team);
+            const x = this.list_role.find((res) => res.id_row == this.Id_project_team);
             if (x) {
                 if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
                     return true;
@@ -515,11 +556,16 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     CheckRoleskeypermit(key) {
+        const x = this.list_role.find((res) => res.id_row == this.Id_project_team);
+        if (x) {
+            if (x.locked) {
+                return false;
+            }
+        }
         if (this.IsAdminGroup) {
             return true;
         }
         if (this.list_role) {
-            const x = this.list_role.find((x) => x.id_row == this.Id_project_team);
             if (x) {
                 if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
                     return true;
@@ -594,7 +640,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
     getPriority(id) {
         if (id > 0) {
-            const item = this.list_priority.find((x) => x.value == id);
+            const item = this.list_priority.find((x) => x.value === id);
             if (item) {
                 return item.icon;
             }
@@ -602,6 +648,18 @@ export class WorkListNewDetailComponent implements OnInit {
         } else {
             return 'far fa-flag';
         }
+    }
+    getPriorityLog(id){
+        if(+id > 0 && this.list_priority){
+            const prio = this.list_priority.find(x => x.value === +id);
+            if(prio)
+                return prio;
+        }
+        return {
+            name: 'Noset',
+            value: 0,
+            icon: 'far fa-flag',
+        };
     }
 
     NextStatus(type) {
@@ -1071,7 +1129,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateTitle() {
-        const ele = document.getElementById('txttitle'+this.DataID) as HTMLInputElement;
+        const ele = document.getElementById('txttitle' + this.DataID) as HTMLInputElement;
         if (ele.value.toString().trim() == '') {
             // this.layoutUtilsService.showError('Tên công việc không được trống');
             ele.value = this.item.title;
@@ -1090,14 +1148,13 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateDescription() {
-        if (this.item.description.trim() != this.description_tiny.trim())
-        {
+        if (this.item.description.trim() != this.description_tiny.trim()) {
             this.disabledBtn = true;
             if (!this.KiemTraThayDoiCongViec(this.item, 'description')) {
                 this.description_tiny = this.item.description;
                 return;
             }
-            this.item.description =  this.description_tiny;
+            this.item.description = this.description_tiny;
             this.UpdateByKeyNew(this.item, 'description', this.description_tiny);
         }
     }
@@ -1130,14 +1187,14 @@ export class WorkListNewDetailComponent implements OnInit {
             catchError((err) => throwError(err)),
             finalize(() => this.layoutUtilsService.OffWaitingDiv()),
         ).subscribe((res) => {
-            if(key == 'description'){
+            if (key == 'description') {
                 this.showsuccess = true;
-                setTimeout(()=>{
+                setTimeout(() => {
                     this.showsuccess = false;
                     this.disabledBtn = false;
-                },2000);
+                }, 2000);
             }
-        },(error) => {
+        }, (error) => {
             this.disabledBtn = false;
         });
     }
@@ -1152,7 +1209,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(UpdateByKeysComponent, {
-            data: { _item },
+            data: {_item},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1188,7 +1245,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
-            data: { _item, IsCheckList: true },
+            data: {_item, IsCheckList: true},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1269,7 +1326,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
-            data: { _item, IsCheckList: false },
+            data: {_item, IsCheckList: false},
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1570,7 +1627,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     Updateestimates(event) {
-        this.item.estimates = event
+        this.item.estimates = event;
         this.UpdateByKeyNew(this.item, 'estimates', event);
     }
 
@@ -1681,7 +1738,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const dialogRef = this.dialog.open(WorkProcessEditComponent, {
             // width: "40vw",
             // minHeight: "200px",
-            data: { Process: this.item.Process, id_project_team: this.Id_project_team },
+            data: {Process: this.item.Process, id_project_team: this.Id_project_team},
         });
         dialogRef.afterClosed().subscribe((res) => {
             this.LoadData();
@@ -1896,7 +1953,11 @@ export class WorkListNewDetailComponent implements OnInit {
                 return;
             }
             this.projectsTeamService.DeleteTask(this.item.id_row).pipe(
-                tap(() => { if (this.loading) this.layoutUtilsService.showWaitingDiv() }),
+                tap(() => {
+                    if (this.loading) {
+                        this.layoutUtilsService.showWaitingDiv();
+                    }
+                }),
                 map((res) => {
                     if (res && res.status == 1) {
                         this.dialogRef.close();
@@ -1916,8 +1977,8 @@ export class WorkListNewDetailComponent implements OnInit {
     SendMessage(value) {
         this.communicateService.changeMessage(value);
     }
+
     imagesUploadHandler = (blobInfo, success, failure) => {
-        debugger
-    }
+    };
 
 }

@@ -135,7 +135,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , '' as NguoiSua from we_project_team p 
                                     join we_department de on de.id_row=p.id_department
                                     left join (select count(*) as tong,COUNT(CASE WHEN w.end_date is not null THEN 1 END) as ht
-                                    , COUNT(CASE WHEN w.deadline < getdate() and w.deadline is not null and w.end_date is null THEN 1 END) as quahan
+                                    , COUNT(CASE WHEN w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null THEN 1 END) as quahan
                                     ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
                                     where p.Disabled=0 and de.Disabled = 0 " + dieukien_where + "  order by " + dieukienSort;
                     sqlq += @$";select u.*,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 
@@ -197,11 +197,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    id_department = r["id_department"],
                                    department = r["department"],
                                    spacename = WeworkLiteController.Get_SpaceName(r["id_department"].ToString(), ConnectionString),
-                                   CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
+                                   //CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
+                                   CreatedDate = !r["CreatedDate"].Equals(DBNull.Value) ? ((DateTime)r["CreatedDate"]).ToString("u") : "",
                                    icon_folder = "fa fa-folder-open",
                                    icon_space = "fas fa-rocket",
                                    CreatedBy = r["CreatedBy"],
                                    NguoiTao = r["NguoiTao"],
+                                   //UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
                                    UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
                                    UpdatedBy = r["UpdatedBy"],
                                    NguoiSua = r["NguoiSua"],
@@ -298,7 +300,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     #region Ủy quyền giao việc
                     string sqluq = $@"or we_project_team_user.id_user in (select createdby from we_authorize
-                                        where id_user = {loginData.UserID} and Disabled = 0 and start_date <= GETDATE() and end_date >= GETDATE())";
+                                        where id_user = {loginData.UserID} and Disabled = 0 and start_date <= GETUTCDATE() and end_date >= GETUTCDATE())";
                     #endregion
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
@@ -312,7 +314,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , p.loai, p.start_date, p.end_date, p.color, p.template, p.status
                                     , p.stage_description, allow_percent_done, require_evaluate
                                     , evaluate_by_assignner, allow_estimate_time, 
-                                    iif(p.end_date is not null and p.end_date < getdate() and p.status = 2,1,0) islate,
+                                    iif(p.end_date is not null and p.end_date < GETUTCDATE() and p.status = 2,1,0) islate,
                                      stop_reminder, note, is_project, period_type, p.priority
                                     , p.createddate, p.createdby, p.Locked, p.disabled, p.updatedDate
                                     , p.UpdatedBy, p.email_assign_work, p.email_update_work
@@ -501,7 +503,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 , '' as NguoiSua from we_project_team p 
                                 left join we_department de on de.id_row=p.id_department
                                 left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
-                                , COUNT(CASE WHEN w.status=1 and getdate()>w.deadline THEN 1 END) as quahan
+                                , COUNT(CASE WHEN w.status=1 and GETUTCDATE()>w.deadline THEN 1 END) as quahan
                                 ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
                                 where p.Disabled=0 and p.id_row=" + id;
                     sqlq += @$";select u.*,  '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image, admin from we_project_team_user u 
@@ -803,9 +805,9 @@ namespace JeeWork_Core2021.Controllers.Wework
 iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
 iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
 iIf(w.Status = 1, 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
+iIf(w.Status = 1 and GETUTCDATE() > w.deadline, 1, 0) as is_quahan,
 iIf(w.Status = 3, 1, 0) as is_cho,
-Iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday
+Iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday
 from v_wework_new w 
 where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     DataSet ds = cnn.CreateDataSet(sqlq);
@@ -951,7 +953,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val.Add("status", data.status);
                     if (!string.IsNullOrEmpty(data.color))
                         val.Add("color", data.color);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_project_team where Disabled=0 and  (id_department=@id_department) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", data.id_department }, { "name", data.title } }).ToString()) > 0)
@@ -970,7 +972,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
                     Hashtable val1 = new Hashtable();
                     val1["id_project_team"] = idc;
-                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedDate"] = Common.GetDateTime();
                     val1["CreatedBy"] = iduser;
                     foreach (var owner in data.Users)
                     {
@@ -1164,7 +1166,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val.Add("id_department", departmentid);
                     val.Add("loai", data.loai);
                     val.Add("meetingid", data.meetingid);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", loginData.UserID);
                     strCheck = "select count(*) from we_project_team where Disabled=0 and (id_department=@id_department) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", data.id_department }, { "name", data.title } }).ToString()) > 0)
@@ -1183,7 +1185,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     // insert thành viên
                     val = new Hashtable();
                     val["id_project_team"] = idc;
-                    val["createddate"] = DateTime.Now;
+                    val["createddate"] = Common.GetDateTime();
                     val["createdby"] = loginData.UserID;
                     foreach (var owner in data.Users)
                     {
@@ -1406,11 +1408,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val.Add("id_department", data.id_department);
                     val.Add("loai", 1);
                     val.Add("is_project", 1);
-                    val.Add("start_date", DateTime.Now);
-                    val.Add("end_date", DateTime.Now.AddMonths(3));
+                    val.Add("start_date", Common.GetDateTime());
+                    val.Add("end_date", Common.GetDateTime().AddMonths(3));
                     val.Add("status", data.status);
                     val.Add("color", "bg6");
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_project_team where Disabled=0 and (id_department=@id_department) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", data.id_department }, { "name", data.title } }).ToString()) > 0)
@@ -1428,7 +1430,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     // insert thành viên
                     string sql_insert = "";
                     sql_insert = $@"insert into we_project_team_user (id_project_team, id_user, admin, favourite, CreatedDate, CreatedBy, Disabled)
-                        select " + idc + ",id_user,0,0,getdate(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + $" and id_user != {iduser}";
+                        select " + idc + ",id_user,0,0,GETUTCDATE(), " + iduser + ", Disabled from we_department_owner where Disabled = 0 and id_department = " + data.id_department + $" and id_user != {iduser}";
                     cnn.ExecuteNonQuery(sql_insert);
                     if (cnn.LastError != null)
                     {
@@ -1439,7 +1441,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     // insert admin
                     Hashtable has = new Hashtable();
                     has["id_project_team"] = idc;
-                    has["CreatedDate"] = DateTime.Now;
+                    has["CreatedDate"] = Common.GetDateTime();
                     has["CreatedBy"] = iduser;
                     has["id_user"] = iduser;
                     has["admin"] = 1;
@@ -1696,7 +1698,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (data.end_date != DateTime.MinValue)
                     {
                         val.Add("end_date", data.end_date);
-                        if (data.end_date < DateTime.Now)
+                        if (data.end_date < Common.GetDateTime())
                         {
                             val.Remove("status");
                             val.Add("status", 2);
@@ -1709,7 +1711,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         val.Add("color", data.color);
                     else
                         val.Add("color", DBNull.Value);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_project_team where Disabled=0 and (id_department=@id_department) and title=@name and id_row<>@id_row";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", data.id_department }, { "name", data.title }, { "id_row", data.id_row } }).ToString()) > 0)
@@ -1725,7 +1727,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     string ids = string.Join(",", data.Users.Where(x => x.id_row > 0).Select(x => x.id_row));
                     if (ids != "")//xóa owner và thành viên
                     {
-                        string strDel = "Update we_project_team_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_project_team=" + data.id_row + " and id_row not in (" + ids + ")";
+                        string strDel = "Update we_project_team_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and  id_project_team=" + data.id_row + " and id_row not in (" + ids + ")";
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
@@ -1734,7 +1736,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     Hashtable val1 = new Hashtable();
                     val1["id_project_team"] = data.id_row;
-                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedDate"] = Common.GetDateTime();
                     val1["CreatedBy"] = iduser;
                     foreach (var owner in data.Users)
                     {
@@ -1964,7 +1966,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     Hashtable val = new Hashtable();
                     val.Add("stage_description", string.IsNullOrEmpty(data.stage_description) ? "" : data.stage_description);
                     val.Add("status", data.status);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
@@ -1977,7 +1979,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val1.Add("id_project_team", data.id_row);
                     val1.Add("description", string.IsNullOrEmpty(data.stage_description) ? "" : data.stage_description);
                     val1.Add("stage", data.status);
-                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedDate"] = Common.GetDateTime();
                     val1["CreatedBy"] = iduser;
                     if (cnn.Insert(val1, "we_project_team_stage") != 1)
                     {
@@ -2046,7 +2048,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add(key, value);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
@@ -2113,7 +2115,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val.Add("status", data.close_status);
                     val.Add("stop_reminder", data.stop_reminder);
                     val.Add("note", string.IsNullOrEmpty(data.note) ? "" : data.note);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
@@ -2174,7 +2176,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val.Add("status", data.close_status);
                     val.Add("stop_reminder", data.stop_reminder);
                     val.Add("note", string.IsNullOrEmpty(data.note) ? "" : data.note);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_project_team") != 1)
@@ -2225,7 +2227,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
                     bool email_delete_team = (bool)dt.Rows[0]["email_delete_team"];
-                    sqlq = "update we_project_team set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_project_team set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -2326,7 +2328,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (temp == null)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
                     bool value = !(bool)temp;
-                    sqlq = "update we_project_team set is_project=" + (value ? "1" : "0") + ", UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_project_team set is_project=" + (value ? "1" : "0") + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -2398,7 +2400,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     val.Add("keep_admin", data.keep_admin);
                     val.Add("keep_member", data.keep_member);
                     val.Add("keep_role", data.keep_role);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_project_team_dupplicate") != 1)
@@ -2433,7 +2435,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         val1.Add("IsFinal", item["IsFinal"]);
                         val1.Add("IsDeadline", item["IsDeadline"]);
                         val1.Add("IsToDo", item["IsToDo"]);
-                        val1.Add("CreatedDate", DateTime.Now);
+                        val1.Add("CreatedDate", Common.GetDateTime());
                         val1.Add("CreatedBy", iduser);
                         cnn.BeginTransaction();
                         if (cnn.Insert(val1, "we_status") != 1)
@@ -2592,7 +2594,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         {
                             if ((bool)find["admin"] != owner.admin)
                             {
-                                val1["UpdatedDate"] = DateTime.Now;
+                                val1["UpdatedDate"] = Common.GetDateTime();
                                 val1["UpdatedBy"] = iduser;
                                 re = cnn.Update(val1, new SqlConditions() { { "id_row", find["id_row"] } }, "we_project_team_user");
                             }
@@ -2606,7 +2608,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         {
                             val1["id_project_team"] = data.id_row;
                             val1["id_user"] = owner.id_user;
-                            val1["CreatedDate"] = DateTime.Now;
+                            val1["CreatedDate"] = Common.GetDateTime();
                             val1["CreatedBy"] = iduser;
                             re = cnn.Insert(val1, "we_project_team_user");
                         }
@@ -2751,7 +2753,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (temp == null)
                         return JsonResultCommon.Custom("Người dùng không thuộc dự án/phòng ban");
                     cnn.BeginTransaction();
-                    string sql = "Update we_project_team_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
+                    string sql = "Update we_project_team_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
                     int re = cnn.ExecuteNonQuery(sql);
                     if (re <= 0)
                     {
@@ -2805,7 +2807,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         return JsonResultCommon.Custom("Người dùng không thuộc dự án/phòng ban");
                     var id_project_team = long.Parse(dt.Rows[0]["id_project_team"].ToString());
                     cnn.BeginTransaction();
-                    string sql = "Update we_project_team_user set admin=" + (admin ? 1 : 0) + ", UpdatedDate=getdate(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
+                    string sql = "Update we_project_team_user set admin=" + (admin ? 1 : 0) + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
                     int re = cnn.ExecuteNonQuery(sql);
                     if (re <= 0)
                     {
@@ -3020,7 +3022,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         bool value = true;
                         if (dt.Rows[0][1] != DBNull.Value)
                             value = !(bool)dt.Rows[0][1];
-                        string sql = "Update we_project_role set " + key + "=" + (value ? 1 : 0) + ", UpdatedDate=getdate(), UpdatedBy=" + loginData.UserID + " where id_row=" + dt.Rows[0][0];
+                        string sql = "Update we_project_role set " + key + "=" + (value ? 1 : 0) + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + dt.Rows[0][0];
                         re = cnn.ExecuteNonQuery(sql);
                     }
                     if (re <= 0)
@@ -3317,7 +3319,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     has.Add("personal_view", data.personal_view);
                     has.Add("favourite", data.favourite);
                     has.Add("link", dt.Rows[0]["link"].ToString());
-                    has["CreatedDate"] = DateTime.Now;
+                    has["CreatedDate"] = Common.GetDateTime();
                     has["CreatedBy"] = iduser;
                     re = cnn.Insert(has, "we_projects_view");
                     if (re != 1)
@@ -3400,7 +3402,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (data.favourite != null)
                         has.Add("favourite", data.favourite);
                     has.Add("link", dt.Rows[0]["link"].ToString());
-                    has["updateddate"] = DateTime.Now;
+                    has["updateddate"] = Common.GetDateTime();
                     has["updatedby"] = iduser;
                     re = cnn.Update(has, sqlcond, "we_projects_view");
                     if (re != 1)
@@ -3443,7 +3445,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Mẫu dự án");
                     //bool email_delete_team = (bool)dt.Rows[0]["email_delete_team"];
-                    sqlq = "update we_projects_view set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_projects_view set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {

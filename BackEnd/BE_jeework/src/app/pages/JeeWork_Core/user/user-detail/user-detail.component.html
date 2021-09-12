@@ -1,129 +1,124 @@
 <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]=" 0">
     <mat-sidenav #snav [mode]="'over'" position="end">
-      <mat-nav-list class="pd-0">
-        <div class="kt-portlet kt-user-detail position-relative">
-            <div class="tab-right position-relative" [ngStyle]="{'height': getHeight()}" style="overflow: auto; width: 400px;">
-                <div id="project-side" style="overflow: auto;">
-                    <div class="section pd-5">
-                        <kt-portlet>
-                            <kt-portlet-body>
-                                <div class="row col-12">
-                                    <div style="margin-right:10px;">
-                                        <ngx-avatar size="35"
-                                            matTooltip="{{hoten}}"
-                                            src="{{image}}"
-                                            *ngIf="image;else bindText">
-                                        </ngx-avatar>
-                                        <ng-template #bindText>
-                                            <ngx-avatar textSizeRatio="2.5"
-                                                matTooltip="{{hoten}}"
-                                                [style]="customStyle"
-                                                size="35"
-                                                [name]="WeWorkService.getNameUser(hoten)"
-                                                bgColor="{{WeWorkService.getColorNameUser(hoten)}}">
+        <mat-nav-list class="pd-0">
+            <div class="kt-portlet kt-user-detail position-relative">
+                <div class="tab-right position-relative" [ngStyle]="{'height': getHeight()}"
+                    style="overflow: auto; width: 400px;">
+                    <div id="project-side" style="overflow: auto;">
+                        <div class="section pd-5">
+                            <kt-portlet>
+                                <kt-portlet-body>
+                                    <div class="row col-12">
+                                        <div style="margin-right:10px;">
+                                            <ngx-avatar size="35" matTooltip="{{hoten}}" src="{{image}}"
+                                                *ngIf="image;else bindText">
                                             </ngx-avatar>
-                                        </ng-template>
-                                    </div>
-                                    <div>
-                                        <h5 class="user-detail--title">{{hoten}} </h5>
-                                        <span>{{tenchucdanh}}</span>
-                                    </div>
-                                </div>
-                                <ng-container *ngIf="Count">
-                                    <hr style="margin: 1rem 0;" />
-                                    <div class="user-detail--works col-12">
-                                        <div class="keynum">
-                                            <b>{{Count.tong}}</b>
-                                            <em>{{'wuser.congviec' | translate}}</em>
+                                            <ng-template #bindText>
+                                                <ngx-avatar textSizeRatio="2.5" matTooltip="{{hoten}}"
+                                                    [style]="customStyle" size="35"
+                                                    [name]="WeWorkService.getNameUser(hoten)"
+                                                    bgColor="{{WeWorkService.getColorNameUser(hoten)}}">
+                                                </ngx-avatar>
+                                            </ng-template>
                                         </div>
-                                        <div class="bar url">
-                                            <div class="-b phailam" matTooltip="{{'wuser.phailam' | translate}}"
-                                                [ngStyle]="{'width': getPercentWork(Count.phailam,Count.tong)}"></div>
-                                            <div class="-b danglam" matTooltip="{{'wuser.danglam' | translate}}"
-                                                [ngStyle]="{'width': getPercentWork(Count.danglam,Count.tong)}"></div>
-                                            <div class="-b hoanthanh" matTooltip="{{'wuser.hoanthanh' | translate}}"
-                                                [ngStyle]="{'width': getPercentWork(Count.ht,Count.tong)}"></div>
-                                        </div>
-                                        <div class="txt">
-                                            <b class="phailam">{{Count.phailam}}</b>
-                                            {{'wuser.phailam' | translate}}&nbsp;&#8901;
-                                            <b class="danglam">{{Count.danglam}}</b>
-                                            {{'wuser.danglam' | translate}}&nbsp;&#8901;
-                                            <b class="hoanthanh">{{Count.ht}}</b> {{'wuser.hoanthanh' | translate}}
+                                        <div>
+                                            <h5 class="user-detail--title">{{hoten}} </h5>
+                                            <span>{{tenchucdanh}}</span>
                                         </div>
                                     </div>
-                                    <hr style="margin: 1rem 0;"/>
-                                    <div class="row user-detail--works">
-                                        <div class="col-6 keysub">
-                                            <b style="color:red">{{Count.quahan}}</b>
-                                            <em>{{'wuser.quahan' | translate}}</em>
+                                    <ng-container *ngIf="Count">
+                                        <hr style="margin: 1rem 0;" />
+                                        <div class="user-detail--works col-12">
+                                            <div class="keynum">
+                                                <b>{{Count.tong}}</b>
+                                                <em>{{'wuser.congviec' | translate}}</em>
+                                            </div>
+                                            <div class="bar url">
+                                                <div class="-b phailam" matTooltip="{{'wuser.phailam' | translate}}"
+                                                    [ngStyle]="{'width': getPercentWork(Count.phailam,Count.tong)}">
+                                                </div>
+                                                <div class="-b danglam" matTooltip="{{'wuser.danglam' | translate}}"
+                                                    [ngStyle]="{'width': getPercentWork(Count.danglam,Count.tong)}">
+                                                </div>
+                                                <div class="-b hoanthanh" matTooltip="{{'wuser.hoanthanh' | translate}}"
+                                                    [ngStyle]="{'width': getPercentWork(Count.ht,Count.tong)}"></div>
+                                            </div>
+                                            <div class="txt">
+                                                <b class="phailam">{{Count.phailam}}</b>
+                                                {{'wuser.phailam' | translate}}&nbsp;&#8901;
+                                                <b class="danglam">{{Count.danglam}}</b>
+                                                {{'wuser.danglam' | translate}}&nbsp;&#8901;
+                                                <b class="hoanthanh">{{Count.ht}}</b> {{'wuser.hoanthanh' | translate}}
+                                            </div>
                                         </div>
-                                        <div class="col-6 keysub">
-                                            <b style="color:brown">{{Count.khancap}}</b>
-                                            <em>{{'wuser.khancap' | translate}}</em>
+                                        <hr style="margin: 1rem 0;" />
+                                        <div class="row user-detail--works">
+                                            <div class="col-6 keysub">
+                                                <b style="color:red">{{Count.quahan}}</b>
+                                                <em>{{'wuser.quahan' | translate}}</em>
+                                            </div>
+                                            <div class="col-6 keysub">
+                                                <b style="color:brown">{{Count.khancap}}</b>
+                                                <em>{{'wuser.khancap' | translate}}</em>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </kt-portlet-body>
+                            </kt-portlet>
+                        </div>
+                        <div class="section pd-5">
+                            <kt-portlet>
+                                <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
+                                    <ng-container ktPortletTitle>
+                                        <div class="kt-form__filtration">
+                                            <div class="row align-items-center">
+                                                <span class="title-header" translate="wuser.theoduan"></span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </kt-portlet-header>
+                                <kt-portlet-body class="view-thongtin" *ngIf="projects.length > 0;">
+                                    <div class="row font-chu" *ngFor="let filter of projects">
+                                        <div class="col-md-8 m--margin-bottom-10-mobile text-3-line">
+                                            <a class="-action" [routerLink]="['/project',filter.id]">
+                                                <span class="text-2-line">{{filter.title}}</span>
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 m--margin-bottom-10-mobile">
+                                            <span>{{filter.count}}</span> {{'wuser.congviec' | translate}}
                                         </div>
                                     </div>
-                                </ng-container>
-                            </kt-portlet-body>
-                        </kt-portlet>
-                    </div>
-                    <div class="section pd-5">
-                        <kt-portlet>
-                            <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
-                                <ng-container ktPortletTitle>
-                                    <div class="kt-form__filtration">
-                                        <div class="row align-items-center">
-                                            <span class="title-header" translate="wuser.theoduan"></span>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </kt-portlet-header>
-                            <kt-portlet-body class="view-thongtin" *ngIf="projects.length > 0;">
-                                <div class="row font-chu" *ngFor="let filter of projects">
-                                    <div class="col-md-8 m--margin-bottom-10-mobile text-3-line">
-                                        <a class="-action" [routerLink]="['/project',filter.id]">
-                                            <span class="text-2-line">{{filter.title}}</span>
-                                        </a>
-                                    </div>
-                                    <div class="col-md-4 m--margin-bottom-10-mobile">
-                                        <span>{{filter.count}}</span> {{'wuser.congviec' | translate}}
-                                    </div>
-                                </div>
-                            </kt-portlet-body>
-                        </kt-portlet>
-                    </div>
-                    <div class="section pd-5">
-                        <kt-mystaff [data]="staffs"></kt-mystaff>
-                    </div>
-                    <div class="section pd-5">
-                        <kt-mystaff [data]="uyquyens" [title]="'wuser.uyquyen'"></kt-mystaff>
+                                </kt-portlet-body>
+                            </kt-portlet>
+                        </div>
+                        <div class="section pd-5">
+                            <kt-mystaff [data]="staffs"></kt-mystaff>
+                        </div>
+                        <div class="section pd-5">
+                            <kt-mystaff [data]="uyquyens" [title]="'wuser.uyquyen'"></kt-mystaff>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-      </mat-nav-list>
+        </mat-nav-list>
     </mat-sidenav>
 
     <mat-sidenav-content>
-       <kt-portlet [options]="{hideHeader: true}" class="kt-user-detail">
-           <kt-portlet-body class="pd-0 user-detail">
+        <kt-portlet [options]="{hideHeader: true}" class="kt-user-detail">
+            <kt-portlet-body class="pd-0 user-detail">
                 <div [ngClass]="{'row': selectedItem!=undefined}">
-                    <div class=" kt--margin-bottom-10-mobile " [ngStyle]="{'height': getHeight()}" style="min-height: auto;">
+                    <div class=" kt--margin-bottom-10-mobile " [ngStyle]="{'height': getHeight()}"
+                        style="min-height: auto;">
                         <div class="form-group  kt-form__group row position-relative mbt-10">
                             <div class="col-md-12">
                                 <div style="display:flex">
                                     <div class="avatar">
-                                        <ngx-avatar size="35"
-                                            matTooltip="{{hoten}}"
-                                            src="{{image}}"
+                                        <ngx-avatar size="35" matTooltip="{{hoten}}" src="{{image}}"
                                             *ngIf="image;else bindText">
                                         </ngx-avatar>
                                         <ng-template #bindText>
-                                            <ngx-avatar textSizeRatio="2.5"
-                                                matTooltip="{{hoten}}"
-                                                [style]="customStyle"
-                                                size="35"
-                                                [name]="WeWorkService.getNameUser(hoten)"
+                                            <ngx-avatar textSizeRatio="2.5" matTooltip="{{hoten}}" [style]="customStyle"
+                                                size="35" [name]="WeWorkService.getNameUser(hoten)"
                                                 bgColor="{{WeWorkService.getColorNameUser(hoten)}}">
                                             </ngx-avatar>
                                         </ng-template>
@@ -133,15 +128,16 @@
                                             <span>{{hoten}}</span>
                                         </div>
                                         <nav mat-tab-nav-bar *ngIf="selectedItem==undefined">
-                                            <a mat-tab-link [routerLink]="['/users/',UserID]" [active]="activelink == 'user'"
-                                             (click)="activelink='user'" >{{'wuser.congviecduocgiao' | translate}}</a>
-                                            <a mat-tab-link (click)="printme.click()" href="javascript:;">{{'wuser.in' | translate}}</a>
-                                                <button class="d-none" #printme [useExistingCss]="true"
-                                                printSectionId="print-section"
-                                                ngxPrint></button>
-                                            <a mat-tab-link href="javascript:;"
-                                                (click)="export()">{{'wuser.export' | translate}}</a>
-                                                <!-- (click)="uyquyen()" -->
+                                            <a mat-tab-link [routerLink]="['/users/',UserID]"
+                                                [active]="activelink == 'user'"
+                                                (click)="activelink='user'">{{'wuser.congviecduocgiao' | translate}}</a>
+                                            <a mat-tab-link (click)="printme.click()" href="javascript:;">{{'wuser.in' |
+                                                translate}}</a>
+                                            <button class="d-none" #printme [useExistingCss]="true"
+                                                printSectionId="print-section" ngxPrint></button>
+                                            <a mat-tab-link href="javascript:;" (click)="export()">{{'wuser.export' |
+                                                translate}}</a>
+                                            <!-- (click)="uyquyen()" -->
                                             <!-- <a *ngIf="Is_authorize" mat-tab-link href="javascript:;" [routerLink]="['/users/',UserID,'uyquyen']"
                                                 [active]="activelink == 'uyquyen'"
                                                 (click)="activelink='uyquyen'" 
@@ -149,7 +145,10 @@
                                         </nav>
                                     </div>
                                 </div>
-                                <button mat-icon-button (click)="snav.toggle()" style="position: absolute; right: 0;bottom: 0;z-index: 999;"><mat-icon>menu</mat-icon></button>
+                                <button mat-icon-button (click)="snav.toggle()"
+                                    style="position: absolute; right: 0;bottom: 0;z-index: 999;">
+                                    <mat-icon>menu</mat-icon>
+                                </button>
                             </div>
                             <!-- <div class="search-box user-detail--search" style="padding-right: 5px;"
                                 *ngIf="selectedItem==undefined">
@@ -163,8 +162,8 @@
                                 </div>
                             </div> -->
                         </div>
-                        <div class="form-group  kt-form__group row user-detail--filter d-none" style="border-bottom: 1px solid #ccc;"
-                            *ngIf="selectedItem==undefined">
+                        <div class="form-group  kt-form__group row user-detail--filter d-none"
+                            style="border-bottom: 1px solid #ccc;" *ngIf="selectedItem==undefined">
                             <div class="filter row">
                                 <div class="col-md-3">
                                     <mat-form-field class="mat-form-field-fluid">
@@ -187,7 +186,8 @@
                                         <mat-label>{{'wuser.duan_phongban' | translate}}</mat-label>
                                         <mat-select [(ngModel)]="id_project_team">
                                             <mat-option [value]="0">{{'filter.tatca' | translate}}</mat-option>
-                                            <mat-option [value]="p.id" *ngFor="let p of projects">{{p.title}}</mat-option>
+                                            <mat-option [value]="p.id" *ngFor="let p of projects">{{p.title}}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
@@ -197,7 +197,8 @@
                                         <mat-select [(ngModel)]="id_project_team">
                                             <mat-option [value]="0">{{'filter.ngaytao' | translate}}</mat-option>
                                             <mat-option [value]="1">{{'filter.deadline' | translate}}</mat-option>
-                                            <mat-option [value]="p.id" *ngFor="let p of projects">{{p.title}}</mat-option>
+                                            <mat-option [value]="p.id" *ngFor="let p of projects">{{p.title}}
+                                            </mat-option>
                                         </mat-select>
                                     </mat-form-field>
                                 </div>
@@ -206,18 +207,15 @@
                                 <button mat-raised-button color="primary" class="jee_btn-addcontinue"
                                     (click)="loadDataList()">{{'wuser.capnhat' | translate}}</button>
                             </div>
-                        </div> 
-                        
+                        </div>
+
                         <div id="print-section" class="kt-form__group w-100">
                             <!-- <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID"></kt-list-task-cu> -->
                             <router-outlet></router-outlet>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </kt-portlet-body>
         </kt-portlet>
     </mat-sidenav-content>
-  </mat-sidenav-container>
-
-
-
+</mat-sidenav-container>

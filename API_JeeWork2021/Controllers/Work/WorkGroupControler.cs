@@ -242,7 +242,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     val.Add("id_project_team", data.id_project_team);
                     if (data.reviewer > 0)
                         val.Add("reviewer", data.reviewer);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_group where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
@@ -309,7 +309,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                         val.Add("reviewer", data.reviewer);
                     else
                         val.Add("reviewer", DBNull.Value);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_group where Disabled=0 and  (id_project_team=@id_project_team) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -366,7 +366,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc nhóm công việc này nên không thể xóa");
                     //}
-                    sqlq = "update we_group set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_group set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -414,7 +414,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("locked", closed);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_group") != 1)

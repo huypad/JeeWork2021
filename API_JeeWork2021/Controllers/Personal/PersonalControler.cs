@@ -56,8 +56,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select w.*, IIF(w.Status = 1 and getdate() > w.deadline,1,0) as is_quahan,
-IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETDATE(),103),1,0) as is_moigiao
+                    string sqlq = @"select w.*, IIF(w.Status = 1 and GETUTCDATE() > w.deadline,1,0) as is_quahan,
+IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETUTCDATE(),103),1,0) as is_moigiao
 from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID ) ";
                     DataSet ds = cnn.CreateDataSet(sqlq, new SqlConditions() { { "userID", loginData.UserID } });
                     if (cnn.LastError != null || ds == null)
@@ -106,8 +106,8 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                                       }),
                     };
                     return JsonResultCommon.ThanhCong(data);
+                    #endregion
                 }
-                #endregion
             }
             catch (Exception ex)
             {
@@ -236,7 +236,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     {
                         val["id_work"] = id;
                         val["CreatedBy"] = loginData.UserID;
-                        val["CreatedDate"] = DateTime.Now;
+                        val["CreatedDate"] = Common.GetDateTime();
                         re = cnn.Insert(val, "we_work_favourite");
                     }
                     else
@@ -244,7 +244,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         value = !(bool)dt.Rows[0]["disabled"];
                         val["disabled"] = value;
                         val["UpdatedBy"] = loginData.UserID;
-                        val["UpdatedDate"] = DateTime.Now;
+                        val["UpdatedDate"] = Common.GetDateTime();
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_work_favourite");
                     }
                     if (re <= 0)
@@ -347,7 +347,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         value = !(bool)dt.Rows[0]["favourite"];
                         val["favourite"] = value;
                         val["UpdatedBy"] = loginData.UserID;
-                        val["UpdatedDate"] = DateTime.Now;
+                        val["UpdatedDate"] = Common.GetDateTime();
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_topic_user");
                     }
                     if (re <= 0)
@@ -397,7 +397,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     {
                         val["id_topic"] = id;
                         val["CreatedBy"] = loginData.UserID;
-                        val["CreatedDate"] = DateTime.Now;
+                        val["CreatedDate"] = Common.GetDateTime();
                         re = cnn.Insert(val, "we_topic_user");
                     }
                     else
@@ -405,7 +405,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         value = !(bool)dt.Rows[0]["disabled"];
                         val["disabled"] = value;
                         val["UpdatedBy"] = loginData.UserID;
-                        val["UpdatedDate"] = DateTime.Now;
+                        val["UpdatedDate"] = Common.GetDateTime();
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_topic_user");
                     }
                     if (re <= 0)
@@ -468,8 +468,8 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     SqlConditions cond = new SqlConditions();
                     string strW = "";
                     string strWP = "";
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -477,7 +477,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                             return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                         strW += " and w." + collect_by + ">=@from";
                         strWP += " and end_date>=@from";
-                        cond.Add("from", from);
+                        cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));                        
                     }
                     if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                     {
@@ -486,7 +486,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                         strW += " and w." + collect_by + "<@to";
                         strWP += " and end_date<@to";
-                        cond.Add("to", to);
+                        cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));                        
                     }
                     if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
                     {
@@ -510,7 +510,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                                 join we_project_team_user u on p.id_row=u.id_project_team 
                                 where p.disabled=0 and u.disabled=0 and u.id_user in (" + ids + ")" + strWP + " group by u.id_user";
                                 sql += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
-                                iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan from v_wework_new w where id_nv in (" + ids + ")" + strW;
+                                iIf(w.Status = 1 and GETUTCDATE() > w.deadline, 1, 0) as is_quahan from v_wework_new w where id_nv in (" + ids + ")" + strW;
                     DataSet ds = cnn.CreateDataSet(sql, cond);
                     var asP = ds.Tables[0].AsEnumerable();
                     DataTable dtW = ds.Tables[1];

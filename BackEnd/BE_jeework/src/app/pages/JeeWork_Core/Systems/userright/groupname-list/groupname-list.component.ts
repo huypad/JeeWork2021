@@ -47,7 +47,7 @@ import { FunctionsGroupListComponent } from "../functions-group/functions-group-
 export class GroupNameListComponent implements OnInit {
   // Table fields
   dataSource: UserRightDataSource;
-  displayedColumns = ["ID_Nhom", "TenNhom", "actions"];
+  displayedColumns = ["ID_Nhom", "TenNhom","DateCreated", "actions"];
   sorting: SortState = new SortState();
 
   //Form
@@ -111,9 +111,9 @@ export class GroupNameListComponent implements OnInit {
       this.paginatorNew.pageSize
     );
     this.dataSource.loadListGroupName(queryParams);
-    setTimeout((x) => {
-      this.loadPage();
-    }, 500);
+    // setTimeout((x) => {
+    //   this.loadPage();
+    // }, 500);
 
     let a = this.permitService.VisibleNND;
   }

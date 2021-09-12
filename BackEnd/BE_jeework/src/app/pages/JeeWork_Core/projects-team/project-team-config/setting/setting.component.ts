@@ -150,7 +150,7 @@ export class SettingComponent {
 				this.changeDetectorRefs.detectChanges();
 			}),
 			catchError((err) => throwError(err)),
-        	finalize(() => (console.log('complete')))
+        	finalize(() => {})
 		).subscribe(res =>{})
 	}
 

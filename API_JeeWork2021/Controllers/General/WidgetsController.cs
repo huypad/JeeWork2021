@@ -251,20 +251,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                         collect_by = collect[query.filter["collect_by"]];
                     SqlConditions cond = new SqlConditions();
                     string strW = "";
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                         return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", from);
+                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", to);
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                    
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         listDept = query.filter["id_department"];
@@ -436,8 +437,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -447,7 +448,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (!from1)
                             return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                         strW += " and w." + collect_by + ">=@from";
-                        cond.Add("from", from);
+                        cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                     {
@@ -455,7 +456,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (!to1)
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                         strW += " and w." + collect_by + "<@to";
-                        cond.Add("to", to);
+                        cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     }
                     string id_project_team = "0";
                     string hoanthanh = "";
@@ -587,8 +588,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -641,7 +642,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = WorkClickupController.GetWorkByEmployee(Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -711,8 +712,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -750,7 +751,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     if (!string.IsNullOrEmpty(query.filter["timedeadline"]))
-                        strW += $"and (w.deadline is not null and deadline >= GETDATE() and deadline <= '{query.filter["timedeadline"]}')";
+                        strW += $"and (w.deadline is not null and deadline >= GETUTCDATE() and deadline <= '{query.filter["timedeadline"]}')";
                     if (!string.IsNullOrEmpty(query.filter["tinhtrang"]))
                     {
                         string tinhtrang = query.filter["tinhtrang"];
@@ -783,7 +784,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = WorkClickupController.GetWorkByEmployee(Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -856,8 +857,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -878,7 +879,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     string columnName = "id_project_team";
                     if (!string.IsNullOrEmpty(query.filter["timedeadline"]))
-                        strW += $"and (w.deadline is not null and deadline >= GETDATE() and deadline =< '{query.filter["timedeadline"]}')";
+                        strW += $"and (w.deadline is not null and deadline >= GETUTCDATE() and deadline =< '{query.filter["timedeadline"]}')";
                     if (!string.IsNullOrEmpty(query.filter["tinhtrang"]))
                     {
                         string tinhtrang = query.filter["tinhtrang"];
@@ -910,7 +911,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = WorkClickupController.GetWorkByEmployee(Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = WorkClickupController.filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -1118,8 +1119,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
 
                     #region filter thời gian, keyword, group by
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     string groupby = "status";
                     string tableName = "";
                     string querySQL = "";
@@ -1847,8 +1848,8 @@ namespace JeeWork_Core2021.Controllers.Wework
             #endregion
 
             #region filter thời gian , keyword
-            DateTime from = DateTime.Now;
-            DateTime to = DateTime.Now;
+            DateTime from = Common.GetDateTime();
+            DateTime to = Common.GetDateTime();
             if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -1892,7 +1893,7 @@ iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_ht
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as is_danglam, 
 iIf(w.Status in (" + list_Deadline + @$") , 1, 0) as is_quahan,
-iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
+iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao, '' as NguoiSua from v_wework_clickup_new w 
 left join (select count(*) as count,object_id from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row

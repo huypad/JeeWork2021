@@ -66,7 +66,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("id_user", data.id_user);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_authorize") != 1)
@@ -130,7 +130,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("start_date", data.start_date);
                     val.Add("end_date", data.end_date);
                     val.Add("id_user", data.id_user);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_authorize") != 1)
@@ -175,7 +175,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc nhóm công việc này nên không thể xóa");
                     //}
-                    sqlq = "update we_authorize set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_authorize set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {

@@ -56,7 +56,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 		this._subscriptions.push(sb);
 
 		const dt = this.auth.getAuthFromLocalStorage();
-		this.userCurrent = dt.user.username
+		this.userCurrent = dt?.user.username
 	}
 	ngOnChanges(changes: SimpleChanges) {
 		this.propChanges = changes;
@@ -128,7 +128,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 				this.presence.NewGroup(data.access_token, res[0], res[0])
 				// this.GetContact();
 				// this.subscribeToEvents();
-				debugger
 				this.selectUser(res[0]);
 				this.GetContact();
 				this.changeDetectorRefs.detectChanges();
@@ -440,7 +439,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 	}
 
 	DeleteGroupChat(user: any) {
-		debugger
 		const _title = this.translate.instant('landingpagekey.xoa');
 		const _description = this.translate.instant('landingpagekey.bancochacchanmuonxoakhong');
 		const _waitDesciption = this.translate.instant('landingpagekey.dulieudangduocxoa');

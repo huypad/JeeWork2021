@@ -116,10 +116,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                         dieukienSort = "CreatedDate desc";
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select c.*,c.CreatedBy as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, coalesce(tong,0) as reply from we_comment c
-                                    left join (select count(*) as tong, id_parent from we_comment where disabled=0 group by id_parent) child on child.id_parent=c.id_row where c.disabled=0 and c.CreatedBy in ({listID}) " + dieukien_where + "  order by " + dieukienSort;
-                    sqlq += $";select att.*,att.createdby as id_nv, '' as username from we_attachment att where disabled=0 and att.createdby in ({listID}) and object_type=3";
+                                    left join (select count(*) as tong, id_parent from we_comment where disabled=0 group by id_parent) child on child.id_parent=c.id_row where c.disabled=0 " + dieukien_where + "  order by " + dieukienSort;
+                    sqlq += $";select att.*,att.createdby as id_nv, '' as username from we_attachment att where disabled=0 and object_type=3";
                     sqlq += @$";select l.*, ico.title, ico.icon, '' as hoten from we_comment_like l 
-                            join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabled = 0 and l.createdby in ({listID})";
+                            join we_like_icon ico on ico.id_row = l.type where l.disabled = 0 and ico.disabled = 0";
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -243,13 +243,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                     icon = "assets/media/icons/" + g.Key.b,
                                                     tong = g.Count(),
                                                     Users = string.Join(Environment.NewLine, from u in g select u["hoten"]),
-
                                                 },
                 Children = data == null ? new List<string>() : getChild(data, domain, loginData, asAttachment, asLike, r["id_row"])
             };
         }
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -300,7 +297,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         val.Add("id_parent", data.id_parent);
                     val.Add("object_type", data.object_type);
                     val.Add("object_id", data.object_id);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_comment") != 1)
@@ -672,7 +669,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
 
                     Hashtable val = new Hashtable();
                     val.Add("comment", data.comment);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_comment") != 1)
@@ -767,7 +764,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                     string sqlq = "select ISNULL((select count(*) from we_comment where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Bình luận");
-                    sqlq = "update we_comment set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_comment set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -834,7 +831,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                         val["id_comment"] = id;
                         val["type"] = type;
                         val["CreatedBy"] = loginData.UserID;
-                        val["CreatedDate"] = DateTime.Now;
+                        val["CreatedDate"] = Common.GetDateTime();
                         re = cnn.Insert(val, "we_comment_like");
                     }
                     else
@@ -844,7 +841,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                         if (type > 0)
                             val["type"] = type;
                         val["UpdatedBy"] = loginData.UserID;
-                        val["UpdatedDate"] = DateTime.Now;
+                        val["UpdatedDate"] = Common.GetDateTime();
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_comment_like");
                     }
                     if (re <= 0)

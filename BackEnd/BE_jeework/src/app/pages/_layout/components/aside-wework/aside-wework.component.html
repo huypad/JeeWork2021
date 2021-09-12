@@ -127,10 +127,9 @@
 </li>
 <!-- end:: section -->
 <ng-template #menuItemInnerTemplate let-item="item" let-parentItem="parentItem">
-    <li class="menu-item {{item.id_phanloai<0?'menu-item-open':''}} menu-item-open {{item.submenu?'menu-item-submenu':''}}"
-        aria-haspopup="true" data-menu-toggle="hover" routerLinkActive="menu-item-open"
-        routerLinkActive="menu-item-active" [ngClass]="{ 'menu-item-open': isMenuItemActive(item.page) }"
-        data-placement="right">
+    <li class="menu-item {{item.id_phanloai<0?'menu-item-open':''}} {{item.submenu?'menu-item-submenu':''}}"
+        aria-haspopup="true" data-menu-toggle="hover" routerLinkActive="menu-item-active"
+        [ngClass]="{ 'menu-item-open': isMenuItemActive(item.page) }" data-placement="right">
 
         <!-- if menu item hasn't submenu -->
         <a *ngIf="!item.submenu" class="kt-menu__link kt-menu__toggle menu-link hover-action">
@@ -138,7 +137,8 @@
                 [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
         </a>
         <!-- if menu item has sumnenu child  white-space: break-spaces;-->
-        <a *ngIf="item.submenu" class="kt-menu__link kt-menu__toggle menu-link  menu-toggle hover-action">
+        <a *ngIf="item.submenu" class="kt-menu__link kt-menu__toggle menu-link  menu-toggle hover-action"
+            (click)="item.folderOpen=!item.folderOpen">
             <ng-container [ngTemplateOutlet]="menuItemTextTemplate"
                 [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
         </a>
@@ -172,7 +172,7 @@
 </ng-template>
 
 <ng-template #menuSubmenuTemplate let-item="item" let-parentItem="parentItem">
-    <ul class="menu-subnav" (click)="btnClick($event)">
+    <ul class="menu-subnav">
         <ng-container *ngFor="let child of item.submenu">
             <ng-container *ngIf="child.section" [ngTemplateOutlet]="menuItemSectionTemplate"
                 [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
@@ -191,9 +191,8 @@
             <div class="text-white box-icon" [ngStyle]="{'backgroundColor': getColorText(item)}">{{getText(item)}}</div>
         </ng-container>
         <ng-template #icon>
-            <i [ngStyle]="{'color': folderOpen?'rgb(255, 140, 0)':''}"
-                [ngClass]="getActiveClass(folderOpen)"></i>
-
+            <i class="color-folder fa"></i>
+            <!--[ngClass]="getActiveClass(item.folderOpen)"-->
         </ng-template>
     </span>
 
@@ -206,10 +205,10 @@
     </i>
     <!-- menu item title text -->
     <span class=" menu-text" *ngIf="!item.submenu" (click)="NavigateTo(item.page)" style="white-space:break-spaces;"
-        [translate]="item.translate">{{item.title}}</span>
+        [translate]="item.translate">{{item.title.trim()}}</span>
 
     <span class=" menu-text" *ngIf="item.submenu" [translate]="item.translate"
-        style="white-space:break-spaces;">{{item.title}}</span>
+        style="white-space:break-spaces;">{{item.title.trim()}}</span>
     <!-- menu item with badge -->
     <span *ngIf="item.badge" class="kt-menu__link-badge">
         <span class="kt-badge" [ngClass]="item.badge.type">{{item.badge.value}}</span>
@@ -222,95 +221,84 @@
             <i class="las la-ellipsis-h m--font-brand text-primary" style="font-size: 2.2rem;"></i>
         </button>
         <mat-menu #menu="matMenu">
-            <button mat-menu-item [matMenuTriggerFor]="tc"><span translate="GeneralKey.templatecenter"></span></button>
-            <mat-menu #tc="matMenu" yPosition="below">
-                <div>
-                    <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5>
-                    <button mat-menu-item><span translate="GeneralKey.browsetemplate"
-                            (click)="AddTemplate()"></span></button>
-                    <button mat-menu-item><span translate="GeneralKey.saveastemplate"
-                            (click)="UpdateTemplate(1,item)"></span></button>
-                    <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
-                            (click)="UpdateTemplate(2,item)"></span></button>
-                </div>
-            </mat-menu>
+            <!-- <button mat-menu-item [matMenuTriggerFor]="tc"><span translate="GeneralKey.templatecenter"></span></button> -->
+
             <button mat-menu-item color="accent">
-                <mat-icon style="color: rgb(35, 93, 201) ">arrow_forward
+                <mat-icon style="color: rgb(35, 93, 201)">view_comfy
                 </mat-icon>
                 <a [routerLink]="['/project',item.id]" mat-icon-button color="accent">
                     <span>
-                        <span style="font-size: 9pt; color:rgb(35, 93, 201)" translate="work.xemchitiet"></span>
+                        <span translate="work.xemchitiet"></span>
                     </span>
                 </a>
             </button>
-            <button mat-menu-item [matMenuTriggerFor]="recent" color="accent">
-                <mat-icon style="color:rgb(235, 166, 19);">create</mat-icon>
+            <button mat-menu-item *ngIf="item.Locked" (click)="ClosedProject(item)">
+                <mat-icon style="color:rgb(8, 122, 52)">lock_open</mat-icon>
                 <span>
-                    <span style="font-size: 9pt; color:rgb(235, 166, 19);" translate="GeneralKey.chinhsua"></span>
-                </span>
+                        <span translate="GeneralKey.moteam"></span>
+                    </span>
             </button>
-            <ng-container *ngIf="item">
-                <button mat-menu-item *ngIf="item.Locked == 'False'" (click)="ClosedProject(item)">
+            <ng-container *ngIf="item && !item.Locked">
+
+                <button mat-menu-item *ngIf="!item.Locked" (click)="ClosedProject(item)">
                     <mat-icon style="color:rgb(89, 94, 92)">lock</mat-icon>
                     <span>
-                        <span style="font-size: 9pt; color:rgb(89, 94, 92)" translate="GeneralKey.dongteam"></span>
+                        <span translate="GeneralKey.dongteam"></span>
                     </span>
                 </button>
-                <button mat-menu-item *ngIf="item.Locked == 'True'" (click)="ClosedProject(item)">
-                    <mat-icon style="color:rgb(8, 122, 52)">lock_open</mat-icon>
+                <button mat-menu-item (click)="DuplicateProject(item)">
+                    <mat-icon style="color:rgb(149, 14, 211);">filter_none</mat-icon>
                     <span>
-                        <span style="font-size: 9pt; color:rgb(8, 122, 52)" translate="GeneralKey.moteam"></span>
-                    </span>
-                </button>
-            </ng-container>
-            <button mat-menu-item (click)="Deleted(item)">
-                <mat-icon style="color:rgb(236, 49, 74)">clear</mat-icon>
-                <span>
-                    <span style="font-size: 9pt; color:rgb(236, 49, 74)" translate="GeneralKey.xoateam"></span>
+                    <span translate="GeneralKey.nhanbanteam"></span>
                 </span>
-            </button>
-            <button mat-menu-item [matMenuTriggerFor]="nhanbanteam" color="accent">
-                <mat-icon style="color:rgb(219, 69, 9)">settings</mat-icon>
-                <span style="font-size: 9pt; color:rgb(219, 69, 9)" translate="GeneralKey.cactuychonkhac"></span>
-            </button>
-            <button mat-menu-item (click)="AddAutomation(item)">
-                <svg style="margin-right: 13px;fill:rgb(219, 69, 9)" xmlns="http://www.w3.org/2000/svg" height="16"
-                    width="16" viewBox="0 0 16 16" id="svg-sprite-automations-robot">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7 1.5a1 1 0 111.5.866V3.5H11a3.5 3.5 0 013.163 2h.337A1.5 1.5 0 0116 7v4a1.5 1.5 0 01-1.5 1.5h-.145A3.502 3.502 0 0111 15H5a3.501 3.501 0 01-3.355-2.5H1.5A1.5 1.5 0 010 11V7a1.5 1.5 0 011.5-1.5h.337A3.5 3.5 0 015 3.5h2.5V2.366A1 1 0 017 1.5zm-5.465 5H1.5A.5.5 0 001 7v4a.5.5 0 00.5.5V7c0-.17.012-.337.035-.5zm12.965 5a.5.5 0 00.5-.5V7a.5.5 0 00-.5-.5h-.035c.023.163.035.33.035.5v4.5zM5 4.5A2.5 2.5 0 002.5 7v4.5A2.5 2.5 0 005 14h6a2.5 2.5 0 002.5-2.5V7A2.5 2.5 0 0011 4.5H5zm.675 6.12a.5.5 0 01.704.054L6 11l-.38.325a.5.5 0 01.055-.705zM6 11l.38-.325.002.003.022.023c.02.021.051.054.093.094.084.08.208.188.361.295.315.22.714.41 1.142.41.428 0 .827-.19 1.142-.41a3.13 3.13 0 00.476-.412l.003-.004a.5.5 0 01.759.651L10 11l.38.326h-.001l-.002.002-.003.004-.011.013a2.46 2.46 0 01-.17.173c-.112.107-.274.25-.478.392-.4.28-1 .59-1.715.59-.715 0-1.316-.31-1.715-.59a4.121 4.121 0 01-.648-.565l-.01-.013-.004-.004-.002-.001v-.001L6 11zm-.5-4a1 1 0 100 2 1 1 0 000-2zm5 0a1 1 0 100 2 1 1 0 000-2z">
-                    </path>
-                </svg>
-                &nbsp;
-                <span style="font-size: 9pt; color:rgb(219, 69, 9)" translate="GeneralKey.automation"></span>
-            </button>
+                </button>
+                <button mat-menu-item (click)="AddAutomation(item)">
+                    <mat-icon style="color:rgb(207, 65, 8);">autorenew</mat-icon>
+                    <span translate="GeneralKey.automation"></span>
+                </button>
+                <button mat-menu-item [matMenuTriggerFor]="recent" color="accent">
+                    <mat-icon class="icon-sua">create</mat-icon>
+                    <span>
+                    <span translate="GeneralKey.chinhsua"></span>
+                </span>
+                </button>
+                <button mat-menu-item [matMenuTriggerFor]="tc" color="accent">
+                    <mat-icon class="icon-them">add</mat-icon>
+                    <span>
+                    <span translate="GeneralKey.templatecenter"></span>
+                </span>
+                </button>
+                <button mat-menu-item (click)="Deleted(item)">
+                    <mat-icon class="icon-xoa">clear</mat-icon>
+                    <span>
+                    <span translate="GeneralKey.xoateam"></span>
+                </span>
+                </button>
+
+            </ng-container>
+
+        </mat-menu>
+        <mat-menu #tc="matMenu">
+            <!-- <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5> -->
+            <button mat-menu-item><span translate="GeneralKey.browsetemplate" (click)="AddTemplate()"></span></button>
+            <button mat-menu-item><span translate="GeneralKey.saveastemplate"
+                    (click)="UpdateTemplate(1,item)"></span></button>
+            <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
+                    (click)="UpdateTemplate(2,item)"></span></button>
         </mat-menu>
         <mat-menu #recent="matMenu">
             <button type="button" (click)="AddProject(item,true)" mat-menu-item>
                 <mat-icon style="color:rgb(13, 92, 240)">create</mat-icon>
-                <span style="font-size: 9pt;color:rgb(13, 92, 240)" translate="GeneralKey.chinhsuanhanh"></span>
+                <span translate="GeneralKey.chinhsuanhanh"></span>
             </button>
             <button type="button" (click)="UpdateStatus(item)" mat-menu-item>
-                <mat-icon style="color:rgb(230, 36, 171)">create</mat-icon>
-                <span style="font-size: 9pt;color:rgb(230, 36, 171)" translate="GeneralKey.chinhsuastatus"></span>
+                <mat-icon style="color:rgb(203, 14, 209)">update</mat-icon>
+                <span translate="GeneralKey.chinhsuastatus"></span>
             </button>
             <button mat-menu-item (click)="updateStage(item)">
-                <mat-icon style="color:rgb(5, 116, 29)">update</mat-icon>
+                <mat-icon style="color:rgb(5, 116, 29)">done</mat-icon>
                 <span>
-                    <span style="font-size: 9pt;color:rgb(5, 116, 29)" translate="GeneralKey.capnhattrangthai"></span>
-                </span>
-            </button>
-        </mat-menu>
-        <mat-menu #nhanbanteam="matMenu">
-            <button mat-menu-item (click)="DuplicateProject(item)">
-                <mat-icon style="color:rgb(123, 15, 173);">filter_none</mat-icon>
-                <span>
-                    <span style="font-size: 9pt;color:rgb(123, 15, 173);" translate="GeneralKey.nhanbanteam"></span>
-                </span>
-            </button>
-            <button mat-menu-item (click)="Change(item)">
-                <mat-icon style="color:rgb(5, 111, 231)">swap_horiz</mat-icon>
-                <span>
-                    <span style="font-size: 9pt;color:rgb(5, 111, 231)" translate="GeneralKey.changetype"></span>
+                    <span translate="GeneralKey.capnhattrangthai"></span>
                 </span>
             </button>
         </mat-menu>
@@ -326,28 +314,19 @@
                 <button mat-menu-item [matMenuTriggerFor]="tc"><span
                         translate="GeneralKey.templatecenter"></span></button>
                 <mat-menu #tc="matMenu" yPosition="below">
-                    <div>
-                        <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5>
-                        <button mat-menu-item><span translate="GeneralKey.browsetemplate"
-                                (click)="AddTemplate()"></span></button>
-                        <button mat-menu-item><span translate="GeneralKey.saveastemplate"
-                                (click)="UpdateTemplate(1,item)"></span></button>
-                        <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
-                                (click)="UpdateTemplate(2,item)"></span></button>
-                    </div>
+                    <button mat-menu-item><span translate="GeneralKey.browsetemplate"
+                            (click)="AddTemplate()"></span></button>
+                    <button mat-menu-item><span translate="GeneralKey.saveastemplate"
+                            (click)="UpdateTemplate(1,item)"></span></button>
+                    <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
+                            (click)="UpdateTemplate(2,item)"></span></button>
                 </mat-menu>
-                <!-- <button mat-menu-item > 
-                    <span translate="projects.themnhanhduan"></span>
-                </button> -->
                 <a [routerLink]="['/depts',item.id,'projects']"><button mat-menu-item>
                         <span translate="work.xemchitiet"></span>
                     </button></a>
                 <a [routerLink]="['/depts',item.id,'task',item.id]"><button mat-menu-item>
                         <span translate="work.xemchitietcongviec"></span>
                     </button></a>
-                <!-- <a [routerLink]="['/depts',item.id,'milestones']"><button mat-menu-item>
-                        <span translate="work.xemchitietmuctieu"></span>
-                    </button></a> -->
                 <a [routerLink]="['/depts',item.id,'report',item.id]"><button mat-menu-item>
                         <span translate="work.xemchitietbaocao"></span>
                     </button></a>
@@ -356,8 +335,6 @@
                 <button (click)="DeleteDept(item)" mat-menu-item><span
                         translate="department.{{item.IsFolder?'xoafolder':'xoa'}}"></span></button>
                 <button mat-menu-item (click)="AddAutomation(item)">
-                    <!-- <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 16 16" id="svg-sprite-automations-robot"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 1.5a1 1 0 111.5.866V3.5H11a3.5 3.5 0 013.163 2h.337A1.5 1.5 0 0116 7v4a1.5 1.5 0 01-1.5 1.5h-.145A3.502 3.502 0 0111 15H5a3.501 3.501 0 01-3.355-2.5H1.5A1.5 1.5 0 010 11V7a1.5 1.5 0 011.5-1.5h.337A3.5 3.5 0 015 3.5h2.5V2.366A1 1 0 017 1.5zm-5.465 5H1.5A.5.5 0 001 7v4a.5.5 0 00.5.5V7c0-.17.012-.337.035-.5zm12.965 5a.5.5 0 00.5-.5V7a.5.5 0 00-.5-.5h-.035c.023.163.035.33.035.5v4.5zM5 4.5A2.5 2.5 0 002.5 7v4.5A2.5 2.5 0 005 14h6a2.5 2.5 0 002.5-2.5V7A2.5 2.5 0 0011 4.5H5zm.675 6.12a.5.5 0 01.704.054L6 11l-.38.325a.5.5 0 01.055-.705zM6 11l.38-.325.002.003.022.023c.02.021.051.054.093.094.084.08.208.188.361.295.315.22.714.41 1.142.41.428 0 .827-.19 1.142-.41a3.13 3.13 0 00.476-.412l.003-.004a.5.5 0 01.759.651L10 11l.38.326h-.001l-.002.002-.003.004-.011.013a2.46 2.46 0 01-.17.173c-.112.107-.274.25-.478.392-.4.28-1 .59-1.715.59-.715 0-1.316-.31-1.715-.59a4.121 4.121 0 01-.648-.565l-.01-.013-.004-.004-.002-.001v-.001L6 11zm-.5-4a1 1 0 100 2 1 1 0 000-2zm5 0a1 1 0 100 2 1 1 0 000-2z"></path></svg> -->
-                    <!-- &nbsp; -->
                     <span translate="GeneralKey.automation"></span>
                 </button>
             </mat-menu>

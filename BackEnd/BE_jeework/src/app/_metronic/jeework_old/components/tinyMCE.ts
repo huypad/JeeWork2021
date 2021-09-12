@@ -26,7 +26,7 @@ const tinyMCE = {
 	// images_upload_credentials: true,
 	autosave_ask_before_unload: true, // Tự động save
 	autosave_interval: '30s', // thời gian tự động save
-
+	// apiKey : "lvp9xf6bvvm3nkaupm67ffzf50ve8femuaztgg7rkgkmsws3",
 	images_upload_handler: function (blobInfo, success, failure) {
 		var xhr, formData;
 		xhr = new XMLHttpRequest();
@@ -68,10 +68,9 @@ const tinyMCE = {
 					.replace('>', '')
 					.replace('"', '')
 					.trim();
-				// debugger
 				if (e.target.editorUpload.blobCache.getByUri(s)) {
 					let size = e.target.editorUpload.blobCache.getByUri(s).blob().size;
-					const allowedSize = 100; // KB
+					const allowedSize = 2048; // KB
 					size = size / 1024; // KB
 					if (size > allowedSize) {
 						// alert('Hình ảnh đã vượt qua kích thước tối đa.');

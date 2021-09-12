@@ -336,7 +336,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(data.listid))
                         val.Add("listid", data.listid);
 
-                    //val.Add("UpdatedDate", DateTime.Now);
+                    //val.Add("UpdatedDate", Common.GetDateTime());
                     //val.Add("UpdatedBy", iduser);
                     val.Add("status", data.status);
                     // event
@@ -430,7 +430,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             {
                                 Hashtable val1 = new Hashtable();
                                 val1["taskid"] = max_task;
-                                val1.Add("createddate", DateTime.Now);
+                                val1.Add("createddate", Common.GetDateTime());
                                 foreach (var _tag in _t.tags)
                                 {
                                     val1["tagid"] = _tag.id_tag;
@@ -862,7 +862,7 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                 val.Add("listid", data.listid);
             else
                 val.Add("listid", DBNull.Value);
-            val.Add("createddate", DateTime.Now);
+            val.Add("createddate", Common.GetDateTime());
             val.Add("createdby", iduser);
             val.Add("status", 1);
             // event
@@ -960,7 +960,7 @@ where w.Disabled = 0 and id_parent is null and  id_department in (select id_row 
                     {
                         Hashtable val1 = new Hashtable();
                         val1["taskid"] = max_task;
-                        val1.Add("createddate", DateTime.Now);
+                        val1.Add("createddate", Common.GetDateTime());
                         foreach (var _tag in _t.tags)
                         {
                             val1["tagid"] = _tag.id_tag;

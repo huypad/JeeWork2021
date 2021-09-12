@@ -358,7 +358,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         conds.Add("id_row", DepartmentID);
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select id_row, title, id_cocau, templateid, parentid, id_template_list
-                                    from we_department where (where) and parentid is null";
+                                    from we_department where (where) and ( parentid is null or id_row = {DepartmentID} )";
                     #endregion
                     DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conds);
                     if (cnn.LastError != null || dt == null)
@@ -368,12 +368,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                                 {
                                                     id = int.Parse(pb["id_row"].ToString()),
                                                     title = pb["title"].ToString(),
+                                                    parentid = pb["parentid"].ToString(),
                                                 }).ToList();
                     var data = (from pb in _parents
                                 select new LiteModel()
                                 {
                                     id = pb.id,
                                     title = pb.title,
+                                    parentid = pb.parentid,
                                     data = findChild(pb.id)
                                 }).ToList();
                     return JsonResultCommon.ThanhCong(data);
@@ -418,6 +420,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         {
             public T id { get; set; }
             public string title { get; set; }
+            public string parentid { get; set; }
             public object disabled { get; set; }
             public object data { get; set; }
             public bool? IsDefault { get; set; }
@@ -1581,7 +1584,7 @@ and IdKH={loginData.CustomerID} )";
                             val["Description"] = item["Description"];
                             val["TemplateID"] = item["id_row"];
                             val["CustomerID"] = loginData.CustomerID;
-                            val["CreatedDate"] = DateTime.Now;
+                            val["CreatedDate"] = Common.GetDateTime();
                             val["CreatedBy"] = loginData.UserID;
                             if (cnn.Insert(val, "we_template_customer") != 1)
                             {
@@ -1591,7 +1594,7 @@ and IdKH={loginData.CustomerID} )";
                             string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString();
                             string sql_insert = "";
                             sql_insert = $@"insert into we_template_status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
-                                "select id_Row, " + idc + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
+                                "select id_Row, " + idc + ", StatusName, description, GETUTCDATE(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
                                 "from we_status_list where disabled = 0 and id_template_list = " + item["id_row"] + "";
                             cnn.ExecuteNonQuery(sql_insert);
                             if (cnn.LastError != null)
@@ -2199,7 +2202,7 @@ and IdKH={loginData.CustomerID} )";
             val["id_action"] = id_action;
             val["object_id"] = object_id;
             val["CreatedBy"] = id_user;
-            val["CreatedDate"] = DateTime.Now;
+            val["CreatedDate"] = Common.GetDateTime();
             if (!string.IsNullOrEmpty(log_content))
                 val["log_content"] = log_content;
             if (_old == null)
@@ -2272,8 +2275,8 @@ and IdKH={loginData.CustomerID} )";
                     string sqlq = "";
                     string authorize = "";
                     authorize = @$"select createdby from we_authorize where id_user = {loginData.UserID} 
-                                and disabled =0 and start_date <= GETDATE() 
-                                and end_date >= GETDATE()";
+                                and disabled =0 and start_date <= GETUTCDATE() 
+                                and end_date >= GETUTCDATE()";
 
                     sqlq = "select users.admin, proj.title, proj.description, proj.start_date, proj.end_date" +
                         ", Iif( users.admin = 1 and id_user <> " + loginData.UserID + ",1,0 ) as isuyquyen " +
@@ -2941,7 +2944,7 @@ and IdKH={loginData.CustomerID} )";
                             has.Add("view_name_new", item["view_name"].ToString());
                             has.Add("id_department", department);
                             has.Add("default_view", item["is_default"].ToString());
-                            has.Add("createddate", DateTime.Now);
+                            has.Add("createddate", Common.GetDateTime());
                             has.Add("createdby", 0);
                             if (conn.Insert(has, "we_projects_view") != 1)
                             {
@@ -2961,7 +2964,7 @@ and IdKH={loginData.CustomerID} )";
                             has.Add("view_name_new", item["view_name"].ToString());
                             has.Add("default_view", item["is_default"].ToString());
                             has.Add("id_department", 0);
-                            has.Add("createddate", DateTime.Now);
+                            has.Add("createddate", Common.GetDateTime());
                             has.Add("createdby", 0);
                             if (conn.Insert(has, "we_projects_view") != 1)
                             {
@@ -3013,7 +3016,7 @@ and IdKH={loginData.CustomerID} )";
                         has.Add("disabled", 0);
                         has.Add("position", item["position"].ToString());
                         has.Add("fieldid", item["id_field"].ToString());
-                        has.Add("createddate", DateTime.Now);
+                        has.Add("createddate", Common.GetDateTime());
                         has.Add("createdby", 0);
                         has.Add("isnewField", 0);
                         if (conn.Insert(has, "we_fields_project_team") != 1)
@@ -3059,7 +3062,7 @@ and IdKH={loginData.CustomerID} )";
                         has.Add("disabled", 0);
                         has.Add("position", item["position"].ToString());
                         has.Add("fieldid", item["id_field"].ToString());
-                        has.Add("createddate", DateTime.Now);
+                        has.Add("createddate", Common.GetDateTime());
                         has.Add("createdby", 0);
                         has.Add("isnewField", 0);
                         if (conn.Insert(has, "we_fields_project_team") != 1)
@@ -3152,7 +3155,7 @@ and IdKH={loginData.CustomerID} )";
                             Hashtable val = new Hashtable();
                             val.Add("id_work", WorkID);
                             val.Add("id_user", dt.Rows[0]["Checker"].ToString());
-                            val.Add("CreatedDate", DateTime.Now);
+                            val.Add("CreatedDate", Common.GetDateTime());
                             val.Add("CreatedBy", data.UserID);
                             val.Add("loai", 1);
                             if (cnn.Insert(val, "we_work_user") != 1)
@@ -3434,7 +3437,7 @@ and IdKH={loginData.CustomerID} )";
             {
                 Conds.Add("CustomerID", CustemerID);
                 sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
-                        select Title, Description, getdate(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_template_list where Disabled = 0  and is_template_center <> 1";
+                        select Title, Description, GETUTCDATE(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_template_list where Disabled = 0  and is_template_center <> 1";
                 cnn.ExecuteNonQuery(sql_insert);
                 dt = cnn.CreateDataTable(select);
                 if (dt.Rows.Count > 0)
@@ -3442,7 +3445,7 @@ and IdKH={loginData.CustomerID} )";
                     foreach (DataRow item in dt.Rows)
                     {
                         sql_insert = $@"insert into we_template_status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
-                            "select id_Row, " + item["id_row"] + ", StatusName, description, getdate(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
+                            "select id_Row, " + item["id_row"] + ", StatusName, description, GETUTCDATE(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
                             "from we_status_list where disabled = 0 and id_template_list = " + item["templateid"] + "";
                         cnn.ExecuteNonQuery(sql_insert);
                         sql_insert = "";
@@ -3455,7 +3458,7 @@ and IdKH={loginData.CustomerID} )";
             error = "";
             string sql_insert = "";
             sql_insert = $@"insert into we_projects_view (id_project_team, viewid, view_name_new, createddate, createdby, default_view, disabled) " +
-                    "select " + id_project_team + ", id_row, view_name, getdate(), " + loginData.UserID + ", is_default, 0 " +
+                    "select " + id_project_team + ", id_row, view_name, GETUTCDATE(), " + loginData.UserID + ", is_default, 0 " +
                     "from we_default_views where id_row in (" + list_views + ")";
             cnn.ExecuteNonQuery(sql_insert);
             if (cnn.LastError == null)
@@ -3518,7 +3521,7 @@ and IdKH={loginData.CustomerID} )";
                 has["parentid"] = DBNull.Value; // insert lần đầu không có parentid 
             has["levels"] = types;
             has["disabled"] = 0;
-            has["createddate"] = DateTime.Now;
+            has["createddate"] = Common.GetDateTime();
             has["createdby"] = loginData.UserID;
             has["customerid"] = loginData.CustomerID;
             has["id_reference"] = dr["id_row"].ToString();
@@ -3600,7 +3603,7 @@ and IdKH={loginData.CustomerID} )";
             val.Add("title", "Cuộc họp");
             val.Add("id_cocau", 0);
             val.Add("idkh", loginData.CustomerID);
-            val.Add("createddate", DateTime.Now);
+            val.Add("createddate", Common.GetDateTime());
             val.Add("createdby", loginData.UserID);
             val.Add("IsDataStaff_HR", 0);
             val.Add("templateid", max_template);
@@ -3619,7 +3622,7 @@ and IdKH={loginData.CustomerID} )";
             string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
             val = new Hashtable();
             val["id_department"] = idc;
-            val["CreatedDate"] = DateTime.Now;
+            val["CreatedDate"] = Common.GetDateTime();
             val["CreatedBy"] = loginData.UserID;
             val["viewid"] = 1;
             val["is_default"] = 1;
@@ -3631,7 +3634,7 @@ and IdKH={loginData.CustomerID} )";
             }
             val = new Hashtable();
             val["id_department"] = idc;
-            val["CreatedDate"] = DateTime.Now;
+            val["CreatedDate"] = Common.GetDateTime();
             val["CreatedBy"] = loginData.UserID;
             val["id_user"] = loginData.UserID;
             val["type"] = 1;
@@ -3836,7 +3839,21 @@ and IdKH={loginData.CustomerID} )";
                 return spacename;
             }
         }
-        
+
+        public static string GetUTCTime(IHeaderDictionary _header, string CurrentTime)
+        {
+            int _timeZone = 0;
+            if (_header != null)
+                _timeZone = int.Parse(_header["TimeZone"].ToString());
+            _timeZone /= -60;
+            DateTime dt = DateTime.Parse(CurrentTime);
+            int _currentTZ = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
+            // int _chl = Math.Abs(_currentTZ - _timeZone); 
+            int _chl = (_timeZone - _currentTZ);
+            var _currentLocalTime = dt.AddHours(_chl);
+            return _currentLocalTime.ToString();
+        }
+
     }
 }
 

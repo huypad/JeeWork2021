@@ -18,6 +18,7 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using DPSinfra.Notifier;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -66,8 +67,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -94,7 +95,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (query.filter["filter"] == "2")//giao đi
                             strW = " and (w.nguoigiao=@iduser)";
                     }
-                    DataSet ds = getWork(cnn, query, loginData.UserID, strW);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -158,8 +159,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -180,7 +181,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (ids == "")
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     string strW = " and w.id_nv in (" + ids + ")";
-                    DataSet ds = getWork(cnn, query, loginData.UserID, strW);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -242,8 +243,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -289,7 +290,7 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -361,8 +362,8 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
                         return JsonResultCommon.Custom("Thành viên");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -387,7 +388,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -451,8 +452,8 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     return BadRequest();
 
                 #region filter thời gian , keyword
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                 {
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -483,7 +484,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     string strG = @"select p.id_row, p.title from we_project_team_user u
 join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Disabled=0 and id_user=" + query.filter["id_nv"];
                     DataTable dtG = cnn.CreateDataTable(strG);
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     var tags = ds.Tables[1].AsEnumerable();
                     var followers = ds.Tables[2].AsEnumerable();
                     if (cnn.LastError != null || ds == null)
@@ -547,8 +548,8 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     SqlConditions Conds = new SqlConditions();
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -569,7 +570,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     string dieukien_where = FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"],null);
                     //if (string.IsNullOrEmpty(dieukien_where))
                     //    return JsonResultCommon.KhongTonTai("Filter");
-                    DataSet ds = getWork(cnn, query, loginData.UserID, dieukien_where);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID, dieukien_where);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -629,8 +630,8 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -676,7 +677,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -747,8 +748,8 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -765,7 +766,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -827,8 +828,8 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -848,7 +849,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                     string strG = @"select 0 as id_row, N'Chưa phân loại' as title union
 select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
                     DataTable dtG = cnn.CreateDataTable(strG);
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -972,8 +973,8 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -994,7 +995,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     DataTable dtF = cnn.CreateDataTable(sql);
                     if (dtF == null || dtF.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     //var ss = (from f in dtF.AsEnumerable()
@@ -1061,8 +1062,8 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
 iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
 iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
 iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
-iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
+iIf(w.Status = 1 and GETUTCDATE() > w.deadline, 1, 0) as is_quahan,
+iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
 tao.UserName as NguoiTao, sua.Username as NguoiSua from v_wework w 
 left join {_config.HRCatalog}.dbo.Tbl_Nhanvien nv on w.nguoigiao = nv.id_nv
@@ -1320,13 +1321,13 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     else
                         val.Add("description", data.description);
                     val.Add("id_project_team", data.id_project_team);
-                    if (data.deadline > DateTime.MinValue)
-                        val.Add("deadline", data.deadline);
+                    //if (data.deadline > DateTime.MinValue)
+                    //    val.Add("deadline", data.deadline);
                     if (data.id_group > 0)
                         val.Add("id_group", data.id_group);
                     if (data.id_milestone > 0)
                         val.Add("id_milestone", data.id_milestone);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     //string strCheck = "select count(*) from we_work where (id_project_team=@id_project_team) and title=@name";
                     //if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
@@ -1344,7 +1345,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     {
                         Hashtable val1 = new Hashtable();
                         val1["id_work"] = idc;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var user in data.Users)
                         {
@@ -1361,7 +1362,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     {
                         Hashtable val2 = new Hashtable();
                         val2["id_work"] = idc;
-                        val2["CreatedDate"] = DateTime.Now;
+                        val2["CreatedDate"] = Common.GetDateTime();
                         val2["CreatedBy"] = iduser;
                         foreach (var tag in data.Tags)
                         {
@@ -1477,7 +1478,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     val.Add("prioritize", data.prioritize);
                     val.Add("urgent", data.urgent);
 
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_work") != 1)
@@ -1489,7 +1490,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //string ids = string.Join(",", data.Users.Where(x => x.loai == 1 && x.id_row > 0).Select(x => x.id_row));
                     //if (ids != "")
                     //{
-                    //    string strDel = "Update we_work_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row + " and id_row not in (" + ids + ")";
+                    //    string strDel = "Update we_work_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row + " and id_row not in (" + ids + ")";
                     //    if (cnn.ExecuteNonQuery(strDel) < 0)
                     //    {
                     //        cnn.RollbackTransaction();
@@ -1502,7 +1503,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //    {
                     //        Hashtable val1 = new Hashtable();
                     //        val1["id_work"] = data.id_row;
-                    //        val1["CreatedDate"] = DateTime.Now;
+                    //        val1["CreatedDate"] = Common.GetDateTime();
                     //        val1["CreatedBy"] = iduser;
                     //        val1["id_user"] = user.id_user;
                     //        val1["loai"] = 1;
@@ -1619,7 +1620,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (data.key != "Tags" && data.key != "Attachments" && data.key != "assign")
                     {
                         Hashtable val = new Hashtable();
-                        val.Add("UpdatedDate", DateTime.Now);
+                        val.Add("UpdatedDate", Common.GetDateTime());
                         val.Add("UpdatedBy", iduser);
                         cnn.BeginTransaction();
                         if (data.value == null)
@@ -1781,7 +1782,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     {
                         if (data.key == "assign")//assign cho 1 người mới hoặc xóa
                         {
-                            string strDel = "Update we_work_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row;
+                            string strDel = "Update we_work_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row;
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
@@ -1791,7 +1792,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 Hashtable val1 = new Hashtable();
                                 val1["id_work"] = data.id_row;
-                                val1["CreatedDate"] = DateTime.Now;
+                                val1["CreatedDate"] = Common.GetDateTime();
                                 val1["CreatedBy"] = iduser;
                                 val1["id_user"] = data.value;
                                 val1["loai"] = 1;
@@ -1838,7 +1839,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             if (int.Parse(f.ToString()) > 0) // Tag đã có => Delete
                             {
                                 val2 = new Hashtable();
-                                val2["UpdatedDate"] = DateTime.Now;
+                                val2["UpdatedDate"] = Common.GetDateTime();
                                 val2["UpdatedBy"] = iduser;
                                 val2["Disabled"] = 1;
                                 SqlConditions cond = new SqlConditions();
@@ -1854,7 +1855,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 val2 = new Hashtable();
                                 val2["id_work"] = data.id_row;
-                                val2["CreatedDate"] = DateTime.Now;
+                                val2["CreatedDate"] = Common.GetDateTime();
                                 val2["CreatedBy"] = iduser;
                                 val2["id_tag"] = data.value;
                                 if (cnn.Insert(val2, "we_work_tag") != 1)
@@ -1956,7 +1957,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
                     //}
-                    sqlq = "update we_work set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_work set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
@@ -2045,7 +2046,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     val["id_user"] = id_user;
                     val["loai"] = 1;
                     val["createdBy"] = loginData.UserID;
-                    val["CreatedDate"] = DateTime.Now;
+                    val["CreatedDate"] = Common.GetDateTime();
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_work_user") <= 0)
                     {
@@ -2053,7 +2054,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_user')").ToString());
-                    string strU = "update we_work_user set disabled=1, updateddate=getdate(), updatedby=" + id_user + ", id_child=" + idc + " where id_row=" + dt.Rows[0]["id_row"].ToString();
+                    string strU = "update we_work_user set disabled=1, updateddate=GETUTCDATE(), updatedby=" + id_user + ", id_child=" + idc + " where id_row=" + dt.Rows[0]["id_row"].ToString();
                     if (cnn.ExecuteNonQuery(strU) != 1)
                     {
                         cnn.RollbackTransaction();
@@ -2136,7 +2137,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         val.Add("start_date", data.start_date);
                     if (data.followers != null && data.followers.Count > 0)
                         val.Add("followers", string.Join(",", data.followers));
-                    val.Add("CreatedDate", DateTime.Now.ToUniversalTime());
+                    val.Add("CreatedDate", Common.GetDateTime().ToUniversalTime());
                     val.Add("CreatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_work_duplicate") != 1)
@@ -2259,8 +2260,8 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
                     return BadRequest();
 
                 #region filter thời gian , keyword
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                 {
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -2291,7 +2292,7 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
                     string strG = @"select null as id_row, N'Chưa phân loại' as title union
 select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
                     DataTable dtG = cnn.CreateDataTable(strG);
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     var tags = ds.Tables[1].AsEnumerable();
                     var followers = ds.Tables[2].AsEnumerable();
                     if (cnn.LastError != null || ds == null)
@@ -2740,14 +2741,14 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     int total = data_import.dtW.Rows.Count;
                     cnn.BeginTransaction();
                     //Hashtable val = new Hashtable();
-                    //val["CreatedDate"] = DateTime.Now;
+                    //val["CreatedDate"] = Common.GetDateTime();
                     //val["CreatedBy"] = loginData.UserID;
                     //val["id_project_team"] = data.id_project_team;
                     #region insert tag mới, milestone mới, group
                     foreach (DataRow dr in data_import.dtPK.Rows)
                     {
                         Hashtable vl = new Hashtable();
-                        vl["CreatedDate"] = DateTime.Now;
+                        vl["CreatedDate"] = Common.GetDateTime();
                         vl["CreatedBy"] = loginData.UserID;
                         vl["id_project_team"] = data.id_project_team;
                         vl["title"] = dr["title"];
@@ -2755,7 +2756,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                             vl["description"] = "";
                         if (dr["table"].ToString() == "we_milestone")
                         {
-                            vl["deadline"] = DateTime.Now;
+                            vl["deadline"] = Common.GetDateTime();
                             vl["person_in_charge"] = loginData.UserID;
                         }
                         if (cnn.Insert(vl, dr["table"].ToString()) <= 0)
@@ -2768,7 +2769,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     #endregion
 
                     Hashtable valW = new Hashtable();
-                    valW["CreatedDate"] = DateTime.Now;
+                    valW["CreatedDate"] = Common.GetDateTime();
                     valW["CreatedBy"] = loginData.UserID;
                     valW["id_project_team"] = data.id_project_team;
                     for (int i = 0; i < data_import.dtW.Rows.Count; i++)
@@ -2817,7 +2818,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                             foreach (DataRow rr in filter)
                             {
                                 Hashtable val = new Hashtable();
-                                val["createddate"] = DateTime.Now;
+                                val["createddate"] = Common.GetDateTime();
                                 val["createdby"] = rr["createdby"];
                                 val["id_work"] = idW;
                                 val["id_user"] = rr["id_user"];
@@ -2832,7 +2833,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                             foreach (DataRow rr in filter)
                             {
                                 Hashtable val = new Hashtable();
-                                val["createddate"] = DateTime.Now;
+                                val["createddate"] = Common.GetDateTime();
                                 val["createdby"] = loginData.UserID;
                                 val["id_work"] = idW;
 
@@ -2899,7 +2900,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     {
                         Hashtable val1 = new Hashtable();
                         val1["id_work"] = id;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = loginData.UserID;
                         val1["id_user"] = id_user;
                         val1["loai"] = 2;
@@ -2958,7 +2959,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     var asU = ds.Tables[1].AsEnumerable();
                     Hashtable val1 = new Hashtable();
                     val1["id_work"] = data.id_row;
-                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedDate"] = Common.GetDateTime();
                     val1["CreatedBy"] = iduser;
                     val1["loai"] = 2;
                     cnn.BeginTransaction();
@@ -3004,8 +3005,8 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -3023,7 +3024,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    DataSet ds = getWork(cnn, query, loginData.UserID, " and w.id_nv=@iduser");
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID, " and w.id_nv=@iduser");
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -3083,8 +3084,8 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -3102,7 +3103,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    DataSet ds = getWork(cnn, query, loginData.UserID);
+                    DataSet ds = getWork(Request.Headers, cnn, query, loginData.UserID);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -3143,7 +3144,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
         }
 
         #endregion
-        private DataSet getWork(DpsConnection cnn, QueryParams query, long curUser, string dieukien_where = "")
+        private DataSet getWork(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, string dieukien_where = "")
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
@@ -3160,20 +3161,21 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             }
 
             #region filter thời gian , keyword
-            DateTime from = DateTime.Now;
-            DateTime to = DateTime.Now;
+            DateTime from = Common.GetDateTime();
+            DateTime to = Common.GetDateTime();
             if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w.CreatedDate>=@from";
-                Conds.Add("from", from);
+                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w.CreatedDate<@to";
-                Conds.Add("to", to);
+               Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString())); 
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -3204,8 +3206,8 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                         iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
                         iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
                         iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-                        iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
-                        iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
+                        iIf(w.Status = 1 and GETUTCDATE() > w.deadline, 1, 0) as is_quahan,
+                        iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday,
                         iif(w.status=1 and w.start_date is null,1,0) as require,
                         tao.UserName as NguoiTao, sua.Username as NguoiSua from v_wework w 
                         left join (select count(*) as count,object_id 

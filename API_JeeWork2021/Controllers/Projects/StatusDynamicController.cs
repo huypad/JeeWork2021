@@ -82,7 +82,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     else
                         val.Add("Description", data.Description);
 
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     // insert position
                     int statusfinal = int.Parse(cnn.ExecuteScalar("select Position from we_status where id_project_team = " + data.Id_project_team + "").ToString());
@@ -109,7 +109,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //else
                     //    val.Add("checker", DBNull.Value);
                     //val.Add("createdby", iduser);
-                    //val.Add("createddate", DateTime.Now);
+                    //val.Add("createddate", Common.GetDateTime());
                     //cnn.BeginTransaction();
                     //if (cnn.Insert(val, "we_work_process") != 1)
                     //{
@@ -178,7 +178,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         val.Add("Follower", data.Follower);
                     else
                         val.Add("Follower", DBNull.Value);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_status where Disabled=0 and id_project_team=@id_project_team and StatusName=@name  and id_row != @id_row";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team }, { "id_row", data.Id_row } }).ToString()) > 0)
@@ -223,7 +223,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long sl_congviec = long.Parse(cnn.ExecuteScalar("select ISNULL((select count(*) from we_work where disabled=0 and status = " + id + "),0)").ToString());
                     if (sl_congviec > 0)
                         return JsonResultCommon.Custom("Hiện tại đang có "+sl_congviec+" đang thuộc trạng thái này, nên không thể xóa");
-                    sqlq = "update we_status set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_status set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -268,7 +268,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     #region Update những status hiện tại về disabled = 1
-                    sqlq_insert = "update we_status set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_project_team = " + data.id_project_team;
+                    sqlq_insert = "update we_status set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_project_team = " + data.id_project_team;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq_insert) < 0)
                     {
@@ -278,7 +278,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //DataTable dt_status_old = cnn.CreateDataTable("select * from we_status where Disabled = 1 and id_project_team =" + data.id_project_team + "");
                     #endregion
                     #region update lại template mới
-                    string sql_update_template = $@"update we_project_team set id_template = {data.TemplateID_New} , UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + data.id_project_team;
+                    string sql_update_template = $@"update we_project_team set id_template = {data.TemplateID_New} , UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + data.id_project_team;
                     if (cnn.ExecuteNonQuery(sql_update_template) < 0)
                     {
                         cnn.RollbackTransaction();
@@ -287,7 +287,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     #region Insert những status của template mới
                     sqlq_insert = $@"insert into we_status (StatusName, description, Disabled, id_project_team, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference, CreatedBy, CreatedDate)
-                        select StatusName, description, Disabled, " + data.id_project_team + ", Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsTodo, Id_row," + loginData.UserID + ", getdate() from we_template_status where Disabled = 0 and TemplateID = " + data.TemplateID_New + "";
+                        select StatusName, description, Disabled, " + data.id_project_team + ", Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsTodo, Id_row," + loginData.UserID + ", GETUTCDATE() from we_template_status where Disabled = 0 and TemplateID = " + data.TemplateID_New + "";
                     int rs = cnn.ExecuteNonQuery(sqlq_insert);
                     if (rs < 0)
                     {

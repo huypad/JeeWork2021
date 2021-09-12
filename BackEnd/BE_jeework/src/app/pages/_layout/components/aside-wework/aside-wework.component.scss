@@ -64,4 +64,25 @@
 .active-btn {
   color: orange;
   // background-color: blue;
-} 
+}
+
+.aside-menu .menu-nav > .menu-item .menu-submenu .menu-item.menu-item-open > .menu-link .color-folder{
+  color:rgb(255, 140, 0);
+}
+// mở popup
+.aside-menu .menu-nav > .menu-item .menu-submenu .menu-item.menu-item-open > .menu-link .color-folder:before{
+  content: "\f07c";
+}
+// đóng folder
+.aside-menu .menu-nav > .menu-item .menu-submenu .menu-item > .menu-link .color-folder:before {
+  content: "\f07b";
+}
+.icon-them{
+  color: #1863AD;
+}
+.icon-xoa{
+  color: #E84A4A;
+}
+.icon-sua{
+  color: #333333;
+}

@@ -1328,7 +1328,7 @@ export const locale = {
 			soluongcongviec: 'Number of tasks',
 			thanhvien: 'Member',
 			thanhvienxuatsac: 'Top performers',
-			tagclounds: 'Tag clounds',
+			tagclounds: 'Tag cloud',
 			tonghoptheotuan: 'Weekly reports',//Tổng hợp theo tuần
 			xuatbaocaoexcel: 'Export Excel',
 			danhgia: 'In review',

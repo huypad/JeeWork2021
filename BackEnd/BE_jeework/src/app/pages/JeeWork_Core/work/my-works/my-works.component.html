@@ -1,10 +1,2 @@
-<ng-container *ngIf="selectedTab!=2">
-    <!-- <kt-list-task-cu-2 myWorks="true" [ID_NV]="this.UserID" 
-    [selectedTab]="selectedTab" [idFilter]="idFilter" [detailWork]="detailWork"></kt-list-task-cu-2> -->
-    <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID" 
-    [selectedTab]="selectedTab" [idFilter]="idFilter" [detailWork]="detailWork"></kt-list-task-cu>
-</ng-container>
-<ng-container *ngIf="selectedTab==2">
-    <kt-list-task-cu myWorks="true" [ID_NV]="this.UserID" 
-    [selectedTab]="selectedTab" [idFilter]="idFilter" [detailWork]="detailWork"></kt-list-task-cu>
-</ng-container>
+<kt-list-task-cu myWorks="true" [ID_NV]="this.UserID"
+                 [selectedTab]="selectedTab" [idFilter]="idFilter" [detailWork]="detailWork"></kt-list-task-cu>

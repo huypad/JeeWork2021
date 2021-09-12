@@ -156,7 +156,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("title", data.title);
                     val.Add("id_project_team", data.id_project_team);
                     val.Add("color", string.IsNullOrEmpty(data.color) ? "" : data.color);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_tag where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
@@ -219,7 +219,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         val.Add("color", "");
                     else
                         val.Add("color", data.color);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_tag where Disabled=0 and  (id_project_team=@id_project_team) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -275,7 +275,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc nhãn này nên không thể xóa");
                     //}
-                    sqlq = "update we_tag set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_tag set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {

@@ -9,7 +9,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 const observer = {
   next : (val) => console.log(val),
   err : (err) => console.log(err),
-  complete : () => console.log('complete'),
+  complete : () => {},
 }
 @Component({
   selector: 'kt-report-tab-member',

@@ -96,9 +96,9 @@ export class DanhSachNguoiDungComponent implements OnInit {
 			this.paginatorNew.pageSize
 		);
 		this.dataSource1.loadList_NguoiDungNhom(queryParams1);
-		setTimeout(x => {
-			this.loadPage();
-		}, 500)
+		// setTimeout(x => {
+		// 	this.loadPage();
+		// }, 500)
 	}
 	loadPage() {
 		var arrayData = [];

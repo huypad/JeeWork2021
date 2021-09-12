@@ -352,7 +352,7 @@ namespace JeeWork_Core2021.Classes
                 string newpass = EncryptPassword(password);
                 var val = new Hashtable();
                 val.Add("PasswordHash", newpass);
-                val.Add("LastUpdatePass", DateTime.Now);
+                val.Add("LastUpdatePass", Common.GetDateTime());
                 val.Add("GiaHan", 0);
                 if (Conn.Update(val, new SqlConditions { new SqlCondition("UserID", iduser) }, "Dps_User") != 1)
                 {
@@ -378,7 +378,7 @@ namespace JeeWork_Core2021.Classes
         //        string newpass = EncryptPassword(password);
         //        var val = new Hashtable();
         //        val.Add("PasswordHash", newpass);
-        //        val.Add("LastUpdatePass", DateTime.Now);
+        //        val.Add("LastUpdatePass", Common.GetDateTime());
         //        val.Add("GiaHan", 0);
         //        Conn.BeginTransaction();
         //        if (Conn.Update(val, new SqlConditions { new SqlCondition("UserID", iduser) }, "Dps_User") != 1)

@@ -203,7 +203,6 @@ export class DuplicateProjectComponent implements OnInit {
       this.disabledBtn = false;
       this.menuAsideService.loadMenu()
       if (res && res.status === 1) {
-        window.location.reload();
         if (withBack == true) {
           this.dialogRef.close({
             res,
@@ -226,15 +225,8 @@ export class DuplicateProjectComponent implements OnInit {
           // this.focusInput.nativeElement.focus();
         }
       } else {
-        this.layoutUtilsService.showActionNotification(
-          res.error.message,
-          MessageType.Read,
-          9999999999,
-          true,
-          false,
-          3000,
-          "top",
-          0
+        this.layoutUtilsService.showError(
+          res.error.message
         );
       }
     });
@@ -256,15 +248,8 @@ export class DuplicateProjectComponent implements OnInit {
         }
       } else {
         this.viewLoading = false;
-        this.layoutUtilsService.showActionNotification(
-          res.error.message,
-          MessageType.Read,
-          9999999999,
-          true,
-          false,
-          3000,
-          "top",
-          0
+        this.layoutUtilsService.showError(
+          res.error.message
         );
       }
     });

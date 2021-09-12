@@ -1,5 +1,6 @@
 ﻿using DPSinfra.Kafka;
 using DpsLibs.Data;
+using JeeWork_Core2021.Classes;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -23,7 +24,7 @@ namespace JeeWork_Core2021.ConsumerServices
                 _item.Add("GroupName", (isAdmin == 0) ? "Default" : "Admin");
                 //_item.Add("Ma", (isAdmin == 0) ? "Default" : "Admin");
                 //_item.Add("DisplayOrder",1);
-                _item.Add("DateCreated", DateTime.Now);
+                _item.Add("DateCreated", Common.GetDateTime());
                 _item.Add("CustemerID", idCustomer);
                 _item.Add("Module", 0);
                 _item.Add("IsAdmin", 1);
@@ -79,7 +80,7 @@ namespace JeeWork_Core2021.ConsumerServices
                 //_item.Add("Locked", 0);
                 //_item.Add("Priority", 1);
                 //_item.Add("Disabled", 0);
-                //_item.Add("CreatedDate", DateTime.Now);
+                //_item.Add("CreatedDate", Common.GetDateTime());
                 //_item.Add("CreatedBy", 0);
                 cnn.BeginTransaction();
                 if (cnn.Insert(_item, "tbl_group_account") == 1)

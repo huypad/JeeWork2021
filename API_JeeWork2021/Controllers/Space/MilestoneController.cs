@@ -239,13 +239,13 @@ from v_wework_clickup_new w
 where w.disabled=0 and id_milestone = " + id;
                     //                    sqlq += @"; select count(CASE WHEN w.Status=2 and w.end_date<=w.deadline THEN 1 END) as htquahan ,
                     //count(CASE WHEN w.Status=2 and w.end_date>w.deadline THEN 1 END) as htdunghan ,
-                    //count(CASE WHEN w.Status=1 and (getdate()<=w.deadline or w.deadline is null) THEN 1 END) as danglam ,
-                    //count(CASE WHEN w.Status=1 and getdate()>w.deadline THEN 1 END) as  quahan, count(*) as tong
+                    //count(CASE WHEN w.Status=1 and (GETUTCDATE()<=w.deadline or w.deadline is null) THEN 1 END) as danglam ,
+                    //count(CASE WHEN w.Status=1 and GETUTCDATE()>w.deadline THEN 1 END) as  quahan, count(*) as tong
                     //from v_wework w where disabled=0 and id_milestone=" + id;
                     //                    sqlq += @"; select count(CASE WHEN w.Status=2 and w.end_date<=m.deadline then 1 end) as htquahan ,
                     //count(CASE WHEN w.Status=2 and w.end_date>m.deadline then 1 end) as htdunghan ,
-                    //count(CASE WHEN w.Status=1 and (getdate()<=m.deadline or m.deadline is null) then 1 end) as danglam ,
-                    //count(CASE WHEN w.Status=1 and getdate()>m.deadline then 1 end) as  quahan, count(*) as tong
+                    //count(CASE WHEN w.Status=1 and (GETUTCDATE()<=m.deadline or m.deadline is null) then 1 end) as danglam ,
+                    //count(CASE WHEN w.Status=1 and GETUTCDATE()>m.deadline then 1 end) as  quahan, count(*) as tong
                     //from v_wework w join we_milestone m on w.id_milestone=m.id_row
                     // where w.disabled=0 and id_milestone=" + id;
                     SqlConditions conds1 = new SqlConditions();
@@ -394,8 +394,8 @@ where w.disabled=0 and id_milestone = " + id;
                                         tong = ds.Tables[1].Rows.Count,
                                         htdunghan = m_htdunghan,
                                         htquahan = m_htquahan,
-                                        quahan = ds.Tables[1].AsEnumerable().Count(w => w["Status"].ToString() == "1" && DateTime.Now > (DateTime)w["m_deadline"]),
-                                        danglam = ds.Tables[1].AsEnumerable().Count(w => w["Status"].ToString() == "1" && DateTime.Now <= (DateTime)w["m_deadline"]),
+                                        quahan = ds.Tables[1].AsEnumerable().Count(w => w["Status"].ToString() == "1" && Common.GetDateTime() > (DateTime)w["m_deadline"]),
+                                        danglam = ds.Tables[1].AsEnumerable().Count(w => w["Status"].ToString() == "1" && Common.GetDateTime() <= (DateTime)w["m_deadline"]),
                                         percentage = WeworkLiteController.calPercentage(ds.Tables[1].Rows.Count, htdunghan + htquahan)
                                     },
                                     //Count = new
@@ -465,7 +465,7 @@ where w.disabled=0 and id_milestone = " + id;
                     val.Add("id_project_team", data.id_project_team);
                     val.Add("deadline", data.deadline);
                     val.Add("person_in_charge", data.person_in_charge);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_milestone where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
@@ -537,7 +537,7 @@ where w.disabled=0 and id_milestone = " + id;
                     val.Add("id_project_team", data.id_project_team);
                     val.Add("deadline", data.deadline);
                     val.Add("person_in_charge", data.person_in_charge);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_milestone where Disabled=0 and  (id_project_team=@id_project_team) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -593,7 +593,7 @@ where w.disabled=0 and id_milestone = " + id;
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
                     //}
-                    sqlq = "update we_milestone set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_milestone set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {

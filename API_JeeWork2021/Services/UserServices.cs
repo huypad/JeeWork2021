@@ -32,7 +32,7 @@ namespace JeeWork_Core2021.Services
         // users hardcoded for simplicity, store in a db with hashed passwords in production applications
         private List<UserJWT> _users = new List<UserJWT>
         {
-            new UserJWT { UserID = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test", WhenLog = DateTime.Now.Ticks }
+            new UserJWT { UserID = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test", WhenLog = Common.GetDateTime().Ticks }
         };
 
         private readonly AppSettings _appSettings;
@@ -76,7 +76,7 @@ namespace JeeWork_Core2021.Services
                         LastName = x["LastName"].ToString(),
                         Username = x["UserName"].ToString(),
                         Password = string.Empty,
-                        WhenLog = DateTime.Now.Ticks,
+                        WhenLog = Common.GetDateTime().Ticks,
                         TokenSys = x["GuidID"].ToString(),
                         RefreshTokens = new List<RefreshToken>()
 
@@ -128,7 +128,7 @@ namespace JeeWork_Core2021.Services
                         LastName = x["LastName"].ToString(),
                         Username = x["UserName"].ToString(),
                         Password = string.Empty,
-                        WhenLog = DateTime.Now.Ticks,
+                        WhenLog = Common.GetDateTime().Ticks,
                         TokenSys = x["GuidID"].ToString(),
                         RefreshTokens = new List<RefreshToken>
                         {

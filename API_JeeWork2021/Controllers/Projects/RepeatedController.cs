@@ -444,7 +444,7 @@ from we_repeated_Task task where task.Disabled=0";
                             val.Add("assign", data.assign);
                         val.Add("Locked", data.Locked);
                         val.Add("frequency", data.frequency);
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("CreatedBy", iduser);
                         val.Add("customerid", loginData.CustomerID);
 
@@ -465,7 +465,7 @@ from we_repeated_Task task where task.Disabled=0";
                         {
                             Hashtable val1 = new Hashtable();
                             val1["id_repeated"] = idc;
-                            val1["CreatedDate"] = DateTime.Now;
+                            val1["CreatedDate"] = Common.GetDateTime();
                             val1["CreatedBy"] = iduser;
                             foreach (var u in data.Users)
                             {
@@ -482,7 +482,7 @@ from we_repeated_Task task where task.Disabled=0";
                         {
                             Hashtable val2 = new Hashtable();
                             val2["id_repeated"] = idc;
-                            val2["CreatedDate"] = DateTime.Now;
+                            val2["CreatedDate"] = Common.GetDateTime();
                             val2["CreatedBy"] = iduser;
                             val2["Disabled"] = 0;
                             foreach (var _task in data.Tasks)
@@ -572,7 +572,7 @@ from we_repeated_Task task where task.Disabled=0";
                     else
                         val.Add("end_date", DBNull.Value);
                     val.Add("Locked", data.Locked);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_repeated where Disabled=0 and  (id_project_team=@id_project_team) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -590,7 +590,7 @@ from we_repeated_Task task where task.Disabled=0";
                         string ids = string.Join(",", data.Users.Select(x => x.id_user));
                         if (ids != "")//xóa follower
                         {
-                            string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row ;
+                            string strDel = "Update we_repeated_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row ;
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
@@ -601,7 +601,7 @@ from we_repeated_Task task where task.Disabled=0";
                         var listU = dt_user.AsEnumerable().Select(x => x["id_user"]).ToList();
                         Hashtable val1 = new Hashtable();
                         val1["id_repeated"] = data.id_row;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         //data.Users = data.Users.Where(x => listU.Where(y=>y==x));
                         foreach (var user in data.Users)
@@ -617,7 +617,7 @@ from we_repeated_Task task where task.Disabled=0";
                     }
                     else // Trường hợp không có Users
                     {
-                        string deleteuser = "Update we_repeated_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row + "";
+                        string deleteuser = "Update we_repeated_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and  id_repeated=" + data.id_row + "";
                         if (cnn.ExecuteNonQuery(deleteuser) < 0)
                         {
                             cnn.RollbackTransaction();
@@ -627,7 +627,7 @@ from we_repeated_Task task where task.Disabled=0";
                     string idtask = string.Join(",", data.Tasks.Where(x => x.id_row > 0).Select(x => x.id_row));
                     if (idtask != "")
                     {
-                        string strDel = "Update we_repeated_Task set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " " +
+                        string strDel = "Update we_repeated_Task set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " " +
                             "where Disabled=0 and  id_repeated=" + data.id_row;// + " and id_row not in (" + idtask + ")";
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
@@ -639,7 +639,7 @@ from we_repeated_Task task where task.Disabled=0";
                     {
                         Hashtable val2 = new Hashtable();
                         val2["id_repeated"] = data.id_row;
-                        val2["CreatedDate"] = DateTime.Now;
+                        val2["CreatedDate"] = Common.GetDateTime();
                         val2["CreatedBy"] = iduser;
                         val2["Disabled"] = 0;
                         foreach (var _task in data.Tasks)
@@ -701,7 +701,7 @@ from we_repeated_Task task where task.Disabled=0";
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
                     //}
-                    sqlq = "update we_repeated set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_repeated set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -751,7 +751,7 @@ from we_repeated_Task task where task.Disabled=0";
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("locked", locked);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_repeated") != 1)
@@ -804,7 +804,7 @@ from we_repeated_Task task where task.Disabled=0";
                         return JsonResultCommon.KhongTonTai("Công việc lặp lại");
                     Hashtable val = new Hashtable();
                     val["assign"] = user;
-                    val["UpdatedDate"] = DateTime.Now;
+                    val["UpdatedDate"] = Common.GetDateTime();
                     val["UpdatedBy"] = iduser;
                     if (cnn.Update(val, new SqlConditions() { { "id_row", id } }, "we_repeated") != 1)
                     {
@@ -843,7 +843,7 @@ from we_repeated_Task task where task.Disabled=0";
                         return JsonResultCommon.KhongTonTai("Công việc lặp lại");
                     Hashtable val = new Hashtable();
                     val["id_project_team"] = id_project_team;
-                    val["UpdatedDate"] = DateTime.Now;
+                    val["UpdatedDate"] = Common.GetDateTime();
                     val["UpdatedBy"] = iduser;
                     if (cnn.Update(val, new SqlConditions() { { "id_row", id } }, "we_repeated") != 1)
                     {
@@ -909,7 +909,7 @@ from we_repeated_Task task where task.Disabled=0";
                                 if (loai == 2) // Báo cáo theo tháng
                                 {
                                     // Ngày lặp lại = ngày truyền vào của tháng và năm đó
-                                    WeekdayCurrent = new DateTime(DateTime.Now.Year, DateTime.Now.Month, int.Parse(day));
+                                    WeekdayCurrent = new DateTime(Common.GetDateTime().Year, Common.GetDateTime().Month, int.Parse(day));
                                     if (WeekdayCurrent < DateTime.UtcNow) // Nếu WeekdayCurrent nhỏ hơn ngày hiện tại, thì tạo dữ liệu cho thứ của tuần tiếp theo
                                         WeekdayCurrent = WeekdayCurrent.AddMonths(1);
                                 }
@@ -926,7 +926,7 @@ from we_repeated_Task task where task.Disabled=0";
                                         IsCreateAuto = true;
                                 }
                                 // Nếu ngày kết thúc đã quá thời gian hiện tại
-                                if ((DateTime)_item["end_date"] < DateTime.Now)
+                                if ((DateTime)_item["end_date"] < Common.GetDateTime())
                                 {
                                     return new BaseModel<object>()
                                     {
@@ -948,7 +948,7 @@ from we_repeated_Task task where task.Disabled=0";
                                         Hashtable has = new Hashtable();
                                         SqlConditions conds = new SqlConditions();
                                         conds.Add("id_row", _item["id_row"].ToString());
-                                        has.Add("last_run", DateTime.Now);
+                                        has.Add("last_run", Common.GetDateTime());
                                         has.Add("run_by", 0);
                                         cnn.Update(has, conds, "we_repeated");
                                         string sql_new = "select we_work_user.*, we_work.title as tencongviec " +
@@ -1064,7 +1064,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (int.Parse(dr["id_group"].ToString()) > 0)
                                 val.Add("id_group", dr["id_group"].ToString());
                         }
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("Disabled", 0);
                         val.Add("CreatedBy", runby);
                         val.Add("id_repeated", dr["id_row"].ToString());
@@ -1091,7 +1091,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("id_user", dr_user["id_user"]);
                         val.Add("id_work", maxid);
                         val.Add("loai", 1); // insert giao việc
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("Disabled", 0);
                         val.Add("CreatedBy", runby);
                         cnn.BeginTransaction();
@@ -1105,7 +1105,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("id_user", dr["CreatedBy"].ToString());
                         val.Add("id_work", maxid);
                         val.Add("loai", 2); // insert người theo dõi
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("Disabled", 0);
                         val.Add("CreatedBy", runby);
                         cnn.BeginTransaction();
@@ -1129,7 +1129,7 @@ from we_repeated_Task task where task.Disabled=0";
                                     val = new Hashtable();
                                     val.Add("id_work", maxid);
                                     val.Add("title", dr_work["title"]);
-                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("CreatedDate", Common.GetDateTime());
                                     val.Add("Disabled", 0);
                                     val.Add("CreatedBy", runby);
                                     cnn.BeginTransaction();
@@ -1149,7 +1149,7 @@ from we_repeated_Task task where task.Disabled=0";
                                         if ((int)dr["id_group"] > 0)
                                             val.Add("id_group", dr["id_group"].ToString());
                                     }
-                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("CreatedDate", Common.GetDateTime());
                                     val.Add("Disabled", 0);
                                     val.Add("CreatedBy", runby);
                                     val.Add("id_repeated", dr["id_row"].ToString());
@@ -1187,7 +1187,7 @@ from we_repeated_Task task where task.Disabled=0";
                             if (int.Parse(dr["id_group"].ToString()) > 0)
                                 val.Add("id_group", dr["id_group"].ToString());
                         }
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("Disabled", 0);
                         val.Add("CreatedBy", runby);
                         val.Add("id_repeated", dr["id_row"].ToString());
@@ -1214,7 +1214,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("id_user", dr["assign"].ToString());
                         val.Add("id_work", maxid);
                         val.Add("loai", 1); // insert giao việc
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("Disabled", 0);
                         val.Add("CreatedBy", runby);
                         cnn.BeginTransaction();
@@ -1228,7 +1228,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("id_user", dr["assign"].ToString());
                         val.Add("id_work", maxid);
                         val.Add("loai", 2); // insert người theo dõi
-                        val.Add("CreatedDate", DateTime.Now);
+                        val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("Disabled", 0);
                         val.Add("CreatedBy", runby);
                         cnn.BeginTransaction();
@@ -1252,7 +1252,7 @@ from we_repeated_Task task where task.Disabled=0";
                                     val = new Hashtable();
                                     val.Add("id_work", maxid);
                                     val.Add("title", dr_work["title"]);
-                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("CreatedDate", Common.GetDateTime());
                                     val.Add("Disabled", 0);
                                     val.Add("CreatedBy", runby);
                                     cnn.BeginTransaction();
@@ -1272,7 +1272,7 @@ from we_repeated_Task task where task.Disabled=0";
                                         if ((int)dr["id_group"] > 0)
                                             val.Add("id_group", dr["id_group"].ToString());
                                     }
-                                    val.Add("CreatedDate", DateTime.Now);
+                                    val.Add("CreatedDate", Common.GetDateTime());
                                     val.Add("Disabled", 0);
                                     val.Add("CreatedBy", runby);
                                     val.Add("id_repeated", dr["id_row"].ToString());

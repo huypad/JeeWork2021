@@ -122,7 +122,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqlq = "select ISNULL((select count(*) from we_attachment where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Tệp đính kèm");
-                    sqlq = "update we_attachment set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_attachment set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -219,7 +219,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             val2.Add("filename", item.filename);
             val2.Add("size", Convert.FromBase64String(item.strBase64).Length);
             val2.Add("type", UploadHelper.GetContentType(x));
-            val2["CreatedDate"] = DateTime.Now;
+            val2["CreatedDate"] = Common.GetDateTime();
             val2["CreatedBy"] = data.id_user;
             if (cnn.Insert(val2, "we_attachment") != 1)
             {

@@ -8,7 +8,6 @@ import {CRUDTableModule} from './../../_metronic/shared/crud-table/crud-table.mo
 import {ActionNotificationComponent} from './../../_metronic/jeework_old/_shared/action-natification/action-notification.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {PartialsModule} from './../../_metronic/jeework_old/partials/partials.module';
-import {AuthService} from './../../modules/auth/_services/auth.service';
 import {TokenStorage} from './../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import {CommonService} from './../../_metronic/jeework_old/core/services/common.service';
 import {LayoutUtilsService} from './../../_metronic/jeework_old/core/utils/layout-utils.service';
@@ -273,7 +272,6 @@ import { LogWorkDescriptionComponent } from './log-work-description/log-work-des
         TagsService,
         AngularGanttScheduleTimelineCalendarModule,
         CommonService,
-        AuthService,
         TokenStorage,
         AttachmentService,
         TemplateCenterService,

@@ -60,25 +60,6 @@ export class WorkComponent implements OnInit {
 				this.Image = res.Image;
 				this.Ten = res.HoTen;
 				this.ChucVu = res.ChucVu;
-				// this.userProfileService.getHinhAnhByID(+id).subscribe(res => {
-				// 	this.profile = res;
-				// 	let UserData = {
-				// 		HoTen: res.HoTen,
-				// 		Image: res.Image,
-				// 		ChucVu: res.ChucVu,
-				// 		Username: localStorage.getItem('Username')
-				// 	};
-				// 	this.tokenStore.setUserData(UserData);
-				// 	if (this.profile == undefined) {
-
-				// 	}
-				// 	else {
-				// 		this.Image = this.profile.Image;
-				// 		this.Ten = this.profile.HoTen;
-				// 		this.ChucVu = this.profile.ChucVu;
-				// 	}
-				// 	this.changeDetect.detectChanges();
-				// });
 			}
 			else{
 				setTimeout(() => {

@@ -27,6 +27,7 @@ using System.IO;
 using Google.Apis.Services;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Util.Store;
+using Microsoft.AspNetCore.Http;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -89,7 +90,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
                     DataTable dt_Fields = WeworkLiteController.ListField(int.Parse(query.filter["id_project_team"]), 3, cnn);
-                    var data = GetWorkByProjects(query.filter["id_project_team"], dt_Fields, ConnectionString, query, loginData, DataAccount);
+                    var data = GetWorkByProjects(Request.Headers, query.filter["id_project_team"], dt_Fields, ConnectionString, query, loginData, DataAccount);
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
             }
@@ -234,7 +235,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    title = r["title"],
                                    color = r["color"],
                                    id_row = r["id_row"],
-                                   project_data = GetWorkByProjects(r["id_row"].ToString(), dt_fields, ConnectionString, query, loginData, DataAccount)
+                                   project_data = GetWorkByProjects(Request.Headers, r["id_row"].ToString(), dt_fields, ConnectionString, query, loginData, DataAccount)
                                };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
@@ -274,8 +275,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     long IDNV = loginData.UserID;
                     #region filter thời gian, keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -313,16 +314,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     else
                     {
-                        strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser)";
+                        string querysub = "";
+                        if (string.IsNullOrEmpty(query.filter["subtask_done"]) || query.filter["subtask_done"] == "0")// sub task
+                            querysub += $" and ww.end_date is null";
+                        strW_parent = $"or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = @iduser {querysub} )";
                         if (query.filter["filter"] == "1")//được giao
-                            strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 1 and id_user = @iduser)";
+                            strW_parent = $"or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 1 and id_user = @iduser {querysub})";
                         if (query.filter["filter"] == "2")//giao đi
-                            strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.CreatedBy = @iduser)";
+                            strW_parent = $"or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.CreatedBy = @iduser {querysub})";
                         if (query.filter["filter"] == "3")// theo dõi
-                            strW_parent = "or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 2 and id_user = @iduser)";
+                            strW_parent = $"or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 2 and id_user = @iduser {querysub})";
                         strW = strW.Replace("(parent)", strW_parent);
                     }
-                    if (query.filter["subtask_done"] == "0")// task con
+                    if (query.filter["subtask_done"] == "0")// sub task 
                         strW += $" and w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is not null ) ";
                     if (query.filter["task_done"] == "0")// task
                         strW += $" and  w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is null ) ";
@@ -340,7 +344,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = GetWorkByEmployee(cnn, query, IDNV, DataAccount, strW);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     //var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -399,8 +403,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     long IDNV = loginData.UserID;
                     #region filter thời gian, keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     int nam = DateTime.Today.Year;
                     int thang = DateTime.Today.Month;
                     var lastDayOfMonth = DateTime.DaysInMonth(nam, thang);
@@ -445,7 +449,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     #endregion
                     strW += " and w.deadline is not null and (w.deadline >= '" + from + "' and w.deadline <= '" + to + "')";
-                    DataSet ds = GetWorkByEmployee(cnn, query, IDNV, DataAccount, strW);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     // Phân trang
@@ -529,8 +533,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -559,7 +563,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     strW += FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"], DataAccount);
 
-                    DataSet ds = GetWorkByEmployee(cnn, query, long.Parse(query.filter["id_nv"]), DataAccount, strW);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, long.Parse(query.filter["id_nv"]), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -643,8 +647,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (string.IsNullOrEmpty(query.filter["id_nv"]))
                         return JsonResultCommon.Custom("Thành viên");
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -704,7 +708,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     //DataSet ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount, strW);
-                    DataSet ds = getWork_IDNV(cnn, query, loginData.UserID, DataAccount, strW);
+                    DataSet ds = getWork_IDNV(Request.Headers, cnn, query, loginData.UserID, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -1228,14 +1232,14 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                     int total = data_import.dtW.Rows.Count;
                     cnn.BeginTransaction();
                     //Hashtable val = new Hashtable();
-                    //val["CreatedDate"] = DateTime.Now;
+                    //val["CreatedDate"] = Common.GetDateTime();
                     //val["CreatedBy"] = loginData.UserID;
                     //val["id_project_team"] = data.id_project_team;
                     #region insert tag mới, milestone mới, group
                     foreach (DataRow dr in data_import.dtPK.Rows)
                     {
                         Hashtable vl = new Hashtable();
-                        vl["CreatedDate"] = DateTime.Now;
+                        vl["CreatedDate"] = Common.GetDateTime();
                         vl["CreatedBy"] = loginData.UserID;
                         vl["id_project_team"] = data.id_project_team;
                         vl["title"] = dr["title"];
@@ -1243,7 +1247,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             vl["description"] = "";
                         if (dr["table"].ToString() == "we_milestone")
                         {
-                            vl["deadline"] = DateTime.Now;
+                            vl["deadline"] = Common.GetDateTime();
                             vl["person_in_charge"] = loginData.UserID;
                         }
                         if (cnn.Insert(vl, dr["table"].ToString()) <= 0)
@@ -1256,7 +1260,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                     #endregion
 
                     Hashtable valW = new Hashtable();
-                    valW["CreatedDate"] = DateTime.Now;
+                    valW["CreatedDate"] = Common.GetDateTime();
                     valW["CreatedBy"] = loginData.UserID;
                     valW["id_project_team"] = data.id_project_team;
                     DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
@@ -1314,7 +1318,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             foreach (DataRow rr in filter)
                             {
                                 Hashtable val = new Hashtable();
-                                val["createddate"] = DateTime.Now;
+                                val["createddate"] = Common.GetDateTime();
                                 val["createdby"] = rr["createdby"];
                                 val["id_work"] = idW;
                                 val["id_user"] = rr["id_user"];
@@ -1329,7 +1333,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             foreach (DataRow rr in filter)
                             {
                                 Hashtable val = new Hashtable();
-                                val["createddate"] = DateTime.Now;
+                                val["createddate"] = Common.GetDateTime();
                                 val["createdby"] = loginData.UserID;
                                 val["id_work"] = idW;
 
@@ -1359,7 +1363,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                         val.Add("checker", DBNull.Value);
                                     else
                                         val.Add("checker", item["follower"]);
-                                    val.Add("createddate", DateTime.Now);
+                                    val.Add("createddate", Common.GetDateTime());
                                     val.Add("createdby", loginData.UserID);
                                     if (cnn.Insert(val, "we_work_process") != 1)
                                     {
@@ -1382,7 +1386,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                             val.Add("content_note", loginData.customdata.personalInfo.Fullname + " thêm " + info.FullName + " vào theo dõi");
                                         }
                                     }
-                                    val.Add("createddate", DateTime.Now);
+                                    val.Add("createddate", Common.GetDateTime());
                                     val.Add("createdby", loginData.UserID);
                                     if (cnn.Insert(val, "we_work_process_log") != 1)
                                     {
@@ -1581,7 +1585,7 @@ where act.object_type = 1 and view_detail=1 and l.object_id = " + id + " order b
                             item["image"] = info.AvartarImgURL;
                             item["Tenchucdanh"] = info.Jobtitle;
                         }
-
+                        // giao việc, bỏ giao việc cho user
                         if (item["id_action"].ToString().Equals("15") || item["id_action"].ToString().Equals("55") || item["id_action"].ToString().Equals("56") || item["id_action"].ToString().Equals("57"))
                         {
                             var infoUser = DataAccount.Where(x => item["newvalue"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -1656,8 +1660,8 @@ where act.object_type = 1 and view_detail=1 and l.object_id = " + id + " order b
                     return BadRequest();
                 #endregion
                 #region filter thời gian , keyword
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                 {
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -1688,7 +1692,7 @@ where act.object_type = 1 and view_detail=1 and l.object_id = " + id + " order b
                     string strG = @"select null as id_row, N'Chưa phân loại' as title union
 select id_row, title from we_group g where disabled=0 and id_project_team=" + query.filter["id_project_team"];
                     DataTable dtG = cnn.CreateDataTable(strG);
-                    DataSet ds = GetWorkByEmployee(cnn, query, loginData.UserID, DataAccount);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, loginData.UserID, DataAccount);
                     var tags = ds.Tables[1].AsEnumerable();
                     var followers = ds.Tables[2].AsEnumerable();
                     if (cnn.LastError != null || ds == null)
@@ -1754,9 +1758,9 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Công việc");
                     if (isdeleted)
-                        sqlq = "update we_fields_project_team set disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id + "";
+                        sqlq = "update we_fields_project_team set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id + "";
                     else
-                        sqlq = "update we_fields_project_team set IsHidden=" + hidden + ", UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id + "";
+                        sqlq = "update we_fields_project_team set IsHidden=" + hidden + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id + "";
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
@@ -1813,8 +1817,8 @@ w.UpdatedDate,w.UpdatedBy,w.NguoiGiao, w.project_team,w.id_department,w.clickup_
 iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
 iIf(w.Status = 2 and w.end_date <= w.deadline, 1, 0) as is_htdunghan ,
 iIf(w.Status = 1 and  w.start_date is not null, 1, 0) as is_danglam,
-iIf(w.Status = 1 and getdate() > w.deadline, 1, 0) as is_quahan,
-iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
+iIf(w.Status = 1 and GETUTCDATE() > w.deadline, 1, 0) as is_quahan,
+iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao,'' as NguoiSua from v_wework_new w 
 left join we_work_favourite fa on fa.id_work=w.id_row and fa.createdby=6 and fa.disabled=0
@@ -2194,8 +2198,8 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -2221,7 +2225,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     "order by type, position";
                     DataTable dt_st = cnn.CreateDataTable(sql_status);
                     //DataTable dt_st = cnn.CreateDataTable(strG);
-                    DataSet ds = await GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept);
+                    DataSet ds = await GetWork_ClickUp(Request.Headers, cnn, query, loginData.UserID, DataAccount, listDept);
                     DataTable dt_stt = cnn.CreateDataTable($"select * from we_status where id_project_team=" + query.filter["id_project_team"]);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2363,8 +2367,8 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
 
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -2390,7 +2394,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     "order by type, position";
                     DataTable dt_st = cnn.CreateDataTable(sql_status);
                     //DataTable dt_st = cnn.CreateDataTable(strG);
-                    DataSet ds = await GetWork_ClickUp(cnn, query, loginData.UserID, DataAccount, listDept);
+                    DataSet ds = await GetWork_ClickUp(Request.Headers, cnn, query, loginData.UserID, DataAccount, listDept);
                     DataTable dt_stt = cnn.CreateDataTable($"select * from we_status where id_project_team=" + query.filter["id_project_team"]);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2586,6 +2590,18 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     else
                         val.Add("estimates", DBNull.Value);
+                    //DateTime ngaybatdau = new DateTime();
+                    //DateTime deadline = new DateTime();
+                    //if (!Common.ChuyenNgay(out ngaybatdau, data.start_date))
+                    //{
+                    //    return JsonResultCommon.Custom("Ngày bắt đầu không hợp lệ");
+                    //}
+                    //if (!Common.ChuyenNgay(out deadline, data.deadline))
+                    //{
+                    //    return JsonResultCommon.Custom("Hạn chót không hợp lệ");
+                    //}
+                    //val.Add("start_date", ngaybatdau);
+                    //val.Add("deadline", deadline);
 
                     if (data.start_date > DateTime.MinValue)
                     {
@@ -2610,7 +2626,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         val.Add("id_group", data.id_group);
                     if (data.id_milestone > 0)
                         val.Add("id_milestone", data.id_milestone);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     val.Add("clickup_prioritize", data.urgent);
                     cnn.BeginTransaction();
@@ -2635,7 +2651,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 val.Add("checker", DBNull.Value);
                             else
                                 val.Add("checker", item["follower"]);
-                            val.Add("createddate", DateTime.Now);
+                            val.Add("createddate", Common.GetDateTime());
                             val.Add("createdby", iduser);
                             if (cnn.Insert(val, "we_work_process") != 1)
                             {
@@ -2658,7 +2674,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     val.Add("content_note", loginData.customdata.personalInfo.Fullname + " thêm " + info.FullName + " vào theo dõi");
                                 }
                             }
-                            val.Add("createddate", DateTime.Now);
+                            val.Add("createddate", Common.GetDateTime());
                             val.Add("createdby", iduser);
                             if (cnn.Insert(val, "we_work_process_log") != 1)
                             {
@@ -2671,7 +2687,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         Hashtable val1 = new Hashtable();
                         val1["id_work"] = idc;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var user in data.Users)
                         {
@@ -2688,7 +2704,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         Hashtable val2 = new Hashtable();
                         val2["id_work"] = idc;
-                        val2["CreatedDate"] = DateTime.Now;
+                        val2["CreatedDate"] = Common.GetDateTime();
                         val2["CreatedBy"] = iduser;
                         foreach (var tag in data.Tags)
                         {
@@ -2836,7 +2852,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     else
                         val.Add("estimates", DBNull.Value);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     val.Add("status", data.status);
                     cnn.BeginTransaction();
@@ -2849,7 +2865,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     //string ids = string.Join(",", data.Users.Where(x => x.loai == 1 && x.id_row > 0).Select(x => x.id_row));
                     //if (ids != "")
                     //{
-                    //    string strDel = "Update we_work_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row + " and id_row not in (" + ids + ")";
+                    //    string strDel = "Update we_work_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and loai=1 and id_work=" + data.id_row + " and id_row not in (" + ids + ")";
                     //    if (cnn.ExecuteNonQuery(strDel) < 0)
                     //    {
                     //        cnn.RollbackTransaction();
@@ -2862,7 +2878,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     //    {
                     //        Hashtable val1 = new Hashtable();
                     //        val1["id_work"] = data.id_row;
-                    //        val1["CreatedDate"] = DateTime.Now;
+                    //        val1["CreatedDate"] = Common.GetDateTime();
                     //        val1["CreatedBy"] = iduser;
                     //        val1["id_user"] = user.id_user;
                     //        val1["loai"] = 1;
@@ -3004,7 +3020,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (dt.Rows.Count == 0 || data.isnewfield)
                     {
                         Hashtable val = new Hashtable();
-                        val.Add("createddate", DateTime.Now);
+                        val.Add("createddate", Common.GetDateTime());
                         val.Add("createdby", iduser);
                         val.Add("fieldname", data.columnname);
                         string sql_position = "";
@@ -3190,7 +3206,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     #endregion
                     Hashtable val = new Hashtable();
                     val.Add("title", data.Title);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_fields_project_team where disabled =0 and title=@name and id_row<>@id_row and IsNewField = 1";// and (CreatedBy=@id_user) 
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.Title }, { "id_row", data.id_row } }).ToString()) > 0)
@@ -3347,7 +3363,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         val.Add("id_parent", id_parent);
                                     else
                                         val.Add("id_parent", DBNull.Value);
-                                    val.Add("UpdatedDate", DateTime.Now);
+                                    val.Add("UpdatedDate", Common.GetDateTime());
                                     val.Add("UpdatedBy", loginData.UserID);
                                     val.Add("priority", priority_from);
                                     Conds = new SqlConditions();
@@ -3370,7 +3386,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         val.Add("id_parent", id_parent);
                                     else
                                         val.Add("id_parent", DBNull.Value);
-                                    val.Add("UpdatedDate", DateTime.Now);
+                                    val.Add("UpdatedDate", Common.GetDateTime());
                                     val.Add("UpdatedBy", loginData.UserID);
                                     val.Add("priority", priority_from);
                                     Conds = new SqlConditions();
@@ -3391,7 +3407,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 IsUpdateDirect = false;
                                 val = new Hashtable();
                                 val.Add("id_parent", data.id_to);
-                                val.Add("UpdatedDate", DateTime.Now);
+                                val.Add("UpdatedDate", Common.GetDateTime());
                                 val.Add("UpdatedBy", loginData.UserID);
                                 val.Add("priority", data.priority_from);
                                 sqlcond = new SqlConditions();
@@ -3403,7 +3419,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             {
                                 IsUpdateDirect = false;
                                 val = new Hashtable();
-                                val.Add("UpdatedDate", DateTime.Now);
+                                val.Add("UpdatedDate", Common.GetDateTime());
                                 val.Add("UpdatedBy", loginData.UserID);
                                 val.Add("status", data.status_to);
                                 sqlcond = new SqlConditions();
@@ -3434,7 +3450,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     return JsonResultCommon.ThanhCong(data);
                     //sqlcond.Add("fieldname", data.columnname);
                     val.Add("disabled", 0);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     //val.Add("fieldname", data.columnname);
                     val.Add("id_project_team", data.id_project_team);
@@ -3559,7 +3575,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     txterror = "Bạn không có quyền thay đổi nội dung của công việc này của công việc này";
                                     break;
                             }
-
                             if (!rs)
                             {
                                 return JsonResultCommon.Custom(txterror);
@@ -3567,7 +3582,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         }
                         return JsonResultCommon.Custom(txterror);
                     }
-
                     //Data datapost = new Data();
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
                         "from we_work " +
@@ -3591,7 +3605,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (data.key != "Tags" && data.key != "Attachments" && data.key != "Attachments_result" && data.key != "assign" && data.key != "follower")
                     {
                         Hashtable val = new Hashtable();
-                        val.Add("UpdatedDate", DateTime.Now);
+                        val.Add("UpdatedDate", Common.GetDateTime());
                         val.Add("UpdatedBy", iduser);
                         cnn.BeginTransaction();
                         // Xử lý riêng cho update status
@@ -3609,8 +3623,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 if (StatusID != null)
                                 {
                                     val.Add(data.key, StatusID);
-                                    val.Add("end_date", DateTime.Now);
-                                    val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                                    val.Add("end_date", Common.GetDateTime());
+                                    val.Add("closed_date", Common.GetDateTime()); // date update isFilnal = 1
                                     val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                     data.value = StatusID;
                                 }
@@ -3631,8 +3645,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         data.value = StatusID;
                                         if (long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + StatusID + " and IsFinal = 1").ToString()) > 0)
                                         {
-                                            val.Add("end_date", DateTime.Now);
-                                            val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                                            val.Add("end_date", Common.GetDateTime());
+                                            val.Add("closed_date", Common.GetDateTime()); // date update isFilnal = 1
                                             val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                         }
                                         else
@@ -3640,8 +3654,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             val.Add("end_date", DBNull.Value);
                                             if (long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + StatusID + " and isTodo = 1").ToString()) > 0)
                                             {
-                                                val.Add("start_date", DateTime.Now); // start_date isTodo = 1
-                                                val.Add("activated_date", DateTime.Now); // date update isTodo = 1
+                                                val.Add("start_date", Common.GetDateTime()); // start_date isTodo = 1
+                                                val.Add("activated_date", Common.GetDateTime()); // date update isTodo = 1
                                                 val.Add("activated_by", loginData.UserID); // user update isTodo = 1
                                             }
                                         }
@@ -3652,8 +3666,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     val.Add("status", data.value);
                                     if (isFinal)
                                     {
-                                        val.Add("end_date", DateTime.Now);
-                                        val.Add("closed_date", DateTime.Now); // date update isFilnal = 1
+                                        val.Add("end_date", Common.GetDateTime());
+                                        val.Add("closed_date", Common.GetDateTime()); // date update isFilnal = 1
                                         val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                     }
                                     else
@@ -3661,31 +3675,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         val.Add("end_date", DBNull.Value);
                                         if (isTodo)
                                         {
-                                            val.Add("start_date", DateTime.Now); // start_date isTodo = 1
-                                            val.Add("activated_date", DateTime.Now); // date update isTodo = 1
+                                            val.Add("start_date", Common.GetDateTime()); // start_date isTodo = 1
+                                            val.Add("activated_date", Common.GetDateTime()); // date update isTodo = 1
                                             val.Add("activated_by", loginData.UserID); // user update isTodo = 1
                                         }
                                     }
                                 }
                             }
                             #region gửi thông báo nhắc nhở
-                            //if (isDeadline)
-                            //{
-                            //    foreach (long idUser in danhsachU)
-                            //    {
-                            //        NhacNho.UpdateSoluongCVHetHan(idUser, loginData.CustomerID, "+", _configuration, _producer);
-                            //    }
-                            //}
-                            //if (isFinal)
-                            //{
-                            //    foreach (long idUser in danhsachU)
-                            //    {
-                            //        NhacNho.UpdateCVHoanthanh(idUser, loginData.CustomerID, hasDeadline, _configuration, _producer);
-                            //    }
-                            //}
                             #endregion
-                            // state_change_date
-                            val.Add("state_change_date", DateTime.Now); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
+                            val.Add("state_change_date", Common.GetDateTime()); // Ngày thay đổi trạng thái (Bất kỳ cập nhật trạng thái là thay đổi)
                         }
                         else
                         {
@@ -3710,10 +3709,10 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 #endregion
                                 if (dtstt.Rows.Count == 0)
                                 {
-                                    DateTime deadline = DateTime.Now;
+                                    DateTime deadline = Common.GetDateTime();
                                     if (DateTime.TryParse(data.value.ToString(), out deadline))
                                     {
-                                        if (deadline > DateTime.Now)
+                                        if (deadline > Common.GetDateTime())
                                         {
                                             val.Add("islate", DBNull.Value);
                                             foreach (long idUser in danhsachU)
@@ -3736,11 +3735,13 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         }
                         if (("deadline".Equals(data.key) || "start_date".Equals(data.key)) && data.value != null)
                         {
-                            DateTime values = DateTime.Now;
+                            DateTime values = Common.GetDateTime();
                             if (DateTime.TryParse(data.value.ToString(), out values))
                             {
                                 if ("deadline".Equals(data.key))
                                 {
+                                    DateTime dt1 = values;
+                                    DateTime dt_utc = values.ToUniversalTime();
                                     if (!string.IsNullOrEmpty(dt_infowork.Rows[0]["start_date"].ToString()))
                                     {
                                         if (values < DateTime.Parse(dt_infowork.Rows[0]["start_date"].ToString()))
@@ -4087,10 +4088,10 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                                DataTable dt_user = cnn.CreateDataTable("select distinct * from ( select id_nv from v_wework_new where (where) and id_nv is not null union all select CreatedBy from v_wework_new where (where) and id_nv is not null ) US", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
                                 {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                    var users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
                                     cnn.EndTransaction();
                                     WeworkLiteController.mailthongbao(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
                                     #region Lấy thông tin để thông báo
@@ -4218,7 +4219,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 bool isAssign = false; // = true: thêm người, = false: xóa người
                                 Hashtable val1 = new Hashtable();
                                 val1["id_work"] = data.id_row;
-                                val1["CreatedDate"] = DateTime.Now;
+                                val1["CreatedDate"] = Common.GetDateTime();
                                 val1["CreatedBy"] = iduser;
                                 if (string.IsNullOrEmpty(data.value.ToString()))
                                     val1["id_user"] = DBNull.Value;
@@ -4416,7 +4417,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             if (int.Parse(f.ToString()) > 0) // Tag đã có => Delete
                             {
                                 val2 = new Hashtable();
-                                val2["UpdatedDate"] = DateTime.Now;
+                                val2["UpdatedDate"] = Common.GetDateTime();
                                 val2["UpdatedBy"] = iduser;
                                 val2["Disabled"] = 1;
                                 SqlConditions cond = new SqlConditions();
@@ -4432,7 +4433,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             {
                                 val2 = new Hashtable();
                                 val2["id_work"] = data.id_row;
-                                val2["CreatedDate"] = DateTime.Now;
+                                val2["CreatedDate"] = Common.GetDateTime();
                                 val2["CreatedBy"] = iduser;
                                 val2["id_tag"] = data.value;
                                 if (cnn.Insert(val2, "we_work_tag") != 1)
@@ -4738,7 +4739,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         {
             // Define parameters of request.    
             EventsResource.ListRequest request = _service.Events.List("primary");
-            request.TimeMin = DateTime.Now;
+            request.TimeMin = Common.GetDateTime();
             request.ShowDeleted = false;
             request.SingleEvents = true;
             request.MaxResults = 10;
@@ -4831,7 +4832,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         val.Add("start_date", data.start_date);
                     if (data.followers != null && data.followers.Count > 0)
                         val.Add("followers", string.Join(",", data.followers));
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_work_duplicate") != 1)
@@ -4868,7 +4869,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     val.Add("checker", DBNull.Value);
                                 else
                                     val.Add("checker", item["follower"]);
-                                val.Add("createddate", DateTime.Now);
+                                val.Add("createddate", Common.GetDateTime());
                                 val.Add("createdby", iduser);
                                 if (cnn.Insert(val, "we_work_process") != 1)
                                 {
@@ -4891,7 +4892,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         val.Add("content_note", loginData.customdata.personalInfo.Fullname + " thêm " + info.FullName + " vào theo dõi");
                                     }
                                 }
-                                val.Add("createddate", DateTime.Now);
+                                val.Add("createddate", Common.GetDateTime());
                                 val.Add("createdby", iduser);
                                 if (cnn.Insert(val, "we_work_process_log") != 1)
                                 {
@@ -4993,7 +4994,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         return JsonResultCommon.KhongTonTai("Công việc");
                     //code xóa cv con
                     string xoacon = " in ( select id_row from v_wework_clickup_new where (id_row = " + id + " or id_parent = " + id + ") and  disabled = 0 ) ";
-                    sqlq = "update we_work set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row " + xoacon;
+                    sqlq = "update we_work set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row " + xoacon;
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
@@ -5113,7 +5114,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         val.Add("checker", data.checker);
                     else
                         val.Add("checker", DBNull.Value);
-                    val.Add("updateddate", DateTime.Now);
+                    val.Add("updateddate", Common.GetDateTime());
                     val.Add("updatedby", iduser);
                     val.Add("change_note", data.change_note);
                     if (string.IsNullOrEmpty(data.change_note))
@@ -5162,7 +5163,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         }
                     }
                     val.Add("content_note", loginData.customdata.personalInfo.Fullname + " đã chỉnh sửa người theo dõi từ " + value_old + " --> " + value_new);
-                    val.Add("createddate", DateTime.Now);
+                    val.Add("createddate", Common.GetDateTime());
                     val.Add("createdby", iduser);
                     val.Add("note", data.change_note);
                     if (cnn.Insert(val, "we_work_process_log") != 1)
@@ -5209,8 +5210,8 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         return JsonResultCommon.Custom(error);
                     #endregion
                     #region filter thời gian, keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -5271,7 +5272,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         strW = strW.Replace("(parent)", strW_parent);
                     }
                     //#endregion
-                    DataSet ds = GetWorkByEmployee(cnn, query, loginData.UserID, DataAccount, strW);//" and w.id_nv=@iduser"
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, loginData.UserID, DataAccount, strW);//" and w.id_nv=@iduser"
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable(), query.filter);//k bao gồm con
@@ -5335,8 +5336,8 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                         return JsonResultCommon.Custom("Dự án/phòng ban bắt buộc nhập");
                     #region filter thời gian , keyword
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -5354,7 +5355,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                    DataSet ds = GetWorkByEmployee(cnn, query, loginData.UserID, DataAccount);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, loginData.UserID, DataAccount);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -5418,8 +5419,8 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     return BadRequest();
 
                 #region filter thời gian , keyword
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                 {
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -5456,7 +5457,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     DataTable dtG = cnn.CreateDataTable(strG);
                     //DataSet ds = getWork(cnn, query, loginData.UserID);
                     string strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.id_row in (select id_work from we_work_user where id_user = @iduser union all select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.Disabled = 0 and wu.Disabled = 0  and id_user = @iduser ) )"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
-                    DataSet ds = GetWorkByEmployee(cnn, query, long.Parse(query.filter["id_nv"].ToString()), DataAccount, strW);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, long.Parse(query.filter["id_nv"].ToString()), DataAccount, strW);
                     var tags = ds.Tables[1].AsEnumerable();
                     var followers = ds.Tables[2].AsEnumerable();
                     if (cnn.LastError != null || ds == null)
@@ -5528,7 +5529,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("closed", closed);
-                    val.Add("closed_work_date", DateTime.Now);
+                    val.Add("closed_work_date", Common.GetDateTime());
                     val.Add("closed_work_by", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_work") != 1)
@@ -5797,7 +5798,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 }
             }
         }
-        public static async Task<DataSet> GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string listDept, string dieukien_where = "")
+        public static async Task<DataSet> GetWork_ClickUp(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string listDept, string dieukien_where = "")
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             string ListID = string.Join(",", nvs);
@@ -5825,20 +5826,20 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
             #endregion
 
             #region filter thời gian , keyword
-            DateTime from = DateTime.Now;
-            DateTime to = DateTime.Now;
+            DateTime from = Common.GetDateTime();
+            DateTime to = Common.GetDateTime();
             if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w.CreatedDate>=@from";
-                Conds.Add("from", from);
+                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w.CreatedDate<@to";
-                Conds.Add("to", to);
+                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -5870,7 +5871,7 @@ iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_ht
 iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
 iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as is_danglam, 
 iIf(w.Status in (" + list_Deadline + @$") , 1, 0) as is_quahan,
-iif(convert(varchar, w.deadline,103) like convert(varchar, GETDATE(),103),1,0) as duetoday,
+iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao, '' as NguoiSua from v_wework_clickup_new w 
 left join (select count(*) as count,object_id from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -5921,7 +5922,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        public static DataSet GetWorkByEmployee(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
+        public static DataSet GetWorkByEmployee(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             SqlConditions Conds = new SqlConditions();
@@ -5937,8 +5938,8 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             {
                 Conds.Add("id_nv", query.filter["id_nv"]);
             }
-            DateTime from = DateTime.Now;
-            DateTime to = DateTime.Now;
+            DateTime from = Common.GetDateTime();
+            DateTime to = Common.GetDateTime();
             Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -5953,14 +5954,15 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w." + collect_by + ">=@from";
-                Conds.Add("from", from);
+                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w." + collect_by + "<@to";
-                Conds.Add("to", to);
+                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+
             }
             int nam = DateTime.Today.Year;
             int thang = DateTime.Today.Month;
@@ -5978,9 +5980,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 from = new DateTime(nam, thang, 1, 0, 0, 1);
                 to = new DateTime(nam, thang, lastDayOfMonth, 23, 59, 59);
                 dieukien_where += " and w." + collect_by + ">=@from";
-                Conds.Add("from", from);
+                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
                 dieukien_where += " and w." + collect_by + "<@to";
-                Conds.Add("to", to);
+                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -6006,7 +6008,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Return data to backend to display on the interface
             string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group
-                            ,w.deadline,w.id_milestone,w.milestone,
+                            ,w.deadline,w.id_milestone, w.milestone,
                             w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
                             ,w.status,w.result,w.createddate,w.createdby,
                             w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department
@@ -6016,9 +6018,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
-                            ,iIf(  w.deadline < getdate() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
-                            ,iIf( w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
-                            ,iIf( ( (deadline >= getdate() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
+                            ,iIf(  w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
+                            ,iIf( w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
+                            ,iIf( ( (deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -6029,13 +6031,30 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             where 1=1 " + dieukien_where + "  order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.disabled=0 and t.disabled=0";
+            string where_id_project_team = "";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
-                sqlq += " and id_project_team=" + query.filter["id_project_team"];
+            {
+                where_id_project_team = " and id_project_team=" + query.filter["id_project_team"];
+            }
+            sqlq += where_id_project_team;
             //người theo dõi
             sqlq += @$";select id_work,id_user,'' as hoten from we_work_user u 
                         where u.disabled = 0 and u.loai = 2";
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
             ds.Tables[0].Columns.Add("PhanLoai");
+            ds.Tables[0].Columns.Add("ActivityDate");
+            string sql_activity = @"SELECT b.maxdate, a.*
+                                            from we_work a
+                                            join
+                                                (
+                                                    select object_id, MAX(CreatedDate) maxdate
+                                                    from we_log
+                                                    where id_action in (select id_row from we_log_action where object_type = 1)
+                                                    group by object_id
+                                                ) b on a.id_row = b.object_id
+                                            where a.disabled = 0 " + where_id_project_team + " " +
+                                    "order by maxdate desc";
+            DataTable dt_activity = cnn.CreateDataTable(sql_activity);
             #region Map info account từ JeeAccount
             foreach (DataRow item in ds.Tables[0].Rows)
             {
@@ -6059,6 +6078,19 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 {
                     item["hoten"] = infoId_NV.FullName;
                 }
+                if (!string.IsNullOrEmpty(query.filter["sort_activity"]))
+                {
+                    if (dt_activity.Rows.Count > 0)
+                    {
+                        DataRow[] dr = dt_activity.Select("id_row =" + item["id_row"].ToString());
+                        if (dr.Length > 0)
+                        {
+                            item["ActivityDate"] = dr[0]["maxdate"].ToString();
+                        }
+                    }
+                }
+                else
+                    item["ActivityDate"] = item["CreatedDate"];
             }
             foreach (DataRow item in ds.Tables[2].Rows)
             {
@@ -6072,7 +6104,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        private DataSet getWork_IDNV(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
+        private DataSet getWork_IDNV(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             string ListID = string.Join(",", nvs);
@@ -6093,20 +6125,20 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             }
 
             #region filter thời gian, keyword
-            DateTime from = DateTime.Now;
-            DateTime to = DateTime.Now;
+            DateTime from = Common.GetDateTime();
+            DateTime to = Common.GetDateTime();
             if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w.CreatedDate>=@from";
-                Conds.Add("from", from);
+                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w.CreatedDate<@to";
-                Conds.Add("to", to);
+                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -6140,9 +6172,9 @@ w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize
 '' as NguoiTao, '' as NguoiSua 
 , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
 w.activated_by, w.closed_by, closed, closed_work_date, closed_work_by
-,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is null),0) as TreHan-- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < getdate()
-,isnull((select count(*) from we_work v where deadline < getdate() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < getdate()
-,isnull((select count(*) from we_work v where ((deadline >= getdate() and deadline is not null) or deadline is null) and w.id_row = v.id_row and v.end_date is null),0) as Doing--Đang làm: Ngày kết thúc is null và deadline is not null và deadline => getdate()
+,isnull((select count(*) from we_work v where deadline < GETUTCDATE() and deadline is not null and w.id_row = v.id_row and v.end_date is null),0) as TreHan-- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
+,isnull((select count(*) from we_work v where deadline < GETUTCDATE() and deadline is not null and w.id_row = v.id_row and v.end_date is not null),0) as done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
+,isnull((select count(*) from we_work v where ((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.id_row = v.id_row and v.end_date is null),0) as Doing--Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
 from v_wework_new w 
 left join (select count(*) as count,object_id 
 from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -6153,13 +6185,30 @@ on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
 where 1=1 " + dieukien_where + "  order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.Disabled=0";
+            string where_id_project_team = "";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
-                sqlq += " and id_project_team=" + query.filter["id_project_team"];
+            {
+                where_id_project_team = " and id_project_team=" + query.filter["id_project_team"];
+            }
+            sqlq += where_id_project_team;
             //người theo dõi
             sqlq += @$";select id_work,'' as hoten,id_user from we_work_user u 
 where u.disabled = 0 and u.loai = 2";
 
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
+            ds.Tables[0].Columns.Add("ActivityDate");
+            string sql_activity = @"SELECT b.maxdate, a.*
+                                            from we_work a
+                                            join
+                                                (
+                                                    select object_id, MAX(CreatedDate) maxdate
+                                                    from we_log
+                                                    where id_action in (select id_row from we_log_action where object_type = 1)
+                                                    group by object_id
+                                                ) b on a.id_row = b.object_id
+                                            where a.disabled = 0 " + where_id_project_team + " " +
+                                    "order by maxdate desc";
+            DataTable dt_activity = cnn.CreateDataTable(sql_activity);
             #region Map info account từ JeeAccount
             foreach (DataRow item in ds.Tables[0].Rows)
             {
@@ -6173,6 +6222,19 @@ where u.disabled = 0 and u.loai = 2";
                 {
                     item["NguoiSua"] = infoNguoiSua.Username;
                 }
+                if (!string.IsNullOrEmpty(query.filter["sort_activity"]))
+                {
+                    if (dt_activity.Rows.Count > 0)
+                    {
+                        DataRow[] dr = dt_activity.Select("id_row =" + item["id_row"].ToString());
+                        if (dr.Length > 0)
+                        {
+                            item["ActivityDate"] = dr[0]["maxdate"].ToString();
+                        }
+                    }
+                }
+                else
+                    item["ActivityDate"] = item["CreatedDate"];
             }
             foreach (DataRow item in ds.Tables[2].Rows)
             {
@@ -6280,6 +6342,7 @@ where u.disabled = 0 and u.loai = 2";
                              updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
                              nguoisua = r["NguoiSua"],
                              clickup_prioritize = r["clickup_prioritize"],
+                             activity_date = r["ActivityDate"],
                              comments = SoluongComment(r["id_row"].ToString(), cnn),
                              DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
                              User = from us in dt_Users.AsEnumerable()
@@ -6337,9 +6400,7 @@ where u.disabled = 0 and u.loai = 2";
                                       },
                              Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectString, r["id_row"])
                          };
-
-                return re.Distinct().ToList();
-
+                return re.Distinct().ToList().OrderByDescending(x => x.activity_date);
             }
         }
         public static long SoluongComment(string idwork, DpsConnection cnn)
@@ -6376,15 +6437,15 @@ where u.disabled = 0 and u.loai = 2";
             #endregion
             return temp;
         }
-        private object GetWorkByProjects(string id_project_team, DataTable dt_fields, string ConnectionString, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount)
+        private object GetWorkByProjects(IHeaderDictionary _header, string id_project_team, DataTable dt_fields, string ConnectionString, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount)
         {
             try
             {
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian, keyword, group by
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     string groupby = "status";
                     string tableName = "";
                     string querySQL = "";
@@ -6417,14 +6478,14 @@ where u.disabled = 0 and u.loai = 2";
                     {
                         DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                         strW += " and w." + collect_by + ">=@from";
-                        Conds.Add("from", from);
+                        Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                     {
                         DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                         to = to.AddDays(1);
                         strW += " and w." + collect_by + "<@to";
-                        Conds.Add("to", to);
+                        Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {

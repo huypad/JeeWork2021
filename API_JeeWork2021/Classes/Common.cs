@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using JeeWork_Core2021.Models;
 using JeeWork_Core2021.Controllers.Wework;
 using System.Globalization;
+using Microsoft.Extensions.Configuration;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -568,7 +569,7 @@ namespace JeeWork_Core2021.Classes
         {
             string id = "0";
             DataTable dt = cnn.CreateDataTable($@"select top 1 cocauid from P_Phanquyendonvi join DM_Donvisudung on rowid = donviid 
-                        where startdate <= getdate() and (expiredate is NULL or expiredate >= getdate()) and id_nv = {id_nv}");
+                        where startdate <= GETUTCDATE() and (expiredate is NULL or expiredate >= GETUTCDATE()) and id_nv = {id_nv}");
             if (dt.Rows.Count > 0)
             {
                 id = dt.Rows[0][0].ToString();
@@ -703,13 +704,9 @@ namespace JeeWork_Core2021.Classes
             }
             return model.data;
         }
-        public static object UpdateCustomData(IHeaderDictionary pHeader, string URL, ObjCustomData objCustomData)
+        public static object UpdateCustomData(IConfiguration _configuration, string URL, ObjCustomData objCustomData)
         {
-            if (pHeader == null) return null;
-            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
-            IHeaderDictionary _d = pHeader;
-            string _bearer_token;
-            _bearer_token = _d[HeaderNames.Authorization].ToString();
+            string internal_secret = WeworkLiteController.getSecretToken(_configuration);
             var content = new ObjCustomData
             {
                 userId = objCustomData.userId.ToString(),
@@ -717,18 +714,18 @@ namespace JeeWork_Core2021.Classes
                 fieldValue = objCustomData.fieldValue,
             };
             object stringContent = JsonConvert.SerializeObject(content);
-            string link_api = URL + @$"/api/accountmanagement/UppdateCustomData";
+            string link_api = URL + @$"/api/accountmanagement/UppdateCustomData/internal";
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", _bearer_token);
+            request.AddHeader("Authorization", internal_secret);
             request.AddJsonBody(stringContent);
             IRestResponse response = client.Execute(request);
             var model = JsonConvert.DeserializeObject<ResultModel>(response.Content);
-            if (model == null)
+            if (model == null || model.status == 0)
             {
                 return null;
             }
-            return model.data;
+            return model;
         }
         public static bool CheckRoleByProject(string id_project_team, UserJWT loginData, DpsConnection Conn)
         {
@@ -793,6 +790,7 @@ namespace JeeWork_Core2021.Classes
             }
             return false;
         }
+
         public static bool IsAdminTeam(string id_project_team , UserJWT loginData, DpsConnection cnn)
         {
 
@@ -810,6 +808,23 @@ namespace JeeWork_Core2021.Classes
                 return false;
             }
             return false;
+        }
+        public static bool ChuyenNgay(out DateTime kq, string ngay_ddMMyyy, bool isUTC = false)
+        {
+            string[] formats = new string[] { "yyyy-MM-dd HH:mm:ss'.'fff", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH", "dd/MM/yyyy", "yyyy/MM/dd", "yyyy/M/dd", "yyyy/M/d", "yyyy/MM/d", "yyyy-MM-dd'T'HH:mm:ss'.'fff'Z'", "O", "yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ss", "d/MM/yyyy", "d/M/yyyy", "dd/M/yyyy", "yyyy", "HH:mm", "MM/yyyy", "HH:mm:ss", "M/d/yyyy h:mm:ss tt" };
+            kq = new DateTime();
+            if (isUTC) DateTime.TryParseExact(ngay_ddMMyyy, formats, null, DateTimeStyles.AssumeUniversal, out kq);
+            else DateTime.TryParseExact(ngay_ddMMyyy, formats, null, DateTimeStyles.None, out kq);
+            if (new DateTime(1753, 1, 1) <= kq && kq <= new DateTime(9999, 12, 31)) return true;
+            return false;
+        }
+        public static DateTime getLocalTime()
+        {
+            return DateTime.UtcNow.AddHours(7);
+        }
+        public static DateTime GetDateTime()
+        {
+            return DateTime.UtcNow;
         }
     }
 }

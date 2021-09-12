@@ -78,8 +78,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "", strP = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -87,13 +87,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
                 strP += " and p." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
                 strP += " and p." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
 
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
@@ -236,20 +236,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and p." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and p." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -326,20 +326,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "", strW1 = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and m." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and m." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -421,20 +421,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -564,20 +564,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     //strW += " and id_department=@id_department";
@@ -692,20 +692,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     //strW += " and id_department=@id_department";
@@ -757,7 +757,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    int year = DateTime.Now.Year;
+                    int year = Common.GetDateTime().Year;
                     var Children = from rr in dtW.AsEnumerable()
                                    group rr by weekProjector((DateTime)rr["CreatedDate"]) into g
                                    select new
@@ -812,20 +812,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -1033,20 +1033,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         collect_by = collect[query.filter["collect_by"]];
                     SqlConditions cond = new SqlConditions();
                     string strW = "";
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                         return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", from);
+                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", to);
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
                         strW += " and id_project_team=@id_projectteam";
@@ -1225,20 +1225,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
                 string strD = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
                     strW += " and id_project_team=@id_projectteam";
@@ -1352,20 +1352,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         collect_by = collect[query.filter["collect_by"]];
                     SqlConditions cond = new SqlConditions();
                     string strW = "", strW1 = "";
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                         return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", from);
+                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", to);
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         //strW += " and id_department=@id_department";
@@ -1518,20 +1518,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         collect_by = collect[query.filter["collect_by"]];
                     SqlConditions cond = new SqlConditions();
                     string strW = "";
-                    DateTime from = DateTime.Now;
-                    DateTime to = DateTime.Now;
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
                     if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                         return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                     bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", from);
+                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", to);
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
                         strW += " and id_project_team=@id_projectteam";
@@ -1661,20 +1661,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 SqlConditions cond = new SqlConditions();
                 string strW = "";
                 string strD = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -1777,20 +1777,20 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     collect_by = collect[query.filter["collect_by"]];
                 SqlConditions cond = new SqlConditions();
                 string strW = "", strW1 = "";
-                DateTime from = DateTime.Now;
-                DateTime to = DateTime.Now;
+                DateTime from = Common.GetDateTime();
+                DateTime to = Common.GetDateTime();
                 if (string.IsNullOrEmpty(query.filter["TuNgay"]) || string.IsNullOrEmpty(query.filter["DenNgay"]))
                     return JsonResultCommon.Custom("Khoảng thời gian không hợp lệ");
                 bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", from);
+                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", to);
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -1874,7 +1874,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                 default:
                     break;
             }
-            string fileName = "List" + FileName + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss") + ".xls";
+            string fileName = "List" + FileName + "_" + Common.GetDateTime().ToString("ddMMyyyy_HHmmss") + ".xls";
             var bytearr = Encoding.UTF8.GetBytes(excel);
             this.Response.Headers.Add("X-Filename", fileName);
             this.Response.Headers.Add("Access-Control-Expose-Headers", "X-Filename");

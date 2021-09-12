@@ -1,30 +1,4 @@
 <style>
-    .example-tree-invisible {
-        display: none;
-    }
-
-    .example-tree ul,
-    .example-tree li {
-        margin-top: 0;
-        margin-bottom: 0;
-        list-style-type: none;
-    }
-
-    /*
- * This padding sets alignment of the nested nodes.
- */
-    .example-tree .mat-nested-tree-node div[role=group] {
-        padding-left: 40px;
-    }
-
-    /*
- * Padding for leaf nodes.
- * Leaf nodes need to have padding so as to align with other non-leaf nodes
- * under the same parent.
- */
-    .example-tree div[role=group]>.mat-tree-node {
-        padding-left: 40px;
-    }
 
     .item-hethong {
         text-align: center;
@@ -46,7 +20,7 @@
         font-size: 1.5;
     }
     .text-success {
-        color: #28a745 !important;
+        color: #219904 !important;
     }
 </style>
 <div id="page-report">
@@ -840,9 +814,7 @@
 </div>
 
 <ng-template #viewSelectDept>
-    <!-- <m-dropdown-tree [data]="datatree" [FieldTitle]="'title'" [FieldId]="'id'" [FieldChildren]="'data'"
-        [DropdownTitle]="'Chọn phòng ban'" (SelectedItemTree)="LoadDatafilter($event)">
-    </m-dropdown-tree> -->
+
     <div class="view-mat-menu-df" (click)="$event.stopPropagation();">
         <div class="cu2-space-row__item cu2-space-row__item_expanded" [hidden]="this.ID_department > 0">
             <div matTooltipShowDelay="300"  (click)="selected_Dept(null)" [ngClass]="{'text-success font-weight-bolder': null === Selected}"
@@ -852,15 +824,24 @@
         <ng-container *ngFor="let space of this.datatree | async">
             <div class="cu2-space-row__item cu2-space-row__item_expanded">
                 <div class="cu-project-avatar_20 cu-project-avatar">
-                    <div class="cu-project-avatar__item cu-avatar cu-project-avatar__text cu-project-avatar__text_bg"
-                        style="color: rgb(191, 74, 204);">
-                        <span style="margin-top:-1px"> {{space.title[0]}} </span>
-                    </div>
+                    <ng-container *ngIf="space.parentid > 0;else itemspace">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                            <path
+                                    d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" />
+                        </svg>
+                    </ng-container>
+                    <ng-template #itemspace>
+                        <div class="cu-project-avatar__item cu-avatar cu-project-avatar__text cu-project-avatar__text_bg"
+                             style="color: rgb(191, 74, 204);">
+                            <span> {{space.title.trim()[0]}} </span>
+                        </div>
+                    </ng-template>
+
                 </div>
                 <div matTooltipShowDelay="300"  (click)="selected_Dept(space)" [ngClass]="{'text-success font-weight-bolder': space === Selected}"
                     matTooltip="{{space.title}}" class="cu2-space-row__item-name">
                     {{space.title}} </div>
-                <mat-icon class="mat-icon-rtl-mirror"  (click)="space.expanded = !space.expanded"> {{ space.expanded ? 'expand_more' : 'chevron_right'}} </mat-icon>
+                <mat-icon class="mat-icon-rtl-mirror" *ngIf="hasChild(this.space)" (click)="space.expanded = !space.expanded"> {{ space.expanded ? 'expand_more' : 'chevron_right'}} </mat-icon>
 
             </div>
             <ng-container *ngIf="space.expanded">

@@ -427,7 +427,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("title", data.title);
                     val.Add("id_cocau", data.id_cocau);
                     val.Add("IdKH", idk);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     val.Add("IsDataStaff_HR", data.IsDataStaff_HR);
                     val.Add("TemplateID", data.TemplateID);
@@ -455,7 +455,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         Hashtable val1 = new Hashtable();
                         val1["id_department"] = idc;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var view in data.DefaultView)
                         {
@@ -472,7 +472,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         Hashtable val1 = new Hashtable();
                         val1["id_department"] = idc;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var owner in data.Owners)
                         {
@@ -568,7 +568,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     {
                                         Hashtable has = new Hashtable();
                                         has["id_department"] = idc;
-                                        has["CreatedDate"] = DateTime.Now;
+                                        has["CreatedDate"] = Common.GetDateTime();
                                         has["CreatedBy"] = iduser;
                                         has["id_user"] = users["Id_NV"].ToString();
                                         has["type"] = 2;
@@ -657,7 +657,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                   ,[id_cocau]
                                   ,[IdKH]
                                   ,[priority]
-                                  ,GETDATE()
+                                  ,GETUTCDATE()
                                   ,@UserID
                                   ,0
                                   ,[StatusListID]
@@ -693,7 +693,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     Hashtable val1 = new Hashtable();
                     val1["id_department"] = idc;
-                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedDate"] = Common.GetDateTime();
                     val1["CreatedBy"] = iduser;
                     foreach (var view in listView)
                     {
@@ -712,7 +712,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         Hashtable valtv = new Hashtable();
                         valtv["id_department"] = idc;
-                        valtv["CreatedDate"] = DateTime.Now;
+                        valtv["CreatedDate"] = Common.GetDateTime();
                         valtv["CreatedBy"] = iduser;
                         valtv["id_user"] = iduser;
                         valtv["type"] = 1;
@@ -737,7 +737,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                                ,[Type])
                                                     SELECT @id_department
                                                     ,[id_user]
-                                                    ,GETDATE()
+                                                    ,GETUTCDATE()
                                                     ,@UserID
                                                     ,[Disabled]
                                                     ,[Type]
@@ -883,7 +883,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("id_cocau", data.id_cocau);
                     val.Add("TemplateID", data.TemplateID);
                     //val.Add("IdKH", idk);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_department where Disabled=0 and  (IdKH=@custemerid) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "custemerid", idk }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -901,7 +901,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         string ids = string.Join(",", data.Owners.Where(x => x.id_row > 0).Select(x => x.id_row));
                         if (ids != "")//xóa owner
                         {
-                            string strDel = "Update we_department_owner set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_department=" + data.id_row + " and id_row not in (" + ids + ")";
+                            string strDel = "Update we_department_owner set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and  id_department=" + data.id_row + " and id_row not in (" + ids + ")";
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
@@ -910,7 +910,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         Hashtable val1 = new Hashtable();
                         val1["id_department"] = data.id_row;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var owner in data.Owners)
                         {
@@ -931,7 +931,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         string ids = string.Join(",", data.DefaultView.Where(x => x.id_row > 0).Select(x => x.id_row));
                         if (ids != "")//xóa view
                         {
-                            string strDel = "Update we_department_view set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_department=" + data.id_row + " and id_row not in (" + ids + ")";
+                            string strDel = "Update we_department_view set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and  id_department=" + data.id_row + " and id_row not in (" + ids + ")";
                             if (cnn.ExecuteNonQuery(strDel) < 0)
                             {
                                 cnn.RollbackTransaction();
@@ -940,7 +940,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         Hashtable val1 = new Hashtable();
                         val1["id_department"] = data.id_row;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var _view in data.DefaultView)
                         {
@@ -971,7 +971,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     {
                                         Hashtable has = new Hashtable();
                                         has["id_department"] = data.id_row;
-                                        has["CreatedDate"] = DateTime.Now;
+                                        has["CreatedDate"] = Common.GetDateTime();
                                         has["CreatedBy"] = iduser;
                                         has["id_user"] = users["Id_NV"].ToString();
                                         has["type"] = 2;
@@ -1107,7 +1107,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
                     //if (Common.TestDuplicate("", id.ToString(), "-1", "we_project_team", "id_department", "Disabled", "0", cnn, "", true) == false)
                     //    return JsonResultCommon.Custom("Đang có dự án, phòng ban thuộc ban này nên không thể xóa");
-                    sqlq = "update we_department set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id + "or ParentID = " + id;
+                    sqlq = "update we_department set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id + "or ParentID = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {

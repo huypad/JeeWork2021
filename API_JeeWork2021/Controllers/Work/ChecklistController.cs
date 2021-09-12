@@ -224,7 +224,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
                     val.Add("id_work", data.id_work);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_checklist where Disabled=0 and  (id_work=@id_work) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_work", data.id_work }, { "name", data.title } }).ToString()) > 0)
@@ -289,7 +289,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_checklist where Disabled=0 and  (id_work=@id_work) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_work", data.id_work }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -340,7 +340,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc danh sách kiểm tra này nên không thể xóa");
                     //}
-                    sqlq = "update we_checklist set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_checklist set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -397,7 +397,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
                     val.Add("id_checklist", data.id_checklist);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_checklist_item where Disabled=0 and (id_checklist=@id_checklist) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_checklist", data.id_checklist }, { "name", data.title } }).ToString()) > 0)
@@ -463,7 +463,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_checklist_item where Disabled=0 and  (id_checklist=@id_checklist) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_checklist", data.id_checklist }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -519,7 +519,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     var x = dt.Rows[0][0];
                     bool Checked = bool.Parse(dt.Rows[0][0].ToString());
                     Hashtable val = new Hashtable();
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     val.Add("checker", iduser);
                     if(Checked)
@@ -573,7 +573,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc danh sách kiểm tra này nên không thể xóa");
                     //}
-                    sqlq = "update we_checklist_item set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_checklist_item set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -619,7 +619,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("checker", user);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_checklist_item") != 1)

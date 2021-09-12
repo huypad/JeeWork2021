@@ -60,7 +60,7 @@
                             <div style="margin-left: 10px;">
                                 <nav mat-tab-nav-bar>
                                     <a mat-tab-link href="javascript:;" [active]="activeLink == 'project'">
-                                        <h5 style="padding-top: 5px; color: #48465b; color: green; font-weight: bold;">
+                                        <h5 style="padding-top: 5px; color: #48465b; color: green; font-weight: bold;" >
                                             {{item.title}}
                                         </h5>
                                         <mat-icon style="height: 20px;" color="warn" *ngIf="item.locked">lock</mat-icon>
@@ -76,20 +76,59 @@
                                             <mat-icon>info</mat-icon>
                                         </button> -->
                                     </a>
-                                    <!-- <a mat-tab-link *ngIf="!(commonService.CheckRole_WeWork(3501).length>0)"
-                                        href="javascript:;" [active]="activeLink == 'project'">
-                                        <h5 style="padding-top: 5px; color: #48465b; color: green; font-weight: bold;">
-                                            {{item.title}}
-                                        </h5>
-                                        <mat-icon style="height: 20px;" color="warn" *ngIf="item.locked">lock</mat-icon>
-                                    </a> -->
                                     <mat-menu style="justify-content: flex-start !important" #menuProject="matMenu">
-                                        <button mat-menu-item [matMenuTriggerFor]="recent1" color="accent">
-                                            <mat-icon style="color:rgb(235, 166, 19);">create</mat-icon>
-                                            <span><span style="color:rgb(235, 166, 19);font-size: 9pt"
-                                                        translate="GeneralKey.chinhsua"></span></span>
-                                        </button>
 
+
+
+                                        <ng-container  *ngIf="!item.locked">
+                                            <button type="button" (click)="DuplicateProject()" mat-menu-item *ngIf="!item.locked">
+                                                <mat-icon style="color:rgb(123, 15, 173);">filter_none</mat-icon>
+                                                <span
+                                                        style="color:rgb(123, 15, 173);font-size: 9pt"
+                                                        translate="GeneralKey.nhanbanteam"></span>
+                                            </button>
+                                            <button mat-menu-item (click)="AddAutomation()">
+                                                <mat-icon style="color:rgb(207, 65, 8);">autorenew</mat-icon>
+                                                <span translate="GeneralKey.automation"></span>
+                                            </button>
+                                            <button mat-menu-item [matMenuTriggerFor]="recent" color="accent">
+                                                <mat-icon class="icon-sua">create</mat-icon>
+                                                <span>
+                                                <span translate="GeneralKey.chinhsua"></span>
+                                            </span>
+                                            </button>
+                                            <mat-menu #recent="matMenu">
+                                                <button type="button"  mat-menu-item (click)="AddProject(true)">
+                                                    <mat-icon style="color:rgb(13, 92, 240)">create</mat-icon>
+                                                    <span translate="GeneralKey.chinhsuanhanh"></span>
+                                                </button>
+                                                <button type="button" mat-menu-item (click)="UpdateStatus()">
+                                                    <mat-icon style="color:rgb(203, 14, 209)">update</mat-icon>
+                                                    <span translate="GeneralKey.chinhsuastatus"></span>
+                                                </button>
+                                                <button mat-menu-item (click)="updateStage(item)">
+                                                    <mat-icon style="color:rgb(5, 116, 29)">done</mat-icon>
+                                                    <span>
+                                                <span translate="GeneralKey.capnhattrangthai"></span>
+                                            </span>
+                                                </button>
+                                            </mat-menu>
+                                            <button mat-menu-item [matMenuTriggerFor]="templatecenter" color="accent">
+                                                <mat-icon class="icon-them">add</mat-icon>
+                                                <span>
+                                                <span translate="GeneralKey.templatecenter"></span>
+                                            </span>
+                                            </button>
+                                            <mat-menu #templatecenter="matMenu">
+                                                <!-- <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5> -->
+                                                <button mat-menu-item><span translate="GeneralKey.browsetemplate" (click)="AddTemplate()"></span></button>
+                                                <button mat-menu-item><span translate="GeneralKey.saveastemplate"
+                                                                            (click)="UpdateTemplate(1)"></span></button>
+                                                <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
+                                                                            (click)="UpdateTemplate(2)"></span></button>
+                                            </mat-menu>
+
+                                        </ng-container>
                                         <ng-container *ngIf="item">
                                             <button mat-menu-item (click)="ClosedProject()" *ngIf="!item.locked">
                                                 <mat-icon style="color:rgb(89, 94, 92)">lock</mat-icon>
@@ -106,50 +145,21 @@
                                                 </span>
                                             </button>
                                         </ng-container>
-                                        <button mat-menu-item (click)="Deleted()">
+<!--                                        <button mat-menu-item (click)="Change()">-->
+<!--                                            <mat-icon style="color:rgb(5, 111, 231)">swap_horiz</mat-icon>-->
+<!--                                            <span>-->
+<!--                                                <span style="color:rgb(5, 111, 231);font-size: 9pt"-->
+<!--                                                      translate="GeneralKey.changetype"></span>-->
+<!--                                            </span>-->
+<!--                                        </button>-->
+                                        <button mat-menu-item (click)="Deleted()" *ngIf="!item.locked">
                                             <mat-icon style="color:rgb(236, 49, 74)">clear</mat-icon>
                                             <span>
-                                                <span style="color:rgb(236, 49, 74);font-size: 9pt"
-                                                      translate="GeneralKey.xoateam"></span>
-                                            </span>
-                                        </button>
-                                        <button mat-menu-item [matMenuTriggerFor]="nhanbanteam1" color="accent">
-                                            <mat-icon style="color:rgb(219, 69, 9)">settings</mat-icon>
-                                            <span
-                                                    style="color:rgb(219, 69, 9);font-size: 9pt"
-                                                    translate="GeneralKey.cactuychonkhac"></span>
-                                        </button>
-                                    </mat-menu>
-                                    <mat-menu #recent1="matMenu">
-                                        <button type="button" (click)="AddProject(true)" mat-menu-item>
-                                            <mat-icon style="color:rgb(13, 92, 240)">create</mat-icon>
-                                            <span
-                                                    style="color:rgb(13, 92, 240);font-size: 9pt"
-                                                    translate="GeneralKey.chinhsuanhanh"></span>
-                                        </button>
-                                        <button mat-menu-item (click)="updateStage(item)">
-                                            <mat-icon style="color:rgb(5, 116, 29)">update</mat-icon>
-                                            <span>
-                                                <span style="color:rgb(5, 116, 29);font-size: 9pt"
-                                                      translate="GeneralKey.capnhattrangthai"></span>
+                                                <span style="color:rgb(236, 49, 74);font-size: 9pt" translate="GeneralKey.xoateam"></span>
                                             </span>
                                         </button>
                                     </mat-menu>
-                                    <mat-menu #nhanbanteam1="matMenu">
-                                        <button type="button" (click)="DuplicateProject()" mat-menu-item>
-                                            <mat-icon style="color:rgb(123, 15, 173);">filter_none</mat-icon>
-                                            <span
-                                                    style="color:rgb(123, 15, 173);font-size: 9pt"
-                                                    translate="GeneralKey.nhanbanteam"></span>
-                                        </button>
-                                        <button mat-menu-item (click)="Change()">
-                                            <mat-icon style="color:rgb(5, 111, 231)">swap_horiz</mat-icon>
-                                            <span>
-                                                <span style="color:rgb(5, 111, 231);font-size: 9pt"
-                                                      translate="GeneralKey.changetype"></span>
-                                            </span>
-                                        </button>
-                                    </mat-menu>
+
                                     <a mat-tab-link [matMenuTriggerFor]="menuV" #menuTrigger="matMenuTrigger"
                                        href="javascript:;" [active]="activeLink == 'home'">
                                         <span style="justify-content: flex-start !important"
@@ -258,6 +268,7 @@
                                         </mat-menu>
                                     </mat-menu>
                                     <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3502).length>0 || IsAdmin()"
+                                       [disabled]="item.locked"
                                        [routerLink]="['./documents']" (click)="click('documents')"
                                        [active]="activeLink == 'documents'">{{'projects.documents' |
                                         translate}}&nbsp;({{listDocument.length}})</a>
@@ -266,6 +277,7 @@
                                        [active]="activeLink == 'activities'">{{'projects.hoatdong' |
                                         translate}}</a>
                                     <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3610).length>0 || IsAdmin()"
+                                       [disabled]="item.locked"
                                        [routerLink]="['./discussions']" (click)="click('discussions')"
                                        [active]="activeLink == 'discussions'">{{'projects.discuss' |
                                         translate}}</a>
@@ -274,6 +286,7 @@
                                        [active]="activeLink == 'report'">{{'projects.report' |
                                         translate}}</a>
                                     <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3501).length>0 || IsAdmin()"
+                                       [disabled]="item.locked"
                                        [routerLink]="['./settings']" (click)="click('settings')"
                                        [active]="activeLink == 'settings'">{{'projects.tuychinh' |
                                         translate}}</a>

@@ -399,7 +399,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     val.Add("description", data.description);
                     val.Add("id_project_team", data.id_project_team);
                     val.Add("email", data.email);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_topic where Disabled=0 and  (id_project_team=@id_project_team) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title } }).ToString()) > 0)
@@ -435,7 +435,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     {
                         Hashtable val1 = new Hashtable();
                         val1["id_topic"] = idc;
-                        val1["CreatedDate"] = DateTime.Now;
+                        val1["CreatedDate"] = Common.GetDateTime();
                         val1["CreatedBy"] = iduser;
                         foreach (var u in data.Users)
                         {
@@ -545,7 +545,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     val.Add("title", data.title);
                     val.Add("description", data.description);
                     val.Add("email", data.email);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_topic where Disabled=0 and  (id_project_team=@id_project_team) and title=@name and id_row<>@id";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_project_team", data.id_project_team }, { "name", data.title }, { "id", data.id_row } }).ToString()) > 0)
@@ -580,7 +580,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     string ids = string.Join(",", data.Users.Where(x => x.id_row > 0).Select(x => x.id_row));
                     if (ids != "")//xóa follower
                     {
-                        string strDel = "Update we_topic_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where Disabled=0 and  id_topic=" + data.id_row + " and id_row not in (" + ids + ")";
+                        string strDel = "Update we_topic_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where Disabled=0 and  id_topic=" + data.id_row + " and id_row not in (" + ids + ")";
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
@@ -589,7 +589,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     Hashtable val1 = new Hashtable();
                     val1["id_topic"] = data.id_row;
-                    val1["CreatedDate"] = DateTime.Now;
+                    val1["CreatedDate"] = Common.GetDateTime();
                     val1["CreatedBy"] = iduser;
                     foreach (var owner in data.Users)
                     {
@@ -657,7 +657,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
                     //}
-                    sqlq = "update we_topic set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_topic set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -714,7 +714,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             return JsonResultCommon.Custom("Người dùng đang theo dõi topic này");
                         else
                         {
-                            sqlq = "update we_topic_user set Disabled=0, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + dt.Rows[0]["id_row"];
+                            sqlq = "update we_topic_user set Disabled=0, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + dt.Rows[0]["id_row"];
                             if (cnn.ExecuteNonQuery(sqlq) != 1)
                             {
                                 cnn.RollbackTransaction();
@@ -727,7 +727,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         Hashtable val = new Hashtable();
                         val["id_topic"] = topic;
                         val["id_user"] = user;
-                        val["CreatedDate"] = DateTime.Now;
+                        val["CreatedDate"] = Common.GetDateTime();
                         val["CreatedBy"] = iduser;
                         if (cnn.Insert(val, "we_topic_user") != 1)
                         {
@@ -820,7 +820,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         }
                         else
                         {
-                            sqlq = "update we_topic_user set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + dt.Rows[0]["id_row"];
+                            sqlq = "update we_topic_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + dt.Rows[0]["id_row"];
                             if (cnn.ExecuteNonQuery(sqlq) != 1)
                             {
                                 cnn.RollbackTransaction();

@@ -62,7 +62,8 @@ export class HttpUtilsService {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${auth != null ? auth.access_token : ''}`,
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type'
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'TimeZone': (new Date()).getTimezoneOffset().toString()
         });
         return result;
     }

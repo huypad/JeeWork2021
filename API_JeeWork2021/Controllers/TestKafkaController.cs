@@ -227,7 +227,7 @@ namespace JeeWork_Core2021.Controllers
             _timeZone /= -60;
             DateTime dt = DateTime.Parse(_time);
             int _currentTZ = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
-            int _chl = Math.Abs(_currentTZ - _timeZone);
+            int _chl = (_timeZone - _currentTZ );
             var _currentLocalTime = dt.AddHours(_chl);
             return _currentLocalTime.ToString();
         }

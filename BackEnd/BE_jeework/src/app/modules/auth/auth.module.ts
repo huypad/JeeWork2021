@@ -9,7 +9,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { LogoutComponent } from './logout/logout.component';
 import { AuthComponent } from './auth.component';
 import {TranslationModule} from '../i18n/translation.module';
-
+import { CookieService } from 'ngx-cookie-service';
 @NgModule({
   declarations: [
     LoginComponent,
@@ -18,6 +18,7 @@ import {TranslationModule} from '../i18n/translation.module';
     LogoutComponent,
     AuthComponent,
   ],
+  providers: [CookieService],
   imports: [
     CommonModule,
     TranslationModule,

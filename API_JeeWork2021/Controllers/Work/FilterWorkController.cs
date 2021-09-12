@@ -201,7 +201,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         val.Add("color", "");
                     else
                         val.Add("color", data.color);
-                    val.Add("CreatedDate", DateTime.Now);
+                    val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     string strCheck = "select count(*) from we_filter where Disabled=0 and (CreatedBy=@id_user) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_user", loginData.UserID }, { "name", data.title } }).ToString()) > 0)
@@ -290,7 +290,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         val.Add("color", "");
                     else
                         val.Add("color", data.color);
-                    val.Add("UpdatedDate", DateTime.Now);
+                    val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
                     string strCheck = "select count(*) from we_filter where Disabled=0 and (CreatedBy=@id_user) and title=@name and id_row<>@id_row";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_user", loginData.UserID }, { "name", data.title }, { "id_row", data.id_row } }).ToString()) > 0)
@@ -389,7 +389,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //{
                     //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
                     //}
-                    sqlq = "update we_filter set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_filter set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {

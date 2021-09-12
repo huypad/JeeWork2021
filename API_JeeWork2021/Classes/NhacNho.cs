@@ -217,7 +217,7 @@ namespace API_JeeWork2021.Classes
         public static long SLCongviecUser(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
             string StrW = " and id_nv = " + UserID +" ";
-            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount, StrW );
+            DataSet ds = WorkClickupController.GetWorkByEmployee(null,cnn, new QueryParams(), UserID, DataAccount, StrW );
             var cvdanglam = ds.Tables[0].Compute("count(id_row) ", " Doing = 1 ");
             var demo = new Remider()
             {
@@ -250,7 +250,7 @@ namespace API_JeeWork2021.Classes
             //    return 0;
 
             string StrW = " and id_nv = "+ UserID + " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
-            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount, StrW);
+            DataSet ds = WorkClickupController.GetWorkByEmployee(null, cnn, new QueryParams(), UserID, DataAccount, StrW);
             var dt = ds.Tables[0];
             if (cnn.LastError != null || dt.Rows.Count < 0)
                 return 0;
@@ -268,7 +268,7 @@ namespace API_JeeWork2021.Classes
         public static long SLCongviecQuaHan(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
             string StrW = " and id_nv = " + UserID + " ";
-            DataSet ds = WorkClickupController.GetWorkByEmployee(cnn, new QueryParams(), UserID, DataAccount, StrW);
+            DataSet ds = WorkClickupController.GetWorkByEmployee(null, cnn, new QueryParams(), UserID, DataAccount, StrW);
             var cvquahan = ds.Tables[0].Compute("count(id_row) ", " TreHan = 1 ");
             var demo = new Remider()
             {
@@ -294,7 +294,7 @@ namespace API_JeeWork2021.Classes
                                 join we_project_team_user u on u.id_project_team = p.id_row
                                 where u.disabled = 0 
                                 and id_user = @UserID 
-                                and end_date < GETDATE()
+                                and end_date < GETUTCDATE()
                                 and p.disabled = 0 
                                 and d.disabled = 0 
                                 and IdKH=@IdKH";

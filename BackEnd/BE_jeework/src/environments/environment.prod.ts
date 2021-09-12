@@ -31,4 +31,5 @@ export const environment = {
   HOST_JEELANDINGPAGE: 'https://app.jee.vn',
   HOST_JEECOMMENT_API: 'https://jeecomment-api.jee.vn',
   SERVERLIVE: true,
+  DOMAIN_COOKIES: '.jee.vn',
 };

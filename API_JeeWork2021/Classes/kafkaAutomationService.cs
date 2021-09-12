@@ -607,7 +607,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
            ,[type]
 		   ,[CreatedBy]
            ,[CreatedDate])
-     select id_row,title,description,{data},deadline,1,1,start_date,1,2,0,GETDATE()
+     select id_row,title,description,{data},deadline,1,1,start_date,1,2,0,GETUTCDATE()
 	 from v_wework_clickup_new where id_row = " + listTask[i];
                 cnn.BeginTransaction();
                 if (cnn.ExecuteNonQuery(sqlq) < 1)
