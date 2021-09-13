@@ -16,6 +16,10 @@ using JeeWork_Core2021.Models;
 using JeeWork_Core2021.Controllers.Wework;
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using System.IO;
+using DPSinfra.Logger;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -26,7 +30,11 @@ namespace JeeWork_Core2021.Classes
         {
             ConnectionString = _connectionString;
         }
-
+        public static ILogger<object> _logger;
+        public Common(ILogger<Common> logger)
+        {
+            _logger = logger;
+        }
         public static string[] GetRolesForUser_WeWork(string username, DpsConnection Conn)
         {
             SqlConditions Conds = new SqlConditions();
@@ -783,6 +791,35 @@ namespace JeeWork_Core2021.Classes
             conds.Add("userid", id_user);
             conds.Add("id_work", id_work);
             string sql = "select * from v_wework_new where id_row = @id_work and ( createdby = @userid or id_nv = @userid)";
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (dt.Rows.Count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        public static bool IsTaskClosed(long id_work, DpsConnection cnn)
+        {
+
+            // kiểm tra công việc đó của mình hay không
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_work", id_work);
+            string sql = "select * from we_work where id_row = @id_work and Disabled = 0 and closed = 1 ";
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (dt.Rows.Count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsProjectClosed(string id_project_team, DpsConnection cnn)
+        {
+
+            // kiểm tra công việc đó của mình hay không
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_project_team", id_project_team);
+            string sql = "select * from we_project_team where  id_row = @id_project_team and Disabled = 0 and Locked = 1 ";
             DataTable dt = cnn.CreateDataTable(sql,conds);
             if(dt.Rows.Count > 0)
             {
@@ -791,7 +828,7 @@ namespace JeeWork_Core2021.Classes
             return false;
         }
 
-        public static bool IsAdminTeam(string id_project_team , UserJWT loginData, DpsConnection cnn)
+        public static bool IsAdminTeam(string id_project_team, UserJWT loginData, DpsConnection cnn)
         {
 
             bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
@@ -825,6 +862,169 @@ namespace JeeWork_Core2021.Classes
         public static DateTime GetDateTime()
         {
             return DateTime.UtcNow;
+        }
+        public static string BasePath
+        {
+            get
+            {
+                return "";
+            }
+            set
+            {
+                _basePath = value;
+            }
+        }
+        private static string _basePath;
+        public static string module = "";
+        public static string Pagename = "NoName";
+        public static void Ghilogfile(string CustemerID, string LogEditcontent, string LogContent, string username, ControllerContext ControllerContext = null)
+        {
+            if (ControllerContext != null)
+                Pagename = ControllerContext.ActionDescriptor.ControllerName + "_" + ControllerContext.ActionDescriptor.ActionName;
+            if (!"".Equals(LogEditcontent))
+            {
+                WriteLogByFunction(Pagename, LogEditcontent, CustemerID, username);
+            }
+            if (!"".Equals(LogContent))
+            {
+                WriteLogByDay_JeeWork(Pagename, LogContent, CustemerID, username);
+                WriteLogByUser_JeeWork(Pagename, LogContent, CustemerID, username);
+            }
+        }
+        public static string GetEditLogContent(DataTable Old_Data, DataTable New_Data)
+        {
+            string result = "";
+            if ((Old_Data.Rows.Count > 0) && (New_Data.Rows.Count > 0))
+            {
+                for (int i = 0; i < Old_Data.Columns.Count; i++)
+                {
+                    if (Old_Data.Rows[0][i].ToString() != New_Data.Rows[0][i].ToString())
+                        result += " | " + Old_Data.Columns[i].ColumnName + ": " + Old_Data.Rows[0][i].ToString() + " ^ " + New_Data.Rows[0][i].ToString();
+                }
+            }
+            if (!"".Equals(result)) result = result.Substring(3);
+            return result;
+        }
+        public static void WriteLogByFunction(string Pagename, string content, string CustemerID, string username)
+        {
+            StreamWriter w;
+            string pathdir = Path.Combine(BasePath, "Logs/" + CustemerID + "/theochucnang/");
+            if (!Directory.Exists(pathdir))
+            {
+                Directory.CreateDirectory(pathdir);
+            }
+            string fullpath_filename = pathdir + Pagename + ".txt";
+
+            if (!File.Exists(fullpath_filename))
+            {
+                w = File.CreateText(fullpath_filename);
+            }
+            else w = File.AppendText(fullpath_filename);
+            try
+            {
+                w.WriteLine(username + " - " + GetDateTime().ToString("dd/MM/yyyy HH:mm:ss") + " - " + content);
+                w.Flush();
+                w.Close();
+            }
+            catch (Exception ex)
+            {
+                w.Flush();
+                w.Close();
+            }
+        }
+        public static void WriteLogByDay_JeeWork(string page, string content, string CustemerID, string username)
+        {
+            string pathdir = Path.Combine(BasePath, "Logs/" + CustemerID + "/theongay/");
+            if (!Directory.Exists(pathdir))
+            {
+                Directory.CreateDirectory(pathdir);
+            }
+            string fullpath_filename = pathdir + DateTime.Today.ToString("yyyyMMdd") + ".txt";
+            StreamWriter w;
+            if (!File.Exists(fullpath_filename))
+            {
+                w = File.CreateText(fullpath_filename);
+            }
+            else w = File.AppendText(fullpath_filename);
+            w.WriteLine(username + " - " + GetDateTime().ToString("dd/MM/yyyy HH:mm:ss") + " - " + content);
+            w.Flush();
+            w.Close();
+        }
+        public static void WriteLogByUser_JeeWork(string page, string content, string CustemerID, string id_nv)
+        {
+            string pathdir = Path.Combine(BasePath, "Logs/" + CustemerID + "/theonguoidung/");
+            if (!Directory.Exists(pathdir))
+            {
+                Directory.CreateDirectory(pathdir);
+            }
+            string fullpath_filename = pathdir + id_nv + ".txt";
+            StreamWriter w;
+            if (!File.Exists(fullpath_filename))
+            {
+                w = File.CreateText(fullpath_filename);
+            }
+            else w = File.AppendText(fullpath_filename);
+            w.WriteLine(GetDateTime().ToString("dd/MM/yyyy HH:mm:ss") + " - " + content);
+            w.Flush();
+            w.Close();
+        }
+        /// <summary>
+        /// Hàm lưu log sử dụng Flatform
+        /// </summary>
+        /// <param name="CustemerID"></param>
+        /// <param name="LogEditcontent"></param>
+        /// <param name="LogContent"></param>
+        /// <param name="username"></param>
+        /// <param name="actions"></param>
+        /// <param name="data"></param>
+        public static void Ghilogfile_Flatform(string CustemerID, string LogEditcontent, string LogContent, string username, string actions, object data)
+        {
+            if (!"".Equals(LogEditcontent))
+            {
+                WriteLogByFunction_Flatform(module + "_" + Pagename, LogEditcontent, CustemerID, username, actions, data);
+            }
+            //if (!"".Equals(LogContent))
+            //{
+            //    WriteLogByDay_Flatform(module + "_" + Pagename, LogContent, CustemerID, username, actions, data);
+            //    WriteLogByUser_Flatform(module + "_" + Pagename, LogContent, CustemerID, username, actions, data);
+            //}
+        }
+        public static void WriteLogByDay_Flatform(string page, string content, string CustemerID, string username, string actions, object data)
+        {
+            //string pathdir = Path.Combine(BasePath, "Logs/" + CustemerID + "/theongay/");
+            var d2 = new ActivityLog()
+            {
+                username = username,
+                category = content,
+                action = actions,
+                data = JsonConvert.SerializeObject(data)
+            };
+            _logger.LogInformation(JsonConvert.SerializeObject(d2));
+
+        }
+        public static void WriteLogByUser_Flatform(string page, string content, string CustemerID, string id_nv, string actions, object data)
+        {
+            //string pathdir = Path.Combine(BasePath, "Logs/" + CustemerID + "/theonguoidung/");
+            var d2 = new ActivityLog()
+            {
+                username = id_nv,
+                category = content,
+                action = actions,
+                data = JsonConvert.SerializeObject(data)
+            };
+            _logger.LogInformation(JsonConvert.SerializeObject(d2));
+
+        }
+        public static void WriteLogByFunction_Flatform(string Pagename, string content, string CustemerID, string username, string actions, object data)
+        {
+            var d2 = new ActivityLog()
+            {
+                username = username,
+                category = content,
+                action = actions,
+                data = JsonConvert.SerializeObject(data)
+            };
+            _logger.LogInformation(JsonConvert.SerializeObject(d2));
         }
     }
 }

@@ -2659,7 +2659,7 @@ and IdKH={loginData.CustomerID} )";
             string col_name = "id_project_team";
             if (_type < 3)
             {
-                Init_Column_Department(id, cnn);
+                Insert_field_department(id, cnn);
                 col_name = "departmentid";
             }
             cond.Add(col_name, id);
@@ -2984,27 +2984,40 @@ and IdKH={loginData.CustomerID} )";
         /// <param name="id_project"></param>
         /// <param name="conn"></param>
         /// <returns></returns>
-        public static bool Init_Column_Project(long id_project, DpsConnection conn, bool is_custom = false, string list_field = "")
+        public static bool Insert_field_project_team(long id_project, DpsConnection cnn, bool is_custom = false, string list_field = "")
         {
-            SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
 
             string sqlq = "";
-            SqlConditions conds = new SqlConditions();
             Hashtable has = new Hashtable();
+            SqlConditions conds = new SqlConditions();
             conds.Add("disabled", 0);
             conds.Add("id_project_team", id_project);
             sqlq = "select * from we_fields_project_team where (where)";
-            dt = conn.CreateDataTable(sqlq, "(where)", conds);
+            dt = cnn.CreateDataTable(sqlq, "(where)", conds);
             if (dt.Rows.Count <= 0)
             {
                 sqlq = "select fieldname, title, position, isnewfield, id_field " +
-                    "from we_fields where isdefault = 1";
+                   "from we_fields where (where)";
                 if (is_custom)
                 {
-                    sqlq += " and isnewfield = 0 and id_field in (" + list_field + ")";
+                    conds.Add("isdefault", 1);
+                    conds.Add("isnewfield", 0);
+                    sqlq += " and id_field in (" + list_field + ")";
                 }
-                dt = conn.CreateDataTable(sqlq);
+                else
+                {
+                    sqlq = "select * from we_fields_project_team where (where)";
+                    string sql_dept = "select ISNULL((select id_department from we_project_team where id_row = " + id_project + "),0)";
+                    long departmentid = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
+                    conds = new SqlConditions();
+                    conds.Add("disabled", 0);
+                    conds.Add("departmentid", departmentid);
+                    DataTable field_department = cnn.CreateDataTable(sqlq, "(where)", conds);
+                    if (field_department.Rows.Count == 0)
+                        Insert_field_department(departmentid, cnn);
+                }
+                dt = cnn.CreateDataTable(sqlq, "(where)", conds);
                 if (dt.Rows.Count > 0)
                 {
                     foreach (DataRow item in dt.Rows)
@@ -3015,11 +3028,11 @@ and IdKH={loginData.CustomerID} )";
                         has.Add("title", item["title"].ToString());
                         has.Add("disabled", 0);
                         has.Add("position", item["position"].ToString());
-                        has.Add("fieldid", item["id_field"].ToString());
+                        has.Add("fieldid", item["fieldid"].ToString());
                         has.Add("createddate", Common.GetDateTime());
                         has.Add("createdby", 0);
                         has.Add("isnewField", 0);
-                        if (conn.Insert(has, "we_fields_project_team") != 1)
+                        if (cnn.Insert(has, "we_fields_project_team") != 1)
                         {
                             return false;
                         }
@@ -3030,14 +3043,13 @@ and IdKH={loginData.CustomerID} )";
         }
 
         /// <summary>
-        /// Khởi tạo cột mặc định cho space
+        /// Khởi tạo cột mặc định cho space / folder
         /// </summary>
         /// <param name="id_project"></param>
         /// <param name="conn"></param>
         /// <returns></returns>
-        public static bool Init_Column_Department(long id_department, DpsConnection conn)
+        public static bool Insert_field_department(long id_department, DpsConnection cnn)
         {
-            SqlConditions cond = new SqlConditions();
             DataTable dt = new DataTable();
             string sqlq = "";
             SqlConditions conds = new SqlConditions();
@@ -3045,12 +3057,15 @@ and IdKH={loginData.CustomerID} )";
             conds.Add("disabled", 0);
             conds.Add("departmentid", id_department);
             sqlq = "select * from we_fields_project_team where (where)";
-            dt = conn.CreateDataTable(sqlq, "(where)", conds);
+            dt = cnn.CreateDataTable(sqlq, "(where)", conds);
             if (dt.Rows.Count <= 0)
             {
+                conds = new SqlConditions();
+                conds.Add("isdefault", 1);
+                conds.Add("isdel", 0);
                 sqlq = "select fieldname, title, position, isnewfield, id_field " +
-                    "from we_fields where isdefault = 1";
-                dt = conn.CreateDataTable(sqlq);
+                    "from we_fields where (where)";
+                dt = cnn.CreateDataTable(sqlq, "(where)", conds);
                 if (dt.Rows.Count > 0)
                 {
                     foreach (DataRow item in dt.Rows)
@@ -3065,7 +3080,7 @@ and IdKH={loginData.CustomerID} )";
                         has.Add("createddate", Common.GetDateTime());
                         has.Add("createdby", 0);
                         has.Add("isnewField", 0);
-                        if (conn.Insert(has, "we_fields_project_team") != 1)
+                        if (cnn.Insert(has, "we_fields_project_team") != 1)
                         {
                             return false;
                         }

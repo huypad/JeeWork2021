@@ -17,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using DPSinfra.Notifier;
 using JeeWork_Core2021.Controller;
+using DPSinfra.Logger;
+using Newtonsoft.Json;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -420,7 +422,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
@@ -446,11 +447,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    //string LogContent = "", LogEditContent = "";
-                    //LogContent = LogEditContent = "Thêm mới dữ liệu department: title=" + data.title + ", id_cocau=" + data.id_cocau;
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
+                   
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
-
+                    WeworkLiteController.Insert_field_department(long.Parse(idc), cnn);
                     if (data.DefaultView != null)
                     {
                         Hashtable val1 = new Hashtable();
@@ -582,6 +581,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                         }
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu department: title=" + data.title + ", id_cocau=" + data.id_cocau;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     data.id_row = int.Parse(idc);
                     return JsonResultCommon.ThanhCong(data);
@@ -618,7 +632,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
-
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -628,7 +641,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     #region thêm nhanh thư mục
                     //kiểm tra phòng ban
                     string strCheck = "select count(*) from we_department where Disabled=0 and (IdKH=@custemerid) and title=@name";
@@ -673,7 +685,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
-
+                    WeworkLiteController.Insert_field_department(long.Parse(idc), cnn);
                     // thêm view
                     string sqlv = @"select * from we_department_view where id_department = " + data.ParentID;
                     List<long> listView = new List<long>();
@@ -690,7 +702,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             listView.Add(long.Parse(item["viewid"].ToString()));
                         }
                     }
-
                     Hashtable val1 = new Hashtable();
                     val1["id_department"] = idc;
                     val1["CreatedDate"] = Common.GetDateTime();
@@ -751,16 +762,27 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #endregion
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu folder: title=" + data.title + ", id_department=" + data.ParentID;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
-
                     var users_admin = dttv.AsEnumerable().Where(x => x["Type"].ToString() == "1").Select(x => long.Parse(x["id_user"].ToString())).ToList();
                     var users_member = dttv.AsEnumerable().Where(x => x["Type"].ToString() == "2").Select(x => long.Parse(x["id_user"].ToString())).ToList();
-
-
                     Hashtable has_replace = new Hashtable();
                     //List<long>  = data.Owners.Where(x => x.id_row == 0 && x.type == 1).Select(x => x.id_user).ToList();
                     //List<long> users_member = data.Owners.Where(x => x.id_row == 0 && x.type == 2).Select(x => x.id_user).ToList();
-
                     cnn.EndTransaction();
                     #region Lấy thông tin để thông báo
                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(35, ConnectionString);
@@ -868,7 +890,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
                     sqlcond.Add("disabled", 0);
@@ -986,28 +1007,37 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    //string LogContent = "", LogEditContent = "";
-                    //LogEditContent = DpsPage.GetEditLogContent(old, dt);
-                    //if (!LogEditContent.Equals(""))
-                    //{
-                    //    LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
-                    //    LogContent = "Chỉnh sửa dữ liệu department (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
-                    //}
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-                    cnn.EndTransaction();
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu department/Folder (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogEditContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
 
+                    cnn.EndTransaction();
                     if (data.Owners != null)
                     {
                         Hashtable has_replace = new Hashtable();
                         List<long> users_admin = data.Owners.Where(x => x.id_row == 0 && x.type == 1).Select(x => x.id_user).ToList();
                         List<long> users_member = data.Owners.Where(x => x.id_row == 0 && x.type == 2).Select(x => x.id_user).ToList();
-
                         cnn.EndTransaction();
-
                         #region Lấy thông tin để thông báo
                         SendNotifyModel noti = WeworkLiteController.GetInfoNotify(35, ConnectionString);
                         #endregion
-
                         WeworkLiteController.mailthongbao(data.id_row, users_admin, 35, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
                         #region Notify thiết lập vai trò admin
                         for (int i = 0; i < users_admin.Count; i++)
@@ -1107,17 +1137,28 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
                     //if (Common.TestDuplicate("", id.ToString(), "-1", "we_project_team", "id_department", "Disabled", "0", cnn, "", true) == false)
                     //    return JsonResultCommon.Custom("Đang có dự án, phòng ban thuộc ban này nên không thể xóa");
-                    sqlq = "update we_department set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id + "or ParentID = " + id;
+                    sqlq = "update we_department set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id + "or ParentID = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    //string LogContent = "Xóa dữ liệu department (" + id + ")";
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
+                    #region Ghi log trong project
+                    string LogContent = "Xóa dữ liệu department (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = ""
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
-
                     #region 
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
@@ -1128,7 +1169,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     // gửi thông báo cho thành viên dự án
                     string sqltv = $"select * from we_department_owner where id_department = { id} and Disabled = 0";
                     DataTable dt_user = cnn.CreateDataTable(sqltv);

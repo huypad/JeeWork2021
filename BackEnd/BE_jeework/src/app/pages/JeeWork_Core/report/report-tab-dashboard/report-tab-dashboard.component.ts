@@ -96,10 +96,9 @@ export class ReportTabDashboardComponent implements OnInit {
             id_row: ''
         };
         var today = new Date();
-        var start_date = new Date();
         this.selectedDate = {
             endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(start_date.setMonth(start_date.getMonth() - 5)),
+            startDate: new Date(today.getFullYear(),today.getMonth() - 6, 1),
         };
         this.filterCVC = this._filterCV[0];
         this.trangthai = this._filterTT[0];

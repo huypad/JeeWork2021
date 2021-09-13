@@ -39,6 +39,11 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<ReportByProjectController> _logger;
+        string sql_isquahan = " w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ";
+        string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null ) and w.end_date is null";
+        string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
+        string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
+        string sqlhoanthanh = " w.end_date is not null ";
 
         public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportByProjectController> logger)
         {

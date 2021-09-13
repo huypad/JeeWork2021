@@ -2,6 +2,12 @@
 	padding-#{$prop}: $val;
 }
 
+
+iframe #document html{
+	overflow: hidden;
+	overflow-x: auto;
+}
+
 $main-color: #16a850; // màu chính
 
 @mixin main-color-opacity($val) {

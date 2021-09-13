@@ -28,6 +28,8 @@ using Google.Apis.Services;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Util.Store;
 using Microsoft.AspNetCore.Http;
+using DPSinfra.Logger;
+using Newtonsoft.Json;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -1485,7 +1487,6 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
-
                     bool re = true;
                     re = WeworkLiteController.log(_logger, loginData.Username, cnn, 1, data.id_row, iduser, log_content);
                     if (!re)
@@ -1493,6 +1494,27 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu UpdateNewField (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogEditContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
+
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -1770,6 +1792,21 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "update_hidden (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), "", LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = ""
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
+
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }
@@ -2545,6 +2582,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+
+                    if (Common.IsProjectClosed(data.id_project_team.ToString(), cnn))
+                    {
+                        return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc.");
+                    }
                     Common comm = new Common(ConnectionString);
                     // quyền 1 : tạo mới công việc
                     bool rs = Common.CheckPermitUpdate(data.id_project_team.ToString(), 1, loginData, cnn);
@@ -2590,34 +2632,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     else
                         val.Add("estimates", DBNull.Value);
-                    //DateTime ngaybatdau = new DateTime();
-                    //DateTime deadline = new DateTime();
-                    //if (!Common.ChuyenNgay(out ngaybatdau, data.start_date))
-                    //{
-                    //    return JsonResultCommon.Custom("Ngày bắt đầu không hợp lệ");
-                    //}
-                    //if (!Common.ChuyenNgay(out deadline, data.deadline))
-                    //{
-                    //    return JsonResultCommon.Custom("Hạn chót không hợp lệ");
-                    //}
-                    //val.Add("start_date", ngaybatdau);
-                    //val.Add("deadline", deadline);
-
                     if (data.start_date > DateTime.MinValue)
                     {
-                        //string return_date = "";
-                        //DateTime ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "end_date", data.id_project_team, out return_date, cnn);
-                        //if (ngaykiemtra > DateTime.MinValue)
-                        //{
-                        //    if (data.start_date > ngaykiemtra)
-                        //        return JsonResultCommon.Custom("Ngày bắt đầu phải nhỏ hơn ngày kết thúc của dự án" + return_date + "");
-                        //}
-                        //ngaykiemtra = WeworkLiteController.Check_ConditionDate("we_project_team", "start_date", data.id_project_team, out return_date, cnn);
-                        //if (ngaykiemtra > DateTime.MinValue)
-                        //{
-                        //    if (ngaykiemtra > data.start_date)
-                        //        return JsonResultCommon.Custom("Ngày bắt đầu phải lớn hơn hoặc bằng ngày bắt đầu của dự án" + return_date + "");
-                        //}
                         val.Add("start_date", data.start_date);
                     }
                     if (data.deadline > DateTime.MinValue)
@@ -2636,7 +2652,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
-
                     //Insert người follow cho từng tình trạng của công việc
                     dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                     if (dt_status.Rows.Count > 0)
@@ -2734,13 +2749,27 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
-
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu công việc: title=" + data.title + ", id_project_team=" + data.id_project_team;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
 
                     // thông báo nhắc nhở
                     foreach (var user in data.Users)
@@ -2930,6 +2959,26 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
                     #endregion
                     WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu Công việc (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogEditContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     #region Notify chỉnh sửa công việc
                     Hashtable has_replace = new Hashtable();
@@ -3516,6 +3565,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     postauto.customerid = loginData.CustomerID;
 
                     Common comm = new Common(ConnectionString);
+                    if (Common.IsTaskClosed(data.id_row, cnn))
+                    {
+                        return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật nội dung.");
+                    }
+                    if (Common.IsProjectClosed(old.Rows[0]["id_project_team"].ToString(), cnn))
+                    {
+                        return JsonResultCommon.Custom("Dự án đã đóng không thể cập nhật nội dung.");
+                    }
                     bool istaskuser = Common.CheckTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn);
                     if (!istaskuser)
                     {
@@ -3758,7 +3815,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var start = DateTime.Parse(values.ToString());
                                         if (values > DateTime.Parse(dt_infowork.Rows[0]["deadline"].ToString()))
                                         {
-                                            return JsonResultCommon.Custom("Ngày bắt đầu nhỏ hơn hạn chót");
+                                            return JsonResultCommon.Custom("Ngày bắt đầu phải nhỏ hơn hạn chót");
                                         }
                                     }
                                 }
@@ -4442,7 +4499,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
-
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
@@ -4551,7 +4607,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         notify_model.ReplaceData = has_replace;
                                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
@@ -4583,6 +4638,16 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (ID: " + data.id_row + ": " + data.key + "=" + data.value + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu công việc (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -4795,7 +4860,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     if (string.IsNullOrEmpty(data.title))
                         strRe += (strRe == "" ? "" : ",") + "tiêu đề";
                 }
-
                 if (strRe != "")
                 {
                     return JsonResultCommon.BatBuoc(strRe);
@@ -4901,8 +4965,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 }
                             }
                         }
-
-
                         if (data.type == 2)
                         {
                             val = new Hashtable();
@@ -4915,10 +4977,23 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
-
                         }
                     }
-
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Nhân bản công việc: title=" + data.title + ", id_project_team=" + data.id_project_team;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
 
                     foreach (DataRow dr in dt.Rows)
@@ -4946,7 +5021,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
-
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
@@ -4955,8 +5029,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         }
                         #endregion
                     }
-
-
                     return JsonResultCommon.ThanhCong(dt.AsEnumerable().FirstOrDefault());
                 }
             }
@@ -4989,12 +5061,24 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
-                    string sqlq = "select ISNULL((select count(*) from we_work where disabled=0 and id_row = " + id + "),0)";
-                    if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
+                    SqlConditions sqlcondQ = new SqlConditions();
+                    sqlcondQ.Add("id_row", id);
+                    sqlcondQ.Add("disabled", 0);
+                    string s = "select title as tencongviec_old, * from v_wework_new where (where)";
+                    DataTable old = cnn.CreateDataTable(s, "(where)", sqlcondQ);
+                    if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
                     //code xóa cv con
+                    if (Common.IsTaskClosed(id, cnn))
+                    {
+                        return JsonResultCommon.Custom("Công việc đã đóng không thể xóa công việc");
+                    }
+                    if (Common.IsProjectClosed(old.Rows[0]["id_project_team"].ToString(), cnn))
+                    {
+                        return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc");
+                    }
                     string xoacon = " in ( select id_row from v_wework_clickup_new where (id_row = " + id + " or id_parent = " + id + ") and  disabled = 0 ) ";
-                    sqlq = "update we_work set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row " + xoacon;
+                    string sqlq = "update we_work set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row " + xoacon;
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
@@ -5011,6 +5095,10 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "Xóa dữ liệu công việc (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), "", LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     cnn.EndTransaction();
                     #region Check dự án đó có gửi gửi mail khi xóa không
                     long id_project = long.Parse(cnn.ExecuteScalar("select id_project_team from we_work where id_row = " + id).ToString());
@@ -5043,18 +5131,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 notify_model.ReplaceData = has_replace;
                                 notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-
-                                //try
-                                //{
-                                //    if (notify_model != null)
-                                //    {
-                                //        Knoti = new APIModel.Models.Notify();
-                                //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                //    }
-                                //}
-                                //catch
-                                //{ }
-
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
@@ -5171,6 +5247,21 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "we_work_process: title=" + data.workid + ", id_project_team=" + data.id_project_team;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -5180,7 +5271,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         #region calendar
         [Route("list-event")]
         [HttpGet]
@@ -5538,6 +5628,20 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
+                    #region Ghi log trong project
+                    string LogContent = "Đóng công việc (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), "", LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = ""
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(closed);
                 }
@@ -6007,7 +6111,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Return data to backend to display on the interface
-            string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group
+            string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.estimates
                             ,w.deadline,w.id_milestone, w.milestone,
                             w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
                             ,w.status,w.result,w.createddate,w.createdby,
@@ -6164,7 +6268,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Trả dữ liệu về backend để hiển thị lên giao diện
             //, nv.holot+' '+nv.ten as hoten_nguoigiao -- w.NguoiGiao,
-            string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,w.Id_NV,
+            string sqlq = @$"select  distinct w.id_row,w.title,w.description,w.id_project_team,w.id_group,w.deadline,w.id_milestone,w.milestone,w.Id_NV,w.estimates,
 w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize,w.status,w.result,w.CreatedDate,w.CreatedBy,
 w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department,w.clickup_prioritize 
 , Iif(fa.id_row is null ,0,1) as favourite 
@@ -6324,6 +6428,7 @@ where u.disabled = 0 and u.loai = 2";
                              num_file = r["num_file"],
                              num_com = r["num_com"],
                              trehan = r["TreHan"],
+                             estimates = r["estimates"],
                              hoanthanh = r["done"],
                              danglam = r["Doing"],
                              closed = r["closed"],

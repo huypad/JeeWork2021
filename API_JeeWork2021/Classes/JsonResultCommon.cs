@@ -105,7 +105,7 @@ namespace JeeWork_Core2021.Classes
                 if (loginData.CustomerID > 0)
                     AutoSendMail.SendErrorReport(loginData.CustomerID.ToString(), noidungmail, config,"");
                 string category = "Lỗi thao tác";
-                string action = @$"{loginData.Username} thao tác lỗi. ";
+                string action = @$"{loginData.Username} thao tác lỗi";
                 var d2 = new ActivityLog()
                 {
                     username = loginData.Username,

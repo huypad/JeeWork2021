@@ -75,8 +75,6 @@ export class HttpUtilsService {
             'Authorization': `Bearer ${auth != null ? auth.refresh_token : ''}`
         });
         return p;
-
-
     }
 
     public getAuthFromLocalStorage(): any {

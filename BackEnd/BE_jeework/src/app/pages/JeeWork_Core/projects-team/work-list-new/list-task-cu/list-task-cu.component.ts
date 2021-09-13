@@ -156,11 +156,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         {
             title: 'Assignee',
             value: 'member'
-        },
-        // {
-        //   title: 'Priority',
-        //   value: 'priority'
-        // },
+        }
     ];
 
     listFilter_Subtask = [
@@ -207,10 +203,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
 
         const today = new Date();
-        const start_date = new Date();
         this.filterDay = {
             endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
+            startDate: new Date(today.getFullYear(),today.getMonth() - 6, 1),
         };
         this.column_sort = this.sortField[0];
         this.route.params.subscribe(res => {
@@ -1079,6 +1074,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             if (res && res.status == 1) {
                 this.LoadData();
                 this.LoadSampleList();
+            }else{
+                this.layoutUtilsService.showError(res.error.message);
             }
         });
     }

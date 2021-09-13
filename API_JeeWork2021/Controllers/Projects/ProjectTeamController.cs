@@ -25,6 +25,7 @@ using Microsoft.Extensions.Logging;
 using API_JeeWork2021.Classes;
 using DPSinfra.Kafka;
 using JeeWork_Core2021.Controller;
+using DPSinfra.Logger;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -897,8 +898,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Insert([FromBody] ProjectTeamModel data)
         {
-            string Token = Common.GetHeader(Request);
-            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -966,9 +965,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    //string LogContent = "", LogEditContent = "";
-                    //LogContent = LogEditContent = "Thêm mới dữ liệu project_team: title=" + data.title + ", id_department=" + data.id_department + ", loai=" + data.loai;
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
+
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
                     Hashtable val1 = new Hashtable();
                     val1["id_project_team"] = idc;
@@ -1006,13 +1003,27 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         WeworkLiteController.update_position_status(idc, cnn);
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
-                    if (!WeworkLiteController.Init_Column_Project(idc, cnn))
+                    if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #endregion
-
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu project_team: title=" + data.title + ", id_department=" + data.id_department + ", loai=" + data.loai;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     #region Lấy thông tin để thông báo
                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
@@ -1039,24 +1050,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
                             bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
                         }
-
                     }
                     #endregion
                     #region Lấy thông tin để thông báo
@@ -1081,18 +1079,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
-
                         var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -1109,7 +1095,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Tạo dự án từ JeeMeeting
         /// </summary>
@@ -1229,7 +1214,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     WeworkLiteController.update_position_status(idc, cnn);
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
-                    if (!WeworkLiteController.Init_Column_Project(idc, cnn))
+                    if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1490,7 +1475,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             "from we_template_customer " +
                             "where (where) ";
                         DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
-                        if(cnn.LastError == null && dt_template.Rows.Count > 0)
+                        if (cnn.LastError == null && dt_template.Rows.Count > 0)
                         {
                             TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
                             sql_insert = "";
@@ -1505,10 +1490,9 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             }
                             WeworkLiteController.update_position_status(idc, cnn);
                         }
-
                     }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
-                    if (!WeworkLiteController.Init_Column_Project(idc, cnn))
+                    if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1519,6 +1503,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=" + data.title + ", id_department=" + data.id_department + ", loai=" + data.loai;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     #region Lấy thông tin để thông báo
                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
@@ -1544,18 +1543,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
-
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -1587,7 +1574,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
                             try
                             {
                                 if (notify_model != null)
@@ -1753,15 +1739,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    //string LogContent = "", LogEditContent = "";
-                    //string LogEditContentTemp = DpsPage.GetEditLogContent(old, dt);
-                    //if (!LogEditContent.Equals(""))
-                    //{
-                    //    LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContentTemp;
-                    //    LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
-                    //}
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 32, data.id_row, iduser))
                     {
                         cnn.RollbackTransaction();
@@ -1800,18 +1787,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
-
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -1840,17 +1815,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -1896,17 +1860,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 notify_model.ReplaceData = has_replace;
                                 notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                                //try
-                                //{
-                                //    if (notify_model != null)
-                                //    {
-                                //        Knoti = new APIModel.Models.Notify();
-                                //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                //    }
-                                //}
-                                //catch
-                                //{ }
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
@@ -1915,7 +1868,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             }
                             #endregion
                         }
-
                     }
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -1945,7 +1897,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                 string strRe = "";
                 if (data.status <= 0)
                     strRe += (strRe == "" ? "" : ",") + "trạng thái";
-
                 if (strRe != "")
                 {
                     return JsonResultCommon.BatBuoc(strRe);
@@ -1960,7 +1911,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
-
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
@@ -1974,7 +1924,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-
                     Hashtable val1 = new Hashtable();
                     val1.Add("id_project_team", data.id_row);
                     val1.Add("description", string.IsNullOrEmpty(data.stage_description) ? "" : data.stage_description);
@@ -1987,15 +1936,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    //string LogContent = "", LogEditContent = "";
-                    //LogEditContent = DpsPage.GetEditLogContent(old, dt);
-                    //if (!LogEditContent.Equals(""))
-                    //{
-                    //    LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
-                    //    LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
-                    //}
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 34, data.id_row, iduser, "", old.Rows[0]["status"], data.status))
                     {
                         cnn.RollbackTransaction();
@@ -2057,15 +2007,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    //string LogContent = "", LogEditContent = "";
-                    //LogEditContent = DpsPage.GetEditLogContent(old, dt);
-                    //if (!LogEditContent.Equals(""))
-                    //{
-                    //    LogEditContent = "Chỉnh sửa dữ liệu (" + id + ") : " + LogEditContent;
-                    //    LogContent = "Chỉnh sửa dữ liệu project_team (" + id + "), Chi tiết xem trong log chỉnh sửa chức năng";
-                    //}
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + id + " - " + key + ": " + value + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu UpdateByKey (" + id + " - " + key + ": " + value + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 32, id, iduser, ""))
                     {
                         cnn.RollbackTransaction();
@@ -2124,15 +2075,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    //string LogContent = "", LogEditContent = "";
-                    //LogEditContent = DpsPage.GetEditLogContent(old, dt);
-                    //if (!LogEditContent.Equals(""))
-                    //{
-                    //    LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
-                    //    LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
-                    //}
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 34, data.id_row, iduser, "", old.Rows[0]["status"], data.close_status))
                     {
                         cnn.RollbackTransaction();
@@ -2185,12 +2137,21 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 34, data.id_row, iduser, "", old.Rows[0]["status"], data.close_status))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu project_team (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -2234,14 +2195,16 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    //string LogContent = "Xóa dữ liệu project_team (" + id + ")";
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
+                    #region Ghi log trong project
+                    string LogContent = "Xóa dữ liệu project_team (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 33, id, iduser))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    cnn.EndTransaction(); 
+                    cnn.EndTransaction();
                     #region
                     #region Lấy thông tin để thông báo
                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(4, ConnectionString);
@@ -2269,17 +2232,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -2287,7 +2239,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                     }
                     if (email_delete_team)
-                    { 
+                    {
                         // mailthongbao(id, 4, loginData, Token, cnn, DataAccount);
                         List<long> listUser = dt_user.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
                         WeworkLiteController.mailthongbao(id, listUser, 4, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
@@ -2335,9 +2287,10 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    //string LogContent = "Chỉnh sửa dữ liệu project_team (" + id + "):is_project=" + value;
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
-
+                    #region Ghi log trong project
+                    string LogContent = "Change-type project_team (" + id + "):is_project=" + value;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 35, id, iduser, "", !value, value))
                     {
                         cnn.RollbackTransaction();
@@ -2408,11 +2361,22 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    //string LogContent = "", LogEditContent = "";
-                    //LogContent = LogEditContent = "Thêm mới dữ liệu project_team_duplicate: title=" + data.title + ", id=" + data.id + ", type=" + data.type;
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu project_team_duplicate: title=" + data.title + ", id=" + data.id + ", type=" + data.type;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team_dupplicate')").ToString());
-
                     string sql = "exec DuplicateProjectTeam " + idc;
                     DataTable dt = cnn.CreateDataTable(sql);
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
@@ -2428,12 +2392,12 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         val1.Add("StatusName", item["StatusName"]);
                         val1.Add("description", item["description"]);
                         val1.Add("id_project_team", dt.Rows[0]["id_row"]);
-                        val1.Add("Type", item["Type"]);
-                        val1.Add("IsDefault", item["IsDefault"]);
+                        val1.Add("type", item["Type"]);
+                        val1.Add("isdefault", item["IsDefault"]);
                         val1.Add("color", item["color"]);
-                        val1.Add("Position", item["Position"]);
-                        val1.Add("IsFinal", item["IsFinal"]);
-                        val1.Add("IsDeadline", item["IsDeadline"]);
+                        val1.Add("position", item["Position"]);
+                        val1.Add("isfinal", item["IsFinal"]);
+                        val1.Add("isdeadline", item["IsDeadline"]);
                         val1.Add("IsToDo", item["IsToDo"]);
                         val1.Add("CreatedDate", Common.GetDateTime());
                         val1.Add("CreatedBy", iduser);
@@ -2487,7 +2451,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
@@ -2495,13 +2458,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     string sqlq = "select ISNULL((select count(*) from we_project_team where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
                     sqlq = @$"select u.* , '' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 
 join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " where u.disabled=0 and u.Id_user in (" + listID + " )";
-
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     #region Map info account từ JeeAccount
                     //List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
@@ -2628,12 +2589,17 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) < 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
+                        return JsonResultCommon.Custom("Dự án phải có ít nhất một người quản lý");
                     }
                     foreach (var owner in datas)
                     {
                         NhacNho.UpdateSoluongDuan(owner.id_user, loginData.CustomerID, cnn, _configuration, _producer);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Add user";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     cnn.EndTransaction();
                     Hashtable has_replace = new Hashtable();
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
@@ -2661,17 +2627,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                            //try
-                            //{
-                            //    if (notify_model != null)
-                            //    {
-                            //        Knoti = new APIModel.Models.Notify();
-                            //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            //    }
-                            //}
-                            //catch
                             { }
-
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
@@ -2702,17 +2658,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                            //try
-                            //{
-                            //    if (notify_model != null)
-                            //    {
-                            //        Knoti = new APIModel.Models.Notify();
-                            //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitroadmin", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                            //    }
-                            //}
-                            //catch
-                            //{ }
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
@@ -2768,6 +2713,21 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
                     }
                     NhacNho.UpdateSoluongDuan(id, loginData.CustomerID, cnn, _configuration, _producer);
+                    #region Ghi log trong project
+                    string LogContent = "Xóa dữ liệu user ra khỏi dự án (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = ""
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
+
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }
@@ -2804,7 +2764,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sqlq = "select id_project_team, id_user from we_project_team_user where disabled=0 and id_row = " + id + "";
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
-                        return JsonResultCommon.Custom("Người dùng không thuộc dự án/phòng ban");
+                        return JsonResultCommon.Custom("Người dùng không thuộc dự án");
                     var id_project_team = long.Parse(dt.Rows[0]["id_project_team"].ToString());
                     cnn.BeginTransaction();
                     string sql = "Update we_project_team_user set admin=" + (admin ? 1 : 0) + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
@@ -2819,13 +2779,18 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) < 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Custom("Dự án/phòng ban phải có ít nhất một người quản lý");
+                        return JsonResultCommon.Custom("Dự án phải có ít nhất một người quản lý");
                     }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 37, id, loginData.UserID, "", !admin, admin))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Update user: ID" + id + " - admin = " + admin;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     cnn.EndTransaction();
                     var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
                     int id_template = 0;
@@ -2857,18 +2822,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, "ww_thietlapvaitrothanhvien", notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
-
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
@@ -2994,6 +2947,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         {
             string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            bool value = true;
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
             try
@@ -3009,7 +2963,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         return JsonResultCommon.Custom("Quyền không tồn tại hoặc đối tượng phân quyền không đúng");
                     cnn.BeginTransaction();
                     int re = 0;
-                    if (dt.Rows[0][0] == DBNull.Value)//id_row==null
+                    if (dt.Rows[0][0] == DBNull.Value)
                     {
                         Hashtable val = new Hashtable();
                         val["id_project_team"] = id;
@@ -3019,7 +2973,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     }
                     else
                     {
-                        bool value = true;
                         if (dt.Rows[0][1] != DBNull.Value)
                             value = !(bool)dt.Rows[0][1];
                         string sql = "Update we_project_role set " + key + "=" + (value ? 1 : 0) + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + dt.Rows[0][0];
@@ -3030,6 +2983,21 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Update role: Role = " + role + ";" + key + "=" + (value ? 1 : 0);
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = ""
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }
@@ -3306,7 +3274,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     cnn.BeginTransaction();
-
                     int re = 0;
                     Hashtable has = new Hashtable();
                     has.Add("viewid", data.viewid);
@@ -3332,6 +3299,11 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Add view: view_name_new=" + data.view_name_new + ", viewid=" + data.viewid;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
                     cnn.EndTransaction();
                 }
                 return JsonResultCommon.ThanhCong();
@@ -3341,7 +3313,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Add view cho project
         /// </summary>
@@ -3370,7 +3341,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sqlq = "select * from we_project_team where Disabled=0 and id_row = " + data.id_project_team;
                     DataTable dtF = cnn.CreateDataTable(sqlq);
                     if (dtF.Rows.Count == 0)
-                        return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
+                        return JsonResultCommon.KhongTonTai("Dự án");
                     sqlq = @"select * from we_default_views where id_row =" + data.viewid + "";
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (dt.Rows.Count == 0)
@@ -3415,6 +3386,26 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogEditContent = Common.GetEditLogContent(old, dt);
+                    if (!LogEditContent.Equals(""))
+                    {
+                        LogEditContent = "Chỉnh sửa dữ liệu (" + data.id_row + ") : " + LogEditContent;
+                        LogContent = "Chỉnh sửa dữ liệu we_projects_view (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    }
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogEditContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     cnn.EndTransaction();
                 }
                 return JsonResultCommon.ThanhCong();
@@ -3457,6 +3448,21 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #region Ghi log trong project
+                    string LogContent = "Xóa dữ liệu view (" + id + ")";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = ""
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
+
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }

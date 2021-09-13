@@ -181,11 +181,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         //end giao tiếp service
 
 
-        var today = new Date();
-        var start_date = new Date();
+        const today = new Date();
         this.filterDay = {
             endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(start_date.setMonth(start_date.getMonth() - 1)),
+            startDate: new Date(today.getFullYear(),today.getMonth() - 6, 1),
         };
 
         this.column_sort = this.sortField[0];
@@ -1463,6 +1462,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this._service.DeleteTask(task.id_row).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
+            }else{
+                this.layoutUtilsService.showError(res.error.message);
             }
         });
     }
@@ -1754,18 +1755,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             if (!res) {
                 return;
             }
-            // this._service.DeleteWork(this.detail.id_row).subscribe(res => {
-            // 	if (res && res.status === 1) {
-            // 		this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
-            // 		let _backUrl = `tasks`;
-            // 		this.router.navigateByUrl(_backUrl);
-            // 	}
-            // 	else {
-            // 		this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
-            // 		this.ngOnInit();
-            // 	}
-
-            // });
         });
     }
 

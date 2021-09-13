@@ -1337,6 +1337,8 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             if (res && res.status == 1) {
                 this.ReloadData(true);
                 // this.LoadData();
+            }else{
+                this.layoutUtilsService.showError(res.error.message);
             }
         });
     }

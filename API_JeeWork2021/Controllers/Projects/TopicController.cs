@@ -79,6 +79,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
                     bool Visible = Common.CheckRoleByUserID(loginData, 3610, cnn);
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
@@ -109,9 +110,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 join we_project_team p on t.id_project_team=p.id_row
                                 join we_department d on d.id_row=p.id_department
                                 left join ( select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row
-                                join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=" + loginData.UserID + $" where t.Disabled=0 and d.Disabled = 0 and t.CreatedBy in ({listID}) "
+                                join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row (user) where t.Disabled=0 and d.Disabled = 0 "
                                 + dieukien_where + "  order by " + dieukienSort;
-                                                    sqlq += $" select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, id_topic from we_topic_user u where u.Disabled=0 and u.id_user in ({listID})";
+                                                    sqlq += $" select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, id_topic from we_topic_user u where u.Disabled=0 ";
+                    if (IsAdmin)
+                    {
+                        sqlq = sqlq.Replace("(user)", " " );
+                    }
+                    else
+                    {
+                        sqlq = sqlq.Replace("(user)", "and u.id_user = " + loginData.UserID );
+                    }
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
@@ -474,17 +483,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         notify_model.ReplaceData = has_replace; 
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
-
-                        //try
-                        //{
-                        //    if (notify_model != null)
-                        //    {
-                        //        Knoti = new APIModel.Models.Notify();
-                        //        bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                        //    }
-                        //}
-                        //catch
-                        //{ }
+                        
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
@@ -653,10 +652,6 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + id + "),0)";
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai("Topic");
-                    //if (Common.TestDuplicate("", id.ToString(), "-1", "we_work", "id_topic", "Disabled", "0", cnn, "", true) == false)
-                    //{
-                    //    return JsonResultCommon.Custom("Đang có công việc thuộc mục tiêu này nên không thể xóa");
-                    //}
                     sqlq = "update we_topic set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
@@ -860,7 +855,6 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             notify_model.ReplaceData = has_replace;
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", topic.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", topic.ToString());
-
 
                             DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                             if (DataAccount == null)

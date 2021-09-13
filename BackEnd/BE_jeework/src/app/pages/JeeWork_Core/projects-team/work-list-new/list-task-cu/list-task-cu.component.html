@@ -244,7 +244,7 @@
                                                                            [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
                                                                            (keyup.enter)="focusOutFunction($event,node)"
                                                                            (focusout)="focusOutFunction($event,node)"
-                                                                           [(ngModel)]="node.title">
+                                                                           [value]="node.title">
                                                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                                                         <p style="font-size: 11px;"
                                                                            class="mg-0 text-muted"

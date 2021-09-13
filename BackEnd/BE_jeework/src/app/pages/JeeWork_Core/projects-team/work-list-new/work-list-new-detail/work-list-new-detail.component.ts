@@ -222,7 +222,18 @@ export class WorkListNewDetailComponent implements OnInit {
         this.LoadChecklist();
         this.LoadObjectID();
     }
-
+	getHeight(): any {
+		let obj = window.location.href.split("/").find(x => x == "tabs-references");
+		if (obj) {
+			let tmp_height = 0;
+			tmp_height = window.innerHeight - 354;
+			return tmp_height + 'px';
+		} else {
+			let tmp_height = 0;
+			tmp_height = window.innerHeight - 236;
+			return tmp_height + 'px';
+		}
+	}
     OnChanges() {
         // this.ngOnInit();
     }
