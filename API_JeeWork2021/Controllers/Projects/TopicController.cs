@@ -42,7 +42,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             _configuration = configuration;
-            _notifier = notifier; 
+            _notifier = notifier;
             _logger = logger;
         }
         APIModel.Models.Notify Knoti;
@@ -106,24 +106,26 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select distinct t.*, p.title as project_team, t.CreatedBy as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua,c.tong, coalesce (u.favourite,0) as favourite from we_topic t
+                    string sqlq = @$"select distinct t.*, p.title as project_team, t.CreatedBy as Id_NV, '' as hoten,'' as mobile, '' as username
+                                , '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua
+                                ,c.tong, coalesce (u.favourite,0) as favourite from we_topic t
                                 join we_project_team p on t.id_project_team=p.id_row
-                                join we_department d on d.id_row=p.id_department
-                                left join ( select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row
-                                join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row (user) where t.Disabled=0 and d.Disabled = 0 "
-                                + dieukien_where + "  order by " + dieukienSort;
-                                                    sqlq += $" select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, id_topic from we_topic_user u where u.Disabled=0 ";
+                                join we_department d on d.id_row=p.id_department 
+                                and d.idkh = "+loginData.CustomerID+" left join (select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row " +
+                                "join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row (user) where t.Disabled=0 and d.Disabled = 0 " +
+                                " "+ dieukien_where + " order by "+dieukienSort;
+                    sqlq += $" select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, id_topic from we_topic_user u where u.Disabled=0 ";
                     if (IsAdmin)
                     {
-                        sqlq = sqlq.Replace("(user)", " " );
+                        sqlq = sqlq.Replace("(user)", " ");
                     }
                     else
                     {
-                        sqlq = sqlq.Replace("(user)", "and u.id_user = " + loginData.UserID );
+                        sqlq = sqlq.Replace("(user)", "and u.id_user = " + loginData.UserID);
                     }
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -217,7 +219,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -244,9 +246,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-                    //string ids = string.Join(",", nvs);
                     string error = "";
                     string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
@@ -256,14 +255,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select t.*, p.title as project_team, t.CreatedBy as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua ,c.tong, coalesce (u.favourite,0) as favourite from we_topic t
 join we_project_team p on t.id_project_team=p.id_row
-left join ( select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row
-left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=" + loginData.UserID + $" where t.Disabled=0 and t.CreatedBy in ({listID}) and t.id_row=" + id;
-                    sqlq += @$";select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, u.id_row from we_topic_user u where u.Disabled=0 and u.id_user in ({listID}) and id_topic = " + id;
-                    sqlq += $";select att.*, '' as username from we_attachment att where disabled=0 and object_type=2 and att.createdby in ({listID}) and object_id=" + id;
+left join (select count(*) tong,object_id from we_comment where object_type=2 and disabled=0 group by object_id) c on c.object_id=t.id_row
+left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=" + loginData.UserID + $" where t.Disabled=0 and t.id_row=" + id;
+                    sqlq += @$";select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, u.id_row from we_topic_user u where u.Disabled=0 and id_topic = " + id;
+                    sqlq += $";select att.*, '' as username from we_attachment att where disabled=0 and object_type=2 and object_id=" + id;
                     DataSet ds = cnn.CreateDataSet(sqlq);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -369,7 +368,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -419,7 +418,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     if (cnn.Insert(val, "we_topic") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_topic')").ToString());
                     if (data.Attachments != null)
@@ -436,7 +435,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath, _configuration))
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -452,7 +451,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             if (cnn.Insert(val1, "we_topic_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -462,7 +461,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 21, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     data.id_row = idc;
                     cnn.EndTransaction();
@@ -471,7 +470,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     #endregion
                     #region Notify assign
                     Hashtable has_replace = new Hashtable();
-                    foreach(var item in data.Users)
+                    foreach (var item in data.Users)
                     {
                         NotifyModel notify_model = new NotifyModel();
                         has_replace = new Hashtable();
@@ -480,10 +479,10 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         notify_model.To_IDNV = item.id_user.ToString();
                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thaoluan", "", "vi");
                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                        notify_model.ReplaceData = has_replace; 
+                        notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
-                        
+
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
@@ -495,14 +494,14 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     #endregion
                     if (data.email)
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
+                        WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
                     data.id_row = idc;
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -555,7 +554,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     if (cnn.Update(val, sqlcond, "we_topic") != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (data.Attachments != null)
                     {
@@ -571,7 +570,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             if (!AttachmentController.upload(temp, cnn, _hostingEnvironment.ContentRootPath, _configuration))
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -583,7 +582,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         if (cnn.ExecuteNonQuery(strDel) < 0)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     Hashtable val1 = new Hashtable();
@@ -598,7 +597,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             if (cnn.Insert(val1, "we_topic_user") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -615,7 +614,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 22, data.id_row, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     if (data.email)
@@ -625,7 +624,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -657,14 +656,14 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     //string LogContent = "Xóa dữ liệu topic (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 23, id, iduser))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -672,7 +671,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -713,7 +712,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             if (cnn.ExecuteNonQuery(sqlq) != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                     }
@@ -727,13 +726,13 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         if (cnn.Insert(val, "we_topic_user") != 1)
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 25, topic, iduser, null, user))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     sqlq = "select * from we_topic where Disabled=0 and  id_row = " + topic;
@@ -776,7 +775,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -819,13 +818,13 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             if (cnn.ExecuteNonQuery(sqlq) != 1)
                             {
                                 cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
                         if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 26, topic, iduser, null, user))
                         {
                             cnn.RollbackTransaction();
-                            return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
 
                         cnn.EndTransaction();
@@ -875,7 +874,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         #endregion
