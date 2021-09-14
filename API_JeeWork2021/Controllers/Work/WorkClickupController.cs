@@ -6569,8 +6569,15 @@ where u.disabled = 0 and u.loai = 2";
                     dt_filter.Columns.Add("color", typeof(String));
                     dt_filter.Columns.Add("Follower", typeof(String));
                     dt_filter.Columns.Add("description", typeof(String));
+                    SqlConditions sqlcondQ = new SqlConditions();
+                    sqlcondQ.Add("id_row", id_project_team);
+                    sqlcondQ.Add("disabled", 0);
+                    string s = "select * from we_project_team where (where)";
+                    DataTable old = cnn.CreateDataTable(s, "(where)", sqlcondQ);
+                    if (old == null || old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("Dự án");
                     bool rs = Common.CheckRoleByProject(id_project_team, loginData, cnn);
-
+                    
                     data_newfield = "select * from we_newfileds_values where id_project_team = " + id_project_team + "";
                     #endregion
                     string strW = "";
