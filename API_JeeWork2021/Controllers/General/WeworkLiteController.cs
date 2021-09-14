@@ -2652,7 +2652,7 @@ and IdKH={loginData.CustomerID} )";
             DataTable dt_fields = new DataTable();
             DataTable dt_data = new DataTable();
             string select = "";
-            string show_default = "1,15,3,7,4,25,8,6";
+            string show_default = "1,15,3,7,12,25,8,6";
             cond = new SqlConditions();
             cond.Add("disabled", 0);
             string col_name = "id_project_team";
@@ -2672,7 +2672,7 @@ and IdKH={loginData.CustomerID} )";
                 cond.Add("isdel", 0);
                 select = "select we_fields.*," + id + " as id_project_team, " + id + " as departmentid,  type, '' as title_newfield, ''as id_row, 0 as ishidden " +
                         "from we_fields " +
-                        "where (where) and we_fields.id_field in ("+ show_default + ") order by id_row";
+                        "where (where) and we_fields.id_field in ("+ show_default + ") order by position";
             }
             if (id > 0)
             {
@@ -3057,7 +3057,7 @@ and IdKH={loginData.CustomerID} )";
             conds.Add("departmentid", id_department);
             sqlq = "select * from we_fields_project_team where (where)";
             dt = cnn.CreateDataTable(sqlq, "(where)", conds);
-            string show_default = "1,15,3,7,4,25,8,6";
+            string show_default = "1,15,3,7,12,25,8,6";
             if (dt.Rows.Count <= 0)
             {
                 conds = new SqlConditions();
