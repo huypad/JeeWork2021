@@ -104,39 +104,38 @@
                     </mat-form-field>
                 </div>
             </div>
-<!--            <div class="row comment-box" *ngIf="ListAttachments?ListAttachments.length>0:false">-->
-<!--                <div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of ListAttachments;">-->
-<!--                    <div class="attach-item show-action">-->
-<!--                        <div class="attach-item-icon">-->
-<!--                            <img src="{{att2.icon}}" />-->
-<!--                        </div>-->
-<!--                        <div class="attach-item-name">-->
-<!--                            <p>{{att2.filename}}</p>-->
-<!--                        </div>-->
+            <div class="row comment-box" *ngIf="ListAttachments?ListAttachments.length>0:false">
+                <div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of ListAttachments;">
+                    <div class="attach-item show-action">
+                        <div class="attach-item-icon">
+                            <img src="{{att2.icon}}" />
+                        </div>
+                        <div class="attach-item-name">
+                            <p>{{att2.filename}}</p>
+                        </div>
 
-<!--                        <div class="attach-item-del">-->
-<!--                            <button mat-icon-button class="text-success" (click)="preview(att2.path)" type="button"-->
-<!--                                    matTooltip="{{ 'topic.preview' | translate}}">-->
-<!--                                <mat-icon>remove_red_eye</mat-icon>-->
-<!--                            </button>-->
-<!--                            <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)"-->
-<!--                                    type="button" matTooltip="{{ 'topic.download' | translate}}">-->
-<!--                                <mat-icon>cloud_download</mat-icon>-->
-<!--                            </button>-->
-<!--                            <button mat-icon-button color="warn" (click)="Delete_File(att2.id_row)"-->
-<!--                                    type="button" matTooltip="Xóa">-->
-<!--                                <mat-icon>clear</mat-icon>-->
-<!--                            </button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="row" *ngIf="false">-->
-<!--                <input #csvInput hidden="true" type="file"-->
-<!--                       onclick="this.value=null"-->
-<!--                       (change)="save_file_Direct($event, '1')" />-->
-<!--                <button (click)="csvInput.click()" class="btn btn-primary">Thêm file đính kèm</button>-->
-<!--            </div>-->
+                        <div class="attach-item-del">
+                            <button mat-icon-button class="text-success" (click)="preview(att2.path)" type="button"
+                                matTooltip="{{ 'topic.preview' | translate}}">
+                                <mat-icon>remove_red_eye</mat-icon>
+                            </button>
+                            <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)" type="button"
+                                matTooltip="{{ 'topic.download' | translate}}">
+                                <mat-icon>cloud_download</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" (click)="Delete_File(att2.id_row)" type="button"
+                                matTooltip="Xóa">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="false">
+                <input #csvInput hidden="true" type="file" onclick="this.value=null"
+                    (change)="save_file_Direct($event, '1')" />
+                <button (click)="csvInput.click()" class="btn btn-primary">Thêm file đính kèm</button>
+            </div>
             <div class="row">
                 <div class="col-md-12 m--margin-bottom-10-mobile">
                     <editor apiKey="test" formControlName="NoiDung" [init]="tinyMCE" style="margin-bottom: 15px;">

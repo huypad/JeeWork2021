@@ -587,11 +587,14 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
     }
 
     back() {
-        // let _backUrl = `wework/discussions`;
-
-        // this.router.navigateByUrl(_backUrl);
+        const res = this.router.url.split('/');
+        res.splice(res.length - 1, 1);
+        const backUrl = res.join('/');
+        this.router.navigateByUrl(backUrl).then(() => {
+            this._service.changeMessage(true);
+        });
         // this.layoutUtilsService.showActionNotification("back");
-        window.history.back();
+        // window.history.back();
     }
 
     DeleteTopic() {
@@ -628,6 +631,7 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
                         'top',
                         1
                     );
+                    this.back();
                 } else {
                     this.layoutUtilsService.showActionNotification(
                         res.error.message,

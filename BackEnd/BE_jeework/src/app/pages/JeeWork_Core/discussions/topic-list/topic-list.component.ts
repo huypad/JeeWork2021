@@ -10,31 +10,31 @@ import {
     Input,
     SimpleChange,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import {
     MatDialog,
     MatDialogRef,
     MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 // RXJS
-import {fromEvent, merge, ReplaySubject, BehaviorSubject} from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
+import { fromEvent, merge, ReplaySubject, BehaviorSubject, SubscriptionLike } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 // Services
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
-import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {ViewTopicDetailComponent} from '../topic-view-detail/topic-view-detail.component';
-import {DiscussionsService} from '../discussions.service';
-import {PlatformLocation} from '@angular/common';
-import {TopicEditComponent} from '../topic-edit/topic-edit.component';
-import {TopicModel} from '../../projects-team/Model/department-and-project.model';
+import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { ViewTopicDetailComponent } from '../topic-view-detail/topic-view-detail.component';
+import { DiscussionsService } from '../discussions.service';
+import { PlatformLocation } from '@angular/common';
+import { TopicEditComponent } from '../topic-edit/topic-edit.component';
+import { TopicModel } from '../../projects-team/Model/department-and-project.model';
 
 @Component({
     selector: 'kt-topic-list',
@@ -42,24 +42,6 @@ import {TopicModel} from '../../projects-team/Model/department-and-project.model
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopicListComponent {
-    @Input() ID_QuyTrinh: any;
-    data: any[] = [];
-    loadingSubject = new BehaviorSubject<boolean>(false);
-    loadingControl = new BehaviorSubject<boolean>(false);
-    loading1$ = this.loadingSubject.asObservable();
-    //=================PageSize Table=====================
-    pageEvent: PageEvent;
-    pageSize: number;
-    pageLength: number;
-    item: any;
-    sortfield: any = [];
-    ChildComponentInstance: any;
-    selectedItem: any = undefined;
-    childComponentType: any = ViewTopicDetailComponent;
-    childComponentData: any = {};
-    @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-    @ViewChild('keyword', {static: true}) keyword: ElementRef;
-    filterTinhTrang: string;
 
     constructor(
         public _services: DiscussionsService,
@@ -79,12 +61,65 @@ export class TopicListComponent {
         });
     }
 
+    @Input() ID_QuyTrinh: any;
+    data: any[] = [];
+    loadingSubject = new BehaviorSubject<boolean>(false);
+    loadingControl = new BehaviorSubject<boolean>(false);
+    loading1$ = this.loadingSubject.asObservable();
+    // =================PageSize Table=====================
+    pageEvent: PageEvent;
+    pageSize: number;
+    pageLength: number;
+    item: any;
+    sortfield: any = [];
+    ChildComponentInstance: any;
+    selectedItem: any = undefined;
+    childComponentType: any = ViewTopicDetailComponent;
+    childComponentData: any = {};
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+    @ViewChild('keyword', { static: true }) keyword: ElementRef;
+    filterTinhTrang: string;
+    subscription: SubscriptionLike;
+    listSort = [
+        {
+            // CreatedDate
+            title: this.translate.instant('day.theongaytao'),
+            value: 'CreatedDate',
+            sortOder: 'asc',
+        },
+        {
+            // title
+            title: this.translate.instant('GeneralKey.tieude'),
+            value: 'title',
+            sortOder: 'asc',
+        },
+        {
+            // UpdatedBy
+            title: this.translate.instant('day.theongaycapnhat'),
+            value: 'UpdatedDate',
+            sortOder: 'asc',
+        },
+        {
+            // CreatedDate
+            title: this.translate.instant('topic.thaoluancunhat'),
+            value: 'CreatedDate',
+            sortOder: 'desc',
+        },
+    ];
+
     ngOnInit() {
+        if (this._services.currentMessage != undefined) {
+            this.subscription = this._services.currentMessage.subscribe(message => {
+                if (message) {
+                    this.LoadData();
+                }
+            });
+        }
         this.activatedRoute.params.subscribe((params) => {
             this.ID_QuyTrinh = +params.id;
         });
 
-        var arr = this.router.url.split('/');
+        const arr = this.router.url.split('/');
         if (arr[1] === 'project') {
             this._services.TopicDetail(arr[4]).subscribe(res => {
                 if (res && res.status == 1) {
@@ -98,6 +133,31 @@ export class TopicListComponent {
                     this.selectedItem = arr[3];
                 }
             });
+        }
+        this.loadDataList();
+    }
+
+    LoadData() {
+        this.selectedItem = undefined;
+        const arr = this.router.url.split('/');
+        if (arr[1] === 'project') {
+            this._services.TopicDetail(arr[4]).subscribe(res => {
+                if (res && res.status === 1) {
+                    this.selectedItem = arr[4];
+                } else {
+                    this.selectedItem = undefined;
+                }
+            }, (error => this.selectedItem = undefined));
+        }
+        if (arr[1] === 'wework') {
+            this._services.TopicDetail(arr[3]).subscribe(res => {
+                if (res && res.status === 1) {
+                    this.selectedItem = arr[3];
+                } else {
+                    this.selectedItem = undefined;
+                }
+            },
+                (error => this.selectedItem = undefined));
         }
         this.loadDataList();
     }
@@ -133,52 +193,23 @@ export class TopicListComponent {
         this.loadDataList();
     }
 
-    listSort = [
-        {
-            //CreatedDate
-            title: this.translate.instant('day.theongaytao'),
-            value: 'CreatedDate',
-            sortOder: 'asc',
-        },
-        {
-            //title
-            title: this.translate.instant('GeneralKey.tieude'),
-            value: 'title',
-            sortOder: 'asc',
-        },
-        {
-            //UpdatedBy
-            title: this.translate.instant('day.theongaycapnhat'),
-            value: 'UpdatedDate',
-            sortOder: 'asc',
-        },
-        {
-            //CreatedDate
-            title: this.translate.instant('topic.thaoluancunhat'),
-            value: 'CreatedDate',
-            sortOder: 'desc',
-        },
-    ];
-
     goBack() {
-        //let _backUrl = `ListDepartment/Tab/` + this.ID_QuyTrinh;
-        //this.router.navigateByUrl(_backUrl);
         window.history.back();
     }
 
     getHeight(): any {
         let tmp_height = 0;
-        tmp_height = window.innerHeight - 63 - this.tokenStorage.getHeightHeader(); //320
+        tmp_height = window.innerHeight - 63 - this.tokenStorage.getHeightHeader(); // 320
         return tmp_height + 'px';
     }
 
     selected($event) {
         this.selectedItem = $event;
-        let temp: any = {};
+        const temp: any = {};
         temp.Id = this.selectedItem.id_row;
-        let _backUrl = `/wework/discussions/` + this.selectedItem.id_row;
-        var arr = this.router.url.split('/');
-        if (arr[1] == 'project') {
+        let _backUrl = `/wework/discussions`;
+        const arr = this.router.url.split('/');
+        if (arr[1] === 'project') {
             _backUrl =
                 arr[0] +
                 '/' +
@@ -186,21 +217,21 @@ export class TopicListComponent {
                 '/' +
                 arr[2] +
                 '/' +
-                arr[3] +
-                '/' +
-                this.selectedItem.id_row;
+                arr[3];
         }
-        this.router.navigateByUrl(_backUrl);
-        //this.childComponentData.DATA = temp
-        //if (this.ChildComponentInstance != undefined)
-        //	this.ChildComponentInstance.ngOnChanges();
+        this.router.navigateByUrl(_backUrl).then(() => {
+            this.router.navigateByUrl(_backUrl + '/' + this.selectedItem.id_row);
+        });
+        // this.childComponentData.DATA = temp
+        // if (this.ChildComponentInstance != undefined)
+        // 	this.ChildComponentInstance.ngOnChanges();
     }
 
     close_detail() {
         this.selectedItem = undefined;
-        if (!this.changeDetectorRefs['destroyed']) {
-            this.changeDetectorRefs.detectChanges();
-        }
+        // if (!this.changeDetectorRefs.destroyed) {
+        //     this.changeDetectorRefs.detectChanges();
+        // }
     }
 
     getInstance($event) {
@@ -214,8 +245,8 @@ export class TopicListComponent {
     AddTopic() {
         const models = new TopicModel();
         models.clear();
-        var arr = this.router.url.split('/');
-        var id_project_team = arr[2];
+        const arr = this.router.url.split('/');
+        const id_project_team = arr[2];
         models.id_project_team = id_project_team;
         this.UpdateTopic(models);
     }
@@ -229,7 +260,7 @@ export class TopicListComponent {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(TopicEditComponent, {data: {_item}});
+        const dialogRef = this.dialog.open(TopicEditComponent, { data: { _item } });
         dialogRef.afterClosed().subscribe((res) => {
             this.ngOnInit();
             if (!res) {

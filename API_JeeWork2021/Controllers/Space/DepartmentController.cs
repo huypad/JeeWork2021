@@ -447,7 +447,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                   
+
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
                     WeworkLiteController.Insert_field_department(long.Parse(idc), cnn);
                     if (data.DefaultView != null)
@@ -1140,6 +1140,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                     sqlq = "update we_department set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id + "or ParentID = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    cnn.BeginTransaction();
+                    if (cnn.ExecuteNonQuery(sqlq) < 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    bool rs = WeworkLiteController.Delete_TableReference(id, "we_department", loginData, cnn);
+                    if (!rs)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);

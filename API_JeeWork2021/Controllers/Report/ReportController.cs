@@ -1435,7 +1435,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     quahan = r["quahan"],
                                     tonghoanthanh = (long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString())),
                                     percentage = long.Parse(r["tong"].ToString()) == 0 ? 0 : (long.Parse(r["ht"].ToString()) * 100 / long.Parse(r["tong"].ToString())),
-                                    percentageexcellent = long.Parse(r["tong"].ToString()) == 0 ? 0 : (long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString()) * 100 / long.Parse(r["tong"].ToString()))
+                                    percentageexcellent = long.Parse(r["tong"].ToString()) == 0 ? 0 : ((long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString())) * 100 / long.Parse(r["tong"].ToString()))
                                 });
                     if ("excellent".Equals(query.filter["type"]))
                         data = data.OrderByDescending(x => x.percentageexcellent);

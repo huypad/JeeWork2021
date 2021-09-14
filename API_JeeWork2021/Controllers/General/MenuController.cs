@@ -106,7 +106,6 @@ and GroupName IN ( {select_MainMenu}  )
 and {v_module}
 and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) order by position 
 ";
-                        // string HRCatalog = JeeWorkConstant.getConfig("JeeWorkConfig:HRCatalog");
                         select_MainMenu = select_MainMenu
                             .Replace("--,title, PermissionID, page, Target, Summary, isNULL(ALink, '#') as ALink, ISNULL(Icon, 'flaticon-interface-7') as Icon", ",title, PermissionID, page, Target, Summary, isNULL(ALink, '#') as ALink, ISNULL(Icon, 'flaticon-interface-7') as Icon")
                             .Replace("--order by position", " order by position ");

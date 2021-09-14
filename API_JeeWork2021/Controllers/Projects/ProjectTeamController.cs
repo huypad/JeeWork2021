@@ -2195,6 +2195,12 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    bool rs = WeworkLiteController.Delete_TableReference(id, "we_project_team", loginData, cnn);
+                    if (!rs)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
                     #region Ghi log trong project
                     string LogContent = "Xóa dữ liệu project_team (" + id + ")";
                     Common.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.Username, ControllerContext);

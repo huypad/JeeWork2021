@@ -118,7 +118,9 @@ export class TopicEditComponent implements OnInit {
             this.DisableTeam = true;
             this.changeproject(this.item.id_project_team);
         }
-
+        if (this.item.id_project_team == 'discussions') {
+            this.item.id_project_team = '';
+        }
         const filter: any = {};
         this.weworkService.lite_project_team_byuser('').subscribe((res) => {
             this.disabledBtn = false;
@@ -191,6 +193,8 @@ export class TopicEditComponent implements OnInit {
             email: ['' + this.item.email, Validators.required],
             NoiDung: ['' + this.item.description],
         });
+		this.itemForm.controls["title"].markAsTouched();
+		this.itemForm.controls["id_project_team"].markAsTouched();
     }
 
     getHeight(): any {
@@ -243,7 +247,6 @@ export class TopicEditComponent implements OnInit {
         _item.Attachments = this.ListAttachments;
         _item.email = controls.email.value;
         this.list_User = [];
-        debugger
         if (this.selectedUser.length > 0) {
             if (this.User.length > 0) {
                 this.selectedUser.map((item, index) => {

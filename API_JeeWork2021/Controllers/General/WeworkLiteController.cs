@@ -989,7 +989,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object ListFields(long id, long _type, bool isnewfield)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2652,8 +2651,8 @@ and IdKH={loginData.CustomerID} )";
             SqlConditions cond = new SqlConditions();
             DataTable dt_fields = new DataTable();
             DataTable dt_data = new DataTable();
-
             string select = "";
+            string show_default = "1,15,3,7,4,25,8,6";
             cond = new SqlConditions();
             cond.Add("disabled", 0);
             string col_name = "id_project_team";
@@ -2673,7 +2672,7 @@ and IdKH={loginData.CustomerID} )";
                 cond.Add("isdel", 0);
                 select = "select we_fields.*," + id + " as id_project_team, " + id + " as departmentid,  type, '' as title_newfield, ''as id_row, 0 as ishidden " +
                         "from we_fields " +
-                        "where (where) order by id_row";
+                        "where (where) and we_fields.id_field in ("+ show_default + ") order by id_row";
             }
             if (id > 0)
             {
@@ -3058,13 +3057,14 @@ and IdKH={loginData.CustomerID} )";
             conds.Add("departmentid", id_department);
             sqlq = "select * from we_fields_project_team where (where)";
             dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+            string show_default = "1,15,3,7,4,25,8,6";
             if (dt.Rows.Count <= 0)
             {
                 conds = new SqlConditions();
                 conds.Add("isdefault", 1);
                 conds.Add("isdel", 0);
                 sqlq = "select fieldname, title, position, isnewfield, id_field " +
-                    "from we_fields where (where)";
+                    "from we_fields where (where) and id_field in (" + show_default + ")";
                 dt = cnn.CreateDataTable(sqlq, "(where)", conds);
                 if (dt.Rows.Count > 0)
                 {
@@ -3854,7 +3854,6 @@ and IdKH={loginData.CustomerID} )";
                 return spacename;
             }
         }
-
         public static string GetUTCTime(IHeaderDictionary _header, string CurrentTime)
         {
             int _timeZone = 0;
@@ -3868,7 +3867,59 @@ and IdKH={loginData.CustomerID} )";
             var _currentLocalTime = dt.AddHours(_chl);
             return _currentLocalTime.ToString();
         }
+        /// <summary>
+        /// Xóa các table khóa ngoại khi xóa dữ liệu từ bảng cha
+        /// </summary>
+        /// <param name="id">ID_Row của table cần xóa</param>
+        /// <param name="TableName">Tên bảng cha</param>
+        /// <param name="loginData">Thông tin người xóa</param>
+        /// <param name="cnn">ConnectionString</param>
+        /// <returns></returns>
+        public static bool Delete_TableReference(long id, string TableName, UserJWT loginData, DpsConnection cnn)
+        {
+            string sqlq = "";
+            switch (TableName.ToLower())
+            {
+                case "we_department":
+                    {
+                        sqlq = "update we_project_team set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_department = " + id;
+                        sqlq += ";update we_department_owner set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_department = " + id;
+                        sqlq += ";update we_department_view set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_department = " + id;
+                        sqlq += ";delete we_fields_project_team where departmentid = " + id;
+                        sqlq += ";update we_department set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where ParentID = " + id;
+                        sqlq += ";update we_project_team set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_department in (select id_row from we_department where disabled = 1)";
+                        sqlq += ";update we_work set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team in (select id_row from we_project_team where disabled = 1)";
+                        sqlq += ";update we_status set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team in (select id_row from we_project_team where disabled = 1)";
+                        break;
+                    }
+                case "we_project_team":
+                    {
+                        sqlq = "update we_milestone set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";update we_project_team_user set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";update we_group set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";update we_status set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";update we_tag set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";update we_topic set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";update we_work set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_project_team = " + id;
+                        sqlq += ";delete we_fields_project_team where id_project_team = " + id;
+                        break;
+                    }
+                case "we_work":
+                    {
+                        sqlq = "update we_work_process set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where workid = " + id;
+                        sqlq += ";update we_work_tag set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_work = " + id;
+                        sqlq += ";update we_work_user set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_work = " + id;
+                        sqlq += ";update we_checklist set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_work = " + id;
+                        break;
+                    }
+            }
+            if (cnn.ExecuteNonQuery(sqlq) < 1)
+            {
+                return false;
+            }
+            return true;
 
+        }
     }
 }
 

@@ -898,6 +898,10 @@ from we_repeated_Task task where task.Disabled=0";
                         {
                             foreach (string day in repeated_day)
                             {
+                                if (string.IsNullOrEmpty(day))
+                                {
+                                    continue;
+                                }
                                 DateTime WeekdayCurrent = new DateTime();
                                 if (loai == 1) // Báo cáo theo tuần
                                 {

@@ -414,10 +414,9 @@ namespace JeeWork_Core2021.Classes
                 sql_space += " and parentid is null (admin)";
                 sql_project = ";select p.id_row, p.icon, p.title, p.detail, p.id_department" +
                             ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
-                            ", p.priority, p.locked, p.disabled, default_view, IIf((select admin from we_project_team_user u where u.disabled = 0 " +
-                            "and u.id_user = " + loginData.UserID + " and u.id_project_team = p.id_row)= 1,1,0) as admin_project " +
+                            ", p.priority, p.locked, p.disabled, default_view, '0' as admin_project " +
                             "from we_project_team p " +
-                            $"where p.disabled = 0 (dk_proj)";
+                            $"where p.disabled = 0 and p.id_department in (select id_row from we_department where idkh = " + loginData.CustomerID + ") (dk_proj)";
                 if (!MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID))
                 {
                     string and_folder = "or de.parentid in (select dsp.id_department from we_department_owner dsp " +
@@ -441,6 +440,10 @@ namespace JeeWork_Core2021.Classes
                 DataTable dt_space = new DataTable();
                 DataTable dt_folder = new DataTable();
                 DataTable dt_project = new DataTable();
+                DataTable dt_admin_proj = new DataTable();
+                dt_admin_proj = cnn.CreateDataTable(@"select id_row, id_project_team 
+                                                    from we_project_team_user where disabled = 0
+                                                    and id_user = " + loginData.UserID + " and admin = 1");
                 dt_space = cnn.CreateDataTable(sql_space, "(where)", cond);
                 dt_folder = cnn.CreateDataTable(sql_folder, "(where)", cond);
                 dt_project = cnn.CreateDataTable(sql_project);
@@ -453,13 +456,17 @@ namespace JeeWork_Core2021.Classes
                     {
                         dr["parentowner"] = dr_parent[0]["parentowner"].ToString();
                         dr["owner"] = "0";
-
                     }
                     DataRow[] dr_de = dt_space.Select("id_row=" + dr["id_department"]);
                     if (dr_de.Length > 0)
                     {
                         dr["owner"] = dr_de[0]["owner"].ToString();
                         dr["parentowner"] = "0";
+                    }
+                    DataRow[] dr_pr = dt_admin_proj.Select("id_project_team=" + dr["id_row"]);
+                    if (dr_pr.Length > 0)
+                    {
+                        dr["admin_project"] = "1";
                     }
                 }
                 DataSet ds_workspace = new DataSet();
@@ -820,8 +827,8 @@ namespace JeeWork_Core2021.Classes
             SqlConditions conds = new SqlConditions();
             conds.Add("id_project_team", id_project_team);
             string sql = "select * from we_project_team where  id_row = @id_project_team and Disabled = 0 and Locked = 1 ";
-            DataTable dt = cnn.CreateDataTable(sql,conds);
-            if(dt.Rows.Count > 0)
+            DataTable dt = cnn.CreateDataTable(sql, conds);
+            if (dt.Rows.Count > 0)
             {
                 return true;
             }

@@ -16,6 +16,14 @@ export class DiscussionsService {
     lastFilter$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));
     ReadOnlyControl: boolean;
 
+    // khúc này giao tiếp service giữa các component
+    messageSource = new BehaviorSubject<any>(false);
+    currentMessage = this.messageSource.asObservable();
+    changeMessage(message) {
+        this.messageSource.next(message);
+    }
+    // end
+
     constructor(private http: HttpClient,
                 private httpUtils: HttpUtilsService) {
     }

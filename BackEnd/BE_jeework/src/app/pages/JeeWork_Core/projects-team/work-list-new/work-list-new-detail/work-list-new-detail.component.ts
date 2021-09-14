@@ -218,6 +218,7 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         );
         this.tinyMCE = tinyMCE;
+        
         this.LoadData();
         this.LoadChecklist();
         this.LoadObjectID();
