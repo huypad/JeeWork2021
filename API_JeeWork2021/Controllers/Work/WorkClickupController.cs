@@ -6737,7 +6737,7 @@ where u.disabled = 0 and u.loai = 2";
                         strW += @$" and w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and id_user = {userid}
  union all select id_row from v_wework_new where id_nv = {userid} or createdby = {userid} )";
                     }
-                    string sql = "select iIf(id_group is null,0,id_group) as id_group, CreatedDate, work_group, closed, closed_work_date, closed_work_by, " + FieldsSelected;
+                    string sql = "select iIf(id_group is null,0,id_group) as id_group, createddate, work_group, closed, closed_work_date, closed_work_by, " + FieldsSelected;
                     sql += $@" from v_wework_clickup_new w where w.disabled = 0 " + strW + "";
                     DataTable result = new DataTable();
                     result = cnn.CreateDataTable(sql, Conds);
