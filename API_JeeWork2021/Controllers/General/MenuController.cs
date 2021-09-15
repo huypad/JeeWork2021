@@ -339,9 +339,11 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             try
             {
                 cond.Add("Username", username);
-                sqlq = "select Id_group from tbl_group_account " +
-                    "where id_group in (select Id_group from tbl_group " +
-                    "where isadmin = 1 and custemerid = " + CustomerID + ") and (where)";
+                cond.Add("IsAdmin", 1);
+                cond.Add("CustomerID", CustomerID);
+                sqlq = @"select tbl_group_account.Id_group from tbl_group_account 
+                        join tbl_group on tbl_group.Id_group = tbl_group_account.Id_group
+                        where (where)";
                 DataTable dt_checkuser = Conn.CreateDataTable(sqlq, "(where)", cond);
                 if (dt_checkuser.Rows.Count > 0)
                     return true;
