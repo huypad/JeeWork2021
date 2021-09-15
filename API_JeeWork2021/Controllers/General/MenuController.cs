@@ -340,7 +340,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             {
                 cond.Add("Username", username);
                 cond.Add("IsAdmin", 1);
-                cond.Add("CustomerID", CustomerID);
+                cond.Add("tbl_group.CustemerID", CustomerID);
                 sqlq = @"select tbl_group_account.Id_group from tbl_group_account 
                         join tbl_group on tbl_group.Id_group = tbl_group_account.Id_group
                         where (where)";
