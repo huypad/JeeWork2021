@@ -233,6 +233,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     bool Visible = Common.CheckRoleByUserID(loginData, 3403, cnn);
+
+                    if (!WeworkLiteController.CheckCustomerID(id, "we_department", loginData, cnn))
+                    {
+                        return JsonResultCommon.Custom("Phòng ban/thư mục không tồn tại");
+                    }
                     // update later
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     // left join {_config.HRCatalog}.dbo.Tbl_Cocautochuc cc on cc.RowID=we_department.id_cocau

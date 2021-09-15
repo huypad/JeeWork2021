@@ -123,8 +123,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    end_date = r["end_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["end_date"]),
                                    color = r["color"],
                                    status = r["status"],
+                                   title_full = r["title"] + " [" + r["spacename"] + "]",
                                    locked = r["locked"],
+                                   position = r["position"],
+                                   createdby = r["CreatedBy"],
+                                   style = r["CreatedBy"].ToString().Equals(loginData.UserID.ToString()) ? "card-project-for-me" : "card-project"
                                };
+                    //data = data.OrderByDescending(x => x.position);
+                    data = data.OrderBy(x => x.position);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -1639,6 +1645,8 @@ and IdKH={loginData.CustomerID} )";
                                                 IsFinal = dr["IsFinal"],
                                                 IsDeadline = dr["IsDeadline"],
                                                 IsTodo = dr["IsTodo"],
+                                                Type = dr["Type"],
+
                                             }
                                };
                     return JsonResultCommon.ThanhCong(data);
@@ -2672,7 +2680,7 @@ and IdKH={loginData.CustomerID} )";
                 cond.Add("isdel", 0);
                 select = "select we_fields.*," + id + " as id_project_team, " + id + " as departmentid,  type, '' as title_newfield, ''as id_row, 0 as ishidden " +
                         "from we_fields " +
-                        "where (where) and we_fields.id_field in ("+ show_default + ") order by position";
+                        "where (where) and we_fields.id_field in (" + show_default + ") order by position";
             }
             if (id > 0)
             {
@@ -3693,18 +3701,30 @@ and IdKH={loginData.CustomerID} )";
                 str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
             }
             string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
-                                    , color, status, locked, d.title as spacename
+                                    , color, status, locked, d.title as spacename, p.CreatedBy
                                     from we_project_team p
                                     join we_department d on d.id_row = p.id_department
                                     join we_project_team_user u on u.id_project_team = p.id_row
-                                     where u.Disabled = 0 and id_user = " + userid + " " +
-                                    "and p.Disabled = 0  and d.disabled = 0 " +
-                                    "and idkh=" + customerid + "" + str_where + " order by title";
+                                     where u.disabled = 0 and id_user = " + userid + " " +
+                                    "and p.disabled = 0 and d.disabled = 0 " +
+                                    "and idkh=" + customerid + "" + str_where + " order by d.title";
             dt = cnn.CreateDataTable(sql);
+            dt.Columns.Add("Position", typeof(int));
             if (cnn.LastError != null || dt == null)
                 return new DataTable();
             else
-                return dt;
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    if (item["CreatedBy"].ToString().Equals(userid.ToString()))
+                    {
+                        item["Position"] = 1;
+                    }
+                    else
+                        item["Position"] = 2;
+                }
+            }
+            return dt;
         }
         public static bool insert_processwork(DpsConnection cnn)
         {
@@ -3914,6 +3934,36 @@ and IdKH={loginData.CustomerID} )";
                     }
             }
             if (cnn.ExecuteNonQuery(sqlq) < 1)
+            {
+                return false;
+            }
+            return true;
+
+        }
+        
+        public static bool CheckCustomerID(long id, string TableName, UserJWT loginData, DpsConnection cnn)
+        {
+            string sqlq = "";
+            switch (TableName.ToLower())
+            {
+                case "we_department":
+                    {
+                        sqlq = $"select * from we_department where IdKH = { loginData.CustomerID } and id_row =  " + id;
+                        break;
+                    }
+                case "we_project_team":
+                    {
+                        sqlq = @$"select * from we_project_team p join we_department d on p.id_department = d.id_row where d.IdKH =  { loginData.CustomerID } and p.id_row =  " + id;
+                        break;
+                    }
+                case "we_work":
+                    {
+                        sqlq = @$" select * from we_work w join we_project_team p on w.id_project_team = p.id_row join we_department d on
+p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row =  " + id;
+                        break;
+                    }
+            }
+            if (cnn.CreateDataTable(sqlq).Rows.Count == 0)
             {
                 return false;
             }

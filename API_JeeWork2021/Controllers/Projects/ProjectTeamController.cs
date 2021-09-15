@@ -26,6 +26,7 @@ using API_JeeWork2021.Classes;
 using DPSinfra.Kafka;
 using JeeWork_Core2021.Controller;
 using DPSinfra.Logger;
+using System.Globalization;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -498,6 +499,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
+                    if (!WeworkLiteController.CheckCustomerID(id, "we_project_team",loginData,cnn))
+                    {
+                        return JsonResultCommon.Custom("Dự án không tồn tại");
+                    }
 
                     string sqlq = @$"select p.*, de.title as department,coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht
                                 , coalesce(w.quahan,0) as quahan, '' as NguoiTao
@@ -3057,7 +3062,33 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     else
                         Conds.Add("id_project_team", 0);
                     Conds.Add("IDKH", loginData.CustomerID);
-                    #region Sort data theo các dữ liệu bên dưới
+
+                    DateTime from = Common.GetDateTime();
+                    DateTime to = Common.GetDateTime();
+                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    {
+                        DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                        var tungay = WeworkLiteController.GetUTCTime(Request.Headers, from.ToString());
+                        Conds.Add("from", tungay);
+                    }
+                    else
+                    {
+                        Conds.Add("from","");
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    {
+                        DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                        to = to.AddDays(1);
+                        var denngay = WeworkLiteController.GetUTCTime(Request.Headers, to.ToString());
+                        Conds.Add("to", denngay);
+
+                    }
+                    else
+                    {
+                        Conds.Add("to", "");
+                    }
+
+                    #region Sort data theo các dữ liệu bên dướigiơ
                     Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
                             { "id_row", "id_row"},
@@ -3071,7 +3102,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     string sqlq = "";
                     //if (!role.IsUserInRole(loginData.UserName, "3502"))
                     //{
-                    sqlq = @$"exec GetActivitiesNew @IDKH, @id_project_team";
+                    sqlq = @$"exec GetActivitiesNew @IDKH, @id_project_team,@from,@to";
                     //}
                     DataSet ds = cnn.CreateDataSet(sqlq, Conds);
                     #region Map info account từ JeeAccount
@@ -3100,6 +3131,8 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
+                    DataTable dtnew = new DataTable(); 
+
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     if (!Visible)

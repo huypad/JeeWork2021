@@ -1836,6 +1836,12 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
 
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+
+                    if (!WeworkLiteController.CheckCustomerID(id, "we_work", loginData, cnn))
+                    {
+                        return JsonResultCommon.Custom("Công việc không không tồn tại");
+                    }
+
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
