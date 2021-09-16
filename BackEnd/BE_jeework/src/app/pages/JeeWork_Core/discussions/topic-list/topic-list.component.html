@@ -1,3 +1,9 @@
+<style>
+    .menu-project{
+        min-width: 200px;
+        max-height: 400px;
+    }
+</style>
 <kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
     <kt-portlet-body class="pd-0">
         <div class="form-group kt-form__group row mg-0">
@@ -26,6 +32,27 @@
                                 </div>
                             </div>
                             <ng-container *ngIf="selectedItem==undefined">
+                                <div *ngIf="showproject" class="m--margin-bottom-10-mobile text-dark url mr-5" style="min-width:100px;border: 1px solid #eeeeee;
+                                            padding: 5px 10px;
+                                            border-radius: 20px;
+                                            height: 30px;
+                                            background: #fffeee;">
+                                    <div [matMenuTriggerFor]="menuproject"><b translate="topic.projectteam"></b>:
+                                        {{itemProject.title_full?itemProject.title_full:'Tất cả dự án'}}</div>
+                                </div>
+                                <mat-menu #menuproject="matMenu">
+                                    <div class="menu-project">
+                                        <mat-form-field class="mat-form-field-fluid " (click)="$event.stopPropagation()">
+                                            <input matInput [formControl]="projectFilterCtrl" placeholder="{{ 'GeneralKey.nhapdetimkiem' | translate}}" autocomplete="off" />
+                                            <mat-icon matPrefix> search</mat-icon>
+                                        </mat-form-field>
+                                        <button mat-menu-item color="warn"
+                                                [ngStyle]="{'font-weight': itemProject?.id_row==proj.id_row?'700':''}"
+                                                (click)="selectedProject(proj)" *ngFor="let proj of filtereproject | async">
+                                            {{ proj.title_full }}
+                                        </button>
+                                    </div>
+                                </mat-menu>
                                 <div class="m--margin-bottom-10-mobile text-dark url" style="min-width:100px;border: 1px solid #eeeeee;
                                             padding: 5px 10px;
                                             border-radius: 20px;
@@ -53,7 +80,7 @@
 
                     </ng-container>
                 </kt-portlet-header>
-                <kt-topic-view [data]="data" [selectedItem]="selectedItem" (ItemSelected)="selected($event)">
+                <kt-topic-view [data]="listTopic | async" [selectedItem]="selectedItem" (ItemSelected)="selected($event)">
                 </kt-topic-view>
             </div>
             <div class="col-md-9 kt--margin-bottom-10-mobile pd-0 overflow-y-scroll border-left"

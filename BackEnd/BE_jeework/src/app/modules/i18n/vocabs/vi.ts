@@ -125,7 +125,7 @@ export const locale = {
             //=============We work====================
             listdepartment: 'Quản lý phòng ban',
             listproject: 'Quản lý dự án',
-            tasks: 'Công việc',
+            tasks: 'Công việc cá nhân',
             users: 'Quản lý thành viên',
             reports: 'Báo cáo hệ thống',
             permision: 'Phân quyền chức năng',
@@ -751,6 +751,7 @@ export const locale = {
             danhsachtemplates: 'Danh sách mẫu',
             danhsachtrangthai: 'Danh sách trạng thái tương ứng',
             trangthaihoatdong: 'Trạng thái hoạt động',
+            trangthaimoitao: 'Trạng thái mới tạo',
             themmau: 'Thêm mẫu',
             doiten: 'Thay đổi tên',
             doimau: 'Thay đổi màu sắc',
@@ -1193,6 +1194,7 @@ export const locale = {
             traloi: 'Trả lời',
             preview: 'Xem trước',
             download: 'Tải xuống',
+            thoigian: 'Thời gian',
         },
         setting: {
             list: 'List view',

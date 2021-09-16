@@ -10,31 +10,33 @@ import {
     Input,
     SimpleChange,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 // Material
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
 import {
     MatDialog,
     MatDialogRef,
     MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 // RXJS
-import { fromEvent, merge, ReplaySubject, BehaviorSubject, SubscriptionLike } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import {fromEvent, merge, ReplaySubject, BehaviorSubject, SubscriptionLike} from 'rxjs';
+import {TranslateService} from '@ngx-translate/core';
 // Services
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
-import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { ViewTopicDetailComponent } from '../topic-view-detail/topic-view-detail.component';
-import { DiscussionsService } from '../discussions.service';
-import { PlatformLocation } from '@angular/common';
-import { TopicEditComponent } from '../topic-edit/topic-edit.component';
-import { TopicModel } from '../../projects-team/Model/department-and-project.model';
+import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import {ViewTopicDetailComponent} from '../topic-view-detail/topic-view-detail.component';
+import {DiscussionsService} from '../discussions.service';
+import {PlatformLocation} from '@angular/common';
+import {TopicEditComponent} from '../topic-edit/topic-edit.component';
+import {TopicModel} from '../../projects-team/Model/department-and-project.model';
+import {FormControl} from '@angular/forms';
+import {WeWorkService} from '../../services/wework.services';
 
 @Component({
     selector: 'kt-topic-list',
@@ -53,6 +55,7 @@ export class TopicListComponent {
         private router: Router,
         private translate: TranslateService,
         private tokenStorage: TokenStorage,
+        public weworkService: WeWorkService,
         location: PlatformLocation
     ) {
         this.sortfield = this.listSort[0];
@@ -68,18 +71,25 @@ export class TopicListComponent {
     loading1$ = this.loadingSubject.asObservable();
     // =================PageSize Table=====================
     pageEvent: PageEvent;
+    ID_Project = 0;
     pageSize: number;
     pageLength: number;
     item: any;
     sortfield: any = [];
+    itemProject: any = [];
     ChildComponentInstance: any;
     selectedItem: any = undefined;
     childComponentType: any = ViewTopicDetailComponent;
     childComponentData: any = {};
-    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-    @ViewChild('keyword', { static: true }) keyword: ElementRef;
+    @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+    @ViewChild('keyword', {static: true}) keyword: ElementRef;
     filterTinhTrang: string;
     subscription: SubscriptionLike;
+    public filtereproject: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+    public listTopic: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+    public projectFilterCtrl: FormControl = new FormControl();
+    listProject: any[] = [];
+    showproject = false;
     listSort = [
         {
             // CreatedDate
@@ -108,6 +118,10 @@ export class TopicListComponent {
     ];
 
     ngOnInit() {
+        this.projectFilterCtrl.valueChanges.pipe().subscribe(() => {
+            this.filterProject();
+        });
+
         if (this._services.currentMessage != undefined) {
             this.subscription = this._services.currentMessage.subscribe(message => {
                 if (message) {
@@ -117,10 +131,12 @@ export class TopicListComponent {
         }
         this.activatedRoute.params.subscribe((params) => {
             this.ID_QuyTrinh = +params.id;
+            console.log('quytrinh',this.ID_QuyTrinh);
         });
 
         const arr = this.router.url.split('/');
         if (arr[1] === 'project') {
+            this.showproject = false;
             this._services.TopicDetail(arr[4]).subscribe(res => {
                 if (res && res.status == 1) {
                     this.selectedItem = arr[4];
@@ -128,13 +144,34 @@ export class TopicListComponent {
             });
         }
         if (arr[1] === 'wework') {
+            this.showproject = true;
             this._services.TopicDetail(arr[3]).subscribe(res => {
                 if (res && res.status == 1) {
                     this.selectedItem = arr[3];
                 }
             });
         }
+        this.weworkService.lite_project_team_byuser('').subscribe((res) => {
+            this.changeDetectorRefs.detectChanges();
+            if (res && res.status === 1) {
+                this.listProject = res.data;
+                this.listProject.unshift(
+                    {
+                        title: this.translate.instant('filter.tatcaduan'),
+                        title_full: this.translate.instant('filter.tatcaduan'),
+                        id_row: 0
+                    }
+                )
+                this.setUpDropSearchProject();
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
         this.loadDataList();
+    }
+
+    setUpDropSearchProject() {
+        this.projectFilterCtrl.setValue('');
+        this.filterProject();
     }
 
     LoadData() {
@@ -151,12 +188,12 @@ export class TopicListComponent {
         }
         if (arr[1] === 'wework') {
             this._services.TopicDetail(arr[3]).subscribe(res => {
-                if (res && res.status === 1) {
-                    this.selectedItem = arr[3];
-                } else {
-                    this.selectedItem = undefined;
-                }
-            },
+                    if (res && res.status === 1) {
+                        this.selectedItem = arr[3];
+                    } else {
+                        this.selectedItem = undefined;
+                    }
+                },
                 (error => this.selectedItem = undefined));
         }
         this.loadDataList();
@@ -177,6 +214,7 @@ export class TopicListComponent {
         this._services.findListTopic(queryParams).subscribe((res) => {
             if (res && res.status === 1) {
                 this.data = res.data;
+                this.filterListTopic();
             }
             this.changeDetectorRefs.detectChanges();
         });
@@ -191,6 +229,11 @@ export class TopicListComponent {
     selectedField(item) {
         this.sortfield = item;
         this.loadDataList();
+    }
+
+    selectedProject(item) {
+        this.itemProject = item;
+        this.filterListTopic();
     }
 
     goBack() {
@@ -229,9 +272,6 @@ export class TopicListComponent {
 
     close_detail() {
         this.selectedItem = undefined;
-        // if (!this.changeDetectorRefs.destroyed) {
-        //     this.changeDetectorRefs.detectChanges();
-        // }
     }
 
     getInstance($event) {
@@ -260,7 +300,7 @@ export class TopicListComponent {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(TopicEditComponent, { data: { _item } });
+        const dialogRef = this.dialog.open(TopicEditComponent, {data: {_item}});
         dialogRef.afterClosed().subscribe((res) => {
             this.ngOnInit();
             if (!res) {
@@ -276,5 +316,44 @@ export class TopicListComponent {
                 this.changeDetectorRefs.detectChanges();
             }
         });
+    }
+
+    protected filterProject() {
+        if (!this.listProject && this.listProject.length === 0) {
+            return;
+        }
+        let search = this.projectFilterCtrl.value;
+        if (!search) {
+            this.filtereproject.next(this.listProject);
+            return;
+        } else {
+            search = search.toLowerCase();
+        }
+        this.filtereproject.next(
+            this.listProject.filter(
+                (bank) => bank.title_full.toLowerCase().indexOf(search) > -1
+            )
+        );
+    }
+
+    protected filterListTopic() {
+        if (!this.data) {
+            return;
+        }
+        let idProject = 0;
+        if (this.itemProject?.id_row > 0) {
+            idProject = this.itemProject.id_row;
+        }
+        if (idProject > 0) {
+            this.listTopic.next(
+                this.data.filter(
+                    x => x.id_project_team === idProject
+                )
+            );
+        } else {
+            this.listTopic.next(
+                this.data
+            );
+        }
     }
 }

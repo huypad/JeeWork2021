@@ -602,7 +602,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             this.listFilter.forEach((val) => {
                 if (this.CheckDataStatus(val, element)) {
                     val.data.push(element);
-                    this.Emtytask = false;
+                    if (element.end_date == null) {
+                        this.Emtytask = false;
+                    }
                 } else if (this.CheckDataAssigne(val, element)) {
                     if (
                         element.User?.length == 1 ||
@@ -625,7 +627,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         } else if (status.data.length == 0 && this.showemptystatus) {
             return true;
         } else if (this.Emtytask && status.id_row == this.Statusdefault()) {
-            this.newtask = this.Statusdefault();
+            if (this.newtask < 0) {
+                this.newtask = this.Statusdefault();
+            }
             return true;
         }
         return false;

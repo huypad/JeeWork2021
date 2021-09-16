@@ -84,11 +84,55 @@
 
                             </div>
                             <div class="col-md-6">
-                                <div class="header-view row">
+
+                                <div class="header-view row" *ngIf="listSTTMoitao() && listSTTMoitao().length > 0">
+                                    <div class="header-view-title">
+                                        {{ 'department.trangthaimoitao'|translate}}
+                                    </div>
+                                    <ng-container *ngFor="let stt of listSTTMoitao()">
+                                        <div class="status-input col-12   form-control">
+                                            <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                                <div class="row" style="width:200px;">
+                                                    <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                         (click)="ChangeColor(color,stt)"
+                                                         *ngFor="let color of defaultColors">
+                                                    </div>
+                                                </div>
+                                            </mat-menu>
+                                            <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                                    [matMenuTriggerFor]="color"></button>
+                                            <div class="box-color"  (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
+
+                                            </div>
+                                            <div class="input">
+                                                <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                                       (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                                       (focusout)="sttFocusout(stt.StatusName,stt)"
+                                                       [(ngModel)]="stt.StatusName" class="">
+                                            </div>
+                                            <div class="action-input">
+                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                                <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                                   *ngIf="idfocus!=stt.id_row"></i>
+                                            </div>
+                                            <mat-menu #menu1="matMenu">
+                                                <button mat-menu-item (click)="input.focus()">
+                                                    {{ 'department.doiten'|translate}}
+                                                </button>
+                                                <button mat-menu-item (click)="changeColor.click();">
+                                                    {{ 'department.doimau'|translate}}
+                                                </button>
+
+                                            </mat-menu>
+                                        </div>
+                                    </ng-container>
+                                </div>
+
+                                <div class="header-view row mt-4" *ngIf="listSTTHoatdong() && listSTTHoatdong().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaihoatdong'|translate}}
                                     </div>
-                                    <ng-container *ngFor="let stt of listSTT">
+                                    <ng-container *ngFor="let stt of listSTTHoatdong()">
                                         <div class="status-input col-12 form-control"
                                             *ngIf="!stt.IsFinal && !stt.IsDeadline">
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
@@ -149,7 +193,7 @@
                                     </button>
                                 </div>
 
-                                <div class="header-view row" style="margin-top: 15px!important;" *ngIf="listSTTDeadline() && listSTTDeadline().length > 0">
+                                <div class="header-view row mt-4" *ngIf="listSTTDeadline() && listSTTDeadline().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaitre'|translate}}
                                     </div>
@@ -194,7 +238,7 @@
                                     </ng-container>
                                 </div>
 
-                                <div class="header-view row" style="margin-top: 15px!important;" *ngIf="listSTTFinal() && listSTTFinal().length > 0">
+                                <div class="header-view row mt-4" *ngIf="listSTTFinal() && listSTTFinal().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaidone'|translate}}
                                     </div>
@@ -237,7 +281,7 @@
                                         </div>
                                     </ng-container>
                                 </div>
-                                <div class="form-group" style="margin-top: 15px!important;" *ngIf="isStatusNow">
+                                <div class="form-group mt-4" *ngIf="isStatusNow">
                                     <button class="btn btn-outline-success w-100" (click)="isDoinguoi=true">
                                         {{ 'department.chinhsuanguoitheodoicongviec'|translate}}
                                     </button>

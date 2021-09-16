@@ -71,7 +71,7 @@
                 <ngx-avatar [size]="45" src="{{item.Avatar}}">
                 </ngx-avatar>
                 <ngx-avatar [size]="45" [name]="item.Fullname.slice(0, 1)" bgColor="{{ item.BgColor }}"
-                    *ngIf="!item.Avatar"></ngx-avatar>
+                            *ngIf="!item.Avatar"></ngx-avatar>
 
             </div>
             <div style="padding-left: 10px;">
@@ -109,7 +109,7 @@
             </div>
             <div class="child-right">
                 <a class="mr btn" (click)="isCollapsed = !isCollapsed" [attr.aria-expanded]="!isCollapsed"
-                    aria-controls="collapseChatBox">
+                   aria-controls="collapseChatBox">
                     <mat-icon>remove</mat-icon>
                 </a>
                 <a class="mr" href="javascript:;" (click)="closeBoxChat()">
@@ -135,13 +135,13 @@
                             <div *ngFor="let it of mb.InfoMemberUser ">
                                 <div *ngIf="i>=0&&i<3">
                                     <ngx-avatar [size]="25" [name]="it.Fullname.slice(0, 1)" bgColor="{{ it.BgColor }}"
-                                        *ngIf="!it.Avatar"></ngx-avatar>
+                                                *ngIf="!it.Avatar"></ngx-avatar>
                                     <ngx-avatar [size]="25" src="{{ it.Avatar }}" *ngIf="it.Avatar"></ngx-avatar>
 
                                 </div>
 
                                 <ngx-avatar *ngIf="i==3&& gr.ListMember.length>=4" [size]="25"
-                                    value="{{gr.ListMember.length-3}}" bgColor="#ad3838"></ngx-avatar>
+                                            value="{{gr.ListMember.length-3}}" bgColor="#ad3838"></ngx-avatar>
 
                             </div>
                         </div>
@@ -162,19 +162,19 @@
 
                                 <ng-container>
                                     <button style="float: right;" mat-icon-button [matMenuTriggerFor]="menuGroup"
-                                        aria-label="Example icon-button with a menu">
+                                            aria-label="Example icon-button with a menu">
                                         <mat-icon class="action" style="font-size: 22px;">more_vert</mat-icon>
                                     </button>
 
                                     <mat-menu #menuGroup="matMenu">
 
                                         <button (click)="EditNameGroup(user.user.IdGroup)" mat-menu-item
-                                            matTooltip="Đổi tên nhóm">
+                                                matTooltip="Đổi tên nhóm">
                                             <mat-icon>edit</mat-icon>
                                             <span>Đổi tên nhóm</span>
                                         </button>
                                         <button mat-menu-item matTooltip="Thêm thành viên"
-                                            (click)="InsertThanhVienGroup()">
+                                                (click)="InsertThanhVienGroup()">
                                             <mat-icon>group_add</mat-icon>
                                             <span>Thêm thành viên</span>
                                         </button>
@@ -201,7 +201,7 @@
             </div>
             <div class="child-right">
                 <a class="mr btn" (click)="isCollapsed = !isCollapsed" [attr.aria-expanded]="!isCollapsed"
-                    aria-controls="collapseChatBox">
+                   aria-controls="collapseChatBox">
                     <mat-icon>remove</mat-icon>
                 </a>
                 <a class="mr" href="javascript:;" (click)="closeBoxChat()">
@@ -215,23 +215,23 @@
 
         <div>
             <cdk-virtual-scroll-viewport itemSize="30" style="height: 350px;    width: 295px;" ngx-auto-scroll
-                lock-y-offset="10" observe-attributes>
+                                         lock-y-offset="10" observe-attributes>
 
 
                 <ul class="chat chat-frame">
                     <a href="{{hostjeechat}}" target="_blank"
-                        *ngIf="(messageService.messageThread$ | async)?.length==100">Xem thêm tin nhắn</a>
+                       *ngIf="(messageService.messageThread$ | async)?.length==100">Xem thêm tin nhắn</a>
                     <li class="pd-5" *cdkVirtualFor="let message of (messageService.messageThread$ | async)">
 
                         <div [ngClass]=" message.UserName !==userCurrent ? 'd-flex' : 'parent-sent' ">
                             <div class="mr" *ngIf="message.UserName !== userCurrent">
                                 <div *ngFor="let info of  message.InfoUser">
                                     <ngx-avatar *ngIf="info.Avatar&&!message.IsDelAll&&!message.isInsertMember"
-                                        [size]="20" src="{{info.Avatar}}">
+                                                [size]="20" src="{{info.Avatar}}">
                                     </ngx-avatar>
                                     <ngx-avatar [size]="20" [name]="info.Fullname.slice(0, 1)"
-                                        bgColor="{{ info.BgColor }}"
-                                        *ngIf="!info.Avatar&&!message.IsDelAll&&!message.isInsertMember"></ngx-avatar>
+                                                bgColor="{{ info.BgColor }}"
+                                                *ngIf="!info.Avatar&&!message.IsDelAll&&!message.isInsertMember"></ngx-avatar>
 
 
                                 </div>
@@ -239,19 +239,19 @@
 
 
                             <span
-                                *ngIf="!message.IsHidenAll&&message.UserName==userCurrent&&!message.IsDelAll&&!message.isInsertMember"
-                                class="chatmore">
+                                    *ngIf="!message.IsHidenAll&&message.UserName==userCurrent&&!message.IsDelAll&&!message.isInsertMember"
+                                    class="chatmore">
 
 
                                 <ng-container>
                                     <button style="float: right;" mat-icon-button [matMenuTriggerFor]="menu"
-                                        aria-label="Example icon-button with a menu">
+                                            aria-label="Example icon-button with a menu">
                                         <mat-icon class="action" style="font-size: 22px;">more_horiz</mat-icon>
                                     </button>
                                     <mat-menu #menu="matMenu">
 
                                         <button mat-menu-item (click)="HidenMess(message.IdChat,user.user.IdGroup)"
-                                            matTooltip="Thu hồi tin nhắn">
+                                                matTooltip="Thu hồi tin nhắn">
                                             <mat-icon>delete</mat-icon>
                                             <span>Thu hồi tin nhắn</span>
                                         </button>
@@ -263,15 +263,15 @@
                             <div *ngIf="message.IsDelAll&&!message.isInsertMember" class="leave">
                                 <div style=" margin: auto;padding-right: 5px;">
                                     <ngx-avatar [size]="20" [name]="message.InfoUser[0].Fullname.slice(0, 1)"
-                                        bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
+                                                bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
                                     </ngx-avatar>
                                     <ngx-avatar [size]="20" src="{{message.InfoUser[0].Avatar}}"
-                                        *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
+                                                *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
                                 </div>
                                 <div>
                                     <span *ngIf="message.UserName===userCurrent" style="font-weight: bold;">Bạn</span>
                                     <span *ngIf="message.UserName!==userCurrent"
-                                        style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
+                                          style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
                                     {{message.Content_mess}}
                                     <span style="font-weight: bold;">{{message.Note}}</span>khỏi nhóm
                                 </div>
@@ -282,22 +282,22 @@
 
                                 <div style=" margin: auto;padding-right: 5px;">
                                     <ngx-avatar [size]="20" [name]="message.InfoUser[0].Fullname.slice(0, 1)"
-                                        bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
+                                                bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
                                     </ngx-avatar>
                                     <ngx-avatar [size]="20" src="{{message.InfoUser[0].Avatar}}"
-                                        *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
+                                                *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
                                 </div>
                                 <div>
 
 
                                     <span *ngIf="message.UserName===userCurrent" style="font-weight: bold; ">Bạn</span>
                                     <span *ngIf="message.UserName!==userCurrent"
-                                        style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
+                                          style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
                                     {{message.Content_mess}}
                                     <span *ngIf="message.Note.length<30"
-                                        style="font-weight: bold; padding-right:5px;">{{message.Note}}</span>
+                                          style="font-weight: bold; padding-right:5px;">{{message.Note}}</span>
                                     <span *ngIf="message.Note.length>30"
-                                        style="font-weight: bold; padding-right:5px;">{{message.Note|slice:0:30}}...</span>
+                                          style="font-weight: bold; padding-right:5px;">{{message.Note|slice:0:30}}...</span>
 
                                     vào nhóm
                                 </div>
@@ -321,9 +321,9 @@
                                 <div *ngIf="message.Attachment.length>0&&!message.IsHidenAll">
                                     <div gallerize>
                                         <img *ngFor="let img of message.Attachment"
-                                            (click)="loadlightbox(message.IdChat)"
-                                            style="width: 100px;padding-right:  5px;border-radius: inherit;cursor: pointer;"
-                                            src="{{img.hinhanh}}">
+                                             (click)="loadlightbox(message.IdChat)"
+                                             style="width: 100px;padding-right:  5px;border-radius: inherit;cursor: pointer;"
+                                             src="{{img.hinhanh}}">
 
                                     </div>
                                 </div>
@@ -332,7 +332,7 @@
                                 <div style="background: #c3dcc3;
                                         padding: 10px;
                                         border-radius: 15px;"
-                                    *ngIf="message.Attachment_File.length>0&&!message.IsHidenAll">
+                                     *ngIf="message.Attachment_File.length>0&&!message.IsHidenAll">
                                     <div *ngFor="let file of message.Attachment_File">
                                         <div (click)="RouterLink(file.Link)" style="display: flex;cursor: pointer;">
                                             <img src=" {{ file.icon }}" />
@@ -347,11 +347,11 @@
 
                                 </div>
                                 <div *ngIf="!message.IsHidenAll&&!message.IsDelAll&&!message.isInsertMember&&message.Content_mess!==''"
-                                    class="message-body "
-                                    [class.message-send]="message.UserName === userCurrent&&!message.IsHidenAll">
+                                     class="message-body "
+                                     [class.message-send]="message.UserName === userCurrent&&!message.IsHidenAll">
 
                                     <span *ngIf="!message.IsHidenAll"
-                                        class="conntentmess">{{message.Content_mess}}</span>
+                                          class="conntentmess">{{message.Content_mess}}</span>
 
 
                                 </div>
@@ -363,11 +363,12 @@
                             </div>
                         </div>
                     </li>
-                    <span *ngIf="composing" class="composing">{{composingname}} đang soạn tin...</span>
                 </ul>
 
             </cdk-virtual-scroll-viewport>
-
+            <div style="height: 20px;">
+                <span *ngIf="composing" class="composing">{{composingname}} đang soạn tin...</span>
+            </div>
         </div>
         <div style="padding: 0px;">
 
@@ -390,11 +391,11 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                 <button style="height: 80px;
             margin:auto;
             border-radius: 10% !important;" (click)="hiddenfileinput_image.click()" matTooltip="Hỉnh ảnh"
-                    mat-icon-button aria-label="Example icon button with a home icon">
+                        mat-icon-button aria-label="Example icon button with a home icon">
                     <mat-icon class="sizeiconreaction">add_photo_alternate</mat-icon>
                 </button>
                 <input type='file' accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" id="PDFInpdd"
-                    #hiddenfileinput_image (change)="onSelectFile_PDF($event)" multiple style="display: none;">
+                       #hiddenfileinput_image (change)="onSelectFile_PDF($event)" multiple style="display: none;">
             </div>
             <!--  nơi hiển thị file  -->
             <div style="    height: 50px;
@@ -417,14 +418,14 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                 <button style="
                         margin:auto;
                         border-radius: 10% !important;" (click)="hiddenfileinput.click()" matTooltip="File"
-                    mat-icon-button aria-label="Example icon button with a home icon">
+                        mat-icon-button aria-label="Example icon button with a home icon">
                     <mat-icon class="sizeiconreaction">add_to_photos</mat-icon>
                 </button>
                 <input
-                    accept="application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                        accept="application/vnd.ms-excel, application/vnd.ms-powerpoint,
                           text/plain, application/pdf,application/msword,.pdf, .xls, .xlsx, application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
-                    style="display: none;">
+                        type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
+                        style="display: none;">
             </div>
 
             <div *ngIf="show">
@@ -432,21 +433,21 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                 <div>
 
                     <button (click)="hiddenfileinput_image.click()" class="btn-class" matTooltip="Hỉnh ảnh"
-                        mat-icon-button aria-label="Example icon button with a home icon">
+                            mat-icon-button aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">image</mat-icon>
                     </button>
                     <button (click)="hiddenfileinput.click()" class="btn-class" matTooltip="File" mat-icon-button
-                        aria-label="Example icon button with a home icon">
+                            aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">attachment</mat-icon>
                     </button>
                     <input type='file' accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" id="PDFInpdd"
-                        #hiddenfileinput_image (change)="onSelectFile_PDF($event)" multiple style="display: none;">
+                           #hiddenfileinput_image (change)="onSelectFile_PDF($event)" multiple style="display: none;">
 
                     <input
-                        accept="application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                            accept="application/vnd.ms-excel, application/vnd.ms-powerpoint,
                           text/plain, application/pdf,application/msword,.pdf, .xls, .xlsx, application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
-                        style="display: none;">
+                            type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
+                            style="display: none;">
 
                 </div>
 
@@ -457,12 +458,12 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                 <div class="input-group">
                     <div class="input-group-append">
                         <button [disabled]="AttachFileChat.length>0|| list_image.length>0" *ngIf="!show"
-                            matTooltip="Đa phương tiện" (click)="showPT()" mat-icon-button style="color:#4E4EFA ;"
-                            aria-label="Example icon button with a home icon">
+                                matTooltip="Đa phương tiện" (click)="showPT()" mat-icon-button style="color:#4E4EFA ;"
+                                aria-label="Example icon button with a home icon">
                             <mat-icon style="font-size: 25px;">control_point</mat-icon>
                         </button>
                         <button *ngIf="show" matTooltip="Đóng" (click)="showPT()" mat-icon-button
-                            style="color:#4E4EFA ;" aria-label="Example icon button with a home icon">
+                                style="color:#4E4EFA ;" aria-label="Example icon button with a home icon">
                             <mat-icon style="font-size: 25px;">cancel</mat-icon>
                         </button>
 
@@ -471,12 +472,12 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                     <form style="width: 86%;
                     display: flex;" #messageForm="ngForm" (ngSubmit)="sendMessage()" autocomplete="off">
                         <input (ngModelChange)="saverange($event)"
-                            style="   font-size: 15px;background: #F0F2F5;border-radius: 20px;" type="text"
-                            name="messageContent" required [(ngModel)]="messageContent" class="form-control input-sm"
-                            placeholder="Send a private message" (focus)="onFocusEvent($event)">
+                               style="   font-size: 15px;background: #F0F2F5;border-radius: 20px;" type="text"
+                               name="messageContent" required [(ngModel)]="messageContent" class="form-control input-sm"
+                               placeholder="Send a private message" (focus)="onFocusEvent($event)">
                         <div class="input-group-append">
                             <button style="color:#4E4EFA ;" matTooltip="Gửi tin nhắn" mat-icon-button
-                                aria-label="Example icon button with a home icon">
+                                    aria-label="Example icon button with a home icon">
                                 <mat-icon>send</mat-icon>
                             </button>
 

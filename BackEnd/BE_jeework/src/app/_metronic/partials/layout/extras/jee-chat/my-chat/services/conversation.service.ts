@@ -2,6 +2,7 @@ import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import {AuthService} from '../../../../../../../modules/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class ConversationService {
 
   public refreshConversation = new BehaviorSubject<any>(null);
   RefreshConversation$ = this.refreshConversation.asObservable();
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private auth: AuthService) { }
   getDSThanhVienNotInGroup(IdGroup: number): any {
     const url = this.baseUrl + `/GetDSThanhVienNotInGroup?IdGroup=${IdGroup}`
     const httpHeaders = this.getHttpHeaders();
@@ -33,15 +34,7 @@ export class ConversationService {
     const httpHeader = this.getHttpHeaders();
     return this.http.post<any>(url, item, { headers: httpHeader });
   }
-  public getAuthFromLocalStorage(): any {
-    try {
-      const authData = JSON.parse(localStorage.getItem(this.authLocalStorageToken));
-      return authData;
-    } catch (error) {
-      console.error(error);
-      return undefined;
-    }
-  }
+
   DeleteConversation(item: any) {
     const url = this.baseUrl + `/DeleteConverSation?IdGroup=${item}`
     const httpHeader = this.getHttpHeaders();
@@ -49,12 +42,12 @@ export class ConversationService {
   }
   getHttpHeaders() {
 
-    const data = this.getAuthFromLocalStorage();
+    const auth = this.auth.getAuthFromLocalStorage();
 
     // console.log('auth.token',auth.access_token)
     let result = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + data.access_token,
+      'Authorization': `Bearer ${auth != null ? auth.access_token : ''}`,
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Content-Type'
     });

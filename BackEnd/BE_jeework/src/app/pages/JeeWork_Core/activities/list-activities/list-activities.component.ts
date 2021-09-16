@@ -29,6 +29,8 @@ import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_servi
 import {LogActivitiesComponent} from '../log-activities/log-activities.component';
 import {ActivitiesService} from '../activities.service';
 import {WeWorkService} from '../../services/wework.services';
+import {FormControl} from '@angular/forms';
+import {DialogSelectdayComponent} from '../../report/dialog-selectday/dialog-selectday.component';
 
 @Component({
     selector: 'kt-list-activities',
@@ -39,20 +41,29 @@ import {WeWorkService} from '../../services/wework.services';
 export class ListActivitiesComponent {
     @Input() ID_QuyTrinh: any;
     @Input() TenQuyTrinh: any;
-    ID_milestone: number = 0;
+    ID_milestone = 0;
     ListData: any[] = [];
     loadingSubject = new BehaviorSubject<boolean>(false);
     loadingControl = new BehaviorSubject<boolean>(false);
     loading1$ = this.loadingSubject.asObservable();
-    //=================PageSize Table=====================
+    // =================PageSize Table=====================
     pageEvent: PageEvent;
     pageSize: number;
     pageLength: number;
     item: any;
     list_priority: any = [];
+    listProject: any = [];
     percentage: any;
-    id_project_team: number = 0;
+    id_project_team = 0;
+    selecteddate = 7;
+    showproject = true;
     language = 'vi';
+    filterDay = {
+        startDate: new Date(),
+        endDate: new Date(),
+    };
+    public projectFilterCtrl: FormControl = new FormControl();
+    public filtereproject: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
     public listStatus: any[] = [
         {ID: 1, Title: 'In progres', Checked: false},
         {ID: 2, Title: 'Overdue', Checked: false},
@@ -76,7 +87,7 @@ export class ListActivitiesComponent {
     }
 
     getActionActivities(value) {
-        var text = '';
+        let text = '';
         text = value.action;
         if (text) {
             return text.replace('{0}', '');
@@ -85,19 +96,70 @@ export class ListActivitiesComponent {
     }
 
     ngOnInit() {
-        var arr = this.router.url.split('/');
+
+        this.projectFilterCtrl.valueChanges.pipe().subscribe(() => {
+            this.filterProject();
+        });
+
+        const arr = this.router.url.split('/');
         if (+arr[2] > 0) {
             this.id_project_team = +arr[2];
+            this.showproject = false;
         }
+        this.SelectedDate(this.selecteddate);
 
         this.activatedRoute.params.subscribe(params => {
             this.ID_QuyTrinh = +params.id;
             this.ID_milestone = +params.id_milestone;
         });
+
+        this.weworkService.lite_project_team_byuser('').subscribe((res) => {
+            this.changeDetectorRefs.detectChanges();
+            if (res && res.status === 1) {
+                this.listProject = res.data;
+                this.listProject.unshift(
+                    {
+                        title: this.translate.instant('filter.tatcaduan'),
+                        title_full: this.translate.instant('filter.tatcaduan'),
+                        id_row: 0
+                    }
+                );
+                this.setUpDropSearchProject();
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
+
         this.loadDataList();
     }
 
     /** LOAD DATA */
+    selectedProject(item) {
+        this.id_project_team = item.id_row;
+        this.loadDataList();
+    }
+
+    setUpDropSearchProject() {
+        this.projectFilterCtrl.setValue('');
+        this.filterProject();
+    }
+
+    protected filterProject() {
+        if (!this.listProject && this.listProject.length === 0) {
+            return;
+        }
+        let search = this.projectFilterCtrl.value;
+        if (!search) {
+            this.filtereproject.next(this.listProject);
+            return;
+        } else {
+            search = search.toLowerCase();
+        }
+        this.filtereproject.next(
+            this.listProject.filter(
+                (bank) => bank.title_full.toLowerCase().indexOf(search) > -1
+            )
+        );
+    }
 
     getColorProgressbar(status: number = 0): string {
         if (status < 50) {
@@ -140,14 +202,56 @@ export class ListActivitiesComponent {
                     this.changeDetectorRefs.detectChanges();
                 })
             ).subscribe();
-        ;
+
     }
 
     filterConfiguration(): any {
         const filter: any = {};
         filter.keyword = this.keyword.nativeElement.value;
         filter.id_project_team = this.id_project_team;
+        filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
+        filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
+        console.log(filter);
         return filter;
+    }
+
+    SelectedDate(day: number) {
+        this.selecteddate = day;
+        let startdate = new Date();
+        this.filterDay.startDate = new Date(startdate.setDate(startdate.getDate() - (day - 1)));
+        this.filterDay.endDate = new Date();
+        this.loadDataList();
+    }
+
+    getTimefilter() {
+        const TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
+        const DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
+        switch (this.selecteddate) {
+            case 0:
+                return TuNgay + ' - ' + DenNgay;
+                break;
+            case 1:
+                return 'Hôm nay';
+                break;
+            default:
+                return this.selecteddate + ' ngày';
+        }
+    }
+
+    SelectFilterDate() {
+        const dialogRef = this.dialog.open(DialogSelectdayComponent, {
+            width: '500px',
+            data: this.filterDay,
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result != undefined) {
+                this.selecteddate = 0;
+                this.filterDay.startDate = new Date(result.startDate);
+                this.filterDay.endDate = new Date(result.endDate);
+                this.loadDataList();
+            }
+        });
     }
 
     getMatIcon(item: any): string {
@@ -168,7 +272,7 @@ export class ListActivitiesComponent {
     }
 
     goBack() {
-        let _backUrl = `ListDepartment/Tab/` + this.ID_QuyTrinh;
+        const _backUrl = `ListDepartment/Tab/` + this.ID_QuyTrinh;
         this.router.navigateByUrl(_backUrl);
     }
 
@@ -236,6 +340,19 @@ export class ListActivitiesComponent {
         this.router.navigate(['', {outlets: {auxName: 'aux/detail/' + item.object_id},}]);
     }
 
+    f_convertDate(v: any) {
+        if (v != '' && v != undefined) {
+            let a = new Date(v);
+            return (
+                ('0' + a.getDate()).slice(-2) +
+                '/' +
+                ('0' + (a.getMonth() + 1)).slice(-2) +
+                '/' +
+                a.getFullYear()
+            );
+        }
+    }
+
     getPriority(id) {
         if (+id > 0 && this.list_priority) {
             const prio = this.list_priority.find(x => x.value === +id);
@@ -252,5 +369,13 @@ export class ListActivitiesComponent {
 
     getHeight() {
         return (window.innerHeight - 120 - this.tokenStorage.getHeightHeader()) + 'px';
+    }
+
+    getItemproject() {
+        const itemproject = this.listProject.find(item => item.id_row === this.id_project_team);
+        if (itemproject) {
+            return itemproject.title_full;
+        }
+        return this.translate.instant('filter.tatcaduan');
     }
 }

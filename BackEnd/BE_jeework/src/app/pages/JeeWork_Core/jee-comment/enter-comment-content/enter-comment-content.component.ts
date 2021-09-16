@@ -10,7 +10,7 @@ import {
     ElementRef,
     ViewChild,
     Output,
-    EventEmitter
+    EventEmitter, AfterViewInit
 } from '@angular/core';
 import {JeeCommentService} from '../jee-comment.service';
 import {PostCommentModel} from '../jee-comment.model';
@@ -24,17 +24,22 @@ import {PostCommentModel} from '../jee-comment.model';
     encapsulation: ViewEncapsulation.None
 })
 
-export class JeeCommentEnterCommentContentComponent implements OnInit {
-    private readonly onDestroy = new Subject<void>();
+export class JeeCommentEnterCommentContentComponent implements OnInit, AfterViewInit {
 
     constructor(public service: JeeCommentService, public cd: ChangeDetectorRef) {
     }
 
-    @Input() objectID: string = '';
-    @Input() commentID: string = '';
-    @Input() replyCommentID: string = '';
-    @Input() isEdit?: boolean = false;
-    @Input() showonpopup: boolean = false;
+    get isLoading$() {
+        return this._isLoading$.asObservable();
+    }
+
+    private readonly onDestroy = new Subject<void>();
+
+    @Input() objectID = '';
+    @Input() commentID = '';
+    @Input() replyCommentID = '';
+    @Input() isEdit = false;
+    @Input() showonpopup = false;
     @Input() isFocus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     @Output() valuecomment = new EventEmitter<string>();
     showPopupEmoji: boolean;
@@ -46,20 +51,10 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
     inputTextArea: string;
 
     private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    get isLoading$() {
-        return this._isLoading$.asObservable();
-    }
+
+    @ViewChild('txtarea') element: ElementRef;
 
     ngOnInit() {
-        this.isFocus$
-            .pipe(
-                tap((res) => {
-                    if (res) {
-                        this.FocusTextarea();
-                    }
-                }),
-                takeUntil(this.onDestroy),
-            ).subscribe();
 
         this.imagesUrl = [];
         this.imagesUrlArray = [];
@@ -70,7 +65,17 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
         this.showSpanCancelNoFocus = false;
     }
 
-    @ViewChild('txtarea') element: ElementRef;
+    ngAfterViewInit() {
+        this.isFocus$
+            .pipe(
+                tap((res) => {
+                    if (res) {
+                        this.FocusTextarea();
+                    }
+                }),
+                takeUntil(this.onDestroy),
+            ).subscribe();
+    }
 
     FocusTextarea() {
         this.element.nativeElement.focus();
@@ -110,7 +115,7 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
     }
 
     isEqual(object: PostCommentModel, otherObject: PostCommentModel): boolean {
-        let checkValue = object.Text === otherObject.Text;
+        const checkValue = object.Text === otherObject.Text;
         let checkList = false;
         if (object.Attachs.Files.length === otherObject.Attachs.Files.length &&
             object.Attachs.Images.length === otherObject.Attachs.Images.length &&
@@ -141,7 +146,7 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
         this.service.postCommentModel(model).pipe(
             tap(
                 (res) => {
-                    var objSave: any = {};
+                    const objSave: any = {};
                     //           TopicCommentID: string;
                     // CommentID: string;
                     // ReplyCommentID: string;
@@ -195,7 +200,7 @@ export class JeeCommentEnterCommentContentComponent implements OnInit {
             this.showSpanCancelNoFocus = true;
         }
         for (let i = 0; i < filesAmount; i++) {
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsDataURL(files.item(i));
             reader.onload = () => {
                 this.imagesUrl.push(reader.result as string);

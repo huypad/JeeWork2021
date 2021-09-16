@@ -149,6 +149,9 @@
 						<span class="text-dark-50 font-weight-bolder font-size-base d-none d-md-inline mr-3">
 							{{ _user.user.customData.personalInfo.Name }}
 						</span>
+						<span class="font-size-base d-none d-md-inline mr-3 nhacnho" *ngIf="SoLuongNhacNho > 0">
+                        <div>{{SoLuongNhacNho > 9 ? '9+' : SoLuongNhacNho}}</div>
+                    </span>
 					</div>
 				</div>
 				<!--end::User-->

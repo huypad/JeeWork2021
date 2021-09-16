@@ -1,3 +1,9 @@
+<style>
+    .menu-project{
+        min-width: 250px;
+        max-height: 400px;
+    }
+</style>
 <kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
     <kt-portlet-header class="activities" [sticky]="true" style="height: 60px;" [class]="'kt-portlet__head--lg'">
         <ng-container ktPortletTitle>
@@ -20,153 +26,207 @@
                     </div>
                 </div>
             </div>
+
+            <div class="m--margin-bottom-10-mobile text-dark url mr-5" style="min-width:100px;border: 1px solid #eeeeee;
+                                            padding: 5px 10px;
+                                            border-radius: 20px;
+                                            height: 30px;
+                                            background: #fffeee;">
+                <div [matMenuTriggerFor]="selecttime"><b translate="topic.thoigian"></b>:
+                    {{getTimefilter()}}</div>
+            </div>
+            <mat-menu #selecttime="matMenu">
+                <div class="menu-project">
+                    <button mat-menu-item color="warn" (click)="SelectedDate(1)" >
+                        Hôm nay
+                    </button>
+                    <button mat-menu-item color="warn" (click)="SelectedDate(7)">
+                        7 ngày trước
+                    </button>
+                    <button mat-menu-item color="warn" (click)="SelectedDate(30)">
+                        30 ngày trước
+                    </button>
+                    <button mat-menu-item color="warn" (click)="SelectFilterDate()">
+                        Chọn ngày
+                    </button>
+                </div>
+            </mat-menu>
+
+            <div *ngIf="showproject" class="m--margin-bottom-10-mobile text-dark url" style="min-width:100px;border: 1px solid #eeeeee;
+                                            padding: 5px 10px;
+                                            border-radius: 20px;
+                                            height: 30px;
+                                            background: #fffeee;">
+                <div [matMenuTriggerFor]="menuproject"><b translate="topic.projectteam"></b>:
+                    {{getItemproject()}}</div>
+            </div>
+            <mat-menu #menuproject="matMenu">
+                <mat-form-field class="mat-form-field-fluid " (click)="$event.stopPropagation()">
+                    <input matInput [formControl]="projectFilterCtrl" placeholder="{{ 'GeneralKey.nhapdetimkiem' | translate}}" autocomplete="off" />
+                    <mat-icon matPrefix> search</mat-icon>
+                </mat-form-field>
+                <div class="menu-project">
+                    <button mat-menu-item color="warn"
+                            [ngStyle]="{'font-weight': id_project_team==proj.id_row?'700':''}"
+                            (click)="selectedProject(proj)" *ngFor="let proj of filtereproject | async">
+                        {{ proj.title_full }}
+                    </button>
+                </div>
+            </mat-menu>
         </ng-container>
     </kt-portlet-header>
     <kt-portlet-body class="bg-hoatdong pd-0" [ngStyle]="{'height': getHeight()}">
         <div class="workflow-hoatdong">
             <div class="row hoatdong-body">
-                <div class="hoatdong-body-1" *ngFor="let item of ListData">
-                    <div class="hoatdong-header">
-                        <div>
-                            <mat-icon class="icon-header">check_circle</mat-icon>&nbsp;<span style="color: #aaa">
+                <ng-container *ngIf="ListData && ListData.length > 0;else nodata">
+                    <div class="hoatdong-body-1" *ngFor="let item of ListData">
+                        <div class="hoatdong-header">
+                            <div>
+                                <mat-icon class="icon-header">check_circle</mat-icon>&nbsp;<span style="color: #aaa">
 								{{ 'filter.congviectrong' | translate }}
 							</span>&nbsp;
-                            <a [routerLink]="['/project',item.id_project_team]">
-                                <span class="sub-title" style="color: rgb(253, 169, 13);">{{item.project_team}}</span>
-                            </a>
+                                <a [routerLink]="['/project',item.id_project_team]">
+                                    <span class="sub-title" style="color: rgb(253, 169, 13);">{{item.project_team}}</span>
+                                </a>
+                            </div>
+                            <div>
+                                <a class="title url" (click)="Viewdetail(item)">
+                                    {{ 'work.tencongviec' | translate }}:
+                                    <span>{{item.title}}</span>
+                                </a>
+                            </div>
                         </div>
-                        <div>
-                            <a class="title url" (click)="Viewdetail(item)">
-                                {{ 'work.tencongviec' | translate }}:
-                                <span>{{item.title}}</span>
-                            </a>
-                        </div>
-                    </div>
-                    <div *ngFor="let active of item.Activities">
-                        <div class="row mb-2">
-                            <div class="col-md-12" style="display: flex;">
-                                <div style="width: 160px;">
-                                    <span class="date-type">{{active.CreatedDate | timezone}}</span>
-                                    <kt-avatar-user class="float-right mr-2"
-                                                    [image]="active.NguoiTao.image" size="25"
-                                                    [name]="active.NguoiTao.hoten">
-                                    </kt-avatar-user>
-                                </div>
-                                <div style="flex: 1;word-break: break-all;" class="{{ active.id_action != 16 && active.id_action != 14?'text-n-line':active.showmore?'text-n-line mr-5':'hide-more-text mr-5 max-height-50px' }}">
-                                    <ng-container [ngSwitch]="active.id_action">
-                                        <ng-container *ngSwitchCase="44">
-                                            <a>
-                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
-                                                <span class="cu-notification-item__text"
-                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
-                                                <ng-container *ngIf="active.oldvalue">
-                                                    <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
-                                                        <div class="status status_block"
-                                                             [ngStyle]="{'backgroundColor':active.ColorStatus_Old}"
-                                                        > {{active.oldvalue}}
+                        <div *ngFor="let active of item.Activities">
+                            <div class="row mb-2">
+                                <div class="col-md-12" style="display: flex;">
+                                    <div style="width: 160px;">
+                                        <span class="date-type">{{active.CreatedDate | timezone}}</span>
+                                        <kt-avatar-user class="float-right mr-2"
+                                                        [image]="active.NguoiTao.image" size="25"
+                                                        [name]="active.NguoiTao.hoten">
+                                        </kt-avatar-user>
+                                    </div>
+                                    <div style="flex: 1;word-break: break-all;" class="{{ active.id_action != 16 && active.id_action != 14?'text-n-line':active.showmore?'text-n-line mr-5':'hide-more-text mr-5 max-height-50px' }}">
+                                        <ng-container [ngSwitch]="active.id_action">
+                                            <ng-container *ngSwitchCase="44">
+                                                <a>
+                                                    <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                    <span class="cu-notification-item__text"
+                                                          style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                    <ng-container *ngIf="active.oldvalue">
+                                                        <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
+                                                            <div class="status status_block"
+                                                                 [ngStyle]="{'backgroundColor':active.ColorStatus_Old}"
+                                                            > {{active.oldvalue}}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </ng-container>
-                                                <i class="fa fa-long-arrow-alt-right"></i>
-                                                <ng-container *ngIf="active.newvalue">
-                                                    <div class="cu-notification-item__status d-inline">
-                                                        <div class="status status_block"
-                                                             [ngStyle]="{'backgroundColor':active.ColorStatus_New}"
-                                                        > {{active.newvalue}}
+                                                    </ng-container>
+                                                    <i class="fa fa-long-arrow-alt-right"></i>
+                                                    <ng-container *ngIf="active.newvalue">
+                                                        <div class="cu-notification-item__status d-inline">
+                                                            <div class="status status_block"
+                                                                 [ngStyle]="{'backgroundColor':active.ColorStatus_New}"
+                                                            > {{active.newvalue}}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </ng-container>
-<!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
-                                            </a>
-                                        </ng-container>
-                                        <ng-container *ngSwitchCase="16">
-                                            <a>
-                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
-                                                <span class="cu-notification-item__text"
-                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                    </ng-container>
+                                                    <!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
+                                                </a>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="16">
+                                                <a>
+                                                    <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                    <span class="cu-notification-item__text"
+                                                          style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
 
-                                                <ng-container *ngIf="active.newvalue">
-                                                    <span class="d-block overflow-auto" style="font-size: 14px; color: rgb(7, 116, 7);" [innerHtml]="active.newvalue"></span>
-                                                </ng-container>
-                                                <hr/>
-                                                <ng-container *ngIf="active.oldvalue">
-                                                    <span class="d-block overflow-auto" style="font-size: 14px;color: rgb(223, 3, 14);text-decoration: line-through;" [innerHtml]="active.oldvalue"></span>
-                                                </ng-container>
-<!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
-                                            </a>
-                                            <button class="btn btn-sm url" (click)="active.showmore = !active.showmore"  style="     position: absolute;
+                                                    <ng-container *ngIf="active.newvalue">
+                                                        <span class="d-block break-word" [ngClass]="active.showmore?'overflow-auto':''" style="font-size: 14px; color: rgb(7, 116, 7);" [innerHtml]="active.newvalue"></span>
+                                                    </ng-container>
+                                                    <hr/>
+                                                    <ng-container *ngIf="active.oldvalue">
+                                                        <span class="d-block break-word" [ngClass]="active.showmore?'overflow-auto':''" style="font-size: 14px;color: rgb(223, 3, 14);text-decoration: line-through;" [innerHtml]="active.oldvalue"></span>
+                                                    </ng-container>
+                                                    <!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
+                                                </a>
+                                                <button class="btn btn-sm url" (click)="active.showmore = !active.showmore"  style="     position: absolute;
                                                     top: -12px;
                                                     right: -10px;
                                                     font-size: 25px!important;">
-                                                <i class="fa  {{ active.showmore ? 'fa-angle-double-down' : 'fa-angle-double-up'}}" style="font-size: 16px"></i>
-                                            </button>
-                                        </ng-container>
-                                        <ng-container *ngSwitchCase="14">
-                                            <a>
-                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
-                                                <span class="cu-notification-item__text"
-                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                    <i class="fa  {{ active.showmore ? 'fa-angle-double-down' : 'fa-angle-double-up'}}" style="font-size: 16px"></i>
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="14">
+                                                <a>
+                                                    <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                    <span class="cu-notification-item__text"
+                                                          style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
 
-                                                <ng-container *ngIf="active.newvalue">
-                                                    <span class="d-block overflow-auto" style="font-size: 14px; color: rgb(7, 116, 7);" [innerHtml]="active.newvalue"></span>
-                                                </ng-container>
-                                                <hr/>
-                                                <ng-container *ngIf="active.oldvalue">
-                                                    <span class="d-block overflow-auto" style="font-size: 14px;color: rgb(223, 3, 14);text-decoration: line-through;" [innerHtml]="active.oldvalue"></span>
-                                                </ng-container>
-<!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
-                                            </a>
-                                            <button class="btn btn-sm url" (click)="active.showmore = !active.showmore"  style="     position: absolute;
+                                                    <ng-container *ngIf="active.newvalue">
+                                                        <span class="d-block break-word" [ngClass]="active.showmore?'overflow-auto':''" style="font-size: 14px; color: rgb(7, 116, 7);" [innerHtml]="active.newvalue"></span>
+                                                    </ng-container>
+                                                    <hr/>
+                                                    <ng-container *ngIf="active.oldvalue">
+                                                        <span class="d-block break-word" [ngClass]="active.showmore?'overflow-auto':''" style="font-size: 14px;color: rgb(223, 3, 14);text-decoration: line-through;" [innerHtml]="active.oldvalue"></span>
+                                                    </ng-container>
+                                                    <!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
+                                                </a>
+                                                <button class="btn btn-sm url" (click)="active.showmore = !active.showmore"  style="     position: absolute;
                                                     top: -12px;
                                                     right: -10px;
                                                     font-size: 25px!important;">
-                                                <i class="fa  {{ active.showmore ? 'fa-angle-double-down' : 'fa-angle-double-up'}}" style="font-size: 16px"></i>
-                                            </button>
+                                                    <i class="fa  {{ active.showmore ? 'fa-angle-double-down' : 'fa-angle-double-up'}}" style="font-size: 16px"></i>
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="8">
+                                                <a>
+                                                    <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                    <span class="cu-notification-item__text"
+                                                          style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                    <ng-container *ngIf="active.oldvalue">
+                                                        <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
+                                                            <i class="{{getPriority(active.oldvalue).icon}}"></i>
+                                                            &nbsp;
+                                                            {{ 'priority.' + getPriority(active.oldvalue).name | translate }}
+                                                        </div>
+                                                    </ng-container>
+                                                    <i class="fa fa-long-arrow-alt-right"></i>
+                                                    <ng-container *ngIf="active.newvalue">
+                                                        <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
+                                                            <i class="{{getPriority(active.newvalue).icon}}"></i>
+                                                            &nbsp;
+                                                            {{ 'priority.' + getPriority(active.newvalue).name | translate }}
+                                                        </div>
+                                                    </ng-container>
+                                                    <!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
+                                                </a>
+                                            </ng-container>
+                                            <ng-container *ngSwitchDefault>
+                                                <a>
+                                                    <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
+                                                    <span class="cu-notification-item__text"
+                                                          style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
+                                                    <ng-container *ngIf="active.oldvalue">
+                                                        <span style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
+                                                    </ng-container>
+                                                    <ng-container *ngIf="active.newvalue">
+                                                        <span style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
+                                                    </ng-container>
+                                                    <!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
+                                                </a>
+                                            </ng-container>
                                         </ng-container>
-                                        <ng-container *ngSwitchCase="8">
-                                            <a>
-                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
-                                                <span class="cu-notification-item__text"
-                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
-                                                <ng-container *ngIf="active.oldvalue">
-                                                    <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
-                                                        <i class="{{getPriority(active.oldvalue).icon}}"></i>
-                                                        &nbsp;
-                                                        {{ 'priority.' + getPriority(active.oldvalue).name | translate }}
-                                                    </div>
-                                                </ng-container>
-                                                <i class="fa fa-long-arrow-alt-right"></i>
-                                                <ng-container *ngIf="active.newvalue">
-                                                    <div class="cu-notification-item__status cu-notification-item__status_before d-inline">
-                                                        <i class="{{getPriority(active.newvalue).icon}}"></i>
-                                                        &nbsp;
-                                                        {{ 'priority.' + getPriority(active.newvalue).name | translate }}
-                                                    </div>
-                                                </ng-container>
-<!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
-                                            </a>
-                                        </ng-container>
-                                        <ng-container *ngSwitchDefault>
-                                            <a>
-                                                <span style="font-size: 14px; color: rgb(5, 62, 146);">{{active.NguoiTao.hoten}}</span>
-                                                <span class="cu-notification-item__text"
-                                                      style="cursor: pointer;">{{getActionActivities(active)}}</span>&nbsp;
-                                                <ng-container *ngIf="active.oldvalue">
-                                                    <span style="font-size: 14px; color: rgb(207, 22, 102); text-decoration: line-through;">{{active.oldvalue}}</span>&nbsp;-
-                                                </ng-container>
-                                                <ng-container *ngIf="active.newvalue">
-                                                    <span style="font-size: 14px; color: rgb(7, 116, 7)">{{active.newvalue}}</span>&nbsp;-
-                                                </ng-container>
-<!--                                                <span class="date-type">{{active.CreatedDate | timezone}}</span>-->
-                                            </a>
-                                        </ng-container>
-                                    </ng-container>
-                                    <br>
+                                        <br>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </ng-container>
+                <ng-template #nodata>
+                    <div class="hoatdong-body-1" *ngFor="let item of ListData">
+                        <h3 class="text-center">Không có dữ liệu</h3>
+                    </div>
+                </ng-template>
             </div>
         </div>
     </kt-portlet-body>

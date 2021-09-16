@@ -180,6 +180,9 @@
   <data name="ww_thongbaowework" xml:space="preserve">
     <value>Thông báo JeeWork</value>
   </data>
+  <data name="ww_updatethaoluan" xml:space="preserve">
+    <value>$nguoigui$ đã cập nhật thảo luận</value>
+  </data>
   <data name="ww_xoacongviec" xml:space="preserve">
     <value>$nguoigui$ đã xóa công việc $tencongviec$</value>
   </data>

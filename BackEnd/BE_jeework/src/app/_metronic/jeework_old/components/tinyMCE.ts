@@ -4,8 +4,9 @@ import { environment } from 'src/environments/environment';
 const tinyMCE = {
     // plugins: 'autoresize autosave paste print code preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
     plugins: 'link image code paste table lists preview',
-    toolbar: 'undo redo | bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
+    toolbar: 'undo redo | bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table | removeformat code paste pastetext preview ',
     image_uploadtab: true,
+    paste_block_drop: true,
     menubar: false,
     paste_as_text: true,
     paste_data_images: true,
@@ -14,7 +15,7 @@ const tinyMCE = {
     height: 100,
     min_height: 100,
     max_height: 350,
-    content_style: "body { margin: 1rem auto; max-width: 900px; }",
+    // content_style: "body { margin: 1rem auto; max-width: 900px; }",
     autoresize_bottom_margin: 25,
     autoresize_on_init: true,
     language: 'vi',
@@ -26,6 +27,8 @@ const tinyMCE = {
     },
     table_responsive_width: true,
     images_upload_url: environment.APIROOTS + '/api/attachment/upload-img',
+    default_link_target: '_blank',
+    link_context_toolbar: true,
     // automatic_uploads: true,
     // images_upload_base_path: '/images',
     // images_upload_credentials: true,
@@ -50,7 +53,6 @@ const tinyMCE = {
                 failure('Invalid JSON: ' + xhr.responseText);
                 return;
             }
-
             success(json.imageUrl);
         };
         formData = new FormData();

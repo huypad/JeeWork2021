@@ -167,7 +167,7 @@
                             <div (click)="ShowCloseTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedtask">
+                            <mat-slide-toggle [(ngModel)]="showclosedtask" (ngModelChange)="LoadData()">
                             </mat-slide-toggle>
                         </button>
                         <button mat-menu-item class="d-flex">

@@ -8,24 +8,13 @@ import {TokenStorage} from './../../../../../_metronic/jeework_old/core/auth/_se
 import {QueryParamsModelNew} from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import {MenuPhanQuyenServices} from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import {AttachmentService} from './../../../services/attachment.service';
-import {
-    AttachmentModel,
-    FileUploadModel,
-} from './../../Model/department-and-project.model';
-import {AddNewFieldsComponent} from './../add-new-fields/add-new-fields.component';
-import {StatusDynamicDialogComponent} from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+
 import {WorkService} from './../../../work/work.service';
-import {DuplicateTaskNewComponent} from './../duplicate-task-new/duplicate-task-new.component';
-import {WorkListNewDetailComponent} from './../work-list-new-detail/work-list-new-detail.component';
 import {DialogSelectdayComponent} from './../../../report/dialog-selectday/dialog-selectday.component';
 import {
     WorkModel,
-    UpdateWorkModel,
-    UserInfoModel,
-    WorkDuplicateModel,
-    WorkGroupModel,
 } from './../../../work/work.model';
-import {ColumnWorkModel, DrapDropItem} from './../drap-drop-item.model';
+import { DrapDropItem} from './../drap-drop-item.model';
 import {
     filter,
     tap,
@@ -44,13 +33,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {FormBuilder, FormControl} from '@angular/forms';
 import {Router, ActivatedRoute} from '@angular/router';
 import {ProjectsTeamService} from './../../Services/department-and-project.service';
-import {
-    CdkDropList,
-    CdkDragDrop,
-    moveItemInArray,
-    transferArrayItem,
-    CdkDragStart,
-} from '@angular/cdk/drag-drop';
+
 import {
     Component,
     OnInit,

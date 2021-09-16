@@ -558,7 +558,20 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     if (data.Attachments != null)
                     {
-                        foreach (var item in data.Attachments)
+                        // Xóa các file không tồn tại trong list
+                        string id_atts = string.Join(",", data.Attachments.Where(x => x.IdRow > 0).Select(x => x.IdRow));
+                        if (id_atts != "")//xóa attachments
+                        {
+                            string strDel = "update we_attachment set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + $" where Disabled = 0 and object_id = {data.id_row} and object_type = 2 and id_row not in ( { id_atts } )";
+                            if (cnn.ExecuteNonQuery(strDel) < 0)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                        }
+                        //insert thêm tài liệu IdRow = 0;
+                        var newListAttachments = data.Attachments.Where( x => x.IdRow == 0);
+                        foreach (var item in newListAttachments)
                         {
                             var temp = new AttachmentModel()
                             {
@@ -601,7 +614,6 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             }
                         }
                     }
-
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     //string LogContent = "", LogEditContent = "";
                     //LogEditContent = DpsPage.GetEditLogContent(old, dt);
@@ -617,6 +629,35 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(16, ConnectionString);
+                    #endregion
+                    #region Notify assign
+                    Hashtable has_replace = new Hashtable();
+                    foreach (var item in data.Users)
+                    {
+                        NotifyModel notify_model = new NotifyModel();
+                        has_replace = new Hashtable();
+                        notify_model.AppCode = "WORK";
+                        notify_model.From_IDNV = loginData.UserID.ToString();
+                        notify_model.To_IDNV = item.id_user.ToString();
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_updatethaoluan", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+
+                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                        if (DataAccount == null)
+                            return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info is not null)
+                        {
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                        }
+                    }
+                    #endregion
                     if (data.email)
                         WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
                     return JsonResultCommon.ThanhCong(data);

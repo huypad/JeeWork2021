@@ -1833,15 +1833,12 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-
                     if (!WeworkLiteController.CheckCustomerID(id, "we_work", loginData, cnn))
                     {
-                        return JsonResultCommon.Custom("Công việc không không tồn tại");
+                        return JsonResultCommon.Custom("Công việc không tồn tại");
                     }
-
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -6134,9 +6131,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
-                            ,iIf(  w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf( w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf( ( (deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
+                            ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
+                            ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
+                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -6583,7 +6580,10 @@ where u.disabled = 0 and u.loai = 2";
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án");
                     bool rs = Common.CheckRoleByProject(id_project_team, loginData, cnn);
-                    
+                    if (!rs)
+                    {
+                        return JsonResultCommon.Custom("Bạn không có quyền xem công việc của người khác");
+                    }
                     data_newfield = "select * from we_newfileds_values where id_project_team = " + id_project_team + "";
                     #endregion
                     string strW = "";
@@ -6801,20 +6801,6 @@ where u.disabled = 0 and u.loai = 2";
                                 }
                                 #endregion
                                 dr["DataChildren"] = dt_parent;
-                                //foreach (DataRow item in dt_parent)
-                                //{
-                                //    dt_parent.Rows[0]["Tags"] = cnn.CreateDataTable(queryTag + dt_parent.Rows[0]["id_row"]);
-                                //    row_user = dt_users.Select("id_parent is not null and loai = 1 and id_work = " + dt_parent.Rows[0]["id_row"]);
-                                //    if (row_user.Any())
-                                //        dt_parent.Rows[0]["User"] = row_user.CopyToDataTable();
-                                //    row_user = dt_users.Select("id_parent is not null and loai = 2 and id_work = " + dt_parent.Rows[0]["id_row"]);
-                                //    if (row_user.Any())
-                                //        dt_parent.Rows[0]["Follower"] = row_user.CopyToDataTable();
-                                //    dt_parent.Rows[0]["UserSubtask"] = new DataTable();
-                                //    dt_parent.Rows[0]["DataStatus"] = list_status_user(dt_parent.Rows[0]["id_row"].ToString(), id_project_team, loginData, ConnectionString, DataAccount);
-                                //    dt_parent.AcceptChanges();
-                                //    dr["DataChildren"] = dt_parent;
-                                //}
                             }
                             else
                                 dr["DataChildren"] = dt_parent;
@@ -6824,12 +6810,6 @@ where u.disabled = 0 and u.loai = 2";
                         if (rows.Any())
                             tmp = rows.CopyToDataTable();
                     }
-
-                    if (!rs)
-                    { // không có quyền xem công việc người khác
-
-                    }
-
                     var data = new
                     {
                         datawork = tmp,

@@ -117,7 +117,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 	CreaterGroupChat() {
 		// this.dcmt.body.classList.add('header-fixed');
 		const dialogRef = this.dialog.open(CreateConvesationGroupComponent, {
-			width: '500px',
+			// width: '500px',
 			panelClass: 'mat-dialog-popup'
 		});
 		dialogRef.afterClosed().subscribe(res => {
@@ -140,7 +140,7 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 	CreaterUserChat() {
 		// this.dcmt.body.classList.add('header-fixed');
 		const dialogRef = this.dialog.open(CreateConversationUserComponent, {
-			width: '500px',
+			// width: '500px',
 			panelClass: 'mat-dialog-popup'
 		});
 		dialogRef.afterClosed().subscribe(res => {

@@ -187,6 +187,11 @@ export class WeWorkService {
         return this.http.get<any>(environment.HOST_JEELANDINGPAGE_API + `/api/widgets/Get_DSNhacNho`, {headers: httpHeaders});
     }
 
+    Count_SoLuongNhacNho(): Observable<any> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        return this.http.get<any>(environment.HOST_JEELANDINGPAGE_API + `/api/widgets/Count_SoLuongNhacNho`, { headers: httpHeaders });
+    }
+
     //#region nhắc nhở
     // getTopicObjectIDByComponentName(componentName): Observable<any> {
     //     const httpHeaders = this.httpUtils.getHTTPHeaders();

@@ -122,57 +122,61 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
         this.activatedRoute.params.subscribe((params) => {
             this.loadingSubject.next(false);
             this.ItemData.Id = params['id'];
-            const componentName = this.componentName + this.ItemData.Id;
-            this._service.TopicDetail(this.ItemData.Id).subscribe((res) => {
-                if (res && res.status == 1) {
-                    this.item = res.data;
-                    const filter: any = {};
-                    // filter.key = 'id_project_team';
-                    // filter.value = this.item.id_project_team;
-                    filter.id_project_team = this.item.id_project_team;
-                    this.WeWorkService.list_account(filter).subscribe((res) => {
-                        this.changeDetectorRefs.detectChanges();
-                        if (res && res.status === 1) {
-                            this.listUser = res.data;
-                            this.setUpDropSearchNhanVien();
-                            this.changeDetectorRefs.detectChanges();
-                        }
-                    });
-                    this.changeDetectorRefs.detectChanges();
-                } else {
-                    this.item = Object.assign({}, this.oldItem);
-                    this.initProduct();
-                    this.layoutUtilsService.showActionNotification(
-                        res.error.message,
-                        MessageType.Read,
-                        999999999,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        0
-                    );
-                }
-            });
-            this.WeWorkService.getTopicObjectIDByComponentName(componentName)
-                .pipe(
-                    tap((res) => {
-                        this.topicObjectID$.next('');
-                        setTimeout(() => {
-                            this.topicObjectID$.next(res);
-                        }, 50);
-                    }),
-                    catchError((err) => {
-                        return of();
-                    }),
-                    finalize(() => {
-                    }),
-                    share(),
-                    takeUntil(this.onDestroy)
-                )
-                .subscribe();
+            this.LoadData();
         });
 
+    }
+
+    LoadData() {
+        const componentName = this.componentName + this.ItemData.Id;
+        this._service.TopicDetail(this.ItemData.Id).subscribe((res) => {
+            if (res && res.status == 1) {
+                this.item = res.data;
+                const filter: any = {};
+                // filter.key = 'id_project_team';
+                // filter.value = this.item.id_project_team;
+                filter.id_project_team = this.item.id_project_team;
+                this.WeWorkService.list_account(filter).subscribe((res) => {
+                    this.changeDetectorRefs.detectChanges();
+                    if (res && res.status === 1) {
+                        this.listUser = res.data;
+                        this.setUpDropSearchNhanVien();
+                        this.changeDetectorRefs.detectChanges();
+                    }
+                });
+                this.changeDetectorRefs.detectChanges();
+            } else {
+                this.item = Object.assign({}, this.oldItem);
+                this.initProduct();
+                this.layoutUtilsService.showActionNotification(
+                    res.error.message,
+                    MessageType.Read,
+                    999999999,
+                    true,
+                    false,
+                    3000,
+                    'top',
+                    0
+                );
+            }
+        });
+        this.WeWorkService.getTopicObjectIDByComponentName(componentName)
+            .pipe(
+                tap((res) => {
+                    this.topicObjectID$.next('');
+                    setTimeout(() => {
+                        this.topicObjectID$.next(res);
+                    }, 10);
+                }),
+                catchError((err) => {
+                    return of();
+                }),
+                finalize(() => {
+                }),
+                share(),
+                takeUntil(this.onDestroy)
+            )
+            .subscribe();
     }
 
     ngOnDestroy(): void {
@@ -196,7 +200,8 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
         this._service.Add_Followers(this.ItemData.Id, val).subscribe((res) => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
-                this.ngOnInit();
+                // this.ngOnInit();
+                this.LoadData();
                 this.changeDetectorRefs.detectChanges();
                 this.layoutUtilsService.showActionNotification(
                     this.translate.instant('GeneralKey.capnhatthanhcong'),
@@ -245,7 +250,8 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
             this._service.Delete_Followers(this.ItemData.Id, val).subscribe((res) => {
                 this.layoutUtilsService.OffWaitingDiv();
                 if (res && res.status === 1) {
-                    this.ngOnInit();
+                    // this.ngOnInit();
+                    this.LoadData();
                     this.changeDetectorRefs.detectChanges();
                     this.layoutUtilsService.showActionNotification(
                         _deleteMessage,
@@ -278,7 +284,8 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
             this.layoutUtilsService.OffWaitingDiv();
 
             if (res && res.status == 1) {
-                this.ngOnInit();
+                // this.ngOnInit();
+                this.LoadData();
                 this.changeDetectorRefs.detectChanges();
                 this.layoutUtilsService.showActionNotification(
                     this.translate.instant('GeneralKey.capnhatthanhcong'),
@@ -318,7 +325,8 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(TopicEditComponent, {data: {_item}});
         dialogRef.afterClosed().subscribe((res) => {
-            this.ngOnInit();
+            // this.ngOnInit();
+            this.LoadData();
             if (res) {
                 this.layoutUtilsService.showActionNotification(
                     _saveMessage,
@@ -470,7 +478,8 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
             this._attservice.delete_attachment(val).subscribe((res) => {
                 this.layoutUtilsService.OffWaitingDiv();
                 if (res && res.status === 1) {
-                    this.ngOnInit();
+                    // this.ngOnInit();
+                    this.LoadData();
                     this.changeDetectorRefs.detectChanges();
                     this.layoutUtilsService.showActionNotification(
                         _deleteMessage,
@@ -541,7 +550,8 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
                 this._attservice.Upload_attachment(_model).subscribe((res) => {
                     this.changeDetectorRefs.detectChanges();
                     if (res && res.status === 1) {
-                        this.ngOnInit();
+                        // this.ngOnInit();
+                        this.LoadData();
                         const _messageType = this.translate.instant(
                             'GeneralKey.capnhatthanhcong'
                         );

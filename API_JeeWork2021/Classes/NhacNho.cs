@@ -91,7 +91,7 @@ namespace API_JeeWork2021.Classes
                                             foreach (var account in DataAccount)
                                             {
                                                 ham = "SLCongviecUser"; idkh = item.ToString();
-                                                SLCongviecUser(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
+                                                SLCongviecPhuTrach(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
                                                 ham = "SLCongviecQuaHan"; idkh = item.ToString();
                                                 SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
                                                 ham = "SLCongViecHetHanTrongNgay"; idkh = item.ToString();
@@ -214,7 +214,7 @@ namespace API_JeeWork2021.Classes
             SendTestReminder(_configuration, _producer, demo);
         }
 
-        public static long SLCongviecUser(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
+        public static long SLCongviecPhuTrach(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
             string StrW = " and id_nv = " + UserID +" ";
             DataSet ds = WorkClickupController.GetWorkByEmployee(null,cnn, new QueryParams(), UserID, DataAccount, StrW );

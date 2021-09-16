@@ -36,14 +36,15 @@ export class RemindService {
             this.username = data['user']['username'];
             this.hubConnection.invoke('onConnectedTokenAsync', _token, this.username, environment.APPCODE);
 
-
             this.hubConnection.on('NewMessageReceived', (data: any) => {
                 this.NewMess$.next(data);
             });
 
 
         }).catch(err => {
+            console.log('error', err);
         });
+
     }
 
     disconnectToken() {

@@ -113,12 +113,16 @@ export class TopicEditComponent implements OnInit {
         });
         this.title = this.translate.instant('GeneralKey.choncocautochuc') + '';
         this.item = this.data._item;
+        console.log(this.item);
+        if (this.data._item?.Attachment) {
+            this.ListAttachments = this.data._item.Attachment;
+        }
         this.tinyMCE = tinyMCE;
         if (+this.item.id_project_team > 0) {
             this.DisableTeam = true;
             this.changeproject(this.item.id_project_team);
         }
-        if (this.item.id_project_team == 'discussions') {
+        if (this.item.id_project_team === 'discussions') {
             this.item.id_project_team = '';
         }
         const filter: any = {};
@@ -193,8 +197,8 @@ export class TopicEditComponent implements OnInit {
             email: ['' + this.item.email, Validators.required],
             NoiDung: ['' + this.item.description],
         });
-		this.itemForm.controls["title"].markAsTouched();
-		this.itemForm.controls["id_project_team"].markAsTouched();
+        // this.itemForm.controls['title'].markAsTouched();
+        // this.itemForm.controls['id_project_team'].markAsTouched();
     }
 
     getHeight(): any {
@@ -244,7 +248,6 @@ export class TopicEditComponent implements OnInit {
         _item.id_project_team = controls.id_project_team.value;
         _item.title = controls.title.value;
         _item.description = controls.NoiDung.value;
-        _item.Attachments = this.ListAttachments;
         _item.email = controls.email.value;
         this.list_User = [];
         if (this.selectedUser.length > 0) {
@@ -277,7 +280,11 @@ export class TopicEditComponent implements OnInit {
                 });
             }
         }
-
+        // check file update
+        this.ListAttachments.forEach(x => {
+            x.IdRow = x.id_row > 0 ? x.id_row : 0;
+        });
+        _item.Attachments = this.ListAttachments;
         _item.Users = this.list_User;
         return _item;
     }
@@ -421,8 +428,7 @@ export class TopicEditComponent implements OnInit {
             const reader = new FileReader();
             reader.readAsDataURL(evt.target.files[0]);
             let base64Str;
-            setTimeout(()=>{
-                debugger
+            setTimeout(() => {
                 base64Str = reader.result as String;
                 const metaIdx = base64Str.indexOf(';base64,');
                 base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
@@ -436,18 +442,21 @@ export class TopicEditComponent implements OnInit {
                 ct.IsAdd = true;
                 console.log(ct);
                 this.ListAttachments.push(ct);
-            },500);
+            }, 500);
         } else {
         }
     }
 
-    preview(item) {
+    DownloadFile(link) {
+        window.open(link);
     }
 
-    DownloadFile(item) {
+    preview(link) {
+        this.layoutUtilsService.ViewDoc(link);
     }
 
-    Delete_File(item) {
+    Delete_File(index) {
+        this.ListAttachments.splice(index, 1);
     }
 
     isChangeData() {

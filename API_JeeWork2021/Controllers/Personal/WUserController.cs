@@ -778,7 +778,7 @@ and ( (start_date <= @from and end_date >= @from ) or (start_date <= @to and end
                     //               congviechethantrongngay = NhacNho.SLCongViecHetHanTrongNgay(r.UserId, r.CustomerID, cnn, _configuration, _producer, DataAccount),
                     //               duanquahan = NhacNho.SLDuAnQuaHan(r.UserId, r.CustomerID, cnn, _configuration, _producer),
                     //           };
-                    var data = NhacNho.SLCongviecUser(iduser, idk, cnn, _configuration, _producer, DataAccount);
+                    var data = NhacNho.SLCongviecPhuTrach(iduser, idk, cnn, _configuration, _producer, DataAccount);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }

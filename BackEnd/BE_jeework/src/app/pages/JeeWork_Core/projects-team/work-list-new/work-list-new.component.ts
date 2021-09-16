@@ -184,7 +184,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const today = new Date();
         this.filterDay = {
             endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(),today.getMonth() - 6, 1),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         };
 
         this.column_sort = this.sortField[0];
@@ -399,7 +399,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                                 this.listFilter = this.data.Filter;
                                 this.ListColumns = this.data.TenCot;
                                 // xóa title khỏi cột
-                                var colDelete = ['title'];
+                                const colDelete = ['title'];
                                 colDelete.forEach((element) => {
                                     var indextt = this.ListColumns.findIndex(
                                         (x) => x.fieldname == element
@@ -409,9 +409,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                                     }
                                 });
 
-                                // this.ListColumns.sort((a, b) =>
-                                //   a.title > b.title ? 1 : b.title > a.title ? -1 : 0
-                                // ); // xếp theo anphabet
+
                                 this.ListColumns.sort((a, b) =>
                                     a.id_project_team > b.id_project_team
                                         ? -1
@@ -419,11 +417,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                                             ? 1
                                             : 0
                                 ); // nào chọn xếp trước
-                                // this.ListTasks = this.data.datawork;
                                 if (!this.CheckRoles(3)) {
                                     this.ListTasks = this.data.datawork.filter(x => this.isAssignForme(x));
                                 } else {
                                     this.ListTasks = this.data.datawork;
+                                }
+
+                                if (!this.showclosedtask) {
+                                    this.ListTasks = this.ListTasks.filter(x => x.end_date === null);
                                 }
 
                                 this.Emtytask = true;
@@ -629,7 +630,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                 this.listFilter.forEach((val) => {
                     if (this.CheckDataStatus(val, element)) {
                         val.data.push(element);
-                        this.Emtytask = false;
+                        if (element.end_date == null) {
+                            this.Emtytask = false;
+                        }
+
                     } else if (this.CheckDataAssigne(val, element)) {
                         if (
                             element.User?.length == 1 ||
@@ -652,14 +656,17 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     isShowStatus(status) {
-        if (status.data.length > 0 && this.LoadClosedTask(status.id_row)) {
+        if (status.data.length > 0) {
             return true;
         }
         if (status.data.length == 0 && this.showemptystatus) {
             return true;
         }
         if (this.Emtytask && status.id_row == this.statusDefault) {
-            this.newtask = this.statusDefault;
+            if (this.newtask < 0) {
+                this.newtask = this.statusDefault;
+            }
+
             return true;
         }
         return false;
@@ -1408,7 +1415,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     ShowCloseTask() {
         this.showclosedtask = !this.showclosedtask;
-        // this.LoadData();
+        this.LoadData();
     }
 
     ShowClosesubTask() {
@@ -1416,15 +1423,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         // this.LoadData();
     }
 
-    LoadClosedTask(val) {
-        if (val == this.ItemFinal) {
-            return this.showclosedtask;
-        }
-        return true;
-    }
 
     loadSubtask() {
-        var isExpanded = this.filter_subtask.value == 'show' ? true : false;
+        const isExpanded = this.filter_subtask.value == 'show' ? true : false;
 
         for (let i of this.listStatus) {
             i.data.forEach((element) => {
@@ -1462,7 +1463,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this._service.DeleteTask(task.id_row).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
-            }else{
+            } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });

@@ -550,9 +550,7 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                                 notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_comment", "", "vi");
                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                 notify_model.ReplaceData = has_replace;
-                                //notify_model.To_Link_MobileApp = "";
-                                //notify_model.To_Link_WebApp = "/tasks(auxName:aux/detail/" + data.object_id + ")";
-                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.object_id.ToString());
                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.object_id.ToString());
 
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();

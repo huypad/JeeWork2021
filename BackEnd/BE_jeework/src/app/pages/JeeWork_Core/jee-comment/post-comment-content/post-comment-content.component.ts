@@ -137,6 +137,7 @@ export class JeeCommentPostContentComponent implements OnInit, OnDestroy {
   }
 
   clickButtonShowReply() {
+    this.isFocus$$.next(true);
     if (this.isFirstTime) {
       this.ClickShowReply$.next(true);
       this.showEnterComment$.next(true);

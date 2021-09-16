@@ -35,8 +35,7 @@
             </div>
             <div class="row" style="margin-bottom: 10px;">
                 <div class="col-md-12 row kt--margin-bottom-10-mobile">
-                    <span style="padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{
-                        'topic.nguoitheodoi' | translate }} : </span>
+                    <span style="padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{'topic.nguoitheodoi' | translate }} : </span>
                     <div class="row" style="flex-grow: 1;">
                         <ng-container *ngFor="let us of this.selectedUser;let index = index">
                             <div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
@@ -105,25 +104,27 @@
                 </div>
             </div>
             <div class="row comment-box" *ngIf="ListAttachments?ListAttachments.length>0:false">
-                <div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of ListAttachments;">
-                    <div class="attach-item show-action">
+                <div class="col-md-12 kt-margin-bottom-10-mobile" *ngFor="let att2 of ListAttachments;let index = index">
+                    <div class="attach-item show-action align-items-center">
                         <div class="attach-item-icon">
                             <img src="{{att2.icon}}" />
                         </div>
                         <div class="attach-item-name">
-                            <p>{{att2.filename}}</p>
+                            <p class="mg-0">{{att2.filename}}</p>
                         </div>
 
                         <div class="attach-item-del">
-                            <button mat-icon-button class="text-success" (click)="preview(att2.path)" type="button"
-                                matTooltip="{{ 'topic.preview' | translate}}">
-                                <mat-icon>remove_red_eye</mat-icon>
-                            </button>
-                            <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)" type="button"
-                                matTooltip="{{ 'topic.download' | translate}}">
-                                <mat-icon>cloud_download</mat-icon>
-                            </button>
-                            <button mat-icon-button color="warn" (click)="Delete_File(att2.id_row)" type="button"
+                            <ng-container *ngIf="att2 && att2.path">
+                                <button mat-icon-button class="text-success" (click)="preview(att2.path)" type="button"
+                                        matTooltip="{{ 'topic.preview' | translate}}">
+                                    <mat-icon>remove_red_eye</mat-icon>
+                                </button>
+                                <button mat-icon-button color="primary" (click)="DownloadFile(att2.path)" type="button"
+                                        matTooltip="{{ 'topic.download' | translate}}">
+                                    <mat-icon>cloud_download</mat-icon>
+                                </button>
+                            </ng-container>
+                            <button mat-icon-button color="warn" (click)="Delete_File(index)" type="button"
                                 matTooltip="Xóa">
                                 <mat-icon>clear</mat-icon>
                             </button>
@@ -131,10 +132,17 @@
                     </div>
                 </div>
             </div>
-            <div class="row" *ngIf="false">
+            <div class="row form-group url">
                 <input #csvInput hidden="true" type="file" onclick="this.value=null"
                     (change)="save_file_Direct($event, '1')" />
-                <button (click)="csvInput.click()" class="btn btn-primary">Thêm file đính kèm</button>
+                <div class="col-12">
+<!--                    <span (click)="csvInput.click()" class="text-success">Thêm file đính kèm</span>-->
+                    <a class="action" (click)="csvInput.click()" >
+                        <i matTooltip="{{ 'topic.upload' | translate }}"
+                           class="las la-paperclip"></i>&nbsp;
+                        <span translate="work.themtailieu"></span>
+                    </a>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-12 m--margin-bottom-10-mobile">
