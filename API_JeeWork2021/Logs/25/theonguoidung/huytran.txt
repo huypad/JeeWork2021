@@ -1,0 +1,30 @@
+17/09/2021 02:13:37 - Thêm mới dữ liệu folder: title=JeeHR, id_department=21805
+17/09/2021 02:14:00 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Suport JeeHR, id_department=21826, loai=0
+17/09/2021 02:14:15 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Suport NextHR, id_department=21826, loai=0
+17/09/2021 02:14:32 - Thêm mới dữ liệu công việc: title=Quản lý tuyển dụng, id_project_team=23575
+17/09/2021 02:14:39 - Chỉnh sửa dữ liệu công việc (218887), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:14:50 - Thêm mới dữ liệu công việc: title=Phân quyền, id_project_team=23575
+17/09/2021 02:14:58 - Thêm mới dữ liệu công việc: title=Máy chấm công, id_project_team=23576
+17/09/2021 02:15:02 - Thêm mới dữ liệu công việc: title=Đánh giá, id_project_team=23576
+17/09/2021 02:15:14 - Thêm mới dữ liệu công việc: title=Hợp đồng lao động, id_project_team=23576
+17/09/2021 02:15:28 - Thêm mới dữ liệu công việc: title=Hồ sơ nhân viên, id_project_team=23575
+17/09/2021 02:15:41 - Thêm mới dữ liệu công việc: title=Dashboard, id_project_team=23575
+17/09/2021 02:16:17 - Chỉnh sửa dữ liệu công việc (218888), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:19 - Chỉnh sửa dữ liệu công việc (218892), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:22 - Chỉnh sửa dữ liệu công việc (218893), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:25 - Chỉnh sửa dữ liệu công việc (218893), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:26 - Chỉnh sửa dữ liệu công việc (218892), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:30 - Chỉnh sửa dữ liệu công việc (218887), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:34 - Chỉnh sửa dữ liệu công việc (218890), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:16:37 - Chỉnh sửa dữ liệu công việc (218889), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:18:03 - Thêm mới dữ liệu công việc: title=Quản lý các loại phụ cấp, id_project_team=23576
+17/09/2021 02:18:12 - Thêm mới dữ liệu công việc: title=Quản lý danh mục thưởng, id_project_team=23576
+17/09/2021 02:18:28 - Thêm mới dữ liệu công việc: title=Quản lý phân quyền truy cập hệ thống, id_project_team=23576
+17/09/2021 02:18:43 - Chỉnh sửa dữ liệu công việc (218890), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:18:47 - Chỉnh sửa dữ liệu công việc (218890), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:18:52 - Chỉnh sửa dữ liệu công việc (218891), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:18:55 - Chỉnh sửa dữ liệu công việc (218895), Chi tiết xem trong log chỉnh sửa chức năng
+17/09/2021 02:19:02 - Thêm mới dữ liệu công việc: title=Theo dõi dữ liệu chấm công hàng ngày, id_project_team=23576
+17/09/2021 02:19:18 - Thêm mới dữ liệu công việc: title=Quản lý thông tin cá nhân, id_project_team=23575
+17/09/2021 02:19:28 - Thêm mới dữ liệu công việc: title=Quản lý cấp phát tài sản sử dụng, id_project_team=23575
+17/09/2021 02:20:05 - Thêm mới dữ liệu công việc: title=Cập nhật mô tả công việc cho từng chức danh công việc, id_project_team=23575

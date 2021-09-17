@@ -873,113 +873,11 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object getColorName(string name)
         {
-
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            string result = "";
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
+            var data = new
             {
-                switch (name)
-                {
-                    case "A":
-                        result = "rgb(197, 90, 240)";
-                        break;
-                    case "Ă":
-                        result = "rgb(241, 196, 15)";
-                        break;
-                    case "Â":
-                        result = "rgb(142, 68, 173)";
-                        break;
-                    case "B":
-                        result = "#02c7ad";
-                        break;
-                    case "C":
-                        result = "#0cb929";
-                        break;
-                    case "D":
-                        result = "rgb(44, 62, 80)";
-                        break;
-                    case "Đ":
-                        result = "rgb(127, 140, 141)";
-                        break;
-                    case "E":
-                        result = "rgb(26, 188, 156)";
-                        break;
-                    case "Ê":
-                        result = "rgb(51 152 219)";
-                        break;
-                    case "G":
-                        result = "rgb(44, 62, 80)";
-                        break;
-                    case "H":
-                        result = "rgb(248, 48, 109)";
-                        break;
-                    case "I":
-                        result = "rgb(142, 68, 173)";
-                        break;
-                    case "K":
-                        result = "#2209b7";
-                        break;
-                    case "L":
-                        result = "#759e13";
-                        break;
-                    case "M":
-                        result = "rgb(236, 157, 92)";
-                        break;
-                    case "N":
-                        result = "#bd3d0a";
-                        break;
-                    case "O":
-                        result = "rgb(51 152 219)";
-                        break;
-                    case "Ô":
-                        result = "rgb(241, 196, 15)";
-                        break;
-                    case "Ơ":
-                        result = "rgb(142, 68, 173)";
-                        break;
-                    case "P":
-                        result = "rgb(142, 68, 173)";
-                        break;
-                    case "Q":
-                        result = "rgb(91, 101, 243)";
-                        break;
-                    case "R":
-                        result = "rgb(44, 62, 80)";
-                        break;
-                    case "S":
-                        result = "rgb(122, 8, 56)";
-                        break;
-                    case "T":
-                        result = "rgb(120, 76, 240)";
-                        break;
-                    case "U":
-                        result = "rgb(51, 152, 219)";
-                        break;
-                    case "Ư":
-                        result = "rgb(241, 196, 15)";
-                        break;
-                    case "V":
-                        result = "rgb(142, 68, 173)";
-                        break;
-                    case "X":
-                        result = "rgb(142, 68, 173)";
-                        break;
-                    case "W":
-                        result = "rgb(211, 84, 0)";
-                        break;
-                }
-                var data = new
-                {
-                    Color = result
-                };
-                return JsonResultCommon.ThanhCong(data);
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
+                Color = GetColorName(name)
+            };
+            return JsonResultCommon.ThanhCong(data);
         }
         /// <summary>
         /// Lấy danh sách field động theo id_project_team, isnewfield: Field bên ngoài không select trong DB tùy mục đích người dùng
@@ -1141,6 +1039,279 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    ColumnName = r["columnname"],
                                    Description = r["type"],
                                    Priority = r["priority"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
+        /// <summary>
+        /// Danh sách field mới
+        /// </summary>
+        /// <param name="id_project_team"></param>
+        /// <param name="fieldID"></param>
+        /// <returns></returns>
+        [Route("get-options-new-field")]
+        [HttpGet]
+        public object GetOptions_NewField(long id, long fieldID, long type)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sqlq = "", columname = "", listdept = "", where = "where (where)";
+                    SqlConditions conditions = new SqlConditions();
+                    conditions.Add("disabled", 0);
+                    if (type < 3)
+                    {
+                        columname = "departmentid";
+                    }
+                    else
+                    {
+                        columname = "id_project_team";
+                    }
+                    conditions.Add("f." + columname + "", id);
+                    sqlq = $@"select fo.rowid, f.departmentid, f.id_project_team, fo.fieldid, fieldname, title" +
+                        ", value, position, color, note, isnewfield " +
+                        "from we_newfields_options fo join we_fields_project_team f " +
+                        "on f.id_row = fo.fieldid ";
+                    DataTable dt = cnn.CreateDataTable(sqlq + where, "(where)", conditions);
+                    if (type == 3)
+                    {
+                        listdept = " where f.departmentid in (" + ListIDDepartment(cnn, id) + ")";
+                        sqlq += listdept;
+                        DataTable f_de = cnn.CreateDataTable(sqlq);
+                        if (f_de.Rows.Count > 0)
+                        {
+                            foreach (DataRow item in f_de.Rows)
+                            {
+                                DataRow _ravi = dt.NewRow();
+                                _ravi["rowid"] = item["rowid"].ToString();
+                                _ravi["departmentid"] = item["departmentid"].ToString();
+                                _ravi["id_project_team"] = id;
+                                _ravi["fieldid"] = long.Parse(item["fieldid"].ToString());
+                                _ravi["fieldname"] = item["fieldname"].ToString();
+                                _ravi["title"] = item["title"].ToString();
+                                _ravi["value"] = item["value"].ToString();
+                                _ravi["isnewfield"] = (bool)item["isnewfield"];
+                                _ravi["color"] = item["color"].ToString();
+                                _ravi["note"] = item["note"].ToString();
+                                dt.Rows.Add(_ravi);
+                            }
+                        }
+                    }
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   RowID = r["RowID"],
+                                   Id_project_team = type == 3 ? r["id_project_team"] : "0",
+                                   id_department = type < 3 ? r["departmentid"] : "0",
+                                   Fieldname = r["fieldname"],
+                                   Position = r["position"],
+                                   Color = r["Color"],
+                                   Isnewfield = r["isnewfield"],
+                                   Value = r["Value"],
+                                   Title = r["title"],
+                                   FieldID = r["FieldID"],
+                               };
+                    data.OrderBy(x => x.Position).ThenByDescending(x => x.Id_project_team);
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// Danh sách view mặc định
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        [Route("get-list-default-view")]
+        [HttpGet]
+        public object GetListDefaultView([FromQuery] FilterModel filter)
+        {
+            //this.item.RowID
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sqlq = ""; string getValue = ""; string sql_cmd = "";
+                    string column_name = ", '' as DefaultView, '' as ObjectID, '' as view_id";
+                    sqlq = $@"select _view.id_row, _view.view_name, _view.description, _view.is_default, _view.icon " + column_name + " " +
+                        "from we_default_views _view";
+                    if (filter != null && filter.keys != null)
+                    {
+                        if (filter.keys.Contains("id_department") && !string.IsNullOrEmpty(filter["id_department"]) && int.Parse(filter["id_department"]) > 0)
+                        {
+                            //sqlq_default += " and id_department=" + filter["id_department"];
+                            sql_cmd = "select id_row, id_department, viewid, disabled, is_default " +
+                                "from we_department_view " +
+                                "where disabled = 0";
+                            getValue = cnn.ExecuteScalar(sql_cmd).ToString();
+                            if (getValue != null || getValue != "")
+                            {
+                                column_name = ",id_row as view_id,id_department as ObjectID,is_default as DefaultView,viewid";
+                                sqlq += " left join we_department_view de " +
+                                    "on de.viewid = _view.id_row and de.id_department = " + filter["id_department"] + " " +
+                                    "where disabled = 0";
+                            }
+                        }
+                        if (filter.keys.Contains("id_project_team") && !string.IsNullOrEmpty(filter["id_project_team"]))
+                        {
+                            //sqlq += " and id_project_team=" + filter["id_project_team"];
+                            sql_cmd = "select id_row, id_project_team, viewid, disabled, is_default " +
+                                "from we_projects_view " +
+                                "where disabled = 0";
+                            getValue = cnn.ExecuteScalar(sql_cmd).ToString();
+                            if (getValue != null || getValue != "")
+                            {
+                                column_name = ",id_row as view_id,id_project_team as ObjectID,is_default as DefaultView,viewid";
+                                sqlq += " left join we_projects_view pr " +
+                                    "on pr.viewid = _view.id_row and pr.id_project_team = " + filter["id_project_team"] + " " +
+                                    "where disabled = 0";
+                            }
+                        }
+                    }
+                    DataTable dt = cnn.CreateDataTable(sqlq);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var temp = dt.AsEnumerable();
+                    var data = (from r in temp
+                                select new
+                                {
+                                    id_row = r["id_row"],
+                                    view_name = r["view_name"],
+                                    description = r["description"],
+                                    is_default = r["is_default"],
+                                    icon = r["icon"],
+                                    DefaultView = r["DefaultView"],
+                                    ObjectID = r["ObjectID"],
+                                    view_id = r["view_id"],
+                                }).Distinct();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// DS template theo khách hàng
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_template_by_customer")]
+        [HttpGet]
+        public object ListTemplateByCustomer()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    SqlConditions conds = new SqlConditions(); string sql = "";
+                    conds.Add("Disabled", 0);
+                    conds.Add("is_template_center", 0);
+                    conds.Add("CustomerID", loginData.CustomerID);
+                    sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, customerid " +
+                        "from we_template_customer " +
+                        "where (where) order by Title";
+                    //Check CustommerID có template chưa nếu chưa thì thêm vào
+                    cnn.BeginTransaction();
+                    #region ktra k có thì thêm mới danh sách template cho kh mới
+                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and is_template_center =0 and CustomerID = " + loginData.CustomerID).ToString());
+                    if (soluong == 0)
+                    {
+                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list where is_template_center <>1 and disabled = 0");
+                        Hashtable val = new Hashtable();
+                        foreach (DataRow item in dt_listSTT.Rows)
+                        {
+                            val["Title"] = item["Title"];
+                            val["Description"] = item["Description"];
+                            val["TemplateID"] = item["id_row"];
+                            val["CustomerID"] = loginData.CustomerID;
+                            val["CreatedDate"] = Common.GetDateTime();
+                            val["CreatedBy"] = loginData.UserID;
+                            if (cnn.Insert(val, "we_template_customer") != 1)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                            string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString();
+                            string sql_insert = "";
+                            sql_insert = $@"insert into we_template_status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
+                                "select id_Row, " + idc + ", StatusName, description, GETUTCDATE(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
+                                "from we_status_list where disabled = 0 and id_template_list = " + item["id_row"] + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+
+                        }
+                    }
+                    #endregion
+                    cnn.EndTransaction();
+                    DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                    if (cnn.LastError != null || dt_template == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    string sql_status = "";
+                    sql_status = "select id_row, statusid, templateid, statusname, description, createddate" +
+                                ", type, isdefault, color, position, isfinal, isdeadline, istodo " +
+                        "from we_template_status where disabled = 0 " +
+                        "and templateid in (select id_row from we_template_customer " +
+                        "where disabled = 0 and customerid = " + loginData.CustomerID + ") " +
+                        "order by type, position";
+                    DataTable dt_status = cnn.CreateDataTable(sql_status);
+                    var data = from r in dt_template.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   description = r["description"],
+                                   isdefault = r["isdefault"],
+                                   color = r["color"],
+                                   templateid = r["templateid"],
+                                   customerid = r["customerid"],
+                                   status = from dr in dt_status.AsEnumerable()
+                                            where dr["TemplateID"].Equals(r["id_row"])
+                                            select new
+                                            {
+                                                id_row = dr["id_row"],
+                                                StatusID = dr["statusid"],
+                                                TemplateID = dr["templateid"],
+                                                StatusName = dr["statusname"],
+                                                description = dr["description"],
+                                                CreatedDate = dr["createddate"],
+                                                IsDefault = dr["isdefault"],
+                                                color = dr["color"],
+                                                Position = dr["position"],
+                                                IsFinal = dr["isfinal"],
+                                                IsDeadline = dr["isdeadline"],
+                                                IsTodo = dr["istodo"],
+                                                Type = dr["type"],
+                                            }
                                };
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -1362,274 +1533,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
         }
 
-        /// <summary>
-        /// Danh sách field mới
-        /// </summary>
-        /// <param name="id_project_team"></param>
-        /// <param name="fieldID"></param>
-        /// <returns></returns>
-        [Route("get-options-new-field")]
-        [HttpGet]
-        public object GetOptions_NewField(long id, long fieldID, long type)
-        {
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    string sqlq = "", columname = "", listdept = "", where = "where (where)";
-                    SqlConditions conditions = new SqlConditions();
-                    conditions.Add("disabled", 0);
-                    if (type < 3)
-                    {
-                        columname = "departmentid";
-                    }
-                    else
-                    {
-                        columname = "id_project_team";
-                    }
-                    conditions.Add("f." + columname + "", id);
-                    sqlq = $@"select fo.rowid, f.departmentid, f.id_project_team, fo.fieldid, fieldname, title" +
-                        ", value, position, color, note, isnewfield " +
-                        "from we_newfields_options fo join we_fields_project_team f " +
-                        "on f.id_row = fo.fieldid ";
-                    DataTable dt = cnn.CreateDataTable(sqlq + where, "(where)", conditions);
-                    if (type == 3)
-                    {
-                        listdept = " where f.departmentid in (" + ListIDDepartment(cnn, id) + ")";
-                        sqlq += listdept;
-                        DataTable f_de = cnn.CreateDataTable(sqlq);
-                        if (f_de.Rows.Count > 0)
-                        {
-                            foreach (DataRow item in f_de.Rows)
-                            {
-                                DataRow _ravi = dt.NewRow();
-                                _ravi["rowid"] = item["rowid"].ToString();
-                                _ravi["departmentid"] = item["departmentid"].ToString();
-                                _ravi["id_project_team"] = id;
-                                _ravi["fieldid"] = long.Parse(item["fieldid"].ToString());
-                                _ravi["fieldname"] = item["fieldname"].ToString();
-                                _ravi["title"] = item["title"].ToString();
-                                _ravi["value"] = item["value"].ToString();
-                                _ravi["isnewfield"] = (bool)item["isnewfield"];
-                                _ravi["color"] = item["color"].ToString();
-                                _ravi["note"] = item["note"].ToString();
-                                dt.Rows.Add(_ravi);
-                            }
-                        }
-                    }
-                    if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var data = from r in dt.AsEnumerable()
-                               select new
-                               {
-                                   RowID = r["RowID"],
-                                   Id_project_team = type == 3 ? r["id_project_team"] : "0",
-                                   id_department = type < 3 ? r["departmentid"] : "0",
-                                   Fieldname = r["fieldname"],
-                                   Position = r["position"],
-                                   Color = r["Color"],
-                                   Isnewfield = r["isnewfield"],
-                                   Value = r["Value"],
-                                   Title = r["title"],
-                                   FieldID = r["FieldID"],
-                               };
-                    data.OrderBy(x => x.Position).ThenByDescending(x => x.Id_project_team);
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
-        /// <summary>
-        /// Danh sách view mặc định
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        [Route("get-list-default-view")]
-        [HttpGet]
-        public object GetListDefaultView([FromQuery] FilterModel filter)
-        {
-            //this.item.RowID
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    string sqlq = ""; string getValue = ""; string sql_cmd = "";
-                    string column_name = ", '' as DefaultView, '' as ObjectID, '' as view_id";
-                    sqlq = $@"select _view.id_row, _view.view_name, _view.description, _view.is_default, _view.icon " + column_name + " " +
-                        "from we_default_views _view";
-                    if (filter != null && filter.keys != null)
-                    {
-                        if (filter.keys.Contains("id_department") && !string.IsNullOrEmpty(filter["id_department"]) && int.Parse(filter["id_department"]) > 0)
-                        {
-                            //sqlq_default += " and id_department=" + filter["id_department"];
-                            sql_cmd = "select id_row, id_department, viewid, disabled, is_default " +
-                                "from we_department_view " +
-                                "where disabled = 0";
-                            getValue = cnn.ExecuteScalar(sql_cmd).ToString();
-                            if (getValue != null || getValue != "")
-                            {
-                                column_name = ",id_row as view_id,id_department as ObjectID,is_default as DefaultView,viewid";
-                                sqlq += " left join we_department_view de " +
-                                    "on de.viewid = _view.id_row and de.id_department = " + filter["id_department"] + " " +
-                                    "where disabled = 0";
-                            }
-                        }
-                        if (filter.keys.Contains("id_project_team") && !string.IsNullOrEmpty(filter["id_project_team"]))
-                        {
-                            //sqlq += " and id_project_team=" + filter["id_project_team"];
-                            sql_cmd = "select id_row, id_project_team, viewid, disabled, is_default " +
-                                "from we_projects_view " +
-                                "where disabled = 0";
-                            getValue = cnn.ExecuteScalar(sql_cmd).ToString();
-                            if (getValue != null || getValue != "")
-                            {
-                                column_name = ",id_row as view_id,id_project_team as ObjectID,is_default as DefaultView,viewid";
-                                sqlq += " left join we_projects_view pr " +
-                                    "on pr.viewid = _view.id_row and pr.id_project_team = " + filter["id_project_team"] + " " +
-                                    "where disabled = 0";
-                            }
-                        }
-                    }
-                    DataTable dt = cnn.CreateDataTable(sqlq);
-                    if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var temp = dt.AsEnumerable();
-                    var data = (from r in temp
-                                select new
-                                {
-                                    id_row = r["id_row"],
-                                    view_name = r["view_name"],
-                                    description = r["description"],
-                                    is_default = r["is_default"],
-                                    icon = r["icon"],
-                                    DefaultView = r["DefaultView"],
-                                    ObjectID = r["ObjectID"],
-                                    view_id = r["view_id"],
-                                }).Distinct();
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
-        /// <summary>
-        /// DS template theo khách hàng
-        /// </summary>
-        /// <returns></returns>
-        [Route("lite_template_by_customer")]
-        [HttpGet]
-        public object ListTemplateByCustomer()
-        {
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    SqlConditions conds = new SqlConditions(); string sql = "";
-                    conds.Add("Disabled", 0);
-                    conds.Add("is_template_center", 0);
-                    conds.Add("CustomerID", loginData.CustomerID);
-                    sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
-                        "from we_template_customer " +
-                        "where (where) order by Title";
-                    //Check CustommerID có template chưa nếu chưa thì thêm vào
-                    cnn.BeginTransaction();
-                    #region ktra k có thì thêm mới danh sách template cho kh mới
-                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and is_template_center =0 and CustomerID = " + loginData.CustomerID).ToString());
-                    if (soluong == 0)
-                    {
-                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list where is_template_center <>1 and disabled = 0");
-                        Hashtable val = new Hashtable();
-                        foreach (DataRow item in dt_listSTT.Rows)
-                        {
-                            val["Title"] = item["Title"];
-                            val["Description"] = item["Description"];
-                            val["TemplateID"] = item["id_row"];
-                            val["CustomerID"] = loginData.CustomerID;
-                            val["CreatedDate"] = Common.GetDateTime();
-                            val["CreatedBy"] = loginData.UserID;
-                            if (cnn.Insert(val, "we_template_customer") != 1)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
-                            string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString();
-                            string sql_insert = "";
-                            sql_insert = $@"insert into we_template_status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
-                                "select id_Row, " + idc + ", StatusName, description, GETUTCDATE(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                                "from we_status_list where disabled = 0 and id_template_list = " + item["id_row"] + "";
-                            cnn.ExecuteNonQuery(sql_insert);
-                            if (cnn.LastError != null)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
-
-                        }
-                    }
-                    #endregion
-                    cnn.EndTransaction();
-                    DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
-                    if (cnn.LastError != null || dt_template == null)
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    string sql_status = "";
-                    sql_status = "select Id_row, StatusID, TemplateID, StatusName, description, CreatedDate, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                        "from we_Template_Status where Disabled = 0 and TemplateID in (select id_row from we_template_customer where Disabled = 0 and CustomerID = " + loginData.CustomerID + ")";
-                    DataTable dt_status = cnn.CreateDataTable(sql_status);
-                    var data = from r in dt_template.AsEnumerable()
-                               select new
-                               {
-                                   id_row = r["id_row"],
-                                   title = r["title"],
-                                   description = r["Description"],
-                                   isdefault = r["IsDefault"],
-                                   color = r["color"],
-                                   templateid = r["TemplateID"],
-                                   customerid = r["CustomerID"],
-                                   status = from dr in dt_status.AsEnumerable()
-                                            where dr["TemplateID"].Equals(r["id_row"])
-                                            select new
-                                            {
-                                                id_row = dr["id_row"],
-                                                StatusID = dr["StatusID"],
-                                                TemplateID = dr["TemplateID"],
-                                                StatusName = dr["StatusName"],
-                                                description = dr["description"],
-                                                CreatedDate = dr["CreatedDate"],
-                                                IsDefault = dr["IsDefault"],
-                                                color = dr["color"],
-                                                Position = dr["Position"],
-                                                IsFinal = dr["IsFinal"],
-                                                IsDeadline = dr["IsDeadline"],
-                                                IsTodo = dr["IsTodo"],
-                                                Type = dr["Type"],
-                                            }
-                               };
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
         /// <summary>
         /// Danh sách view theo project
         /// </summary>
@@ -2802,7 +2705,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             query = $@"select id_row, statusname, description, id_project_team, istodo
                     ,type, isdefault, color, position, isfinal, follower, isdeadline, '' as hoten_follower
                     from we_status 
-                    where Disabled = 0 ";
+                    where disabled = 0 ";
             if (id_project > 0)
                 query += " and id_project_team =" + id_project + "";
             query += " order by type, position";
@@ -3760,7 +3663,34 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         return false;
                     }
                 }
-
+            }
+            return true;
+        }
+        public static bool update_position_status_template(long id, DpsConnection cnn)
+        {
+            long position = 0;
+            Hashtable val = new Hashtable();
+            SqlConditions cond = new SqlConditions();
+            cond.Add("disabled", 0);
+            cond.Add("TemplateID", id);
+            string sqlq = "select id_row, id_project_team, position " +
+                        "from we_template_status " +
+                        "where (where) order by type, position";
+            DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    val = new Hashtable();
+                    position++;
+                    val.Add("position", position);
+                    cond = new SqlConditions();
+                    cond.Add("id_row", item["id_row"].ToString());
+                    if (cnn.Update(val, cond, "we_template_status") != 1)
+                    {
+                        return false;
+                    }
+                }
             }
             return true;
         }
@@ -3934,7 +3864,59 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
                 return false;
             }
             return true;
-
+        }
+        public static string GetColorName(string name)
+        {
+            switch (name)
+            {
+                case "A":
+                    return "#6FE80C";
+                case "B":
+                    return "#02c7ad";
+                case "C":
+                    return "#0cb929";
+                case "D":
+                    return "#16C6E5";
+                case "Đ":
+                    return "rgb(127, 140, 141)";
+                case "E":
+                    return "rgb(26, 188, 156)";
+                case "G":
+                    return "rgb(44, 62, 80)";
+                case "H":
+                    return "rgb(248, 48, 109)";
+                case "I":
+                    return "#390FE1";
+                case "K":
+                    return "#2209b7";
+                case "L":
+                    return "#759e13";
+                case "M":
+                    return "rgb(236, 157, 92)";
+                case "N":
+                    return "#bd3d0a";
+                case "O":
+                    return "#10CF99";
+                case "P":
+                    return "#0B63C7";
+                case "Q":
+                    return "#24BBCF";
+                case "R":
+                    return "#6720F5";
+                case "S":
+                    return "rgb(122, 8, 56)";
+                case "T":
+                    return "#BAC609";
+                case "U":
+                    return "rgb(51, 152, 219)";
+                case "V":
+                    return "#DF830B";
+                case "X":
+                    return "#EBBE09";
+                case "W":
+                    return "#BA08C7";
+                default: return "#162EE3";
+            }
         }
     }
 }

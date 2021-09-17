@@ -5701,102 +5701,102 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 genDr(dtW, followers, tags, dr["id_row"], level + "#", ref dt);
             }
         }
-        public static string getColorByName(string name)
-        {
-            string result = "rgb(0, 0, 0)";
-            name = name.ToUpper();
-            switch (name)
-            {
-                case "A":
-                    result = "rgb(51 152 219)";
-                    break;
-                case "Ă":
-                    result = "rgb(241, 196, 15)";
-                    break;
-                case "Â":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "B":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "C":
-                    result = "rgb(211, 84, 0)";
-                    break;
-                case "D":
-                    result = "rgb(44, 62, 80)";
-                    break;
-                case "Đ":
-                    result = "rgb(127, 140, 141)";
-                    break;
-                case "E":
-                    result = "rgb(26, 188, 156)";
-                    break;
-                case "Ê":
-                    result = "rgb(51 152 219)";
-                    break;
-                case "G":
-                    result = "rgb(241, 196, 15)";
-                    break;
-                case "H":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "I":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "K":
-                    result = "rgb(211, 84, 0)";
-                    break;
-                case "L":
-                    result = "rgb(44, 62, 80)";
-                    break;
-                case "M":
-                    result = "rgb(127, 140, 141)";
-                    break;
-                case "N":
-                    result = "rgb(51 152 219)";
-                    break;
-                case "O":
-                    result = "rgb(51 152 219)";
-                    break;
-                case "Ô":
-                    result = "rgb(241, 196, 15)";
-                    break;
-                case "Ơ":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "P":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "Q":
-                    result = "rgb(211, 84, 0)";
-                    break;
-                case "R":
-                    result = "rgb(44, 62, 80)";
-                    break;
-                case "S":
-                    result = "rgb(127, 140, 141)";
-                    break;
-                case "T":
-                    result = "rgb(51 152 219)";
-                    break;
-                case "U":
-                    result = "rgb(51 152 219)";
-                    break;
-                case "Ư":
-                    result = "rgb(241, 196, 15)";
-                    break;
-                case "V":
-                    result = "rgb(211, 84, 0)";
-                    break;
-                case "X":
-                    result = "rgb(142, 68, 173)";
-                    break;
-                case "W":
-                    result = "rgb(211, 84, 0)";
-                    break;
-            }
-            return result;
-        }
+        //public static string getColorByName(string name)
+        //{
+        //    string result = "rgb(0, 0, 0)";
+        //    name = name.ToUpper();
+        //    switch (name)
+        //    {
+        //        case "A":
+        //            result = "rgb(51 152 219)";
+        //            break;
+        //        case "Ă":
+        //            result = "rgb(241, 196, 15)";
+        //            break;
+        //        case "Â":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "B":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "C":
+        //            result = "rgb(211, 84, 0)";
+        //            break;
+        //        case "D":
+        //            result = "rgb(44, 62, 80)";
+        //            break;
+        //        case "Đ":
+        //            result = "rgb(127, 140, 141)";
+        //            break;
+        //        case "E":
+        //            result = "rgb(26, 188, 156)";
+        //            break;
+        //        case "Ê":
+        //            result = "rgb(51 152 219)";
+        //            break;
+        //        case "G":
+        //            result = "rgb(241, 196, 15)";
+        //            break;
+        //        case "H":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "I":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "K":
+        //            result = "rgb(211, 84, 0)";
+        //            break;
+        //        case "L":
+        //            result = "rgb(44, 62, 80)";
+        //            break;
+        //        case "M":
+        //            result = "rgb(127, 140, 141)";
+        //            break;
+        //        case "N":
+        //            result = "rgb(51 152 219)";
+        //            break;
+        //        case "O":
+        //            result = "rgb(51 152 219)";
+        //            break;
+        //        case "Ô":
+        //            result = "rgb(241, 196, 15)";
+        //            break;
+        //        case "Ơ":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "P":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "Q":
+        //            result = "rgb(211, 84, 0)";
+        //            break;
+        //        case "R":
+        //            result = "rgb(44, 62, 80)";
+        //            break;
+        //        case "S":
+        //            result = "rgb(127, 140, 141)";
+        //            break;
+        //        case "T":
+        //            result = "rgb(51 152 219)";
+        //            break;
+        //        case "U":
+        //            result = "rgb(51 152 219)";
+        //            break;
+        //        case "Ư":
+        //            result = "rgb(241, 196, 15)";
+        //            break;
+        //        case "V":
+        //            result = "rgb(211, 84, 0)";
+        //            break;
+        //        case "X":
+        //            result = "rgb(142, 68, 173)";
+        //            break;
+        //        case "W":
+        //            result = "rgb(211, 84, 0)";
+        //            break;
+        //    }
+        //    return result;
+        //}
         public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, string ConnectionString, List<AccUsernameModel> DataAccount)
         {
 
@@ -6580,10 +6580,7 @@ where u.disabled = 0 and u.loai = 2";
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án");
                     bool rs = Common.CheckRoleByProject(id_project_team, loginData, cnn);
-                    if (!rs)
-                    {
-                        return JsonResultCommon.Custom("Bạn không có quyền xem công việc của người khác");
-                    }
+                    
                     data_newfield = "select * from we_newfileds_values where id_project_team = " + id_project_team + "";
                     #endregion
                     string strW = "";
@@ -6678,7 +6675,7 @@ where u.disabled = 0 and u.loai = 2";
                                             char[] array = row[1].ToString().Take(1).ToArray();
                                             word = array[0].ToString();
                                         }
-                                        row["color"] = getColorByName(word);
+                                        row["color"] = WeworkLiteController.GetColorName(word);
                                     }
                                     break;
                                 }
