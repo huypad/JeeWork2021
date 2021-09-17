@@ -9,17 +9,10 @@
 			</div>
 		</ng-container>
 		<ng-container ktPortletTools>
-			<div class="search-box" style="margin-right:20px">
-				<div class="search">
-					<div class="input">
-						<span class="las la-search url"
-							style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
-						<input type="text" (keyup.enter)="applyFilter($event.target.value)"
-							placeholder="{{ 'filter.filtertailieu' | translate }}" style="overflow: hidden;" #keyword>
-					</div>
-				</div>
-			</div>
-            <button class="btn btn-outline-success" style="border-radius: 20px;" (click)="csvInput.click()">Thêm</button>
+            <app-search-box-custom [placeholder]=" 'filter.filtertailieu' | translate " (submitSearch)="applyFilter($event)"></app-search-box-custom>
+            <button class="btn btn-outline-success" style="border-radius: 20px;padding-top: 6px;
+    padding-bottom: 6px;
+    transform: translatey(-2px);" (click)="csvInput.click()">Thêm</button>
             <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
 		</ng-container>
 	</kt-portlet-header>

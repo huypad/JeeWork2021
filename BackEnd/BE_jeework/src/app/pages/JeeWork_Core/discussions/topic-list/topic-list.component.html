@@ -3,6 +3,16 @@
         min-width: 200px;
         max-height: 400px;
     }
+    .filter-duan{
+        min-width:100px;
+        border: 1px solid #eeeeee;
+        padding: 5px 10px;
+        border-radius: 20px;
+        height: 35px;
+        background: #fffeee;
+        display: flex;
+        align-items: center;
+    }
 </style>
 <kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
     <kt-portlet-body class="pd-0">
@@ -19,24 +29,9 @@
                     </ng-container>
                     <ng-container ktPortletTools>
                         <div class="row align-items-center">
-                            <div class="{{selectedItem==undefined?'search-box':'search-box1'}} "
-                                style="margin-right:20px">
-                                <div class="search">
-                                    <div class="input">
-                                        <span class="las la-search url"
-                                            style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
-                                        <input type="text" (keyup.enter)="applyFilter()"
-                                            placeholder="{{ 'topic.timkiemthaoluan' | translate }}" #keyword
-                                            style="overflow: hidden;">
-                                    </div>
-                                </div>
-                            </div>
+                            <app-search-box-custom style="transform: translateY(2px);" [placeholder]="'topic.timkiemthaoluan' | translate" #custombox (submitSearch)="applyFilter()"></app-search-box-custom>
                             <ng-container *ngIf="selectedItem==undefined">
-                                <div *ngIf="showproject" class="m--margin-bottom-10-mobile text-dark url mr-5" style="min-width:100px;border: 1px solid #eeeeee;
-                                            padding: 5px 10px;
-                                            border-radius: 20px;
-                                            height: 30px;
-                                            background: #fffeee;">
+                                <div *ngIf="showproject" class="m--margin-bottom-10-mobile text-dark url filter-duan mr-5" >
                                     <div [matMenuTriggerFor]="menuproject"><b translate="topic.projectteam"></b>:
                                         {{itemProject.title_full?itemProject.title_full:'Tất cả dự án'}}</div>
                                 </div>
@@ -53,11 +48,7 @@
                                         </button>
                                     </div>
                                 </mat-menu>
-                                <div class="m--margin-bottom-10-mobile text-dark url" style="min-width:100px;border: 1px solid #eeeeee;
-                                            padding: 5px 10px;
-                                            border-radius: 20px;
-                                            height: 30px;
-                                            background: #fffeee;">
+                                <div class="m--margin-bottom-10-mobile text-dark filter-duan url">
                                     <div [matMenuTriggerFor]="menu"><b translate="wuser.sapxeptheo"></b>:
                                         {{sortfield.title}}</div>
                                 </div>

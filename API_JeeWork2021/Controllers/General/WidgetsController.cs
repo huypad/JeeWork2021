@@ -265,7 +265,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
                     cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
-                    
+
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         listDept = query.filter["id_department"];
@@ -735,7 +735,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string strW = $"  and w.id_department in ({listDept}) ";
                     if (!string.IsNullOrEmpty(query.filter["loaicongviec"]))
                     {
-                        if (int.Parse(query.filter["loaicongviec"].ToString()) == 1) // công việc tôi được giao
+                        if (int.Parse(query.filter["loaicongviec"].ToString()) == 1) // công việc tôi được giao 
                         {
                             strW += " and (w.id_nv=@iduser or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0))";
                         }
@@ -748,6 +748,26 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             strW += " and NguoiGiao = @iduser";
                             //strW += " and ( w.id_row in (select distinct id_work from we_work_user where CreatedBy = @iduser and CreatedDate>=@from and CreatedDate<@to and Disabled = 0))";
+                        }
+                        else if (int.Parse(query.filter["loaicongviec"].ToString()) == 4) // công việc phụ trách (đếm chung nhắc nhở) = công việc tôi làm
+                        {
+                            string congviecphutrach = " and ( (w.deadline >= GETUTCDATE() and w.deadline is not null) or w.deadline is null) and w.end_date is null ";
+                            string congviecconphutrach = " and ( (ww.deadline >= GETUTCDATE() and ww.deadline is not null) or ww.deadline is null) and ww.end_date is null ";
+                            strW += $" and ( (w.id_nv=@iduser  {congviecphutrach} ) or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0 {congviecconphutrach} )) ";
+                        }
+                        else if (int.Parse(query.filter["loaicongviec"].ToString()) == 5) // công việc quá hạn
+                        {
+                            string congviectrehan = " and w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ";
+                            string congvieccontrehan = " and ww.deadline < GETUTCDATE() and ww.deadline is not null and ww.end_date is null ";
+                            strW += $" and ( (w.id_nv=@iduser  {congviectrehan} ) or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0 {congvieccontrehan} )) ";
+                        }
+                        else if (int.Parse(query.filter["loaicongviec"].ToString()) == 6) // công việc quá hạn trong ngày
+                        {
+                            DateTime today = Common.GetDateTime();
+                            DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
+                            string congviechhtrongngay = " and w.deadline >= '" + currentTime + "' and w.deadline < '" + currentTime.AddDays(1) + "'";
+                            string congviecconhhtrongngay = " and ww.deadline >= '" + currentTime + "' and ww.deadline < '" + currentTime.AddDays(1) + "'";
+                            strW += $" and ( (w.id_nv=@iduser  {congviechhtrongngay} ) or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0 {congviecconhhtrongngay} )) ";
                         }
                     }
                     if (!string.IsNullOrEmpty(query.filter["timedeadline"]))
@@ -1287,7 +1307,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     if (!FieldsSelected.Equals(""))
-                        FieldsSelected = FieldsSelected.Substring(1); 
+                        FieldsSelected = FieldsSelected.Substring(1);
                     // kiểm tra quyền xem công việc người khác
                     new Common(ConnectionString);
                     bool rs = Common.CheckRoleByProject(query.filter["id_project_team"].ToString(), loginData, cnn);
@@ -1342,7 +1362,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (result.Rows.Count > 0)
                     {
                         var filterTeam = " id_parent is null and id_project_team = " + (query.filter["id_project_team"]);
-                        
+
                         var rows = result.Select(filterTeam);
                         if (rows.Any())
                             tmp = rows.CopyToDataTable();

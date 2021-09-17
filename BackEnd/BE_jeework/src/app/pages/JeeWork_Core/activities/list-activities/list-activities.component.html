@@ -15,23 +15,19 @@
             </div>
         </ng-container>
         <ng-container ktPortletTools>
-            <div class="search-box" style="margin-right:20px">
-                <div class="search">
-                    <div class="input">
-						<span class="las la-search url"
-                              style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
-                        <input type="text" (keyup.enter)="applyFilter($event.target.value)"
-                               placeholder="{{ 'filter.filterhoatdong' | translate }}" style="overflow: hidden;"
-                               #keyword>
-                    </div>
-                </div>
-            </div>
-
-            <div class="m--margin-bottom-10-mobile text-dark url mr-5" style="min-width:100px;border: 1px solid #eeeeee;
-                                            padding: 5px 10px;
-                                            border-radius: 20px;
-                                            height: 30px;
-                                            background: #fffeee;">
+<!--            <div class="search-box" style="margin-right:20px">-->
+<!--                <div class="search">-->
+<!--                    <div class="input">-->
+<!--						<span class="las la-search url"-->
+<!--                              style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>-->
+<!--                        <input type="text" (keyup.enter)="applyFilter($event.target.value)"-->
+<!--                               placeholder="{{ 'filter.filterhoatdong' | translate }}" style="overflow: hidden;"-->
+<!--                               #keyword>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <app-search-box-custom style="transform: translateY(2px);" [placeholder]="'filter.filterhoatdong' | translate" #custombox (submitSearch)="applyFilter()"></app-search-box-custom>
+            <div class="m--margin-bottom-10-mobile text-dark url mr-5 filter-duan" >
                 <div [matMenuTriggerFor]="selecttime"><b translate="topic.thoigian"></b>:
                     {{getTimefilter()}}</div>
             </div>
@@ -52,11 +48,7 @@
                 </div>
             </mat-menu>
 
-            <div *ngIf="showproject" class="m--margin-bottom-10-mobile text-dark url" style="min-width:100px;border: 1px solid #eeeeee;
-                                            padding: 5px 10px;
-                                            border-radius: 20px;
-                                            height: 30px;
-                                            background: #fffeee;">
+            <div *ngIf="showproject" class="m--margin-bottom-10-mobile text-dark url filter-duan mr-5">
                 <div [matMenuTriggerFor]="menuproject"><b translate="topic.projectteam"></b>:
                     {{getItemproject()}}</div>
             </div>

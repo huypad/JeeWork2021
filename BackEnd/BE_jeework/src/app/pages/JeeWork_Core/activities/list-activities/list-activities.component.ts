@@ -31,6 +31,7 @@ import {ActivitiesService} from '../activities.service';
 import {WeWorkService} from '../../services/wework.services';
 import {FormControl} from '@angular/forms';
 import {DialogSelectdayComponent} from '../../report/dialog-selectday/dialog-selectday.component';
+import {SearchBoxCustomComponent} from '../../projects-team/work-list-new/field-custom/search-box-custom/search-box-custom.component';
 
 @Component({
     selector: 'kt-list-activities',
@@ -71,7 +72,7 @@ export class ListActivitiesComponent {
         {ID: 4, Title: 'Done ontime', Checked: false},
     ];
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-    @ViewChild('keyword', {static: true}) keyword: ElementRef;
+    @ViewChild('custombox', {static: true}) custombox: SearchBoxCustomComponent;
 
     constructor(public _actServices: ActivitiesService,
                 public dialog: MatDialog,
@@ -171,7 +172,7 @@ export class ListActivitiesComponent {
         }
     }
 
-    applyFilter(text: string) {
+    applyFilter() {
         this.loadDataList();
     }
 
@@ -207,7 +208,7 @@ export class ListActivitiesComponent {
 
     filterConfiguration(): any {
         const filter: any = {};
-        filter.keyword = this.keyword.nativeElement.value;
+        filter.keyword = this.custombox.keyword;
         filter.id_project_team = this.id_project_team;
         filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
         filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();

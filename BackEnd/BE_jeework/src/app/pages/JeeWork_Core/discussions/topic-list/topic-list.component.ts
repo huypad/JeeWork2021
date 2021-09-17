@@ -37,6 +37,7 @@ import {TopicEditComponent} from '../topic-edit/topic-edit.component';
 import {TopicModel} from '../../projects-team/Model/department-and-project.model';
 import {FormControl} from '@angular/forms';
 import {WeWorkService} from '../../services/wework.services';
+import {SearchBoxCustomComponent} from '../../projects-team/work-list-new/field-custom/search-box-custom/search-box-custom.component';
 
 @Component({
     selector: 'kt-topic-list',
@@ -83,6 +84,7 @@ export class TopicListComponent {
     childComponentData: any = {};
     @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
     @ViewChild('keyword', {static: true}) keyword: ElementRef;
+    @ViewChild('custombox', {static: true}) custombox: SearchBoxCustomComponent;
     filterTinhTrang: string;
     subscription: SubscriptionLike;
     public filtereproject: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
@@ -222,7 +224,7 @@ export class TopicListComponent {
 
     filterConfiguration(): any {
         const filter: any = {};
-        filter.keyword = this.keyword.nativeElement.value;
+        filter.keyword = this.custombox.keyword;
         return filter;
     }
 
