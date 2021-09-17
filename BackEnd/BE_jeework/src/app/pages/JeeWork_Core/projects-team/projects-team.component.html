@@ -267,16 +267,19 @@
                                             </div>
                                         </mat-menu>
                                     </mat-menu>
-                                    <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3502).length>0 || IsAdmin()"
+<!--                                    *ngIf="commonService.CheckRole_WeWork(3502).length>0 || IsAdmin()"-->
+                                    <a mat-tab-link
                                        [disabled]="item.locked"
                                        [routerLink]="['./documents']" (click)="click('documents')"
                                        [active]="activeLink == 'documents'">{{'projects.documents' |
                                         translate}}&nbsp;({{listDocument.length}})</a>
-                                    <a mat-tab-link *ngIf="CheckRoles(18)" [routerLink]="['./activities']"
+<!--                                    *ngIf="CheckRoles(18)"-->
+                                    <a mat-tab-link [routerLink]="['./activities']"
                                        (click)="click('activities')"
                                        [active]="activeLink == 'activities'">{{'projects.hoatdong' |
                                         translate}}</a>
-                                    <a mat-tab-link *ngIf="commonService.CheckRole_WeWork(3610).length>0 || IsAdmin()"
+<!--                                    *ngIf="commonService.CheckRole_WeWork(3610).length>0 || IsAdmin()"-->
+                                    <a mat-tab-link
                                        [disabled]="item.locked"
                                        [routerLink]="['./discussions']" (click)="click('discussions')"
                                        [active]="activeLink == 'discussions'">{{'projects.discuss' |

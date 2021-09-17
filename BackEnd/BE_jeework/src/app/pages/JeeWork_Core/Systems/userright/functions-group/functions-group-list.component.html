@@ -39,9 +39,9 @@
 			<button (click)="goBack()" mat-raised-button matTooltip="{{'GeneralKey.dong'|translate}}" type="button">
 				<span>{{'GeneralKey.dong'|translate}}</span>
 			</button>&nbsp;&nbsp;
-			<button type="button" mat-raised-button class="btn-luutieptuc" (click)="luuQuyen(false)"
-				[disabled]="disabledBtn">
-				&nbsp;&nbsp;<span>{{'GeneralKey.luu'|translate}}</span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+			<button type="button" *ngIf="userRightService.VisibleCNN" mat-raised-button class="btn-luutieptuc"
+				(click)="luuQuyen(false)" [disabled]="disabledBtn">
+				&nbsp;<span>{{'GeneralKey.luu'|translate}}</span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
 					class="spinner-button-pad"></div>
 			</button>
 		</ng-container>
@@ -102,7 +102,5 @@
 				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 			</table>
 		</div>
-		<!-- <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;" [paginator]="paginatorNew"
-        [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)"></app-paginator> -->
 	</kt-portlet-body>
 </kt-portlet>

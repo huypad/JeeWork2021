@@ -108,14 +108,14 @@ export class FunctionsGroupListComponent implements OnInit {
 			this.Title = this.data._item.HoTen;
 			this.ColumnKey = 'username';
 			this.ValueKey = this.data._item.Username;
-		} 
-		
+		}
+
 		// this.dataSource.paginatorTotal$.subscribe(res => this.paginatorNew.total = res)
 		this.dataSource = new UserRightDataSource(this.userRightService);
 		this.loadDataList();
 	}
 	onLinkClick() {
-	
+
 	}
 
 	/** FILTRATION */
@@ -157,24 +157,24 @@ export class FunctionsGroupListComponent implements OnInit {
 		});
 	}
 
-	
+
 	paginate(paginator: PaginatorState) {
 		this.loadDataList();
-	  }
+	}
 
-	  
-  sortField(column: string) {
-    const sorting = this.sorting;
-    const isActiveColumn = sorting.column === column;
-    if (!isActiveColumn) {
-      sorting.column = column;
-      sorting.direction = "asc";
-    } else {
-      sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
-    }
-    // this.paginatorNew.page = 1;
-    this.loadDataList();
-  }
+
+	sortField(column: string) {
+		const sorting = this.sorting;
+		const isActiveColumn = sorting.column === column;
+		if (!isActiveColumn) {
+			sorting.column = column;
+			sorting.direction = "asc";
+		} else {
+			sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
+		}
+		// this.paginatorNew.page = 1;
+		this.loadDataList();
+	}
 	//chọn nhân viên
 	onAlertClose($event) {
 		this.hasFormErrors = false;
@@ -193,7 +193,7 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle(val: any) {
-		
+
 		if (val.checked) {
 			this.productsResult.forEach(row => {
 				if (row.IsRead_Enable == true && row.IsReadPermit == true) {
@@ -221,7 +221,7 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle1(val: any) {
-		
+
 		if (val.checked) {
 			this.productsResult.forEach(row => {
 				if (row.IsEdit_Enable == true) {
@@ -257,7 +257,7 @@ export class FunctionsGroupListComponent implements OnInit {
 	}
 	//=================================================================================================
 	changeChinhSua(val: any, row: any) {
-		
+
 		this.productsResult.map((item, index) => {
 			if (item.Id_Quyen == row.Id_Quyen) {
 				item.IsEdit = val.checked;
@@ -265,7 +265,7 @@ export class FunctionsGroupListComponent implements OnInit {
 		});
 	}
 	changeChiXem(val: any, row: any) {
-		
+
 		this.productsResult.map((item, index) => {
 			if (item.Id_Quyen == row.Id_Quyen) {
 				item.IsRead = val.checked;
@@ -273,7 +273,7 @@ export class FunctionsGroupListComponent implements OnInit {
 		});
 	}
 	luuQuyen(withBack: boolean = true) {
-		
+
 		this.listQuyen = [];
 		this.productsResult.forEach(row => {
 			const q = new QuyenAddData();

@@ -64,8 +64,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		public dialogRef: MatDialogRef<DanhSachNguoiDungComponent>,
-		private userRightService: PermissionService,
-		private danhMucChungService: DanhMucChungService,
+		public userRightService: PermissionService,
 		public dialog: MatDialog,
 		public datepipe: DatePipe,
 		private route: ActivatedRoute,
@@ -78,7 +77,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 	/** LOAD DATA */
 	ngOnInit() {
 
-		this.item = this.data._item; 
+		this.item = this.data._item;
 		// this.dataSource = new UserRightDataSource(this.userRightService);
 		// this.dataSource.entitySubject.subscribe(res => this.productsResult = res);
 		this.dataSource1 = new UserRightDataSource(this.userRightService);
@@ -137,20 +136,20 @@ export class DanhSachNguoiDungComponent implements OnInit {
 	/** ACTIONS */
 	paginate(paginator: PaginatorState) {
 		this.loadDataList();
-	  }
+	}
 
-	  sortField(column: string) {
+	sortField(column: string) {
 		const sorting = this.sorting;
 		const isActiveColumn = sorting.column === column;
 		if (!isActiveColumn) {
-		  sorting.column = column;
-		  sorting.direction = "asc";
+			sorting.column = column;
+			sorting.direction = "asc";
 		} else {
-		  sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
+			sorting.direction = sorting.direction === "asc" ? "desc" : "asc";
 		}
 		// this.paginatorNew.page = 1;
 		this.loadDataList();
-	  }
+	}
 
 	goBack() {
 		this.dialogRef.close();

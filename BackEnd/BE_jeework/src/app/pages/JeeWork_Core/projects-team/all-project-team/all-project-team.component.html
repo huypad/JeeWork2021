@@ -3,11 +3,11 @@
 		<nav mat-tab-nav-bar>
 			<a mat-tab-link [routerLink]="['./projects']" (click)="activeLink = 'projects'"
 				[active]="activeLink == 'projects'">{{'projects.project' | translate}}</a>
-
-			<a mat-tab-link [routerLink]="['./activities']" (click)="activeLink = 'activities'" *ngIf="commonService.CheckRole_WeWork(3502).length>0"
+<!--			*ngIf="commonService.CheckRole_WeWork(3502).length>0"-->
+			<a mat-tab-link [routerLink]="['./activities']" (click)="activeLink = 'activities'"
 				[active]="activeLink == 'activities'">{{'projects.hoatdong' | translate}}</a>
-
-			<a mat-tab-link [routerLink]="['./discussions']" (click)="activeLink = 'discussions'" *ngIf="commonService.CheckRole_WeWork(3610).length>0"
+<!--			*ngIf="commonService.CheckRole_WeWork(3610).length>0"-->
+			<a mat-tab-link [routerLink]="['./discussions']" (click)="activeLink = 'discussions'"
 				[active]="activeLink == 'discussions'">{{'projects.discuss' | translate}}</a>
 		</nav>
 		<router-outlet></router-outlet>
