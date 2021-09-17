@@ -6,7 +6,7 @@ const tinyMCE = {
     plugins: 'link image code paste table lists preview',
     toolbar: 'undo redo | bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table | removeformat code paste pastetext preview ',
     image_uploadtab: true,
-    paste_block_drop: true,
+    paste_block_drop: false,
     menubar: false,
     paste_as_text: true,
     paste_data_images: true,
