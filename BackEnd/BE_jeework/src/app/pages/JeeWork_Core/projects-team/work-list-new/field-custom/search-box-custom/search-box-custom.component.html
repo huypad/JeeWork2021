@@ -1,0 +1,11 @@
+<div class="search-box" style="margin-right:20px">
+    <div class="search">
+        <div class="input">
+						<span class="las la-search url"
+                              style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
+            <input type="text" [(ngModel)]="keyword" (keyup.enter)="Submit($event.target.value)" [ngStyle]="{'padding-right.px':keyword?.length > 0?20:5}"
+                   [placeholder]="placeholder" style="overflow: hidden;height: 33px">
+            <i *ngIf="keyword?.length > 0" (click)="Submit('')" class="fa fa-times url" style="transform: translateX(-20px)" ></i>
+        </div>
+    </div>
+</div>
