@@ -3874,48 +3874,50 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
                 case "B":
                     return "#02c7ad";
                 case "C":
-                    return "#0cb929";
+                    return "rgb(123, 104, 238)";
                 case "D":
                     return "#16C6E5";
                 case "Đ":
-                    return "rgb(127, 140, 141)";
+                    return "#959001";
                 case "E":
-                    return "rgb(26, 188, 156)";
+                    return "#16AB6B";
                 case "G":
-                    return "rgb(44, 62, 80)";
+                    return "#2757E7";
                 case "H":
-                    return "rgb(248, 48, 109)";
+                    return "#B70B3F";
                 case "I":
                     return "#390FE1";
+                case "J":
+                    return "rgb(4, 169, 244)";
                 case "K":
                     return "#2209b7";
                 case "L":
                     return "#759e13";
                 case "M":
-                    return "rgb(236, 157, 92)";
+                    return "rgb(255, 120, 0)";
                 case "N":
                     return "#bd3d0a";
                 case "O":
                     return "#10CF99";
                 case "P":
-                    return "#0B63C7";
+                    return "#B60B6F";
                 case "Q":
-                    return "#24BBCF";
+                    return "rgb(27, 188, 156)";
                 case "R":
                     return "#6720F5";
                 case "S":
-                    return "rgb(122, 8, 56)";
+                    return "#14A0DC";
                 case "T":
-                    return "#BAC609";
+                    return "rgb(244, 44, 44)";
                 case "U":
-                    return "rgb(51, 152, 219)";
+                    return "#DC338B";
                 case "V":
                     return "#DF830B";
                 case "X":
-                    return "#EBBE09";
+                    return "rgb(230, 81, 0)";
                 case "W":
                     return "#BA08C7";
-                default: return "#162EE3";
+                default: return "#21BD1C";
             }
         }
     }
