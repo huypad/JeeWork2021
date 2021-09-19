@@ -52,7 +52,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 string strRe = "";
                 if (string.IsNullOrEmpty(data.StatusName))
-                    strRe += (strRe == "" ? "" : ",") + "tên status";
+                    strRe += (strRe == "" ? "" : ",") + "tên trạng thái";
                 if (data.Id_project_team <= 0)
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin dự án/phòng ban";
                 if (strRe != "")
@@ -60,64 +60,45 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    long iduser = loginData.UserID;
-                    long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("StatusName", data.StatusName);
                     val.Add("id_project_team", data.Id_project_team);
-                    val.Add("Disabled", 0);
+                    val.Add("disabled", 0);
                     val.Add("IsDefault", 0);
                     val.Add("IsFinal", 0);
-                    val.Add("Type", data.Type);
+                    val.Add("type", data.Type);
                     if (data.Follower > 0)
-                        val.Add("Follower", data.Follower);
+                        val.Add("follower", data.Follower);
                     else
-                        val.Add("Follower", DBNull.Value);
+                        val.Add("follower", DBNull.Value);
                     if (string.IsNullOrEmpty(data.Color))
-                        val.Add("color", "");
+                        val.Add("color", "#6FE80C");
                     else
                         val.Add("color", data.Color);
                     if (string.IsNullOrEmpty(data.Description))
-                        val.Add("Description", "");
+                        val.Add("description", "");
                     else
-                        val.Add("Description", data.Description);
+                        val.Add("description", data.Description);
 
-                    val.Add("CreatedDate", Common.GetDateTime());
-                    val.Add("CreatedBy", iduser);
+                    val.Add("createdDate", Common.GetDateTime());
+                    val.Add("createdBy", loginData.UserID);
                     // insert position
-                    int statusfinal = int.Parse(cnn.ExecuteScalar("select Position from we_status where id_project_team = " + data.Id_project_team + "").ToString());
+                    val.Add("position", 20);
+                    //cnn.BeginTransaction();
+                    //int statusfinal = int.Parse(cnn.ExecuteScalar("select Position from we_status where id_project_team = " + data.Id_project_team + "").ToString());
                     // lấy ra ID tiếp theo nhưng phải nhỏ hơn
                     string strCheck = "select count(*) from we_status where Disabled=0 and (id_project_team=@id_project_team) and StatusName=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team } }).ToString()) > 0)
                     {
-                        return JsonResultCommon.Custom("Status đã tồn tại");
+                        return JsonResultCommon.Custom("Trạng thái đã tồn tại");
                     }
-                    cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_status") != 1)
                     {
-                        cnn.RollbackTransaction();
+                        //cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_status')").ToString();
                     WeworkLiteController.update_position_status(data.Id_project_team, cnn);
-                    // Insert người follow cho công việc (We_Status_Process)
-                    //val = new Hashtable();
-                    //val.Add("id_project_team", data.Id_project_team);
-                    //val.Add("statusid", idc);
-                    //if (data.Follower > 0)
-                    //    val.Add("checker", data.Follower);
-                    //else
-                    //    val.Add("checker", DBNull.Value);
-                    //val.Add("createdby", iduser);
-                    //val.Add("createddate", Common.GetDateTime());
-                    //cnn.BeginTransaction();
-                    //if (cnn.Insert(val, "we_work_process") != 1)
-                    //{
-                    //    cnn.RollbackTransaction();
-                    //    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    //}
-                    //cnn.EndTransaction();
-                    //data.Id_row = int.Parse(idc);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -183,7 +164,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string strCheck = "select count(*) from we_status where Disabled=0 and id_project_team=@id_project_team and StatusName=@name  and id_row != @id_row";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team }, { "id_row", data.Id_row } }).ToString()) > 0)
                     {
-                        return JsonResultCommon.Custom("Status đã tồn tại");
+                        return JsonResultCommon.Custom("Trạng thái đã tồn tại");
                     }
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_status") != 1)
@@ -222,7 +203,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long id_project_team = long.Parse(cnn.ExecuteScalar("select ISNULL((select id_project_team from we_status where disabled=0 and id_row = " + id + "),0)").ToString());
                     long sl_congviec = long.Parse(cnn.ExecuteScalar("select ISNULL((select count(*) from we_work where disabled=0 and status = " + id + "),0)").ToString());
                     if (sl_congviec > 0)
-                        return JsonResultCommon.Custom("Hiện tại đang có "+sl_congviec+" đang thuộc trạng thái này, nên không thể xóa");
+                        return JsonResultCommon.Custom("Hiện tại đang có " + sl_congviec + " đang thuộc trạng thái này, nên không thể xóa");
                     sqlq = "update we_status set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
