@@ -102,7 +102,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             string position = cnn.ExecuteScalar("select Max(position) from we_template_status where TemplateID =" + idc + "").ToString();
                             if (position == null)
-                                position = "4";
+                                position = "10";
                             has["StatusName"] = item.StatusName;
                             has["Type"] = 1;
                             has["IsDefault"] = 0;
@@ -117,6 +117,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
+                        WeworkLiteController.update_position_status_template(idc, cnn);
                     }
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 45, idc, iduser, data.title))
                     {
@@ -255,7 +256,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public BaseModel<object> Delete(long id, bool isDelStatus)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -300,6 +300,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
+                    //if ("we_template_status".Equals(tablename.ToLower()))
+                    //{
+                    //    WeworkLiteController.update_position_status_template(id, cnn);
+                    //}
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 47, id, iduser))
                     {
                         cnn.RollbackTransaction();
@@ -323,7 +327,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<BaseModel<object>> Update_Quick(UpdateQuickModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -348,7 +351,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 strCheck = "select count(*) from " + tablename + " where Disabled=0";
                 if (data.istemplate)
                 {
-                    val.Add("CustomerID", loginData.CustomerID);
+                    val.Add("customerid", loginData.CustomerID);
                     sqlcond.Add("customerid", loginData.CustomerID);
                     tablename = "we_template_customer";
                     strCheck = "select count(*) from " + tablename + " where Disabled=0";
@@ -387,7 +390,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         sqlcond.Add("id_row", data.id_row);
                         sqlcond.Add("disabled", 0);
                         s = "select * from " + tablename + " where (where)";
-
                         DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                         if (old == null || old.Rows.Count == 0)
                             return JsonResultCommon.KhongTonTai("Template");
@@ -398,17 +400,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
-
+                        if ("we_template_status".Equals(tablename.ToLower()))
+                        {
+                            WeworkLiteController.update_position_status_template(data.id_template, cnn);
+                        }
                         if (!data.istemplate)
                         {
-                            string updatenew = "update we_status set  UpdatedDate=getdate(), UpdatedBy=" + iduser + ", " + data.columname + " = N'" + data.values + "' where StatusID_Reference = " + data.id_row;
+                            string updatenew = "update we_status set UpdatedDate=getdate(), UpdatedBy=" + iduser + ", " + data.columname + " = N'" + data.values + "' where StatusID_Reference = " + data.id_row;
                             if (cnn.ExecuteNonQuery(updatenew) < 0)
                             {
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
-
                         if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 46, data.id_row, iduser))
                         {
                             cnn.RollbackTransaction();
@@ -419,12 +423,29 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         val.Add("CreatedDate", Common.GetDateTime());
                         val.Add("CreatedBy", iduser);
+                        if ("we_template_status".Equals(tablename.ToLower()))
+                        {
+                            val.Add("type", 2);
+                            string word = "H";
+                            if (!string.IsNullOrEmpty(data.values))
+                            {
+                                char[] array = data.values.ToString().Take(1).ToArray();
+                                word = array[0].ToString();
+                            }
+                            val.Add("color", WeworkLiteController.GetColorName(word));
+                            val.Add("IsDefault", 0);
+                            val.Add("Position", 20);
+                        }
                         if (cnn.Insert(val, tablename) != 1)
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                         long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('" + tablename + "')").ToString());
+                        if ("we_template_status".Equals(tablename.ToLower()))
+                        {
+                            WeworkLiteController.update_position_status_template(data.id_template, cnn);
+                        }
                         if (data.istemplate)
                         {
                             string sql_insert = "";
@@ -439,6 +460,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
+                    
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }

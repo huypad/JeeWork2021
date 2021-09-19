@@ -16,7 +16,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="view-template overflow-auto" style="padding-bottom: 0;">
                         <div class="row w-100">
                             <div class="col-md-6">
@@ -32,13 +31,14 @@
                                         </div>
                                     </ng-container>
                                 </div>
-                                
-                                
+
+
                                 <ng-container *ngIf="!isStatusNow">
                                     <hr />
                                     <div class="header-view " style="margin-top: 5px;">
                                         <div class="header-view-title">
-                                            {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
+                                            {{
+                                            'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
                                         </div>
                                         <i class="fas fa-plus url text-success " (click)="addTemplate()"
                                             style="font-size: 20px;" matTooltipPosition="above"
@@ -60,8 +60,8 @@
                                             <div class="edit-template ">
                                                 <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
                                                     matTooltip="Chỉnh sửa">edit</mat-icon>
-                                                <mat-icon class="-hover url"
-                                                    (click)="Delete_Templete(demo,false)" matTooltip="Xóa">close
+                                                <mat-icon class="-hover url" (click)="Delete_Templete(demo,false)"
+                                                    matTooltip="Xóa">close
                                                 </mat-icon>
                                             </div>
                                         </div>
@@ -90,30 +90,33 @@
                                         {{ 'department.trangthaimoitao'|translate}}
                                     </div>
                                     <ng-container *ngFor="let stt of listSTTMoitao()">
-                                        <div class="status-input col-12   form-control">
+
+                                        <div class="status-input col-12 form-control">
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                                 <div class="row" style="width:200px;">
                                                     <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-                                                         (click)="ChangeColor(color,stt)"
-                                                         *ngFor="let color of defaultColors">
+                                                        (click)="ChangeColor(color,stt)"
+                                                        *ngFor="let color of defaultColors">
                                                     </div>
                                                 </div>
                                             </mat-menu>
                                             <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
-                                                    [matMenuTriggerFor]="color"></button>
-                                            <div class="box-color"  (click)="changeColor.click();" [ngStyle]="{'backgroundColor': stt.color }">
+                                                [matMenuTriggerFor]="color"></button>
+                                            <div class="box-color" (click)="changeColor.click();"
+                                                [ngStyle]="{'backgroundColor': stt.color }">
 
                                             </div>
                                             <div class="input">
                                                 <input type="text" #input (focus)="sttFocus(stt.id_row)"
-                                                       (keyup.enter)="sttFocusout(stt.StatusName,stt)"
-                                                       (focusout)="sttFocusout(stt.StatusName,stt)"
-                                                       [(ngModel)]="stt.StatusName" class="">
+                                                    (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                                    (focusout)="sttFocusout(stt.StatusName,stt)"
+                                                    [(ngModel)]="stt.StatusName" class="">
                                             </div>
                                             <div class="action-input">
-                                                <i class="fas fa-check url text-success" *ngIf="idfocus==stt.id_row"></i>
+                                                <i class="fas fa-check url text-success"
+                                                    *ngIf="idfocus==stt.id_row"></i>
                                                 <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
-                                                   *ngIf="idfocus!=stt.id_row"></i>
+                                                    *ngIf="idfocus!=stt.id_row"></i>
                                             </div>
                                             <mat-menu #menu1="matMenu">
                                                 <button mat-menu-item (click)="input.focus()">
@@ -128,11 +131,71 @@
                                     </ng-container>
                                 </div>
 
-                                <div class="header-view row mt-4" *ngIf="listSTTHoatdong() && listSTTHoatdong().length > 0">
+                                <div class="header-view row mt-4"
+                                    *ngIf="listSTTHoatdong() && listSTTHoatdong().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaihoatdong'|translate}}
                                     </div>
+                                    <!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)"
+                                        [cdkDropListSortPredicate]="sortPredicate">
+                                        <div class="example-box" *ngFor="let number of numbers" [cdkDragData]="number"
+                                            cdkDrag>{{number}}</div>
+                                    </div> -->
+                                    <!-- <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)"
+                                        [cdkDropListSortPredicate]="sortPredicate">
+                                        <div class="example-box" *ngFor="let stt of listSTTHoatdong()"
+                                            [cdkDragData]="stt.id_row" cdkDrag>
+                                            <div class="status-input col-11 form-control"
+                                                *ngIf="!stt.IsFinal && !stt.IsDeadline">
+                                                <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                                    <div class="row" style="width:200px;">
+                                                        <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                            (click)="ChangeColor(color,stt)"
+                                                            *ngFor="let color of defaultColors">
+                                                        </div>
+                                                    </div>
+                                                </mat-menu>
+                                                <button class="pd-0 mg-0" style="visibility: hidden;width: 0;"
+                                                    #changeColor [matMenuTriggerFor]="color"></button>
+                                                <div class="box-color" (click)="changeColor.click();"
+                                                    [ngStyle]="{'backgroundColor': stt.color }">
+
+                                                </div>
+                                                <div class="input">
+                                                    <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                                        (keyup.enter)="sttFocusout(stt.StatusName,stt)"
+                                                        (focusout)="sttFocusout(stt.StatusName,stt)"
+                                                        [(ngModel)]="stt.StatusName" class="">
+                                                </div>
+                                                <div class="action-input">
+                                                    <i class="fas fa-check url text-success"
+                                                        *ngIf="idfocus==stt.id_row"></i>
+                                                    <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                                        *ngIf="idfocus!=stt.id_row"></i>
+                                                </div>
+                                                <mat-menu #menu1="matMenu">
+                                                    <button mat-menu-item (click)="input.focus()">
+                                                        {{ 'department.doiten'|translate}}
+
+                                                    </button>
+                                                    <button mat-menu-item (click)="changeColor.click();">
+                                                        {{ 'department.doimau'|translate}}
+
+                                                    </button>
+                                                    <button mat-menu-item (click)="Delete_Templete(stt,true)"
+                                                        *ngIf="!stt.IsDefault">
+                                                        {{ 'GeneralKey.xoa'|translate}}
+                                                    </button>
+                                                </mat-menu>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
                                     <ng-container *ngFor="let stt of listSTTHoatdong()">
+                                        <!-- <div class="status-input col-1 form-control"
+                                            *ngIf="!stt.IsFinal && !stt.IsDeadline">
+                                            <div class="flaticon-more-v5"></div>
+                                        </div> -->
                                         <div class="status-input col-12 form-control"
                                             *ngIf="!stt.IsFinal && !stt.IsDeadline">
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
@@ -193,7 +256,8 @@
                                     </button>
                                 </div>
 
-                                <div class="header-view row mt-4" *ngIf="listSTTDeadline() && listSTTDeadline().length > 0">
+                                <div class="header-view row mt-4"
+                                    *ngIf="listSTTDeadline() && listSTTDeadline().length > 0">
                                     <div class="header-view-title">
                                         {{ 'department.trangthaitre'|translate}}
                                     </div>
@@ -289,7 +353,8 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-success btn-next" type="button" *ngIf="this.TempSelected > 0 && !this.isStatusNow" (click)="IsSave=true">
+                    <button class="btn btn-success btn-next" type="button"
+                        *ngIf="this.TempSelected > 0 && !this.isStatusNow" (click)="IsSave=true">
                         {{ 'department.luuthaydoi'|translate}}
                     </button>
                 </div>
@@ -340,7 +405,7 @@
                             </thead>
                             <tbody>
                                 <ng-container *ngFor="let item of listStatus">
-                                    <tr *ngIf="item.SL_Tasks > 0" >
+                                    <tr *ngIf="item.SL_Tasks > 0">
                                         <td style="width:50%">
                                             <div class="row">
                                                 <div class="point" [ngStyle]="{'backgroundColor': item.color}"></div>
@@ -358,7 +423,8 @@
                                                 <div class="point"
                                                     [ngStyle]="{'backgroundColor': item.colornew?item.colornew:'pink'}">
                                                 </div>
-                                                <div style="flex-grow: 1;" [ngClass]="{'text-danger': item.newvalue==0}">
+                                                <div style="flex-grow: 1;"
+                                                    [ngClass]="{'text-danger': item.newvalue==0}">
                                                     {{ item.newtitle?item.newtitle:'Chọn trạng thái mới'}}
                                                 </div>
                                             </div>
@@ -366,7 +432,8 @@
                                                 <button mat-menu-item *ngFor="let stt of listSTT"
                                                     (click)="item.newvalue = stt.id_row;Doistt(item,stt)">
                                                     <div class="row">
-                                                        <div class="point" [ngStyle]="{'backgroundColor': stt.color}"></div>
+                                                        <div class="point" [ngStyle]="{'backgroundColor': stt.color}">
+                                                        </div>
                                                         <div style="flex-grow: 1;">
                                                             {{stt.StatusName}}
                                                         </div>
@@ -376,7 +443,7 @@
                                         </td>
                                     </tr>
                                 </ng-container>
-                                
+
                             </tbody>
                         </table>
                     </div>

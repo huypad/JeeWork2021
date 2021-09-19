@@ -18,7 +18,7 @@ export class PersonalInformationComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
 
   constructor(private userService: AuthService, private fb: FormBuilder) {
-    this.isLoading$ = this.userService.isLoadingSubject.asObservable();
+    // this.isLoading$ = this.userService.isLoadingSubject.asObservable();
   }
 
   ngOnInit(): void {
@@ -58,10 +58,10 @@ export class PersonalInformationComponent implements OnInit, OnDestroy {
     this.user = Object.assign(this.user, formValues);
 
     // Do request to your server for user update, we just imitate user update there
-    this.userService.isLoadingSubject.next(true);
+    // this.userService.isLoadingSubject.next(true);
     setTimeout(() => {
       this.userService.currentUserSubject.next(Object.assign({}, this.user));
-      this.userService.isLoadingSubject.next(false);
+      // this.userService.isLoadingSubject.next(false);
     }, 2000);
   }
 

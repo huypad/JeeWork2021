@@ -111,7 +111,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             .Replace("--order by position", " order by position ");
                         select_MainMenu += select_Menu;
                         Common permit = new Common(ConnectionString);
-                        ds_workspace = Common.GetWorkSpace(loginData, 0, 0);
+                        ds_workspace = Common.GetWorkSpace(loginData, 0, 0, ConnectionString);
                         DataTable tmp_ww = new DataTable();
                         ds = Conn.CreateDataSet(select_MainMenu, cond);
                         #endregion
@@ -262,7 +262,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                             from we_project_role join we_role on we_role.id_row = we_project_role.id_role
                             where member = 1 and we_role.Disabled = 0";
                     DataSet ds = Conn.CreateDataSet(sqlq);
-                    DataSet ds_workspace = Common.GetWorkSpace(loginData, 0, 0);
+                    DataSet ds_workspace = Common.GetWorkSpace(loginData, 0, 0, ConnectionString);
                     DataTable dt_Project = ds_workspace.Tables[2];
                     dt_Project.Columns.Add("isuyquyen");
                     //foreach(DataRow dr in dt_Project.Rows)

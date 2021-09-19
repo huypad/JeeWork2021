@@ -2,12 +2,12 @@ import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {StatusDynamicModel} from './../Model/status-dynamic.model';
+import { StatusDynamicModel } from './../Model/status-dynamic.model';
 import {
     Different_StatusesModel,
     MapModel,
 } from './../../List-department/Model/List-department.model';
-import {ListDepartmentService} from './../../List-department/Services/List-department.service';
+import { ListDepartmentService } from './../../List-department/Services/List-department.service';
 import {
     Component,
     OnInit,
@@ -18,20 +18,21 @@ import {
     ElementRef,
     ChangeDetectorRef,
 } from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     FormBuilder,
 } from '@angular/forms';
-import {TranslateService} from '@ngx-translate/core';
-import {ReplaySubject, BehaviorSubject, Observable} from 'rxjs';
-import {Router} from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
-import {WeWorkService} from '../../services/wework.services';
-import {ProjectsTeamService} from '../Services/department-and-project.service';
-import {PopoverContentComponent} from 'ngx-smart-popover';
+import { WeWorkService } from '../../services/wework.services';
+import { ProjectsTeamService } from '../Services/department-and-project.service';
+import { PopoverContentComponent } from 'ngx-smart-popover';
 // import { LayoutUtilsService } from 'app/core/_base/crud';
 
-import {UpdateQuickModel} from '../../List-department/Model/List-department.model';
+import { UpdateQuickModel } from '../../List-department/Model/List-department.model';
+import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'kt-project-team-edit-status',
@@ -61,7 +62,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     isStatusNow = true;
 
     idfocus = 0;
-
+    numbers = [1, 2, 3, 4, 5, 6, 7, 8];
     isAddTemplate = false;
     updateTemp = 0;
     isAddStatus = false;
@@ -76,7 +77,18 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         this.ListStatusDynamic();
         this.LoadListAccount();
     }
+    drop(event: CdkDragDrop<unknown>) {
+        moveItemInArray(this.numbers, event.previousIndex, event.currentIndex);
+        debugger
+    }
 
+    /**
+     * Predicate function that only allows even numbers to be
+     * sorted into even indices and odd numbers at odd indices.
+     */
+    sortPredicate(index: number, item: CdkDrag<number>) {
+        return (index + 1) % 2 === item.data % 2;
+    }
     LoadDataTemp() {
         // load lại
         this.layoutUtilsService.showWaitingDiv();

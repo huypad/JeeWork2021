@@ -60,12 +60,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqlq = "a";
                     switch (data.object_type)
                     {
+                        // Công việc
                         case 1: sqlq = "select ISNULL((select count(*) from we_work where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
+                        // Thảo luận
                         case 2: sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
+                        // Bình luận
                         case 3: sqlq = "select ISNULL((select count(*) from we_comment where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
+                       // Kết quả công việc
                         case 11: sqlq = "select ISNULL((select count(*) from we_work where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
+                        // Dự án
                         case 4: sqlq = "select ISNULL((select count(*) from we_project_team where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
-
                         default: break;
                     }
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -248,7 +252,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     {
         public FileUploadModel item { get; set; }
         /// <summary>
-        /// 1: work,2: topic, 3:comment
+        /// 1: work,2: topic, 3:comment, 11 - Kết quả công việc, 4 Dự án
         /// </summary>
         public int object_type { get; set; }
         public long object_id { get; set; }

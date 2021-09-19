@@ -383,7 +383,7 @@ namespace JeeWork_Core2021.Classes
         /// <param name="type"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static DataSet GetWorkSpace(UserJWT loginData, long id, long type)
+        public static DataSet GetWorkSpace(UserJWT loginData, long id, long type, string ConnectionString)
         {
             string sql_space = "", sql_project = "", sql_folder = "", where_dpm = "";
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -742,10 +742,10 @@ namespace JeeWork_Core2021.Classes
             }
             return model;
         }
-        public static bool CheckRoleByProject(string id_project_team, UserJWT loginData, DpsConnection Conn)
+        public static bool CheckRoleByProject(string id_project_team, UserJWT loginData, DpsConnection Conn, string ConnectionString)
         {
             bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, Conn, loginData.CustomerID);
-            DataSet ds = GetWorkSpace(loginData, 0, 0);
+            DataSet ds = GetWorkSpace(loginData, 0, 0, ConnectionString);
             if (Conn.LastError != null || ds == null)
                 return false;
             SqlConditions conds = new SqlConditions();
@@ -770,10 +770,10 @@ namespace JeeWork_Core2021.Classes
             }
             return false;
         }
-        public static bool CheckPermitUpdate(string id_project_team, long id_role, UserJWT loginData, DpsConnection cnn)
+        public static bool CheckPermitUpdate(string id_project_team, long id_role, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
             // Kiểm tra các role admin của tk đăng nhập
-            if (CheckRoleByProject(id_project_team, loginData, cnn))
+            if (CheckRoleByProject(id_project_team, loginData, cnn, ConnectionString))
             {
                 return true;
             }
@@ -787,9 +787,9 @@ namespace JeeWork_Core2021.Classes
             if (dt.Rows.Count > 0) return true;
             return false;
         }
-        public static bool CheckTaskUser(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn)
+        public static bool CheckTaskUser(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
-            if (IsAdminTeam(id_project_team, loginData, cnn))
+            if (IsAdminTeam(id_project_team, loginData, cnn, ConnectionString))
             {
                 return true;
             }
@@ -835,11 +835,11 @@ namespace JeeWork_Core2021.Classes
             return false;
         }
 
-        public static bool IsAdminTeam(string id_project_team, UserJWT loginData, DpsConnection cnn)
+        public static bool IsAdminTeam(string id_project_team, UserJWT loginData, DpsConnection cnn,string ConnectionString)
         {
 
             bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
-            DataSet ds = GetWorkSpace(loginData, 0, 0);
+            DataSet ds = GetWorkSpace(loginData, 0, 0, ConnectionString);
             if (cnn.LastError != null || ds == null)
                 return false;
             if (ds.Tables.Count == 3)

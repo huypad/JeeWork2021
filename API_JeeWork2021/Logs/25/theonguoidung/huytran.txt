@@ -28,3 +28,13 @@
 17/09/2021 02:19:18 - Thêm mới dữ liệu công việc: title=Quản lý thông tin cá nhân, id_project_team=23575
 17/09/2021 02:19:28 - Thêm mới dữ liệu công việc: title=Quản lý cấp phát tài sản sử dụng, id_project_team=23575
 17/09/2021 02:20:05 - Thêm mới dữ liệu công việc: title=Cập nhật mô tả công việc cho từng chức danh công việc, id_project_team=23575
+17/09/2021 08:48:25 - Đóng công việc (217604)
+18/09/2021 12:56:51 - Chỉnh sửa dữ liệu công việc (218822), Chi tiết xem trong log chỉnh sửa chức năng
+18/09/2021 12:56:57 - Chỉnh sửa dữ liệu công việc (218858), Chi tiết xem trong log chỉnh sửa chức năng
+19/09/2021 03:21:42 - Chỉnh sửa dữ liệu công việc (218883), Chi tiết xem trong log chỉnh sửa chức năng
+19/09/2021 03:24:02 - Chỉnh sửa dữ liệu công việc (217546), Chi tiết xem trong log chỉnh sửa chức năng
+19/09/2021 03:27:07 - Chỉnh sửa dữ liệu công việc (218859), Chi tiết xem trong log chỉnh sửa chức năng
+19/09/2021 06:18:53 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Tháng 10, id_department=21764, loai=0
+19/09/2021 06:24:52 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Tháng 11, id_department=21764, loai=0
+19/09/2021 07:56:50 - Chỉnh sửa dữ liệu department/Folder (21764), Chi tiết xem trong log chỉnh sửa chức năng
+19/09/2021 07:57:02 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Tuần 1 - Tháng 10, id_department=21764, loai=0

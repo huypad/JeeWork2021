@@ -54,7 +54,6 @@ namespace JeeWork_Core2021.Classes
             //        actionContext.HttpContext.Response.StatusCode = 403;
             //        return;
             //    }
-
             //    else
             //    {
             //        string token = actionContext.HttpContext.Request.Headers["Token"].FirstOrDefault();
@@ -76,7 +75,6 @@ namespace JeeWork_Core2021.Classes
             //    actionContext.HttpContext.Response.StatusCode = 403;
             //    return;
             //}
-
         }
 
     }

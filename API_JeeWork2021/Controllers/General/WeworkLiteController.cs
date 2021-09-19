@@ -476,7 +476,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object Lite_Tag(long id_project_team)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -955,7 +954,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    title = r["title"],
                                    typeid = r["TypeID"],
                                };
-
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -964,7 +962,46 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
+        /// <summary>
+        /// Danh sách giá trị new field
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-value-new-field")]
+        [HttpGet]
+        public object GetValuesNewFields(long id_project_team)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    SqlConditions conds = new SqlConditions();
+                    conds.Add("id_project_team", id_project_team);
+                    string sql = "select FieldID, WorkID, TypeID, Value, ID_project_team " +
+                        "from we_newfileds_values where (where)";
+                    DataTable dt = cnn.CreateDataTable(sql, "(where)", conds);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   FieldID = r["FieldID"],
+                                   WorkID = r["WorkID"],
+                                   TypeID = r["TypeID"],
+                                   Value = r["Value"],
+                                   ID_project_team = r["ID_project_team"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
         /// <summary>
         /// Danh sách field mới
         /// </summary>
@@ -1268,7 +1305,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
-
                         }
                     }
                     #endregion
@@ -2531,7 +2567,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             DataTable dt_fields = new DataTable();
             DataTable dt_data = new DataTable();
             string select = "";
-            string show_default = "1,15,3,7,12,25,8,6";
+            string show_default = "1,3,5,6,7,8,12,15,25";
             cond = new SqlConditions();
             cond.Add("disabled", 0);
             string col_name = "id_project_team";
@@ -3673,7 +3709,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             SqlConditions cond = new SqlConditions();
             cond.Add("disabled", 0);
             cond.Add("TemplateID", id);
-            string sqlq = "select id_row, id_project_team, position " +
+            string sqlq = "select id_row, position " +
                         "from we_template_status " +
                         "where (where) order by type, position";
             DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);

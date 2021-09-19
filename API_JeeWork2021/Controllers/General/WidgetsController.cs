@@ -1310,7 +1310,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         FieldsSelected = FieldsSelected.Substring(1);
                     // kiểm tra quyền xem công việc người khác
                     new Common(ConnectionString);
-                    bool rs = Common.CheckRoleByProject(query.filter["id_project_team"].ToString(), loginData, cnn);
+                    bool rs = Common.CheckRoleByProject(query.filter["id_project_team"].ToString(), loginData, cnn, ConnectionString);
                     if (!rs)
                     {
                         long userid = loginData.UserID;
