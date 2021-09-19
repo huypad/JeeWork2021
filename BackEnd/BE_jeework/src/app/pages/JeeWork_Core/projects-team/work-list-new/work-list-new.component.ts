@@ -73,6 +73,7 @@ import {DuplicateWorkComponent} from '../../work/work-duplicate/work-duplicate.c
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {BehaviorSubject, of, SubscriptionLike, throwError} from 'rxjs';
 import {CommunicateService} from './work-list-new-service/communicate.service';
+import {AuthService} from '../../../../modules/auth';
 
 @Component({
     selector: 'kt-work-list-new',
@@ -80,7 +81,36 @@ import {CommunicateService} from './work-list-new-service/communicate.service';
     styleUrls: ['./work-list-new.component.scss'],
 })
 export class WorkListNewComponent implements OnInit, OnChanges {
-    @Input() ID_Project: number = 0;
+
+    constructor(
+        private CommunicateService: CommunicateService,
+        @Inject(DOCUMENT) private document: Document, // multi level
+        private _service: ProjectsTeamService,
+        private WorkService: WorkService,
+        private router: Router,
+        public dialog: MatDialog,
+        private route: ActivatedRoute,
+        private itemFB: FormBuilder,
+        public subheaderService: SubheaderService,
+        private layoutUtilsService: LayoutUtilsService,
+        private changeDetectorRefs: ChangeDetectorRef,
+        private translate: TranslateService,
+        public datepipe: DatePipe,
+        private tokenStorage: TokenStorage,
+        private weworkService: WeWorkService,
+        private menuServices: MenuPhanQuyenServices,
+        private overlayContainer: OverlayContainer,
+        private auth: AuthService,
+        private _attservice: AttachmentService
+    ) {
+        this.taskinsert.clear();
+        this.filter_groupby = this.listFilter_Groupby[0];
+        this.filter_subtask = this.listFilter_Subtask[0];
+        this.list_priority = this.weworkService.list_priority;
+        this.UserID = this.auth.getUserId();
+    }
+
+    @Input() ID_Project = 0;
 
     @ViewChild('table1', {static: true}) table1: MatTable<any>;
     @ViewChild('table2', {static: true}) table2: MatTable<any>;
@@ -98,7 +128,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     editmail = 0;
     statusDefault = 0;
     isAssignforme = false;
-    taskortherpeople = true;
     // col
     displayedColumnsCol: string[] = [];
     @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -111,7 +140,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     filter_subtask: any = [];
     list_milestone: any = [];
     Assign_me = -1;
-    keyword: string = '';
+    keyword = '';
     // view setting
     tasklocation = false;
     showsubtask = true;
@@ -131,7 +160,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     listNewField: any = [];
     DataNewField: any = [];
     listType: any = [];
-    textArea: string = '';
+    textArea = '';
     searchCtrl: FormControl = new FormControl();
     private readonly componentName: string = 'kt-task_';
     Emtytask = false;
@@ -142,44 +171,94 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     IsAdminGroup = false;
     public column_sort: any = [];
 
-    constructor(
-        private CommunicateService: CommunicateService,
-        @Inject(DOCUMENT) private document: Document, // multi level
-        private _service: ProjectsTeamService,
-        private WorkService: WorkService,
-        private router: Router,
-        public dialog: MatDialog,
-        private route: ActivatedRoute,
-        private itemFB: FormBuilder,
-        public subheaderService: SubheaderService,
-        private layoutUtilsService: LayoutUtilsService,
-        private changeDetectorRefs: ChangeDetectorRef,
-        private translate: TranslateService,
-        public datepipe: DatePipe,
-        private tokenStorage: TokenStorage,
-        private WeWorkService: WeWorkService,
-        private menuServices: MenuPhanQuyenServices,
-        private overlayContainer: OverlayContainer,
-        private _attservice: AttachmentService
-    ) {
-        this.taskinsert.clear();
-        this.filter_groupby = this.listFilter_Groupby[0];
-        this.filter_subtask = this.listFilter_Subtask[0];
-        this.list_priority = this.WeWorkService.list_priority;
-        this.UserID = +localStorage.getItem('idUser');
-    }
+    listField: any = [];
+
+    listStatus: any = [];
+
+    // list da nhiệm
+    // nodes: any[] = demoData;
+
+    // ids for connected drop lists
+    dropTargetIds = [];
+    nodeLookup = {};
+    dropActionTodo: DropInfo = null;
+
+    listNewfield: any = [];
+
+    taskinsert = new WorkModel();
+
+    cot = 1;
+
+    Assign: any = [];
+
+    listUser: any[];
+
+    selectedDate: any = {
+        startDate: '',
+        endDate: '',
+    };
+
+    listFilter_Groupby = [
+        {
+            title: 'Status',
+            value: 'status',
+        },
+        {
+            title: 'Assignee',
+            value: 'assignee',
+        },
+        {
+            title: 'groupwork',
+            value: 'groupwork',
+        },
+    ];
+
+    listFilter_Subtask = [
+        {
+            title: 'showtask',
+            showvalue: 'showtask',
+            value: 'hide',
+        },
+        {
+            title: 'expandall',
+            showvalue: 'expandall',
+            value: 'show',
+        },
+    ];
+
+    colorName = '';
+
+    list_Tag: any = [];
+    project_team: any = '';
+
+    sortField = [
+        {
+            title: this.translate.instant('day.theongaytao'),
+            value: 'CreatedDate',
+        },
+        {
+            title: this.translate.instant('day.theothoihan'),
+            value: 'Deadline',
+        },
+        {
+            title: this.translate.instant('day.theongaybatdau'),
+            value: 'StartDate',
+        },
+    ];
 
     ngOnInit() {
+
         // giao tiếp service
         this.subscription = this.CommunicateService.currentMessage.subscribe(
             (message) => {
                 if (message) {
-                    this.LoadData();
+                    this.LoadData(false);
                 }
             }
         );
-        //end giao tiếp service
+        // end giao tiếp service
 
+        this.LoadTaskClosed();
 
         const today = new Date();
         this.filterDay = {
@@ -196,7 +275,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                         this.IsAdminGroup = res.data.IsAdminGroup;
                     }
                     if (!this.CheckRoles(3)) {
-                        // this.taskortherpeople = false
+                        // this.isAssignforme = false
                     }
                 }),
             )
@@ -208,11 +287,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                 this.LoadDetailProject();
             });
 
-        // this.changeDetectorRefs.detectChanges();
-
-        this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
+        this.weworkService.lite_milestone(this.ID_Project).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.list_milestone = res.data;
                 this.changeDetectorRefs.detectChanges();
             }
@@ -247,16 +324,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     CheckRoles(roleID: number) {
-        const x = this.list_role.find((x) => x.id_row == this.ID_Project);
-        if (x && roleID !== 3) {
-            if (x.locked) {
-                return false;
-            }
-        }
-        if (this.IsAdminGroup) {
-            return true;
-        }
         if (this.list_role) {
+            const x = this.list_role.find((x) => x.id_row == this.ID_Project);
+            if (x && roleID !== 3) {
+                if (x.locked) {
+                    return false;
+                }
+            }
+            if (this.IsAdminGroup) {
+                return true;
+            }
             if (x) {
                 if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
                     return true;
@@ -298,16 +375,17 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     CheckRoleskeypermit(key) {
-        const x = this.list_role.find((x) => x.id_row == this.ID_Project);
-        if (x) {
-            if (x.locked) {
-                return false;
-            }
-        }
-        if (this.IsAdminGroup) {
-            return true;
-        }
         if (this.list_role) {
+            const x = this.list_role.find((x) => x.id_row == this.ID_Project);
+            if (x) {
+                if (x.locked) {
+                    return false;
+                }
+            }
+            if (this.IsAdminGroup) {
+                return true;
+            }
+
             if (x) {
                 if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
                     return true;
@@ -353,7 +431,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     /** SELECTION */
     CheckedNode(check: any, arr_model: any) {
         const checked = this.selection.selected.find(
-            (x) => x.id_row === arr_model.id_row
+            (x) => x.id_row == arr_model.id_row
         );
         const index = this.selection.selected.indexOf(arr_model, 0);
         if (!checked && check.checked) {
@@ -367,8 +445,47 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     masterToggle() {
     }
 
-    LoadData() {
+    async LoadData(loading = true) {
         this.clearList();
+
+        this.data = [];
+        // get option new field
+        this.GetOptions_NewField();
+        // get list new field
+        this.weworkService.GetNewField().subscribe((res) => {
+            if (res && res.status == 1) {
+                this.listNewField = res.data;
+            }
+        });
+        // Load data new field
+        await this.LoadNewField();
+        // Load data status dynamic
+        await this.LoadDataStatusDynamic();
+        // Load data work group
+        await this.LoadDataWorkGroup();
+        // get data work binding data
+        // this.LoadDataTask();
+        await this.LoadDataTaskNew(loading);
+
+    }
+
+    LoadDataWorkGroup() {
+        this.weworkService.lite_workgroup(this.ID_Project)
+            .pipe(
+                tap((res) => {
+                    if (res && res.status == 1) {
+                        this.listType = res.data;
+                        this.changeDetectorRefs.detectChanges();
+                    }
+                })
+            )
+            .subscribe();
+    }
+
+    LoadDataTaskNew(loading = true) {
+        if(loading){
+            this.layoutUtilsService.showWaitingDiv();
+        }
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
             '',
@@ -377,91 +494,44 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             50,
             true
         );
-        this.data = [];
-        // get option new field
-        this.GetOptions_NewField();
-        // get list new field
-        this.WeWorkService.GetNewField().subscribe((res) => {
-            if (res && res.status == 1) {
-                this.listNewField = res.data;
+        this._service.ListTask(queryParams)
+            .subscribe((res) => {
+                if (res && res.status === 1) {
+                    this.listStatus = res.data;
+                    this.prepareDragDrop(this.ListTasks);
+                    // this.LoadListStatus();
+                    this.changeDetectorRefs.detectChanges();
+                }
+                this.layoutUtilsService.OffWaitingDiv();
+
+            },(err)=> (  this.layoutUtilsService.OffWaitingDiv()));
+    }
+
+
+
+    async LoadNewField() {
+        this.weworkService.GetValuesNewFields(this.ID_Project).subscribe(res => {
+            if (res && res.status === 1) {
+                this.DataNewField = res.data;
+                this.changeDetectorRefs.detectChanges();
             }
         });
-        // get data work binding data
-        this.layoutUtilsService.showWaitingDiv();
-        this._service.GetDataWorkCU(queryParams)
-            .pipe(
-                tap(() => this.layoutUtilsService.showWaitingDiv()),
-                debounceTime(1000),
-                switchMap((resultFromServer) => of(resultFromServer).pipe(
-                        tap((res) => {
-                            if (res && res.status === 1) {
-                                this.data = res.data;
-                                this.listFilter = this.data.Filter;
-                                this.ListColumns = this.data.TenCot;
-                                // xóa title khỏi cột
-                                const colDelete = ['title'];
-                                colDelete.forEach((element) => {
-                                    var indextt = this.ListColumns.findIndex(
-                                        (x) => x.fieldname == element
-                                    );
-                                    if (indextt >= 0) {
-                                        this.ListColumns.splice(indextt, 1);
-                                    }
-                                });
+    }
 
 
-                                this.ListColumns.sort((a, b) =>
-                                    a.id_project_team > b.id_project_team
-                                        ? -1
-                                        : b.id_project_team > a.id_project_team
-                                            ? 1
-                                            : 0
-                                ); // nào chọn xếp trước
-                                if (!this.CheckRoles(3)) {
-                                    this.ListTasks = this.data.datawork.filter(x => this.isAssignForme(x));
-                                } else {
-                                    this.ListTasks = this.data.datawork;
-                                }
-
-                                if (!this.showclosedtask) {
-                                    this.ListTasks = this.ListTasks.filter(x => x.end_date === null);
-                                }
-
-                                this.Emtytask = true;
-                                if (this.filter_groupby.value == 'status' && this.ListTasks.length == 0) {
-                                    if (this.listFilter[0]) {
-                                        this.newtask = this.listFilter[0].id_row;
-                                    }
-                                }
-                                this.prepareDragDrop(this.ListTasks);
-                                this.ListTags = this.data.Tag;
-                                this.ListUsers = this.data.User;
-                                this.DataNewField = this.data.DataWork_NewField;
-
-                                this.LoadListStatus();
-                                this.changeDetectorRefs.detectChanges();
-                            }
-                        })
-                    ),
-                ),
-                catchError((err) => throwError(err)),
-                finalize(() => this.layoutUtilsService.OffWaitingDiv())
-            )
-            .subscribe((res) => {
-            });
-
-        this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
+    LoadDataStatusDynamic() {
+        this.weworkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
+            if (res && res.status == 1) {
                 this.status_dynamic = res.data;
                 // load ItemFinal
                 if (this.status_dynamic) {
-                    var x = this.status_dynamic.find((val) => val.IsFinal == true);
+                    const x = this.status_dynamic.find((val) => val.IsFinal == true);
                     if (x) {
                         this.ItemFinal = x.id_row;
                     } else {
                     }
 
-                    let itemstatusdefault = this.status_dynamic.find(
+                    const itemstatusdefault = this.status_dynamic.find(
                         (x) =>
                             x.isdefault == true &&
                             x.IsToDo == false &&
@@ -478,18 +548,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
             }
         });
-
-        //Load data work group
-        this.WeWorkService.lite_workgroup(this.ID_Project)
-            .pipe(
-                tap((res) => {
-                    if (res && res.status === 1) {
-                        this.listType = res.data;
-                        this.changeDetectorRefs.detectChanges();
-                    }
-                })
-            )
-            .subscribe();
     }
 
     ClosedTask(value, node) {
@@ -507,12 +565,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     GetDataNewField(id_work, id_field, isDropdown = false, getColor = false) {
 
-        var x = this.DataNewField.find(
+        const x = this.DataNewField.find(
             (x) => x.WorkID == id_work && x.FieldID == id_field
         );
         if (x) {
             if (isDropdown) {
-                var list = this.listNewfield.find(
+                const list = this.listNewfield.find(
                     (element) => element.FieldID == id_field && element.RowID == x.Value
                 );
                 if (list) {
@@ -542,7 +600,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             return;
         }
 
-        var idWork = node.id_row;
+        const idWork = node.id_row;
         const _item = new UpdateWorkModel();
         _item.clear();
         _item.FieldID = field.id_row;
@@ -557,7 +615,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     LoadNhomCongViec(id) {
-        var x = this.listType.find((x) => x.id_row == id);
+        const x = this.listType.find((x) => x.id_row == id);
         if (x) {
             return x.title;
         }
@@ -570,18 +628,29 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     filterConfiguration(): any {
         const filter: any = {};
         filter.id_project_team = this.ID_Project;
-        filter.groupby = this.filter_groupby.value; //assignee
+        filter.groupby = this.filter_groupby.value; // assignee
         filter.keyword = this.keyword;
         filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
         filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
         filter.collect_by = this.column_sort.value;
-        // filter.subtask_done = this.showclosedsubtask?1:0;
-        // filter.task_done = this.showclosedtask?1:0;
+        filter.displayChild = 1;
+        if(this.showclosedsubtask){
+            filter.subtask_done = this.showclosedsubtask;
+        }
+        if(this.showclosedtask){
+            filter.task_done = this.showclosedtask;
+        }
+        if(this.isAssignforme){
+            filter.forme = this.isAssignforme;
+        }
+        else{
+            filter.everyone = !this.isAssignforme;
+        }
         return filter;
     }
 
     getColorStatus(val) {
-        var index = this.status_dynamic.find((x) => x.id_row == val);
+        const index = this.status_dynamic.find((x) => x.id_row == val);
         if (index) {
             return index.color;
         } else {
@@ -589,14 +658,32 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
     }
 
-    listField: any = [];
-
+    // TenCot
     GetField() {
-        this.WeWorkService.GetListField(this.ID_Project, 3, false).subscribe(
+        this.weworkService.GetListField(this.ID_Project, 3, false).subscribe(
             (res) => {
-                if (res && res.status === 1) {
+                if (res && res.status == 1) {
                     this.listField = res.data;
-                    // this.changeDetectorRefs.detectChanges();
+                    this.ListColumns = res.data;
+                    console.log(this.ListColumns,' -- listCol')
+                    // xóa title khỏi cột
+                    const colDelete = ['title'];
+                    colDelete.forEach((element) => {
+                        const indextt = this.ListColumns.findIndex(
+                            (x) => x.fieldname == element
+                        );
+                        if (indextt >= 0) {
+                            this.ListColumns.splice(indextt, 1);
+                        }
+                    });
+                    this.ListColumns.sort((a, b) =>
+                        a.id_project_team > b.id_project_team
+                            ? -1
+                            : b.id_project_team > a.id_project_team
+                                ? 1
+                                : 0
+                    ); // nào chọn xếp trước
+                    this.changeDetectorRefs.detectChanges();
                 }
             }
         );
@@ -608,8 +695,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
         return false;
     }
-
-    listStatus: any = [];
 
     LoadListStatus(loading = false) {
         if (loading) {
@@ -636,9 +721,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
                     } else if (this.CheckDataAssigne(val, element)) {
                         if (
-                            element.User?.length == 1 ||
-                            (this.UserNull(element.User) && val.id_row == '') ||
-                            (element.User?.length > 1 && val.id_row == '0')
+                            element.Users?.length == 1 ||
+                            (this.UserNull(element.Users) && val.id_row == '') ||
+                            (element.Users?.length > 1 && val.id_row == '0')
                         ) {
                             val.data.push(element);
                         }
@@ -656,10 +741,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     isShowStatus(status) {
-        if (status.data.length > 0) {
+        if (status.datawork.length > 0) {
             return true;
         }
-        if (status.data.length == 0 && this.showemptystatus) {
+        if (status.datawork.length == 0 && this.showemptystatus) {
             return true;
         }
         if (this.Emtytask && status.id_row == this.statusDefault) {
@@ -672,6 +757,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         return false;
     }
 
+    CheckCustomfield(node,item){
+        return this.editmail != (node.id_row+item.Id_row.toString());
+    }
+
     TestUpdateKey(node) {
         this.UpdateByKey(node, 'title', node.title + ' +1');
     }
@@ -681,69 +770,69 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             this.filter_groupby.value == 'status' &&
             valuefilter.id_row == +elementTask.status
         ) {
-            if (this.isAssignforme) {
-                if (!this.FindUser(elementTask.User, this.UserID)) {
-                    return false;
-                }
-            }
-            if (!this.taskortherpeople) {
-                // kiểm tra có phải người được giao hay người tạo hay không
-                if (
-                    this.isAssignForme(elementTask) || elementTask.createdby == this.UserID
-                ) {
-                    return true;
-                }
-            } else {
-                return true;
-            }
+            // if (this.isAssignforme) {
+            //     if (!this.FindUser(elementTask.Users, this.UserID)) {
+            //         return false;
+            //     }
+            // }
+            // if (!this.isAssignforme) {
+            // // kiểm tra có phải người được giao hay người tạo hay không
+            // if (
+            //     this.isAssignForme(elementTask) || elementTask.createdby == this.UserID
+            // ) {
+            //     return true;
+            // }
+            // } else {
+            return true;
+            // }
         }
         return false;
     }
 
-    isAssignForme(elementTask) {
-        if (
-            elementTask.createdby == this.UserID ||
-            this.FindUser(elementTask.User, this.UserID) ||
-            this.FindUser(elementTask.Follower, this.UserID) ||
-            this.FindUser(elementTask.UserSubtask, this.UserID)
-        ) {
-            return true;
-        }
-        return false;
-    }
+    // isAssignForme(elementTask) {
+    //     if (
+    //         elementTask.createdby == this.UserID ||
+    //         this.FindUser(elementTask.Users, this.UserID) ||
+    //         this.FindUser(elementTask.Follower, this.UserID) ||
+    //         this.FindUser(elementTask.UserSubtask, this.UserID)
+    //     ) {
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
     CheckDataAssigne(valuefilter, elementTask) {
         if (this.filter_groupby.value == 'assignee') {
-            if (this.isAssignforme) {
-                if (!this.FindUser(elementTask.User, this.UserID)) {
-                    return false;
-                }
+            // if (this.isAssignforme) {
+            //     if (!this.FindUser(elementTask.Users, this.UserID)) {
+            //         return false;
+            //     }
+            // }
+            // if (!this.isAssignforme) {
+            //     if (
+            //         (this.FindUser(elementTask.Users, valuefilter.id_row) &&
+            //             this.isAssignForme(elementTask)) ||
+            //         (elementTask.createdby == this.UserID &&
+            //             this.UserNull(elementTask.Users))
+            //     ) {
+            //         return true;
+            //     }
+            // } else {
+            if (
+                this.FindUser(elementTask.Users, valuefilter.id_row) ||
+                (this.UserNull(elementTask.Users) && valuefilter.id_row == '') ||
+                (elementTask.Users?.length > 1 && valuefilter.id_row == '0')
+            ) {
+                return true;
             }
-            if (!this.taskortherpeople) {
-                if (
-                    (this.FindUser(elementTask.User, valuefilter.id_row) &&
-                        this.isAssignForme(elementTask)) ||
-                    (elementTask.createdby == this.UserID &&
-                        this.UserNull(elementTask.User))
-                ) {
-                    return true;
-                }
-            } else {
-                if (
-                    this.FindUser(elementTask.User, valuefilter.id_row) ||
-                    (this.UserNull(elementTask.User) && valuefilter.id_row == '') ||
-                    (elementTask.User?.length > 1 && valuefilter.id_row == '0')
-                ) {
-                    return true;
-                }
-            }
+            // }
         }
         return false;
     }
 
     FindUser(listUser, iduser) {
         if (listUser) {
-            var x = listUser.find((x) => x.id_user == iduser);
+            const x = listUser.find((x) => x.userid == iduser);
             if (x) {
                 return true;
             }
@@ -765,21 +854,21 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             this.filter_groupby.value == 'groupwork' &&
             elementTask.id_group == valuefilter.id_row
         ) {
-            if (this.isAssignforme) {
-                if (!this.FindUser(elementTask.User, this.UserID)) {
-                    return false;
-                }
-            }
-            if (!this.taskortherpeople) {
-                // kiểm tra có phải người được giao hay người tạo hay không
-                if (
-                    this.isAssignForme(elementTask)
-                ) {
-                    return true;
-                }
-            } else {
-                return true;
-            }
+            // if (this.isAssignforme) {
+            //     if (!this.FindUser(elementTask.Users, this.UserID)) {
+            //         return false;
+            //     }
+            // }
+            // if (!this.isAssignforme) {
+            //     // kiểm tra có phải người được giao hay người tạo hay không
+            //     if (
+            //         this.isAssignForme(elementTask)
+            //     ) {
+            //         return true;
+            //     }
+            // } else {
+            return true;
+            // }
         }
         return false;
     }
@@ -790,7 +879,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     drop2(event: CdkDragDrop<string[]>) {
         moveItemInArray(this.ListColumns, event.previousIndex, event.currentIndex);
-        var item = this.ListColumns[event.currentIndex];
+        const item = this.ListColumns[event.currentIndex];
         const itemDrop = new DrapDropItem();
         itemDrop.id_row = 0;
         itemDrop.typedrop = 5;
@@ -811,22 +900,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.previousIndex = index;
     }
 
-    // list da nhiệm
-    // nodes: any[] = demoData;
-
-    // ids for connected drop lists
-    dropTargetIds = [];
-    nodeLookup = {};
-    dropActionTodo: DropInfo = null;
-
     prepareDragDrop(nodes: any[]) {
         nodes.forEach((node) => {
             this.dropTargetIds.push(node.id_row);
             this.nodeLookup[node.id_row] = node;
-            if (node.DataChildren == null) {
-                node.DataChildren = [];
+            if (node.children == null) {
+                node.children = [];
             }
-            this.prepareDragDrop(node.DataChildren);
+            this.prepareDragDrop(node.children);
 
         });
     }
@@ -846,56 +927,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         item.columnname = fieldname;
         this._service.UpdateColumnWork(item).subscribe((res) => {
             if (res && res.status == 1) {
-                this.LoadUpdateCol(true);
+                this.GetField();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
     }
 
-    LoadUpdateCol(loading = false) {
-        if (loading) {
-            this.layoutUtilsService.showWaitingDiv();
-        }
-        const queryParams = new QueryParamsModelNew(
-            this.filterConfiguration(),
-            '',
-            '',
-            0,
-            50,
-            true
-        );
-        this._service.GetDataWorkCU(queryParams).subscribe((res) => {
-            if (res && res.status === 1) {
-                this.ListColumns = res.data['TenCot'];
-                //xóa title khỏi cột
-                var colDelete = ['title'];
-                colDelete.forEach((element) => {
-                    var indextt = this.ListColumns.findIndex(
-                        (x) => x.fieldname == element
-                    );
-                    if (indextt >= 0) {
-                        this.ListColumns.splice(indextt, 1);
-                    }
-                });
-
-                this.ListColumns.sort((a, b) =>
-                    a.id_project_team > b.id_project_team
-                        ? -1
-                        : b.id_project_team > a.id_project_team
-                            ? 1
-                            : 0
-                );
-                this.layoutUtilsService.OffWaitingDiv();
-                this.changeDetectorRefs.detectChanges();
-            }
-        });
-    }
-
-    listNewfield: any = [];
-
     GetOptions_NewField() {
-        this.WeWorkService.GetOptions_NewField(this.ID_Project, 0, 3).subscribe(
+        this.weworkService.GetOptions_NewField(this.ID_Project, 0, 3).subscribe(
             (res) => {
                 if (res && res.status == 1) {
                     this.listNewfield = res.data;
@@ -905,7 +945,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     getDropdownField(idField) {
-        var list = this.listNewfield.filter((x) => x.FieldID == idField);
+        const list = this.listNewfield.filter((x) => x.FieldID == idField);
         if (list) {
             return list;
         }
@@ -924,13 +964,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     onSelectFile(event) {
         if (event.target.files && event.target.files[0]) {
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsDataURL(event.target.files[0]);
-            var base64Str: any = '';
+            let base64Str: any = '';
             reader.onload = (event) => {
-                base64Str = event.target['result'];
-                var metaIdx = base64Str.indexOf(';base64,');
-                let strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
+                base64Str = event.target.result;
+                const metaIdx = base64Str.indexOf(';base64,');
+                const strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
                 // var icon = { filename: filesAmount.name, strBase64: strBase64, base64Str: base64Str };
                 // this.changeDetectorRefs.detectChanges();
             };
@@ -939,7 +979,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     // @debounce(50)
     dragMoved(event) {
-        let e = this.document.elementFromPoint(
+        const e = this.document.elementFromPoint(
             event.pointerPosition.x,
             event.pointerPosition.y
         );
@@ -948,7 +988,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             this.clearDragInfo();
             return;
         }
-        let container = e.classList.contains('node-item')
+        const container = e.classList.contains('node-item')
             ? e
             : e.closest('.node-item');
         if (!container) {
@@ -963,25 +1003,22 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
         if (event.pointerPosition.y - targetRect.top < oneThird) {
             // before
-            this.dropActionTodo['action'] = 'before';
+            this.dropActionTodo.action = 'before';
         } else if (event.pointerPosition.y - targetRect.top > 2 * oneThird) {
             // after
-            this.dropActionTodo['action'] = 'after';
+            this.dropActionTodo.action = 'after';
         } else {
             // inside
-            this.dropActionTodo['action'] = 'inside';
+            this.dropActionTodo.action = 'inside';
         }
         this.showDragInfo();
     }
 
     drop(event) {
-        // if (this.CheckRoles(15)) {
-        //   this.isAssignforme = true;
-        // }
         const itemDrop = new DrapDropItem();
         const draggedItemId = event.item.data; // get data -- id
         const parentItemId = event.previousContainer.id; // từ thằng cha hiện tại
-        var status = 0;
+        const status = 0;
         const listdata = this.ListTasks;
         if (!this.dropActionTodo) {
             return;
@@ -989,14 +1026,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         // load list new data
         const draggedItem = this.nodeLookup[draggedItemId]; // lấy item từ node
 
-        var listDatanew = this.ListTasks;
+        let listDatanew = this.ListTasks;
         // cách này chỉ dùng gọi data trong 1 bảng
-        var stt = draggedItem.status;
-        var newArr = this.listStatus.find((x) => x.id_row == stt);
+        const stt = draggedItem.status;
+        const newArr = this.listStatus.find((x) => x.id_row == stt);
         if (newArr) {
             listDatanew = newArr.data;
         }
-        //get list data từ list bỏ đi
+        // get list data từ list bỏ đi
         // if(parentItemId=='main'){
         //   //get list bỏ đi
         //   //draggedItem.id_parent = '';
@@ -1010,7 +1047,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             'main'
         ); // thằng cha mới nếu ngoài cùng thì = main
 
-        //get list data nơi muốn đến
+        // get list data nơi muốn đến
         // if(targetListId=='main' && parentItemId!='main' ){
         //   //get list muốn đến
         //   // draggedItem.status = id_row?
@@ -1020,7 +1057,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         //     listDatanew = newArr.data;
         //   }
         // }
-        var text =
+        const text =
             '\nmoving\n[' +
             draggedItemId +
             '] from list [' +
@@ -1052,10 +1089,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             if (nodeParent.id_parent != '') {
                 return;
             } else {
-                if (draggedItem.DataChildren == null) {
-                    draggedItem.DataChildren = [];
+                if (draggedItem.children == null) {
+                    draggedItem.children = [];
                 }
-                if (draggedItem.DataChildren.length)
+                if (draggedItem.children.length)
                     // nếu có node con thì out không cho phép ghép các node
                 {
                     return;
@@ -1069,7 +1106,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                 draggedItem.id_parent = '';
             } else {
                 // node con
-                if (draggedItem.DataChildren.length)
+                if (draggedItem.children.length)
                     // nếu có node con thì out không cho phép ghép các node
                 {
                     return;
@@ -1080,14 +1117,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         // list data phai la list tất cả thằng cha trong bảng
         const oldItemContainer =
             parentItemId != 'main'
-                ? this.nodeLookup[parentItemId].DataChildren
+                ? this.nodeLookup[parentItemId].children
                 : listDatanew; // lấy con từ thằng cha nế thằng cha main thì lấy nguyên cây
         const newContainer =
             targetListId != 'main'
-                ? this.nodeLookup[targetListId].DataChildren
+                ? this.nodeLookup[targetListId].children
                 : listDatanew; // lấy list muốn đưa tới chuẩn bị map vào list này
 
-        let i = oldItemContainer.findIndex((c) => c.id_row == draggedItemId); // lấy index từ list cũ
+        const i = oldItemContainer.findIndex((c) => c.id_row == draggedItemId); // lấy index từ list cũ
         oldItemContainer.splice(i, 1); // cắt item từ list bỏ đi
         // set parent
         switch (this.dropActionTodo.action) {
@@ -1104,7 +1141,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                 break;
 
             case 'inside': // đưa vào trong làm con của thằng node được chọn
-                this.nodeLookup[this.dropActionTodo.targetId].DataChildren.push(
+                this.nodeLookup[this.dropActionTodo.targetId].children.push(
                     draggedItem
                 ); // get ID node được chọn push item mới vào đó
                 this.nodeLookup[this.dropActionTodo.targetId].isExpanded = true; // trạng thái đang mở node
@@ -1123,17 +1160,17 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     getParentNodeId(id: string, nodesToSearch: any[], parentId: string): string {
-        var findNode = nodesToSearch.find((x) => x.id_row == id);
+        const findNode = nodesToSearch.find((x) => x.id_row == id);
         if (findNode) {
             return parentId;
         } else {
-            for (let node of nodesToSearch) {
+            for (const node of nodesToSearch) {
 
                 // if (node.id_row == id) return parentId;
-                if (node.DataChildren == null) {
-                    node.DataChildren = [];
+                if (node.children == null) {
+                    node.children = [];
                 }
-                let ret = this.getParentNodeId(id, node.DataChildren, node.id_row);
+                const ret = this.getParentNodeId(id, node.children, node.id_row);
                 if (ret) {
                     return ret;
                 }
@@ -1178,7 +1215,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     editTitle(val) {
         this.isEdittitle = val;
-        var ele = <HTMLInputElement> document.getElementById('task' + val);
+        const ele = document.getElementById('task' + val) as HTMLInputElement;
         setTimeout(() => {
             ele.focus();
         }, 50);
@@ -1205,18 +1242,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
     }
 
-    taskinsert = new WorkModel();
-
     AddTask(item) {
         // WorkModel
 
-        var task = new WorkModel();
+        const task = new WorkModel();
         task.status = item.id_row;
         task.title = this.taskinsert.title;
         task.id_project_team = this.ID_Project;
         task.Users = [];
         if (this.Assign.id_nv > 0) {
-            var assign = this.AssignInsert(this.Assign);
+            const assign = this.AssignInsert(this.Assign);
             task.Users.push(assign);
         }
         const start = moment();
@@ -1243,7 +1278,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     AssignInsert(assign) {
-        var NV = new UserInfoModel();
+        let NV = new UserInfoModel();
         NV = assign;
         NV.id_user = assign.id_nv;
         NV.loai = 1;
@@ -1251,7 +1286,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     bindStatus(val) {
-        var stt = this.status_dynamic.find((x) => +x.id_row == +val);
+        const stt = this.status_dynamic.find((x) => +x.id_row == +val);
         if (stt) {
             return stt.statusname;
         }
@@ -1263,8 +1298,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             this.addNodeitem = 0;
         }
     }
-
-    cot = 1;
 
     Themcot() {
         // this.ListColumns.push({
@@ -1279,8 +1312,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         // this.cot++;
     }
 
-    Assign: any = [];
-
     // Assign
     ItemSelected(val: any, task, remove = false) {
         // chọn item
@@ -1290,15 +1321,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.UpdateByKey(task, 'assign', val.id_nv, false);
     }
 
-    listUser: any[];
-
     LoadListAccount() {
         const filter: any = {};
         // filter.key = 'id_project_team';
         // filter.value = this.ID_Project;
         filter.id_project_team = this.ID_Project;
-        this.WeWorkService.list_account(filter).subscribe((res) => {
-            if (res && res.status === 1) {
+        this.weworkService.list_account(filter).subscribe((res) => {
+            if (res && res.status == 1) {
                 this.listUser = res.data;
                 // this.setUpDropSearchNhanVien();
             }
@@ -1312,18 +1341,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     getOptions_Assign() {
-        var options_assign: any = {
+        const options_assign: any = {
             showSearch: true,
             keyword: '',
             data: this.listUser,
         };
         return options_assign;
     }
-
-    selectedDate: any = {
-        startDate: '',
-        endDate: '',
-    };
 
     Selectdate() {
         const dialogRef = this.dialog.open(DialogSelectdayComponent, {
@@ -1348,7 +1372,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     f_convertDate(v: any) {
         if (v != '' && v != undefined) {
-            let a = new Date(v);
+            const a = new Date(v);
             return (
                 ('0' + a.getDate()).slice(-2) +
                 '/' +
@@ -1363,26 +1387,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         if (this.selectedDate.startDate == '' && this.selectedDate.endDate == '') {
             return 'Set due date';
         } else {
-            var start = this.f_convertDate(this.selectedDate.startDate);
-            var end = this.f_convertDate(this.selectedDate.endDate);
+            const start = this.f_convertDate(this.selectedDate.startDate);
+            const end = this.f_convertDate(this.selectedDate.endDate);
             return start + ' - ' + end;
         }
     }
-
-    listFilter_Groupby = [
-        {
-            title: 'Status',
-            value: 'status',
-        },
-        {
-            title: 'Assignee',
-            value: 'assignee',
-        },
-        {
-            title: 'groupwork',
-            value: 'groupwork',
-        },
-    ];
 
     GroupBy(item) {
         if (item == this.filter_groupby) {
@@ -1391,19 +1400,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.filter_groupby = item;
         this.LoadData();
     }
-
-    listFilter_Subtask = [
-        {
-            title: 'showtask',
-            showvalue: 'showtask',
-            value: 'hide',
-        },
-        {
-            title: 'expandall',
-            showvalue: 'expandall',
-            value: 'show',
-        },
-    ];
 
     ExpandNode(node) {
         if (this.filter_subtask.value == 'show') {
@@ -1415,24 +1411,26 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     ShowCloseTask() {
         this.showclosedtask = !this.showclosedtask;
+        this.UpdateInfoProject();
         this.LoadData();
     }
 
     ShowClosesubTask() {
         this.showclosedsubtask = !this.showclosedsubtask;
-        // this.LoadData();
+        this.UpdateInfoProject();
+        this.LoadData();
     }
 
 
-    loadSubtask() {
-        const isExpanded = this.filter_subtask.value == 'show' ? true : false;
-
-        for (let i of this.listStatus) {
-            i.data.forEach((element) => {
-                element.isExpanded = isExpanded;
-            });
-        }
-    }
+    // loadSubtask() {
+    //     const isExpanded = this.filter_subtask.value == 'show' ? true : false;
+    //
+    //     for (const i of this.listStatus) {
+    //         i.datawork.forEach((element) => {
+    //             element.isExpanded = isExpanded;
+    //         });
+    //     }
+    // }
 
     Subtask(item) {
 
@@ -1441,11 +1439,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
 
         this.filter_subtask = item;
-        this.loadSubtask();
+        // this.loadSubtask();
     }
 
     CreateTask(val) {
-        var x = this.newtask;
+        const x = this.newtask;
         this.CloseAddnewTask(true);
         setTimeout(() => {
             this.newtask = x;
@@ -1493,7 +1491,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             return true;
         }
         if (this.list_role) {
-            var x = this.list_role.find((x) => x.id_row == this.ID_Project);
+            const x = this.list_role.find((x) => x.id_row == this.ID_Project);
             if (x) {
                 if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
                     return true;
@@ -1571,18 +1569,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         });
     }
 
-    colorName: string = '';
-
     GetColorName(val) {
         // name
-        this.WeWorkService.getColorName(val).subscribe((res) => {
+        this.weworkService.getColorName(val).subscribe((res) => {
             this.colorName = res.data.Color;
             return this.colorName;
         });
     }
 
     getTenAssign(val) {
-        var list = val.split(' ');
+        const list = val.split(' ');
         return list[list.length - 1];
     }
 
@@ -1621,7 +1617,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     getAssignee(id_nv) {
         if (+id_nv > 0 && this.listUser) {
-            var assign = this.listUser.find((x) => x.id_nv == id_nv);
+            const assign = this.listUser.find((x) => x.id_nv == id_nv);
             if (assign) {
                 return assign;
             }
@@ -1631,7 +1627,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     getPriority(id) {
-        var item = this.list_priority.find((x) => x.value == id);
+        const item = this.list_priority.find((x) => x.value == id);
         if (item) {
             return item;
         }
@@ -1659,7 +1655,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     duplicate(type: number) {
-        var model = new WorkDuplicateModel();
+        const model = new WorkDuplicateModel();
         model.clear();
 
         model.type = type;
@@ -1697,7 +1693,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     assign(node) {
-        var item = this.getOptions_Assign();
+        const item = this.getOptions_Assign();
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
             height: '500px',
@@ -1710,7 +1706,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     Add_followers() {
         let saveMessageTranslateParam = '';
-        var _item = new WorkModel();
+        const _item = new WorkModel();
         // _item = this.detail;
         saveMessageTranslateParam +=
             _item.id_row > 0
@@ -1761,7 +1757,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     // nhóm công việc
     Assignmore() {
-        var item = this.getOptions_Assign();
+        const item = this.getOptions_Assign();
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
             height: '500px',
@@ -1797,7 +1793,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     // nhóm start date
     updateStartDateList() {
-        var date = moment(this.startDatelist).format('MM/DD/YYYY HH:mm');
+        const date = moment(this.startDatelist).format('MM/DD/YYYY HH:mm');
         this.selection.selected.forEach((element) => {
             this.UpdateByKey(
                 element,
@@ -1823,7 +1819,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     getViewCheck(node) {
-        let checked = this.selection.selected.find((x) => x.id_row == node);
+        const checked = this.selection.selected.find((x) => x.id_row == node);
         if (checked) {
             return 1;
         }
@@ -1831,9 +1827,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     Chontatca(node) {
-        var list = node.data;
+        const list = node.data;
         list.forEach((element) => {
-            let checked = this.selection.selected.find(
+            const checked = this.selection.selected.find(
                 (x) => x.id_row == element.id_row
             );
             if (!checked) {
@@ -1844,7 +1840,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     // lisst dupliacte
     UpdateListDuplicate(type) {
-        var time = this.selection.selected.length * 500;
+        const time = this.selection.selected.length * 500;
         if (type == 1) {
             this.selection.selected.forEach((element) => {
                 setTimeout(() => {
@@ -1852,7 +1848,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                 }, 100);
             });
         } else if (type == 2) {
-            let saveMessageTranslateParam = 'GeneralKey.themthanhcong';
+            const saveMessageTranslateParam = 'GeneralKey.themthanhcong';
             const _saveMessage = this.translate.instant(saveMessageTranslateParam);
             const _messageType = MessageType.Create;
             const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
@@ -1903,7 +1899,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     Create(_item: WorkDuplicateModel) {
         this._service.DuplicateCU(_item).subscribe((res) => {
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.layoutUtilsService.showActionNotification(
                     'Nhân bản thành công',
                     MessageType.Read,
@@ -1929,12 +1925,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         });
     }
 
-    list_Tag: any = [];
-    project_team: any = '';
-
     mark_tag() {
-        this.WeWorkService.lite_tag(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
+        this.weworkService.lite_tag(this.ID_Project).subscribe((res) => {
+            if (res && res.status == 1) {
                 this.list_Tag = res.data;
                 // this.changeDetectorRefs.detectChanges();
             }
@@ -1996,7 +1989,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     chinhsuaNhomCV(item) {
         let saveMessageTranslateParam = '';
-        var _item = new WorkGroupModel();
+        const _item = new WorkGroupModel();
         _item.clear();
         _item.id_project_team = '' + this.ID_Project;
         if (item && item.id_row) {
@@ -2099,7 +2092,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     Nguoitaocv(id) {
         if (this.listUser) {
-            var x = this.listUser.find((x) => x.id_nv == id);
+            const x = this.listUser.find((x) => x.id_nv == id);
             if (x) {
                 return x;
             }
@@ -2108,7 +2101,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     themThanhvien() {
-        var url = 'project/' + this.ID_Project + '/settings/members';
+        const url = 'project/' + this.ID_Project + '/settings/members';
         this.router.navigateByUrl(url);
     }
 
@@ -2117,15 +2110,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     update_hidden(item, isDelete = false) {
-        var hidden = item.ishidden ? 1 : 0;
+        let hidden = item.IsHidden ? 1 : 0;
         if (isDelete) {
         } else {
-            hidden = item.ishidden ? 0 : 1;
+            hidden = item.IsHidden ? 0 : 1;
         }
 
-        this._service.update_hidden(item.id_row, 3, hidden, isDelete).subscribe((res) => {
+        this._service.update_hidden(item.Id_row, 3, hidden, isDelete).subscribe((res) => {
             if (res && res.status == 1) {
-                this.LoadUpdateCol(true);
+                this.GetField();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -2153,7 +2146,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     HasColunmHidden(list) {
-        var x = list.filter((item) => item.ishidden && item.isnewfield);
+        const x = list.filter((item) => item.IsHidden && item.isnewfield);
         if (x.length > 0) {
             return true;
         }
@@ -2161,7 +2154,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     getHeight() {
-        var height = window.innerHeight - 125 - this.tokenStorage.getHeightHeader();
+        const height = window.innerHeight - 125 - this.tokenStorage.getHeightHeader();
         return height;
     }
 
@@ -2169,21 +2162,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.column_sort = item;
         this.LoadData();
     }
-
-    sortField = [
-        {
-            title: this.translate.instant('day.theongaytao'),
-            value: 'CreatedDate',
-        },
-        {
-            title: this.translate.instant('day.theothoihan'),
-            value: 'Deadline',
-        },
-        {
-            title: this.translate.instant('day.theongaybatdau'),
-            value: 'StartDate',
-        },
-    ];
 
     getComponentName(id_row) {
         if (id_row) {
@@ -2217,15 +2195,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         } else if (item.createdby == this.UserID) {
             return true;
         } else {
-            if (item.User) {
-                const index = item.User.findIndex(x => x.id_user == this.UserID);
+            if (item.Users) {
+                const index = item.Users.findIndex(x => x.userid == this.UserID);
                 if (index >= 0) {
                     return true;
                 }
             }
         }
-        ;
-        var txtError = '';
+
+        let txtError = '';
         switch (key) {
             case 'assign':
                 txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
@@ -2254,6 +2232,54 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
         this.layoutUtilsService.showError(txtError);
         return false;
+    }
+
+    // xử lý filter cho dự án
+    LoadTaskClosed() {
+        const Info = JSON.parse(localStorage.getItem('closedTask-worklistnew'));
+        if (Info && Info.length > 0) {
+            const itemproject = Info.find(x => x.projectteam == this.ID_Project);
+            if (itemproject) {
+                this.LoadInfoProject(itemproject.data);
+            } else {
+                this.CreateInfoProject();
+            }
+        } else {
+            localStorage.setItem('closedTask-worklistnew', JSON.stringify([]));
+            this.CreateInfoProject();
+        }
+    }
+
+    LoadInfoProject(item) {
+        this.tasklocation = item.tasklocation;
+        this.showclosedtask = item.showclosedtask;
+        this.showclosedsubtask = item.showclosedsubtask;
+        this.showemptystatus = item.showemptystatus;
+    }
+
+    CreateInfoProject() {
+        const InfoNew = JSON.parse(localStorage.getItem('closedTask-worklistnew'));
+        InfoNew.push({projectteam: this.ID_Project, data: this.InfoFilter()});
+        localStorage.setItem('closedTask-worklistnew', JSON.stringify(InfoNew));
+    }
+
+    UpdateInfoProject() {
+        const InfoNew = JSON.parse(localStorage.getItem('closedTask-worklistnew'));
+        InfoNew.forEach(res => {
+            if (res.projectteam == this.ID_Project) {
+                res.data = this.InfoFilter();
+            }
+        });
+        localStorage.setItem('closedTask-worklistnew', JSON.stringify(InfoNew));
+    }
+
+    InfoFilter() {
+        return {
+            tasklocation: this.tasklocation,
+            showclosedtask: this.showclosedtask,
+            showclosedsubtask: this.showclosedsubtask,
+            showemptystatus: this.showemptystatus,
+        };
     }
 }
 

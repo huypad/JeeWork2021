@@ -272,8 +272,8 @@ export class WorkListNewDetailComponent implements OnInit {
         } else if (item.CreatedBy == this.UserID) {
             return true;
         } else {
-            if (item.User) {
-                const index = item.User.findIndex(x => x.id_nv == this.UserID);
+            if (item.Users) {
+                const index = item.Users.findIndex(x => x.id_nv == this.UserID);
                 if (index >= 0) {
                     return true;
                 }
@@ -319,8 +319,8 @@ export class WorkListNewDetailComponent implements OnInit {
         } else if (item.CreatedBy == this.UserID) {
             return true;
         } else {
-            if (item.User) {
-                const index = item.User.findIndex(x => x.id_nv == this.UserID);
+            if (item.Users) {
+                const index = item.Users.findIndex(x => x.id_nv == this.UserID);
                 if (index >= 0) {
                     return true;
                 }
@@ -494,8 +494,8 @@ export class WorkListNewDetailComponent implements OnInit {
         } else if (this.item.CreatedBy == this.UserID) {
             return true;
         } else {
-            if (this.item.User) {
-                const index = this.item.User.findIndex(x => x.id_nv == this.UserID);
+            if (this.item.Users) {
+                const index = this.item.Users.findIndex(x => x.id_nv == this.UserID);
                 if (index >= 0) {
                     return true;
                 }
@@ -1024,7 +1024,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     refreshData() {
-        this.workService.WorkDetail(this.item.id_row).subscribe((res) => {
+        this.projectsTeamService.WorkDetail(this.item.id_row).subscribe((res) => {
             if (res && res.status == 1) {
                 this.ngOnInit();
                 this.changeDetectorRefs.detectChanges();
@@ -1100,7 +1100,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     this.changeDetectorRefs.detectChanges();
                     if (res && res.status === 1) {
                         this.IsShow_MoTaCV = !this.IsShow_MoTaCV;
-                        this.workService.WorkDetail(model.id_row).subscribe((res) => {
+                        this.projectsTeamService.WorkDetail(model.id_row).subscribe((res) => {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
                                 this.description_tiny = this.description;

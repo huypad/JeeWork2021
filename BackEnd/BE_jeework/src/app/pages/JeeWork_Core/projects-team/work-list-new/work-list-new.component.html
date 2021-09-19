@@ -73,7 +73,7 @@
             <ng-container>
                 <div class="cu-search-filter cu-search-filter_v5" style="    padding: 0 10px;">
                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
-                           (keyup.enter)="LoadData()" [(ngModel)]="keyword" type="text"
+                           (keyup.enter)="LoadDataTaskNew()" [(ngModel)]="keyword" type="text"
                            placeholder="{{ 'work.filterbytaskname' | translate }}">
                     <div class="cu-search-filter__extra">
                         <div class="cu-filter-value-list-dropdown ng-star-inserted">
@@ -126,7 +126,7 @@
             <div class="item-filter url">
                 <div class="cu-filter-assignees_two-rows cu-filter-assignees ng-star-inserted">
                     <div class="cu-filter-assignees__item cu-filter-assignees__item_me -hover {{isAssignforme?'text-success':''}}"
-                         (click)="isAssignforme=true;LoadListStatus(true)">
+                         (click)="isAssignforme=true;LoadDataTaskNew()">
                         <div class="cu-filter-assignees__icon cu-filter-assignees__icon_me icon">
                             <i class="fas fa-user {{isAssignforme?'text-success':''}}"></i>
                         </div>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div class="cu-filter-assignees__item cu-filter-assignees__item_everyone cu-filter-assignees__item_selected ng-star-inserted -hover {{isAssignforme?'':'text-success'}}"
-                         (click)="isAssignforme=false;LoadListStatus(true)">
+                         (click)="isAssignforme=false;LoadDataTaskNew()">
                         <div class="cu-filter-assignees__icon cu-filter-assignees__icon_team icon">
                             <i class="fas fa-users {{isAssignforme?'':'text-success'}}"></i>
                         </div>
@@ -150,7 +150,7 @@
                             <span translate="viewsetting.title"></span>
                         </div>
                         <button mat-menu-item class="d-flex">
-                            <div (click)="tasklocation=!tasklocation"
+                            <div (click)="tasklocation=!tasklocation;UpdateInfoProject()"
                                  style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.tasklocation"></span>
                             </div>
@@ -167,15 +167,14 @@
                             <div (click)="ShowCloseTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedtask" (ngModelChange)="LoadData()">
+                            <mat-slide-toggle [(ngModel)]="showclosedtask" (ngModelChange)="LoadDataTaskNew()">
                             </mat-slide-toggle>
                         </button>
                         <button mat-menu-item class="d-flex">
-                            <div (click)="ShowClosesubTask()"
-                                 style="line-height: 2;margin-right: 10px;flex-grow: 1;">
+                            <div (click)="ShowClosesubTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedsubtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedsubtask">
+                            <mat-slide-toggle [(ngModel)]="showclosedsubtask" (ngModelChange)="LoadDataTaskNew()">
                             </mat-slide-toggle>
                         </button>
                         <!-- <button mat-menu-item>
@@ -186,7 +185,7 @@
                             </mat-slide-toggle>
                         </button> -->
                         <button mat-menu-item class="d-flex">
-                            <div (click)="showemptystatus=!showemptystatus"
+                            <div (click)="showemptystatus=!showemptystatus;UpdateInfoProject()"
                                  style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showemptystatus"></span>
                             </div>
@@ -248,7 +247,7 @@
                                                                            *ngIf="isUpdateStatusname(status.id_row)"
                                                                            (click)="chinhsuanoidung(status)"
                                                                            matTooltip="{{ (this.filter_groupby.value == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
-                                                                        <i *ngIf="status.data.length > 0"
+                                                                        <i *ngIf="status.datawork?.length > 0"
                                                                            class="fas fa-check-double"
                                                                            (click)="Chontatca(status)"
                                                                            matTooltipPosition="above"
@@ -286,12 +285,12 @@
                                             </div>
                                         </div>
                                         <div class="cu-task-list-header__item cu-task-list-header__count cu-task-list-header-field ng-star-inserted"
-                                             *ngIf="status.data.length > 0" sorttitle="Sort by task name">
+                                             *ngIf="status.datawork?.length > 0" sorttitle="Sort by task name">
                                             <div class="cu-dropdown-head">
                                                 <div class="cu-task-list-header-field__title">
                                                     <div class="cu-task-list-header-field__title-text"
                                                          style="padding-top: 6px;">
-                                                        {{status.data.length}} {{ 'work.tasks' | translate }}
+                                                        {{status.datawork?.length}} {{ 'work.tasks' | translate }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -301,18 +300,18 @@
                                          class=" cu-task-list-header__items" (cdkDropListDropped)="drop2($event)">
                                         <ng-container *ngFor="let item of ListColumns">
                                             <div class="cu-task-list-header-field"
-                                                 *ngIf="!(item.ishidden && item.isnewfield)" cdkDrag>
+                                                 *ngIf="!(item.IsHidden && item.isnewfield)" cdkDrag>
                                                 <div class="cu-dropdown-head" style="width:100px;margin:0 1px;"
                                                      *ngIf="item.id_project_team==ID_Project">
                                                     <div class="cu-task-list-header-field__title">
                                                         <div class="cu-task-list-header-field__title-text text-center"
                                                              *ngIf="!item.isnewfield;else isnewfield">
-                                                            {{ 'filter.' + item.title | translate }}
+                                                            {{ 'filter.' + item.Title | translate }}
                                                         </div>
                                                         <ng-template #isnewfield>
                                                             <div class="cu-task-list-header-field__title-text text-center"
                                                                  [matMenuTriggerFor]="optionField">
-                                                                {{ item.title_newfield }}
+                                                                {{ item.Title_NewField }}
                                                             </div>
                                                             <mat-menu #optionField="matMenu">
                                                                 <button mat-menu-item (click)="update_hidden(item)">
@@ -350,10 +349,9 @@
                                                     <ng-container *ngFor="let item of ListColumns;trackBy:trackByFn">
                                                         <button style="min-width:150px;padding:5px" mat-menu-item *ngIf="!item.isnewfield"
                                                                 (click)="UpdateCol(item.fieldname);">
-                                                            <span style="padding-right: 10px;">{{ 'filter.' + item.title |
-                                                                translate }}</span>
+                                                            <span style="padding-right: 10px;">{{ 'filter.' + item.Title | translate }}</span>
                                                             <i class="fas fa-check float-right"
-                                                               *ngIf="item.id_project_team==ID_Project || item.isbatbuoc"></i>
+                                                               *ngIf="item.id_project_team==ID_Project"></i>
                                                         </button>
                                                     </ng-container>
                                                     <ng-container *ngIf="HasColunmHidden(ListColumns)">
@@ -362,10 +360,9 @@
                                                                 *ngFor="let item of ListColumns;trackBy:trackByFn">
                                                             <button style="min-width:150px;padding:5px" mat-menu-item
                                                                     (click)="update_hidden(item)"
-                                                                    [disabled]="item.isbatbuoc"
-                                                                    *ngIf="(item.ishidden && item.isnewfield)">
+                                                                    *ngIf="(item.IsHidden && item.isnewfield)">
                                                                 <span style="padding-right: 10px;">{{
-                                                                    item.title_newfield }}</span>
+                                                                    item.Title_NewField }}</span>
                                                             </button>
                                                         </ng-container>
                                                     </ng-container>
@@ -468,7 +465,7 @@
 
 
                                                                             <ng-container
-                                                                                    *ngIf="node.DataChildren.length > 0">
+                                                                                    *ngIf="node.children.length > 0">
                                                                                 <div class="cu-task-row-subtasks-count url ng-star-inserted"
                                                                                      style="font-size: 15px;">
                                                                                     <div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
@@ -486,7 +483,7 @@
                                                                                                         d="M2 4.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h1.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V6.95A2.5 2.5 0 012 4.5zM4.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
                                                                                                 </path>
                                                                                             </svg>
-                                                                                            <span>{{node.DataChildren.length}}</span>
+                                                                                            <span>{{node.children.length}}</span>
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="add-new-task -hover"
@@ -509,7 +506,7 @@
                                                                                    (click)="editTitle(node.id_row)"
                                                                                    matTooltip="{{ 'work.chinhsuatencongviec' | translate }}"></i>
                                                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                     *ngIf="!(node.id_parent>0) && node.DataChildren.length == 0 && CheckRoles(1) && CheckClosedTask(node)"
+                                                                                     *ngIf="!(node.id_parent>0) && node.children.length == 0 && CheckRoles(1) && CheckClosedTask(node)"
                                                                                      (click)="AddnewTask(node.id_row);node.isExpanded=true"
                                                                                      matTooltip="{{ 'work.addsubtask' | translate }}"
                                                                                      width="20" height="20"
@@ -540,7 +537,7 @@
                                                                         <ng-container *ngFor="let tag of node.Tags">
                                                                             <kt-cu-tag [node]="node" [tag]="tag"
                                                                                        [role]="CheckRoles(20) && CheckClosedTask(node)"
-                                                                                       (loadData)="LoadData()"
+                                                                                       (loadData)="LoadDataTaskNew()"
                                                                                        (RemoveTag)="RemoveTag(tag,node)">
                                                                             </kt-cu-tag>
                                                                         </ng-container>
@@ -553,7 +550,7 @@
                                                 </div>
                                                 <ng-container *ngFor="let item of ListColumns">
                                                     <div class="text-center position-relative url -hover"
-                                                         *ngIf="(item.id_project_team==ID_Project || item.isbatbuoc) && !item.ishidden"
+                                                         *ngIf="item.id_project_team==ID_Project && !item.IsHidden"
                                                          style="width:100px;margin:0 1px;">
                                                         <ng-container *ngIf="!item.isnewfield;else isnewfield1">
                                                             <ng-container
@@ -629,7 +626,7 @@
                                                                             <div class="item-field hide-more-text">
                                                                                 <div class="item-field" *ngIf="CheckRoleskeypermit(item.fieldname) && CheckClosedTask(node);else noroleuser">
                                                                                     <ng-container
-                                                                                            *ngFor="let us of node.User;let index = index">
+                                                                                            *ngFor="let us of node.Users;let index = index">
                                                                                         <div *ngIf="index < 3"
                                                                                              class="user url scale-hover-02 position-relative"
                                                                                              style="justify-content: flex-end;">
@@ -647,7 +644,7 @@
                                                                                         </div>
                                                                                     </ng-container>
                                                                                     <ng-container
-                                                                                            *ngIf="node.User && node.User.length > 3">
+                                                                                            *ngIf="node.Users && node.Users.length > 3">
 
                                                                                         <div class="m--img-rounded m--marginless m--img-centered background"
                                                                                              [matMenuTriggerFor]="menu1"
@@ -655,11 +652,11 @@
                                                                                             <div class="user w-100"
                                                                                                  style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                                                  [ngStyle]="{'font-size.px': 15}">
-                                                                                                +{{node.User.length - 3}}
+                                                                                                +{{node.Users.length - 3}}
                                                                                             </div>
                                                                                         </div>
                                                                                         <mat-menu #menu1="matMenu">
-                                                                                            <div *ngFor="let user of node.User;let index = index"
+                                                                                            <div *ngFor="let user of node.Users;let index = index"
                                                                                                  style="justify-content: flex-end;">
                                                                                                 <ng-container
                                                                                                         *ngIf="index > 2">
@@ -684,7 +681,7 @@
                                                                                         </mat-menu>
                                                                                     </ng-container>
                                                                                     <div matTooltip="{{ 'work.assignee' | translate }}"
-                                                                                         *ngIf="!node.User || ( node.User && node.User.length == 0) "
+                                                                                         *ngIf="!node.Users || ( node.Users && node.Users.length == 0) "
                                                                                          (click)="clickmenu.click()"
                                                                                          matTooltipPosition="above"
                                                                                          style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
@@ -695,7 +692,7 @@
                                                                                 <ng-template #noroleuser>
                                                                                     <div class="item-field">
                                                                                         <ng-container
-                                                                                                *ngFor="let us of node.User;let index = index">
+                                                                                                *ngFor="let us of node.Users;let index = index">
                                                                                             <div *ngIf="index < 3"
                                                                                                  class="user url"
                                                                                                  style="justify-content: flex-end;">
@@ -709,18 +706,18 @@
                                                                                             </div>
                                                                                         </ng-container>
                                                                                         <ng-container
-                                                                                                *ngIf="node.User && node.User.length > 3">
+                                                                                                *ngIf="node.Users && node.Users.length > 3">
                                                                                             <div class="m--img-rounded m--marginless m--img-centered background"
                                                                                                  [ngStyle]="{'width.px': 30,'height.px':30}">
                                                                                                 <div class="user w-100"
                                                                                                      style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                                                      [ngStyle]="{'font-size.px': 15}">
-                                                                                                    +{{node.User.length - 3}}
+                                                                                                    +{{node.Users.length - 3}}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </ng-container>
                                                                                         <div matTooltip="{{ 'work.assignee' | translate }}"
-                                                                                             *ngIf="!node.User || ( node.User && node.User.length == 0) "
+                                                                                             *ngIf="!node.Users || ( node.Users && node.Users.length == 0) "
                                                                                              matTooltipPosition="above"
                                                                                              style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
                                                                                             <i class="fas fa-user-plus pd-0"
@@ -784,7 +781,7 @@
                                                                         <ng-container *ngSwitchCase="'comments'">
                                                                             <div class="item-field hide-more-text">
                                                                                 <app-task-comment
-                                                                                        (submit)="this.LoadData()"
+                                                                                        (submit)="this.LoadDataTaskNew()"
                                                                                         [id_row]="node.id_row"
                                                                                         [value]="node.num_comment">
                                                                                 </app-task-comment>
@@ -793,9 +790,9 @@
                                                                         <ng-container *ngSwitchCase="'createdby'">
                                                                             <div class="item-field">
                                                                                 <kt-avatar-user
-                                                                                        [image]="Nguoitaocv(node[item.fieldname]).image"
+                                                                                        [image]="node[item.fieldname].image"
                                                                                         size="25"
-                                                                                        [name]="Nguoitaocv(node[item.fieldname]).hoten">
+                                                                                        [name]="node[item.fieldname].hoten">
                                                                                 </kt-avatar-user>
                                                                             </div>
                                                                         </ng-container>
@@ -895,7 +892,7 @@
                                                                             <app-task-datetime
                                                                                     (valueChange)="UpdateValueField($event,node,item)"
                                                                                     [fieldname]="'date'"
-                                                                                    [value]="GetDataNewField(node.id_row,item.id_row)=='-'?'':GetDataNewField(node.id_row,item.id_row)"
+                                                                                    [value]="GetDataNewField(node.id_row,item.Id_row)=='-'?'':GetDataNewField(node.id_row,item.Id_row)"
                                                                                     [role]="CheckClosedProject()"></app-task-datetime>
 
                                                                         </div>
@@ -905,44 +902,43 @@
                                                                                 class="w-100 h-100 padding-new-field item-field">
                                                                             <!-- border-hover  -->
 
-                                                                            <ng-container
-                                                                                    *ngIf="editmail != (node.id_row+item.id_row.toString())">
+                                                                            <ng-container *ngIf="CheckCustomfield(node,item)">
                                                                                 <div class=" url hide-more-text"
-                                                                                     *ngIf="GetDataNewField(node.id_row,item.id_row)!='-'">
+                                                                                     *ngIf="GetDataNewField(node.id_row,item.Id_row)!='-'">
                                                                                     <div class="w-100 h-100 hide-more-text"
                                                                                          [matMenuTriggerFor]="emaillist">
                                                                                         {{
-                                                                                        GetDataNewField(node.id_row, item.id_row)
+                                                                                        GetDataNewField(node.id_row, item.Id_row)
                                                                                         }}
                                                                                     </div>
                                                                                     <mat-menu #emaillist="matMenu">
                                                                                         <button mat-menu-item>
                                                                                             <a
-                                                                                                    href="mailto:{{GetDataNewField(node.id_row,item.id_row)}}">
+                                                                                                    href="mailto:{{GetDataNewField(node.id_row,item.Id_row)}}">
                                                                                                 Gửi mail
                                                                                             </a>
                                                                                         </button>
                                                                                         <button mat-menu-item>
-                                                                                            <a (click)="focusInput(node.id_row,item.id_row)">
+                                                                                            <a (click)="focusInput(node.id_row,item.Id_row)">
                                                                                                 Chình sửa mail
                                                                                             </a>
                                                                                         </button>
                                                                                     </mat-menu>
                                                                                 </div>
                                                                                 <div class=" url hide-more-text urf"
-                                                                                     *ngIf="GetDataNewField(node.id_row,item.id_row)=='-'"
-                                                                                     (click)="focusInput(node.id_row,item.id_row)">
+                                                                                     *ngIf="GetDataNewField(node.id_row,item.Id_row)=='-'"
+                                                                                     (click)="focusInput(node.id_row,item.Id_row)">
                                                                                     <span class="hide-more-text">
-                                                                                        {{GetDataNewField(node.id_row, item.id_row)}}
+                                                                                        {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                                     </span>
                                                                                 </div>
                                                                             </ng-container>
 
                                                                             <ng-container
-                                                                                    *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                                                                    *ngIf="!CheckCustomfield(node,item)">
                                                                                 <app-focus-block type="email"
                                                                                                  [isbd]="true"
-                                                                                                 [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                                                                 [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                                                                  (out)="UpdateValueField($event,node,item);">
                                                                                 </app-focus-block>
                                                                             </ng-container>
@@ -966,15 +962,15 @@
                                                                                 class="w-100 h-100 padding-new-field item-field">
                                                                             <!-- border-hover  -->
                                                                             <div class="url hide-more-text"
-                                                                                 (click)="focusInput(node.id_row,item.id_row)"
-                                                                                 *ngIf="editmail != (node.id_row+item.id_row.toString())">
-                                                                                {{GetDataNewField(node.id_row, item.id_row)}}
+                                                                                 (click)="focusInput(node.id_row,item.Id_row)"
+                                                                                 *ngIf="CheckCustomfield(node,item)">
+                                                                                {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                             </div>
                                                                             <ng-container
-                                                                                    *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                                                                    *ngIf="!CheckCustomfield(node,item)">
                                                                                 <app-focus-block type="number"
                                                                                                  [isbd]="true"
-                                                                                                 [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                                                                 [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                                                                  (out)="UpdateValueField($event,node,item);">
                                                                                 </app-focus-block>
                                                                             </ng-container>
@@ -985,15 +981,15 @@
                                                                                 class="w-100 h-100  padding-new-field item-field">
                                                                             <!-- border-hover  -->
                                                                             <div class=" url hide-more-text"
-                                                                                 (click)="focusInput(node.id_row,item.id_row)"
-                                                                                 *ngIf="editmail != (node.id_row+item.id_row.toString())">
-                                                                                {{GetDataNewField(node.id_row, item.id_row)}}
+                                                                                 (click)="focusInput(node.id_row,item.Id_row)"
+                                                                                 *ngIf="CheckCustomfield(node,item)">
+                                                                                {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                             </div>
                                                                             <ng-container
-                                                                                    *ngIf="editmail == (node.id_row+item.id_row.toString())">
+                                                                                    *ngIf="!CheckCustomfield(node,item)">
                                                                                 <app-focus-block type="text"
                                                                                                  [isbd]="true"
-                                                                                                 [value]="GetDataNewField(node.id_row,item.id_row)"
+                                                                                                 [value]="GetDataNewField(node.id_row,item.Id_row)"
                                                                                                  (out)="UpdateValueField($event,node,item);">
                                                                                 </app-focus-block>
                                                                             </ng-container>
@@ -1002,10 +998,10 @@
                                                                     <ng-container *ngSwitchCase="'textarea'">
                                                                         <div class="w-100 h-100 padding-new-field item-field"
                                                                              [matMenuTriggerFor]="area"
-                                                                             (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.id_row))"
-                                                                             (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.id_row))">
+                                                                             (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.Id_row))"
+                                                                             (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.Id_row))">
                                                                             <div class=" url hide-more-text">
-                                                                                {{GetDataNewField(node.id_row, item.id_row)}}
+                                                                                {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                             </div>
                                                                         </div>
                                                                         <mat-menu #area="matMenu">
@@ -1020,16 +1016,16 @@
                                                                     <ng-container *ngSwitchDefault>
                                                                         <!-- border-hover  -->
                                                                         <div class="w-100 h-100 padding-new-field item-field"
-                                                                             [ngStyle]="{'backgroundColor': GetDataNewField(node.id_row,item.id_row,true,true)}"
+                                                                             [ngStyle]="{'backgroundColor': GetDataNewField(node.id_row,item.Id_row,true,true)}"
                                                                              [matMenuTriggerFor]="dropdown">
                                                                             <div class="url hide-more-text"
-                                                                                 [ngClass]="{'text-white': GetDataNewField(node.id_row,item.id_row,true) != '-'}">
-                                                                                {{ GetDataNewField(node.id_row, item.id_row, true) }}
+                                                                                 [ngClass]="{'text-white': GetDataNewField(node.id_row,item.Id_row,true) != '-'}">
+                                                                                {{ GetDataNewField(node.id_row, item.Id_row, true) }}
                                                                             </div>
                                                                         </div>
                                                                         <mat-menu #dropdown="matMenu">
                                                                             <button mat-menu-item
-                                                                                    *ngFor="let dr of getDropdownField(item.id_row)"
+                                                                                    *ngFor="let dr of getDropdownField(item.Id_row)"
                                                                                     (click)="UpdateValueField(dr.RowID,node,item)">
                                                                                 <div class="d-inline-block"
                                                                                      [ngStyle]="{'backgroundColor': dr.Color}"
@@ -1128,15 +1124,14 @@
 
                                         <!-- ở dưới bind thằng con -->
 
-                                        <div *ngIf="!node.id_parent && node.isExpanded  && (node.DataChildren.length || addNodeitem==node.id_row)"
-                                             class="node-children" cdkDropList [cdkDropListData]="node.DataChildren"
+                                        <div *ngIf="!node.id_parent && ( node.isExpanded || filter_subtask.value == 'show'  )&& (node.children.length || addNodeitem==node.id_row)"
+                                             class="node-children" cdkDropList [cdkDropListData]="node.children"
                                              [id]="node.id_row" [cdkDropListConnectedTo]="dropTargetIds"
                                              (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
 
                                             <div class="cu-task-list__subtasks">
-                                                <ng-container *ngFor="let child of node.DataChildren">
-                                                    <div *ngIf="!(!this.showclosedsubtask && isItemFinal(child.status))"
-                                                         class="cu-task-row row" cdkDrag [cdkDragData]="child.id_row"
+                                                <ng-container *ngFor="let child of node.children">
+                                                    <div class="cu-task-row row" cdkDrag [cdkDragData]="child.id_row"
                                                          (cdkDragMoved)="dragMoved($event)">
                                                         <ng-container
                                                                 *ngTemplateOutlet="tmplNode1,context:{node:child}">
@@ -1178,11 +1173,11 @@
                                 </ng-template>
 
                                 <div [ngStyle]="{'display': status.isShow?'none':''}">
-                                    <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="status.data"
+                                    <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="status.datawork"
                                          [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
                                          (cdkDropListDropped)="drop($event)" [cdkDropListSortingDisabled]="true">
 
-                                        <div class="cu-task-row row" *ngFor="let node of status.data" cdkDrag
+                                        <div class="cu-task-row row" *ngFor="let node of status.datawork" cdkDrag
                                              [cdkDragData]="node.id_row" (cdkDragMoved)="dragMoved($event)">
 
                                             <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}">

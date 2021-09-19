@@ -2387,8 +2387,23 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
                                     DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
                                     Users = from us in ds.Tables[2].AsEnumerable()
-                                            where r["id_row"].Equals(us["id_work"])
+                                            where r["id_row"].Equals(us["id_work"]) && us["loai"].ToString().Equals("1")
                                             select new
+                                            {
+                                                id_nv = us["id_user"],
+                                                hoten = us["hoten"],
+                                                username = us["username"],
+                                                tenchucdanh = us["tenchucdanh"],
+                                                mobile = us["mobile"],
+                                                image = us["image"],
+                                                createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
+                                                updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
+                                                updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                                createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                            },
+                                    Followers = from us in ds.Tables[2].AsEnumerable()
+                                            where r["id_row"].Equals(us["id_work"]) && us["loai"].ToString().Equals("2")
+                                                select new
                                             {
                                                 id_nv = us["id_user"],
                                                 hoten = us["hoten"],
@@ -2419,7 +2434,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                       isImage = UploadHelper.IsImage(dr["type"].ToString()),
                                                       icon = UploadHelper.GetIcon(dr["type"].ToString()),
                                                       size = dr["size"],
-                                                      NguoiTao = dr["username"],
+                                                      // NguoiTao = dr["username"],
                                                       Object_Type = dr["object_type"],
                                                       CreatedBy = dr["CreatedBy"],
                                                       CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", dr["CreatedDate"])
@@ -6744,7 +6759,7 @@ where u.disabled = 0 and u.loai = 2";
                              status = r["status"],
                              id_milestone = r["id_milestone"],
                              milestone = r["milestone"],
-                             num_com = r["num_comment"],
+                             num_comment = r["num_comment"],
                              estimates = r["estimates"],
                              closed = r["closed"],
                              closed_work_date = r["closed_work_date"],
@@ -7242,9 +7257,15 @@ where u.disabled = 0 and u.loai = 2";
                                 dt_filter = cnn.CreateDataTable("select id_user as id_row, '' as statusname,'' as color, '' as follower, '' as description " +
                                     "from we_project_team_user where disabled = 0 and id_project_team = " + id_project_team);
                                 DataRow newRow = dt_filter.NewRow();
+
+                                newRow = dt_filter.NewRow();
+                                newRow[0] = DBNull.Value;
+                                newRow[1] = "Chưa giao việc";
+                                dt_filter.Rows.InsertAt(newRow, 0);
+                                //dt_filter.Rows.InsertAt(dt_filter.NewRow(), 0);
                                 foreach (DataRow item in dt_filter.Rows)
                                 {
-                                    newRow = dt_filter.NewRow();
+                                    //newRow = dt_filter.NewRow();
                                     var info = DataAccount.Where(x => item["id_row"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                     if (info != null)
                                     {
@@ -7253,12 +7274,11 @@ where u.disabled = 0 and u.loai = 2";
                                         item["Follower"] = "";
                                         item["Description"] = "";
                                     }
+                                    else
+                                    {
+                                        item["color"] = WeworkLiteController.GetColorName("Chưa giao việc");
+                                    }
                                 }
-                                newRow = dt_filter.NewRow();
-                                newRow[0] = "0";
-                                newRow[1] = "Công việc nhiều người làm";
-                                dt_filter.Rows.InsertAt(newRow, 0);
-                                dt_filter.Rows.InsertAt(dt_filter.NewRow(), 0);
                                 break;
                             }
                         default: break;
@@ -7281,7 +7301,7 @@ where u.disabled = 0 and u.loai = 2";
                     displayChild = query.filter["displayChild"];
                 string sql = "select iIf(id_group is null,0,id_group) as id_group" +
                     ", cast(id_row as varchar) as id_row, cast(status as varchar) as status, * ";
-                sql += $@" from v_wework_clickup_new w where w.disabled = 0 " + strW + "";
+                sql += $@" from v_wework_new w where w.disabled = 0 " + strW + "";
                 DataTable result = new DataTable();
                 result = cnn.CreateDataTable(sql, Conds);
                 DataTable tmp = new DataTable();

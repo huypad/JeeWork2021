@@ -279,7 +279,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         sqlq = "select ISNULL((select count(*) from we_template_customer where Disabled=0 and  id_row = " + id + "),0)";
                         errors = "Mẫu";
                         tablename = "we_template_customer";
-
                     }
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai(errors);

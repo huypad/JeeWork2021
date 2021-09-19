@@ -316,10 +316,20 @@ export class ProjectsTeamService {
     }
 
     // get data từ work click up
-    GetDataWorkCU(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
+    GetDataWorkCU(queryParams: QueryParamsModelNew): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
         const url = API_work_CU + '/list-work';
+        return this.http.get<QueryResultsModel>(url, {
+            headers: httpHeaders,
+            params: httpParams
+        });
+    }
+    // get data work mới ok
+    ListTask(queryParams: QueryParamsModelNew): Observable<any> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+        const url = API_work_CU + '/list-task';
         return this.http.get<QueryResultsModel>(url, {
             headers: httpHeaders,
             params: httpParams
@@ -418,7 +428,8 @@ export class ProjectsTeamService {
 
     WorkDetail(id: any): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
-        const url = `${API_work_CU}/Detail?id=${id}`;
+        const url = `${API_work_CU}/detail-task?id=${id}`;
+        // const url = `${API_work_CU}/Detail?id=${id}`;
         return this.http.get<any>(url, {headers: httpHeaders});
     }
 

@@ -63,7 +63,7 @@
                         </div>
                     </ng-template>
                     <div class="cu-task-row-assignee pd-r-10">
-                        <ng-container *ngIf="item.User">
+                        <ng-container *ngIf="item.Users">
                             <ng-container *ngIf="CheckRoles(14)&& CheckClosedTask();else norole14">
                                 <div class="ml-1">
                                     <ng-container *ngTemplateOutlet="giaovieccanhan"></ng-container>
@@ -71,14 +71,14 @@
 
                             </ng-container>
                             <ng-template #norole14>
-                                <kt-avatar-list-users class="ml-1" [ListUser]="item.User" MaxSize="3" iconSize="26">
+                                <kt-avatar-list-users class="ml-1" [ListUser]="item.Users" MaxSize="3" iconSize="26">
                                 </kt-avatar-list-users>
                             </ng-template>
                         </ng-container>
 
 
                         <div class="cu-user-group"
-                            *ngIf="CheckRoles(14) && !(item.User && item.User.length > 0) && CheckClosedTask()">
+                            *ngIf="CheckRoles(14) && !(item.Users && item.Users.length > 0) && CheckClosedTask()">
                             <div class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print"
                                 matTooltipPosition="above" matTooltip="{{item.assign?item.assign.hoten:'Giao việc'}}">
                                 <div
@@ -422,7 +422,7 @@
                                                                     <ng-container
                                                                         *ngIf="CheckRoles(14) && CheckClosedTask();else norole14">
                                                                         <ng-container
-                                                                            *ngFor="let us of child.User;let index = index">
+                                                                            *ngFor="let us of child.Users;let index = index">
                                                                             <div *ngIf="index < 3"
                                                                                 class="cu-user-group scale-hover-01 position-relative"
                                                                                 style="justify-content: flex-end;">
@@ -437,7 +437,7 @@
                                                                             </div>
                                                                         </ng-container>
                                                                         <ng-container
-                                                                            *ngIf="child.User && child.User.length > 3">
+                                                                            *ngIf="child.Users && child.Users.length > 3">
 
                                                                             <div class="m--img-rounded m--marginless m--img-centered background url"
                                                                                 [matMenuTriggerFor]="menu1"
@@ -445,11 +445,11 @@
                                                                                 <div class="user w-100"
                                                                                     style="opacity: 1;color:white;padding-top:1px;text-align: center;background: grey;margin: 0;"
                                                                                     [ngStyle]="{'font-size.px': 15}">
-                                                                                    +{{child.User.length - 3}}
+                                                                                    +{{child.Users.length - 3}}
                                                                                 </div>
                                                                             </div>
                                                                             <mat-menu #menu1="matMenu">
-                                                                                <div *ngFor="let user of child.User;let index = index"
+                                                                                <div *ngFor="let user of child.Users;let index = index"
                                                                                     style="justify-content: flex-end;">
                                                                                     <ng-container *ngIf="index > 2">
                                                                                         <div class="position-relative">
@@ -476,7 +476,7 @@
 
                                                                     <ng-template #norole14>
                                                                         <ng-container
-                                                                            *ngFor="let us of child.User;let index = index">
+                                                                            *ngFor="let us of child.Users;let index = index">
                                                                             <div *ngIf="index < 3"
                                                                                 class="cu-user-group scale-hover-01 position-relative"
                                                                                 style="justify-content: flex-end;">
@@ -486,18 +486,18 @@
                                                                             </div>
                                                                         </ng-container>
                                                                         <ng-container
-                                                                            *ngIf="child.User && child.User.length > 3">
+                                                                            *ngIf="child.Users && child.Users.length > 3">
                                                                             <div class="m--img-rounded m--marginless m--img-centered background url"
                                                                                 [matMenuTriggerFor]="menu1"
                                                                                 [ngStyle]="{'width.px': 30,'height.px':30}">
                                                                                 <div class="user w-100"
                                                                                     style="opacity: 1;color:white;padding-top:1px;text-align: center;background: grey;margin: 0;"
                                                                                     [ngStyle]="{'font-size.px': 15}">
-                                                                                    +{{child.User.length - 3}}
+                                                                                    +{{child.Users.length - 3}}
                                                                                 </div>
                                                                             </div>
                                                                             <mat-menu #menu1="matMenu">
-                                                                                <div *ngFor="let user of child.User;let index = index"
+                                                                                <div *ngFor="let user of child.Users;let index = index"
                                                                                     style="justify-content: flex-end;">
                                                                                     <ng-container *ngIf="index > 2">
                                                                                         <div class="position-relative">
@@ -519,7 +519,7 @@
                                                                     </ng-template>
 
                                                                     <div class="cu-user-group"
-                                                                        *ngIf="child.User.length == 0">
+                                                                        *ngIf="child.Users.length == 0">
                                                                         <div
                                                                             class="cu-user-group__item cu-user-group__item_assign-mono cu-hidden-print">
                                                                             <div style="width:25px;height:25px;"
@@ -1116,7 +1116,7 @@
 </kt-portlet>
 
 <ng-template #giaovieccanhan>
-    <ng-container *ngFor="let us of item.User ">
+    <ng-container *ngFor="let us of item.Users ">
         <div class="user url scale-hover-02 position-relative"
             style="justify-content: flex-end;transform: scale(1) !important;">
             <i class="far fa-times-circle url view-hover text-dark bg-white"
