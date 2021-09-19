@@ -66,7 +66,6 @@ export class CreateConvesationGroupComponent implements OnInit {
   CreateConverSation() {
     let data = this.ItemConversation();
     this.conversation_sevices.CreateConversation(data).subscribe(res => {
-      console.log('create conversat', res.data)
       if (res && res.status === 1) {
         this.CloseDia(res.data);
       }
@@ -167,7 +166,6 @@ export class CreateConvesationGroupComponent implements OnInit {
 
   loadTT() {
     this.conversation_sevices.getAllUsers().subscribe(res => {
-      //  console.log(res);
       this.itemuser = res.data;
       for (let i = 0; i < this.user_tam.length; i++) {
         let vitri = this.itemuser.findIndex(x => x.UserId == this.user_tam[i].UserId)

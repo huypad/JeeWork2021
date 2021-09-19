@@ -142,8 +142,6 @@ stopHubConnection() {
 
 reconnectToken(): void {
   const data=this.auth.getAuthFromLocalStorage();
-  console.log("data",data);
-
      var _token =`Bearer ${data.access_token}`
      this.hubConnection.start().then((data: any) => {
       console.log('Connect with ID',data);

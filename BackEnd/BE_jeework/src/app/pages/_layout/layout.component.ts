@@ -126,7 +126,6 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         try {
             this.presence.connectToken();
         } catch (err) {
-            console.log(err);
         }
         this.subscribeToEvents();
 
@@ -252,9 +251,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
 
 
         this.chatService.OpenMiniChat$.subscribe(res => {
-            console.log('submit OpenMiniChat$', res);
             if (res) {
-                console.log('Co Res', res);
                 this.chatBoxUsers.push(res);
                 this.changeDetectorRefs.detectChanges();
             } else {

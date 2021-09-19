@@ -78,7 +78,6 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
     this.dataSource = new DepartmentProjectDataSource(this.deptService);
 
     this.route.params.subscribe((params) => {
-      console.log(params);
       if (params?.id){
         this.Id_Department = params.id;
         // this.loadDataList();

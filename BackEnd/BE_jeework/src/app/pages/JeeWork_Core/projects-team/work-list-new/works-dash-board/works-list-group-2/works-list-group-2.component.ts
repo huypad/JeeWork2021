@@ -270,7 +270,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             this.changeDetectorRefs.detectChanges();
         }
         if (changes.listNewfield) {
-            // console.log('list-new-field:',this.listNewfield);
         }
     }
 

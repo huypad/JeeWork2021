@@ -127,7 +127,6 @@ export class JeeCommentComponent implements OnInit {
                     }
                   }),
                   catchError((err) => {
-                    console.log(err);
                     this._isLoading$.next(false);
                     this.signalrService.disconnectToken(this.objectID);
                     this._errorMessage$.next(err);

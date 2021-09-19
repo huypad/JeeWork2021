@@ -212,7 +212,6 @@ export class ListActivitiesComponent {
         filter.id_project_team = this.id_project_team;
         filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
         filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
-        console.log(filter);
         return filter;
     }
 

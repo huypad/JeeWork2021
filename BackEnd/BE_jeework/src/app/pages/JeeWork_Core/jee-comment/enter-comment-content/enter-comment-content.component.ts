@@ -160,7 +160,6 @@ export class JeeCommentEnterCommentContentComponent implements OnInit, AfterView
                     this.Luulogcomment(objSave);
                 },
                 catchError((err) => {
-                    console.log(err);
                     return of();
                 }),
                 () => {

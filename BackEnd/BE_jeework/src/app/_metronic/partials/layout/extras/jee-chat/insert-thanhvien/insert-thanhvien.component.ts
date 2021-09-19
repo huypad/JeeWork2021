@@ -75,7 +75,6 @@ export class InsertThanhvienComponent implements OnInit {
 
         const data = this.ItemConversation();
         this.conversation_sevices.InsertThanhVien(this.data, data).subscribe(res => {
-            console.log('create InsertThanhVien', res);
             if (res && res.status === 1) {
                 this.CloseDia(res);
             }
@@ -213,7 +212,6 @@ export class InsertThanhvienComponent implements OnInit {
 
     loadTT() {
         this.conversation_sevices.getDSThanhVienNotInGroup(this.data).subscribe(res => {
-            console.log(res.data);
             this.itemuser = res.data;
             for (let i = 0; i < this.user_tam.length; i++) {
                 const vitri = this.itemuser.findIndex(x => x.UserId == this.user_tam[i].UserId);
@@ -236,7 +234,6 @@ export class InsertThanhvienComponent implements OnInit {
     loadTTuser() {
         //const authData = JSON.parse(localStorage.getItem(this.authLocalStorageToken));
         const authData = this.auth.getAuthFromLocalStorage();
-        console.log(authData,'data');
         this.listTT_user = authData.user.customData.personalInfo;
     }
 

@@ -133,7 +133,6 @@ export class TopicListComponent {
         }
         this.activatedRoute.params.subscribe((params) => {
             this.ID_QuyTrinh = +params.id;
-            console.log('quytrinh',this.ID_QuyTrinh);
         });
 
         const arr = this.router.url.split('/');

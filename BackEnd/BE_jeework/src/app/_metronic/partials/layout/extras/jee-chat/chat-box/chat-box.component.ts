@@ -362,7 +362,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
         let item = this.ItemLeaveMessenger(mess, note);
         this.messageService.sendMessage(_token, item, this.user.user.IdGroup).then(() => {
         }).catch(err => {
-            console.log(err);
         });
     }
 

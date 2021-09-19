@@ -113,7 +113,6 @@ export class TopicEditComponent implements OnInit {
         });
         this.title = this.translate.instant('GeneralKey.choncocautochuc') + '';
         this.item = this.data._item;
-        console.log(this.item);
         if (this.data._item?.Attachment) {
             this.ListAttachments = this.data._item.Attachment;
         }
@@ -440,7 +439,6 @@ export class TopicEditComponent implements OnInit {
                 ct.strBase64 = File;
                 ct.filename = TenFile;
                 ct.IsAdd = true;
-                console.log(ct);
                 this.ListAttachments.push(ct);
             }, 500);
         } else {

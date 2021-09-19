@@ -123,10 +123,6 @@ export class UserProfileComponent implements OnInit {
 
   GetAllRoles() {
     this.menuConfigService.GetRole_WeWork(localStorage.getItem("Username"));
-    console.log(
-      "Username",
-      this.menuConfigService.GetRole_WeWork(localStorage.getItem("Username"))
-    );
   }
   checkSession() {
     try {

@@ -196,7 +196,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     handleSVG(svg: SVGElement, parent: Element | null): SVGElement {
-        console.log('Loaded SVG: ', svg, parent);
         svg.setAttribute('width', '100');
         return svg;
     }
@@ -390,7 +389,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 
     UpdateTemplate(value, itemMenu) {
         const item = itemMenu;
-        console.log(item);
         const dialogRef = this.dialog.open(TemplateCenterUpdateComponent, {
             data: { item, buocthuchien: value },
             width: '50vw',
@@ -1046,7 +1044,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 
     AddAutomation(itemMenu) {
         const item = itemMenu;
-        console.log(item);
         const dialogRef = this.dialog.open(AutomationComponent, {
             data: { item },
             width: '1240px',

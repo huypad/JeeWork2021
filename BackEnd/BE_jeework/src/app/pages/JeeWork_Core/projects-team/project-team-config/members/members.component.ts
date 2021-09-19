@@ -280,10 +280,8 @@ export class MembersComponent {
                     this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
                     this.chatBoxUsers.push(u);
                 } else {
-                    console.log('USERRRR', user);
                     this.chatBoxUsers.push(new UserChatBox(user, 300));
                     const item = new UserChatBox(user, 300);
-                    console.log('ITEMMMM', item);
                     // this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
                     this.chatService.OpenMiniChat$.next(item);
                 }

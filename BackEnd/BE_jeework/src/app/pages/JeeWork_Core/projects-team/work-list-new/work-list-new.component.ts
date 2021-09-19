@@ -1,22 +1,22 @@
-import {WorkGroupEditComponent} from './../../work/work-group-edit/work-group-edit.component';
+import { WorkGroupEditComponent } from './../../work/work-group-edit/work-group-edit.component';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {SubheaderService} from './../../../../_metronic/partials/layout/subheader/_services/subheader.service';
-import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {MenuPhanQuyenServices} from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {AttachmentService} from './../../services/attachment.service';
+import { SubheaderService } from './../../../../_metronic/partials/layout/subheader/_services/subheader.service';
+import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { MenuPhanQuyenServices } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { AttachmentService } from './../../services/attachment.service';
 import {
     AttachmentModel,
     FileUploadModel,
 } from './../Model/department-and-project.model';
-import {AddNewFieldsComponent} from './add-new-fields/add-new-fields.component';
-import {StatusDynamicDialogComponent} from './../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
-import {WorkService} from './../../work/work.service';
-import {DuplicateTaskNewComponent} from './duplicate-task-new/duplicate-task-new.component';
-import {DialogSelectdayComponent} from './../../report/dialog-selectday/dialog-selectday.component';
+import { AddNewFieldsComponent } from './add-new-fields/add-new-fields.component';
+import { StatusDynamicDialogComponent } from './../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+import { WorkService } from './../../work/work.service';
+import { DuplicateTaskNewComponent } from './duplicate-task-new/duplicate-task-new.component';
+import { DialogSelectdayComponent } from './../../report/dialog-selectday/dialog-selectday.component';
 import {
     WorkModel,
     UpdateWorkModel,
@@ -25,7 +25,7 @@ import {
     WorkGroupModel,
     GoogleCalendarModel,
 } from './../../work/work.model';
-import {ColumnWorkModel, DrapDropItem} from './drap-drop-item.model';
+import { ColumnWorkModel, DrapDropItem } from './drap-drop-item.model';
 import {
     filter,
     tap,
@@ -38,13 +38,13 @@ import {
     switchMap,
     map,
 } from 'rxjs/operators';
-import {element} from 'protractor';
-import {WeWorkService} from './../../services/wework.services';
-import {DatePipe, DOCUMENT} from '@angular/common';
-import {TranslateService} from '@ngx-translate/core';
-import {FormBuilder, FormControl} from '@angular/forms';
-import {Router, ActivatedRoute} from '@angular/router';
-import {ProjectsTeamService} from './../Services/department-and-project.service';
+import { element } from 'protractor';
+import { WeWorkService } from './../../services/wework.services';
+import { DatePipe, DOCUMENT } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder, FormControl } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProjectsTeamService } from './../Services/department-and-project.service';
 import {
     CdkDropList,
     CdkDragDrop,
@@ -62,18 +62,18 @@ import {
     OnChanges,
     OnDestroy,
 } from '@angular/core';
-import {MatTable} from '@angular/material/table';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSort} from '@angular/material/sort';
+import { MatTable } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import * as moment from 'moment';
-import {SelectionModel} from '@angular/cdk/collections';
-import {workAddFollowersComponent} from '../../work/work-add-followers/work-add-followers.component';
-import {WorkAssignedComponent} from '../../work/work-assigned/work-assigned.component';
-import {DuplicateWorkComponent} from '../../work/work-duplicate/work-duplicate.component';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {BehaviorSubject, of, SubscriptionLike, throwError} from 'rxjs';
-import {CommunicateService} from './work-list-new-service/communicate.service';
-import {AuthService} from '../../../../modules/auth';
+import { SelectionModel } from '@angular/cdk/collections';
+import { workAddFollowersComponent } from '../../work/work-add-followers/work-add-followers.component';
+import { WorkAssignedComponent } from '../../work/work-assigned/work-assigned.component';
+import { DuplicateWorkComponent } from '../../work/work-duplicate/work-duplicate.component';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { BehaviorSubject, of, SubscriptionLike, throwError } from 'rxjs';
+import { CommunicateService } from './work-list-new-service/communicate.service';
+import { AuthService } from '../../../../modules/auth';
 
 @Component({
     selector: 'kt-work-list-new',
@@ -112,10 +112,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     @Input() ID_Project = 0;
 
-    @ViewChild('table1', {static: true}) table1: MatTable<any>;
-    @ViewChild('table2', {static: true}) table2: MatTable<any>;
-    @ViewChild('table3', {static: true}) table3: MatTable<any>;
-    @ViewChild('list1', {static: true}) list1: CdkDropList;
+    @ViewChild('table1', { static: true }) table1: MatTable<any>;
+    @ViewChild('table2', { static: true }) table2: MatTable<any>;
+    @ViewChild('table3', { static: true }) table3: MatTable<any>;
+    @ViewChild('list1', { static: true }) list1: CdkDropList;
 
     ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
     subscription: SubscriptionLike;
@@ -130,7 +130,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     isAssignforme = false;
     // col
     displayedColumnsCol: string[] = [];
-    @ViewChild(MatSort, {static: true}) sort: MatSort;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
     previousIndex: number;
     ListAction: any = [];
     addNodeitem = 0;
@@ -483,7 +483,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     LoadDataTaskNew(loading = true) {
-        if(loading){
+        if (loading) {
             this.layoutUtilsService.showWaitingDiv();
         }
         const queryParams = new QueryParamsModelNew(
@@ -502,9 +502,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                     // this.LoadListStatus();
                     this.changeDetectorRefs.detectChanges();
                 }
-                this.layoutUtilsService.OffWaitingDiv();
+                this.layoutUtilsService.showWaitingDiv();
 
-            },(err)=> (  this.layoutUtilsService.OffWaitingDiv()));
+            }, (err) => (this.layoutUtilsService.showWaitingDiv()));
     }
 
 
@@ -634,16 +634,16 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
         filter.collect_by = this.column_sort.value;
         filter.displayChild = 1;
-        if(this.showclosedsubtask){
+        if (this.showclosedsubtask) {
             filter.subtask_done = this.showclosedsubtask;
         }
-        if(this.showclosedtask){
+        if (this.showclosedtask) {
             filter.task_done = this.showclosedtask;
         }
-        if(this.isAssignforme){
+        if (this.isAssignforme) {
             filter.forme = this.isAssignforme;
         }
-        else{
+        else {
             filter.everyone = !this.isAssignforme;
         }
         return filter;
@@ -665,7 +665,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                 if (res && res.status == 1) {
                     this.listField = res.data;
                     this.ListColumns = res.data;
-                    console.log(this.ListColumns,' -- listCol')
                     // xóa title khỏi cột
                     const colDelete = ['title'];
                     colDelete.forEach((element) => {
@@ -709,7 +708,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             this.ListTasks.forEach((element) => {
                 element.isExpanded =
                     this.filter_subtask.value == 'show' ||
-                    this.addNodeitem == element.id_row
+                        this.addNodeitem == element.id_row
                         ? true
                         : false;
                 this.listFilter.forEach((val) => {
@@ -757,8 +756,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         return false;
     }
 
-    CheckCustomfield(node,item){
-        return this.editmail != (node.id_row+item.Id_row.toString());
+    CheckCustomfield(node, item) {
+        return this.editmail != (node.id_row + item.Id_row.toString());
     }
 
     TestUpdateKey(node) {
@@ -1093,7 +1092,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                     draggedItem.children = [];
                 }
                 if (draggedItem.children.length)
-                    // nếu có node con thì out không cho phép ghép các node
+                // nếu có node con thì out không cho phép ghép các node
                 {
                     return;
                 }
@@ -1107,7 +1106,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             } else {
                 // node con
                 if (draggedItem.children.length)
-                    // nếu có node con thì out không cho phép ghép các node
+                // nếu có node con thì out không cho phép ghép các node
                 {
                     return;
                 }
@@ -1366,7 +1365,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     ViewDetai(item) {
         this.router.navigate([
             '',
-            {outlets: {auxName: 'aux/detail/' + item.id_row}},
+            { outlets: { auxName: 'aux/detail/' + item.id_row } },
         ]);
     }
 
@@ -1642,7 +1641,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
             width: '40vw',
             minHeight: '60vh',
-            data: {_item, type},
+            data: { _item, type },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1669,7 +1668,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = MessageType.Create;
         const dialogRef = this.dialog.open(DuplicateWorkComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1697,7 +1696,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
             height: '500px',
-            data: {item},
+            data: { item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             this.UpdateByKey(node, 'assign', res.id_nv);
@@ -1716,7 +1715,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(workAddFollowersComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1761,7 +1760,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
             height: '500px',
-            data: {item, ID_Project: this.ID_Project},
+            data: { item, ID_Project: this.ID_Project },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (res) {
@@ -1852,7 +1851,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             const _saveMessage = this.translate.instant(saveMessageTranslateParam);
             const _messageType = MessageType.Create;
             const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
-                data: {getOnlyIDproject: true},
+                data: { getOnlyIDproject: true },
             });
             dialogRef.afterClosed().subscribe((res) => {
                 if (res) {
@@ -2005,7 +2004,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(WorkGroupEditComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -2030,7 +2029,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     getDeadline(fieldname, date) {
         if (fieldname == 'deadline') {
             if (new Date(date) < new Date())
-                // return 'text-danger'
+            // return 'text-danger'
             {
                 return 'red-color';
             }
@@ -2259,7 +2258,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     CreateInfoProject() {
         const InfoNew = JSON.parse(localStorage.getItem('closedTask-worklistnew'));
-        InfoNew.push({projectteam: this.ID_Project, data: this.InfoFilter()});
+        InfoNew.push({ projectteam: this.ID_Project, data: this.InfoFilter() });
         localStorage.setItem('closedTask-worklistnew', JSON.stringify(InfoNew));
     }
 
