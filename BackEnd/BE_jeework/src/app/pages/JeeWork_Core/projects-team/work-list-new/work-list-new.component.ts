@@ -503,9 +503,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
                     // this.LoadListStatus();
                     this.changeDetectorRefs.detectChanges();
                 }
-                this.layoutUtilsService.showWaitingDiv();
+                this.layoutUtilsService.OffWaitingDiv();
 
-            }, (err) => (this.layoutUtilsService.showWaitingDiv()));
+            }, (err) => (this.layoutUtilsService.OffWaitingDiv()));
     }
 
 
