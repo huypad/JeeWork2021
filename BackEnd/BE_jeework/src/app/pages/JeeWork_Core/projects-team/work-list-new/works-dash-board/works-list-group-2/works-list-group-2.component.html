@@ -550,7 +550,7 @@
                                         <ng-container *ngSwitchCase="'closed'">
                                             <div class="item-field hide-more-text">
                                                 <mat-checkbox class="example-margin"
-                                                              [disabled]="!(IsAdmin() && CheckClosedTask(node) && CheckClosedProject())"
+                                                              [disabled]="!(CheckRoles(22) && CheckClosedProject())"
                                                               [checked]="node[item.fieldname]"
                                                               (change)="ClosedTask($event.checked,node)">
                                                 </mat-checkbox>

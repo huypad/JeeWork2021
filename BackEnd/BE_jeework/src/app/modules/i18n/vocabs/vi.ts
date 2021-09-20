@@ -723,6 +723,8 @@ export const locale = {
             xoafolder: 'Xóa thư mục',
             chinhsua: 'Chỉnh sửa phòng ban',
             chinhsuafolder: 'Chỉnh sửa thư mục',
+            chinhsuatrangthaifolder: 'Chỉnh sửa trạng thái thư mục',
+            chinhsuatrangthaidepartment: 'Chỉnh sửa trạng thái phòng ban',
             ten: 'Tên phòng ban',
             tenfolder: 'Tên thư mục',
             chusohuu: 'Người quản trị',

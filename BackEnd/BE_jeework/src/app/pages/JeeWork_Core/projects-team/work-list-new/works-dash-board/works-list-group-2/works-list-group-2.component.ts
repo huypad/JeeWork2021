@@ -282,16 +282,16 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     CheckRoles(roleID: number) {
-        const x = this.list_role.find((x) => x.id_row == this.ID_Project);
-        if (x && roleID !== 3) {
-            if (x.locked) {
-                return false;
-            }
-        }
-        if (this.IsAdminGroup) {
-            return true;
-        }
         if (this.list_role) {
+            const x = this.list_role.find((x) => x.id_row == this.ID_Project);
+            if (x && roleID !== 3) {
+                if (x.locked) {
+                    return false;
+                }
+            }
+            if (this.IsAdminGroup) {
+                return true;
+            }
             if (x) {
                 if (x.admin == true || x.admin == 1 || +x.owner == 1 || +x.parentowner == 1) {
                     return true;
@@ -328,6 +328,8 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                     }
                 }
             }
+        } else if (this.IsAdminGroup) {
+            return true;
         }
         return false;
     }
@@ -343,16 +345,16 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     CheckRoleskeypermit(key) {
-        const x = this.list_role.find((x) => x.id_row == this.ID_Project);
-        if (x) {
-            if (x.locked) {
-                return false;
-            }
-        }
-        if (this.IsAdminGroup) {
-            return true;
-        }
         if (this.list_role) {
+            const x = this.list_role.find((x) => x.id_row == this.ID_Project);
+            if (x) {
+                if (x.locked) {
+                    return false;
+                }
+            }
+            if (this.IsAdminGroup) {
+                return true;
+            }
             if (x) {
                 if (x.admin == true) {
                     return true;
@@ -391,6 +393,8 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             } else {
                 return false;
             }
+        } else if (this.IsAdminGroup) {
+            return true;
         }
         return false;
     }
@@ -813,7 +817,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
     ShowCol(item, IdDepartment) {
         if (!item.IsHidden) {
-            if (item.id_department === IdDepartment ) {
+            if (item.id_department === IdDepartment) {
                 return true;
             }
         }
@@ -1340,7 +1344,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             if (res && res.status == 1) {
                 this.ReloadData(true);
                 // this.LoadData();
-            }else{
+            } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });

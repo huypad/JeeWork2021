@@ -188,7 +188,8 @@ export class AuthService implements OnDestroy {
         }
     }
 
-    prepareLogout() {
+    prepareLogout() { 
+        localStorage.clear();
         this.deleteAccessRefreshToken_cookie();
         let url = '';
         if (document.location.port) {

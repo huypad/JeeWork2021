@@ -182,6 +182,74 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        [Route("drop-position")]
+        [HttpPost]
+        public async Task<object> dropPosition(PositionModel data)
+        {
+            string Token = Common.GetHeader(Request);
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string strRe = "";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+                    SqlConditions sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", data.id_row_to);
+                    string s = "select * from we_status where disabled=0 and id_row=@id_row";
+                    DataTable old = cnn.CreateDataTable(s, sqlcond);
+                    if (cnn.LastError != null || old == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    if (old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("Filter");
+                    Hashtable val = new Hashtable();
+                    val.Add("StatusName", data.StatusName);
+                    val.Add("id_project_team", data.Id_project_team);
+                    val.Add("Disabled", 0);
+                    val.Add("IsDefault", 0);
+                    if (!string.IsNullOrEmpty(data.Type))
+                    {
+                        val.Add("Type", data.Type);
+                    }
+                    if (string.IsNullOrEmpty(data.Color))
+                        val.Add("color", "");
+                    else
+                        val.Add("color", data.Color);
+                    if (string.IsNullOrEmpty(data.Description))
+                        val.Add("Description", "");
+                    else
+                        val.Add("Description", data.Description);
+                    if (data.Follower > 0)
+                        val.Add("Follower", data.Follower);
+                    else
+                        val.Add("Follower", DBNull.Value);
+                    val.Add("UpdatedDate", Common.GetDateTime());
+                    val.Add("UpdatedBy", iduser);
+                    string strCheck = "select count(*) from we_status where Disabled=0 and id_project_team=@id_project_team and StatusName=@name  and id_row != @id_row";
+                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team }, { "id_row", data.Id_row } }).ToString()) > 0)
+                    {
+                        return JsonResultCommon.Custom("Trạng thái đã tồn tại");
+                    }
+                    cnn.BeginTransaction();
+                    if (cnn.Update(val, sqlcond, "we_status") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    WeworkLiteController.update_position_status(data.id_columnname, cnn);
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
         [Route("Delete")]
         [HttpGet]
         public BaseModel<object> Delete(long id)

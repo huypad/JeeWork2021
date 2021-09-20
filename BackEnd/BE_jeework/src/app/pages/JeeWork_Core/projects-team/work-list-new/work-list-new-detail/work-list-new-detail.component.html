@@ -1,5 +1,8 @@
 <kt-portlet [options]="{hideHeader: true}" class="h-100">
-    <kt-portlet-header [sticky]="true" title="Chi tiết công việc" [class]="'kt-portlet__head--lg'">
+    <kt-portlet-header [sticky]="true"  [class]="'kt-portlet__head--lg'">
+        <ng-container ktPortletTitle>
+            <span>{{item.department}} \ {{item.project_team}}</span>
+        </ng-container>
         <ng-container ktPortletTools>
             <button mat-raised-button [ngClass]="{'d-none': !isback}" matTooltip="{{ 'GeneralKey.trolai' | translate }}"
                 type="button" (click)="this.dialogRef.close();">
