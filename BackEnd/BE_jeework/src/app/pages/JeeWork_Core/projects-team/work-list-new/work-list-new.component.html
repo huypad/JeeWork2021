@@ -126,7 +126,7 @@
             <div class="item-filter url">
                 <div class="cu-filter-assignees_two-rows cu-filter-assignees ng-star-inserted">
                     <div class="cu-filter-assignees__item cu-filter-assignees__item_me -hover {{isAssignforme?'text-success':''}}"
-                         (click)="isAssignforme=true;LoadDataTaskNew()">
+                         (click)="Forme(true)">
                         <div class="cu-filter-assignees__icon cu-filter-assignees__icon_me icon">
                             <i class="fas fa-user {{isAssignforme?'text-success':''}}"></i>
                         </div>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div class="cu-filter-assignees__item cu-filter-assignees__item_everyone cu-filter-assignees__item_selected ng-star-inserted -hover {{isAssignforme?'':'text-success'}}"
-                         (click)="isAssignforme=false;LoadDataTaskNew()">
+                         (click)="Forme(false)">
                         <div class="cu-filter-assignees__icon cu-filter-assignees__icon_team icon">
                             <i class="fas fa-users {{isAssignforme?'':'text-success'}}"></i>
                         </div>
@@ -154,7 +154,7 @@
                                  style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.tasklocation"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="tasklocation">
+                            <mat-slide-toggle [(ngModel)]="tasklocation" (ngModelChange)="UpdateInfoProject()">
                             </mat-slide-toggle>
                         </button>
                         <!-- <button mat-menu-item>

@@ -163,7 +163,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     textArea = '';
     searchCtrl: FormControl = new FormControl();
     private readonly componentName: string = 'kt-task_';
-    Emtytask = false;
+    Emtytask = true;
     filterDay = {
         startDate: new Date('09/01/2020'),
         endDate: new Date('09/30/2020'),
@@ -248,6 +248,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     ngOnInit() {
 
+        // set ngày filter
+        const today = new Date();
+        this.filterDay = {
+            endDate: new Date(today.setMonth(today.getMonth() + 1)),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
+        };
+
         // giao tiếp service
         this.subscription = this.CommunicateService.currentMessage.subscribe(
             (message) => {
@@ -258,13 +265,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         );
         // end giao tiếp service
 
-        this.LoadTaskClosed();
-
-        const today = new Date();
-        this.filterDay = {
-            endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
-        };
+        this.LoadFilterProject();
 
         this.column_sort = this.sortField[0];
         this.menuServices.GetRoleWeWork('' + this.UserID)
@@ -1315,15 +1316,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     ItemSelected(val: any, task, remove = false) {
         // chọn item
         if (remove) {
-            val.id_nv = val.id_user;
+            val.id_nv = val.userid;
         }
         this.UpdateByKey(task, 'assign', val.id_nv, false);
     }
 
     LoadListAccount() {
         const filter: any = {};
-        // filter.key = 'id_project_team';
-        // filter.value = this.ID_Project;
         filter.id_project_team = this.ID_Project;
         this.weworkService.list_account(filter).subscribe((res) => {
             if (res && res.status == 1) {
@@ -1397,6 +1396,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             return;
         }
         this.filter_groupby = item;
+        this.UpdateInfoProject();
         this.LoadData();
     }
 
@@ -1476,6 +1476,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             if (result != undefined) {
                 this.filterDay.startDate = new Date(result.startDate);
                 this.filterDay.endDate = new Date(result.endDate);
+                this.UpdateInfoProject();
                 this.LoadData();
             }
         });
@@ -2159,7 +2160,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
     SelectedField(item) {
         this.column_sort = item;
+        this.UpdateInfoProject();
         this.LoadData();
+    }
+    Forme(val) {
+        this.isAssignforme = val;
+        this.UpdateInfoProject();
+        this.LoadDataTaskNew();
     }
 
     getComponentName(id_row) {
@@ -2234,7 +2241,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     // xử lý filter cho dự án
-    LoadTaskClosed() {
+    LoadFilterProject() {
         const Info = JSON.parse(localStorage.getItem('closedTask-worklistnew'));
         if (Info && Info.length > 0) {
             const itemproject = Info.find(x => x.projectteam == this.ID_Project);
@@ -2254,6 +2261,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.showclosedtask = item.showclosedtask;
         this.showclosedsubtask = item.showclosedsubtask;
         this.showemptystatus = item.showemptystatus;
+        this.column_sort = item.column_sort;
+        this.filter_groupby = item.filter_groupby;
+        this.filter_subtask = item.filter_subtask;
+        this.filterDay = item.filterDay;
+        this.isAssignforme = item.isAssignforme;
     }
 
     CreateInfoProject() {
@@ -2278,6 +2290,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             showclosedtask: this.showclosedtask,
             showclosedsubtask: this.showclosedsubtask,
             showemptystatus: this.showemptystatus,
+            column_sort: this.column_sort,
+            filter_groupby: this.filter_groupby,
+            filter_subtask: this.filter_subtask,
+            filterDay: this.filterDay,
+            isAssignforme: this.isAssignforme,
         };
     }
 }

@@ -217,7 +217,7 @@ export class ProjectsTeamComponent implements OnInit {
         if (this.list_role) {
             const x = this.list_role.find((x) => x.id_row === this.ID_Project);
             if (x) {
-                if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+                if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 }
             }
@@ -250,7 +250,7 @@ export class ProjectsTeamComponent implements OnInit {
         if (this.list_role) {
             const x = this.list_role.find((x) => x.id_row === this.ID_Project);
             if (x) {
-                if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+                if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 } else {
                     if (x.Roles.find((r) => r.id_role === 15)) {

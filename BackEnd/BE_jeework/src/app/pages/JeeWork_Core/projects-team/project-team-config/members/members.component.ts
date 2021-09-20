@@ -94,7 +94,7 @@ export class MembersComponent {
         if (list_role) {
             const x = list_role.find((x) => x.id_row === this.id_project_team);
             if (x) {
-                if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+                if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 } else {
                     debugger;

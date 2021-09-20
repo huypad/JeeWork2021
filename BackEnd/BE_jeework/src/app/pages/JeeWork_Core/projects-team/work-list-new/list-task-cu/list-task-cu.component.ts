@@ -367,7 +367,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         if (this.list_role) {
             if (x) {
-                if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+                if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 } else {
                     // if (roleID === 3 || roleID === 4) {
@@ -416,7 +416,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         if (this.list_role) {
             if (x) {
-                if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+                if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 } else {
                     // if (key === 'id_nv') {
@@ -886,7 +886,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         if (this.list_role) {
             const x = this.list_role.find((x) => x.id_row === id_project_team);
             if (x) {
-                if (x.admin === true || x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
+                if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 }
             }
