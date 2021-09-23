@@ -1,10 +1,10 @@
-import { SortState } from './../../../../../_metronic/shared/crud-table/models/sort.model';
-import { PaginatorState } from './../../../../../_metronic/shared/crud-table/models/paginator.model';
-import { SubheaderService } from './../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
-import { TokenStorage } from './../../../../../_metronic/jeework_old/core/services/token-storage.service';
-import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { QueryParamsModel } from './../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
-import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { SortState } from '../../../../../_metronic/shared/crud-table/models/sort.model';
+import { PaginatorState } from '../../../../../_metronic/shared/crud-table/models/paginator.model';
+import { SubheaderService } from '../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
+import { TokenStorage } from '../../../../../_metronic/jeework_old/core/services/token-storage.service';
+import { LayoutUtilsService, MessageType } from '../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { QueryParamsModel } from '../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
+import { DanhMucChungService } from '../../../../../_metronic/jeework_old/core/services/danhmuc.service';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 // Material
@@ -24,14 +24,14 @@ import { isFulfilled } from 'q';
 import { DatePipe } from '@angular/common';
 import { PermissionService } from '../Services/userright.service';
 import { UserRightDataSource } from '../Model/data-sources/userright.datasource';
-import { DanhSachNguoiDungThemMoiComponent } from '../danh-sach-nguoi-dung-them-moi/danh-sach-nguoi-dung-them-moi.component';
+import { AddUserGroupComponent } from '../add-user-group/add-user-group.component';
 @Component({
-	selector: 'kt-danh-sach-nguoi-dung',
-	templateUrl: './danh-sach-nguoi-dung.component.html',
+	selector: 'kt-user-group-permit',
+	templateUrl: './user-group-permit.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class DanhSachNguoiDungComponent implements OnInit {
+export class UserGroupPermitComponent implements OnInit {
 	// Table fields
 	dataSource: UserRightDataSource;
 	dataSource1: UserRightDataSource;
@@ -63,7 +63,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 	item: GroupNameModel;
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
-		public dialogRef: MatDialogRef<DanhSachNguoiDungComponent>,
+		public dialogRef: MatDialogRef<UserGroupPermitComponent>,
 		public userRightService: PermissionService,
 		public dialog: MatDialog,
 		public datepipe: DatePipe,
@@ -94,7 +94,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 			this.paginatorNew.page - 1,
 			this.paginatorNew.pageSize
 		);
-		this.dataSource1.loadList_NguoiDungNhom(queryParams1);
+		this.dataSource1.loadList_UserGroup(queryParams1);
 		// setTimeout(x => {
 		// 	this.loadPage();
 		// }, 500)
@@ -113,7 +113,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 					this.paginatorNew.page - 1,
 					this.paginatorNew.pageSize
 				);
-				this.dataSource1.loadList_NguoiDungNhom(queryParams1);
+				this.dataSource1.loadList_UserGroup(queryParams1);
 			}
 			else {
 				const queryParams1 = new QueryParamsModel(
@@ -123,7 +123,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 					this.paginatorNew.page = 0,
 					this.paginatorNew.pageSize
 				);
-				this.dataSource1.loadList_NguoiDungNhom(queryParams1);
+				this.dataSource1.loadList_UserGroup(queryParams1);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 		saveMessageTranslateParam += this.translate.instant('GeneralKey.themthanhcong');
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = MessageType.Create;
-		const dialogRef = this.dialog.open(DanhSachNguoiDungThemMoiComponent, { data: { _item }, height: '70%' });
+		const dialogRef = this.dialog.open(AddUserGroupComponent, { data: { _item }, height: '70%' });
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
 				this.loadDataList();
@@ -176,7 +176,7 @@ export class DanhSachNguoiDungComponent implements OnInit {
 
 	Delete(item: any) {
 
-		if (this.userRightService.VisibleNDN == true) {
+		if (this.userRightService.Visible_UserGroup == true) {
 			const q = new UserAddData();
 			q.ID_Nhom = this.item.ID_Nhom;
 			q.UserName = item.Username;
@@ -204,3 +204,4 @@ export class DanhSachNguoiDungComponent implements OnInit {
 		return result;
 	}
 }
+

@@ -507,6 +507,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             .subscribe((res) => {
                 if (res && res.status === 1) {
                     this.listStatus = res.data;
+                    var itemPush = [];
+                    this.listStatus.forEach(element =>{
+                        itemPush = itemPush.concat(element.datawork)
+                    });
+                    this.ListTasks = itemPush;
                     this.prepareDragDrop(this.ListTasks);
                     // this.LoadListStatus();
                     this.changeDetectorRefs.detectChanges();
@@ -2189,9 +2194,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         if (!this.CheckClosedProject()) {
             return false;
         }
-        if (this.IsAdminGroup) {
-            return true;
-        }
+        // if (this.IsAdminGroup) {
+        //     return true;
+        // }
         if (item.closed) {
             return false;
         } else {
@@ -2200,7 +2205,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
 
     KiemTraThayDoiCongViec(item, key, closeTask = false) {
-        if (!this.CheckClosedTask(item) || closeTask) {
+        if (!this.CheckClosedTask(item) && !closeTask) {
             this.layoutUtilsService.showError('Công việc đã đóng');
             return false;
         }

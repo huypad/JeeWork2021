@@ -103,7 +103,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 }
                 int total = dt.Rows.Count;
                 if (total == 0)
-                    return JsonResultCommon.KhongCoDuLieu(Visible);
+                    return JsonResultCommon.ThanhCong(null, pageModel, Visible);
                 if (query.more)
                 {
                     query.page = 1;
@@ -140,7 +140,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="query"></param>
         /// <returns></returns>
         [CusAuthorize(Roles = "3900")]
-        [Route("Get_DSNguoiDungNhom")]
+        [Route("Get_UserGroup")]
         [HttpGet]
         public object Get_DSNguoiDungNhom([FromQuery] QueryParams query)
         {
@@ -230,7 +230,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 }
                 int total = dt.Rows.Count;
                 if (total == 0)
-                    return JsonResultCommon.KhongCoDuLieu(Visible);
+                    return JsonResultCommon.ThanhCong(null, pageModel, Visible);
                 pageModel.TotalCount = total;
                 pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
                 pageModel.Size = query.record;
@@ -260,132 +260,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
-        /// <summary>
-        /// Danh sách người dùng ---
-        /// Load danh sách người dùng hệ thống ---
-        /// !Visible: chỉ xem, visible tất cả các button thao tác
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
-        [Route("Get_DSNguoiDungHeThong")]
-        [HttpGet]
-        public object Get_DSNguoiDungHeThong([FromQuery] QueryParams query)
-        {
-
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            query = query == null ? new QueryParams() : query;
-            BaseModel<object> model = new BaseModel<object>();
-            PageModel pageModel = new PageModel();
-            ErrorModel error = new ErrorModel();
-            string sqlq = "";
-            DataTable dt_staff = new DataTable();
-            dt_staff.Columns.Add("UserId", typeof(int));
-            dt_staff.Columns.Add("Username", typeof(string));
-            dt_staff.Columns.Add("FirstName", typeof(string));
-            dt_staff.Columns.Add("LastName", typeof(string));
-            dt_staff.Columns.Add("FullName", typeof(string));
-            dt_staff.Columns.Add("Jobtitle", typeof(string));
-            dt_staff.Columns.Add("Department", typeof(string));
-            dt_staff.Columns.Add("AvartarImgURL", typeof(string));
-            dt_staff.Columns.Add("CustomerID", typeof(int));
-            SqlConditions Conds = new SqlConditions();
-            string orderByStr = "Username asc", whereStr = $@"";
-            bool Visible = true;
-            DataTable dt = new DataTable();
-            try
-            {
-                Conds.Add("CustemerID", loginData.CustomerID);
-                Conds.Add("ID_Nhom", query.filter["ID_Nhom"]);
-
-                Dictionary<string, string> sortableFields = new Dictionary<string, string>
-                        {
-                            { "Username", "Username"},
-                        };
-                if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
-                {
-                    orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
-                }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                #region Kiểm tra quyền chỉ xem
-                Common permit = new Common(ConnectionString);
-                if (Common.IsReadOnlyPermit("3900", loginData.Username))
-                {
-                    Visible = false;
-                }
-                #endregion
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    sqlq = $@"select username from tbl_group_account where id_group=@ID_Nhom";
-                    dt = cnn.CreateDataTable(sqlq, Conds);
-                }
-                StringCollection danhsach = new StringCollection();
-                foreach (DataRow dr in dt.Rows)
-                {
-                    danhsach.Add(dr["username"].ToString());
-                }
-                #region Lấy danh sách nhân viên từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                if (DataAccount == null)
-                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
-                DataRow row;
-                foreach (AccUsernameModel str in DataAccount)
-                {
-                    if (!danhsach.Contains(str.Username))
-                    {
-                        row = dt_staff.NewRow();
-                        row["UserId"] = str.UserId;
-                        row["Username"] = str.Username;
-                        row["FirstName"] = str.FirstName;
-                        row["LastName"] = str.LastName;
-                        row["FullName"] = str.FullName;
-                        row["Jobtitle"] = str.Jobtitle;
-                        row["Department"] = str.Department;
-                        row["AvartarImgURL"] = str.AvartarImgURL;
-                        row["CustomerID"] = str.CustomerID;
-                        dt_staff.Rows.Add(row);
-                    }
-                }
-                #endregion
-                if (!string.IsNullOrEmpty(query.filter["HoTen"]))
-                {
-                    DataRow[] filteredRows = dt_staff.Select("FullName like '%" + query.filter["HoTen"] + "%'");
-                    dt_staff = filteredRows.CopyToDataTable();
-                }
-                int total = dt_staff.Rows.Count;
-                if (total == 0)
-                    return JsonResultCommon.KhongCoDuLieu(Visible);
-                if (query.more)
-                {
-                    query.page = 1;
-                    query.record = pageModel.TotalCount;
-                }
-                pageModel.TotalCount = total;
-                pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
-                pageModel.Size = query.record;
-                pageModel.Page = query.page;
-
-                // Phân trang
-                dt_staff = dt_staff.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
-                var data = from r in dt_staff.AsEnumerable()
-                           select new
-                           {
-                               Username = r["Username"],
-                               ID_NV = r["UserId"],
-                               HoTen = r["FullName"],
-                               ChucVu = r["Jobtitle"],
-                           };
-                return JsonResultCommon.ThanhCong(data, pageModel, Visible);
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
-
         /// <summary>
         /// Nhóm người dùng ---
         /// Thêm nhóm ---
@@ -764,7 +638,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                                ID_NV = nv["UserId"],
                                HoTen = nv["FullName"],
                                ChucDanh = nv["Jobtitle"],
-                               CCTC = nv["Department"]
+                               CCTC = nv["Department"],
+                               ChucVu = nv["Jobtitle"],
                            };
                 if (!string.IsNullOrEmpty(query.filter["HoTen"]))
                 {
@@ -812,53 +687,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         }
 
         /// <summary>
-        /// Nhóm người dùng ---
-        /// Lưu người dùng ---
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
-        [Route("Save_NguoiDung")]
-        [HttpPost]
-        public async Task<BaseModel<object>> Save_NguoiDung(List<NguoiDungAddData> arr_data)
-        {
-
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            SqlConditions Conds = new SqlConditions();
-            Hashtable val = new Hashtable();
-            try
-            {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    foreach (NguoiDungAddData data in arr_data)
-                    {
-                        val = new Hashtable();
-                        if (data.Locked) val.Add("lock", 1);
-                        else val.Add("lock", 0);
-                        Conds = new SqlConditions();
-                        Conds.Add("username", data.UserName);
-                        if (cnn.Update(val, Conds, "Tbl_Account") == -1)
-                        {
-                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                        }
-                        //string LogContent = "Khóa tài khoản " + data.UserName;
-                        //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserID.ToString());
-                    }
-                }
-                return JsonResultCommon.ThanhCong();
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
-
-
-        /// <summary>
-        /// Load danh sách chức năng theo nhóm --- 
+        /// Load danh sách chức năng --- 
         /// (Column "Chỉ xem").Visible = !IsReadPermit, (Column "Chỉ xem").Check = IsRead, (Column "Sửa").Check = IsEdit, (Column "Chỉ xem").Enable = IsRead_Enable, (Column "Sửa").Enable = IsEdit_Enable /// (Column "Chỉ xem").Visible = !IsReadPermit 
         /// !Visible: chỉ xem, visible tất cả các button thao tác
         /// </summary>
@@ -869,7 +698,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Get_ListFunctions([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -959,7 +787,24 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         else dr["IsEdit"] = false;
                     }
-                    if (!isgroup) // Xét trường hợp user nằm trong group
+                    if (isgroup) 
+                    {
+                        // Xét trường hợp group admin thì disabled check
+                        Conds = new SqlConditions();
+                        Conds.Add("id_group", query.filter["id_group"]);
+                        Conds.Add("IsAdmin", 1);
+                        DataTable dtAdmin = cnn.CreateDataTable("select Id_group  from tbl_group where (where)", "(where)", Conds);
+                        if(dtAdmin.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in dt.Rows)
+                            { 
+                                dr["IsRead_Enable"] = false;
+                                dr["IsEdit_Enable"] = false; 
+                            }
+                        }
+
+                    }
+                    else // Xét trường hợp user nằm trong group
                     {
                         Conds = new SqlConditions();
                         Conds.Add("Username", query.filter["username"]);
@@ -1005,16 +850,15 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
         }
         /// <summary>
-        /// Lưu quyền nhóm người dùng ---
+        /// Lưu quyền nhóm, người dùng ---
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
        // [CusAuthorize(Roles = "3900")]
-        [Route("Save_QuyenNhomNguoiDung")]
+        [Route("Save_Permision")]
         [HttpPost]
         public async Task<BaseModel<object>> Save_QuyenNhomNguoiDung(List<PermissionNewModel> arr_data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1170,88 +1014,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
                 }
 
-                return JsonResultCommon.ThanhCong();
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
-
-        /// <summary>
-        /// Lưu quyền người dùng ---
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
-        [Route("Save_QuyenNguoiDung")]
-        [HttpPost]
-        public async Task<BaseModel<object>> Save_QuyenNguoiDung(List<QuyenAddData> arr_data)
-        {
-
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            SqlConditions Conds = new SqlConditions();
-            Hashtable val = new Hashtable();
-            StringCollection permit = new StringCollection();
-            StringCollection ReadOnlyPermit = new StringCollection();
-            try
-            {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    Conds = new SqlConditions();
-                    Conds.Add("username", arr_data[0].ID);
-                    DataTable dt = cnn.CreateDataTable($@"select id_permit, Edit from tbl_Account_Permit where (where)", "(where)", Conds);
-                    string status = $@"select id_permit, Edit from Tbl_Account_Permit where username='" + arr_data[0].ID + "'";
-                    foreach (QuyenAddData data in arr_data)
-                    {
-                        DataRow[] drow = dt.Select("id_permit=" + data.ID_Quyen);
-                        if (data.IsEdit || data.IsRead)
-                        {
-                            permit.Add(data.ID_Quyen.ToString());
-                            bool chixem = data.IsRead;
-                            if (data.IsRead)
-                            {
-                                ReadOnlyPermit.Add(data.ID_Quyen.ToString());
-                            }
-                            else if (drow[0]["edit"].ToString().ToLower().Equals(chixem.ToString().ToLower()))
-                            {
-                            }
-                        }
-                        else
-                        {
-                        }
-                    }
-                    Conds = new SqlConditions();
-                    Conds.Add("username", arr_data[0].ID);
-                    Conds.Add("id_chucnang", arr_data[0].ID_NhomChucNang);
-                    string cmd = $@"delete Tbl_Account_permit 
-                                where (username=@username) and (id_permit in (select Id_Permit 
-                                from tbl_permision where Id_group=@id_chucnang))";
-                    int rs = cnn.ExecuteNonQuery(cmd, Conds);
-                    if (rs == -1)
-                    {
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    }
-                    for (int i = 0; i < permit.Count; i++)
-                    {
-                        val = new Hashtable();
-                        val.Add("username", arr_data[0].ID);
-                        val.Add("id_permit", permit[i]);
-                        bool edit = true;
-                        if (ReadOnlyPermit.Contains(permit[i])) edit = false;
-                        val.Add("edit", edit);
-                        val.Add("id_chucnang", arr_data[0].ID_NhomChucNang);
-                        if (cnn.Insert(val, "Tbl_Account_permit") == -1)
-                        {
-                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                        }
-                    }
-                    cnn.EndTransaction();
-                    cnn.Disconnect();
-                }
                 return JsonResultCommon.ThanhCong();
             }
             catch (Exception ex)

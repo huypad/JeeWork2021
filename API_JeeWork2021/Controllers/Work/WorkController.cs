@@ -52,7 +52,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object MyList([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -139,7 +139,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object MyStaffList([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -225,7 +225,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListByProject([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -344,7 +344,7 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
         [HttpGet]
         public object ListByUser([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -442,7 +442,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
         [HttpGet]
         public async Task<IActionResult> ExportExcelByUsers([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return Unauthorized();
@@ -528,7 +528,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
         [HttpGet]
         public object ListByFilter([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -612,7 +612,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
         [HttpGet]
         public object PeriodView([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -730,7 +730,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
         [HttpGet]
         public object Streamview([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -810,7 +810,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
         [HttpGet]
         public object Ganttview([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -958,7 +958,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         [HttpGet]
         public object ListFollowing([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1047,7 +1047,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1293,7 +1293,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpPost]
         public async Task<object> Insert(WorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1447,7 +1447,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpPost]
         public async Task<BaseModel<object>> Update(WorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1595,7 +1595,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpPost]
         public async Task<BaseModel<object>> UpdateByKey(UpdateWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1939,7 +1939,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2028,7 +2028,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpGet]
         public BaseModel<object> reassign(long id, long id_user)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2084,7 +2084,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpPost]
         public async Task<object> Duplicate(WorkDuplicateModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2182,7 +2182,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
         [HttpGet]
         public object LogDetail(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2250,7 +2250,7 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
         [HttpGet]
         public async Task<IActionResult> ExportExcel([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return Unauthorized();
@@ -2413,7 +2413,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         [HttpPost]
         public object ImportData(ImportWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2878,7 +2878,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
         [HttpGet]
         public async Task<object> AddFollower(long id, long id_user, bool follow = true)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2933,7 +2933,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
         [HttpPost]
         public async Task<BaseModel<object>> AddFollowers(WorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2990,7 +2990,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
         [HttpGet]
         public object ListEvent([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3067,7 +3067,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
         [HttpGet]
         public object ListEventByProject([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

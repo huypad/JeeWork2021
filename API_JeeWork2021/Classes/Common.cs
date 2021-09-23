@@ -60,6 +60,43 @@ namespace JeeWork_Core2021.Classes
             }
             return roles;
         }
+        public static bool UpdatePermitNew(UserJWT loginData, DpsConnection cnn)
+        {
+            if (loginData.UserID <= 0)
+                return false;
+            //Lấy username
+            SqlConditions Conds = new SqlConditions();
+            Conds.Add("userID", loginData.UserID);
+            Conds = new SqlConditions();
+            Conds.Add("Username", loginData.Username);
+            string sqlq = "";
+            sqlq = @"select * from tbl_permision 
+                        where Id_Permit not in (select Id_permit from tbl_group_permit 
+                        where Id_Group in (select Id_group from tbl_group 
+                        where isadmin = 1 and CustemerID = " + loginData.CustomerID + ")) and CustemerID is null";
+            DataTable dt_permit = cnn.CreateDataTable(sqlq);
+            DataTable dt_group_admin = cnn.CreateDataTable("select * from tbl_group " +
+                   "where isadmin = 1 and CustemerID = " + loginData.CustomerID + "");
+            if (dt_permit.Rows.Count > 0 && dt_group_admin.Rows.Count > 0)
+            {
+                // insert thêm quyền cho group admin
+                foreach (DataRow item in dt_group_admin.Rows)
+                {
+                    Hashtable has = new Hashtable();
+                    has["Id_Group"] = item["Id_group"].ToString();
+                    foreach (DataRow _permit in dt_permit.Rows)
+                    {
+                        has["Id_Permit"] = _permit["Id_permit"].ToString();
+                        if (cnn.Insert(has, "tbl_group_permit") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
         public static string GetHeader(HttpRequest request)
         {
             try
@@ -835,7 +872,7 @@ namespace JeeWork_Core2021.Classes
             return false;
         }
 
-        public static bool IsAdminTeam(string id_project_team, UserJWT loginData, DpsConnection cnn,string ConnectionString)
+        public static bool IsAdminTeam(string id_project_team, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
 
             bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);

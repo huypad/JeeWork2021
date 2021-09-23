@@ -72,8 +72,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListByDepartment([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
-            //Token = "f3d23d99-8342-49fe-afbb-211f525cae73";
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -474,11 +472,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
-            //Token = "f3d23d99-8342-49fe-afbb-211f525cae73";
-            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
             try
@@ -762,7 +756,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object FindDepartmentFromProjectteam(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -781,12 +774,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         [Route("overview")]
         [HttpGet]
         public object Overview(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -993,20 +984,63 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     // Tạo status mặc định cho project này dựa vào id_department
                     string sql_insert = "";
-                    long TemplateID = long.Parse(cnn.ExecuteScalar("select TemplateID from we_department").ToString());
-                    if (TemplateID > 0)
+                    //long TemplateID = long.Parse(cnn.ExecuteScalar("select TemplateID from we_department").ToString());
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = " + data.id_department).ToString());
+                    if (soluongstatus > 0)
                     {
-                        sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
-                        sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
-                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
-                        cnn.ExecuteNonQuery(sql_insert);
+                        string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.id_department + "";
+                        cnn.ExecuteNonQuery(insertSTT);
                         if (cnn.LastError != null)
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
-                        WeworkLiteController.update_position_status(idc, cnn);
                     }
+                    else
+                    {
+                        long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
+                        if (TemplateID > 0)
+                        {
+                            sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                            sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            } 
+                            WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
+                        }
+                        else
+                        {
+                            // Tạo status mặc định cho project này nếu department không có view lấy mẫu template đầu tiên của customerid đó
+                            SqlConditions conds = new SqlConditions(); string sql = "";
+                            conds.Add("Disabled", 0);
+                            conds.Add("is_template_center", 0);
+                            conds.Add("CustomerID", loginData.CustomerID);
+                            sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
+                                "from we_template_customer " +
+                                "where (where) ";
+                            DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                            if (cnn.LastError == null && dt_template.Rows.Count > 0)
+                            {
+                                TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
+                                sql_insert = "";
+                                sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                                sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                                cnn.ExecuteNonQuery(sql_insert);
+                                if (cnn.LastError != null)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
+                                WeworkLiteController.update_position_status(idc, cnn,"id_project_team");
+                            }
+                        }
+                    } 
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
@@ -1110,7 +1144,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Generate_Projects([FromBody] GenerateProjectAutoModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1202,22 +1235,64 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
-                    var TemplateID = cnn.ExecuteScalar("select templateid from we_department where id_row = " + departmentid + "").ToString();
-                    if (TemplateID == null)
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = " + departmentid).ToString());
+                    if (soluongstatus > 0)
                     {
-                        TemplateID = "1";
+                        string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + departmentid + "";
+                        cnn.ExecuteNonQuery(insertSTT);
+                        if (cnn.LastError != null)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
                     }
-                    sql_insert = "";
-                    sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
-                    sql_insert += $@";insert into we_status (statusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
-                        select statusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
-                    cnn.ExecuteNonQuery(sql_insert);
-                    if (cnn.LastError != null)
+                    else
                     {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
+                        if (TemplateID > 0)
+                        {
+                            sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                            sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                            WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
+                        }
+                        else
+                        {
+                            // Tạo status mặc định cho project này nếu department không có templateID thì lấy mẫu template đầu tiên của customerid đó
+                            conds = new SqlConditions(); string sql = "";
+                            conds.Add("Disabled", 0);
+                            conds.Add("is_template_center", 0);
+                            conds.Add("CustomerID", loginData.CustomerID);
+                            sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
+                                "from we_template_customer " +
+                                "where (where) ";
+                            DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                            if (cnn.LastError == null && dt_template.Rows.Count > 0)
+                            {
+                                TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
+                                sql_insert = "";
+                                sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                                sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                                cnn.ExecuteNonQuery(sql_insert);
+                                if (cnn.LastError != null)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
+                                WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
+                            }
+                        }
                     }
-                    WeworkLiteController.update_position_status(idc, cnn);
+
+                    WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
@@ -1371,7 +1446,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Insert_Quick([FromBody] ProjectTeamModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1390,7 +1464,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
-
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
@@ -1454,35 +1527,24 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
-                    long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
-                    if (TemplateID > 0)
+                    // thêm status từ phòng ban
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = "+ data.id_department).ToString());
+                    if(soluongstatus > 0)
                     {
-                        sql_insert = "";
-                        sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
-                        sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
-                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
-                        cnn.ExecuteNonQuery(sql_insert);
+                        string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.id_department + "";
+                        cnn.ExecuteNonQuery(insertSTT);
                         if (cnn.LastError != null)
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
-                        WeworkLiteController.update_position_status(idc, cnn);
                     }
                     else
                     {
-                        // Tạo status mặc định cho project này nếu department không có view lấy mẫu template đầu tiên của customerid đó
-                        SqlConditions conds = new SqlConditions(); string sql = "";
-                        conds.Add("Disabled", 0);
-                        conds.Add("is_template_center", 0);
-                        conds.Add("CustomerID", loginData.CustomerID);
-                        sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
-                            "from we_template_customer " +
-                            "where (where) ";
-                        DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
-                        if (cnn.LastError == null && dt_template.Rows.Count > 0)
+                        long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
+                        if (TemplateID > 0)
                         {
-                            TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
                             sql_insert = "";
                             sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
                             sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
@@ -1493,9 +1555,36 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
-                            WeworkLiteController.update_position_status(idc, cnn);
+                            WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
                         }
-                    }
+                        else
+                        {
+                            // Tạo status mặc định cho project này nếu department không có view lấy mẫu template đầu tiên của customerid đó
+                            SqlConditions conds = new SqlConditions(); string sql = "";
+                            conds.Add("Disabled", 0);
+                            conds.Add("is_template_center", 0);
+                            conds.Add("CustomerID", loginData.CustomerID);
+                            sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
+                                "from we_template_customer " +
+                                "where (where) ";
+                            DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                            if (cnn.LastError == null && dt_template.Rows.Count > 0)
+                            {
+                                TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
+                                sql_insert = "";
+                                sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                                sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                                cnn.ExecuteNonQuery(sql_insert);
+                                if (cnn.LastError != null)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
+                                WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
+                            }
+                        }
+                    } 
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
@@ -1617,7 +1706,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Update([FromBody] ProjectTeamModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1893,7 +1981,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Update_Stage(ProjectTeamModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1978,7 +2065,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpGet]
         public async Task<object> UpdateByKey(long id, string key, string value)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2047,7 +2133,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Close([FromBody] ProjectTeamCloseModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2109,7 +2194,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Open([FromBody] ProjectTeamCloseModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2177,7 +2261,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetToken(HttpContext.Request.Headers);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2276,7 +2359,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpGet]
         public BaseModel<object> ChangeType(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2328,7 +2410,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpPost]
         public async Task<object> Duplicate([FromBody] ProjectTeamDuplicateModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2420,7 +2501,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
-                    WeworkLiteController.update_position_status(long.Parse(dt.Rows[0]["id_row"].ToString()), cnn);
+                    WeworkLiteController.update_position_status(long.Parse(dt.Rows[0]["id_row"].ToString()), cnn, "id_project_team");
                     #endregion
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser))
                     {
@@ -2448,7 +2529,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpGet]
         public BaseModel<object> ListUser(long id)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2524,7 +2605,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpPost]
         public async Task<object> AddUser(AddUserToProjectTeamModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2697,7 +2778,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public BaseModel<object> DeleteUser(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2805,7 +2885,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public BaseModel<object> UpdateUser(long id, bool admin)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2916,7 +2995,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public BaseModel<object> GetConfigEmail(long id)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2960,7 +3039,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public object ListRole(long id_project_team)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3012,7 +3091,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public BaseModel<object> UpdateRole(long id, int role, string key)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             bool value = true;
             if (loginData == null)
@@ -3087,7 +3166,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public object ListActivities([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3340,7 +3419,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpPost]
         public async Task<object> Add_View(ProjectViewsModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3353,7 +3431,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     strRe += (strRe == "" ? "" : ",") + "dự án";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -3361,7 +3438,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     DataTable dtF = cnn.CreateDataTable(sqlq);
                     if (dtF.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
-
                     sqlq = @"select * from we_default_views where id_row =" + data.viewid + "";
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (dt.Rows.Count == 0)
@@ -3417,7 +3493,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpPost]
         public async Task<object> update_view(ProjectViewsModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3515,7 +3590,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public BaseModel<object> Delete_View(long id)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3574,21 +3649,15 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             {
                 case "1":
                     return "Khẩn cấp";
-                    break;
                 case "2":
                     return "Cao";
-                    break;
                 case "3":
                     return "Bình thường";
-                    break;
                 case "4":
                     return "Thấp";
-                    break;
                 default:
                     return "Không xét";
-                    break;
             }
-            return "Không xét";
         }
     }
 }

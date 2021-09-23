@@ -1266,6 +1266,11 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = true;
+                    if (Common.IsReadOnlyPermit("3901", loginData.Username))
+                    {
+                        Visible = false;
+                    }
                     SqlConditions conds = new SqlConditions(); string sql = "";
                     conds.Add("Disabled", 0);
                     conds.Add("is_template_center", 0);
@@ -1318,7 +1323,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         "from we_template_status where disabled = 0 " +
                         "and templateid in (select id_row from we_template_customer " +
                         "where disabled = 0 and customerid = " + loginData.CustomerID + ") " +
-                        "order by type, position";
+                        "order by position";
                     DataTable dt_status = cnn.CreateDataTable(sql_status);
                     var data = from r in dt_template.AsEnumerable()
                                select new
@@ -1328,6 +1333,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    description = r["description"],
                                    isdefault = r["isdefault"],
                                    color = r["color"],
+                                   visible = Visible,
                                    templateid = r["templateid"],
                                    customerid = r["customerid"],
                                    status = from dr in dt_status.AsEnumerable()
@@ -1365,7 +1371,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         /// <returns></returns>
         [Route("list-status-dynamic")]
         [HttpGet]
-        public object ListStatusDynamic(long id_project_team)
+        public object ListStatusDynamic(long id_project_team, bool isDepartment = false)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -1379,17 +1385,25 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
                     string error = "";
                     string listID = ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    DataTable dt = StatusDynamic(id_project_team, DataAccount, cnn);
+                    DataTable dt = StatusDynamic(id_project_team, DataAccount, cnn, isDepartment);
+                    string columnname = "id_project_team";
+                    if (isDepartment)
+                    {
+                        columnname = "id_department";
+                    }
+                    if (dt.Rows.Count == 0)
+                    {
+                        insert_status(id_project_team, columnname, loginData, cnn);
+                    }
+                    dt = StatusDynamic(id_project_team, DataAccount, cnn, isDepartment);
                     DataTable dt_work = cnn.CreateDataTable("select id_row, title, status " +
                         "from we_work " +
                         "where disabled = 0 and id_project_team = " + id_project_team + "");
-                    //khancap_quantrong = hasValue ? dt.Compute("count( id_row)", " level = 1") : 0,
                     dt.Columns.Add("SL_Tasks", typeof(double));
                     if (dt_work.Rows.Count > 0)
                     {
@@ -1416,6 +1430,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    id_row = r["id_row"],
                                    statusname = r["StatusName"],
                                    id_project_team = r["id_project_team"],
+                                   id_department = r["id_department"],
                                    isdefault = r["IsDefault"],
                                    color = r["color"],
                                    position = r["Position"],
@@ -2734,17 +2749,28 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return false;
             }
         }
-        public static DataTable StatusDynamic(long id_project, List<AccUsernameModel> DataAccount, DpsConnection cnn)
+        public static DataTable StatusDynamic(long id, List<AccUsernameModel> DataAccount, DpsConnection cnn, bool isDepartment = false)
         {
             DataTable dt = new DataTable();
+            string columname = "id_project_team";
             string query = "";
-            query = $@"select id_row, statusname, description, id_project_team, istodo
+            query = $@"select id_row, statusname, description, id_project_team, id_department, istodo
                     ,type, isdefault, color, position, isfinal, follower, isdeadline, '' as hoten_follower
                     from we_status 
                     where disabled = 0 ";
-            if (id_project > 0)
-                query += " and id_project_team =" + id_project + "";
-            query += " order by type, position";
+            if (id > 0)
+            {
+                if (isDepartment)
+                {
+                    columname = "id_department";
+                    query += " and id_department =" + id + "";
+                }
+                else
+                {
+                    query += " and id_project_team =" + id + "";
+                }
+            }
+            query += " order by position";
             dt = cnn.CreateDataTable(query);
             #region Map info account từ JeeAccount
             foreach (DataRow item in dt.Rows)
@@ -2769,7 +2795,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         where disabled = 0";
             if (id_project > 0)
                 query += " and id_project_team =" + id_project + "";
-            query += " order by type, Position";
+            query += " order by Position";
             dt = cnn.CreateDataTable(query);
             #region Map info account từ JeeAccount
 
@@ -3339,6 +3365,10 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return "";
             }
         }
+        public static long GetMaxSize(IConfiguration _configuration)
+        {
+            return long.Parse(_configuration.GetValue<string>("AppConfig:SizeUpload"));
+        }
         public static bool IsNotify(IConfiguration _configuration)
         {
             try
@@ -3674,16 +3704,20 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return true;
         }
-        public static bool update_position_status(long id_project_team, DpsConnection cnn)
+        public static bool update_position_status(long id, DpsConnection cnn, string columnname)
         {
             long position = 0;
             Hashtable val = new Hashtable();
             SqlConditions cond = new SqlConditions();
             cond.Add("disabled", 0);
-            cond.Add("id_project_team", id_project_team);
-            string sqlq = "select id_row, id_project_team, position " +
+            if (!string.IsNullOrEmpty(columnname))
+            {
+                cond.Add(columnname, id);
+            }
+            string sqlq = "select id_row, position " +
                         "from we_status " +
-                        "where (where) order by type, position";
+                        "where (where) " +
+                        "order by type, position";
             DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);
             if (dt.Rows.Count > 0)
             {
@@ -3709,7 +3743,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             SqlConditions cond = new SqlConditions();
             cond.Add("disabled", 0);
             cond.Add("TemplateID", id);
-            string sqlq = "select id_row, position " +
+            string sqlq = "select id_row, position,type " +
                         "from we_template_status " +
                         "where (where) order by type, position";
             DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);
@@ -3730,6 +3764,91 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return true;
         }
+        public static bool insert_status(long id, string column_name, UserJWT loginData, DpsConnection cnn)
+        {
+            long templateid = 0;
+            DataTable dt = new DataTable();
+            templateid = Return_TemplateID(id, column_name, loginData, cnn);
+            Hashtable val = new Hashtable();
+            SqlConditions cond = new SqlConditions();
+            string sql_insert = "";
+            sql_insert += $@";insert into we_status (StatusName, description, " + column_name + ", CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference) " +
+                "select StatusName, description, " + id + ", GETUTCDATE()," + loginData.UserID + ", Disabled, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where disabled = 0 and TemplateID = " + templateid + "";
+            cnn.ExecuteNonQuery(sql_insert);
+            if (cnn.LastError != null)
+            {
+                cnn.RollbackTransaction();
+                return false;
+            }
+            return true;
+        }
+        public static long Return_TemplateID(long id, string column_name, UserJWT loginData, DpsConnection cnn)
+        {
+            string sqlq = "";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_row", id);
+            conds.Add("disabled", 0);
+            string table_name = "we_department";
+            string sqlq_update = "";
+            DataTable dt = new DataTable();
+            // Lấy ID template mặc định
+            string sql_template = "select id_row from we_template_customer " +
+                "where CustomerID = " + loginData.CustomerID + " and IsDefault = 1";
+            long template_default = long.Parse(cnn.ExecuteScalar(sql_template).ToString());
+            if ("id_department".Equals(column_name))
+            {
+                if (!CheckCustomerID(id, "we_department", loginData, cnn))
+                {
+                    return -1;
+                }
+                conds.Add("idkh", loginData.CustomerID);
+                sqlq = "select id_row, templateid, parentid from we_department where (where)";
+                dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+                if (dt.Rows.Count > 0)
+                {
+                    if (string.IsNullOrEmpty(dt.Rows[0]["templateid"].ToString()))
+                    {
+                        if (string.IsNullOrEmpty(dt.Rows[0]["parentid"].ToString())) // department cha
+                        {
+                            sqlq_update = "update " + table_name + " set TemplateID=" + template_default + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where TemplateID is null and id_row = " + id;
+                            sqlq_update += ";update " + table_name + " set TemplateID=" + template_default + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where TemplateID is null and parentid = " + id;
+                            sqlq_update += ";update we_project_team set id_template=" + template_default + ", UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_template is null and id_department = " + id;
+                            cnn.ExecuteNonQuery(sqlq_update);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return -1;
+                            }
+                        }
+                        else // Nếu department chưa có id_template và có ParentID ==> Get Template ID của cha
+                        {
+                            Return_TemplateID(long.Parse(dt.Rows[0]["parentid"].ToString()), "id_department", loginData, cnn);
+                        }
+                    }
+                }
+            }
+            if ("id_project_team".Equals(column_name))
+            {
+                if (!CheckCustomerID(id, "we_project_team", loginData, cnn))
+                {
+                    return -1;
+                }
+                conds = new SqlConditions();
+                conds.Add("id_row", id);
+                conds.Add("disabled", 0);
+                sqlq = "select id_row, id_template, id_department from we_project_team where (where)";
+                dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+                if (dt.Rows.Count > 0)
+                {
+                    if (string.IsNullOrEmpty(dt.Rows[0]["id_template"].ToString()))
+                    {
+                        Return_TemplateID(long.Parse(dt.Rows[0]["id_department"].ToString()), "id_department", loginData, cnn);
+                    }
+                }
+            }
+            dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+            return long.Parse(dt.Rows[0][1].ToString());
+        }
         public static string ListIDDepartment(DpsConnection cnn, long id_project_team)
         {
             string listid = "0";
@@ -3743,12 +3862,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string sql_dept = "select ISNULL((select id_department from we_project_team where id_row = " + id_project_team + "),0)";
                 id_department = long.Parse(cnn.ExecuteScalar(sql_dept).ToString());
                 string sql = "";
-                //sql = @"select id_row from we_department 
-                //        where ParentID = " + id_department + " " +
-                //        "or id_row = " + id_department + " " +
-                //"union all " +
-                //"select ParentID from we_department " +
-                //"where id_row = " + id_department + " ";
                 long ParentID = 0;
                 sql = @"select id_row from we_department 
                     where id_row = " + id_department + "";

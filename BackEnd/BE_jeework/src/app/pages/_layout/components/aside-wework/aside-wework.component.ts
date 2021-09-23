@@ -989,8 +989,42 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     UpdateStatus(item) {
         this._Services.DeptDetail(item.id).subscribe((res) => {
             if (res && res.status == 1) {
+                const dataDialog = {
+                    id_row: res.data.id_row,
+                    id_template: res.data.id_template,
+                    columnname: 'id_project_team',
+                };
                 const dialogRef = this.dialog.open(ProjectTeamEditStatusComponent, {
-                    data: res.data,
+                    data: dataDialog,
+                    minWidth: '800px',
+                });
+                dialogRef.afterClosed().subscribe((res) => {
+                    if (!res) {
+                        return;
+                    } else {
+                        this.LoadMenu();
+                    }
+                    location.reload();
+                });
+                this.changeDetectorRefs.detectChanges();
+            } else {
+                this.layoutUtilsService.showError(res.error.message);
+            }
+        });
+    }
+
+    UpdateSpaceStatus(item) {
+        console.log(item);
+
+        this._Services.department_detail(item.id).subscribe((res) => {
+            if (res && res.status == 1) {
+                const dataDialog = {
+                    id_row: res.data.id_row,
+                    id_template: res.data.Template[0]?.TemplateID,
+                    columnname: 'id_department',
+                };
+                const dialogRef = this.dialog.open(ProjectTeamEditStatusComponent, {
+                    data: dataDialog,
                     minWidth: '800px',
                 });
                 dialogRef.afterClosed().subscribe((res) => {

@@ -166,9 +166,9 @@ export class WeWorkService {
     }
 
     //status
-    ListStatusDynamic(id_project_team: any): Observable<any> {
+    ListStatusDynamic(id_project_team: any,isDepartment = false): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
-        return this.http.get<any>(API_Lite + `/list-status-dynamic?id_project_team=${id_project_team}`, {headers: httpHeaders});
+        return this.http.get<any>(API_Lite + `/list-status-dynamic?id_project_team=${id_project_team}&isDepartment=${isDepartment}`, {headers: httpHeaders});
     }
 
     ListStatusDynamicByDepartment(id_department: any): Observable<any> {

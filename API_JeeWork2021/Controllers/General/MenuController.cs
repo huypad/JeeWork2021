@@ -46,7 +46,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         public object LayMenuChucNang(string v_module)
         {
             ErrorModel error = new ErrorModel();
-            DataTable dt_chamcongwf = new DataTable();
             DataSet ds = new DataSet();
             DataSet ds_workspace = new DataSet();
             string select_MainMenu = "", select_Menu = "", sql_listRole = "";
@@ -59,6 +58,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                     using (DpsConnection Conn = new DpsConnection(ConnectionString))
                     {
+                        Common.UpdatePermitNew(loginData, Conn);
                         #region Lấy dữ liệu account từ JeeAccount
                         DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
@@ -114,6 +114,17 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                         ds_workspace = Common.GetWorkSpace(loginData, 0, 0, ConnectionString);
                         DataTable tmp_ww = new DataTable();
                         ds = Conn.CreateDataSet(select_MainMenu, cond);
+                        //string sql_pin = "";
+                        //SqlConditions cond_pin = new SqlConditions();
+                        //sql_pin = "select id_row, id_project_team, createddate, createdby, disabled, updateddate, updatedby " +
+                        //    "from we_project_pin";
+                        //cond_pin.Add("disabled", 0);
+                        //cond_pin.Add("createdby", loginData.UserID);
+                        //DataTable dt_pin = Conn.CreateDataTable(sql_pin, "(where)", cond_pin);
+                        //if (dt_pin.Rows.Count > 0)
+                        //{
+
+                        //}
                         #endregion
                     }
                     System.Data.DataColumn newColumn = new System.Data.DataColumn("Child", typeof(object));

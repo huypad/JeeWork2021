@@ -140,6 +140,7 @@ export const locale = {
             wereport: 'Báo cáo hệ thống',
             wepermision: 'Phân quyền chức năng',
             thaoluan: 'Xem và thảo luận trong topic của dự án/phòng ban tham gia',
+            templatesoftware: 'Quản lý mô hình dự án',
             thaoluan_admin:
                 'Xem và thảo luận trong topic của dự án/phòng ban khi không phải thành viên',
         },
@@ -175,6 +176,7 @@ export const locale = {
             ID: 'ID',
             id_nhom: 'ID nhóm',
             phanquyennguoidung: 'Phân quyền người dùng',
+
         },
         GeneralKey: {
             // a
@@ -447,6 +449,11 @@ export const locale = {
             selectpeople: 'Chọn người chia sẻ:',
             everyone: 'Tất cả mọi người( bao gồm cả khách)',
             next: 'Chọn mẫu',
+            id_mohinh: 'ID mô hình',
+            tenmohinh: 'Tên mẫu',
+            mohinhduan: 'Mô hình mẫu',
+            mohinhtrungtam: 'Mô hình trung tâm',
+
         },
         //===================Dung cho phần workfollow===================
         process: {
@@ -779,7 +786,7 @@ export const locale = {
             chontrangthaicongviecmongmuon: 'Chọn trạng thái công việc mong muốn',
             chontrangthaicv: 'Chọn trạng thái công việc',
             doinguoitheodoi: 'Đổi người theo dõi công việc',
-            cactrangthaidangsudung: 'Các trạng thái dự án đang sử dụng',
+            cactrangthaidangsudung: 'Các trạng thái đang sử dụng',
             trangthaicuaphongban: 'Trạng thái của phòng ban',
             themmaumoi: 'Thêm mẫu mới',
             cactrangthaicuamaukhac: 'Các trạng thái của mẫu khác',
@@ -1138,7 +1145,8 @@ export const locale = {
             id_group: 'Nhóm công việc',
             closed: 'Đóng',
             closed_work_date: 'Ngày đóng',
-            closed_work_by: 'Người đóng'
+            closed_work_by: 'Người đóng',
+            macdinh: 'Mặc định',
         },
         priority: {
             Urgent: 'Khẩn cấp',
@@ -1303,6 +1311,7 @@ export const locale = {
             uploadfile: 'Tải file',
             xemthongtin: 'Xem thông tin',
             xoacongviec: 'Xóa công việc',
+            dongcongviec: 'Đóng công việc',
             xoanhomcongviec: 'Xóa nhóm công việc',
             yeucauketquacongviec: 'Yêu cầu kết quả công việc',
             bansaocua: 'Bản sao của',

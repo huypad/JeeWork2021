@@ -511,21 +511,7 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
 
     save_file_Direct(evt: any) {
         if (evt.target.files && evt.target.files.length) {
-            //Nếu có file
-            var size = evt.target.files[0].size;
-            if (size / 1024 / 1024 > 3) {
-                this.layoutUtilsService.showActionNotification(
-                    'File upload không được vượt quá 3 MB',
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
-                return;
-            }
+            //Nếu có file 
             let file = evt.target.files[0]; // Ví dụ chỉ lấy file đầu tiên
             this.TenFile = file.name;
             let reader = new FileReader();

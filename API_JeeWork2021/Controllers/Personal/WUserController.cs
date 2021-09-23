@@ -55,7 +55,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -169,7 +168,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListUyQuyen([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -279,7 +277,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object DetailUyQuyen(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -362,7 +359,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -515,7 +511,6 @@ where u.disabled=0 and d.Disabled = 0 and p.Disabled=0 and id_user=" + id;
         [HttpGet]
         public object ListAuthorize([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -622,7 +617,6 @@ and authorize.Createdby =" + loginData.UserID + " " +
         [HttpPost]
         public async Task<object> Authorize(AuthorizeModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -715,18 +709,14 @@ and ( (start_date <= @from and end_date >= @from ) or (start_date <= @to and end
         [HttpGet]
         public async Task<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
             try
             {
-
-
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery("update we_authorize set disabled = 1 where id_row = " + id) != 1)
                     {

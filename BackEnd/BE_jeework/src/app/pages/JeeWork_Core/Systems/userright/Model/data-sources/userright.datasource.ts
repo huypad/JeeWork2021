@@ -10,10 +10,10 @@ export class UserRightDataSource extends BaseDataSource {
 	constructor(public permitService: PermissionService) {
 		super();
 	}
-	loadListGroupName(queryParams: QueryParamsModel) {
+	LoadGroup(queryParams: QueryParamsModel) {
 		this.permitService.lastFilter$.next(queryParams);
 		this.loadingSubject.next(true);
-		this.permitService.findDataGroupName(queryParams)
+		this.permitService.findDataGroup(queryParams)
 			.pipe(
 				tap(resultFromServer => {
 					this.entitySubject.next(resultFromServer.data);
@@ -24,7 +24,7 @@ export class UserRightDataSource extends BaseDataSource {
 				finalize(() => this.loadingSubject.next(false))
 			).subscribe(
 				res => {
-					this.permitService.VisibleNND = res.Visible;
+					this.permitService.Visible_Group = res.Visible;
 				}
 			);
 	}
@@ -44,7 +44,8 @@ export class UserRightDataSource extends BaseDataSource {
 				finalize(() => this.loadingSubject.next(false))
 			).subscribe(
 				res => {
-					this.permitService.VisibleND = res.Visible;
+					this.permitService.Visible_User = res.Visible;
+					this.permitService.Visible_UserSystem = res.Visible;
 				}
 			);
 	}
@@ -64,16 +65,15 @@ export class UserRightDataSource extends BaseDataSource {
 				finalize(() => this.loadingSubject.next(false))
 			).subscribe(
 				res => {
-					this.permitService.VisibleCNN = res.Visible;
+					this.permitService.Visible_Functions = res.Visible;
 				}
 			);
 	}
-
-	loadList_NguoiDungHeThong(queryParams: QueryParamsModel) {
+	loadList_UserGroup(queryParams: QueryParamsModel) {
 		this.permitService.lastFilter$.next(queryParams);
 		this.loadingSubject.next(true);
 
-		this.permitService.findData_NguoiDungHeThong(queryParams)
+		this.permitService.findData_UserGroup(queryParams)
 			.pipe(
 				tap(resultFromServer => {
 					this.entitySubject.next(resultFromServer.data);
@@ -84,27 +84,7 @@ export class UserRightDataSource extends BaseDataSource {
 				finalize(() => this.loadingSubject.next(false))
 			).subscribe(
 				res => {
-					this.permitService.VisibleNDHT = res.Visible;
-				}
-			);
-	}
-
-	loadList_NguoiDungNhom(queryParams: QueryParamsModel) {
-		this.permitService.lastFilter$.next(queryParams);
-		this.loadingSubject.next(true);
-
-		this.permitService.findData_NguoiDungNhom(queryParams)
-			.pipe(
-				tap(resultFromServer => {
-					this.entitySubject.next(resultFromServer.data);
-					var totalCount = resultFromServer.page.TotalCount || (resultFromServer.page.AllPage * resultFromServer.page.Size);
-					this.paginatorTotalSubject.next(totalCount);
-				}),
-				catchError(err => of(new QueryResultsModel([], err))),
-				finalize(() => this.loadingSubject.next(false))
-			).subscribe(
-				res => {
-					this.permitService.VisibleNDN = res.Visible;
+					this.permitService.Visible_UserGroup = res.Visible;
 				}
 			);
 	}

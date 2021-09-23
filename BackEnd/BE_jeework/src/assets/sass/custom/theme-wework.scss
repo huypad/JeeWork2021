@@ -3873,3 +3873,113 @@ td .mat-chip-list-wrapper .mat-chip .mat-standard-chip {
 		right:0;
 	}
 }
+//===========Css mat-menu========================
+.mat-menu-panel {
+    min-height: 0 !important;
+}
+
+.mat-menu-item {
+    line-height: 10px !important;
+    height: 30px !important;
+}
+
+.mat-menu-content {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+//color overdue
+.-red-bg {
+    color: #c34343;
+    background-color: #ffeeee;
+}
+
+.crepeated-active {
+    font-size: 30px;
+    text-align: center;
+}
+
+.btn-close-container {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.btn-close-container .btn-close {
+    position: absolute;
+    margin-top: -20px;
+    z-index: 2;
+}
+
+.btn-close-container .btn-close .mat-icon {
+    height: auto;
+    width: auto;
+}
+
+.btn-trolai {
+    background-color: #AEAEAE !important;
+    ;
+    color: #F4F4F4;
+}
+
+.btn-luudong {
+    background-color: #77A942;
+    color: #F4F4F4;
+    border-color: #77A942;
+}
+
+.btn-themmoi {
+    color: #F4F4F4;
+    background-color: #77A942;
+    border-color: #77A942;
+}
+
+.btn-luutieptuc {
+    color: #F4F4F4;
+    background-color: #1863AD;
+    border-color: #1863AD;
+}
+
+.btn-luuthietlap {
+    color: #F4F4F4;
+    background-color: #1863AD;
+    border-color: #1863AD;
+}
+
+// custom css from bootstrap
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.user {
+    overflow: hidden;
+    float: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    margin-left: -8px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid #f3f3f3;
+}
+
+.card.card-custom>.card-header .card-label-dialog {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #16a850 !important;
+}
+.card-project {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #008636 !important;
+}

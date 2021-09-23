@@ -90,17 +90,13 @@ export class UserOffcanvasComponent implements OnInit {
     }
 
     ChangeLink(item) {
-        if (this.AppCode == item.AppCode) {
-            if (item.Target == '_blank') {
-                window.open(item.WebAppLink, '_blank');
-            } else {
+        if (item.WebAppLink != null && item.WebAppLink != '') {
+            if (this.AppCode == item.AppCode) {
                 this.router.navigate([item.WebAppLink]);
             }
-        } else {
-            if (item.Target == '_blank') {
-                window.open(item.Link, '_blank');
-            } else {
-                window.location.href = item.Link;
+            else {
+                let link = item.Domain + item.WebAppLink;
+                window.open(link, '_blank');
             }
         }
     }

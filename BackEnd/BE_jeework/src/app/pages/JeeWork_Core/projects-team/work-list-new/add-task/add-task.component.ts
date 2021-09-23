@@ -73,7 +73,9 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     let ele = (<HTMLInputElement>document.getElementById(idname));
 
     setTimeout(() => {
-      ele.focus();
+      if (ele){
+        ele.focus();
+      } 
     }, 10);
 
   }

@@ -104,6 +104,22 @@ export class UpdateQuickModel extends BaseModel {
 		this.id_template = 0;
 	}
 }
+export class PositionModel {
+	id_row_from: number;
+	id_row_to: number;
+	position_from: number;
+	position_to: number;
+	columnname : string;
+	id_columnname : number;
+	clear() {
+		this.id_row_from = 0;
+		this.id_row_to = 0;
+		this.position_from = 0;
+		this.position_to = 0;
+		this.columnname = '';
+		this.id_columnname  = 0;
+	}
+}
 
 // public class Different_Statuses
 //     {

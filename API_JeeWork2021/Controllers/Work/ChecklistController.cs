@@ -44,7 +44,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -202,7 +201,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpPost]
         public async Task<object> Insert([FromBody] ChecklistModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -264,7 +263,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpPost]
         public async Task<BaseModel<object>> Update([FromBody] ChecklistModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -322,7 +321,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -367,7 +366,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpPost]
         public async Task<object> InsertItem([FromBody] ChecklistItemModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -438,7 +437,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpPost]
         public async Task<BaseModel<object>> UpdateItem([FromBody] ChecklistItemModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -495,7 +494,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpGet]
         public async Task<BaseModel<object>> CheckedItem(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -555,7 +554,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpGet]
         public BaseModel<object> DeleteItem(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -599,7 +598,7 @@ from we_checklist l join we_checklist_item i on l.id_row=i.id_checklist where l.
         [HttpGet]
         public async Task<BaseModel<object>> AssignItem(long id, long user)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

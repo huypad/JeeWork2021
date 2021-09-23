@@ -54,7 +54,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -256,7 +255,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Insert([FromBody] CommentModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -482,7 +480,6 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
         [HttpPost]
         public async Task<object> SaveLogComment([FromBody] CommentModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -635,7 +632,6 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
         [HttpPost]
         public async Task<object> Update([FromBody] CommentModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -748,7 +744,6 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -792,7 +787,6 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
         [HttpGet]
         public object Like(long id, int type)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

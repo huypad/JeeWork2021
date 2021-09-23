@@ -295,7 +295,7 @@ export class FunctionsGroupListComponent implements OnInit {
 		this.loadingSubject.next(true);
 		this.disabledBtn = true;
 
-		this.userRightService.UpdateNhomNguoiDung(_product).subscribe(res => {
+		this.userRightService.UpdatePermision(_product).subscribe(res => {
 			this.loadingSubject.next(false);
 
 			this.disabledBtn = false;
@@ -305,13 +305,6 @@ export class FunctionsGroupListComponent implements OnInit {
 				this.dialogRef.close({
 					_product
 				});
-				const _messageType = this.translate.instant('GeneralKey.capnhatthanhcong');
-				this.layoutUtilsService.showActionNotification(_messageType, MessageType.Read, 4000, true, false, 3000, 'top', 1);
-				window.location.reload();
-				this.changeDetectorRefs.detectChanges();
-				// } else {
-				this.loadDataList();
-				// }
 			}
 			else {
 				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 99999999999, true, false, 3000, 'top', 0);

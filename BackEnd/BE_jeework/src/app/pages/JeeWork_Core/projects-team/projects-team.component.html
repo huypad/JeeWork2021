@@ -65,16 +65,10 @@
                                         </h5>
                                         <mat-icon style="height: 20px;" color="warn" *ngIf="item.locked">lock</mat-icon>
                                         <button mat-icon-button [matMenuTriggerFor]="menuProject"
-                                                *ngIf="commonService.CheckRole_WeWork(3501).length>0"
+                                                *ngIf="commonService.CheckRole_WeWork(3501).length>0 || IsAdmin()"
                                                 #trigger="matMenuTrigger">
                                             <mat-icon class="example-tab-icon">keyboard_arrow_down</mat-icon>
                                         </button>
-                                        <!-- <button mat-icon-button *ngIf="this.IsAdmin()" matTooltip="{{infoUser()}}">
-                                            <mat-icon>info</mat-icon>
-                                        </button>
-                                        <button mat-icon-button *ngIf="!this.IsAdmin()" [matMenuTriggerFor]="menuProject" matTooltip="{{infoUser()}}">
-                                            <mat-icon>info</mat-icon>
-                                        </button> -->
                                     </a>
                                     <mat-menu style="justify-content: flex-start !important" #menuProject="matMenu">
 

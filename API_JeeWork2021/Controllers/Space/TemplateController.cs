@@ -44,6 +44,197 @@ namespace JeeWork_Core2021.Controllers.Wework
         }
 
         /// <summary>
+        /// DS template theo khách hàng
+        /// </summary>
+        /// <returns></returns>
+        [CusAuthorize(Roles = "3901")]
+        [Route("mo-hinh-du-an")]
+        [HttpGet]
+        public object MohinhDuan([FromQuery] QueryParams query)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                if (Common.IsReadOnlyPermit("3901", loginData.Username))
+                {
+                    Visible = false;
+                }
+                string orderByStr = "IsDefault desc";
+                Dictionary<string, string> sortableFields = new Dictionary<string, string>
+                        {
+                            { "title", "title"},
+                            { "id", "id_row"},
+                        };
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+                    if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
+                    {
+                        orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
+                    }
+                    SqlConditions conds = new SqlConditions(); string sql = "";
+                    conds.Add("Disabled", 0);
+                    conds.Add("is_template_center", 0);
+                    conds.Add("CustomerID", loginData.CustomerID);
+                    sql = "select id_row, title, description, IsDefault, color, id_department" +
+                        ", templateid, customerid, createddate, createdby, updatedby, updateddate " +
+                        "from we_template_customer " +
+                        $"where (where) order by { orderByStr }";
+                    //Check CustommerID có template chưa nếu chưa thì thêm vào
+                    cnn.BeginTransaction();
+                    #region ktra k có thì thêm mới danh sách template cho kh mới
+                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer " +
+                        "where disabled = 0 and is_template_center =0 " +
+                        "and CustomerID = " + loginData.CustomerID).ToString());
+                    if (soluong == 0)
+                    {
+                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list " +
+                            "where is_template_center <>1 and disabled = 0");
+                        Hashtable val = new Hashtable();
+                        foreach (DataRow item in dt_listSTT.Rows)
+                        {
+                            val["Title"] = item["Title"];
+                            val["Description"] = item["Description"];
+                            val["TemplateID"] = item["id_row"];
+                            val["CustomerID"] = loginData.CustomerID;
+                            val["CreatedDate"] = Common.GetDateTime();
+                            val["CreatedBy"] = loginData.UserID;
+                            if (cnn.Insert(val, "we_template_customer") != 1)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                            string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString();
+                            string sql_insert = "";
+                            sql_insert = $@"insert into we_template_status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
+                                "select id_Row, " + idc + ", StatusName, description, GETUTCDATE(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
+                                "from we_status_list where disabled = 0 and id_template_list = " + item["id_row"] + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                        }
+                    }
+                    #endregion
+                    cnn.EndTransaction();
+                    DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                    if (cnn.LastError != null || dt_template == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    string sql_status = "";
+                    sql_status = "select id_row, statusid, templateid, statusname, description, createddate,createdby,updatedby,updateddate" +
+                                ", type, isdefault, color, position, isfinal, isdeadline, istodo " +
+                        "from we_template_status where disabled = 0 " +
+                        "and templateid in (select id_row from we_template_customer " +
+                        "where disabled = 0 and customerid = " + loginData.CustomerID + ") " +
+                        "order by position";
+                    DataTable dt_status = cnn.CreateDataTable(sql_status);
+                    int total = dt_template.Rows.Count;
+                    if (total == 0)
+                        return JsonResultCommon.KhongCoDuLieu();
+                    if (query.more)
+                    {
+                        query.page = 1;
+                        query.record = pageModel.TotalCount;
+                    }
+                    pageModel.TotalCount = total;
+                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    pageModel.Size = query.record;
+                    pageModel.Page = query.page;
+                    // Phân trang
+                    dt_template = dt_template.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
+                    var data = from r in dt_template.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   description = r["description"],
+                                   isdefault = r["isdefault"],
+                                   color = r["color"],
+                                   templateid = r["templateid"],
+                                   customerid = r["customerid"],
+                                   createddate = r["createddate"],
+                                   createdby = r["createdby"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["createdby"].ToString(), DataAccount),
+                                   updateddate = r["updateddate"],
+                                   updatedby = r["updatedby"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["updatedby"].ToString(), DataAccount),
+                                   status = from dr in dt_status.AsEnumerable()
+                                            where dr["TemplateID"].Equals(r["id_row"])
+                                            select new
+                                            {
+                                                id_row = dr["id_row"],
+                                                StatusID = dr["statusid"],
+                                                TemplateID = dr["templateid"],
+                                                StatusName = dr["statusname"],
+                                                description = dr["description"],
+                                                CreatedDate = dr["createddate"],
+                                                IsDefault = dr["isdefault"],
+                                                color = dr["color"],
+                                                Position = dr["position"],
+                                                IsFinal = dr["isfinal"],
+                                                IsDeadline = dr["isdeadline"],
+                                                IsTodo = dr["istodo"],
+                                                Type = dr["type"],
+                                            }
+                               };
+                    return JsonResultCommon.ThanhCong(data, pageModel, Visible);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [Route("set-default")]
+        [HttpGet]
+        public async Task<object> SetDefault(long id, bool isdefault = true)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                if (Common.IsReadOnlyPermit("3901", loginData.Username))
+                {
+                    return JsonResultCommon.Custom("Bạn không có quyền cập nhật");
+                }
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sql_update = @$"update we_template_customer set IsDefault = 1, UpdatedBy =  {loginData.UserID} ,UpdatedDate = GETUTCDATE() where CustomerID = {loginData.CustomerID} and Disabled = 0 and is_template_center = 0 and id_row = {id};
+                                                       update we_template_customer set IsDefault =  0,UpdatedBy = {loginData.UserID} ,UpdatedDate = GETUTCDATE() where CustomerID = {loginData.CustomerID} and Disabled = 0 and is_template_center = 0 and id_row <> {id}  and IsDefault = 1";
+                    cnn.BeginTransaction();
+                    cnn.ExecuteNonQuery(sql_update);
+                    if (cnn.LastError != null)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(id);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
@@ -52,7 +243,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Insert(TemplateModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -144,7 +335,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<BaseModel<object>> Update(TemplateModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -247,6 +437,85 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        [Route("change-template")]
+        [HttpPost]
+        public async Task<BaseModel<object>> ChangeTemplate(ChangeTemplateModel data)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string strRe = "";
+                if (data.templateid_new <= 0)
+                    strRe += (strRe == "" ? "" : ",") + "tên mẫu";
+                if (strRe != "")
+                    return JsonResultCommon.BatBuoc(strRe);
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string table_name = "we_department";
+                    SqlConditions sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", data.id);
+                    sqlcond.Add("disabled", 0);
+                    sqlcond.Add("idkh", loginData.CustomerID);
+                    string s = "select * from " + table_name + " where (where)";
+                    DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
+                    if (old == null || old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("Phòng ban/thư mục");
+                    Hashtable val = new Hashtable();
+                    val.Add("TemplateID", data.templateid_new);
+                    val.Add("UpdatedDate", Common.GetDateTime());
+                    val.Add("UpdatedBy", loginData.UserID);
+                    //if (data.isproject)
+                    //    table_name = "we_project_team";
+                    cnn.BeginTransaction();
+                    if (cnn.Update(val, sqlcond, table_name) != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    #region Xóa trạng thái cho phòng ban cũ
+                    string sqlq = "";
+                    sqlq = "update we_status set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_department = " + data.id;
+                    cnn.BeginTransaction();
+                    cnn.ExecuteNonQuery(sqlq);
+                    if (cnn.LastError != null)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    // insert lại status theo template mới
+                    bool rs = WeworkLiteController.insert_status(data.id, "id_department", loginData, cnn);
+                    if (rs)
+                    {
+                        DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
+                        #region Ghi log trong project
+                        string LogContent = "", LogEditContent = "";
+                        LogEditContent = Common.GetEditLogContent(old, dt);
+                        if (!LogEditContent.Equals(""))
+                        {
+                            LogEditContent = "Chỉnh sửa dữ liệu (" + data.id + ") : " + LogEditContent;
+                            LogContent = "Chỉnh sửa dữ liệu department/folder (" + data.id + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                        }
+                        Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                        #endregion
+                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 45, data.id, loginData.UserID))
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    #endregion
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -282,7 +551,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
                         return JsonResultCommon.KhongTonTai(errors);
-                    sqlq = "update " + tablename + " set Disabled=1, UpdatedDate=getdate(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update " + tablename + " set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -459,7 +728,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
-                    
+
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -708,9 +977,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("Detail")]
         [HttpGet]
-        public object Detail(long id,bool istemplatelist=false)
+        public object Detail(long id, bool istemplatelist = false)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -752,7 +1021,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string list_viewid = "", group_statusid = "", field_id = "";
                     DataTable dt_Detail = new DataTable();
                     dt_Detail = cnn.CreateDataTable(sqlq);
-                    if(dt_Detail.Rows.Count > 0)
+                    if (dt_Detail.Rows.Count > 0)
                     {
                         list_viewid = dt_Detail.Rows[0]["viewid"].ToString();
                         group_statusid = dt_Detail.Rows[0]["group_statusid"].ToString();
@@ -905,7 +1174,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<object> SaveAsTemplate(TemplateCenterModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -926,7 +1195,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom(error);
                     }
-                    
+
                     long sampleid = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_sample_data where parentid is null").ToString());
                     long group_id = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_status_group").ToString());
                     long iduser = loginData.UserID;
@@ -998,7 +1267,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     }
 
                     #region insert data vào bảng tạm
-                    if(!InsertDataToTemp(idc,data.types,long.Parse(data.save_as_id),loginData.UserID,cnn,out error))
+                    if (!InsertDataToTemp(idc, data.types, long.Parse(data.save_as_id), loginData.UserID, cnn, out error))
                     {
                         return JsonResultCommon.Custom(error);
                     }
@@ -1022,9 +1291,9 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <returns></returns>
         [Route("use-template")]
         [HttpPost]
-        public async Task<object> SudungTemplate(TemplateCenterModel data,bool istemplatelist)
+        public async Task<object> SudungTemplate(TemplateCenterModel data, bool istemplatelist)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1048,7 +1317,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         data.field_id = x;
                     }
                     Hashtable val = new Hashtable();
-                    val.Add("title", data.title); 
+                    val.Add("title", data.title);
                     val.Add("customerid", loginData.CustomerID);
                     val.Add("createddate", Common.GetDateTime());
                     val.Add("createdby", iduser);
@@ -1100,7 +1369,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<BaseModel<object>> update_template_center(TemplateCenterModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1201,7 +1470,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<BaseModel<object>> add_template_library(add_template_library_Model data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1233,7 +1502,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         }
                         long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString());
                         sqlcond = new SqlConditions();
-                        sqlcond.Add("id_row",idc);
+                        sqlcond.Add("id_row", idc);
                         sqlcond.Add("disabled", 0);
                         sqlcond.Add("is_template_center", 1);
                         s = "select * from we_template_customer where (where)";
@@ -1296,7 +1565,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpGet]
         public async Task<BaseModel<object>> delete_library(long id)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1305,13 +1574,13 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 Hashtable val = new Hashtable();
                 SqlConditions sqlcond = new SqlConditions();
                 long iduser = loginData.UserID;
-                long idk = loginData.CustomerID; 
+                long idk = loginData.CustomerID;
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     cnn.BeginTransaction();
-                    string sqlu = "update we_template_customer set disabled = 1 where id_row = "+id;
-                    if(cnn.ExecuteNonQuery(sqlu) != 1)
+                    string sqlu = "update we_template_customer set disabled = 1 where id_row = " + id;
+                    if (cnn.ExecuteNonQuery(sqlu) != 1)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -1320,7 +1589,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    } 
+                    }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(id);
                 }
@@ -1355,11 +1624,11 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <param name="cnn"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private bool InsertDataToTemp(long id_temp_center, long type, long idmau, long UserID,DpsConnection cnn ,out string error)
+        private bool InsertDataToTemp(long id_temp_center, long type, long idmau, long UserID, DpsConnection cnn, out string error)
         {
             error = "";
             // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
-            if(type == 1) // phòng ban
+            if (type == 1) // phòng ban
             {
                 long idc = InserDepartmentToTemp(id_temp_center, idmau, UserID, 0, cnn, out error);
                 if (idc <= 0)
@@ -1369,7 +1638,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
                 string sqlf = "select * from we_department where  Disabled = 0 and  ParentID = " + idmau;
                 DataTable datafolder = cnn.CreateDataTable(sqlf);
-                if(datafolder.Rows.Count > 0)
+                if (datafolder.Rows.Count > 0)
                 {
                     foreach (DataRow dr in datafolder.Rows)
                     {
@@ -1378,7 +1647,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         if (idfolder <= 0)
                         {
                             return false;
-                        } 
+                        }
                     }
                 }
             }
@@ -1399,7 +1668,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             return true;
         }
-        private long InserDepartmentToTemp(long id_temp_center,  long idmau, long UserID,long idparent, DpsConnection cnn, out string error)
+        private long InserDepartmentToTemp(long id_temp_center, long idmau, long UserID, long idparent, DpsConnection cnn, out string error)
         {
             // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
             error = "";
@@ -1423,8 +1692,8 @@ from we_template_library where disabled = 0 and id_template = " + id;
             {
                 foreach (DataRow dr in dataprojectteam.Rows)
                 {
-                   long idproject = long.Parse(dr["id_row"].ToString());
-                   if(!InsertProjectToTemp(id_temp_center, idproject, UserID, idc, cnn, out error))
+                    long idproject = long.Parse(dr["id_row"].ToString());
+                    if (!InsertProjectToTemp(id_temp_center, idproject, UserID, idc, cnn, out error))
                     {
                         return 0;
                     }
@@ -1448,7 +1717,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 error = cnn.LastError.Message.ToString();
                 return false;
             }
-            return true; 
+            return true;
         }
 
         /// <summary>
@@ -1461,7 +1730,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <param name="cnn"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private bool InsertTempToData(long id_temp, TemplateCenterModel data, UserJWT loginData, bool istemplatelist,DpsConnection cnn ,out string error)
+        private bool InsertTempToData(long id_temp, TemplateCenterModel data, UserJWT loginData, bool istemplatelist, DpsConnection cnn, out string error)
         {
             error = "";
             long idmau = 0;
@@ -1483,7 +1752,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
                 string sqlf = "select * from we_department_temp where  Disabled = 0 and  ParentID = " + idmau;
                 DataTable datafolder = cnn.CreateDataTable(sqlf);
-                if(datafolder.Rows.Count > 0)
+                if (datafolder.Rows.Count > 0)
                 {
                     foreach (DataRow dr in datafolder.Rows)
                     {
@@ -1493,7 +1762,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         if (idfoldertemp <= 0)
                         {
                             return false;
-                        } 
+                        }
                     }
                 }
             }
@@ -1516,7 +1785,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             return true;
         }
-        private long InsertTepmToDepartment(long id_temp,  long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, out string error)
+        private long InsertTepmToDepartment(long id_temp, long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, out string error)
         {
             // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
             error = "";
@@ -1543,7 +1812,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             {
                 foreach (DataRow dr in dataprojectteam.Rows)
                 {
-                   long idproject = long.Parse(dr["id_row"].ToString());
+                    long idproject = long.Parse(dr["id_row"].ToString());
                     string titlep = dr["title"].ToString();
                     if (!InsertTempToProject(id_temp, idproject, titlep, idc, cnn, out error))
                     {
@@ -1573,7 +1842,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             {
                 return false;
             }
-            return true; 
+            return true;
         }
         /// <summary>
         /// add user vào template library
@@ -1582,9 +1851,9 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <returns></returns>
         [Route("save-image")]
         [HttpPost]
-        public async Task<BaseModel<object>> SaveasImage(FileUploadModel data, bool istemplatelist= false)
+        public async Task<BaseModel<object>> SaveasImage(FileUploadModel data, bool istemplatelist = false)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1593,7 +1862,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
                 string tablename = "we_template_list";
-                if(!istemplatelist)
+                if (!istemplatelist)
                     tablename = "we_template_customer";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -1613,12 +1882,12 @@ from we_template_library where disabled = 0 and id_template = " + id;
                             return JsonResultCommon.ThatBai("Cập nhật hình ảnh");
                         }
                         cnn.EndTransaction();
-                }
+                    }
 
-                    
+
                 }
                 return JsonResultCommon.ThanhCong(data);
-                
+
             }
             catch (Exception ex)
             {

@@ -49,12 +49,11 @@ import { UserRightComponent } from './userright.component';
 import { PermissionService } from './Services/userright.service';
 import { GroupNameListComponent } from './groupname-list/groupname-list.component';
 import { UsersListComponent } from './users-list/users-list.component';
-import { DanhSachNguoiDungComponent } from './danh-sach-nguoi-dung/danh-sach-nguoi-dung.component';
 import { GroupNameEditComponent } from './groupname-edit/groupname-edit.component';
-import { DanhSachNguoiDungThemMoiComponent } from './danh-sach-nguoi-dung-them-moi/danh-sach-nguoi-dung-them-moi.component';
 import { JeeWork_CoreModule } from '../../JeeWork_Core.module';
 import { FunctionsGroupListComponent } from './functions-group/functions-group-list.component';
-import { ChucNangUserListComponent } from './chucnanguser-list/chucnanguser-list.component';
+import { AddUserGroupComponent } from './add-user-group/add-user-group.component';
+import { UserGroupPermitComponent } from './user-group-permit/user-group-permit.component';
 
 const routes: Routes = [
 	{
@@ -123,10 +122,9 @@ const routes: Routes = [
 	],
 	entryComponents: [
 		FunctionsGroupListComponent,
-		DanhSachNguoiDungComponent,
+		UserGroupPermitComponent,
 		GroupNameEditComponent,
-		DanhSachNguoiDungThemMoiComponent,
-		ChucNangUserListComponent
+		AddUserGroupComponent,
 	],
 	declarations: [
 		UserRightComponent,
@@ -134,9 +132,8 @@ const routes: Routes = [
 		GroupNameEditComponent,
 		UsersListComponent,
 		FunctionsGroupListComponent,
-		DanhSachNguoiDungComponent,
-		DanhSachNguoiDungThemMoiComponent,
-		ChucNangUserListComponent
+		UserGroupPermitComponent,
+		AddUserGroupComponent,
 	]
 })
 export class UserRightModule { }

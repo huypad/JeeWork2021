@@ -9,7 +9,6 @@ public class ErrorController : ControllerBase
     [Route("error")]
     protected IActionResult Error()
     {
-        //string Token = Common.GetHeader(Request);
         //LoginData loginData = Common._GetInfoUser(Token);
         //var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
         //string noidung = context.Error.Message;

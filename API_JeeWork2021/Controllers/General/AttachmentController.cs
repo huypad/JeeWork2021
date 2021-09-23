@@ -88,6 +88,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     data.id_user = iduser;
                     cnn.BeginTransaction();
+                    byte[] imageBytes = Convert.FromBase64String(data.item.strBase64);
+                    long MaxSize = WeworkLiteController.GetMaxSize(_configuration);
+                    if (imageBytes.Length > MaxSize)
+                    {
+                        return JsonResultCommon.KhongTonTai("File không được lớn hơn " + MaxSize / 1000 + "MB");
+                    }
                     if (!upload(data, cnn, _hostingEnvironment.ContentRootPath, _configuration))
                     {
                         cnn.RollbackTransaction();
@@ -112,7 +118,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -123,9 +128,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sqlq = "select ISNULL((select count(*) from we_attachment where Disabled=0 and  id_row = " + id + "),0)";
-                    if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
+                    string sqlq = "select * from we_attachment where disabled=0 and id_row = " + id + "";
+                    DataTable dt_file = cnn.CreateDataTable(sqlq);
+                    if (dt_file.Rows.Count != 1)
                         return JsonResultCommon.KhongTonTai("Tệp đính kèm");
+                    string signedPath = dt_file.Rows[0]["path"].ToString();
                     sqlq = "update we_attachment set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
@@ -133,6 +140,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    UploadHelper.DeleteFileAtt(signedPath);
                     string LogContent = "Xóa dữ liệu attachment (" + id + ")";
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
@@ -211,11 +219,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return false;
             string x = "";
             string folder = "/attachment/" + getFolderByType(data.object_type) + "/";
+            
             if (!UploadHelper.UploadFile(item.strBase64, item.filename, folder, ContentRootPath, ref x, _configuration))
             {
                 return false;
             }
-            item.src = JeeWorkConstant.linkAPI + x;
             Hashtable val2 = new Hashtable();
             val2["object_type"] = data.object_type;//topic
             val2["object_id"] = data.object_id;
@@ -257,5 +265,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         public int object_type { get; set; }
         public long object_id { get; set; }
         public long id_user { get; set; }
+    }
+    public class DeleteAttachmentModel
+    {
+        public string _path { get; set; }
     }
 }

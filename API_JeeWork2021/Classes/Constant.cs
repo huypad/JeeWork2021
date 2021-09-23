@@ -9,6 +9,7 @@ namespace JeeWork_Core2021.Classes
 {
     public class JeeWorkConstant
     {
+        public IConfiguration _configuration;
         public static string _User = "customdata";
         public const string ERRORCODE = "101";//lỗi token
         public const string ERRORDATA = "106";//lỗi token
@@ -57,17 +58,7 @@ namespace JeeWork_Core2021.Classes
             var value = root[code];
             return value;
         }
-        public static string getHRCnn()
-        {
-            //IConfigurationBuilder builder = new ConfigurationBuilder();
-            //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-            //var root = builder.Build();
-            //string ConnectionString = root["JeeWorkConfig:ConnectionString"];
-            //string HRCatalog = root["JeeWorkConfig:HRCatalog"];
-            //string HRConnectionString = ConnectionString.Replace("jeework", HRCatalog);
-            //return HRConnectionString;
-            return "";
-        }
+       
     }
     public enum StateCode
     {

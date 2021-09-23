@@ -17,6 +17,14 @@ namespace JeeWork_Core2021.Models
         public string link_mobileapp { get; set; } // deep link dành cho mobile
         public bool exclude_sender { get; set; } = true;
     }
+    public class ChangeTemplateModel
+    {
+        public long id { get; set; }
+        public long templateid_new { get; set; } = 0;
+        public long templateid_old { get; set; } = 0;
+        public bool isproject { get; set; } = true;
+    }
+   
     public class TemplateModel
     {
         public long id_row { get; set; }

@@ -48,7 +48,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -171,7 +171,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -214,7 +214,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
         [HttpPost]
         public async Task<object> Insert(WorkGroupModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -276,7 +276,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
         [HttpPost]
         public async Task<BaseModel<object>> Update(WorkGroupModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -347,7 +347,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -391,7 +391,7 @@ where g.Disabled=0 " + dieukien_where + "  order by " + dieukienSort;
         [HttpGet]
         public async Task<object> Close(long id, bool closed = true)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

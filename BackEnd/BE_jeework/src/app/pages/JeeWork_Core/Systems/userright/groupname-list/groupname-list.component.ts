@@ -35,10 +35,9 @@ import { isFulfilled } from "q";
 import { DatePipe } from "@angular/common";
 import { PermissionService } from "../Services/userright.service";
 import { UserRightDataSource } from "../Model/data-sources/userright.datasource";
-
-import { DanhSachNguoiDungComponent } from "../danh-sach-nguoi-dung/danh-sach-nguoi-dung.component";
 import { GroupNameEditComponent } from "../groupname-edit/groupname-edit.component";
 import { FunctionsGroupListComponent } from "../functions-group/functions-group-list.component";
+import { UserGroupPermitComponent } from "../user-group-permit/user-group-permit.component";
 @Component({
   selector: "kt-groupname-list",
   templateUrl: "./groupname-list.component.html",
@@ -47,7 +46,7 @@ import { FunctionsGroupListComponent } from "../functions-group/functions-group-
 export class GroupNameListComponent implements OnInit {
   // Table fields
   dataSource: UserRightDataSource;
-  displayedColumns = ["ID_Nhom", "TenNhom","DateCreated", "actions"];
+  displayedColumns = ["ID_Nhom", "TenNhom", "DateCreated", "actions"];
   sorting: SortState = new SortState();
 
   //Form
@@ -90,7 +89,7 @@ export class GroupNameListComponent implements OnInit {
     this.dataSource.paginatorTotal$.subscribe(
       (res) => (this.paginatorNew.total = res)
     );
-    this.Visable = this.permitService.VisibleNND;
+    this.Visable = this.permitService.Visible_Group;
     this.changeDetectorRefs.detectChanges();
 
     setTimeout(() => {
@@ -110,12 +109,11 @@ export class GroupNameListComponent implements OnInit {
       this.paginatorNew.page - 1,
       this.paginatorNew.pageSize
     );
-    this.dataSource.loadListGroupName(queryParams);
+    this.dataSource.LoadGroup(queryParams);
     // setTimeout((x) => {
     //   this.loadPage();
     // }, 500);
 
-    let a = this.permitService.VisibleNND;
   }
   loadPage() {
     var arrayData = [];
@@ -132,7 +130,7 @@ export class GroupNameListComponent implements OnInit {
           this.paginatorNew.page - 1,
           this.paginatorNew.pageSize
         );
-        this.dataSource.loadListGroupName(queryParams1);
+        this.dataSource.LoadGroup(queryParams1);
       } else {
         const queryParams1 = new QueryParamsModel(
           this.filterConfiguration(),
@@ -141,7 +139,7 @@ export class GroupNameListComponent implements OnInit {
           this.paginatorNew.page = 0,
           this.paginatorNew.pageSize
         );
-        this.dataSource.loadListGroupName(queryParams1);
+        this.dataSource.LoadGroup(queryParams1);
       }
     }
   }
@@ -210,7 +208,7 @@ export class GroupNameListComponent implements OnInit {
     const _saveMessage = this.translate.instant(saveMessageTranslateParam);
     const _messageType =
       _item.ID_Nhom > 0 ? MessageType.Update : MessageType.Create;
-    const dialogRef = this.dialog.open(DanhSachNguoiDungComponent, {
+    const dialogRef = this.dialog.open(UserGroupPermitComponent, {
       data: { _item },
       width: '1000px',
       height: "70%",

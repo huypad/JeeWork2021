@@ -47,7 +47,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Insert([FromBody] AuthorizeModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -101,7 +100,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<BaseModel<object>> Update([FromBody] AuthorizeModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -157,7 +155,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

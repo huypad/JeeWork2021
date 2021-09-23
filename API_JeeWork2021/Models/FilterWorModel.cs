@@ -27,4 +27,12 @@ namespace JeeWork_Core2021.Models
         public string columnname { get; set; }
         public long id_columnname { get; set; }
     }
+    public class PositionTemplateModel
+    {
+        public long id_row_from { get; set; }
+        public long id_row_to { get; set; }
+        public long position_from { get; set; }
+        public long position_to { get; set; }
+        public long templateid { get; set; }
+    }
 }

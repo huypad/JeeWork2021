@@ -608,7 +608,6 @@ namespace JeeWork_Core2021.Classes
     {
         public MailInfo(string CustemerID, DpsConnection cnn)
         {
-            InitialData(CustemerID, cnn);
         }
         public MailInfo()
         {
@@ -618,39 +617,6 @@ namespace JeeWork_Core2021.Classes
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
-                InitialData(CustemerID, cnn);
-            }
-        }
-        private void InitialData(string CustemerID, DpsConnection cnn)
-        {
-            DataTable dt = new DataTable();
-            SqlConditions cond = new SqlConditions();
-            cond.Add("RowID", CustemerID);
-            dt = cnn.CreateDataTable("select SmtpClient, Port, Email, Password, EnableSSL, Username from tbl_custemers where (where)", "(where)", cond);
-            if (dt.Rows.Count <= 0)
-            {
-                Email = "";
-                return;
-            }
-            else
-            {
-                int port = 0;
-                if (!int.TryParse(dt.Rows[0]["Port"].ToString(), out port))
-                {
-                    return;
-                }
-                Email = dt.Rows[0]["email"].ToString();
-                UserName = dt.Rows[0]["username"].ToString();
-                SmptClient = dt.Rows[0]["SmtpClient"].ToString();
-                if (bool.TrueString.Equals(dt.Rows[0]["EnableSSL"].ToString()))
-                    EnableSSL = true;
-                else EnableSSL = false;
-                Port = port;
-                try
-                {
-                    Password = DpsLibs.Common.EncDec.Decrypt(dt.Rows[0]["Password"].ToString(), JeeWorkConstant.PASSWORD_ED);
-                }
-                catch { }
             }
         }
         private void InfoMailTest()

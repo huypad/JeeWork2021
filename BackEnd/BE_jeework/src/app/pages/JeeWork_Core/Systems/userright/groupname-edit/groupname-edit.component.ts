@@ -84,7 +84,6 @@ export class GroupNameEditComponent implements OnInit {
 			Object.keys(controls).forEach(controlName =>
 				controls[controlName].markAsTouched()
 			);
-
 			this.hasFormErrors = true;
 			this.selectedTab = 0;
 			return;

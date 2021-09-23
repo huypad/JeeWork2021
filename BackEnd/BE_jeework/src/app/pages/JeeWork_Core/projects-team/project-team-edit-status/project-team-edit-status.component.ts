@@ -5,7 +5,7 @@ import {
 import { StatusDynamicModel } from './../Model/status-dynamic.model';
 import {
     Different_StatusesModel,
-    MapModel,
+    MapModel, PositionModel,
 } from './../../List-department/Model/List-department.model';
 import { ListDepartmentService } from './../../List-department/Services/List-department.service';
 import {
@@ -32,7 +32,9 @@ import { PopoverContentComponent } from 'ngx-smart-popover';
 // import { LayoutUtilsService } from 'app/core/_base/crud';
 
 import { UpdateQuickModel } from '../../List-department/Model/List-department.model';
-import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CommonService } from '../../../../_metronic/jeework_old/core/services/common.service';
+import { ChangeTemplateModel } from '../Model/department-and-project.model';
 
 @Component({
     selector: 'kt-project-team-edit-status',
@@ -50,6 +52,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         private translate: TranslateService,
         public weworkService: WeWorkService,
         public _Services: ListDepartmentService,
+        public commonService: CommonService,
     ) {
     }
     litsTemplateDemo: any = [];
@@ -60,32 +63,84 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     defaultColors = this.weworkService.defaultColors;
     isDoinguoi = false;
     isStatusNow = true;
-
+    itemde = new ChangeTemplateModel();
     idfocus = 0;
     numbers = [1, 2, 3, 4, 5, 6, 7, 8];
     isAddTemplate = false;
     updateTemp = 0;
     isAddStatus = false;
     IsSave = false;
-
+    visible = true;
+    movies = [{
+        name: 'Episode I - The Phantom Menace',
+        isDisable: false
+    }, {
+        name: 'Episode II - Attack of the Clones',
+        isDisable: false
+    }, {
+        name: 'Episode III - Revenge of the Sith',
+        isDisable: false
+    }, {
+        name: 'Episode IV - A New Hope',
+        isDisable: false
+    }, {
+        name: 'Episode V - The Empire Strikes Back',
+        isDisable: false
+    }, {
+        name: 'Episode VI - Return of the Jedi',
+        isDisable: false
+    }
+    ];
     // Update người quản lý quá trình cv
     listUser: any[];
 
     ngOnInit() {
+        console.log(this.data);
         this.TempSelected = this.data.id_template > 0 ? this.data.id_template : 0;
         this.LoadDataTemp();
         this.ListStatusDynamic();
         this.LoadListAccount();
     }
-    drop(event: CdkDragDrop<unknown>) {
-        moveItemInArray(this.numbers, event.previousIndex, event.currentIndex);
-        debugger
+    drop(event: CdkDragDrop<string[]>) {
+        console.log(event);
+        moveItemInArray(this.listSTTHoatdong(), event.previousIndex, event.currentIndex);
+        const previous = this.listSTTHoatdong()[event.previousIndex];
+        const curent = this.listSTTHoatdong()[event.currentIndex];
+        console.log(previous, curent);
+        const positon = new PositionModel();
+        positon.id_row_from = previous.id_row;
+        positon.position_from = previous.Position;
+        positon.id_row_to = curent.id_row;
+        positon.position_to = curent.Position;
+        positon.columnname = this.data.columnname;
+        positon.id_columnname = this.data.id_row;
+        console.log(positon);
+        this.dropPosition(positon);
+        // debugger
+        // if (event.previousContainer === event.container) {
+        //     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        //   } else {
+        //     transferArrayItem(event.previousContainer.data,
+        //       event.container.data,
+        //       event.previousIndex,
+        //       event.currentIndex);
+        //   }
     }
-
     /**
      * Predicate function that only allows even numbers to be
      * sorted into even indices and odd numbers at odd indices.
      */
+    dropPosition(_item) {
+        this._service.dropPosition(_item).subscribe((res) => {
+            if (res && res.status == 1) {
+                console.log(res.data);
+                this.ListStatusDynamic();
+            } else {
+                this.layoutUtilsService.showError(res.error.message);
+            }
+        });
+    }
+
     sortPredicate(index: number, item: CdkDrag<number>) {
         return (index + 1) % 2 === item.data % 2;
     }
@@ -96,7 +151,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
                 this.litsTemplateDemo = res.data;
-                this.litsTemplateDemo.sort((a, b) => (a.IsTodo === b.IsTodo ? -1 : 1)); // isTodo true lên trước
+                // this.litsTemplateDemo.sort((a, b) => (a.IsTodo === b.IsTodo ? -1 : 1)); // isTodo true lên trước
                 if (
                     this.TempSelected == 0 ||
                     !this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected)
@@ -113,7 +168,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 
     ListStatusDynamic() {
         this.layoutUtilsService.showWaitingDiv();
-        this.weworkService.ListStatusDynamic(this.data.id_row).subscribe((res) => {
+        this.weworkService.ListStatusDynamic(this.data.id_row, this.data.columnname !== 'id_project_team').subscribe((res) => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
                 this.listStatus = res.data;
@@ -152,6 +207,8 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     }
 
     LoadStatusDuan() {
+        console.log(this);
+        console.log(this.listStatus);
         if (this.listStatus && this.isStatusNow) {
             // this.listSTT = this.listStatus;
             const listTemp = [];
@@ -167,6 +224,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
                     color: element.color,
                     description: element.Description,
                     id_project_team: element.id_project_team,
+                    id_department: element.id_department,
                     id_row: element.id_row,
                     SL_Tasks: element.SL_Tasks,
                 };
@@ -186,6 +244,27 @@ export class ProjectTeamEditStatusComponent implements OnInit {
                 color: 'pink',
                 StatusName: 'Chọn trạng thái mới',
             };
+        }
+    }
+
+    LuuThayDoi() {
+        if (this.data.columnname === 'id_project_team') {
+            this.IsSave = true;
+        } else {
+            debugger
+            this.itemde.id = this.data.id_row;
+            this.itemde.templateid_new = this.TempSelected;
+            this.itemde.templateid_old = this.data.id_template;
+            this.itemde.isproject = false;
+            this._service.ChangeTemplate(this.itemde).subscribe((res) => {
+                if (res && res.status == 1) {
+                    const _messageType = this.translate.instant('GeneralKey.capnhatthanhcong');
+					this.layoutUtilsService.showActionNotification(_messageType, MessageType.Create, 4000, true, false);
+                    this.dialogRef.close(true);
+                } else {
+                    this.layoutUtilsService.showError(res.error.message);
+                }
+            });
         }
     }
 
@@ -231,8 +310,10 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     Created(_item) {
         this._service.Different_Statuses(_item).subscribe((res) => {
             if (res && res.status == 1) {
-                this.layoutUtilsService.showInfo('Update thành công');
+                const _messageType = this.translate.instant('GeneralKey.capnhatthanhcong');
+					this.layoutUtilsService.showActionNotification(_messageType, MessageType.Read, 4000, true, false);
                 this.dialogRef.close(true);
+                window.location.reload();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -269,6 +350,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 
             item.Description = status.Description;
             item.Id_project_team = status.id_project_team;
+            item.id_department = status.id_department;
             //   item.Follower = status.Follower;
             item.Type = status.Type ? status.Type : '2';
             this.UpdateStatus(item);
@@ -478,33 +560,42 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         });
     }
 
-    UpdateStatus(item) {
-        this._service.UpdateStatus(item).subscribe((res) => {
-            if (res && res.status == 1) {
-                // this.layoutUtilsService.showActionNotification(
-                //   this.translate.instant("GeneralKey.capnhatthanhcong"),
-                //   MessageType.Read,
-                //   3000,
-                //   true,
-                //   false,
-                //   3000,
-                //   "top",
-                //   1
-                // );
-                this.ListStatusDynamic();
-            } else {
-                this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+
+
+    CheckRole() {
+        if (this.isStatusNow) {
+            return true
+        } else {
+            return this.RoleUpdate();
+        }
+    }
+
+    RoleUpdate() {
+        if (this.commonService.CheckRole_WeWork(3901).length > 0) {
+            if (this.litsTemplateDemo && this.litsTemplateDemo[0]) {
+                if (this.litsTemplateDemo[0].visible) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
-        });
+        }
+        return false;
+
+    }
+
+    UpdateStatus(item) {
+        console.log(item);
+        return;
+        // this._service.UpdateStatus(item).subscribe((res) => {
+        //     if (res && res.status == 1) {
+        //         this.ListStatusDynamic();
+        //     } else {
+        //         this.layoutUtilsService.showError(
+        //             res.error.message
+        //         );
+        //     }
+        // });
     }
 
     @HostListener('document:keydown', ['$event'])

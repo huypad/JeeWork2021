@@ -227,7 +227,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Members([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -417,7 +416,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object TrangThaiCongViec([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -561,7 +559,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object MyListWiget([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -685,7 +682,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Congviecduocgiao([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -845,7 +841,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object CongviecNhanvien([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -994,116 +989,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 val["newvalue"] = _new;
             return cnn.Insert(val, "we_log") == 1;
         }
-        /// <summary>
-        /// Notify mail
-        /// </summary>
-        /// <param name="id_template">we_template.id_row</param>
-        /// <param name="object_id"></param>
-        /// <param name="nguoigui"></param>
-        /// <param name="dtUser">gồm id_nv, hoten, email</param>
-        /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier notifier, DataTable dtOld = null)
-        {
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
-            {
-                //get template
-                string sql = "select * from we_template where id_row=" + id_template;
-                DataTable dt = cnn.CreateDataTable(sql);
-                bool exclude_sender = (bool)dt.Rows[0]["exclude_sender"];//loại bỏ người gửi khỏi ds người nhận
-                string link = JeeWorkConstant.LinkWework + dt.Rows[0]["link"].ToString().Replace("$id$", object_id.ToString());
-                string title = dt.Rows[0]["title"].ToString();
-                string template = dt.Rows[0]["template"].ToString();
-                title = title.Replace("$nguoigui$", nguoigui.Username);
-                template = template.Replace("$nguoigui$", nguoigui.Username);
-                template = template.Replace("$link$", link);
-                //get key_value replace
-                sql = "select * from we_template_key where id_key in (" + dt.Rows[0]["keys"] + ") order by id_key";
-                DataTable dtKey = cnn.CreateDataTable(sql);
-                //get data replace
-                string sqlq = getSqlFromKeys(dtKey, object_id);
-                if ("$data_account$".Equals(sqlq))
-                {
-                    sqlq = sqlq.Replace("$data_account$", "");
-                }
-                DataTable dtFind = cnn.CreateDataTable(sqlq);
-                if (cnn.LastError != null)
-                    return false;
-                #region Xử lý khi gửi file đính kèm thảo luận qua Email (id_template = 16 - Thảo luận)
-                //if (id_template == 16)
-                //{
-                //    // Xử lý cho trường hợp gửi link tải file qua email
-                //    if (dtFind.Rows.Count > 0)
-                //    {
-                //        string list_file = "";
-                //        for (int i = 0; i < dtFind.Rows.Count; i++)
-                //        {
-                //            list_file = dtFind.Rows[i]["filename"].ToString();
-                //            if (!string.IsNullOrEmpty(list_file))
-                //            {
-                //                list_file += "\n " + list_file;
-                //                dtFind.Rows[i]["path"] = JeeWorkConstant.LinkWework + dtFind.Rows[0]["path"].ToString();
-                //            }
-                //            //list_file += "\n " + JeeWorkConstant.LinkWework + "" + list_file;
-                //        }
-                //        dtFind.Rows[0]["filename"] = list_file;
-                //    }
-                //}
-                #endregion
-                DataRow values = dtFind.Rows[0];
-                DataRow old_values = dtOld == null ? null : dtOld.Rows[0];
-                foreach (DataRow dr in dtKey.Rows)
-                {
-                    string f = "";
-                    if (dr["format"] != DBNull.Value)
-                        f = "{0:" + dr["format"].ToString() + "}";
-                    string key = dr["key"].ToString();
-                    string val = dr["value"].ToString();
-                    var temp = val.Split(new string[] { " as " }, StringSplitOptions.None);
-                    val = temp[temp.Length - 1];
-                    if (!(bool)dr["is_old"])
-                    {
-                        if (!string.IsNullOrEmpty(f))
-                            val = string.Format(f, values[val]);
-                        else
-                            val = values[val].ToString();
-                    }
-                    else
-                    {//dữ liệu cũ
-                        if (old_values != null)
-                        {
-                            if (!string.IsNullOrEmpty(f))
-                                val = string.Format(f, old_values[val]);
-                            else
-                                val = old_values[val].ToString();
-                        }
-                    }
-                    title = title.Replace(key, val);
-                    template = template.Replace(key, val);
-                }
-
-                // #update guimail
-                string HRConnectionString = JeeWorkConstant.getHRCnn();
-                DpsConnection cnnHR = new DpsConnection(HRConnectionString);
-                MailInfo MInfo = new MailInfo(nguoigui.CustomerID.ToString(), cnnHR);
-                cnn.Disconnect();
-                if (MInfo.Email != null)
-                {
-                    for (int i = 0; i < dtUser.Rows.Count; i++)
-                    {
-                        //Gửi mail cho người nhận
-                        if (!"".Equals(dtUser.Rows[i]["email"].ToString()))
-                        {
-                            if (exclude_sender && dtUser.Rows[i]["id_nv"].ToString() == nguoigui.UserID.ToString())
-                                continue;
-                            string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
-                            string ErrorMessage = "";
-                            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, notifier);
-                        }
-                    }
-                }
-            }
-            return true;
-        }
+       
         /// <summary>
         /// Trang danh sách công việc chính
         /// </summary>
@@ -1113,7 +999,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object WorksByProject([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1417,7 +1302,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListActivities([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1816,29 +1700,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
-        }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier notifier, DataTable dtOld = null)
-        {
-            if (users == null || users.Count == 0)
-                return;
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
-            {
-                List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
-                DataTable dtUser = new DataTable();
-                dtUser.Columns.Add("id_nv");
-                dtUser.Columns.Add("hoten");
-                dtUser.Columns.Add("email");
-                foreach (var item in users)
-                {
-                    var info = DataAccount.Where(x => item.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
-                    if (info != null)
-                    {
-                        dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
-                    }
-                }
-                NotifyMail(id_template, id, loginData, dtUser, ConnectionString, notifier, dtOld);
-            }
         }
         public static DataSet GetWork_ClickUp(DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string listDept, string dieukien_where = "")
         {

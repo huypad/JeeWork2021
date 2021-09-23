@@ -5,6 +5,7 @@ export class StatusDynamicModel extends BaseModel {
 	Title: string;
 	Description: string;
 	Id_project_team: number;
+	id_department : number;
 	Type: string;
 	IsDefault: boolean;
 	Color: string;
@@ -16,7 +17,8 @@ export class StatusDynamicModel extends BaseModel {
 		this.StatusName = '';
 		this.Title = '';
 		this.Id_project_team = 0;
-		this.Type = '';
+		this.id_department = 0;
+		this.Type = '2';
 		this.Description = '';
 		this.Color = '';
 		this.IsDefault = true;

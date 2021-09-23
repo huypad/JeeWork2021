@@ -1,70 +1,89 @@
-<kt-portlet class="d-block" [options]="{headLarge: true, enableSticky: true}" [loading$]="loading1$">
-	<kt-portlet-header class="activities" [sticky]="true" style="height: 60px;" [class]="'kt-portlet__head--lg'">
-		<ng-container ktPortletTitle>
-			<div class="kt-form__filtration">
-				<h4>
-					<i class="far fa-file-alt text-dark" style="padding-right: 5px;"></i>
-					<b class="url text-dark">{{ 'projects.tailieu' | translate }}</b>
-				</h4>
-			</div>
-		</ng-container>
-		<ng-container ktPortletTools>
-            <app-search-box-custom [placeholder]=" 'filter.filtertailieu' | translate " (submitSearch)="applyFilter($event)"></app-search-box-custom>
-            <button class="btn btn-outline-success" style="border-radius: 20px;padding-top: 6px;
-    padding-bottom: 6px;
-    transform: translatey(-2px);" (click)="csvInput.click()">Thêm</button>
-            <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
-		</ng-container>
-	</kt-portlet-header>
-	<kt-portlet-body class="bg-hoatdong pd-0" [ngStyle]="{'height': getHeight()}">
+<div class="card card-custom">
+  <div class="card-header">
+    <div class="card-title">
+      <h3 style="font-size: 14px; font-weight: 500; color: #000000; text-transform: uppercase" class="card-label">
+        <span translate="projects.tailieu"></span>
+      </h3>
+    </div>
+    <div class="card-toolbar">
+      <!-- <button mat-raised-button type="button" class="ja_btn-addnew" type="button" (click)="AddTemplate()"
+        matTooltip="{{ 'GeneralKey.themmoi' | translate }}">
+        <span translate="GeneralKey.themmoi"></span>
+      </button> -->
+      <button class="btn btn-outline-success" style="border-radius: 20px;padding-top: 6px;
+      padding-bottom: 6px;
+      transform: translatey(-2px);" (click)="csvInput.click()"><span translate="GeneralKey.themmoi"></span></button>
+      <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="m-form">
+      <div class="m-form__filtration">
+        <div class="row align-items-center">
+          <div class="col-md-4 m--margin-bottom-10-mobile">
+            <div class="m-form__control">
+              <app-search-box-custom [placeholder]=" 'filter.filtertailieu' | translate "
+                (submitSearch)="applyFilter($event)">
+              </app-search-box-custom>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end::FILTERS -->
+    </div>
+    <div class="example-container mat-table__wrapper" [ngStyle]="{ height: getHeight() }">
+      <table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" matSort matSortActive="id"
+        style="width: 100%" matSortDirection="asc" matSortDisableClear>
+        <ng-container matColumnDef="filename">
+          <th mat-header-cell *matHeaderCellDef> Tên tài liệu </th>
+          <td mat-cell *matCellDef="let file">
+            <img src="{{file.icon}}" alt="{{file.filename}}"> {{file.filename}}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="lichsu">
+          <th mat-header-cell *matHeaderCellDef style="width:300px"> Lịch sử </th>
+          <td mat-cell *matCellDef="let file"> {{file.NguoiTao}} - {{file.CreatedDate}} </td>
+        </ng-container>
 
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-          
-            <ng-container matColumnDef="filename">
-              <th mat-header-cell *matHeaderCellDef> Tên tài liệu </th>
-              <td mat-cell *matCellDef="let file"> 
-				  <img src="{{file.icon}}" alt="{{file.filename}}"> {{file.filename}} 
-			  </td>
-            </ng-container>
-          
-            <ng-container matColumnDef="lichsu">
-              <th mat-header-cell *matHeaderCellDef style="width:300px"> Lịch sử </th>
-              <td mat-cell *matCellDef="let file"> {{file.NguoiTao}} - {{file.CreatedDate}} </td>
-            </ng-container>
-          
-            <ng-container matColumnDef="size">
-              <th mat-header-cell *matHeaderCellDef class="text-center" style="width:150px"> Kích thước </th>
-              <td mat-cell *matCellDef="let file" class="text-center"> {{ (file.size/1024) | number: '1.0-0'}} kb </td>
-            </ng-container>
-          
-            
-            
-            <ng-container matColumnDef="action">
-              <th mat-header-cell *matHeaderCellDef style="width:200px" class="text-right"></th>
-              <td mat-cell *matCellDef="let file;let index = index" class="text-right"> 
+        <ng-container matColumnDef="size">
+          <th mat-header-cell *matHeaderCellDef class="text-center" style="width:150px"> Kích thước </th>
+          <td mat-cell *matCellDef="let file" class="text-center"> {{ (file.size/1024) | number: '1.0-0'}} kb </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef style="width:200px" class="text-right"></th>
+          <td mat-cell *matCellDef="let file;let index = index" class="text-right">
 
-                <button mat-icon-button class="text-success" (click)="DownloadFile(file.path)" *ngIf="file.isImage"
-                    type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
-                    <mat-icon>remove_red_eye</mat-icon>
-                </button>
-                <button mat-icon-button class="text-success" (click)="preview(file.path)" *ngIf="!file.isImage"
-                    type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
-                    <mat-icon>remove_red_eye</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="DownloadFile(file.path)" *ngIf="!file.isImage"
-                    type="button" matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
-                    <mat-icon>cloud_download</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" type="button" (click)="Delete_File(file.id_row)"
-                    matTooltip="{{ 'topic.xoafile' | translate}}">
-                    <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-          
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-        
-	</kt-portlet-body>
-</kt-portlet>
+            <button mat-icon-button class="text-success" (click)="DownloadFile(file.path)" *ngIf="file.isImage"
+              type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+              <mat-icon>remove_red_eye</mat-icon>
+            </button>
+            <button mat-icon-button class="text-success" (click)="preview(file.path)" *ngIf="!file.isImage"
+              type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+              <mat-icon>remove_red_eye</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="DownloadFile(file.path)" *ngIf="!file.isImage"
+              type="button" matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
+              <mat-icon>cloud_download</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" type="button" (click)="Delete_File(file.id_row)"
+              matTooltip="{{ 'topic.xoafile' | translate}}">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"
+          [ngClass]="{hovered: row.hovered, highlighted: row.highlighted}" (mouseover)="row.hovered = true"
+          (mouseout)="row.hovered = false"></tr>
+      </table>
+      <div style="padding: 50px; text-align: center" class="mat-table__message" *ngIf="!dataSource.hasItems">
+        <span translate="GeneralKey.khongcodulieu"></span>
+      </div>
+    </div>
+    <div style="padding-left: 10px; padding-right: 10px">
+      <app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;"
+        [paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)">
+      </app-paginator>
+    </div>
+  </div>
+</div>

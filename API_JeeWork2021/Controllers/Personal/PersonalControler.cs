@@ -46,7 +46,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object MyWork()
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -118,7 +117,6 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
         [HttpGet]
         public object MyMilestone()
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -213,7 +211,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
         [HttpGet]
         public object FavouriteWork(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -262,7 +259,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
         [HttpGet]
         public object FavouriteProject(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -317,7 +313,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
         [HttpGet]
         public object FavouriteTopic(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -373,7 +368,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
         [HttpGet]
         public object FollowTopic(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -431,7 +425,6 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
         [HttpGet]
         public object MyStaffOverview([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

@@ -166,7 +166,7 @@ export class UsersListComponent implements OnInit {
 					this.paginatorNew.page = 0,
 					this.paginatorNew.pageSize
 				);
-				this.dataSource.loadListGroupName(queryParams1);
+				this.dataSource.LoadGroup(queryParams1);
 			}
 		}
 	}

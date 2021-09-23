@@ -72,7 +72,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public async Task<object> ListWorkClickUp([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -110,7 +109,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public async Task<object> ListTask([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -148,7 +146,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public async Task<object> WorkFilter([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -329,7 +326,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
-
                     #region Lấy công việc user theo filter
                     string strW_parent = "";
                     string strW = "";
@@ -370,7 +366,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (query.filter["task_done"] == "0")// task
                         strW += $" and  w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is null ) ";
                     #endregion
-
                     string columnName = "id_project_team";
                     #region group
                     string strG = @$"select distinct p.id_row, p.title 
@@ -546,7 +541,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListWorkByFilter([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -570,7 +564,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     #region filter thời gian , keyword
                     DateTime from = Common.GetDateTime();
                     DateTime to = Common.GetDateTime();
@@ -601,7 +594,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
                     strW += FilterWorkController.genStringWhere(cnn, loginData.UserID, query.filter["id_filter"], DataAccount);
-
                     DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, long.Parse(query.filter["id_nv"]), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -616,7 +608,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         query.page = 1;
                         query.record = total;
                     }
-
                     pageModel.TotalCount = total;
                     pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
                     pageModel.Size = query.record;
@@ -652,7 +643,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListWorkUserByManager([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -682,7 +673,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
                     if (string.IsNullOrEmpty(query.filter["id_nv"]))
                         return JsonResultCommon.Custom("Thành viên");
                     #region filter thời gian , keyword
@@ -701,7 +691,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
-
                     string strW = $" and (w.id_nv in ({listIDNV}) or w.createdby in ({listIDNV}))";
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -797,7 +786,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object LogDetail(long id)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -898,11 +887,9 @@ where act.object_type = 1 and view_detail=1 and l.CreatedBy in ({listID}) and l.
         [HttpPost]
         public object ImportData(ImportWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
-
             try
             {
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
@@ -1461,7 +1448,6 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
         [HttpPost]
         public async Task<BaseModel<object>> UpdateNewField(UpdateWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1570,7 +1556,6 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
         [HttpGet]
         public object LogDetailByWork(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1700,7 +1685,7 @@ where act.object_type = 1 and view_detail=1 and l.object_id = " + id + " order b
         [HttpGet]
         public async Task<IActionResult> ExportExcel([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return Unauthorized();
@@ -1802,7 +1787,6 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         [HttpGet]
         public BaseModel<object> update_hidden(long id, long hidden, bool isdeleted = false)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1862,7 +1846,6 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2275,7 +2258,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     ,w.end_date,w.urgent,w.important
                                     ,w.prioritize,w.status,w.result,w.CreatedDate,w.CreatedBy
                                     ,w.UpdatedDate,w.UpdatedBy
-                                    ,w.NguoiGiao, w.project_team
+                                    ,w.NguoiGiao, w.project_team,w.department
                                     ,w.id_department,w.clickup_prioritize 
                                     ,Iif(fa.id_row is null ,0,1) as favourite
                                     , num_comment, estimates, accepted_date, activated_date
@@ -2361,6 +2344,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     description = r["description"],
                                     id_project_team = r["id_project_team"],
                                     project_team = r["project_team"],
+                                    department = r["department"],
                                     deadline = r["deadline"],
                                     start_date = r["start_date"],
                                     end_date = r["end_date"],
@@ -2402,20 +2386,20 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                 createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                                             },
                                     Followers = from us in ds.Tables[2].AsEnumerable()
-                                            where r["id_row"].Equals(us["id_work"]) && us["loai"].ToString().Equals("2")
+                                                where r["id_row"].Equals(us["id_work"]) && us["loai"].ToString().Equals("2")
                                                 select new
-                                            {
-                                                id_nv = us["id_user"],
-                                                hoten = us["hoten"],
-                                                username = us["username"],
-                                                tenchucdanh = us["tenchucdanh"],
-                                                mobile = us["mobile"],
-                                                image = us["image"],
-                                                createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
-                                                updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                                                updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                                                createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
-                                            },
+                                                {
+                                                    id_nv = us["id_user"],
+                                                    hoten = us["hoten"],
+                                                    username = us["username"],
+                                                    tenchucdanh = us["tenchucdanh"],
+                                                    mobile = us["mobile"],
+                                                    image = us["image"],
+                                                    createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
+                                                    updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
+                                                    updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                                    createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                                },
                                     Tags = from t in ds.Tables[1].AsEnumerable()
                                            select new
                                            {
@@ -2523,7 +2507,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
         [HttpGet]
         public async Task<object> Ganttview([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2576,7 +2560,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                     string sql_status = @"select id_row, statusname as title, color, position, type 
                                     from we_status 
                                     where disabled = 0 and id_project_team=" + query.filter["id_project_team"] + " " +
-                                    "order by type, position";
+                                    "order by position";
                     DataTable dt_st = cnn.CreateDataTable(sql_status);
                     //DataTable dt_st = cnn.CreateDataTable(strG);
                     DataSet ds = await GetWork_ClickUp(Request.Headers, cnn, query, loginData.UserID, DataAccount, listDept);
@@ -2696,7 +2680,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
         [HttpGet]
         public async Task<object> GanttEditor([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2745,7 +2729,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                     string sql_status = @"select id_row, statusname as title, color, position, type 
                                     from we_status 
                                     where disabled = 0 and id_project_team=" + query.filter["id_project_team"] + " " +
-                                    "order by type, position";
+                                    "order by position";
                     DataTable dt_st = cnn.CreateDataTable(sql_status);
                     //DataTable dt_st = cnn.CreateDataTable(strG);
                     DataSet ds = await GetWork_ClickUp(Request.Headers, cnn, query, loginData.UserID, DataAccount, listDept);
@@ -2881,7 +2865,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<object> Insert(WorkModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3156,7 +3139,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> Update(WorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3350,7 +3333,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> UpdateColumnWork(ColumnWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3468,7 +3451,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpGet]
         public object Detail_column_new_field(long field, long type)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3537,7 +3520,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> UpdateColumnNewField(ColumnWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3655,7 +3638,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> DragDropItemWork(DragDropModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3845,7 +3828,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> UpdateByKey(UpdateWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -3880,20 +3862,19 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     postauto.listid = long.Parse(old.Rows[0]["id_project_team"].ToString()); // id project team
                     postauto.departmentid = long.Parse(old.Rows[0]["id_department"].ToString()); // id_department
                     postauto.customerid = loginData.CustomerID;
-
                     Common comm = new Common(ConnectionString);
                     if (Common.IsTaskClosed(data.id_row, cnn))
                     {
-                        return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật nội dung.");
+                        return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật");
                     }
                     if (Common.IsProjectClosed(old.Rows[0]["id_project_team"].ToString(), cnn))
                     {
-                        return JsonResultCommon.Custom("Dự án đã đóng không thể cập nhật nội dung.");
+                        return JsonResultCommon.Custom("Dự án đã đóng không thể cập nhật");
                     }
                     bool istaskuser = Common.CheckTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
                     if (!istaskuser)
                     {
-                        var txterror = "Bạn không có quyền thay đổi nội dung của công việc này";
+                        var txterror = "Bạn không có quyền cập nhật công việc này";
                         if (data.id_role > 0)
                         {
                             bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
@@ -4985,7 +4966,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpPost]
         public async Task<BaseModel<object>> Google_Calender(GoogleCalendarModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5158,7 +5139,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpPost]
         public async Task<object> Duplicate(WorkDuplicateModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5362,7 +5343,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5485,7 +5466,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpPost]
         public async Task<BaseModel<object>> UpdateWorkProcess(WorkProcessModel data)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5599,7 +5580,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpGet]
         public object ListEvent([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5716,12 +5697,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         [Route("list-event-by-project")]
         [HttpGet]
         public object ListEventByProject([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5812,7 +5792,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpGet]
         public async Task<IActionResult> ExportExcelByUsers([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return Unauthorized();
@@ -5920,7 +5900,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         [HttpGet]
         public async Task<object> Close(long id, bool closed = true)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5930,6 +5910,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
+                    int id_log_action = closed ? 59 : 60;
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
                     string s = "select * from we_work where (where)";
@@ -5951,6 +5932,13 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
+                     
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, id, iduser, "", null))
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+
                     #region Ghi log trong project
                     string LogContent = "Đóng công việc (" + id + ")";
                     Common.Ghilogfile(loginData.CustomerID.ToString(), "", LogContent, loginData.Username, ControllerContext);
@@ -5966,6 +5954,51 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
                     #endregion
                     cnn.EndTransaction();
+                    #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
+                    int TemplateId = closed ? 43 : 44;
+                    string txtnoti = closed ? "ww_dongcongviec" : "ww_mocongviec";
+                    if (WeworkLiteController.CheckNotify_ByConditions(long.Parse(old.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
+                    {
+                        DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                        if (dt_user.Rows.Count > 0)
+                        {
+                            var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                            cnn.EndTransaction();
+                            WeworkLiteController.mailthongbao(id, users, TemplateId, loginData, ConnectionString, _notifier, _configuration, old);
+                            #region Lấy thông tin để thông báo
+                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
+                            #endregion
+                            #region Notify chỉnh sửa công việc
+                            Hashtable has_replace = new Hashtable();
+                            for (int i = 0; i < users.Count; i++)
+                            {
+                                NotifyModel notify_model = new NotifyModel();
+                                has_replace = new Hashtable();
+                                has_replace.Add("nguoigui", loginData.Username);
+                                has_replace.Add("tencongviec", old.Rows[0]["title"].ToString());
+                                notify_model.AppCode = "WORK";
+                                notify_model.From_IDNV = loginData.UserID.ToString();
+                                notify_model.To_IDNV = users[i].ToString();
+
+                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(txtnoti, "", "vi");
+                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", old.Rows[0]["title"].ToString());
+                                notify_model.ReplaceData = has_replace;
+                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                                if (DataAccount == null)
+                                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                if (info is not null)
+                                {
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                }
+                            }
+                            #endregion
+                        }
+                    }
+                    #endregion
                     return JsonResultCommon.ThanhCong(closed);
                 }
             }
@@ -6048,7 +6081,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         where _status.id_project_team = " + id_project_team + " " +
                                 "and _status.disabled = 0 and process.disabled = 0 " +
                                 "and workid = " + workid + " " +
-                                "order by type, position ";
+                                "order by position ";
                     bool admin_project = false;
                     object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
                     if (project_team != null)
@@ -6739,8 +6772,8 @@ where u.disabled = 0 and u.loai = 2";
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 var re = from r in temp
-                         //where r["id_parent"].Equals(parent) && ((columnName != "" && r[columnName].ToString().Equals(id.ToString())) || parent != DBNull.Value)
-                         where ( r["id_parent"].ToString().Equals(parent.ToString()) ) && (new_parent > 0 ? new_parent > 0 : (r[columnName].ToString().Equals(id.ToString())))
+                             //where r["id_parent"].Equals(parent) && ((columnName != "" && r[columnName].ToString().Equals(id.ToString())) || parent != DBNull.Value)
+                         where (r["id_parent"].ToString().Equals(parent.ToString())) && (new_parent > 0 ? new_parent > 0 : (r[columnName].ToString().Equals(id.ToString())))
                          select new
                          {
                              id_parent = r["id_parent"],
@@ -6931,7 +6964,7 @@ where u.disabled = 0 and u.loai = 2";
                                     tableName = "we_status";
                                     querySQL = "select id_row, statusname, color, follower, description, type, position from " + tableName + " " +
                                         "where disabled = 0 and id_project_team  = " + int.Parse(id_project_team) + " " +
-                                        "order by type, position";
+                                        "order by position";
                                     dt_filter = cnn.CreateDataTable(querySQL);
                                     break;
                                 }
@@ -7102,7 +7135,6 @@ where u.disabled = 0 and u.loai = 2";
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         private object GetWorkByProjectsNew(IHeaderDictionary _header, string id_project_team, DataTable dt_fields, string ConnectionString, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -7224,7 +7256,7 @@ where u.disabled = 0 and u.loai = 2";
                                 tableName = "we_status";
                                 querySQL = "select id_row, statusname, color, follower, description, type, position from " + tableName + " " +
                                     "where disabled = 0 and id_project_team  = " + int.Parse(id_project_team) + " " +
-                                    "order by type, position";
+                                    "order by position";
                                 dt_filter = cnn.CreateDataTable(querySQL);
                                 break;
                             }
@@ -7295,7 +7327,7 @@ where u.disabled = 0 and u.loai = 2";
                                      union all select id_row 
                                     from v_wework_new where id_nv = {userid} or createdby = {userid} )";
                 }
-               
+
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];

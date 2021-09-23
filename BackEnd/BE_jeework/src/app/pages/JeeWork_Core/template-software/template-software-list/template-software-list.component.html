@@ -1,0 +1,224 @@
+<style>
+	.header {
+		height: 60px;
+		border-bottom: 1px solid #ebedf2;
+		padding-top: 20px;
+		padding-left: 20px
+	}
+
+	.h5 {
+		font-size: 1.3rem;
+		font-weight: 500;
+		font-family: Roboto
+	}
+
+	.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+		padding-bottom: 1.25em;
+		padding-top: 10px
+	}
+
+	.mat-form-field-appearance-legacy .mat-form-field-wrapper {
+		padding-bottom: 1.25em;
+		padding-top: 10px
+	}
+
+	.kt-buttons--list {
+		text-align: center;
+		width: 100px;
+		height: 40px;
+		margin-top: 10px;
+	}
+
+	:host>>>.inp-error {
+		color: red;
+	}
+
+	.mat-table__wrapper .mat-table {
+		min-width: 100%;
+	}
+
+	.view {
+		padding-bottom: 15px;
+	}
+
+	.css-button-green {
+		background-color: green;
+		color: #fff;
+	}
+
+	.css-button-blue {
+		background-color: darkblue;
+		color: #fff;
+	}
+
+	.icon {
+		cursor: pointer;
+		width: 40px;
+		height: 40px;
+	}
+
+	.mat-header-cell-stt {
+		max-width: 100px;
+	}
+
+	.mat-cell-stt {
+		max-width: 100px;
+	}
+
+	.obligate-center {
+		justify-content: center;
+	}
+</style>
+<div class="card card-custom">
+	<div class="card-header">
+		<div class="card-title">
+			<h3 style="font-size: 14px; font-weight: 500; color: #000000; text-transform: uppercase" class="card-label">
+				<span translate="template.mohinhduan"></span>
+			</h3>
+		</div>
+		<div class="card-toolbar">
+			<button mat-raised-button type="button" class="ja_btn-addnew" *ngIf="templateService.Visible" type="button"
+				(click)="AddTemplate()" matTooltip="{{ 'GeneralKey.themmoi' | translate }}">
+				<span translate="GeneralKey.themmoi"></span>
+			</button>
+		</div>
+	</div>
+	<div class="card-body">
+		<div class="m-form">
+			<div class="m-form__filtration">
+				<div class="row align-items-center">
+
+
+					<div class="col-md-4 m--margin-bottom-10-mobile">
+						<div class="m-form__control">
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- end::FILTERS -->
+		</div>
+		<div class="example-container mat-table__wrapper" [ngStyle]="{ height: getHeight() }">
+			<table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" matSort matSortActive="id"
+				style="width: 100%" matSortDirection="asc" matSortDisableClear>
+				<ng-container matColumnDef="STT">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode mat-header-cell-stt">
+						<span translate="GeneralKey.stt"></span>
+					</th>
+					<td mat-cell *matCellDef="let item; let vi = index" class="mat-column-vinCode mat-cell-stt">
+						{{ vi + 1 }}
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="ID_Mohinh">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="template.id_mohinh"></span>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						<span class="ml-5">{{item.id_row}}</span>
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="TenMohinh">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="template.tenmohinh"></span> &nbsp;
+						<app-sort-icon column="TenNhom" [activeColumn]="sorting.column"
+							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.title}}
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="CreatedDate">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="filter.ngaytao"></span> &nbsp;
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.createddate | timezone}}
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="CreatedBy">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="filter.createdby"></span> &nbsp;
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						<kt-avatar-user class="ml-5 d-flex" [image]="item.createdby.image" size="26"
+							[name]="item.createdby.hoten">
+						</kt-avatar-user>
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="UpdatedDate">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="GeneralKey.ngaycapnhat"></span> &nbsp;
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						{{item.updateddate | timezone}}
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="UpdatedBy">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="GeneralKey.nguoicapnhat"></span> &nbsp;
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						<kt-avatar-user class="ml-5 d-flex" [image]="item.updatedby.image" size="26"
+							[name]="item.updatedby.hoten">
+						</kt-avatar-user>
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="IsDefault">
+					<th mat-header-cell *matHeaderCellDef class="mat-column-vinCode">
+						<span translate="filter.macdinh"></span> &nbsp;
+					</th>
+					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+						<mat-slide-toggle [disabled]="item.isdefault || !templateService.Visible"
+							[checked]="item.isdefault" (change)="lock($event, item.id_row)">
+						</mat-slide-toggle>
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="Status">
+					<th mat-header-cell *matHeaderCellDef style="justify-content: center;min-width: 20%; ">
+						<span translate="GeneralKey.trangthai"></span>
+					</th>
+					<td mat-cell *matCellDef="let item" style="justify-content: center;min-width: 20%; ">
+						<div class="url cu-template-center-selected-template__includes-item-bot-item "
+							style="padding: 5px 10px; height: auto;">
+							<ng-container *ngFor="let status of item.status">
+								<div matTooltip="{{ status.StatusName }}"
+									class="cu-template-center-selected-template__includes-item-bot-item-status-group-bubble"
+									style="width: 15px; height: 15px;margin-right: 7px;"
+									[ngStyle]="{'backgroundColor': status.color}"></div>
+							</ng-container>
+						</div>
+					</td>
+				</ng-container>
+				<ng-container matColumnDef="action">
+					<th mat-header-cell *matHeaderCellDef style="justify-content: center; "><span
+							translate="GeneralKey.tacvu"></span>
+					</th>
+					<td mat-cell *matCellDef="let item" style="justify-content: center;">
+						<div class="row" *ngIf="templateService.Visible">
+							<button mat-icon-button class="icon-sua" matTooltip="{{ 'GeneralKey.capnhat' | translate }}"
+								(click)="UpdateItem(item)">
+								<mat-icon>edit</mat-icon>
+							</button>
+							<button mat-icon-button class="icon-xoa" *ngIf="templateService.Visible"
+								matTooltip="{{ 'GeneralKey.xoa' | translate }}" (click)="DeleteItem(item)">
+								<mat-icon>delete</mat-icon>
+							</button>
+						</div>
+					</td>
+				</ng-container>
+				<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns"
+					[ngClass]="{hovered: row.hovered, highlighted: row.highlighted}" (mouseover)="row.hovered = true"
+					(mouseout)="row.hovered = false"></tr>
+			</table>
+			<div style="padding: 50px; text-align: center" class="mat-table__message" *ngIf="!dataSource.hasItems">
+				<span translate="GeneralKey.khongcodulieu"></span>
+			</div>
+		</div>
+		<div style="padding-left: 10px; padding-right: 10px">
+			<app-paginator class="d-flex justify-content-between align-items-center flex-wrap" style="padding: 0 20px;"
+				[paginator]="paginatorNew" [isLoading]="dataSource.loading$  | async" (paginate)="paginate($event)">
+			</app-paginator>
+		</div>
+	</div>
+</div>

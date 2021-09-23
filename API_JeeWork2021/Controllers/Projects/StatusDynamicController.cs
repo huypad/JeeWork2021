@@ -44,7 +44,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Insert(StatusDynamicModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -60,12 +59,22 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    SqlConditions conds = new SqlConditions();
                     Hashtable val = new Hashtable();
-                    val.Add("StatusName", data.StatusName);
-                    val.Add("id_project_team", data.Id_project_team);
+                    val.Add("statusname", data.StatusName);
+                    if (data.Id_project_team > 0)
+                    {
+                        val.Add("id_project_team", data.Id_project_team);
+                        conds.Add("id_project_team", data.Id_project_team);
+                    }
+                    else
+                    {
+                        val.Add("id_department", data.id_department);
+                        conds.Add("id_department", data.id_department);
+                    }
                     val.Add("disabled", 0);
-                    val.Add("IsDefault", 0);
-                    val.Add("IsFinal", 0);
+                    val.Add("isdefault", 0);
+                    val.Add("isfinal", 0);
                     val.Add("type", data.Type);
                     if (data.Follower > 0)
                         val.Add("follower", data.Follower);
@@ -80,15 +89,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     else
                         val.Add("description", data.Description);
 
-                    val.Add("createdDate", Common.GetDateTime());
-                    val.Add("createdBy", loginData.UserID);
+                    val.Add("createddate", Common.GetDateTime());
+                    val.Add("createdby", loginData.UserID);
                     // insert position
                     val.Add("position", 20);
                     //cnn.BeginTransaction();
                     //int statusfinal = int.Parse(cnn.ExecuteScalar("select Position from we_status where id_project_team = " + data.Id_project_team + "").ToString());
                     // lấy ra ID tiếp theo nhưng phải nhỏ hơn
-                    string strCheck = "select count(*) from we_status where Disabled=0 and (id_project_team=@id_project_team) and StatusName=@name";
-                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team } }).ToString()) > 0)
+                    conds.Add("disabled", 0);
+                    conds.Add("StatusName", data.StatusName);
+                    string strCheck = "select count(*) from we_status where (where)";
+                    DataTable dt_check = new DataTable();
+                    dt_check = cnn.CreateDataTable(strCheck, "(where)", conds);
+                    if (dt_check.Rows.Count > 0)
                     {
                         return JsonResultCommon.Custom("Trạng thái đã tồn tại");
                     }
@@ -98,7 +111,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_status')").ToString();
-                    WeworkLiteController.update_position_status(data.Id_project_team, cnn);
+                    if (data.Id_project_team > 0)
+                    {
+                        WeworkLiteController.update_position_status(data.Id_project_team, cnn, "id_project_team");
+                    }
+                    else
+                    {
+                        WeworkLiteController.update_position_status(data.id_department, cnn, "id_department");
+                    }
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -111,7 +131,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Update(StatusDynamicModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -137,15 +156,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.LastError != null || old == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (old.Rows.Count == 0)
-                        return JsonResultCommon.KhongTonTai("Filter");
+                        return JsonResultCommon.KhongTonTai("Trạng thái");
                     Hashtable val = new Hashtable();
+                    SqlConditions conds = new SqlConditions();
                     val.Add("StatusName", data.StatusName);
-                    val.Add("id_project_team", data.Id_project_team);
-                    val.Add("Disabled", 0);
-                    val.Add("IsDefault", 0);
                     if (!string.IsNullOrEmpty(data.Type))
                     {
                         val.Add("Type", data.Type);
+                    }
+                    if (data.Id_project_team > 0)
+                    {
+                        val.Add("id_project_team", data.Id_project_team);
+                    }
+                    else
+                    {
+                        val.Add("id_department", data.id_department);
                     }
                     if (string.IsNullOrEmpty(data.Color))
                         val.Add("color", "");
@@ -161,10 +186,22 @@ namespace JeeWork_Core2021.Controllers.Wework
                         val.Add("Follower", DBNull.Value);
                     val.Add("UpdatedDate", Common.GetDateTime());
                     val.Add("UpdatedBy", iduser);
-                    string strCheck = "select count(*) from we_status where Disabled=0 and id_project_team=@id_project_team and StatusName=@name  and id_row != @id_row";
-                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team }, { "id_row", data.Id_row } }).ToString()) > 0)
+                    string strCheck = "";
+                    if (data.Id_project_team > 0)
                     {
-                        return JsonResultCommon.Custom("Trạng thái đã tồn tại");
+                        strCheck = "select count(*) from we_status where disabled=0 and id_project_team=@id_project_team and StatusName=@name and id_row != @id_row";
+                        if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team }, { "id_row", data.Id_row } }).ToString()) > 0)
+                        {
+                            return JsonResultCommon.Custom("Trạng thái đã tồn tại");
+                        }
+                    }
+                    else
+                    {
+                        strCheck = "select count(*) from we_status where disabled=0 and id_department=@id_department and StatusName=@name and id_row != @id_row";
+                        if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_department", data.id_department }, { "id_row", data.Id_row } }).ToString()) > 0)
+                        {
+                            return JsonResultCommon.Custom("Trạng thái đã tồn tại");
+                        }
                     }
                     cnn.BeginTransaction();
                     if (cnn.Update(val, sqlcond, "we_status") != 1)
@@ -172,7 +209,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    WeworkLiteController.update_position_status(data.Id_project_team, cnn);
+                    if (data.Id_project_team > 0)
+                    {
+                        WeworkLiteController.update_position_status(data.Id_project_team, cnn, "id_project_team");
+                    }
+                    else
+                    {
+                        WeworkLiteController.update_position_status(data.id_department, cnn, "id_department");
+                    }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -186,13 +230,11 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> dropPosition(PositionModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
             try
             {
-                string strRe = "";
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -205,42 +247,76 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.LastError != null || old == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (old.Rows.Count == 0)
-                        return JsonResultCommon.KhongTonTai("Filter");
-                    Hashtable val = new Hashtable();
-                    val.Add("StatusName", data.StatusName);
-                    val.Add("id_project_team", data.Id_project_team);
-                    val.Add("Disabled", 0);
-                    val.Add("IsDefault", 0);
-                    if (!string.IsNullOrEmpty(data.Type))
-                    {
-                        val.Add("Type", data.Type);
-                    }
-                    if (string.IsNullOrEmpty(data.Color))
-                        val.Add("color", "");
-                    else
-                        val.Add("color", data.Color);
-                    if (string.IsNullOrEmpty(data.Description))
-                        val.Add("Description", "");
-                    else
-                        val.Add("Description", data.Description);
-                    if (data.Follower > 0)
-                        val.Add("Follower", data.Follower);
-                    else
-                        val.Add("Follower", DBNull.Value);
-                    val.Add("UpdatedDate", Common.GetDateTime());
-                    val.Add("UpdatedBy", iduser);
-                    string strCheck = "select count(*) from we_status where Disabled=0 and id_project_team=@id_project_team and StatusName=@name  and id_row != @id_row";
-                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "name", data.StatusName }, { "id_project_team", data.Id_project_team }, { "id_row", data.Id_row } }).ToString()) > 0)
-                    {
-                        return JsonResultCommon.Custom("Trạng thái đã tồn tại");
-                    }
+                        return JsonResultCommon.KhongTonTai("id_row_to");
+                    sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", data.id_row_from);
+                    s = "select * from we_status where disabled=0 and id_row=@id_row";
+                    old = cnn.CreateDataTable(s, sqlcond);
+                    if (cnn.LastError != null || old == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    if (old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("id_row_from");
+                    string sqlq = "";
+                    sqlq = "update we_status set position=" + data.position_from + ", updateddate=GETUTCDATE(), updatedby=" + iduser + " where id_row = " + data.id_row_to;
+                    sqlq += ";update we_status set position=" + data.position_to + ", updateddate=GETUTCDATE(), updatedby=" + iduser + " where id_row = " + data.id_row_from;
                     cnn.BeginTransaction();
-                    if (cnn.Update(val, sqlcond, "we_status") != 1)
+                    cnn.ExecuteNonQuery(sqlq);
+                    if (cnn.LastError != null)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    WeworkLiteController.update_position_status(data.id_columnname, cnn);
+                    WeworkLiteController.update_position_status(data.id_columnname, cnn, data.columnname);
+                    cnn.EndTransaction();
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        [Route("drop-position-template")]
+        [HttpPost]
+        public async Task<object> dropPositiontemplate(PositionTemplateModel data)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+                    SqlConditions sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", data.id_row_to);
+                    string s = "select * from we_template_status where disabled=0 and id_row=@id_row";
+                    DataTable old = cnn.CreateDataTable(s, sqlcond);
+                    if (cnn.LastError != null || old == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    if (old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("id_row_to");
+                    sqlcond = new SqlConditions();
+                    sqlcond.Add("id_row", data.id_row_from);
+                    s = "select * from we_template_status where disabled=0 and id_row=@id_row";
+                    old = cnn.CreateDataTable(s, sqlcond);
+                    if (cnn.LastError != null || old == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    if (old.Rows.Count == 0)
+                        return JsonResultCommon.KhongTonTai("id_row_from");
+                    string sqlq = "";
+                    sqlq = "update we_template_status set position=" + data.position_from + ", updateddate=GETUTCDATE(), updatedby=" + iduser + " where id_row = " + data.id_row_to;
+                    sqlq += ";update we_template_status set position=" + data.position_to + ", updateddate=GETUTCDATE(), updatedby=" + iduser + " where id_row = " + data.id_row_from;
+                    cnn.BeginTransaction();
+                    cnn.ExecuteNonQuery(sqlq);
+                    if (cnn.LastError != null)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    WeworkLiteController.update_position_status_template(data.templateid, cnn);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -254,7 +330,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -280,7 +355,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
 
-                    WeworkLiteController.update_position_status(id_project_team, cnn);
+                    WeworkLiteController.update_position_status(id_project_team, cnn, "id_project_team");
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }
@@ -295,7 +370,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Different_Statuses(Different_Statuses data)
         {
-            string Token = Common.GetHeader(Request);
+
             string sqlq_insert = "";
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -343,7 +418,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    WeworkLiteController.update_position_status(data.id_project_team, cnn);
+                    WeworkLiteController.update_position_status(data.id_project_team, cnn, "id_project_team");
                     // insert người
                     #endregion
                     int status_todo = int.Parse(cnn.ExecuteScalar("select id_row from we_status where Disabled = 0 and id_project_team = " + data.id_project_team + " and istodo = 1").ToString());

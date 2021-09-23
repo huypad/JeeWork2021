@@ -57,7 +57,22 @@ namespace JeeWork_Core2021.Classes
             }
             return base64String;
         }
-
+        internal static bool DeleteFile(string signedPath)
+        {
+            try
+            {
+                if (File.Exists(signedPath))
+                {
+                    File.Delete(signedPath);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public static ImageFormat GetExtensionImage(string postedFile)
         {
             ImageFormat extension = ImageFormat.Png;
@@ -140,7 +155,7 @@ namespace JeeWork_Core2021.Classes
             }
         }
 
-        internal static bool DeleteFile(string signedPath)
+        internal static bool DeleteFileAtt(string signedPath)
         {
             try
             {

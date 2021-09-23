@@ -134,7 +134,7 @@ export class DepartmentEditNewComponent implements OnInit {
     ngOnInit() {
         this.IsUpdate = this.data.IsUpdate;
         if (this.IsUpdate) {
-            this.step = 5;
+            this.step = 4;
             this.isComplete = true;
         }
         //get các giá trị khởi tạo
@@ -294,12 +294,6 @@ export class DepartmentEditNewComponent implements OnInit {
             if (this.itemFormGroup.controls['title'].value.trim() == '') {
                 return true;
             }
-            // if (
-            //   this.IsDataStaff_HR &&
-            //   this.itemFormGroup.controls["dept_name"].value == ""
-            // ) {
-            //   return true;
-            // }
         }
 
         return false;
@@ -449,10 +443,11 @@ export class DepartmentEditNewComponent implements OnInit {
         this.loadingAfterSubmit = true;
         this.viewLoading = true;
         this.disabledBtn = true;
+        this.layoutUtilsService.showWaitingDiv();
         this._Services.UpdateDept(_item).subscribe((res) => {
             /* Server loading imitation. Remove this on real code */
+            this.layoutUtilsService.OffWaitingDiv();
             this.disabledBtn = false;
-            this.changeDetectorRefs.detectChanges();
             if (res && res.status === 1) {
                 if (withBack == true) {
                     this.dialogRef.close({
@@ -488,15 +483,17 @@ export class DepartmentEditNewComponent implements OnInit {
                     0
                 );
             }
+            this.changeDetectorRefs.detectChanges();
         });
     }
 
     Create(_item: DepartmentModel, withBack: boolean) {
         this.loadingAfterSubmit = true;
         this.disabledBtn = true;
+        this.layoutUtilsService.showWaitingDiv();
         this._Services.InsertDept(_item).subscribe((res) => {
+            this.layoutUtilsService.OffWaitingDiv();
             this.disabledBtn = false;
-            this.changeDetectorRefs.detectChanges();
             if (res && res.status === 1) {
                 if (withBack == true) {
                     this.dialogRef.close({
@@ -518,6 +515,7 @@ export class DepartmentEditNewComponent implements OnInit {
                     0
                 );
             }
+            this.changeDetectorRefs.detectChanges();
         });
     }
 
@@ -685,7 +683,7 @@ export class DepartmentEditNewComponent implements OnInit {
 
     Next() {
         if (this.isComplete) {
-            this.step = 5;
+            this.step = 4;
         } else {
             this.step += 1;
         }
@@ -693,7 +691,7 @@ export class DepartmentEditNewComponent implements OnInit {
 
     Pre() {
         if (this.isComplete) {
-            this.step = 5;
+            this.step = 4;
         } else {
             this.step -= 1;
         }

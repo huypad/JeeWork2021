@@ -565,12 +565,77 @@ span{
   --global-font-support: "Gotham Pro", "Proxima Nova", Arial, serif;
   --global-second-font-support: "Proxima Nova", Arial, serif;
 }
+//==============Start style icon thêm, xóa, sửa=====================
 .icon-them{
-  color: #1863AD;
+  color: #575962;
 }
 .icon-xoa{
-  color: #E84A4A;
+  color: #f4516c;
 }
 .icon-sua{
-  color: #333333;
+  color: #716aca;
+}
+.icon-width20{
+  width: 20px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+//=======================CSS BUTTON======================
+.ja_button {
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 1.02rem; //12pt;
+  padding: 5px 20px 5px 20px; //top right botton left
+  border: 0.5;
+  border-color: #D1D1D1;
+  border-radius: 3px;
+  margin: 20px 20px 20px 20px;
+}
+
+.ja_btn-addnew {
+  background-color: #3699ff;
+  color: #ffffff;
+  &:hover {
+      background-color: #0e72d8;
+  }
+}
+
+.ja_btn-koduyet { //flaticon2-delete
+  background-color: #d9534f;
+  color: #ffffff;
+  &:hover {
+      background-color: #c9443f;
+  } 
+}
+
+.ja_btn-duyet { //flaticon2-check-mark
+  background-color: #41a0ff;
+  color: #ffffff;
+  &:hover {
+      background-color: #0e76df;
+  } 
+}
+
+.ja_btn-dropdown {
+  background-color: #1bc5bd;
+  color: #ffffff;
+  &:hover {
+      background-color: #0bb7af;
+  }
+}
+
+.ja_btn-addcontinue {
+  background-color: #1bc5bd;
+  color: #ffffff;
+  &:hover {
+      background-color: #0bb7af;
+  }
+}
+
+.ja_btn-goback {
+  background-color: #ffffff;
+  color: #5f5f5f;
+  &:hover {
+      background-color: #e4e6ef;
+  }
 }

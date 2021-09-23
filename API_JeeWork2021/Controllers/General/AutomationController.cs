@@ -16,6 +16,8 @@ using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
+using DPSinfra.Logger;
+using Newtonsoft.Json;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -220,7 +222,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Add_Automation(List<AutomationListModel> data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -248,6 +249,27 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     
                     cnn.EndTransaction();
+
+                    foreach (var item in data)
+                    {
+                        #region Ghi log trong project
+                        string LogContent = "", LogEditContent = "";
+                        LogContent = LogEditContent = $"Thêm automation {item.title} vào : {item.departmentid} ";
+                        Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                        #endregion 
+                        #region Ghi log lên CDN
+                        var d2 = new ActivityLog()
+                        {
+                            username = loginData.Username,
+                            category = LogContent,
+                            action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                            data = JsonConvert.SerializeObject(item)
+                        };
+                        _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                        #endregion
+                    }
+
+
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -265,7 +287,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public async Task<object> DeleteAutomation(long id)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -285,6 +306,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                     
                     
                     cnn.EndTransaction();
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = $" xóa automation {id}. ";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(new { id = id})
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     return JsonResultCommon.ThanhCong(id);
                 }
             }
@@ -303,7 +339,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> UpdateAutomation(AutomationListModel data)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -449,6 +484,22 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = $"Chỉnh sửa automation {data.title} của : {data.departmentid} ";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -467,7 +518,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public async Task<object> UpdateStatusAutomation(long rowid)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -510,6 +560,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = $"Chỉnh sửa status automation {rowid} ";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(new { rowid= rowid })
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     return JsonResultCommon.ThanhCong(rowid);
                 }
             }

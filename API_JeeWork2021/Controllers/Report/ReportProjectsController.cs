@@ -44,6 +44,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
         string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
         string sqlhoanthanh = " w.end_date is not null ";
+        // kiểm tra điều kiện hoành thành
+        string queryhoanthanh = " and w.end_date is not null ";
+        string querydangthuchien = " and w.end_date is null ";
 
         public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportByProjectController> logger)
         {
@@ -63,7 +66,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Overview([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -71,7 +73,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (query == null)
                     query = new QueryParams();
-
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -115,11 +116,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -156,8 +159,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("danglam", danglam);
                     cond.Add("deadline", deadline);
                     #region Trả dữ liệu về backend để hiển thị lên giao diện 
-                    string sqlq = @"select count(*) as Tong, COUNT(CASE WHEN w.status = @hoanthanh THEN 1 END) as HoanThanh
-,COUNT(CASE WHEN w.status NOT IN (@deadline,@hoanthanh) THEN 1 END) as DangThucHien,COUNT(CASE WHEN w.status = @deadline THEN 1 END) as TreHan from v_wework_clickup_new w
+                    string sqlq = @$"select count(*) as Tong, COUNT(CASE WHEN { sqlhoanthanh } THEN 1 END) as HoanThanh
+,COUNT(CASE WHEN {sql_dangthuchien} THEN 1 END) as DangThucHien,COUNT(CASE WHEN {sql_isquahan} THEN 1 END) as TreHan from v_wework_clickup_new w
 join we_project_team p on p.id_row = w.id_project_team
 where w.disabled=0  " + strW; 
                     sqlq += @$";select count(*) as Tong,COUNT(CASE WHEN pu.admin = 1 THEN 1 END) as QuanTriVien,COUNT(CASE WHEN pu.admin = 0 THEN 1 END) as ThanhVien from we_project_team_user pu
@@ -221,7 +224,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TongHopDuAn([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -264,11 +267,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
@@ -311,7 +316,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object MucTieuTheoDepartment([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -406,7 +411,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TrangThaiCongViec([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -454,11 +459,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -475,10 +482,16 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     cond.Add("quahan", quahan);
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status,iIf(w.Status=@hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status=@hoanthanh and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                    iIf(w.Status = @quahan, 1, 0) as is_quahan, deadline 
-                                    from v_wework_clickup_new w where 1=1 " + strW;
+                    //string sqlq = @"select id_row, id_nv, status,iIf(w.Status=@hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status=@hoanthanh and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                iIf(w.Status = @quahan, 1, 0) as is_quahan, deadline 
+                    //                from v_wework_clickup_new w where 1=1 " + strW;
+                    string sqlq = @$"select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_clickup_new  w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
@@ -488,9 +501,14 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
-                    int ht = (int)dtW.Compute("count(id_row)",  "is_ht=1");
+                    //int ht = (int)dtW.Compute("count(id_row)",  "is_ht=1");
+                    //int htm = (int)dtW.Compute("count(id_row)", " is_htquahan=1 ");
+                    //int dth = (int)dtW.Compute("count(id_row)", " status not in ( "+hoanthanh + "," + quahan+")");
+                    //int qh = (int)dtW.Compute("count(id_row)", " is_quahan=1 ");
+                    //int khong = (int)dtW.Compute("count(id_row)", " deadline is null "); 
+                    int ht = (int)dtW.Compute("count(id_row)", " is_ht=1 ");
                     int htm = (int)dtW.Compute("count(id_row)", " is_htquahan=1 ");
-                    int dth = (int)dtW.Compute("count(id_row)", " status not in ( "+hoanthanh + "," + quahan+")");
+                    int dth = (int)dtW.Compute("count(id_row)", " dangthuchien=1 ");
                     int qh = (int)dtW.Compute("count(id_row)", " is_quahan=1 ");
                     int khong = (int)dtW.Compute("count(id_row)", " deadline is null ");
                     data.Add(new
@@ -549,7 +567,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object QuaTrinhHoanThanh([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -597,11 +615,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -619,9 +639,15 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     cond.Add("quahan", quahan);
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status = @quahan, 1, 0) as is_quahan 
-                                    from v_wework_clickup_new w where 1=1 " + strW;
+                    //string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status = @quahan, 1, 0) as is_quahan 
+                    //                from v_wework_clickup_new w where 1=1 " + strW;
+                    string sqlq = @$"select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_clickup_new  w where 1=1 " + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
@@ -677,7 +703,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TongHopTheoTuan([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -725,11 +751,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -747,10 +775,16 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
 
 
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
-                                     iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
-                                    iIf(w.Status = @quahan, 1, 0) as is_quahan 
-                                    from v_wework_clickup_new w where 1=1 " + strW;
+                    //string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                 iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
+                    //                iIf(w.Status = @quahan, 1, 0) as is_quahan 
+                    //                from v_wework_clickup_new w where 1=1 " + strW;
+                    string sqlq = @$"select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_clickup_new  w where 1=1 " + strW;
 
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -795,7 +829,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object ReportByStaff([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             //Token = "f3d23d99-8342-49fe-afbb-211f525cae73";
             //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -845,11 +879,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 { 
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -908,11 +944,17 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                     on p.id_row=u.id_project_team 
                                     where p.disabled=0 and u.disabled=0 " +
                                     "group by u.id_user";
-                    sqlq += @";select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status  = @hoanthanh and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                     iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
-                                    iIf(w.Status = @quahan, 1, 0) as is_quahan 
-                                    from v_wework_new w where 1=1  " + strW + " (parent)";
+                    //sqlq += @";select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status  = @hoanthanh and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
+                    //                 iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
+                    //                iIf(w.Status = @quahan, 1, 0) as is_quahan 
+                    //                from v_wework_new w where 1=1  " + strW + " (parent)";
+                    sqlq += @$";select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_new  w where 1=1 " + strW + " (parent) ";
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -1005,7 +1047,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object ReportByConditions([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1061,11 +1103,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            strW += queryhoanthanh;
                         }
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -1112,10 +1156,16 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                     where p.disabled=0 and u.disabled=0   " +
                                     "group by u.id_user";
 
-                    sqlq += @";select id_row, id_nv, status,iIf(w.Status=@hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status = @quahan, 1, 0) as is_quahan 
-                                    from v_wework_new w 
-                                    where 1=1 " + strW + " (parent)";
+                    //sqlq += @";select id_row, id_nv, status,iIf(w.Status=@hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
+                    //                iIf(w.Status = @quahan, 1, 0) as is_quahan 
+                    //                from v_wework_new w 
+                    //                where 1=1 " + strW + " (parent)";
+                    sqlq += @$";select id_row, id_nv, status, CreatedDate, Deadline,
+                                    iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_new  w where 1=1 " + strW + " (parent)";
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -1139,11 +1189,17 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                             if (row.Length > 0)
                             {
                                 dr["tong"] = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + dr["id_nv"].ToString()) : 0);
-                                dr["ht"] = success = (hasValue ? (int)dtW.Compute("count(id_nv)", " status="+hoanthanh+" and id_nv=" + dr["id_nv"].ToString()) : 0);
+                                dr["ht"] = success = (hasValue ? (int)dtW.Compute("count(id_nv)", "is_ht=1 and id_nv=" + dr["id_nv"].ToString()) : 0);
                                 dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                                 dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
-                                dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " status<>" + hoanthanh + " and id_nv=" + dr["id_nv"].ToString()) : 0;
-                                dr["dangdanhgia"] = hasValue ? dtW.Compute("count(id_nv)", " status=3 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                dr["dangdanhgia"] = 0;
+                                //dr["tong"] = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + dr["id_nv"].ToString()) : 0);
+                                //dr["ht"] = success = (hasValue ? (int)dtW.Compute("count(id_nv)", " status="+hoanthanh+" and id_nv=" + dr["id_nv"].ToString()) : 0);
+                                //dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                //dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                //dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " status<>" + hoanthanh + " and id_nv=" + dr["id_nv"].ToString()) : 0;
+                                //dr["dangdanhgia"] = hasValue ? dtW.Compute("count(id_nv)", " status=3 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             }
                         }
                     }
@@ -1183,10 +1239,11 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                     dangdanhgia = r["dangdanhgia"],
                                     ht_quahan = r["ht_quahan"],
                                     quahan = r["quahan"],
-                                    percentage = (total == 0 || int.Parse(r["tong"].ToString()) == 0) ? 0 : (int.Parse(r["ht"].ToString()) * 100 / int.Parse(r["tong"].ToString()))
+                                    percentage = (total == 0 || int.Parse(r["tong"].ToString()) == 0) ? 0 : (int.Parse(r["ht"].ToString()) * 100 / int.Parse(r["tong"].ToString())),
+                                    percentageexcellent = long.Parse(r["tong"].ToString()) == 0 ? 0 : ((long.Parse(r["ht"].ToString()) + long.Parse(r["ht_quahan"].ToString())) * 100 / long.Parse(r["tong"].ToString()))
                                 });
                     if ("excellent".Equals(query.filter["type"]))
-                        data = data.OrderByDescending(x => x.hoanthanh);
+                        data = data.OrderByDescending(x => x.percentageexcellent);
                     else
                         if ("most".Equals(query.filter["type"]))
                         data = data.OrderByDescending(x => x.danglam);
@@ -1209,7 +1266,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object Eisenhower([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1254,11 +1311,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
 
@@ -1275,9 +1334,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     cond.Add("quahan", quahan); 
 
 
-                    string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
-                                    ,iIf(w.Status = @quahan, 1, 0) as is_quahan
-                                    from v_wework_clickup_new w 
+                    //string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
+                    //                ,iIf(w.Status = @quahan, 1, 0) as is_quahan
+                    //                from v_wework_clickup_new w 
+                    //                where disabled = 0" + strW;
+                    string sqlq = @$"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
+                                    ,iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_clickup_new  w 
                                     where disabled = 0" + strW;
                     if (displayChild == "0")
                         sqlq += " and id_parent is null";
@@ -1320,7 +1383,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object milestone([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1387,11 +1450,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            strW += queryhoanthanh;
                         }
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -1400,11 +1465,18 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
 
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
-                    DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team, 
-                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua
+                    //DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team, 
+                    //                                    m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua
+                    //                                    from we_milestone m 
+                    //                                    join we_project_team p on m.id_project_team=p.id_row
+                    //                                    left join (select count(*) as tong, COUNT(CASE WHEN w.status=@hoanthanh THEN 1 END) as ht
+                    //                                    ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
+                    //                                    $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW1 + " order by title", cond);
+                    DataTable dt = cnn.CreateDataTable(@$"select m.*, coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht , p.title as project_team,
+                                                        m.person_in_charge as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh,'' as NguoiTao, '' as NguoiSua 
                                                         from we_milestone m 
                                                         join we_project_team p on m.id_project_team=p.id_row
-                                                        left join (select count(*) as tong, COUNT(CASE WHEN w.status=@hoanthanh THEN 1 END) as ht
+                                                        left join (select count(*) as tong, COUNT(CASE WHEN {sqlhoanthanh} THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
                                                         $"where m.Disabled=0 and m.person_in_charge in ({listID}) and m.CreatedBy in ({listID}) " + strW1 + " order by title", cond);
 
@@ -1487,7 +1559,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object Top_done_milestone([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1546,11 +1618,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                            strW += queryhoanthanh;
                         }
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -1645,7 +1719,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object CacConSoThongKe([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1696,11 +1770,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
@@ -1762,7 +1838,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TagCloud([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1812,11 +1888,13 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
-                        strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += querydangthuchien;
                     }
                     else if (query.filter["status"].ToString().Equals(2.ToString()))
                     {
-                        strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        //  strW += " and w.status  in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
+                        strW += queryhoanthanh;
                     }
                 }
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con

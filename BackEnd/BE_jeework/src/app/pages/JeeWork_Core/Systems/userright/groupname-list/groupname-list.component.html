@@ -48,7 +48,7 @@
 		</ng-container>
 		<ng-container ktPortletTools>
 			<button type="button" mat-raised-button class="jee_btn-addcontinue"
-				matTooltip="{{ 'GeneralKey.themmoi' | translate }}" *ngIf="permitService.VisibleNND"
+				matTooltip="{{ 'GeneralKey.themmoi' | translate }}" *ngIf="permitService.Visible_Group"
 				(click)="ThemNhom()">
 				<span>{{'GeneralKey.themmoi'|translate}}</span>
 			</button>&nbsp;&nbsp;
@@ -101,7 +101,7 @@
 							<mat-icon>people</mat-icon>
 						</button>&nbsp;
 						<button mat-icon-button color="warn" type="button"
-							*ngIf="!item.IsAdmin && permitService.VisibleNND" (click)="deleteItem(item)"
+							*ngIf="!item.IsAdmin && permitService.Visible_Group" (click)="deleteItem(item)"
 							matTooltip="{{ 'GeneralKey.xoa' | translate }}">
 							<mat-icon>delete</mat-icon>
 						</button>&nbsp;

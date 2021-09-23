@@ -47,7 +47,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List()
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -82,7 +82,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Lite_FilterKey()
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -123,7 +123,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -176,7 +176,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Insert(FilterWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -256,7 +256,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Update(FilterWorkModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -371,7 +371,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

@@ -300,6 +300,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                         this.filterDanhSach();
                         this.changeDetectorRefs.detectChanges();
                     }
+                },(err)=>{
+                    this.layoutUtilsService.OffWaitingDiv();
                 });
             } else {
                 this._service.ListByUserCU(queryParams1).subscribe(res => {
@@ -309,6 +311,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                         this.filterDanhSach();
                         this.changeDetectorRefs.detectChanges();
                     }
+                },(err)=>{
+                    this.layoutUtilsService.OffWaitingDiv();
                 });
             }
         } else {
@@ -319,6 +323,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                     this.filterDanhSach();
                     this.changeDetectorRefs.detectChanges();
                 }
+            },(err)=>{
+                this.layoutUtilsService.OffWaitingDiv();
             });
         }
     }
@@ -1231,9 +1237,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     CheckClosedTask(item) {
-        if (this.IsAdminGroup) {
-            return true;
-        }
+        // if (this.IsAdminGroup) {
+        //     return true;
+        // }
         if (item.closed) {
             return false;
         } else {

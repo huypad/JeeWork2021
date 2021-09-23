@@ -2014,9 +2014,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         if (!this.CheckClosedProject()) {
             return false;
         }
-        if (this.IsAdminGroup) {
-            return true;
-        }
+        // if (this.IsAdminGroup) {
+        //     return true;
+        // }
         if (item.closed) {
             return false;
         } else {

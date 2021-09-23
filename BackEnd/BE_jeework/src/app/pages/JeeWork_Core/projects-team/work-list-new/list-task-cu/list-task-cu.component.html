@@ -607,7 +607,7 @@
                                                 <div class="cu-task-row-menu">
                                                     <div class="action-task -hover url">
                                                         <i class="fas fa-ellipsis-h"
-                                                           *ngIf="!CheckRoles(15,node.id_project_team) && CheckClosedTask(node)"
+                                                           *ngIf=" CheckClosedTask(node)"
                                                            style="font-size: 18px;" [matMenuTriggerFor]="menuline"></i>
                                                         <mat-menu #menuline="matMenu" style="padding: 0;">
                                                             <div class="card" style="border:none">

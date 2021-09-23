@@ -34,7 +34,6 @@ import { DuplicateProjectComponent } from './projects-team/duplicate-project/dup
 import { ClosedProjectComponent } from './projects-team/closed-project/closed-project.component';
 import { AddStatusComponent } from './projects-team/work-list-new/add-status/add-status.component';
 import { DuplicateTaskNewComponent } from './projects-team/work-list-new/duplicate-task-new/duplicate-task-new.component';
-import { WorkListNewComponent } from './projects-team/work-list-new/work-list-new.component';
 import { AddTaskComponent } from './projects-team/work-list-new/add-task/add-task.component';
 import { RepeatedListComponent } from './work/repeated-list/repeated-list.component';
 import { NgModule } from '@angular/core';
@@ -307,8 +306,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
 		RepeatedListComponent,
-		
-		WorkListNewComponent,
 		WorksDashBoardComponent,
 		DuplicateTaskNewComponent,
 		AddStatusComponent,
@@ -374,10 +371,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportTabDashboardComponent,
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
-		WorkListNewComponent,
-		WorksDashBoardComponent,
-		AddTaskComponent,
-		AddStatusComponent,
 		DuplicateTaskNewComponent,
 		ColorPicker2Component,
 		ClosedProjectComponent,
@@ -484,11 +477,6 @@ import { ApplicationPipesModule } from './pipe/pipe.module';
 		ReportByProjectComponent,
 		ItemGroupComponent, CrossbarChartComponent,
 		RepeatedListComponent,
-		
-		WorkListNewComponent,
-		WorksDashBoardComponent,
-		AddTaskComponent,
-		AddStatusComponent,
 		DuplicateTaskNewComponent, ColorPicker2Component,
 		ClosedProjectComponent,
 		DuplicateProjectComponent,

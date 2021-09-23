@@ -56,7 +56,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -271,7 +271,7 @@ from we_repeated_user u where u.Disabled = 0");
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -405,7 +405,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpPost]
         public async Task<object> Insert(RepeatedModel data)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -522,7 +522,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpPost]
         public async Task<BaseModel<object>> Update(RepeatedModel data)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -683,7 +683,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -729,7 +729,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpGet]
         public async Task<object> Lock(long id, bool locked = true)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -788,7 +788,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpGet]
         public BaseModel<object> Assign(long id, long user)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -827,7 +827,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpGet]
         public BaseModel<object> project_team(long id, long id_project_team)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -866,7 +866,7 @@ from we_repeated_Task task where task.Disabled=0";
         [HttpGet]
         public BaseModel<object> Forcerun(long id_repeated)
         {
-            string Token = Common.GetHeader(Request);
+            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

@@ -14,12 +14,12 @@
             </ng-container>
 
 
-            <ng-container *ngSwitchCase="3">
-                <ng-container *ngTemplateOutlet="chonstatus"></ng-container>
-            </ng-container>
+<!--            <ng-container *ngSwitchCase="3">-->
+<!--                <ng-container *ngTemplateOutlet="chonstatus"></ng-container>-->
+<!--            </ng-container>-->
             
 
-            <ng-container *ngSwitchCase="4">
+            <ng-container *ngSwitchCase="3">
                 <div class="cu-view-space">
                     <div class="close-dialog d-flex">
                         <div>
@@ -165,7 +165,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <tr *ngIf="false">
                                         <td class="border line-tab url" (click)="viewDetail(3)">
                                             <div class="line-title">
                                                 {{ 'filter.status'|translate}}
@@ -182,7 +182,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="border line-tab url" (click)="viewDetail(4)">
+                                        <td class="border line-tab url" (click)="viewDetail(3)">
                                             <div class="line-title">
                                                 {{ 'department.chedoxem'|translate}}
                                             </div>
@@ -201,7 +201,7 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-success btn-next" type="button" (click)="SubmitData()">
+                    <button class="btn btn-success btn-next" [disabled]="disabledBtn" type="button" (click)="SubmitData()">
                         {{ (item.id_row > 0 ? 'department.luuthaydoi' : 'department.hoanthanh') |translate}}
                     </button>
                 </div>

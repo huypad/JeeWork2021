@@ -48,9 +48,9 @@
             </div>
         </div>
         <div class="action-right row">
-            <div class="col-button m--margin-bottom-10-mobile d-flex align-items-center" style="text-align: right;"
-                *ngIf="commonService.CheckRole_WeWork(3402).length>0">
+            <div class="col-button m--margin-bottom-10-mobile d-flex align-items-center" style="text-align: right;" >
                 <button (click)="AddProject(true)" class="btn btn-outline-success"
+                        *ngIf="commonService.CheckRole_WeWork(3501).length>0"
                     style="border-radius:20px; margin-right: 15px;"
                     matTooltip="{{ 'projects.themmoiproject' | translate }}" type="button">
                     <span translate="projects.themmoiproject"></span>
@@ -60,7 +60,7 @@
                     matTooltip="{{ 'projects.themmoiteam' | translate }}" type="button">
                     <span translate="projects.themmoiteam"></span>
                 </button>&nbsp; -->
-                <button (click)="Add()" class="btn btn-outline-primary" style="border-radius:20px"
+                <button (click)="Add()" class="btn btn-outline-primary" style="border-radius:20px"  *ngIf="commonService.CheckRole_WeWork(3402).length>0"
                     matTooltip="{{ 'projects.themmoidepartment' | translate }}" type="button">
                     <span translate="projects.themmoidepartment"></span>
                 </button>

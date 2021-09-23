@@ -76,15 +76,12 @@ export class WorkListNewDetailComponent implements OnInit {
         private communicateService: CommunicateService,
         private el: ElementRef,
         private projectsTeamService: ProjectsTeamService,
-        private danhMucService: DanhMucChungService,
         public dialog: MatDialog,
-        private itemFB: FormBuilder,
         public subheaderService: SubheaderService,
         private layoutUtilsService: LayoutUtilsService,
         private changeDetectorRefs: ChangeDetectorRef,
         private translate: TranslateService,
         public datepipe: DatePipe,
-        private activatedRoute: ActivatedRoute,
         public weworkService: WeWorkService,
         public jeeCommentService: JeeCommentService,
         private updatebykeyService: UpdateByKeyService,
@@ -175,6 +172,7 @@ export class WorkListNewDetailComponent implements OnInit {
     require_evaluate = false;
     newtask = true;
     loading = true;
+    isclosed = true;
     TenFile = '';
     File = '';
     filemodel: any;
@@ -186,7 +184,6 @@ export class WorkListNewDetailComponent implements OnInit {
         startDate: '',
         endDate: '',
     };
-
     // load task
     list_Tag: any = [];
     project_team: any = '';
@@ -218,23 +215,25 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         );
         this.tinyMCE = tinyMCE;
-        
+
         this.LoadData();
         this.LoadChecklist();
         this.LoadObjectID();
     }
-	getHeight(): any {
-		let obj = window.location.href.split("/").find(x => x == "tabs-references");
-		if (obj) {
-			let tmp_height = 0;
-			tmp_height = window.innerHeight - 354;
-			return tmp_height + 'px';
-		} else {
-			let tmp_height = 0;
-			tmp_height = window.innerHeight - 236;
-			return tmp_height + 'px';
-		}
-	}
+
+    getHeight(): any {
+        let obj = window.location.href.split('/').find(x => x == 'tabs-references');
+        if (obj) {
+            let tmp_height = 0;
+            tmp_height = window.innerHeight - 354;
+            return tmp_height + 'px';
+        } else {
+            let tmp_height = 0;
+            tmp_height = window.innerHeight - 236;
+            return tmp_height + 'px';
+        }
+    }
+
     OnChanges() {
         // this.ngOnInit();
     }
@@ -261,12 +260,11 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
 
-    KiemTraThayDoiCongViec(item, key) {
-        if (!this.CheckClosedTask()) {
+    KiemTraThayDoiCongViec(item, key, closeTask = false) {
+        if (!this.CheckClosedTask() && !closeTask) {
             this.layoutUtilsService.showError('Công việc đã đóng');
             return false;
         }
-
         if (this.IsAdmin()) {
             return true;
         } else if (item.CreatedBy == this.UserID) {
@@ -384,11 +382,9 @@ export class WorkListNewDetailComponent implements OnInit {
     LoadData() {
         this.mark_tag();
         this.LoadLog();
-
         if (this.loading) {
             this.layoutUtilsService.showWaitingDiv();
         }
-
         this.weworkService.ListStatusDynamic(this.Id_project_team)
             .subscribe((res) => {
                 if (res && res.status === 1) {
@@ -414,7 +410,10 @@ export class WorkListNewDetailComponent implements OnInit {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
                 this.item = res.data;
-                this.description_tiny = this.item.description;
+                this.isclosed = this.item.closed;
+                if (!this.description_tiny) {
+                    this.description_tiny = this.item.description;
+                }
                 this.changeDetectorRefs.detectChanges();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
@@ -489,6 +488,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     HasupdateResult() {
+        if (!this.CheckClosedTask()) {
+            return false;
+        }
         if (this.IsAdmin()) {
             return true;
         } else if (this.item.CreatedBy == this.UserID) {
@@ -506,9 +508,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     CheckClosedTask() {
-        if (this.IsAdminGroup) {
-            return true;
-        }
+        // if (this.IsAdminGroup) {
+        //     return true;
+        // }
         if (this.item.closed) {
             return false;
         } else {
@@ -516,7 +518,36 @@ export class WorkListNewDetailComponent implements OnInit {
         }
     }
 
+    ClosedTask(value) {
+        if (!this.KiemTraThayDoiCongViec(this.item, 'closetask', true)) {
+            this.item.closed = !value;
+            return;
+        }
+        this.projectsTeamService.ClosedTask(this.item.id_row, value).subscribe((res) => {
+            this.LoadData();
+            this.SendMessage(true);
+            if (res && res.status == 1) {
+            } else {
+                this.layoutUtilsService.showError(res.error.message);
+            }
+        });
+    }
+
+    CheckClosedProject() {
+        if (this.list_role) {
+            const x = this.list_role.find((x) => x.id_row == this.Id_project_team);
+            if (x) {
+                if (x.locked) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     CheckRoles(roleID: number) {
+
+
         const x = this.list_role.find((res) => res.id_row == this.Id_project_team);
         if (x) {
             if (x.locked) {
@@ -661,11 +692,13 @@ export class WorkListNewDetailComponent implements OnInit {
             return 'far fa-flag';
         }
     }
-    getPriorityLog(id){
-        if(+id > 0 && this.list_priority){
+
+    getPriorityLog(id) {
+        if (+id > 0 && this.list_priority) {
             const prio = this.list_priority.find(x => x.value === +id);
-            if(prio)
+            if (prio) {
                 return prio;
+            }
         }
         return {
             name: 'Noset',
@@ -870,6 +903,7 @@ export class WorkListNewDetailComponent implements OnInit {
             });
         });
     }
+
 
     setUpDropSearchNhanVien() {
         this.bankFilterCtrl.setValue('');
@@ -1503,14 +1537,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
     save_file_Direct(evt: any, type: string) {
         if (evt.target.files && evt.target.files.length) {
-            // Nếu có file
-            const size = evt.target.files[0].size;
-            if (size / 1024 / 1024 > 3) {
-                this.layoutUtilsService.showError(
-                    'File upload không được vượt quá 3 MB'
-                );
-                return;
-            }
+            // Nếu có file 
             const file = evt.target.files[0]; // Ví dụ chỉ lấy file đầu tiên
             this.TenFile = file.name;
             const reader = new FileReader();

@@ -13,18 +13,17 @@ const API_PRODUCTS_URL = environment.APIROOTS + '/api/ww_userrights';
 @Injectable()
 export class PermissionService {
 	lastFilter$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));
-	public VisibleNND: boolean;
-	public VisibleND: boolean;
-	public VisibleNDN: boolean;
-	public VisibleNDHT: boolean;
-	public VisibleCNN: boolean;
-	public VisibleCNU: boolean;
+	public Visible_Group: boolean;
+	public Visible_User: boolean;
+	public Visible_UserGroup: boolean;
+	public Visible_UserSystem: boolean;
+	public Visible_Functions: boolean;
 	constructor(private http: HttpClient,
 		private httpUtils: HttpUtilsService) { }
 
 	//===========Nhóm người dùng===================
 	//danh sách nhóm người dùng
-	findDataGroupName(queryParams: QueryParamsModel): Observable<any> {
+	findDataGroup(queryParams: QueryParamsModel): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
 		const url = API_PRODUCTS_URL + `/Get_DSNhom`;
@@ -33,7 +32,6 @@ export class PermissionService {
 			params: httpParams,
 		});
 	}
-
 	// CREATE =>  POST: add a new oduct to the server
 	CreateNhomNguoiDung(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
@@ -55,9 +53,9 @@ export class PermissionService {
 		});
 	}
 	//Update quyền nhóm người dùng
-	UpdateNhomNguoiDung(item): Observable<any> {
+	UpdatePermision(item): Observable<any> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.post<any>(API_PRODUCTS_URL + '/Save_QuyenNhomNguoiDung', item, { headers: httpHeaders });
+		return this.http.post<any>(API_PRODUCTS_URL + '/Save_Permision', item, { headers: httpHeaders });
 	}
 	//============Người dùng ========================
 	//Danh sách người dùng
@@ -70,21 +68,11 @@ export class PermissionService {
 			params: httpParams,
 		});
 	}
-	//Danh sách người dùng hệ thống  
-	findData_NguoiDungHeThong(queryParams: QueryParamsModel): Observable<QueryResultsModel> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
-		const url = API_PRODUCTS_URL + `/Get_DSNguoiDungHeThong`;
-		return this.http.get<QueryResultsModel>(url, {
-			headers: httpHeaders,
-			params: httpParams,
-		});
-	}
 	//Danh sách người dùng nhóm  
-	findData_NguoiDungNhom(queryParams: QueryParamsModel): Observable<QueryResultsModel> {
+	findData_UserGroup(queryParams: QueryParamsModel): Observable<QueryResultsModel> {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
-		const url = API_PRODUCTS_URL + `/Get_DSNguoiDungNhom`;
+		const url = API_PRODUCTS_URL + `/Get_UserGroup`;
 		return this.http.get<QueryResultsModel>(url, {
 			headers: httpHeaders,
 			params: httpParams,
@@ -100,10 +88,4 @@ export class PermissionService {
 		const httpHeaders = this.httpUtils.getHTTPHeaders();
 		return this.http.post<any>(API_PRODUCTS_URL + '/Delete_User', item, { headers: httpHeaders });
 	}
-	//Update quyền nhóm user
-	UpdateNhomUser(item): Observable<any> {
-		const httpHeaders = this.httpUtils.getHTTPHeaders();
-		return this.http.post<any>(API_PRODUCTS_URL + '/Save_QuyenNguoiDung', item, { headers: httpHeaders });
-	}
-
 }

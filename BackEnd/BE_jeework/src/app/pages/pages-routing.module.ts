@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LayoutComponent } from './_layout/layout.component';
+import {TemplateSoftwareModule} from './JeeWork_Core/template-software/template-software.module';
 
 const routes: Routes = [
   {
@@ -52,6 +53,13 @@ const routes: Routes = [
         path: 'reports',
         loadChildren: () =>
           import('./JeeWork_Core/report/report.module').then((m) => m.ReportModule),
+      },
+      {
+        path: 'templatesoftware',
+        loadChildren: () =>
+          import('./JeeWork_Core/template-software/template-software.module').then(
+            (m) => m.TemplateSoftwareModule
+          ),
       },
       {
         path: 'permision',

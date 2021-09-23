@@ -95,6 +95,7 @@ export class ProjectTeamModel extends BaseModel {
     person_in_charge: any;
     id_project_team: string;
     templatecenter: TemplateCenterModel;
+    id_template: any;
 
     clear() {
         this.id_row = 0;
@@ -285,5 +286,18 @@ export class ProjectViewsModel extends BaseModel {
         this.id_project_team = 0;
         this.link = '';
         this.id_department = 0;
+    }
+}
+export class ChangeTemplateModel {
+    id: number;
+    templateid_new: number;
+    templateid_old: number;
+    isproject: boolean;
+
+    clear() {
+        this.id = 0;
+        this.templateid_new = 0;
+        this.templateid_old = 0;
+        this.isproject = false;
     }
 }

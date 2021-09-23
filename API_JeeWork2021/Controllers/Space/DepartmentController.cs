@@ -211,7 +211,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Detail(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -233,7 +233,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     bool Visible = Common.CheckRoleByUserID(loginData, 3403, cnn);
-
                     if (!WeworkLiteController.CheckCustomerID(id, "we_department", loginData, cnn))
                     {
                         return JsonResultCommon.Custom("Phòng ban/thư mục không tồn tại");
@@ -400,7 +399,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> Insert(DepartmentModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -429,6 +428,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
+                    #region lấy idtemplate mặc định 
+                    long TemplateID = long.Parse(cnn.ExecuteScalar($"select id_row from we_template_customer where CustomerID = {idk} and is_template_center = 0").ToString());// and IsDefault = 1
+                    #endregion
+
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
                     val.Add("id_cocau", data.id_cocau);
@@ -436,7 +439,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     val.Add("IsDataStaff_HR", data.IsDataStaff_HR);
-                    val.Add("TemplateID", data.TemplateID);
+                    val.Add("TemplateID", TemplateID);
                     if (data.ParentID > 0)
                     {
                         val.Add("ParentID", data.ParentID);
@@ -455,6 +458,34 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
                     WeworkLiteController.Insert_field_department(long.Parse(idc), cnn);
+                    // lớn hơn 0 thì update status của phòng ban đó
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = " + data.ParentID).ToString());
+                    if (data.ParentID > 0 && soluongstatus > 0)
+                    {
+                        // thêm status từ phòng ban
+                        string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description,id_project_team, {idc}, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.ParentID + "";
+                        cnn.ExecuteNonQuery(insertSTT);
+                        if (cnn.LastError != null)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    else
+                    {
+                        if (TemplateID > 0)
+                        {
+                            string sql_insert = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, 0,  { idc }, GETUTCDATE(),  { loginData.UserID}, Disabled,  Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                        }
+                    }
                     if (data.DefaultView != null)
                     {
                         Hashtable val1 = new Hashtable();
@@ -619,7 +650,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> InsertQuickFolder(DepartmentModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -691,6 +722,35 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
                     WeworkLiteController.Insert_field_department(long.Parse(idc), cnn);
+                    // thêm status từ phòng ban
+                    long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = {idc}").ToString());
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = " + data.ParentID).ToString());
+                    if (soluongstatus > 0)
+                    {
+                        // thêm status từ phòng ban
+                        string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description,id_project_team, {idc}, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.ParentID + "";
+                        cnn.ExecuteNonQuery(insertSTT);
+                        if (cnn.LastError != null)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    else
+                    {
+                        if (TemplateID > 0)
+                        {
+                            string sql_insert = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, 0,  { idc }, GETUTCDATE(),  { loginData.UserID}, Disabled,  Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                        }
+                    }
                     // thêm view
                     string sqlv = @"select * from we_department_view where id_department = " + data.ParentID;
                     List<long> listView = new List<long>();
@@ -868,7 +928,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<BaseModel<object>> Update(DepartmentModel data)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1124,7 +1184,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-            string Token = Common.GetHeader(Request);
+           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

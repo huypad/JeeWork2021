@@ -49,6 +49,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
         string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
         string sqlhoanthanh = " w.end_date is not null ";
+        // kiểm tra điều kiện hoành thành
+        string queryhoanthanh = " and w.end_date is not null ";
+        string querydangthuchien = " and w.end_date is null ";
 
         public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportController> logger)
         {
@@ -68,7 +71,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Overview([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -148,11 +151,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -248,7 +253,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object TongHopDuAn([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -293,7 +297,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
-                        listDept  = " and  id_department in (" + query.filter["id_department"] + ") ";
+                        listDept  = query.filter["id_department"];
                         //strW += " and id_department=@id_department";
                         //cond.Add("id_department", query.filter["id_department"]);
                     }
@@ -340,7 +344,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object MucTieuTheoDepartment([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -402,13 +406,16 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+                       
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -459,7 +466,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object TrangThaiCongViec([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -519,13 +526,16 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -613,7 +623,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object QuaTrinhHoanThanh([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -675,13 +685,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -753,7 +766,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object TongHopTheoTuan([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -818,13 +831,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -883,7 +899,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object PhanBoTheoDepartment([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -947,13 +963,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -1012,7 +1031,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ReportByStaff([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1076,13 +1095,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -1228,7 +1250,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ReportByConditions([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1326,13 +1348,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -1461,7 +1486,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Eisenhower([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1532,15 +1557,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
-
                     }
                     //string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
                     //                ,iIf(w.Status in (" + list_Deadline + @"), 1, 0) as is_quahan
@@ -1592,7 +1619,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object milestone([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1670,15 +1697,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
-                            strW1 += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
-                            strW1 += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -1957,7 +1985,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ReportByDepartment_ProjectTeam([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2023,11 +2051,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -2140,7 +2170,7 @@ iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
         [HttpGet]
         public object ReportByDepartment([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2204,15 +2234,17 @@ iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
                     #endregion
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
+
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
-
                     }
                     string sql_query = "";
                     if (string.IsNullOrEmpty(query.filter["key"]))
@@ -2324,7 +2356,7 @@ iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
         [HttpGet]
         public object ReportToDepartments([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2401,11 +2433,13 @@ from we_department where Disabled = 0";
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
 
                     }
@@ -2464,7 +2498,7 @@ iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
         [HttpGet]
         public object CacConSoThongKe([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2528,13 +2562,14 @@ iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
-
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "select id_row, title from we_department d where d.disabled=0 " + strD;
@@ -2604,7 +2639,7 @@ where u.Disabled = 0 and p.Disabled = 0 and p.id_department in (" + listDept + "
         [HttpGet]
         public object ThongKeHeThong([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2674,13 +2709,14 @@ where u.Disabled = 0 and p.Disabled = 0 and p.id_department in (" + listDept + "
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
-
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlthongkechung = @"select id_row, title,Locked from we_project_team p where disabled=0 " + strP;
@@ -2862,7 +2898,7 @@ and o.Disabled = 0 and d.Disabled = 0 " + strD;
         [HttpGet]
         public object TagCloud([FromQuery] QueryParams query)
         {
-            string Token = Common.GetHeader(Request);
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2917,13 +2953,14 @@ and o.Disabled = 0 and d.Disabled = 0 " + strD;
                     {
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
-                            strW += $" and w.status not in ({list_Complete})";
+                            // strW += $" and w.status not in ({list_Complete})";
+                            strW += querydangthuchien;
                         }
                         else if (query.filter["status"].ToString().Equals(2.ToString()))
                         {
-                            strW += $" and w.status in ({list_Complete})";
+                            // strW += $" and w.status in ({list_Complete})";
+                            strW += queryhoanthanh;
                         }
-
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))

@@ -414,14 +414,7 @@ export class TopicEditComponent implements OnInit {
 
     save_file_Direct(evt: any, type: string) {
         if (evt.target.files && evt.target.files.length) {
-            // Nếu có file
-            const size = evt.target.files[0].size;
-            if (size / 1024 / 1024 > 3) {
-                this.layoutUtilsService.showError(
-                    'File upload không được vượt quá 3 MB'
-                );
-                return;
-            }
+            // Nếu có file 
             const file = evt.target.files[0]; // Ví dụ chỉ lấy file đầu tiên
             const TenFile = file.name;
             const reader = new FileReader();

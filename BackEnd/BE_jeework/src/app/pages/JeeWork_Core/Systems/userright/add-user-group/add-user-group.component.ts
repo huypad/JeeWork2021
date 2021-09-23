@@ -1,10 +1,10 @@
-import { SortState } from './../../../../../_metronic/shared/crud-table/models/sort.model';
-import { PaginatorState } from './../../../../../_metronic/shared/crud-table/models/paginator.model';
-import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import { QueryParamsModel } from './../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
-import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { SubheaderService } from './../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
-import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { SortState } from '../../../../../_metronic/shared/crud-table/models/sort.model';
+import { PaginatorState } from '../../../../../_metronic/shared/crud-table/models/paginator.model';
+import { DanhMucChungService } from '../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { QueryParamsModel } from '../../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
+import { LayoutUtilsService, MessageType } from '../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { SubheaderService } from '../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
+import { TokenStorage } from '../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'; 
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -27,12 +27,12 @@ import { PermissionService } from '../Services/userright.service';
 import { UserRightDataSource } from '../Model/data-sources/userright.datasource';
 
 @Component({
-	selector: 'kt-danh-sach-nguoi-dung-them-moi',
-	templateUrl: './danh-sach-nguoi-dung-them-moi.component.html',
+	selector: 'kt-add-user-group',
+	templateUrl: './add-user-group.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class DanhSachNguoiDungThemMoiComponent implements OnInit {
+export class AddUserGroupComponent implements OnInit {
 	// Table fields
 	dataSource: UserRightDataSource;
 	displayedColumns = ['actions', 'Username', 'HoTen', 'ChucVu'];
@@ -67,7 +67,7 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 	ID_Struct: string = '';
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
-		public dialogRef: MatDialogRef<DanhSachNguoiDungThemMoiComponent>,
+		public dialogRef: MatDialogRef<AddUserGroupComponent>,
 		private userRightService: PermissionService,
 		private danhMucChungService: DanhMucChungService,
 		public dialog: MatDialog,
@@ -136,7 +136,7 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 			this.paginatorNew.page - 1,
 			this.paginatorNew.pageSize
 		);
-		this.dataSource.loadList_NguoiDungHeThong(queryParams);
+		this.dataSource.loadListUsers(queryParams);
 		// setTimeout(x => {
 		// 	this.loadPage();
 		// }, 500)
@@ -155,7 +155,7 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 					this.paginatorNew.page - 1,
 					this.paginatorNew.pageSize
 				);
-				this.dataSource.loadList_NguoiDungHeThong(queryParams1);
+				this.dataSource.loadListUsers(queryParams1);
 			}
 			else {
 				const queryParams1 = new QueryParamsModel(
@@ -165,7 +165,7 @@ export class DanhSachNguoiDungThemMoiComponent implements OnInit {
 					this.paginatorNew.page = 0,
 					this.paginatorNew.pageSize
 				);
-				this.dataSource.loadList_NguoiDungHeThong(queryParams1);
+				this.dataSource.loadListUsers(queryParams1);
 			}
 		}
 	}
