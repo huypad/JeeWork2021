@@ -24,7 +24,6 @@ namespace JeeWork_Core2021.Classes
         public const string BASE_URL_ImgLoaiHang = "http://sales.webcore.vn";
         public const string BASE_URL_ImgNhanVien = "http://hrm.webcore.vn/";
 
-
         public static string RootUpload { get { return "dulieu"; } }
         public static string HinhAnh { get { return "/hinhanh"; } }
         public static string HinhAnh_MatHang { get { return "/hinhanh/mathang"; } }
@@ -37,9 +36,10 @@ namespace JeeWork_Core2021.Classes
         public const string linkAI = "http://115.79.28.221";
         public const string Authorization = "Token 78c30d151382c93ae3e216acdff4e614d8032aeb";
         public const string PassEnDecSalary = "Sa_ABB__~!12DPS";
-        public static int MaxSize { get { return 30000000; } }//maximum file size 30MB
+        public static int MaxSize { get { return 200000000; } }//maximum file size 30MB
 
         public const string LinkWework = "http://localhost:4010";
+
         public static IConfigurationRoot getConfig()
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
@@ -47,8 +47,9 @@ namespace JeeWork_Core2021.Classes
             var root = builder.Build();
             return root;
         }
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="code">ex: JeeWorkConfig:HRConnectionString</param>
         /// <returns></returns>
@@ -60,6 +61,7 @@ namespace JeeWork_Core2021.Classes
             var value = root[code];
             return value;
         }
+
         public static string getHRCnn()
         {
             //IConfigurationBuilder builder = new ConfigurationBuilder();
@@ -72,11 +74,13 @@ namespace JeeWork_Core2021.Classes
             return "";
         }
     }
+
     public enum StateCode
     {
         NoPermit,
         CannotGetData
     }
+
     public static class ErrCode_Const
     {
         public static int SUCCESS = 0;
@@ -85,9 +89,10 @@ namespace JeeWork_Core2021.Classes
         public static int PROPERTY_IS_NULL_OR_EMPTY = 3;
 
         /// <summary>
-        /// Cannot find data form id 
+        /// Cannot find data form id
         /// </summary>
         public static int CANNOT_FIND_DATA_BY_QUERY = 4;
+
         public static int PROPERTY_IS_REQUIRED = 5;
         public static int PROPERTY_IS_INVALID = 6;
         public static int KEY_PROPS_NOT_FOUND = 7;
@@ -109,13 +114,14 @@ namespace JeeWork_Core2021.Classes
         public static int SQL_QUERY_CANNOT_PAGINATE = 24;
         public static int SQL_INSERT_FAILED = 25;
         public static int PROPERTY_IS_ENOUGH_COUT = 26;
-
     }
+
     public static class AppSessionConstants
     {
         public static int Web = 1;
         public static int Mobile = 2;
     }
+
     public static class ErrMsg_Const
     {
         private static Dictionary<int, string> Dic_Error =
@@ -150,7 +156,7 @@ namespace JeeWork_Core2021.Classes
              };
 
         /// <summary>
-        /// Get error message from error 
+        /// Get error message from error
         /// </summary>
         /// <param name="pErrorCode">From ErrCode_Constant </param>
         /// <returns></returns>
@@ -167,7 +173,7 @@ namespace JeeWork_Core2021.Classes
         }
 
         /// <summary>
-        /// Get error msg with leghth of string 
+        /// Get error msg with leghth of string
         /// Example: error is asdasdasd asdasdas dasd asdiejforeng rgerogijeoijerf neroifnerofnsdv oijsdoisd
         /// We want to return a message with lenght is 50 character
         /// </summary>
