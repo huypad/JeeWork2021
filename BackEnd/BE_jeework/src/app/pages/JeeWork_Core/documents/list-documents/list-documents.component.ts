@@ -102,9 +102,9 @@ export class ListDocumentsComponent implements OnInit {
         if (evt.target.files && evt.target.files.length) {
             //Nếu có file
             var size = evt.target.files[0].size;
-            if (size / 1024 / 1024 > 3) {
+            if (size / 1024 / 1024 > 15) {
                 this.LayoutUtilsService.showError(
-                    'File upload không được vượt quá 3 MB'
+                    'File upload không được vượt quá 15 MB'
                 );
                 return;
             }

@@ -23,8 +23,6 @@ namespace JeeWork_Core2021.Classes
         public const string BASE_URL_Img = "https://gateway.webcore.vn/";
         public const string BASE_URL_ImgLoaiHang = "http://sales.webcore.vn";
         public const string BASE_URL_ImgNhanVien = "http://hrm.webcore.vn/";
-
-
         public static string RootUpload { get { return "dulieu"; } }
         public static string HinhAnh { get { return "/hinhanh"; } }
         public static string HinhAnh_MatHang { get { return "/hinhanh/mathang"; } }
@@ -37,8 +35,7 @@ namespace JeeWork_Core2021.Classes
         public const string linkAI = "http://115.79.28.221";
         public const string Authorization = "Token 78c30d151382c93ae3e216acdff4e614d8032aeb";
         public const string PassEnDecSalary = "Sa_ABB__~!12DPS";
-        public static int MaxSize { get { return 30000000; } }//maximum file size 30MB
-
+        public static int MaxSize { get { return 200000000; } }//maximum file size 30MB
         public const string LinkWework = "http://localhost:4010";
         public static IConfigurationRoot getConfig()
         {
