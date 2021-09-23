@@ -16,7 +16,15 @@ namespace JeeWork_Core2021.Models
         public string Color { get; set; }
         public long Position { get; set; }
         public long Follower { get; set; }
-
+        public long id_department { get; set; }
     }
-   
+    public class PositionModel
+    {
+        public long id_row_from { get; set; }
+        public long id_row_to { get; set; }
+        public long position_from { get; set; }
+        public long position_to { get; set; }
+        public string columnname { get; set; }
+        public long id_columnname { get; set; }
+    }
 }
