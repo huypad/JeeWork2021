@@ -18,7 +18,7 @@ namespace JeeWork_Core2021.Models
         public long Follower { get; set; }
         public long id_department { get; set; }
     }
-    public class PositionModel
+    public class PositionModel //
     {
         public long id_row_from { get; set; }
         public long id_row_to { get; set; }
