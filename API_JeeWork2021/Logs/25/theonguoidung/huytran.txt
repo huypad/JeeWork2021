@@ -38,3 +38,17 @@
 19/09/2021 06:24:52 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Tháng 11, id_department=21764, loai=0
 19/09/2021 07:56:50 - Chỉnh sửa dữ liệu department/Folder (21764), Chi tiết xem trong log chỉnh sửa chức năng
 19/09/2021 07:57:02 - Thêm mới dữ liệu project_team (Hàm Insert_Quick): title=Tuần 1 - Tháng 10, id_department=21764, loai=0
+23/09/2021 12:58:28 - Đóng công việc (216455)
+23/09/2021 13:01:26 - Đóng công việc (218885)
+23/09/2021 13:02:58 - Đóng công việc (218882)
+23/09/2021 13:03:03 - Đóng công việc (218882)
+23/09/2021 13:03:17 - Đóng công việc (218882)
+23/09/2021 13:03:28 - Đóng công việc (218882)
+23/09/2021 13:03:33 - Đóng công việc (218882)
+23/09/2021 13:03:41 - Đóng công việc (218882)
+23/09/2021 13:03:58 - Đóng công việc (218882)
+23/09/2021 13:05:01 - Đóng công việc (218882)
+23/09/2021 13:05:16 - Thêm mới dữ liệu công việc: title=Công việc con 1, id_project_team=22365
+23/09/2021 13:24:26 - Đóng công việc (218885)
+23/09/2021 13:25:10 - Chỉnh sửa dữ liệu công việc (218885), Chi tiết xem trong log chỉnh sửa chức năng
+23/09/2021 13:27:41 - Update user: ID24057 - admin = True

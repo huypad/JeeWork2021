@@ -58,7 +58,6 @@ export class templateSoftwareEditComponent implements OnInit {
 		// this.ListStatusDynamic();
 	}
 	drop(event: CdkDragDrop<string[]>) {
-		return;
 		console.log(event);
 		moveItemInArray(this.listSTTHoatdong(), event.previousIndex, event.currentIndex);
 		const previous = this.listSTTHoatdong()[event.previousIndex];
@@ -79,14 +78,13 @@ export class templateSoftwareEditComponent implements OnInit {
 	 * sorted into even indices and odd numbers at odd indices.
 	 */
 	dropPosition(_item){
-		this._service.dropPosition(_item).subscribe((res) => {
-			if (res && res.status == 1) {
-				console.log(res.data);
-				// this.ListStatusDynamic();
+		this._service.dropPositionTemplate(_item).subscribe((res) => {
+			if (res && res.status == 1) { 
+			  this.LoadDataTemp();
 			} else {
-				this.layoutUtilsService.showError(res.error.message);
+			  this.layoutUtilsService.showError(res.error.message);
 			}
-		});
+		  });
 	}
 
 	sortPredicate(index: number, item: CdkDrag<number>) {

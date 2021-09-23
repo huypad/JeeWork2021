@@ -2423,6 +2423,22 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                       CreatedBy = dr["CreatedBy"],
                                                       CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", dr["CreatedDate"])
                                                   },
+                                    Attachments_Result = from dr in ds.Tables[3].AsEnumerable()
+                                                         where dr["object_type"].ToString() == "11"
+                                                         select new
+                                                         {
+                                                             id_row = dr["id_row"],
+                                                             path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                             filename = dr["filename"],
+                                                             type = dr["type"],
+                                                             isImage = UploadHelper.IsImage(dr["type"].ToString()),
+                                                             icon = UploadHelper.GetIcon(dr["type"].ToString()),
+                                                             size = dr["size"],
+                                                             /// NguoiTao = dr["username"],
+                                                             Object_Type = dr["object_type"],
+                                                             CreatedBy = dr["CreatedBy"],
+                                                             CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", dr["CreatedDate"])
+                                                         },
                                     Process = from t in ds.Tables[4].AsEnumerable()
                                               select new
                                               {
@@ -3139,7 +3155,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpPost]
         public async Task<BaseModel<object>> Update(WorkModel data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5343,7 +5358,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -5480,6 +5494,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
+                    Common comm = new Common(ConnectionString);
+                    if (Common.IsTaskClosed(data.workid, cnn))
+                    {
+                        return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật");
+                    }
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", data.id_row);
                     sqlcond.Add("disabled", 0);

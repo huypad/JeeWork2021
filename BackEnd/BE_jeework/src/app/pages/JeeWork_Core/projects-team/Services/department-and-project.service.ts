@@ -515,6 +515,10 @@ export class ProjectsTeamService {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         return this.http.post<any>(API_Status + '/drop-position', item, { headers: httpHeaders });
     }
+    dropPositionTemplate(item): Observable<any> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        return this.http.post<any>(API_Status + '/drop-position-template', item, { headers: httpHeaders });
+    }
 
     // view update
     Add_View(item): Observable<any> {

@@ -132,18 +132,7 @@
                                                                 </div>
                                                             </mat-menu>
 
-                                                        </div>
-
-                                                        <div
-                                                            class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20">
-                                                            <div>
-                                                                <time-estimates-view
-                                                                    [role]="CheckRoles(19) && CheckClosedTask()"
-                                                                    [time]="item.estimates"
-                                                                    (submit)="Updateestimates($event)">
-                                                                </time-estimates-view>
-                                                            </div>
-                                                        </div>
+                                                        </div> 
                                                         <div class="cu-task-row-assignee border-left url">
                                                             <strong>Nhóm công việc:</strong>&nbsp;
                                                             <app-tasks-group [ListGroup]="ListGroup"
@@ -207,8 +196,7 @@
                                                                     </app-task-datetime>
                                                                 </div>
                                                             </div>
-                                                            <div
-                                                                class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20 position-relative">
+                                                            <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20 position-relative">
                                                                 <div class="position-relative item-datetime"
                                                                     style="min-width:100px">
                                                                     <div class="cu-task-info__key  text-center w-100">
@@ -220,6 +208,15 @@
                                                                         [value]="item.deadline"
                                                                         [role]="CheckRoles(10) && CheckClosedTask()">
                                                                     </app-task-datetime>
+                                                                </div>
+                                                            </div>
+                                                            <div class="cu-task-info cu-task-info_row cu-task-info_task-created border-left pd-0-20 pr-0">
+                                                                <div>
+                                                                    <time-estimates-view
+                                                                        [role]="CheckRoles(19) && CheckClosedTask()"
+                                                                        [time]="item.estimates"
+                                                                        (submit)="Updateestimates($event)">
+                                                                    </time-estimates-view>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -480,8 +477,15 @@
 
                         </div>
                     </div>
-                    <!-- <div class="task-column__footer cu-hidden-print ng-tns-c150-53 ng-star-inserted"> 
-                        <div class="task-uploader border-top url " style="font-size: 16px;
+                    <div class="task-column__footer cu-hidden-print ng-tns-c150-53 pl-3"> 
+                        <div class="task-comment pd-0 border-top">
+                            <ng-container *ngIf="this.objectID">
+                                <jeecomment-enter-comment-content (valuecomment)="LoadLog();this.SendMessage(true);"
+                                    class="w-100" [objectID]="this.objectID"></jeecomment-enter-comment-content>
+                            </ng-container>
+
+                        </div>
+                        <!-- <div class="task-uploader border-top url " style="font-size: 16px;
                                     font-style: italic; font-weight: 600;">
                             <ng-container *ngIf="HasupdateResult()">
                                 <div class="text-center">
@@ -512,8 +516,8 @@
                                     </span>
                                 </div>
                             </ng-container>
-                        </div>
-                    </div> -->
+                        </div> -->
+                    </div>
 
                 </div>
 
@@ -533,14 +537,14 @@
                                         <ng-container *ngIf="!item.id_parent">
                                             {{'work.subtask'|translate}}
                                             <ng-container *ngIf="item.Childs?.length>0">
-                                                ({{ item.Childs.length }})
+                                                ( <span class="text-danger">{{ item.Childs.length }}</span> )
                                             </ng-container>
                                             &nbsp; - &nbsp;
                                         </ng-container>
 
                                         CheckList
                                         <ng-container *ngIf="CheckList?.length>0">
-                                            ({{ CheckList.length }})
+                                            (<span class="text-danger">{{ CheckList.length }}</span>)
                                         </ng-container>
                                     </ng-template>
                                     <ng-container *ngTemplateOutlet="tabcongvieccon"></ng-container>
@@ -549,7 +553,7 @@
 
                         </div>
                     </div>
-                    <div class="task-column__footer second cu-hidden-print ng-tns-c150-53 ng-star-inserted">
+                    <!-- <div class="task-column__footer second cu-hidden-print ng-tns-c150-53 ng-star-inserted">
                         <div class="task-comment pd-0 border-top">
                             <ng-container *ngIf="this.objectID">
                                 <jeecomment-enter-comment-content (valuecomment)="LoadLog();this.SendMessage(true);"
@@ -557,7 +561,7 @@
                             </ng-container>
 
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
             </div>
@@ -848,7 +852,7 @@
                                             <i class="far fa-eye"></i>
                                         </a>
                                         <a class="url" (click)="DownloadFile(att2.path)"
-                                            matTooltip="{ 'topic.download' | translate}}">
+                                            matTooltip="{{ 'topic.download' | translate}}">
                                             <i class="fas fa-download "></i>
                                         </a>
                                         <a class="url" *ngIf="HasupdateResult()" (click)="Delete_File(att2.id_row)"

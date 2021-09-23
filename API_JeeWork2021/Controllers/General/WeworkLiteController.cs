@@ -3764,6 +3764,18 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return true;
         }
+        public static bool CheckUpdateWorkClosed(long id, DpsConnection cnn)
+        {
+            SqlConditions cond = new SqlConditions();
+            cond.Add("disabled", 0);
+            cond.Add("id_row", id);
+            cond.Add("closed", 1);
+            string sqlq = "select * from we_work where (where) ";
+            DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);
+            if (dt.Rows.Count > 0)
+                return false;
+            return true;
+        }
         public static bool insert_status(long id, string column_name, UserJWT loginData, DpsConnection cnn)
         {
             long templateid = 0;

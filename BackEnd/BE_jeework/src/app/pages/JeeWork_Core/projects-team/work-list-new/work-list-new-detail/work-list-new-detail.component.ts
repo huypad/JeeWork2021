@@ -1545,7 +1545,7 @@ export class WorkListNewDetailComponent implements OnInit {
             let base64Str;
             setTimeout(() => {
                 base64Str = reader.result as String;
-                const metaIdx = base64Str.indexOf(';base64,');
+                const metaIdx = base64Str?.indexOf(';base64,');
                 base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
                 this.File = base64Str;
                 const _model = new AttachmentModel();
@@ -1565,7 +1565,7 @@ export class WorkListNewDetailComponent implements OnInit {
                         this.SendMessage(true);
                     }
                 });
-            }, 50);
+            }, 100);
         } else {
             this.File = '';
         }

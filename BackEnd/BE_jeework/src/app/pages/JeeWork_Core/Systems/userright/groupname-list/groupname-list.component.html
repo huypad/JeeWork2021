@@ -57,7 +57,7 @@
 		</ng-container>
 	</kt-portlet-header>
 	<kt-portlet-body>
-		<div class="example-container mat-table__wrapper">
+		<div class="example-container mat-table__wrapper" [ngStyle]="{ height: getHeight() }">
 			<table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" matSort matSortActive="id"
 				style="width: 100%" matSortDirection="asc" matSortDisableClear>
 				<ng-container matColumnDef="ID_Nhom">

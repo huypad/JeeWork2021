@@ -215,7 +215,7 @@ export class SettingComponent {
             if (!res) {
                 return;
             } else {
-                location.reload();
+                // location.reload();
             }
         });
     }

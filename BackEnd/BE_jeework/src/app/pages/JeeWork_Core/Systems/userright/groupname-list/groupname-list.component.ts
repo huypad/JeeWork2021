@@ -376,7 +376,7 @@ export class GroupNameListComponent implements OnInit {
   //==========================================================
   getHeight(): any {
     let tmp_height = 0;
-    tmp_height = window.innerHeight - 343 - this.tokenStorage.getHeightHeader();
+    tmp_height = window.innerHeight - 300 - this.tokenStorage.getHeightHeader();
     return tmp_height + "px";
   }
 }

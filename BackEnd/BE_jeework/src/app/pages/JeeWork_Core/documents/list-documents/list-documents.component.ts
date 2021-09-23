@@ -52,6 +52,7 @@ export class ListDocumentsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.dataSource = new DocumentDataSource(this.DocumentsService);
         var arr = this.router.url.split('/');
         this.id_project_team = +arr[2];
 
@@ -106,7 +107,7 @@ export class ListDocumentsComponent implements OnInit {
     displayedColumns = ['filename', 'lichsu', 'size', 'action'];
 
     getHeight() {
-        return window.innerHeight - 120 - this.tokenStorage.getHeightHeader() + 'px';
+        return window.innerHeight - 300 - this.tokenStorage.getHeightHeader() + 'px';
     }
 
     applyFilter(text: string) {
@@ -129,43 +130,52 @@ export class ListDocumentsComponent implements OnInit {
     onSelectFile_PDF(evt) {
         if (evt.target.files && evt.target.files.length) {
             //Nếu có file 
+            var size = evt.target.files[0].size;
+            if (size / 1024 / 1024 > 15) {
+                this.LayoutUtilsService.showError(
+                    'File upload không được vượt quá 15 MB'
+                );
+                return;
+            }
             let file = evt.target.files[0]; // Ví dụ chỉ lấy file đầu tiên
             this.TenFile = file.name;
             let reader = new FileReader();
             reader.readAsDataURL(evt.target.files[0]);
             let base64Str;
-            base64Str = reader.result as String;
-            var metaIdx = base64Str.indexOf(';base64,');
-            base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
-            this.File = base64Str;
-            var _model = new AttachmentModel();
-            _model.object_type = 4;
-            _model.object_id = this.id_project_team; // object_id = id_project_team
-            const ct = new FileUploadModel();
-            ct.strBase64 = this.File;
-            ct.filename = this.TenFile;
-            ct.IsAdd = true;
-            _model.item = ct;
-            this.LayoutUtilsService.showWaitingDiv();
-            this._attservice.Upload_attachment(_model).subscribe((res) => {
-                this.LayoutUtilsService.OffWaitingDiv();
-                if (res && res.status === 1) {
-                    this.loadDataList();
-                    this.LoadParent(true);
-                    const _messageType = this.translate.instant(
-                        'GeneralKey.capnhatthanhcong'
-                    );
-                    this.LayoutUtilsService.showInfo(
-                        _messageType
-                    )
-                        .afterDismissed()
-                        .subscribe((tt) => {
-                        });
-                } else {
-                    this.LayoutUtilsService.showError(res.error.message);
-                }
-                this.changeDetectorRefs.detectChanges();
-            });
+            setTimeout(() => {
+                base64Str = reader.result as String;
+                var metaIdx = base64Str.indexOf(';base64,');
+                base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
+                this.File = base64Str;
+                var _model = new AttachmentModel();
+                _model.object_type = 4;
+                _model.object_id = this.id_project_team; // object_id = id_project_team
+                const ct = new FileUploadModel();
+                ct.strBase64 = this.File;
+                ct.filename = this.TenFile;
+                ct.IsAdd = true;
+                _model.item = ct;
+                this.LayoutUtilsService.showWaitingDiv();
+                this._attservice.Upload_attachment(_model).subscribe((res) => {
+                    this.LayoutUtilsService.OffWaitingDiv();
+                    if (res && res.status === 1) {
+                        this.loadDataList();
+                        this.LoadParent(true);
+                        const _messageType = this.translate.instant(
+                            'GeneralKey.capnhatthanhcong'
+                        );
+                        this.LayoutUtilsService.showInfo(
+                            _messageType
+                        )
+                            .afterDismissed()
+                            .subscribe((tt) => {
+                            });
+                    } else {
+                        this.LayoutUtilsService.showError(res.error.message);
+                    }
+                    this.changeDetectorRefs.detectChanges();
+                });
+            }, 100);
         } else {
             this.File = '';
         }

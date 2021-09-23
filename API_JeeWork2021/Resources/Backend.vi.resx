@@ -147,8 +147,14 @@
   <data name="ww_comment" xml:space="preserve">
     <value>$nguoigui$ đã bình luận trong công việc bạn tham gia</value>
   </data>
+  <data name="ww_dongcongviec" xml:space="preserve">
+    <value>đóng công việc</value>
+  </data>
   <data name="ww_follower" xml:space="preserve">
     <value>$nguoigui$ thêm bạn theo dõi công việc $tencongviec$</value>
+  </data>
+  <data name="ww_mocongviec" xml:space="preserve">
+    <value>mở lại công việc</value>
   </data>
   <data name="ww_thaoluan" xml:space="preserve">
     <value>$nguoigui$ đã thêm bạn vào thảo luận</value>

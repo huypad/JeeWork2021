@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Drawing;
 using Microsoft.AspNetCore.Http;
+using DPSinfra.Logger;
+using Newtonsoft.Json;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -100,6 +102,21 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = $"Thêm mới file {data.item.filename} vào: loại :{data.object_type}  ";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     return JsonResultCommon.ThanhCong();
                 }
             }
@@ -141,8 +158,23 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     UploadHelper.DeleteFileAtt(signedPath);
-                    string LogContent = "Xóa dữ liệu attachment (" + id + ")";
+                    // string LogContent = "Xóa dữ liệu attachment (" + id + ")";
                     cnn.EndTransaction();
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = $"Xóa dữ liệu attachment (" + id + ")  ";
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject((new { id = id }))
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
                     return JsonResultCommon.ThanhCong();
                 }
             }
