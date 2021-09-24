@@ -199,7 +199,7 @@
 								(click)="UpdateItem(item)">
 								<mat-icon>edit</mat-icon>
 							</button>
-							<button mat-icon-button class="icon-xoa" *ngIf="templateService.Visible"
+							<button mat-icon-button class="icon-xoa" *ngIf="templateService.Visible && !item.isdefault && item.createdby.userid > 0"
 								matTooltip="{{ 'GeneralKey.xoa' | translate }}" (click)="DeleteItem(item)">
 								<mat-icon>delete</mat-icon>
 							</button>

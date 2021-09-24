@@ -150,12 +150,12 @@
                                         <div class="status-input col-12 form-control"
                                              style="padding-left: 5px;display: flex"
                                              *ngFor="let stt of listSTTHoatdong(), index as i" cdkDrag>
-                                            <div class="w-10 drag-icon" >
+                                            <div class="w-10 drag-icon" [hidden]="!RoleUpdate()">
                                                 <i class="material-icons" cdkDragHandle>reorder</i>
                                             </div>
-                                            <!-- <div class="w-10" [hidden]="isStatusNow">
+                                            <div class="w-10" [hidden]="RoleUpdate()">
                                                 <i class="material-icons">reorder</i>
-                                            </div> -->
+                                            </div>
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                                 <div class="row" style="width:200px;">
                                                     <div class="color-picker" [ngStyle]="{'backgroundColor': color}"

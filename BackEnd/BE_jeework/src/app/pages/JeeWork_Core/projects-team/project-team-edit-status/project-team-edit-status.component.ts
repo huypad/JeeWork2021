@@ -503,8 +503,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         });
       }
     }
-  }
-
+  } 
   focusOutSTT(value) {
     this.isAddStatus = false;
     if (!value) {
