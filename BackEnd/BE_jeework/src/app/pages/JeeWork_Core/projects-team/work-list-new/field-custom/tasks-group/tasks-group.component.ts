@@ -8,6 +8,7 @@ import { Component, OnInit, Input,Output, EventEmitter } from '@angular/core';
 export class TasksGroupComponent implements OnInit {
 
   @Input() ListGroup : any = [];
+  @Input() viewdetail= false;
   @Input() value : any = [];
   @Output() valueChange = new EventEmitter<any>();
   @Input() role = false;

@@ -1275,7 +1275,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     conds.Add("Disabled", 0);
                     conds.Add("is_template_center", 0);
                     conds.Add("CustomerID", loginData.CustomerID);
-                    sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, customerid " +
+                    sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, customerid, createddate,createdby,updatedby,updateddate " +
                         "from we_template_customer " +
                         "where (where) order by Title";
                     //Check CustommerID có template chưa nếu chưa thì thêm vào
@@ -1336,6 +1336,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    visible = Visible,
                                    templateid = r["templateid"],
                                    customerid = r["customerid"],
+                                   createdby = r["createdby"],
+                                   createddate = r["createddate"],
                                    status = from dr in dt_status.AsEnumerable()
                                             where dr["TemplateID"].Equals(r["id_row"])
                                             select new

@@ -202,12 +202,12 @@
     -moz-osx-font-smoothing: grayscale;
     font-family: Gotham Pro, Proxima Nova, arial, serif;
     font-weight: 500;
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1;
     display: flex;
     align-items: center;
-    height: 30px;
-    padding: 0 15px;
+    height: 25px;
+    padding: 0 10px;
     text-transform: uppercase;
     color: #fff;
     -webkit-user-select: none;
@@ -224,9 +224,9 @@
     align-items: center;
     justify-content: center;
     transition: all .2s cubic-bezier(.785, .135, .15, .86) 0s;
-    width: 30px;
-    height: 30px;
-    margin: 0 30px 0 0;
+    width: 25px;
+    height: 25px;
+    margin: 0 10px 0 0;
     flex-shrink: 0;
     color: #aeacb0;
     border: 1px solid #aeacb0;
@@ -1040,7 +1040,7 @@ div.cu-avatar {
 .task-status__controls {
   position: relative;
   flex-shrink: 0;
-  width: 25px;
+  width: 20px;
   border-left: 2px solid white;
   border-radius: 0 3px 3px 0;
 }
@@ -1053,8 +1053,8 @@ div.cu-avatar {
   width: 0;
   border: 4px solid transparent;
   border-left-color: #fff;
-  top: 11px;
-  left: 10px;
+  top: 9px;
+  left: 8px;
 }
 
 .row-title-check-list {
@@ -1249,4 +1249,40 @@ div.cu-avatar {
   position: absolute;
   right: 0px;
   top: -5px;
+}
+
+
+.view-nomal{
+  display: flex;
+}
+.view-reponsive{
+  display: none;
+}
+
+@media only screen and (max-width: 1600px) {
+  .view-nomal{
+    display: none;
+  }
+  .view-reponsive{
+    display: flex;
+  }
+}
+
+.mat-tab-label{
+  min-width: auto!important;
+  padding: 0 12px!important;
+}
+::ng-deep .mat-tab-list .mat-tab-label {
+  min-width: auto!important;
+  padding: 0 12px!important;
+}
+
+.size-group{
+  max-width: 200px;
+}
+
+@media only screen and (max-width: 1366px) {
+  .size-group{
+    max-width:100px;
+  }
 }

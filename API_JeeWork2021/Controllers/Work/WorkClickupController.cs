@@ -6834,7 +6834,7 @@ where u.disabled = 0 and u.loai = 2";
                                      where r["id_row"].ToString().Equals(us["id_work"].ToString())
                                      select us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                              Tags = from t in tags
-                                    where r["id_row"].Equals(t["id_work"])
+                                    where r["id_row"].ToString().Equals(t["id_work"].ToString())
                                     select new
                                     {
                                         id_row = t["id_tag"],

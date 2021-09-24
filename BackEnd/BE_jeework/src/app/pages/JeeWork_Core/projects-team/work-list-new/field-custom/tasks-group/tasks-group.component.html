@@ -1,8 +1,8 @@
-<div class="item-field text-2-line" [matMenuTriggerFor]="group"
+<div class="item-field {{viewdetail?'max-size-group':'text-2-line'}}" [matMenuTriggerFor]="group" matTooltip="{{LoadNhomCongViec(value)}}"
     [hidden]="!role">
     {{LoadNhomCongViec(value)}}
-</div>
-<div class="item-field text-2-line" [hidden]="role">
+</div> 
+<div class="item-field {{viewdetail?'max-size-group':'text-2-line'}}" [hidden]="role" matTooltip="{{LoadNhomCongViec(value)}}">
     {{LoadNhomCongViec(value)}}
 </div>
 <mat-menu #group="matMenu">

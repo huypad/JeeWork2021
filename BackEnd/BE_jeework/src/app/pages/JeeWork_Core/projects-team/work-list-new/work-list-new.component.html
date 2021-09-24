@@ -494,6 +494,13 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </ng-container>
+                                                                            <ng-container *ngFor="let tag of node.Tags">
+                                                                                <kt-cu-tag [node]="node" [tag]="tag"
+                                                                                           [role]="CheckRoles(20) && CheckClosedTask(node)"
+                                                                                           (loadData)="LoadDataTaskNew()"
+                                                                                           (RemoveTag)="RemoveTag(tag,node)">
+                                                                                </kt-cu-tag>
+                                                                            </ng-container>
                                                                             <span class="action-inline text-muted">
                                                                                 <i class="fas fa-tags"
                                                                                    *ngIf=" CheckRoles(20) && CheckClosedTask(node)"
@@ -532,15 +539,7 @@
                                                                                     </ng-container>
                                                                                 </mat-menu>
                                                                             </span>
-                                                                        </span>
-
-                                                                        <ng-container *ngFor="let tag of node.Tags">
-                                                                            <kt-cu-tag [node]="node" [tag]="tag"
-                                                                                       [role]="CheckRoles(20) && CheckClosedTask(node)"
-                                                                                       (loadData)="LoadDataTaskNew()"
-                                                                                       (RemoveTag)="RemoveTag(tag,node)">
-                                                                            </kt-cu-tag>
-                                                                        </ng-container>
+                                                                        </span> 
                                                                         <!-- <mat-icon (click)="CreateEvent(node)" class="float-right">aspect_ratio</mat-icon> -->
                                                                     </ng-container>
                                                                 </div>

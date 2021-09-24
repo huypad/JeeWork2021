@@ -2,7 +2,7 @@
 <div class="brand flex-column-auto" id="kt_brand" [ngClass]="brandClasses">
     <!--begin::Logo-->
     <a href="/" class="brand-logo">
-        <img alt="Logo" style="height: 30px;" [attr.src]="headerLogo"/>
+        <img alt="Logo" style="height: 30px;" [attr.src]="headerLogo" />
     </a>
     <!-- <span>Quản lý công việc</span> -->
     <!--end::Logo-->
@@ -22,7 +22,7 @@
     <ng-container *ngIf="disableAsideSelfDisplay">
         <!--begin::Header Logo-->
         <a routerLink="/">
-            <img alt="Logo" style="width: 40px;" [attr.src]="headerLogo"/>
+            <img alt="Logo" style="width: 40px;" [attr.src]="headerLogo" />
         </a>
         <!--end::Header Logo-->
     </ng-container>
@@ -30,8 +30,8 @@
     <ng-container *ngIf="menuAsideService && menuAsideService.menuList$">
         <!--begin::Menu Container-->
         <div id="kt_aside_menu" class="aside-menu" [ngClass]="asideMenuCSSClasses" data-menu-vertical="1"
-             [attr.data-menu-scroll]="asideMenuScroll" [attr.data-menu-dropdown]="asideMenuDropdown"
-             data-menu-dropdown-timeout="500">
+            [attr.data-menu-scroll]="asideMenuScroll" [attr.data-menu-dropdown]="asideMenuDropdown"
+            data-menu-dropdown-timeout="500">
             <!-- begin::Menu Nav -->
             <ul class="menu-nav" [ngClass]="ulCSSClasses">
                 <!--- END DYNAMIC DATA ARRAY MENU -->
@@ -39,7 +39,7 @@
                     routerLinkActive="menu-item-open" *ngFor="let p of menuData2 | async">
                     <a class="menu-link menu-toggle" routerLinkActive="active">
                         <span [inlineSVG]="'./assets/media/svg/icons/Design/Layers.svg'" cacheSVG="true"
-                              class="svg-icon menu-icon"></span>
+                            class="svg-icon menu-icon"></span>
                         <span class="menu-text"> {{'MainMenu.' + p.Title | translate }}</span>
                         <i class="menu-arrow"></i>
                     </a>
@@ -74,11 +74,9 @@
                 <li class="menu-item menu-item-submenu" aria-haspopup="true" data-menu-toggle="hover"
                     routerLinkActive="menu-item-open">
                     <div #asideMenu ktMenu [perfectScrollbar]="{wheelPropagation: false}"
-                         [ngStyle]="{'max-height': '90vh', 'position': 'relative'}" id="kt_aside_menu"
-                         class="aside-menu"
-                         [ngClass]="asideMenuCSSClasses" data-menu-vertical="1"
-                         [attr.data-menu-scroll]="asideMenuScroll"
-                         [attr.data-menu-dropdown]="asideMenuDropdown" data-menu-dropdown-timeout="500">
+                        [ngStyle]="{'max-height': '90vh', 'position': 'relative'}" id="kt_aside_menu" class="aside-menu"
+                        [ngClass]="asideMenuCSSClasses" data-menu-vertical="1" [attr.data-menu-scroll]="asideMenuScroll"
+                        [attr.data-menu-dropdown]="asideMenuDropdown" data-menu-dropdown-timeout="500">
                         <!-- begin::Menu Nav -->
                         <ul class="menu-nav" [ngClass]="ulCSSClasses">
                             <ng-container *ngFor="let child of menuAsideService.menuList$ | async">
@@ -88,7 +86,7 @@
                                 [ngTemplateOutletContext]="{ item: child }"></ng-container> -->
                                 <!-- <ng-container *ngIf="!child.title" [ngTemplateOutlet]="workspace"></ng-container> -->
                                 <ng-container *ngIf="child.title" [ngTemplateOutlet]="menuItemTemplate"
-                                              [ngTemplateOutletContext]="{ item: child }"></ng-container>
+                                    [ngTemplateOutletContext]="{ item: child }"></ng-container>
                             </ng-container>
                             <ng-container [ngTemplateOutlet]="addStatus"></ng-container>
                         </ul>
@@ -115,10 +113,10 @@
 <!-- https://share-devgcs.basecdn.net/apps/wework.png -->
 <ng-template #menuItemTemplate let-item="item" let-parentItem="parentItem">
     <ng-container *ngIf="!item.permission" [ngTemplateOutlet]="menuItemInnerTemplate"
-                  [ngTemplateOutletContext]="{ item: item, parentItem: parentItem  }"></ng-container>
+        [ngTemplateOutletContext]="{ item: item, parentItem: parentItem  }"></ng-container>
     <ng-template *ngIf="item.permission" ngxPermissionsOnly="{{ item.permission }}">
         <ng-container [ngTemplateOutlet]="menuItemInnerTemplate"
-                      [ngTemplateOutletContext]="{ item: item, parentItem: parentItem  }"></ng-container>
+            [ngTemplateOutletContext]="{ item: item, parentItem: parentItem  }"></ng-container>
     </ng-template>
 </ng-template>
 <!-- Custom -->
@@ -136,13 +134,13 @@
         <!-- if menu item hasn't submenu -->
         <a *ngIf="!item.submenu" class="kt-menu__link kt-menu__toggle menu-link hover-action">
             <ng-container [ngTemplateOutlet]="menuItemTextTemplate"
-                          [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
+                [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
         </a>
         <!-- if menu item has sumnenu child  white-space: break-spaces;-->
         <a *ngIf="item.submenu" class="kt-menu__link kt-menu__toggle menu-link  menu-toggle hover-action"
-           (click)="item.folderOpen=!item.folderOpen">
+            (click)="item.folderOpen=!item.folderOpen">
             <ng-container [ngTemplateOutlet]="menuItemTextTemplate"
-                          [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
+                [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
         </a>
 
         <!-- if menu item has submenu child then recursively call new menu item component -->
@@ -151,12 +149,12 @@
             <div *ngIf="item['custom-class'] === 'kt-menu__item--submenu-fullheight'" class="kt-menu__wrapper">
                 <!-- wrap submenu to full height -->
                 <ng-container [ngTemplateOutlet]="menuSubmenuTemplate"
-                              [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
+                    [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }"></ng-container>
             </div>
             <!-- normal submenu -->
             <ng-container *ngIf="item['custom-class'] !== 'kt-menu__item--submenu-fullheight'"
-                          [ngTemplateOutlet]="menuSubmenuTemplate"
-                          [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }">
+                [ngTemplateOutlet]="menuSubmenuTemplate"
+                [ngTemplateOutletContext]="{ item: item, parentItem: parentItem }">
             </ng-container>
         </div>
     </li>
@@ -167,8 +165,7 @@
                 (keyup.enter)="focusOutProject($event.target.value,item)"
                 (focusout)="focusOutProject($event.target.value,item)"> -->
             <app-focus-block class="form-control" type="text" isbd="true" style="width:100%"
-                             placeholder="{{'projects.nhaptenduan'  | translate}}"
-                             (out)="focusOutProject($event,item);">
+                placeholder="{{'projects.nhaptenduan'  | translate}}" (out)="focusOutProject($event,item);">
             </app-focus-block>
         </div>
     </ng-container>
@@ -178,11 +175,11 @@
     <ul class="menu-subnav">
         <ng-container *ngFor="let child of item.submenu">
             <ng-container *ngIf="child.section" [ngTemplateOutlet]="menuItemSectionTemplate"
-                          [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
+                [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
             <ng-container *ngIf="child.separator" [ngTemplateOutlet]="menuItemSeparatorTemplate"
-                          [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
+                [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
             <ng-container *ngIf="child.title" [ngTemplateOutlet]="menuItemTemplate"
-                          [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
+                [ngTemplateOutletContext]="{ item: child, parentItem: item }"></ng-container>
         </ng-container>
     </ul>
 </ng-template>
@@ -201,17 +198,17 @@
 
     <!-- if menu item using bullet -->
     <i *ngIf="parentItem && parentItem.bullet === 'dot' && !item.IsFolder" _ngcontent-jgl-c108=""
-       class="menu-bullet menu-bullet-dot"><span _ngcontent-jgl-c108=""></span></i>
+        class="menu-bullet menu-bullet-dot"><span _ngcontent-jgl-c108=""></span></i>
 
     <i *ngIf="parentItem && parentItem.bullet === 'line'" class="kt-menu__link-bullet kt-menu__link-bullet--line">
         <span></span>
     </i>
     <!-- menu item title text -->
     <span class=" menu-text" *ngIf="!item.submenu" (click)="NavigateTo(item.page)" style="white-space:break-spaces;"
-          [translate]="item.translate">{{item.title.trim()}}</span>
+        [translate]="item.translate">{{item.title.trim()}}</span>
 
     <span class=" menu-text" *ngIf="item.submenu" [translate]="item.translate"
-          style="white-space:break-spaces;">{{item.title.trim()}}</span>
+        style="white-space:break-spaces;">{{item.title.trim()}}</span>
     <!-- menu item with badge -->
     <span *ngIf="item.badge" class="kt-menu__link-badge">
         <span class="kt-badge" [ngClass]="item.badge.type">{{item.badge.value}}</span>
@@ -219,7 +216,7 @@
 
     <!-- Tạo mới space -->
     <div *ngIf="item.id_phanloai == 0 && commonService.CheckRole_WeWork(3501).length>0" class="hover-to-show icon-add"
-         style="text-align:right">
+        style="text-align:right">
         <button mat-icon-button [matMenuTriggerFor]="menu" class="bolder">
             <i class="las la-ellipsis-h m--font-brand text-primary" style="font-size: 2.2rem;"></i>
         </button>
@@ -238,8 +235,8 @@
             <button mat-menu-item *ngIf="item.Locked" (click)="ClosedProject(item)">
                 <mat-icon style="color:rgb(8, 122, 52)">lock_open</mat-icon>
                 <span>
-                        <span translate="GeneralKey.moteam"></span>
-                    </span>
+                    <span translate="GeneralKey.moteam"></span>
+                </span>
             </button>
             <ng-container *ngIf="item && !item.Locked">
 
@@ -252,8 +249,8 @@
                 <button mat-menu-item (click)="DuplicateProject(item)">
                     <mat-icon style="color:rgb(149, 14, 211);">filter_none</mat-icon>
                     <span>
-                    <span translate="GeneralKey.nhanbanteam"></span>
-                </span>
+                        <span translate="GeneralKey.nhanbanteam"></span>
+                    </span>
                 </button>
                 <button mat-menu-item (click)="AddAutomation(item)">
                     <mat-icon style="color:rgb(207, 65, 8);">autorenew</mat-icon>
@@ -262,20 +259,20 @@
                 <button mat-menu-item [matMenuTriggerFor]="recent" color="accent">
                     <mat-icon class="icon-sua">create</mat-icon>
                     <span>
-                    <span translate="GeneralKey.chinhsua"></span>
-                </span>
+                        <span translate="GeneralKey.chinhsua"></span>
+                    </span>
                 </button>
                 <button mat-menu-item [matMenuTriggerFor]="tc" color="accent">
                     <mat-icon class="icon-them">add</mat-icon>
                     <span>
-                    <span translate="GeneralKey.templatecenter"></span>
-                </span>
+                        <span translate="GeneralKey.templatecenter"></span>
+                    </span>
                 </button>
                 <button mat-menu-item (click)="Deleted(item)">
                     <mat-icon class="icon-xoa">clear</mat-icon>
                     <span>
-                    <span translate="GeneralKey.xoateam"></span>
-                </span>
+                        <span translate="GeneralKey.xoateam"></span>
+                    </span>
                 </button>
 
             </ng-container>
@@ -285,9 +282,9 @@
             <!-- <h5 style="color:#101010">{{ 'GeneralKey.templatecenter' | translate }}</h5> -->
             <button mat-menu-item><span translate="GeneralKey.browsetemplate" (click)="AddTemplate()"></span></button>
             <button mat-menu-item><span translate="GeneralKey.saveastemplate"
-                                        (click)="UpdateTemplate(1,item)"></span></button>
+                    (click)="UpdateTemplate(1,item)"></span></button>
             <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
-                                        (click)="UpdateTemplate(2,item)"></span></button>
+                    (click)="UpdateTemplate(2,item)"></span></button>
         </mat-menu>
         <mat-menu #recent="matMenu">
             <button type="button" (click)="AddProject(item,true)" mat-menu-item>
@@ -307,24 +304,14 @@
         </mat-menu>
     </div>
 
-    <ng-container *ngIf="item.id_phanloai > 0 && commonService.CheckRole_WeWork(3402).length>0">
+    <ng-container *ngIf="item.id_phanloai > 0">
         <!-- *ngIf="item.id_phanloai > 0 && commonService.CheckRole_WeWork(3402).length>0" -->
         <div style="text-align:right" class="hover-to-show icon-menu">
             <button mat-icon-button [matMenuTriggerFor]="belowMenu" class="bolder">
                 <i class="las la-ellipsis-h m--font-brand text-primary" style="font-size: 2.2rem;"></i>
             </button>
             <mat-menu #belowMenu="matMenu" yPosition="below">
-                <button mat-menu-item [matMenuTriggerFor]="tc"><span
-                        translate="GeneralKey.templatecenter"></span></button>
-                <mat-menu #tc="matMenu" yPosition="below">
-                    <button mat-menu-item><span translate="GeneralKey.browsetemplate"
-                                                (click)="AddTemplate()"></span></button>
-                    <button mat-menu-item><span translate="GeneralKey.saveastemplate"
-                                                (click)="UpdateTemplate(1,item)"></span></button>
-                    <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
-                                                (click)="UpdateTemplate(2,item)"></span></button>
-                </mat-menu>
-                <a [routerLink]="['/depts',item.id,'projects']">
+                <a [routerLink]="['/depts',item.id,'projects']"  *ngIf="commonService.CheckRole_WeWork(3402).length>0">
                     <button mat-menu-item>
                         <span translate="work.xemchitiet"></span>
                     </button>
@@ -334,41 +321,58 @@
                         <span translate="work.xemchitietcongviec"></span>
                     </button>
                 </a>
-                <a [routerLink]="['/depts',item.id,'report',item.id]">
-                    <button mat-menu-item>
-                        <span translate="work.xemchitietbaocao"></span>
+                <ng-container *ngIf="commonService.CheckRole_WeWork(3402).length>0">
+                    <button mat-menu-item [matMenuTriggerFor]="tc"><span
+                            translate="GeneralKey.templatecenter"></span></button>
+                    <mat-menu #tc="matMenu" yPosition="below">
+                        <button mat-menu-item><span translate="GeneralKey.browsetemplate"
+                                (click)="AddTemplate()"></span></button>
+                        <button mat-menu-item><span translate="GeneralKey.saveastemplate"
+                                (click)="UpdateTemplate(1,item)"></span></button>
+                        <button mat-menu-item><span translate="GeneralKey.updateexitingtemplate"
+                                (click)="UpdateTemplate(2,item)"></span></button>
+                    </mat-menu>
+                    <a [routerLink]="['/depts',item.id,'report',item.id]">
+                        <button mat-menu-item>
+                            <span translate="work.xemchitietbaocao"></span>
+                        </button>
+                    </a>
+                    <button (click)="AddDept(item,item.id)" mat-menu-item><span
+                            translate="department.{{item.IsFolder?'chinhsuafolder':'chinhsua'}}"></span></button>
+                    <button (click)="UpdateSpaceStatus(item)" mat-menu-item><span
+                            translate="department.{{item.IsFolder?'chinhsuatrangthaifolder':'chinhsuatrangthaidepartment'}}"></span>
                     </button>
-                </a>
-                <button (click)="AddDept(item,item.id)" mat-menu-item><span
-                        translate="department.{{item.IsFolder?'chinhsuafolder':'chinhsua'}}"></span></button>
-                <button (click)="UpdateSpaceStatus(item)" mat-menu-item><span
-                        translate="department.{{item.IsFolder?'chinhsuatrangthaifolder':'chinhsuatrangthaidepartment'}}"></span>
-                </button>
-                <button (click)="DeleteDept(item)" mat-menu-item><span
-                        translate="department.{{item.IsFolder?'xoafolder':'xoa'}}"></span></button>
-                <button mat-menu-item (click)="AddAutomation(item)">
-                    <span translate="GeneralKey.automation"></span>
-                </button>
+                    <button (click)="DeleteDept(item)" mat-menu-item><span
+                            translate="department.{{item.IsFolder?'xoafolder':'xoa'}}"></span></button>
+                    <button mat-menu-item (click)="AddAutomation(item)">
+                        <span translate="GeneralKey.automation"></span>
+                    </button>
+                </ng-container>
             </mat-menu>
         </div>
-        <ng-container *ngIf="item.IsFolder;then IsFolder else DuanSpace"></ng-container>
-        <ng-template #IsFolder>
-            <i *ngIf="commonService.CheckRole_WeWork(3501).length>0" matTooltip="{{'projects.themnhanhduan' | translate}}" matTooltipPosition="above"
-               class="align-items-center d-flex las la-plus hover-to-show icon-add text-primary"
-               style="font-size: 20px;padding: 10px;" (click)="ThemDuan(item.id)"></i>
-        </ng-template>
-        <ng-template #DuanSpace>
-            <i [matMenuTriggerFor]="folder" matTooltipPosition="above"
-               class="align-items-center d-flex las la-plus hover-to-show icon-add text-primary"
-               style="font-size: 20px;padding: 10px;"></i>
-            <mat-menu #folder="matMenu" yPosition="below">
-                <button *ngIf="commonService.CheckRole_WeWork(3501).length>0" (click)="ThemDuan(item.id)" mat-menu-item><span
-                        translate="projects.themnhanhduan"></span></button>
-                <button (click)="AddQuickFolder(item)" mat-menu-item><span
-                        translate="projects.themnhanhfolder"></span></button>
-                <button (click)="AddFolder(item)" mat-menu-item><span translate="projects.themfolder"></span></button>
-            </mat-menu>
-        </ng-template>
+
+        <ng-container *ngIf="commonService.CheckRole_WeWork(3402).length>0">
+            <ng-container *ngIf="item.IsFolder;then IsFolder else DuanSpace"></ng-container>
+            <ng-template #IsFolder>
+                <i *ngIf="commonService.CheckRole_WeWork(3501).length>0"
+                    matTooltip="{{'projects.themnhanhduan' | translate}}" matTooltipPosition="above"
+                    class="align-items-center d-flex las la-plus hover-to-show icon-add text-primary"
+                    style="font-size: 20px;padding: 10px;" (click)="ThemDuan(item.id)"></i>
+            </ng-template>
+            <ng-template #DuanSpace>
+                <i [matMenuTriggerFor]="folder" matTooltipPosition="above"
+                    class="align-items-center d-flex las la-plus hover-to-show icon-add text-primary"
+                    style="font-size: 20px;padding: 10px;"></i>
+                <mat-menu #folder="matMenu" yPosition="below">
+                    <button *ngIf="commonService.CheckRole_WeWork(3501).length>0" (click)="ThemDuan(item.id)"
+                        mat-menu-item><span translate="projects.themnhanhduan"></span></button>
+                    <button (click)="AddQuickFolder(item)" mat-menu-item><span
+                            translate="projects.themnhanhfolder"></span></button>
+                    <button (click)="AddFolder(item)" mat-menu-item><span translate="projects.themfolder"></span></button>
+                </mat-menu>
+            </ng-template>
+        </ng-container>
+
     </ng-container>
     <!-- if menu item has submenu child then put arrow icon -->
     <i *ngIf="item.submenu" class="menu-arrow"></i>

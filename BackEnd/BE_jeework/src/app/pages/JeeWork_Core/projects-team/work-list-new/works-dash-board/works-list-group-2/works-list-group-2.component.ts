@@ -249,7 +249,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
         this.WeWorkService.lite_milestone(this.ID_Project).subscribe((res) => {
             this.changeDetectorRefs.detectChanges();
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.list_milestone = res.data;
                 this.changeDetectorRefs.detectChanges();
             }
@@ -402,7 +402,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     /** SELECTION */
     CheckedNode(check: any, arr_model: any) {
         const checked = this.selection.selected.find(
-            (x) => x.id_row === arr_model.id_row
+            (x) => x.id_row == arr_model.id_row
         );
         const index = this.selection.selected.indexOf(arr_model, 0);
         if (!checked && check.checked) {
@@ -428,7 +428,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         });
 
         this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.status_dynamic = res.data;
                 const x = this.status_dynamic.find((val) => val.IsFinal == true);
                 if (x) {
@@ -441,7 +441,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         this.WeWorkService.lite_workgroup(this.ID_Project)
             .pipe(
                 tap((res) => {
-                    if (res && res.status === 1) {
+                    if (res && res.status == 1) {
                         this.listType = res.data;
                         this.changeDetectorRefs.detectChanges();
                     }
@@ -576,7 +576,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     GetField() {
         this.WeWorkService.GetListField(this.ID_Project, 3, false).subscribe(
             (res) => {
-                if (res && res.status === 1) {
+                if (res && res.status == 1) {
                     this.listField = res.data;
                 }
             }
@@ -779,7 +779,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         item.id_department = +this.Id_Department;
         item.columnname = fieldname;
         this._service.UpdateColumnWork(item).subscribe((res) => {
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.ReloadColData();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
@@ -798,7 +798,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         ];
         colDelete.forEach((element) => {
             const indextt = this.ListColumns.findIndex(
-                (x) => x.fieldname === element
+                (x) => x.fieldname == element
             );
             if (indextt >= 0) {
                 this.ListColumns.splice(indextt, 1);
@@ -811,13 +811,14 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                 : b.id_department > a.id_department
                     ? 1
                     : 0
-        );
+        ); 
+
         this.changeDetectorRefs.detectChanges();
     }
 
     ShowCol(item, IdDepartment) {
         if (!item.IsHidden) {
-            if (item.id_department === IdDepartment) {
+            if (item.id_department == IdDepartment) {
                 return true;
             }
         }
@@ -827,7 +828,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     ClosedTask(value, node) {
         this._service.ClosedTask(node.id_row, value).subscribe((res) => {
             this.ReloadData(true);
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -835,7 +836,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     getDropdownField(idField) {
-        const list = this.listNewfield.filter((x) => x.FieldID === idField);
+        const list = this.listNewfield.filter((x) => x.FieldID == idField);
         if (list) {
             return list;
         }
@@ -1207,7 +1208,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         // filter.value = this.ID_Project;
         filter.id_project_team = this.ID_Project;
         this.WeWorkService.list_account(filter).subscribe((res) => {
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.listUser = res.data;
                 // this.setUpDropSearchNhanVien();
             }
@@ -1746,7 +1747,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
     Create(_item: WorkDuplicateModel) {
         this._service.DuplicateCU(_item).subscribe((res) => {
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.layoutUtilsService.showActionNotification(
                     'Nhân bản thành công',
                     MessageType.Read,
@@ -1774,7 +1775,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
 
     mark_tag() {
         this.WeWorkService.lite_tag(this.ID_Project).subscribe((res) => {
-            if (res && res.status === 1) {
+            if (res && res.status == 1) {
                 this.list_Tag = res.data;
                 // this.changeDetectorRefs.detectChanges();
             }

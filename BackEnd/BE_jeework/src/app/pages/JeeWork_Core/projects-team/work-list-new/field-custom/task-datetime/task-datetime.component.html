@@ -2,7 +2,7 @@
 <ng-container *ngIf="(fieldname == 'createddate' || fieldname == 'end_date');else selectedDate">
     <div class="item-field">
         <span class="hide-more-text" matTooltip="{{value | timezone}}">
-            {{ value | timezone:'HH:mm' }}
+            <span style="font-size: 110%;">{{ value | timezone:'HH:mm' }}</span>
             <br>
             {{ value | timezone:'DD/MM/YYYY' }}
         </span>
@@ -17,7 +17,7 @@
         <span class=" hide-more-text" [ngClass]="getClassdate()"
             matTooltip="{{value | timezone}}" *ngIf="value;else setDate">
             <ng-container *ngIf="showall">
-                {{ value | timezone:'HH:mm' }}
+                <span style="font-size: 110%;">{{ value | timezone:'HH:mm' }}</span>
                 <br>
             </ng-container>
             {{ GetDatetime(value) }}
@@ -30,7 +30,7 @@
         <span class=" hide-more-text" [ngClass]="getClassdate()"
               matTooltip="{{value | timezone }}" *ngIf="value;else setDate">
             <ng-container *ngIf="showall">
-                {{ value | timezone:'HH:mm' }}
+                <span style="font-size: 110%;">{{ value | timezone:'HH:mm' }}</span>
                 <br>
             </ng-container>
             {{ GetDatetime(value) }}

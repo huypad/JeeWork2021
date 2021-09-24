@@ -63,9 +63,11 @@
                                                 <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
                                                           matTooltip="Chỉnh sửa">edit
                                                 </mat-icon>
-                                                <mat-icon class="-hover url" (click)="Delete_Templete(demo,false)"
-                                                          matTooltip="Xóa">close
-                                                </mat-icon>
+                                                <ng-container *ngIf="!demo.isdefault && demo.createdby > 0">
+                                                    <mat-icon class="-hover url" (click)="Delete_Templete(demo,false)"
+                                                            matTooltip="Xóa">close
+                                                    </mat-icon>
+                                                </ng-container>
                                             </div>
                                         </div>
                                     </div>
