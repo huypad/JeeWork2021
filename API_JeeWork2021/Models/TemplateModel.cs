@@ -66,7 +66,7 @@ namespace JeeWork_Core2021.Models
         public bool is_task { get; set; }
         public bool is_views { get; set; }
         public long share_with { get; set; } // 1 - Only Me, 2 - Everyone (including guests), 3 - All Members, 4 - Select people
-        public List<TempalteUserModel> list_share { get; set; } // Nếu share_with = 4 thì nhập thêm cột list_share (Danh sách các member)
+        public List<TemplateUserModel> list_share { get; set; } // Nếu share_with = 4 thì nhập thêm cột list_share (Danh sách các member)
         public List<ListFieldModel> list_field_name { get; set; }
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
@@ -88,7 +88,7 @@ namespace JeeWork_Core2021.Models
         public bool isdefault { get; set; }
         public long typeid { get; set; }
     }
-    public class TempalteUserModel
+    public class TemplateUserModel
     {
         public long id_row { get; set; }
         public long id_template { get; set; }
@@ -97,7 +97,7 @@ namespace JeeWork_Core2021.Models
     public class add_template_library_Model
     {
         public long templateid { get; set; } = 0; // link từ we_template_customer
-        public List<TempalteUserModel> list_share { get; set; } // Nếu share_with = 4 thì nhập thêm cột list_share (Danh sách các member)
+        public List<TemplateUserModel> list_share { get; set; } // Nếu share_with = 4 thì nhập thêm cột list_share (Danh sách các member)
        
     }
 }

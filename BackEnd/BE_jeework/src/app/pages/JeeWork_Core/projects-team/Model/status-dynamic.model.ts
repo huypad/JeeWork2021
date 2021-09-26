@@ -12,6 +12,8 @@ export class StatusDynamicModel extends BaseModel {
 	Position: number;
 	Follower: string;
 	IsDeadline: boolean;
+	IsFinal: boolean;
+	IsToDo: boolean;
 	clear() {
 		this.Id_row = 0;
 		this.StatusName = '';
@@ -25,5 +27,7 @@ export class StatusDynamicModel extends BaseModel {
 		this.Position = 0;
 		this.Follower = '0';
 		this.IsDefault = false;
+		this.IsFinal = false;
+		this.IsToDo = false;
 	}
 }

@@ -7,8 +7,11 @@ using JeeWork_Core2021.Classes;
 using JeeWork_Core2021.Controllers.Wework;
 using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,13 +27,17 @@ namespace JeeAccount.Controllers
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private INotifier _notifier;
+        private JeeWorkConfig _config;
+        private readonly ILogger<IHostingEnvironment> _logger;
 
-        public CommentController(ICommentService commentService, IConnectionCache _cache, IConfiguration configuration, INotifier notifier)
+        public CommentController(ICommentService commentService, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<IHostingEnvironment> logger, IOptions<JeeWorkConfig> config)
         {
+            _config = config.Value;
             _notifier = notifier;
             ConnectionCache = _cache;
             _configuration = configuration;
             this._commentService = commentService;
+            _logger = logger;
         }
 
         [HttpGet("getByComponentName/{componentName}")]
@@ -63,6 +70,41 @@ namespace JeeAccount.Controllers
             catch (Exception ex)
             {
                 return BadRequest(MessageReturnHelper.Exception(ex));
+            }
+        }    
+        
+        [HttpGet("getByComponentName_Mobile/{componentName}")]
+        public async Task<object> GetByComponentName_Mobile(string componentName)
+        {
+            UserJWT customData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            var access_token = Ulities.GetAccessTokenByHeader(HttpContext.Request.Headers);
+            if (customData is null)
+            {
+                return JsonResultCommon.DangNhap();
+            }
+            try
+            { 
+                var username = Ulities.GetUsernameByHeader(HttpContext.Request.Headers);
+                string Connectionstring = WeworkLiteController.getConnectionString(ConnectionCache, customData.CustomerID, _configuration);
+                var topicObjectID = await _commentService.GetTopicObjectIDAsync(componentName, Connectionstring);
+                if (!string.IsNullOrEmpty(topicObjectID))
+                {
+                    // return Ok(topicObjectID);
+                    return JsonResultCommon.ThanhCong(new { id = topicObjectID });
+                }
+                else
+                {
+                    var responseMessage = await _commentService.CreateTopicObjectIDAsync(username, access_token);
+                    if (!responseMessage.IsSuccessStatusCode) return JsonResultCommon.Custom($"Error {responseMessage.ReasonPhrase}");// BadRequest(MessageReturnHelper.Custom($"Error {responseMessage.ReasonPhrase}"));
+                    var newTopic = Newtonsoft.Json.JsonConvert.DeserializeObject<ConvertTopic>(responseMessage.Content.ReadAsStringAsync().Result);
+                    _commentService.SaveTopicID(componentName, newTopic.Id, Connectionstring);
+                    // return Ok(newTopic.Id);
+                    return JsonResultCommon.ThanhCong(new { id = newTopic.Id });
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, customData);
             }
         }
 

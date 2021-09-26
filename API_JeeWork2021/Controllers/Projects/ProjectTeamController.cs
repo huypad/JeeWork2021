@@ -237,6 +237,182 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        /// <summary>
+        /// ds project/team theo department
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        /// 
+        [Route("List-all-by-department")]
+        [HttpGet]
+        public object LisAlltByDepartment([FromQuery] QueryParams query)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            if (query == null)
+                query = new QueryParams();
+            bool Visible = true;
+            PageModel pageModel = new PageModel();
+            try
+            {
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+
+                    string error = "";
+                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
+                    SqlConditions Conds = new SqlConditions();
+                    string dieukienSort = "ht", dieukien_where = " ";
+                    string sqldepartment = @$" select id_row from we_department where disabled = 0 and ( id_row = { query.filter["id_department"]} or parentid = { query.filter["id_department"]})";
+                    if (string.IsNullOrEmpty(query.filter["id_department"]))
+                        return JsonResultCommon.Custom("Ban bắt buộc nhập");
+                    dieukien_where += " and id_department in ( "+ sqldepartment + " )";
+                    Conds.Add("id_department", query.filter["id_department"]);
+                    if (!string.IsNullOrEmpty(query.filter["keyword"]))
+                    {
+                        dieukien_where += " and (p.title like '%@keyword%' or p.description like '%@keyword%' or tao.Username like '%@keyword%' or sua.Username like '%@keyword%')";
+                        dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
+                    }
+                    #region Sort data theo các dữ liệu bên dưới
+                    Dictionary<string, string> sortableFields = new Dictionary<string, string>
+                        {
+                            { "title", "title"},
+                            { "description", "description"},
+                            { "CreatedBy", "NguoiTao"},
+                            { "CreatedDate", "CreatedDate"},
+                            { "UpdatedBy", "NguoiSua"},
+                            {"UpdatedDate","UpdatedDate" },
+                            {"TrangThai","status" },
+                            {"department","department" },
+                            {"Locked","Locked" },
+                        };
+                    #endregion
+                    if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
+                        dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
+                    #region Trả dữ liệu về backend để hiển thị lên giao diện
+
+                    #region get list trạng thái status 
+                    //List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where IsFinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+                    //List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+                    //string strhoanthanh = string.Join(",", lstHoanthanh);
+                    //string strquahan = string.Join(",", lstQuahan);
+                    #endregion
+                    string sqlq = @$"select p.*, de.title as department,coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht
+                                    , coalesce(w.quahan,0) as quahan, '' as NguoiTao
+                                    , '' as NguoiSua from we_project_team p 
+                                    join we_department de on de.id_row=p.id_department
+                                    left join (select count(*) as tong,COUNT(CASE WHEN w.end_date is not null THEN 1 END) as ht
+                                    , COUNT(CASE WHEN w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null THEN 1 END) as quahan
+                                    ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
+                                    where p.Disabled=0 and de.Disabled = 0 " + dieukien_where + "  order by " + dieukienSort;
+                    sqlq += @$";select u.*,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 
+                                join we_project_team p on p.id_row=u.id_project_team 
+                                and id_department in ({sqldepartment}) where u.disabled=0 ";
+                    DataSet ds = cnn.CreateDataSet(sqlq, Conds);
+                    if (cnn.LastError != null || ds == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    DataTable dt = ds.Tables[0];
+                    if (dt.Rows.Count == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
+                    var temp = dt.AsEnumerable();
+                    dt = temp.CopyToDataTable();
+                    int total = dt.Rows.Count;
+                    pageModel.TotalCount = total;
+                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    pageModel.Size = query.record;
+                    pageModel.Page = query.page;
+                    if (query.more)
+                    {
+                        query.page = 1;
+                        query.record = pageModel.TotalCount;
+                    }
+                    #region Map info account từ JeeAccount
+                    foreach (DataRow item in ds.Tables[0].Rows)
+                    {
+                        var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (infoNguoiTao != null)
+                        {
+                            item["NguoiTao"] = infoNguoiTao.FullName;
+                        }
+                        if (infoNguoiSua != null)
+                        {
+                            item["NguoiSua"] = infoNguoiSua.FullName;
+                        }
+                    }
+                    foreach (DataRow item in ds.Tables[1].Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["username"] = info.Username;
+                            item["tenchucdanh"] = info.Jobtitle;
+                            item["mobile"] = info.PhoneNumber;
+                            item["image"] = info.AvartarImgURL;
+                        }
+                    }
+                    #endregion
+                    // Phân trang
+                    dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   description = r["description"],
+                                   id_department = r["id_department"],
+                                   department = r["department"],
+                                   spacename = WeworkLiteController.Get_SpaceName(r["id_department"].ToString(), ConnectionString),
+                                   //CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
+                                   CreatedDate = !r["CreatedDate"].Equals(DBNull.Value) ? ((DateTime)r["CreatedDate"]).ToString("u") : "",
+                                   icon_folder = "fa fa-folder-open",
+                                   icon_space = "fas fa-rocket",
+                                   CreatedBy = r["CreatedBy"],
+                                   NguoiTao = r["NguoiTao"],
+                                   //UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
+                                   UpdatedDate = r["UpdatedDate"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["UpdatedDate"]),
+                                   UpdatedBy = r["UpdatedBy"],
+                                   NguoiSua = r["NguoiSua"],
+                                   status = r["status"],
+                                   locked = r["locked"],
+                                   users = from u in ds.Tables[1].AsEnumerable()
+                                           where u["id_project_team"].ToString() == r["id_row"].ToString()
+                                           select new
+                                           {
+                                               id_nv = u["id_user"],
+                                               hoten = u["hoten"],
+                                               username = u["username"],
+                                               tenchucdanh = u["tenchucdanh"],
+                                               mobile = u["mobile"],
+                                               image = u["image"]
+                                           },
+                                   Count = new
+                                   {
+                                       tong = r["tong"],
+                                       ht = r["ht"],
+                                       quahan = r["quahan"],
+                                       percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"])
+                                   }
+                               };
+                    return JsonResultCommon.ThanhCong(data, pageModel, Visible);
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
         [Route("List")]
         [HttpGet]
         public object List([FromQuery] QueryParams query)
@@ -1426,7 +1602,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     {
                         string departmentid = cnn.ExecuteScalar("select IDENT_CURRENT('we_department')").ToString();
                     }
-
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -1532,7 +1707,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if(soluongstatus > 0)
                     {
                         string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
-                        select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.id_department + "";
+                        select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.id_department + "";
                         cnn.ExecuteNonQuery(insertSTT);
                         if (cnn.LastError != null)
                         {

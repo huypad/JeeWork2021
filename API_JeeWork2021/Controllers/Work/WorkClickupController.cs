@@ -2361,6 +2361,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     result = r["result"],
                                     estimates = r["estimates"],
                                     closed = r["closed"],
+                                    num_comment = r["num_comment"],
                                     closed_work_date = r["closed_work_date"],
                                     closed_work_by = r["closed_work_by"],
                                     accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
@@ -6324,7 +6325,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             string collect_by = "CreatedDate";
             if (!string.IsNullOrEmpty(query.filter["collect_by"]))
                 collect_by = collect[query.filter["collect_by"]];
-
             if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -6337,7 +6337,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 to = to.AddDays(1);
                 dieukien_where += " and w." + collect_by + "<@to";
                 Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
-
             }
             int nam = DateTime.Today.Year;
             int thang = DateTime.Today.Month;
@@ -6406,12 +6405,16 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             where 1=1 " + dieukien_where + "  order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.disabled=0 and t.disabled=0";
-            string where_id_project_team = "";
+            string where_string = "";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
             {
-                where_id_project_team = " and id_project_team=" + query.filter["id_project_team"];
+                where_string = " and id_project_team=" + query.filter["id_project_team"];
             }
-            sqlq += where_id_project_team;
+            if (!string.IsNullOrEmpty(query.filter["status"]))
+            {
+                where_string += " and status=" + query.filter["status"];
+            }
+            sqlq += where_string;
             //người theo dõi
             sqlq += @$";select id_work,id_user,'' as hoten from we_work_user u 
                         where u.disabled = 0 and u.loai = 2";
@@ -6427,7 +6430,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                                                     where id_action in (select id_row from we_log_action where object_type = 1)
                                                     group by object_id
                                                 ) b on a.id_row = b.object_id
-                                            where a.disabled = 0 " + where_id_project_team + " " +
+                                            where a.disabled = 0 " + where_string + " " +
                                     "order by maxdate desc";
             DataTable dt_activity = cnn.CreateDataTable(sql_activity);
             #region Map info account từ JeeAccount

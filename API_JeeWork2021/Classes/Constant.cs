@@ -20,10 +20,6 @@ namespace JeeWork_Core2021.Classes
         public const string ERRORCODE_NOTEXISTS = "107";//Lỗi dữ liệu truyền vào không tồn tại
         public const string ERRORCODE_EXCEPTION = "0000";//EXCEPTION
         public const string ERROR_NODATA = "108";//lỗi không có dữ liệu
-
-        public const string BASE_URL_Img = "https://gateway.webcore.vn/";
-        public const string BASE_URL_ImgLoaiHang = "http://sales.webcore.vn";
-        public const string BASE_URL_ImgNhanVien = "http://hrm.webcore.vn/";
         public static string RootUpload { get { return "dulieu"; } }
         public static string HinhAnh { get { return "/hinhanh"; } }
         public static string HinhAnh_MatHang { get { return "/hinhanh/mathang"; } }

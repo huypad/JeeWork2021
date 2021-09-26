@@ -552,7 +552,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         [HttpGet]
         public object Lite_Account([FromQuery] FilterModel filter)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -566,9 +565,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
-                    //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
-                    //string ids = string.Join(",", nvs);
                     string error = "";
                     string listID = ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
@@ -1271,49 +1267,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     {
                         Visible = false;
                     }
+                    Insert_Template(cnn, loginData.CustomerID.ToString());
                     SqlConditions conds = new SqlConditions(); string sql = "";
                     conds.Add("Disabled", 0);
                     conds.Add("is_template_center", 0);
                     conds.Add("CustomerID", loginData.CustomerID);
-                    sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, customerid, createddate,createdby,updatedby,updateddate " +
+                    sql = "select id_row, title, description, isdefault, color, id_department, TemplateID, customerid, createddate,createdby,updatedby,updateddate " +
                         "from we_template_customer " +
                         "where (where) order by Title";
-                    //Check CustommerID có template chưa nếu chưa thì thêm vào
-                    cnn.BeginTransaction();
-                    #region ktra k có thì thêm mới danh sách template cho kh mới
-                    int soluong = int.Parse(cnn.ExecuteScalar("select count(*) from we_template_customer where Disabled = 0 and is_template_center =0 and CustomerID = " + loginData.CustomerID).ToString());
-                    if (soluong == 0)
-                    {
-                        DataTable dt_listSTT = cnn.CreateDataTable("select * from we_template_list where is_template_center <>1 and disabled = 0");
-                        Hashtable val = new Hashtable();
-                        foreach (DataRow item in dt_listSTT.Rows)
-                        {
-                            val["Title"] = item["Title"];
-                            val["Description"] = item["Description"];
-                            val["TemplateID"] = item["id_row"];
-                            val["CustomerID"] = loginData.CustomerID;
-                            val["CreatedDate"] = Common.GetDateTime();
-                            val["CreatedBy"] = loginData.UserID;
-                            if (cnn.Insert(val, "we_template_customer") != 1)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
-                            string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString();
-                            string sql_insert = "";
-                            sql_insert = $@"insert into we_template_status (StatusID, TemplateID, StatusName, description, CreatedDate, CreatedBy, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo) " +
-                                "select id_Row, " + idc + ", StatusName, description, GETUTCDATE(), 0, Disabled, Type, IsDefault, color, Position, IsFinal, IsDeadline, IsTodo " +
-                                "from we_status_list where disabled = 0 and id_template_list = " + item["id_row"] + "";
-                            cnn.ExecuteNonQuery(sql_insert);
-                            if (cnn.LastError != null)
-                            {
-                                cnn.RollbackTransaction();
-                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            }
-                        }
-                    }
-                    #endregion
-                    cnn.EndTransaction();
                     DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
                     if (cnn.LastError != null || dt_template == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -3766,18 +3727,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return true;
         }
-        public static bool CheckUpdateWorkClosed(long id, DpsConnection cnn)
-        {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("disabled", 0);
-            cond.Add("id_row", id);
-            cond.Add("closed", 1);
-            string sqlq = "select * from we_work where (where) ";
-            DataTable dt = cnn.CreateDataTable(sqlq, "(where)", cond);
-            if (dt.Rows.Count > 0)
-                return false;
-            return true;
-        }
         public static bool insert_status(long id, string column_name, UserJWT loginData, DpsConnection cnn)
         {
             long templateid = 0;
@@ -3807,7 +3756,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             DataTable dt = new DataTable();
             // Lấy ID template mặc định
             string sql_template = "select id_row from we_template_customer " +
-                "where CustomerID = " + loginData.CustomerID + " and IsDefault = 1";
+                "where customerid = " + loginData.CustomerID + " and IsDefault = 1";
             long template_default = long.Parse(cnn.ExecuteScalar(sql_template).ToString());
             if ("id_department".Equals(column_name))
             {
@@ -3999,7 +3948,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             return true;
 
         }
-
         public static bool CheckCustomerID(long id, string TableName, UserJWT loginData, DpsConnection cnn)
         {
             string sqlq = "";

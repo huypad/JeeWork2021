@@ -18,7 +18,8 @@ namespace JeeWork_Core2021.Models
         public bool IsFolder { get; set; } = false;
         public long ParentID { get; set; }
         public TemplateCenterModel templatecenter { get; set; }
-
+        public List<StatusDynamicModel> status { get; set; } // List status đã custom
+        public List<TemplateStatusModel> status_hethong { get; set; } // List status mặc định của hệ thống
     }
     public class DepartmentOwnerModel
     {

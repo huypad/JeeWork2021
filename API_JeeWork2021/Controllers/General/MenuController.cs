@@ -175,7 +175,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                  owner = r["owner"],
                                                  list = from r2 in ds_workspace.Tables[2].AsEnumerable()
                                                         where r2["id_department"].ToString() == r["id_row"].ToString()
-                                                        orderby r2["Title"]
+                                                        //orderby r2["Title"]
                                                         select new
                                                         {
                                                             ID_Row = r2["id_row"],
@@ -205,7 +205,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
                                                               parentowner = r3["parentowner"],
                                                               list = from r4 in ds_workspace.Tables[2].AsEnumerable()
                                                                      where r4["id_department"].ToString() == r3["id_row"].ToString()
-                                                                     orderby r4["Title"]
+                                                                     //orderby r4["Title"]
                                                                      select new
                                                                      {
                                                                          ID_Row = r4["id_row"],

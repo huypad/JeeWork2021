@@ -8,6 +8,8 @@ import {
   ChangeDetectorRef,
   ElementRef,
   OnChanges,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { JeeCommentService } from "./jee-comment.service";
 import { CdkTextareaAutosize } from "@angular/cdk/text-field";
@@ -66,6 +68,7 @@ export class JeeCommentComponent implements OnInit {
   @Input() number: number;
   @Input() componentName: string;
   @Input() showonpopup: boolean = false;
+  @Output() changeValue = new EventEmitter<any>();
   public lstObjectID: string[] = [];
 
   //demo
@@ -184,6 +187,7 @@ export class JeeCommentComponent implements OnInit {
   }
 
   getShowChangeTopic() {
+    this.changeValue.emit(true);
     this._isLoading$.next(true);
     this.service
       .showChangeTopicCommentByObjectID(this.objectID, this.filter())

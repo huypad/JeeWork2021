@@ -5,34 +5,19 @@ using System.Web;
 
 namespace JeeWork_Core2021.Models
 {
-    public class StatusDynamicModel
+    public class FilterWorkModel
     {
-        public long Id_row { get; set; }
-        public string StatusName { get; set; }
-        public string Description { get; set; }
-        public long Id_project_team { get; set; }
-        public string Type { get; set; }
-        public bool? IsDefault { get; set; }
-        public string Color { get; set; }
-        public long Position { get; set; }
-        public long Follower { get; set; }
-        public long id_department { get; set; }
+        public long id_row { get; set; }
+        public string title { get; set; }
+        public string color { get; set; }
+        public List<FilterDetailModel> details { get; set; }
     }
-    public class PositionModel //
+    public class FilterDetailModel
     {
-        public long id_row_from { get; set; }
-        public long id_row_to { get; set; }
-        public long position_from { get; set; }
-        public long position_to { get; set; }
-        public string columnname { get; set; }
-        public long id_columnname { get; set; }
-    }
-    public class PositionTemplateModel
-    {
-        public long id_row_from { get; set; }
-        public long id_row_to { get; set; }
-        public long position_from { get; set; }
-        public long position_to { get; set; }
-        public long templateid { get; set; }
+        public long id_row { get; set; }
+        public int id_key { get; set; }
+        public string @operator { get; set; }
+        public string value { get; set; }
+
     }
 }

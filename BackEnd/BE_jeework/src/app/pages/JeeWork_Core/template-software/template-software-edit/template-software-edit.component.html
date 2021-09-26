@@ -221,7 +221,7 @@
                                         {{ 'department.trangthaitre'|translate}}
                                     </div>
                                     <ng-container *ngFor="let stt of listSTTDeadline()">
-                                        <div class="status-input col-12 form-control" *ngIf="stt.IsDeadline">
+                                        <div class="status-input col-12 form-control" >
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                                 <div class="row" style="width:200px;">
                                                     <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
@@ -266,7 +266,7 @@
                                         {{ 'department.trangthaidone'|translate}}
                                     </div>
                                     <ng-container *ngFor="let stt of listSTTFinal()">
-                                        <div class="status-input col-12 form-control" *ngIf="stt.IsFinal">
+                                        <div class="status-input col-12 form-control" >
                                             <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                                 <div class="row" style="width:200px;">
                                                     <div class="color-picker" [ngStyle]="{'backgroundColor': color}"

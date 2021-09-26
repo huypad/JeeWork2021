@@ -1,3 +1,4 @@
+import { StatusDynamicModel } from './../../projects-team/Model/status-dynamic.model';
 import { TemplateCenterModel } from './../../template-center/template-model/template.model';
 import { BaseModel } from './../../../../_metronic/jeework_old/core/_base/crud/models/_base.model';
 
@@ -16,6 +17,7 @@ export class DepartmentModel extends BaseModel {
 	DefaultView: any;
 	ParentID: any;
 	templatecenter: TemplateCenterModel;
+	status: Array<StatusDynamicModel>;
 	clear() {
 		this.RowID = 0;
 		this.dept_name = '';
@@ -24,6 +26,7 @@ export class DepartmentModel extends BaseModel {
 		this.id_cocau = 0;
 		this.Owners = [];
 		this.DefaultView = [];
+		this.status = [];
 		this.IsDataStaff_HR = false;
 		this.ReUpdated = false;
 		this.TemplateID = 0;

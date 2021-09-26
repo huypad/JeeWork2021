@@ -451,7 +451,7 @@ namespace JeeWork_Core2021.Classes
                 sql_space += " and parentid is null (admin)";
                 sql_project = ";select p.id_row, p.icon, p.title, p.detail, p.id_department" +
                             ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
-                            ", p.priority, p.locked, p.disabled, default_view, '0' as admin_project " +
+                            ", p.priority, p.locked, p.disabled, p.CreatedDate, default_view, '0' as admin_project " +
                             "from we_project_team p " +
                             $"where p.disabled = 0 and p.id_department in (select id_row from we_department where idkh = " + loginData.CustomerID + ") (dk_proj)";
                 if (!MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID))
@@ -474,6 +474,7 @@ namespace JeeWork_Core2021.Classes
                     sql_folder = sql_folder.Replace("(admin)", "");
                     sql_project = sql_project.Replace("(dk_proj)", " ");
                 }
+                sql_project += " order by createddate desc";
                 DataTable dt_space = new DataTable();
                 DataTable dt_folder = new DataTable();
                 DataTable dt_project = new DataTable();
@@ -511,36 +512,6 @@ namespace JeeWork_Core2021.Classes
                 ds_workspace.Tables.Add(dt_folder);
                 ds_workspace.Tables.Add(dt_project);
                 return ds_workspace;
-            }
-        }
-        public static DataTable dt_datalist(string id_department, UserJWT loginData, long owner)
-        {
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
-            {
-                DataTable result = new DataTable();
-                string sql_project = ""; string join = ""; string str_where = " where (where)"; string col_admin = "";
-                SqlConditions conds = new SqlConditions();
-                conds.Add("id_department", id_department);
-                conds.Add("p.disabled", 0);
-                sql_project = $@"select p.id_row, p.icon, p.title, p.detail, p.id_department" +
-                          ", p.loai, p.start_date, p.end_date, p.color, p.template, p.status, p.is_project" +
-                          ", p.priority, p.locked, p.disabled, default_view, (column) " +
-                          "from we_project_team p ";
-                if (owner == 1)
-                {
-                    conds.Add("u.id_user", loginData.UserID);
-                    conds.Add("u.disabled", 0);
-                    sql_project = sql_project.Replace("(column)", "u.admin");
-                    join = " join we_project_team_user u on u.id_project_team = p.id_row";
-                }
-                else
-                {
-                    //col_admin = "ISNULL((select 1 where exists (select 1 from we_project_team where id_user = " + loginData.UserID + " and admin = 1)),0) as isadmin ";
-                    sql_project = sql_project.Replace("(column)", "1 as admin");
-                }
-
-                result = cnn.CreateDataTable(sql_project + col_admin + join + str_where, "(where)", conds);
-                return result;
             }
         }
         public static string GetIDByWorkSpace(long id, long type, UserJWT loginData)
@@ -590,64 +561,7 @@ namespace JeeWork_Core2021.Classes
             return dt.AddDays(-1 * diff).Date;
         }
 
-        /// <summary>
-        /// Lấy danh sách các cơ cấu tổ chức nhân viên có quyền truy xuất
-        /// </summary>
-        /// <param name="id_nv">Nhân viên</param>
-        public static string GetListStructureByNhanvien(string id_nv)
-        {
-            string list = "0";
-            //using (DpsConnection cnn = new DpsConnection(HRConnectionString))
-            //{
-            //    string custemerid = GetCustemerID(id_nv, cnn).ToString();
-            //    SqlConditions cond = new SqlConditions();
-            //    cond.Add("id_nv", id_nv);
-            //    DataTable dt = cnn.CreateDataTable("select cocauid from P_Phanquyenphamvi where (where)", "(where)", cond);
-            //    cnn.Disconnect();
-            //    foreach (DataRow r in dt.Rows)
-            //    {
-            //        list += "," + r[0];
-            //        list += GetListStructureByParent(r["cocauid"].ToString(), custemerid, cnn, false);
-            //    }
-            //}
-            return list;
-        }
-        /// <summary>
-        /// Lấy danh sách các cơ cấu tổ chức nhân viên có quyền truy xuất
-        /// </summary>
-        /// <param name="id_nv">Nhân viên</param>
-        /// <param name="cocauid">Nhân viên</param>
-        public static string GetQuyenCoCauIDTheoNhanVien(long id_nv, DpsConnection cnn)
-        {
-            string id = "0";
-            DataTable dt = cnn.CreateDataTable($@"select top 1 cocauid from P_Phanquyendonvi join DM_Donvisudung on rowid = donviid 
-                        where startdate <= GETUTCDATE() and (expiredate is NULL or expiredate >= GETUTCDATE()) and id_nv = {id_nv}");
-            if (dt.Rows.Count > 0)
-            {
-                id = dt.Rows[0][0].ToString();
-            }
-            return id;
-        }
-        public static string GetListStructureByParent(string parentid, string custemerid, DpsConnection cnn, bool IsBaoGomDL)
-        {
-            string list = "";
-            SqlConditions cond = new SqlConditions();
-            cond.Add("parentid", parentid);
-            cond.Add("tbl_cocautochuc.disable", 0);
-            cond.Add("tbl_cocautochuc.custemerid", custemerid);
-            string select = "select tbl_cocautochuc.rowid from tbl_cocautochuc where (where)";
-            //if (!IsBaoGomDL)
-            //    select = "select tbl_cocautochuc.rowid from tbl_cocautochuc left join dm_loaihinhdonvi on loaidonvi = dm_loaihinhdonvi.rowid where (ladonvidoclap is NULL or ladonvidoclap =0) and (where)";
-            //DataTable dt = cnn.CreateDataTable($"select tbl_cocautochuc.rowid from tbl_cocautochuc left join dm_loaihinhdonvi on loaidonvi = dm_loaihinhdonvi.rowid where {(IsBaoGomDL ? "" : "(ladonvidoclap is NULL or ladonvidoclap =0) and")} (where)", "(where)", cond);
-            DataTable dt = cnn.CreateDataTable(select, "(where)", cond);
-            foreach (DataRow r in dt.Rows)
-            {
-                list += "," + r[0];
-                list += GetListStructureByParent(r["rowid"].ToString(), custemerid, cnn, IsBaoGomDL);
-            }
-            //if (list.Equals("")) list = "," + parentid;
-            return list;
-        }
+       
         public static DateTime convertStringToDatetime(string strNgay)
         {
             string[] formats = new string[] { "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH", "dd/MM/yyyy",
@@ -844,7 +758,6 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool IsTaskClosed(long id_work, DpsConnection cnn)
         {
-
             // kiểm tra công việc đó của mình hay không
             SqlConditions conds = new SqlConditions();
             conds.Add("id_work", id_work);
@@ -859,7 +772,6 @@ namespace JeeWork_Core2021.Classes
 
         public static bool IsProjectClosed(string id_project_team, DpsConnection cnn)
         {
-
             // kiểm tra công việc đó của mình hay không
             SqlConditions conds = new SqlConditions();
             conds.Add("id_project_team", id_project_team);
@@ -871,7 +783,6 @@ namespace JeeWork_Core2021.Classes
             }
             return false;
         }
-
         public static bool IsAdminTeam(string id_project_team, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
 
@@ -1057,7 +968,6 @@ namespace JeeWork_Core2021.Classes
                 data = JsonConvert.SerializeObject(data)
             };
             _logger.LogInformation(JsonConvert.SerializeObject(d2));
-
         }
         public static void WriteLogByFunction_Flatform(string Pagename, string content, string CustemerID, string username, string actions, object data)
         {
