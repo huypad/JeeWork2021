@@ -20,3 +20,4 @@ export APP_IsOnlineDB=null
 export APP_ConnectionString="Data Source=192.168.199.4,1433;Initial Catalog=jeework;User ID=jeework;Password=Jee33W0rkdB"
 export APP_SecretKey=6LfyWeYUAAAAAPMDrJF8PQ6hsO0ytRLRIc2fKgds
 export APP_Key=ZbsHPbRqNvdgMfyG
+export SIZE_UPLOAD=200000000
