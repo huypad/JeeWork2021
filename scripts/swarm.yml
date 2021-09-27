@@ -30,6 +30,7 @@ services:
       AppConfig__ConnectionString: ${APP_ConnectionString}
       AppConfig__SecretKey: ${APP_SecretKey}
       AppConfig__Key: ${APP_Key}
+      AppConfig__SizeUpload: ${SIZE_UPLOAD}
     deploy:
       mode: replicated
       replicas: 1
