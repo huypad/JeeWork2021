@@ -654,7 +654,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                         where ParentID is not null and ParentID = {IDdepartment} and " + where_department + "";
                     sql_task = @$"select w.*,st.color,st.StatusName from v_wework_clickup_new w
 left join we_status st on w.status = st.id_row 
-where w.Disabled = 0 and id_parent is null and  id_department in (select id_row from we_department where Disabled = 0 and id_row = {IDdepartment} or ParentID = {IDdepartment})";
+where w.Disabled = 0 and id_parent is null and  w.id_department in (select id_row from we_department where Disabled = 0 and id_row = {IDdepartment} or ParentID = {IDdepartment})";
                     DataTable dt_space = cnn.CreateDataTable(sql_space);
                     DataTable dt_project = cnn.CreateDataTable(sql_project);
                     DataTable dt_folder = cnn.CreateDataTable(sql_folder);
