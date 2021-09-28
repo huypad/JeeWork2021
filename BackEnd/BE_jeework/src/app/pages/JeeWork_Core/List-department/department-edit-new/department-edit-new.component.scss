@@ -73,48 +73,7 @@
             }
         }
 
-        .status-input{
-            display: flex;
-            margin: 3px 0 5px 0;
-            .box-color{
-                width: 15px;
-                height: 15px;
-                background-color: red;
-                margin: auto;
-                margin-right: 5px;
-                cursor: pointer;
-            }
-            .input{
-                flex-grow: 1;
-                input{
-                    width: 100%;
-                    border:none;
-                    &:focus{
-                        border:none;
-                        outline: none;
-                        border-bottom: 1px solid gray;
-                    }
-                }
-            }
-            .action-input{
-                min-width: 20px;
-            }
-
-        }
-
-        .box-stt{
-            width: 15px;
-            height: 15px;
-            margin: auto 10px;
-            position: relative;
-            border-radius: 3px;
-            border: 1px solid transparent;
-            transition: .1s;
-            cursor: pointer;
-            color: transparent;
-        }
-
-
+        
     }
 
     .line-tab{
@@ -215,3 +174,50 @@
     width:10px;
     height:10px;
 }
+
+.status-input{
+    display: flex;
+    margin: 3px 0 5px 0;
+    .box-color{
+        width: 15px;
+        height: 15px;
+        background-color: red;
+        margin: auto;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+    .input{
+        flex-grow: 1;
+        input{
+            width: 100%;
+            border:none;
+            &:focus{
+                border:none;
+                outline: none;
+                border-bottom: 1px solid gray;
+            }
+        }
+    }
+    .action-input{
+        min-width: 20px;
+    }
+
+}
+.drag-icon {
+    position: relative;
+  }
+  .drag-icon i {
+    cursor: move;
+  }
+.box-stt{
+    width: 15px;
+    height: 15px;
+    margin: auto 10px;
+    position: relative;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    transition: .1s;
+    cursor: pointer;
+    color: transparent;
+}
+

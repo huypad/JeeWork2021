@@ -979,7 +979,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Detail(long id, bool istemplatelist = false)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1492,8 +1491,8 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     if (data.templateid > 0)
                     {
                         string sql_insert = "";
-                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, save_as_id, customerid,is_template_center,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id,addtolibrary)
-                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id,1 from we_template_list where Disabled = 0 and id_row = " + data.templateid + "";
+                        sql_insert = $@"insert into we_template_customer (title, description, createdDate, createdby, disabled, isdefault, color, id_department, save_as_id, customerid,is_template_center,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id,addtolibrary, is_custom)
+                        select title, description, getdate(), " + loginData.UserID + ", 0, isdefault, color, 0, id_row, " + loginData.CustomerID + " as CustomerID,1,template_typeid,types,levels,viewid,group_statusid,field_id,share_with,sample_id,1, is_custom from we_template_list where disabled = 0 and id_row = " + data.templateid + "";
                         cnn.ExecuteNonQuery(sql_insert);
                         if (cnn.LastError != null)
                         {

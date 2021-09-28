@@ -571,48 +571,53 @@
                             <div class="header-view-title w-100">
                                 {{ 'department.trangthaihoatdong'|translate}}
                             </div>
-                            <ng-container *ngFor="let stt of listSTTHoatdong(); let index = index">
-                                <div class="status-input col-12 form-control" *ngIf="!stt.IsFinal && !stt.IsDeadline">
-                                    <mat-menu #color="matMenu" yPosition="above" xPosition="after">
-                                        <div class="row" style="width:200px;">
-                                            <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-                                                (click)="ChangeColor(color,stt)" *ngFor="let color of defaultColors">
-                                            </div>
+                            <div class="row w-100" cdkDropList (cdkDropListDropped)="drop($event)">
+                                <ng-container *ngFor="let stt of listSTTHoatdong(); let index = index">
+                                    <div class="status-input col-12 form-control" *ngIf="!stt.IsFinal && !stt.IsDeadline" cdkDrag>
+                                        <div class="w-10 drag-icon">
+                                            <i class="material-icons" cdkDragHandle>reorder</i>
                                         </div>
-                                    </mat-menu>
-                                    <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
-                                        [matMenuTriggerFor]="color"></button>
-                                    <div class="box-color" (click)="changeColor.click();"
-                                        [ngStyle]="{'backgroundColor': stt.color }">
-
+                                        <mat-menu #color="matMenu" yPosition="above" xPosition="after">
+                                            <div class="row" style="width:200px;">
+                                                <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
+                                                    (click)="ChangeColor(color,stt)" *ngFor="let color of defaultColors">
+                                                </div>
+                                            </div>
+                                        </mat-menu>
+                                        <button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
+                                            [matMenuTriggerFor]="color"></button>
+                                        <div class="box-color" (click)="changeColor.click();"
+                                            [ngStyle]="{'backgroundColor': stt.color }">
+    
+                                        </div>
+                                        <div class="input">
+                                            <input type="text" #input (focus)="sttFocus(stt.id_row)"
+                                                (keyup.enter)="sttFocusout($event.target.value,stt)"
+                                                (focusout)="sttFocusout($event.target.value,stt)" [value]="stt.StatusName"
+                                                class="">
+                                        </div>
+                                        <div class="action-input">
+                                            <i class="fas fa-check url text-success"
+                                                *ngIf="idfocus==stt.id_row && stt.id_row > 0"></i>
+                                            <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
+                                                *ngIf="idfocus!=stt.id_row"></i>
+                                        </div>
+                                        <mat-menu #menu1="matMenu">
+                                            <button mat-menu-item (click)="input.focus()">
+                                                {{ 'department.doiten'|translate}}
+    
+                                            </button>
+                                            <button mat-menu-item (click)="changeColor.click();">
+                                                {{ 'department.doimau'|translate}}
+    
+                                            </button>
+                                            <button mat-menu-item (click)="Delete_Status(stt)" *ngIf="!stt.IsTodo">
+                                                {{ 'GeneralKey.xoa'|translate}}
+                                            </button>
+                                        </mat-menu>
                                     </div>
-                                    <div class="input">
-                                        <input type="text" #input (focus)="sttFocus(stt.id_row)"
-                                            (keyup.enter)="sttFocusout($event.target.value,stt)"
-                                            (focusout)="sttFocusout($event.target.value,stt)" [value]="stt.StatusName"
-                                            class="">
-                                    </div>
-                                    <div class="action-input">
-                                        <i class="fas fa-check url text-success"
-                                            *ngIf="idfocus==stt.id_row && stt.id_row > 0"></i>
-                                        <i class="fas fa-ellipsis-h url" [matMenuTriggerFor]="menu1"
-                                            *ngIf="idfocus!=stt.id_row"></i>
-                                    </div>
-                                    <mat-menu #menu1="matMenu">
-                                        <button mat-menu-item (click)="input.focus()">
-                                            {{ 'department.doiten'|translate}}
-
-                                        </button>
-                                        <button mat-menu-item (click)="changeColor.click();">
-                                            {{ 'department.doimau'|translate}}
-
-                                        </button>
-                                        <button mat-menu-item (click)="Delete_Status(stt)" *ngIf="!stt.IsTodo">
-                                            {{ 'GeneralKey.xoa'|translate}}
-                                        </button>
-                                    </mat-menu>
-                                </div>
-                            </ng-container>
+                                </ng-container>
+                            </div> 
 
                             <div class="status-input col-12 form-control" *ngIf="isAddStatus">
                                 <div class="input">

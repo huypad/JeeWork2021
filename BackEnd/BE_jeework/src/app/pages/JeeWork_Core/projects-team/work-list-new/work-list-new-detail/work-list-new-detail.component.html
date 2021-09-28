@@ -1,15 +1,7 @@
 <kt-portlet [options]="{hideHeader: true}" class="h-100">
     <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
         <ng-container ktPortletTitle>
-            <div class="row title-detail" style="font-weight: 600;font-size: 18px;">
-                <div matTooltip="{{item.department}} / {{item.project_team}}"
-                    *ngIf="!(CheckRoles(7) && CheckClosedTask()) || isclosed">
-                    &nbsp;{{item.title}}
-                </div>
-                <input matTooltip="{{item.department}} / {{item.project_team}}" id="txttitle{{DataID}}"
-                    [value]="item.title" type="text" class="form-input-title "
-                    [hidden]="!(CheckRoles(7) && CheckClosedTask()) || isclosed" (focusout)="UpdateTitle()">
-            </div>
+            <h3>Chi tiết công việc</h3>
         </ng-container>
         <ng-container ktPortletTools>
             <button mat-raised-button [ngClass]="{'d-none': !isback}" matTooltip="{{ 'GeneralKey.trolai' | translate }}"
@@ -30,6 +22,21 @@
                                     class="w-100">
                                     <ng-container mPortletBody>
                                         <div class="kt-form__group" style="padding:0 15px; line-height: 25px;">
+                                            
+                                            <div class=" row"  style="font-size: 12px;">
+                                                <div>{{item.department}} / {{item.project_team}}</div>
+                                                <div style="font-weight: 600;font-size: 18px;" 
+                                                    *ngIf="!(CheckRoles(7) && CheckClosedTask()) || isclosed">
+                                                    &nbsp;{{item.title}}
+                                                </div>
+                                                <!-- matTooltip="{{item.department}} / {{item.project_team}}" -->
+                                                <input style="font-weight: 600;font-size: 18px;" id="txttitle{{DataID}}"
+                                                    [value]="item.title" type="text" class="form-input-title row  w-100"
+                                                    [hidden]="!(CheckRoles(7) && CheckClosedTask()) || isclosed" (focusout)="UpdateTitle()">
+                                                <div>Tạo bởi {{ item.createdby?.hoten }} lúc  {{item.createddate | timezone:' HH:mm DD/MM/YYYY'}} </div>
+                                
+                                            </div>
+                                            
                                             <div class="row" style="margin-bottom: 10px!important;">
                                                 <div class="row task__header task__mobile-display-for-details w-100">
                                                     <div class="task__column task__toolbar task__toolbar_first"
@@ -140,7 +147,7 @@
                                                     <div
                                                         class="task__column task__toolbar task__toolbar_last cu-hidden-print">
                                                         <div class="task__toolbar-container">
-                                                            <div
+                                                            <div hidden
                                                                 class="cu-task-info cu-task-info_row cu-task-info_task-created pr-5">
                                                                 <div>
                                                                     <div class="cu-task-info__key">
@@ -155,7 +162,8 @@
                                                                 </div>
                                                             </div>
                                                             <div
-                                                                class="cu-task-info cu-task-info_row cu-task-info_task-created border-left position-relative">
+                                                                class="cu-task-info cu-task-info_row cu-task-info_task-created position-relative">
+                                                                <!-- border-left  -->
                                                                 <div class="position-relative item-datetime "
                                                                     style="min-width:100px">
                                                                     <div class="cu-task-info__key text-center w-100">
@@ -363,7 +371,12 @@
 
                                             </div>
 
-                                            <ng-container *ngTemplateOutlet="tabbinhluan"></ng-container>
+                                            <!-- <div class="pr-5" *ngIf="getComponentName()">
+                                                <app-jee-comment [showonpopup]="true" 
+                                                    (changeValue)="this.LoadData();this.SendMessage(true);"
+                                                    [showCommentDefault]="true" [componentName]="getComponentName()">
+                                                </app-jee-comment>
+                                            </div> -->
                                         </div>
                                     </ng-container>
                                 </kt-portlet>

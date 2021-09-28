@@ -205,15 +205,8 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     private getLogo() {
-        // if (this.brandSkin === 'light') {
-        //   return 'https://share-devgcs.basecdn.net/apps/wework.png';
-        // } else {
-        //   return 'https://share-devgcs.basecdn.net/apps/wework.png';
-        // }
         return './../../../../../assets/images/jeework_logo.png';
     }
-
-    //   https://share-devgcs.basecdn.net/apps/wiki.png
     focusOutProject(value, item) {
         this.QuickInsert = 0;
 
@@ -226,7 +219,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             this.Create(_item);
         }
     }
-
     ThemDuan(id) {
         this.QuickInsert = id;
     }
@@ -783,9 +775,9 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                         this.LoadMenu();
 
                     }
-                    this.LoadMenu();
-                    const _backUrl = `/depts`;
-                    this.router.navigateByUrl(_backUrl);
+                    // this.LoadMenu();
+                    // const _backUrl = `/depts`;
+                    // this.router.navigateByUrl(_backUrl);
                 } else {
                     this.layoutUtilsService.showActionNotification(
                         res.error.message,

@@ -189,7 +189,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
                 if (res && res.status == 1) {
                   this.value.title_project_team = res.data.title;
                 } else {
-                  this.layoutUtilsService.showError(res.error.message);
+                  // this.layoutUtilsService.showError(res.error.message);
                 }
               });
             this.value.status = {};
@@ -219,16 +219,18 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       case 14:
         {
           this.value.id_project_team = +this.data_actions.value;
-          this.projectsTeamService
+          if(this.value.id_project_team > 0){
+            this.projectsTeamService
             .DeptDetail(this.value.id_project_team)
             .subscribe((res) => {
               if (res && res.status == 1) {
                 this.value.title_project_team = res.data.title;
                 this.changeDetectorRefs.detectChanges();
               } else {
-                this.layoutUtilsService.showError(res.error.message);
+                // this.layoutUtilsService.showError(res.error.message);
               }
             });
+          }
         }
         break;
       case 4: //comment

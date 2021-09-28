@@ -79,14 +79,11 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     editmail = 0;
     isAssignforme = false;
     // col
-    displayedColumnsCol: string[] = [];
-    @ViewChild(MatSort, {static: true}) sort: MatSort;
-    previousIndex: number;
     ListAction: any = [];
     addNodeitem = 0;
     newtask = -1;
     options_assign: any = {};
-    filter_groupby: any = [];
+    filter_groupby: any = [];   
     filter_subtask: any = [];
     list_milestone: any = [];
     Assign_me = -1;
@@ -101,8 +98,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     status_dynamic: any = [];
     list_priority: any[];
     UserID = 0;
-    isEdittitle = -1;
-    startDatelist: Date = new Date();
+    listFilterCustom_Groupby : any = [];
     selection = new SelectionModel<WorkModel>(true, []);
     list_role: any = [];
     ItemFinal = 0;
@@ -114,7 +110,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     textArea: string = '';
     searchCtrl: FormControl = new FormControl();
     private readonly componentName: string = 'kt-task_';
-    Emtytask = false;
     filterDay = {
         startDate: new Date('09/01/2020'),
         endDate: new Date('09/30/2020'),
@@ -163,6 +158,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
 
     ngOnInit() {
 
+
         if (this.isFolder) {
             this.type = 2;
         }
@@ -208,14 +204,35 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     DataSpace = new BehaviorSubject<any[]>([]);
 
     LoadNewList() {
+        // if (this.Id_Department <= 0) {
+        //     return;
+        // }
+        // const queryParams = new QueryParamsModelNew(
+        //     this.filterConfiguration()
+        // );
+        // this.layoutUtilsService.showWaitingDiv();
+        // this.workService.WorkFilter(queryParams).pipe(
+        //     switchMap(resultFromServer => of(resultFromServer).pipe(
+        //         tap(resultFromServer => {
+        //             this.DataSpace.next(resultFromServer.data);
+        //         })
+        //     )),
+        //     catchError(err => throwError(err)),
+        //     finalize(() => console.log)
+        // ).subscribe(() => {
+        //     this.layoutUtilsService.OffWaitingDiv();
+        // });
+    }
+
+    LoadListProject() {
         if (this.Id_Department <= 0) {
             return;
         }
         const queryParams = new QueryParamsModelNew(
-            this.filterConfiguration()
+            {id_department : this.Id_Department}
         );
         this.layoutUtilsService.showWaitingDiv();
-        this.workService.WorkFilter(queryParams).pipe(
+        this._service.findAllDataProjectByDepartment(queryParams).pipe(
             switchMap(resultFromServer => of(resultFromServer).pipe(
                 tap(resultFromServer => {
                     this.DataSpace.next(resultFromServer.data);
@@ -253,6 +270,20 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         });
         this.getListField();
         this.LoadNewList();
+        this.LoadListProject();
+        this.GetCustomFields();
+    }
+
+    ShowCloseTask() {
+        this.showclosedtask = !this.showclosedtask;
+        // this.UpdateInfoProject();
+        this.LoadData();
+    }
+
+    ShowClosesubTask() {
+        this.showclosedsubtask = !this.showclosedsubtask;
+        // this.UpdateInfoProject();
+        this.LoadData();
     }
 
     getListField(Loading = false) {
@@ -309,6 +340,11 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     filterConfiguration(): any {
         const filter: any = {};
         filter.groupby = this.filter_groupby.value; //assignee
+        if(filter.groupby == 'custom'){
+            filter.field_custom = this.filter_groupby.id_row;
+            filter.field_type = this.filter_groupby.fieldname;
+        }
+
         filter.keyword = this.keyword;
         filter.TuNgay = this.f_convertDate(this.filterDay.startDate).toString();
         filter.DenNgay = this.f_convertDate(this.filterDay.endDate).toString();
@@ -319,6 +355,18 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
             filter.spaceid = this.Id_Department;
         } else {
             filter.folderid = this.Id_Department;
+        }
+        
+        if (this.showclosedsubtask) {
+            filter.subtask_done = this.showclosedsubtask;
+        }
+        if (this.showclosedtask) {
+            filter.task_done = this.showclosedtask;
+        }
+        if (this.isAssignforme) {
+            filter.forme = this.isAssignforme;
+        } else {
+            filter.everyone = !this.isAssignforme;
         }
         return filter;
     }
@@ -416,6 +464,18 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
             title: 'groupwork',
             value: 'groupwork',
         },
+        {
+            title: 'priority',
+            value: 'priority', 
+        },
+        {
+            title: 'tags',
+            value: 'tags', 
+        },
+        {
+            title: 'deadline',
+            value: 'deadline', 
+        },
     ];
 
     GroupBy(item) {
@@ -423,6 +483,15 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
             return;
         }
         this.filter_groupby = item;
+        this.LoadData();
+    }
+    GroupCustomBy(item) {
+        console.log(item);
+        if (item == this.filter_groupby) {
+            return;
+        }
+        this.filter_groupby = item;
+        // this.UpdateInfoProject();
         this.LoadData();
     }
 
@@ -440,12 +509,12 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     ];
 
 
-    ShowCloseTask() {
-        this.showclosedtask = !this.showclosedtask;
-    }
+    // ShowCloseTask() {
+    //     this.showclosedtask = !this.showclosedtask;
+    // }
 
 
-    SelectFilterDate() {
+    SelectFilterDate() { 
         const dialogRef = this.dialog.open(DialogSelectdayComponent, {
             width: '500px',
             data: this.filterDay,
@@ -482,6 +551,25 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     }
 
     listNewfield: any = [];
+// =====================================================================
+    // ========================= XỬ LÝ CUSTOM FIELD=========================
+    // =====================================================================
+    GetCustomFields(){
+        this.WeWorkService.GetCustomFields(this.Id_Department,'id_deparment')
+        .subscribe((res)=>{
+            if(res && res.status === 1){
+                res.data.forEach(element => {
+                    element.value = 'custom';
+                });
+                console.log('custom field',res.data);
+                this.listFilterCustom_Groupby = res.data;
+                this.changeDetectorRefs.detectChanges();
+            }
+        },
+        (err)=>{
+            console.log(err);
+        })
+    }
 
     GetOptions_NewField() {
         this.WeWorkService.GetOptions_NewField(this.Id_Department, 0, this.isFolder ? 2 : 1).subscribe(
@@ -492,6 +580,10 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
             }
         );
     }
+    // =====================================================================
+    // ========================= END XỬ LÝ CUSTOM FIELD=====================
+    // =====================================================================
+
 }
 
 export interface DropInfo {

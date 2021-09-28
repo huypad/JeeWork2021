@@ -1008,6 +1008,7 @@ export const locale = {
             congviecduocgiao: 'CV được giao',
             congviecgiaodi: 'CV giao đi',
             customfilter: 'Bộ lọc tùy chỉnh',
+            customfield: 'Cột tùy chỉnh',
             dadong: 'Đã đóng',
             dangdanhgia: 'Đang đánh giá',
             danglam: 'Đang làm',
@@ -1147,6 +1148,8 @@ export const locale = {
             closed_work_date: 'Ngày đóng',
             closed_work_by: 'Người đóng',
             macdinh: 'Mặc định',
+            priority: 'Ưu tiên',
+            tags: 'Thẻ',
         },
         priority: {
             Urgent: 'Khẩn cấp',
@@ -1396,6 +1399,7 @@ export const locale = {
             xoacot: 'Xóa cột',
             themnhomcongviec: 'Thêm nhóm công việc',
             chinhnhomcongviec: 'Chỉnh sửa nhóm công việc',
+            xemdanhsachduan: 'Xem danh sách dự án',
         },
         wuser: {
             list_uyquyen: 'Danh sách thành viên ủy quyền giao việc',

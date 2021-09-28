@@ -37,7 +37,7 @@
         </ng-container>
       </ng-container>
       <ng-container *ngIf="(errorMessage$ | async) === ''">
-        <jeecomment-enter-comment-content *ngIf="!isFirstTime" [showonpopup]="showonpopup" (valuecomment)="getShowChangeTopic()" [objectID]="objectID"> </jeecomment-enter-comment-content>
+        <jeecomment-enter-comment-content [hidden]="hidecomment" *ngIf="!isFirstTime" [showonpopup]="showonpopup" (valuecomment)="GetValueComment($event)" [objectID]="objectID"> </jeecomment-enter-comment-content>
       </ng-container>
     </div>
   </ng-template>

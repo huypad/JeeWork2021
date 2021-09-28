@@ -43,6 +43,22 @@ export class DepartmentProjectDataSource extends BaseDataSource {
             ).subscribe(res => {
         });
     }
+    loadListAllProjectByDepartment(queryParams: QueryParamsModelNew) {
+        this._service.lastFilter$.next(queryParams);
+        this.loadingSubject.next(true);
+
+        this._service.findAllDataProjectByDepartment(queryParams)
+            .pipe(
+                tap(resultFromServer => {
+                    this.entitySubject.next(resultFromServer.data);
+                    var totalCount = resultFromServer.page.TotalCount || (resultFromServer.page.AllPage * resultFromServer.page.Size);
+                    this.paginatorTotalSubject.next(totalCount);
+                }),
+                catchError(err => of(new QueryResultsModel([], err))),
+                finalize(() => this.loadingSubject.next(false))
+            ).subscribe(res => {
+        });
+    }
 
     loadListbbyProject(queryParams: QueryParamsModelNew) {
         this._service.lastFilter$.next(queryParams);

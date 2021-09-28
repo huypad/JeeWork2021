@@ -110,10 +110,16 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     this.dataSource.paginatorTotal$.subscribe(
       (res) => (this.paginatorNew.total = res)
     );
-    this.route.params.subscribe((params) => {
-      this.loadDataList();
-    });
 
+
+    this.route.queryParams.subscribe((params) => {
+      if (params?.id){
+          this.Id_Department = params.id;
+          this.loadDataList();
+          this.LoadDataFolder();
+        }
+    });
+    this.loadDataList();
     setTimeout(() => {
       this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
     }, 10000);
@@ -370,13 +376,14 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
         if (!res.data.ParentID) {
           this.dataFolder = res.data.data_folder;
           var itemhientai = {
-            CreatedBy: 56609,
+            CreatedBy: res.data.CreatedBy,
             CreatedDate: res.data.CreatedDate,
             id_row: res.data.id_row,
             parentid: res.data.ParentID,
-            templateid: 22,
+            templateid: res.data.Template?.[0]?.TemplateID,
             title: 'Dự án trực tiếp của phòng ban',
           }
+          console.log(itemhientai);
           this.dataFolder.unshift(itemhientai)
           this.loadListfolder = true;
           this.changeDetectorRefs.detectChanges();

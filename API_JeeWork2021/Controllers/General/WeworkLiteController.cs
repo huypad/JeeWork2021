@@ -920,84 +920,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-        /// <summary>
-        /// Danh sách field mới
-        /// </summary>
-        /// <returns></returns>
-        [Route("list-new-field")]
-        [HttpGet]
-        public object ListNewFields()
-        {
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    string sql = "select * from we_fields where isnewfield = 1";
-                    DataTable dt = cnn.CreateDataTable(sql);
-                    if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var data = from r in dt.AsEnumerable()
-                               select new
-                               {
-                                   fieldname = r["fieldname"],
-                                   position = r["position"],
-                                   type = r["type"],
-                                   isnewfield = r["isnewfield"],
-                                   title = r["title"],
-                                   typeid = r["TypeID"],
-                               };
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
-        /// <summary>
-        /// Danh sách giá trị new field
-        /// </summary>
-        /// <returns></returns>
-        [Route("get-value-new-field")]
-        [HttpGet]
-        public object GetValuesNewFields(long id_project_team)
-        {
-            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
-            if (loginData == null)
-                return JsonResultCommon.DangNhap();
-            try
-            {
-                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
-                    SqlConditions conds = new SqlConditions();
-                    conds.Add("id_project_team", id_project_team);
-                    string sql = "select FieldID, WorkID, TypeID, Value, ID_project_team " +
-                        "from we_newfileds_values where (where)";
-                    DataTable dt = cnn.CreateDataTable(sql, "(where)", conds);
-                    if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var data = from r in dt.AsEnumerable()
-                               select new
-                               {
-                                   FieldID = r["FieldID"],
-                                   WorkID = r["WorkID"],
-                                   TypeID = r["TypeID"],
-                                   Value = r["Value"],
-                                   ID_project_team = r["ID_project_team"],
-                               };
-                    return JsonResultCommon.ThanhCong(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
-            }
-        }
+
         /// <summary>
         /// Danh sách field mới
         /// </summary>
@@ -1081,7 +1004,133 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
+        /// <summary>
+        /// Danh sách field mới
+        /// </summary>
+        /// <returns></returns>
+        [Route("list-new-field")]
+        [HttpGet]
+        public object ListNewFields()
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    string sql = "select * from we_fields where isnewfield = 1";
+                    DataTable dt = cnn.CreateDataTable(sql);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   fieldname = r["fieldname"],
+                                   position = r["position"],
+                                   type = r["type"],
+                                   isnewfield = r["isnewfield"],
+                                   title = r["title"],
+                                   typeid = r["TypeID"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
 
+        /// <summary>
+        /// Danh sách giá trị new field
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-custom-field")]
+        [HttpGet]
+        public object GetCustomFields(long id, string columname)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    SqlConditions conds = new SqlConditions();
+                    if ("id_project_team".Equals(columname))
+                        conds.Add(columname, id);
+                    else
+                        conds.Add("departmentid", id);
+                    conds.Add("disabled", 0);
+                    conds.Add("isnewfield", 1);
+                    string sql = "select id_row, id_project_team, fieldname, title, ishidden, departmentid " +
+                        "from we_fields_project_team where (where) " +
+                        "and fieldname in ('dropdown','date','labels','checkbox')";
+                    DataTable dt = cnn.CreateDataTable(sql, "(where)", conds);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   id_project_team = r["id_project_team"],
+                                   departmentid = r["departmentid"],
+                                   fieldname = r["fieldname"].ToString().ToLower(),
+                                   title = r["title"].ToString().ToLower(),
+                                   ishidden = r["ishidden"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+
+        /// <summary>
+        /// Danh sách giá trị new field
+        /// </summary>
+        /// <returns></returns>
+        [Route("get-value-new-field")]
+        [HttpGet]
+        public object GetValuesNewFields(long id_project_team)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    SqlConditions conds = new SqlConditions();
+                    conds.Add("id_project_team", id_project_team);
+                    string sql = "select fieldid, workid, typeid, value, id_project_team " +
+                        "from we_newfileds_values where (where)";
+                    DataTable dt = cnn.CreateDataTable(sql, "(where)", conds);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   FieldID = r["fieldid"],
+                                   WorkID = r["workid"],
+                                   TypeID = r["typeid"],
+                                   Value = r["value"],
+                                   ID_project_team = r["id_project_team"],
+                               };
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
         /// <summary>
         /// Danh sách field mới
         /// </summary>
@@ -3357,8 +3406,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             if (dt.Rows.Count <= 0)
             {
                 Conds.Add("CustomerID", CustemerID);
-                sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID)
-                        select Title, Description, GETUTCDATE(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID from we_template_list where Disabled = 0  and is_template_center <> 1";
+                sql_insert = $@"insert into we_template_customer (Title, Description, CreatedDate, CreatedBy, Disabled, IsDefault, Color, id_department, TemplateID, CustomerID, is_custom)
+                        select Title, Description, GETUTCDATE(), 0, Disabled, IsDefault, Color,0, id_row, " + CustemerID + " as CustomerID, is_custom from we_template_list where disabled = 0 and is_template_center <> 1";
                 cnn.ExecuteNonQuery(sql_insert);
                 dt = cnn.CreateDataTable(select);
                 if (dt.Rows.Count > 0)
@@ -3872,8 +3921,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 DataTable dt = new DataTable();
                 if (!string.IsNullOrEmpty(id_parent) || !"0".Equals(id_parent))
                 {
-                    string sql_dept = "select id_row, title from we_department where (where)";
-                    dt = cnn.CreateDataTable(sql_dept, "(where)", conds);
+                    string sql_dept = "select id_row, title from we_department where id_row = (select ParentID from we_department where id_row = @parentid and Disabled = @disabled) and Disabled = @disabled";
+                    dt = cnn.CreateDataTable(sql_dept, conds);
                     if (dt.Rows.Count <= 0)
                         spacename = "-1";
                     else

@@ -68,6 +68,7 @@ export class JeeCommentComponent implements OnInit {
   @Input() number: number;
   @Input() componentName: string;
   @Input() showonpopup: boolean = false;
+  @Input() hidecomment: boolean = false;
   @Output() changeValue = new EventEmitter<any>();
   public lstObjectID: string[] = [];
 

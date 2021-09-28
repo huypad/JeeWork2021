@@ -1,4 +1,5 @@
-import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { CommonService } from "./../../../../_metronic/jeework_old/core/services/common.service";
 import { StatusDynamicModel } from "./../../projects-team/Model/status-dynamic.model";
 import { TemplateCenterComponent } from "./../../template-center/template-center.component";
 import { values } from "lodash";
@@ -147,7 +148,7 @@ export class DepartmentEditNewComponent implements OnInit {
     //------------------
     this.title = this.translate.instant("GeneralKey.choncocautochuc") + "";
     this.item = this.data._item;
-    if(this.item.RowID > 0){
+    if (this.item.RowID > 0) {
       this.isSpaceStatus = true;
     }
     this.options = this.getOptions();
@@ -231,7 +232,6 @@ export class DepartmentEditNewComponent implements OnInit {
     //         }
     //         this.UseParentTemplate = true;
     //         // this.LoadListSTT();
-
     //         if (this.item.RowID == 0) {
     //           this.LoadListSTT();
     //         }
@@ -261,11 +261,15 @@ export class DepartmentEditNewComponent implements OnInit {
   }
 
   LoadDetail(item) {
-    if (item.Template[0] && item.Template[0].TemplateID && this.IsInListCustom(item.Template[0].TemplateID)) {
+    if (
+      item.Template[0] &&
+      item.Template[0].TemplateID &&
+      this.IsInListCustom(item.Template[0].TemplateID)
+    ) {
       this.TempSelected = item.Template[0].TemplateID;
     }
     // this.LoadListSTT();
-    if(this.item.RowID == 0){ 
+    if (this.item.RowID == 0) {
       this.LoadListSTT();
     }
     this.listDefaultView.forEach((x) => {
@@ -285,7 +289,7 @@ export class DepartmentEditNewComponent implements OnInit {
         this.litsTemplateDemo = res.data;
         if (this.TempSelected == 0 || !this.IsInListCustom(this.TempSelected)) {
           this.TempSelected = this.litsTemplateDemo[0].id_row;
-          console.log('set - default',this.TempSelected);
+          console.log("set - default", this.TempSelected);
         }
         if (this.item.RowID == 0) {
           this.LoadListSTT();
@@ -295,10 +299,12 @@ export class DepartmentEditNewComponent implements OnInit {
     });
   }
 
-  IsInListCustom(idtemplate){
-    if(this.litsTemplateDemo?.length > 0){
-      const index = this.litsTemplateDemo.findIndex(x=>x.id_row == idtemplate);
-      if(index >= 0){
+  IsInListCustom(idtemplate) {
+    if (this.litsTemplateDemo?.length > 0) {
+      const index = this.litsTemplateDemo.findIndex(
+        (x) => x.id_row == idtemplate
+      );
+      if (index >= 0) {
         return true;
       }
     }
@@ -764,14 +770,16 @@ export class DepartmentEditNewComponent implements OnInit {
 
   sttFocusout(value, status) {
     this.idfocus = 0;
-    const index = this.listSTT.findIndex((x) => x.StatusName.trim() === value.trim());
+    const index = this.listSTT.findIndex(
+      (x) => x.StatusName.trim() === value.trim()
+    );
     if (index >= 0 && value.trim() != status.StatusName.trim()) {
       this.layoutUtilsService.showError("Trạng thái đã tồn tại");
-      status.StatusName = status.StatusName+' ';
+      status.StatusName = status.StatusName + " ";
       return;
     }
     if (!value) {
-      status.StatusName = status.StatusName+' ';
+      status.StatusName = status.StatusName + " ";
       // this.LoadListSTT();
       return;
     }
@@ -997,6 +1005,63 @@ export class DepartmentEditNewComponent implements OnInit {
     }
     return false;
   }
+
+  /*
+    Đổi vị trí
+  */
+  drop(event: CdkDragDrop<string[]>) {
+    console.log(event);
+    moveItemInArray(
+      this.listSTTHoatdong(),
+      event.previousIndex,
+      event.currentIndex
+    );
+    const previous = this.listSTTHoatdong()[event.previousIndex];
+    const curent = this.listSTTHoatdong()[event.currentIndex];
+    console.log(previous, curent);
+    // this.listSTTHoatdong()[event.previousIndex] = curent;
+    // this.listSTTHoatdong()[event.currentIndex] = previous;
+    // const positon = new PositionModel();
+    // positon.id_row_from = previous.id_row;
+    // positon.position_from = previous.Position;
+    // positon.id_row_to = curent.id_row;
+    // positon.position_to = curent.Position;
+    // positon.columnname = this.data.columnname;
+    // positon.id_columnname = this.data.id_row;
+    // console.log(positon);
+    // this.dropPosition(positon);
+    this.MoveItem(curent, previous);
+    // debugger
+    // if (event.previousContainer === event.container) {
+    //     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    //   } else {
+    //     transferArrayItem(event.previousContainer.data,
+    //       event.container.data,
+    //       event.previousIndex,
+    //       event.currentIndex);
+    //   }
+  }
+
+  MoveItem(curent, previous) {
+    
+    const position_from = previous.Position;
+    const position_to = curent.Position;
+    previous.Position = position_to;
+    curent.Position = position_from;
+    const indexcurent = this.listSTT.findIndex(
+      (x) => x.StatusName.trim() == curent.StatusName.trim()
+    );
+    const indexprevious = this.listSTT.findIndex(
+      (x) => x.StatusName.trim() == previous.StatusName.trim()
+    );
+    if (indexcurent >= 0 && indexprevious >= 0) {
+      this.listSTT[indexcurent] = previous;
+      this.listSTT[indexprevious] = curent;
+    }
+  }
+  /*
+    End đổi vị trí
+  */
 
   @HostListener("document:keydown", ["$event"])
   onKeydownHandler1(event: KeyboardEvent) {

@@ -107,12 +107,28 @@
         <div class="cu-filter-right row text-dark">
             <div class="item-filter url -hover">
                 <div [matMenuTriggerFor]="groupby">
-                    <span class="filter-name" translate="filter.groupby"></span> : {{
-                    'filter.' + filter_groupby.title | translate }}
+                    <span class="filter-name" translate="filter.groupby"></span> :
+                    <ng-container *ngIf="filter_groupby.value =='custom';else default">
+                        {{ filter_groupby.title }}
+                    </ng-container>
+                    <ng-template #default>
+                        {{ 'filter.' + filter_groupby.title | translate }}
+                    </ng-template>
                 </div>
                 <mat-menu #groupby="matMenu">
-                    <button mat-menu-item *ngFor="let item of listFilter_Groupby" (click)="GroupBy(item)">
-                        {{ 'filter.' + item.title | translate }}</button>
+                    <button mat-menu-item *ngFor="let item of listFilter_Groupby" (click)="GroupBy(item)"> 
+                        {{ 'filter.' + item.title | translate }}
+                    </button>
+                    <button mat-menu-item *ngIf="listFilterCustom_Groupby?.length > 0" [matMenuTriggerFor]="customfield">
+                         {{ 'filter.customfield' | translate }}
+                    </button>
+                    <mat-menu #customfield="matMenu">
+                        <ng-container *ngFor="let item of listFilterCustom_Groupby">
+                            <button mat-menu-item  (click)="GroupCustomBy(item)">
+                                {{  item.title }}
+                            </button> 
+                        </ng-container> 
+                    </mat-menu>
                 </mat-menu>
             </div>
             <div class="item-filter url -hover">
@@ -879,7 +895,7 @@
                                                                     <ng-container *ngSwitchCase="'checkbox'">
                                                                         <mat-checkbox class="example-margin"
                                                                                       [disabled]="!CheckClosedProject()"
-                                                                                      [checked]="GetDataNewField(node.id_row,item.id_row)=='true'?true:false"
+                                                                                      [checked]="GetDataNewField(node.id_row,item.Id_row)=='true'?true:false"
                                                                                       (change)="UpdateValueField($event.checked,node,item)">
                                                                         </mat-checkbox>
                                                                     </ng-container>
@@ -890,7 +906,7 @@
 
                                                                             <app-task-datetime
                                                                                     (valueChange)="UpdateValueField($event,node,item)"
-                                                                                    [fieldname]="'date'"
+                                                                                    [fieldname]="'start_date'"
                                                                                     [value]="GetDataNewField(node.id_row,item.Id_row)=='-'?'':GetDataNewField(node.id_row,item.Id_row)"
                                                                                     [role]="CheckClosedProject()"></app-task-datetime>
 
@@ -898,7 +914,8 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'email'">
                                                                         <div
-                                                                                class="w-100 h-100 padding-new-field item-field">
+                                                                                class="w-100 h-100 padding-new-field item-field"
+                                                                                (click)="GetDataNewField(node.id_row,item.Id_row)!='-'?'':focusInput(node.id_row,item.Id_row)">
                                                                             <!-- border-hover  -->
 
                                                                             <ng-container *ngIf="CheckCustomfield(node,item)">
@@ -958,10 +975,10 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'number'">
                                                                         <div
-                                                                                class="w-100 h-100 padding-new-field item-field">
+                                                                                class="w-100 h-100 padding-new-field item-field"
+                                                                                (click)="focusInput(node.id_row,item.Id_row)">
                                                                             <!-- border-hover  -->
                                                                             <div class="url hide-more-text"
-                                                                                 (click)="focusInput(node.id_row,item.Id_row)"
                                                                                  *ngIf="CheckCustomfield(node,item)">
                                                                                 {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                             </div>
@@ -977,10 +994,10 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'text'">
                                                                         <div
-                                                                                class="w-100 h-100  padding-new-field item-field">
+                                                                                class="w-100 h-100  padding-new-field item-field"
+                                                                                (click)="focusInput(node.id_row,item.Id_row)">
                                                                             <!-- border-hover  -->
                                                                             <div class=" url hide-more-text"
-                                                                                 (click)="focusInput(node.id_row,item.Id_row)"
                                                                                  *ngIf="CheckCustomfield(node,item)">
                                                                                 {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                             </div>
@@ -998,7 +1015,7 @@
                                                                         <div class="w-100 h-100 padding-new-field item-field"
                                                                              [matMenuTriggerFor]="area"
                                                                              (menuOpened)="preventCloseOnClickOutTextArea(GetDataNewField(node.id_row,item.Id_row))"
-                                                                             (menuClosed)="allowCloseOnClickOutTextArea(node.id_row,item,GetDataNewField(node.id_row,item.Id_row))">
+                                                                             (menuClosed)="allowCloseOnClickOutTextArea(node,item,GetDataNewField(node.id_row,item.Id_row))">
                                                                             <div class=" url hide-more-text">
                                                                                 {{GetDataNewField(node.id_row, item.Id_row)}}
                                                                             </div>
@@ -1132,6 +1149,10 @@
                                                 <ng-container *ngFor="let child of node.children">
                                                     <div class="cu-task-row row" cdkDrag [cdkDragData]="child.id_row"
                                                          (cdkDragMoved)="dragMoved($event)">
+                                                         
+                                                <!-- <div class="w-10 drag-icon" >
+                                                    <i class="material-icons" cdkDragHandle>reorder</i>
+                                                </div> -->
                                                         <ng-container
                                                                 *ngTemplateOutlet="tmplNode1,context:{node:child}">
                                                         </ng-container>
@@ -1179,6 +1200,9 @@
                                         <div class="cu-task-row row" *ngFor="let node of status.datawork" cdkDrag
                                              [cdkDragData]="node.id_row" (cdkDragMoved)="dragMoved($event)">
 
+                                             <!-- <div class="w-10 drag-icon">
+                                                <i class="material-icons" cdkDragHandle>reorder</i>
+                                            </div> -->
                                             <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}">
                                             </ng-container>
                                         </div>

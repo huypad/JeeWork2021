@@ -1,4 +1,3 @@
-
 <div class="my-form-header border-bottom border-top">
     <div class="cu2-views-bar__options ng-tns-c31-5 ng-star-inserted">
         <div class="cu-hidden-print cu-filter-block ng-tns-c31-5 ng-star-inserted">
@@ -37,12 +36,28 @@
         <div class="cu-filter-right row text-dark">
             <div class="item-filter url -hover">
                 <div [matMenuTriggerFor]="groupby">
-                    <span class="filter-name" translate="filter.groupby"></span> : {{
-                    'filter.'+filter_groupby.title | translate }}
+                    <span class="filter-name" translate="filter.groupby"></span> : 
+                    <ng-container *ngIf="filter_groupby.value =='custom';else default">
+                        {{ filter_groupby.title }}
+                    </ng-container>
+                    <ng-template #default>
+                        {{ 'filter.' + filter_groupby.title | translate }}
+                    </ng-template>
                 </div>
                 <mat-menu #groupby="matMenu">
                     <button mat-menu-item *ngFor="let item of listFilter_Groupby" (click)="GroupBy(item)">
                         {{ 'filter.'+item.title | translate }}</button>
+                    <button hidden mat-menu-item *ngIf="listFilterCustom_Groupby?.length > 0"
+                        [matMenuTriggerFor]="customfield">
+                        {{ 'filter.customfield' | translate }}
+                    </button>
+                    <mat-menu #customfield="matMenu">
+                        <ng-container *ngFor="let item of listFilterCustom_Groupby">
+                            <button mat-menu-item (click)="GroupCustomBy(item)">
+                                {{ item.title }}
+                            </button>
+                        </ng-container>
+                    </mat-menu>
                 </mat-menu>
             </div>
 
@@ -65,15 +80,14 @@
                             <div (click)="ShowCloseTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedtask">
+                            <mat-slide-toggle [(ngModel)]="showclosedtask" (ngModelChange)="LoadData()">
                             </mat-slide-toggle>
                         </button>
                         <button mat-menu-item class="d-flex">
-                            <div (click)="showclosedsubtask=!showclosedsubtask"
-                                style="line-height: 2;margin-right: 10px;flex-grow: 1;">
+                            <div (click)="ShowClosesubTask()" style="line-height: 2;margin-right: 10px;flex-grow: 1;">
                                 <span translate="viewsetting.showclosedsubtask"></span>
                             </div>
-                            <mat-slide-toggle [(ngModel)]="showclosedsubtask">
+                            <mat-slide-toggle [(ngModel)]="showclosedsubtask" (ngModelChange)="LoadData()">
                             </mat-slide-toggle>
                         </button>
                         <button mat-menu-item class="d-flex">
@@ -96,35 +110,37 @@
 <kt-portlet [options]="{hideHeader: true}">
     <kt-portlet-body class="pd-0" [ngStyle]="{'height.px': getHeight()}">
         <div class="kt-form__filtration cu-if-not-task-view-scroll cu-dashboard-table__scroll">
-            <div class="cu-dashboard-table__body"> 
+            <div class="cu-dashboard-table__body">
                 <ng-container *ngFor="let item of this.DataSpace | async ">
                     <div class="border-list-group item-lis">
                         <div class="cu-list-group__header">
                             <div class="cu-list-group__header-container">
                                 <div class="cu-list-group__header-breadcrumbs">
-                                     <div class="cu-list-group__category-name ng-star-inserted">
-                                     </div>
-                                 </div>
+                                    <div class="cu-list-group__category-name ng-star-inserted">
+                                    </div>
+                                </div>
                                 <div class="cu-list-group__header-inner">
                                     <div class="cu2-list-details-menu cu-list-group__name-container ng-star-inserted">
                                         <div class="cu2-list-details-menu">
                                             <div class="nav-menu cu-dropdown menu-options">
-                                                <div data-test="dropdown__toggle"  class="cu-dropdown__toggle"> 
+                                                <div data-test="dropdown__toggle" class="cu-dropdown__toggle">
 
-                                                    <div  class="cu-list-group__name font-size-h3 font-weight-bolder pl-3">
-                                                        {{ item.projectname }}
+                                                    <div
+                                                        class="cu-list-group__name font-size-h3 font-weight-bolder pl-3">
+                                                        {{ item.title }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> 
-                                </div> 
-                            </div> 
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                         <app-works-list-group-2 [showemptystatus]="showemptystatus" [tasklocation]="tasklocation" [type]="type"
-                            [showclosedtask]="showclosedtask" [showclosedsubtask]="showclosedsubtask"
-                            [project_data]="item.project_data" [ID_Project]="item.id_row" [filter]="filter" [Id_Department]="Id_Department" [listNewfield]="listNewfield"
-                            [listField]="listField" [groupby]="filter_groupby.value" (pageReload)="LoadData()" (ColReload)="getListField($event)">
+                        <app-works-list-group-2 [showemptystatus]="showemptystatus" [tasklocation]="tasklocation"
+                            [type]="type" [showclosedtask]="showclosedtask" [showclosedsubtask]="showclosedsubtask"
+                            [ID_Project]="item.id_row" [filter]="filter" [Id_Department]="Id_Department"
+                            [listNewfield]="listNewfield" [listField]="listField" [groupby]="filter_groupby.value"
+                            (pageReload)="LoadData()" (ColReload)="getListField($event)">
                         </app-works-list-group-2>
                     </div>
                 </ng-container>

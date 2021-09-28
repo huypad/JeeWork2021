@@ -456,4 +456,8 @@ export class EditAutomationComponent implements OnInit, OnChanges {
     this.listActions.push({ id: this.idAction });
     this.idAction++;
   }
+
+  ChangeData(){
+    console.log('change')
+  }
 }

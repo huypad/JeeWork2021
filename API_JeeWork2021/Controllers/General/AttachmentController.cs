@@ -187,23 +187,12 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpPost]
         public async Task<object> uploadImg(IFormFile file)
         {
-            string message;
             var dirPath = Path.Combine(_hostingEnvironment.ContentRootPath, "Upload\\editor\\");
             var saveimg = Path.Combine(dirPath, file.FileName);
             string imgext = Path.GetExtension(file.FileName);
             
             if (imgext.ToLower() == ".jpg" || imgext.ToLower() == ".png")
             {
-                //using (var uploadimg = new FileStream(saveimg, FileMode.Create))
-                //{
-                //    await file.CopyToAsync(uploadimg);
-                //    //message = "The selected file" + file.FileName + " is save";
-                //    return new
-                //    {
-                //        succeeded = true,
-                //        imageUrl = file.Name
-                //    };
-                //}
                 using (var ms = new MemoryStream())
                 {
                     file.CopyTo(ms);
@@ -225,7 +214,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         succeeded = true,
                         imageUrl = WeworkLiteController.genLinkAttachment(_configuration, x)
                     };
-                    // act on the Base64 data
                 }
             }
             else

@@ -61,6 +61,16 @@ export class ProjectsTeamService {
         });
     }
 
+    findAllDataProjectByDepartment(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
+        const url = API_Project_Team + '/List-all-by-department';
+        return this.http.get<QueryResultsModel>(url, {
+            headers: httpHeaders,
+            params: httpParams
+        });
+    }
+
     listView(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
 
         const httpHeaders = this.httpUtils.getHTTPHeaders();

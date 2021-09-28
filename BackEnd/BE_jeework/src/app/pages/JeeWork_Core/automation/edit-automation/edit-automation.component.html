@@ -65,7 +65,7 @@
                             class="cu-edit-automation__container-body-actions-top cu-edit-automation__container-body-actions-top_has-inputs">
                             <mat-form-field class="w-100" appearance="fill">
                                 <mat-label>Lựa chọn hành động</mat-label>
-                                <mat-select [(ngModel)]="item.Actionid">
+                                <mat-select [(ngModel)]="item.Actionid" (ngModelChange)="ChangeData()">
                                     <mat-option *ngFor="let item of ListAction" [disabled]="item.disabled" [value]="item.rowid"> {{item.actionname}}
                                     </mat-option>
                                 </mat-select>

@@ -155,6 +155,12 @@ export class WeWorkService {
         return this.http.get<any>(API_Lite + `/list-field${queryParams}`, {headers: httpHeaders});
     }
 
+    GetCustomFields(id, columname): Observable<any> {
+        const queryParams = `?id=${id}&columname=${columname}`;
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        return this.http.get<any>(API_Lite + `/get-custom-field${queryParams}`, {headers: httpHeaders});
+    }
+
     GetNewField(): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         return this.http.get<any>(API_Lite + `/list-new-field`, {headers: httpHeaders});

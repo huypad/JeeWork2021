@@ -32,7 +32,7 @@ const routes: Routes = [
             {
                 path: 'projects',
                 component: DepartmentProjectTabComponent,
-            },
+            }, 
             {
                 path: 'task',
                 component: PageWorkDepartmentComponent,
