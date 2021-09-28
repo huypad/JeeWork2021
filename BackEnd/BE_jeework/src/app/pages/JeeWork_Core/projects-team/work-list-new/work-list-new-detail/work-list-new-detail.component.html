@@ -23,9 +23,9 @@
                                     <ng-container mPortletBody>
                                         <div class="kt-form__group" style="padding:0 15px; line-height: 25px;">
                                             
-                                            <div class=" row"  style="font-size: 12px;">
+                                            <div class=" row position-relative"  style="font-size: 12px;" [attr.style]="('margin-right :'+ line2right.offsetWidth + 'px !important')">
                                                 <div>{{item.department}} / {{item.project_team}}</div>
-                                                <div style="font-weight: 600;font-size: 18px;" 
+                                                <div style="font-weight: 600;font-size: 18px;" class=" row  w-100"
                                                     *ngIf="!(CheckRoles(7) && CheckClosedTask()) || isclosed">
                                                     &nbsp;{{item.title}}
                                                 </div>
@@ -35,6 +35,55 @@
                                                     [hidden]="!(CheckRoles(7) && CheckClosedTask()) || isclosed" (focusout)="UpdateTitle()">
                                                 <div>Tạo bởi {{ item.createdby?.hoten }} lúc  {{item.createddate | timezone:' HH:mm DD/MM/YYYY'}} </div>
                                 
+                                                <div #line2right class="action item__header_line_2_right">
+
+                                                    <div class="title row">
+                                                        <!-- <div class="cu-task-row-assignee url">
+                                                            <mat-checkbox class="example-margin "
+                                                                [disabled]="!(CheckRoles(22) && CheckClosedProject())"
+                                                                [checked]="item.closed"
+                                                                (change)="ClosedTask($event.checked)">
+                                                            </mat-checkbox>
+                                                            <span style="font-size: 11pt"
+                                                                translate="work.dongcongviec"></span>
+                                                        </div> -->
+
+                                                        <button mat-icon-button color="primary"
+                                                            [matMenuTriggerFor]="menutask">
+                                                            <i class="fa fa-ellipsis-h"></i>
+                                                        </button>
+                                                    </div>
+                                                    <mat-menu #menutask="matMenu" xPosition="before">
+
+                                                        <ng-container *ngIf="IsAdmin()&& CheckClosedTask()">
+                                                            <button mat-menu-item (click)="UpdateWorkProcess();">
+                                                                <i class="fas fa-user-cog pd-0"
+                                                                    style="color: green;"></i>
+                                                                Chỉnh sửa người theo dõi công việc
+                                                            </button>
+                                                        </ng-container>
+
+                                                        <button mat-menu-item>
+                                                            <mat-checkbox class="example-margin p-0 "
+                                                                [disabled]="!(CheckRoles(22) && CheckClosedProject())"
+                                                                [checked]="item.closed"
+                                                                (change)="ClosedTask($event.checked)">
+                                                            </mat-checkbox>
+                                                            <span (click)="$event.stopPropagation();" class="pl-3"
+                                                                style="font-size: 11pt"
+                                                                translate="work.dongcongviec"></span>
+                                                        </button>
+
+                                                        <ng-container *ngIf="IsAdmin()&& CheckClosedTask()">
+
+                                                            <button mat-menu-item (click)="DeleteTask()">
+                                                                <i class="flaticon2-delete"
+                                                                    style="color: red;"></i>&nbsp;
+                                                                <span translate="work.xoacongviec"></span>
+                                                            </button>
+                                                        </ng-container>
+                                                    </mat-menu>
+                                                </div>
                                             </div>
                                             
                                             <div class="row" style="margin-bottom: 10px!important;">
@@ -209,8 +258,7 @@
                                             </div>
                                             <div class="row position-relative" style="margin-bottom: 15px!important;">
 
-                                                <div class="row"
-                                                    [attr.style]="('margin-right :'+ line2right.offsetWidth + 'px !important')">
+                                                <div class="row" >
                                                     <div class="view-nomal">
                                                         <ng-container *ngTemplateOutlet="changeassign"></ng-container>
                                                         <ng-container *ngTemplateOutlet="changefollower"></ng-container>
@@ -248,58 +296,7 @@
                                                         </ng-container>
 
                                                     </mat-menu>
-                                                </div>
-
-
-                                                <div #line2right class="action item__header_line_2_right">
-
-                                                    <div class="title row">
-                                                        <!-- <div class="cu-task-row-assignee url">
-                                                            <mat-checkbox class="example-margin "
-                                                                [disabled]="!(CheckRoles(22) && CheckClosedProject())"
-                                                                [checked]="item.closed"
-                                                                (change)="ClosedTask($event.checked)">
-                                                            </mat-checkbox>
-                                                            <span style="font-size: 11pt"
-                                                                translate="work.dongcongviec"></span>
-                                                        </div> -->
-
-                                                        <button mat-icon-button color="primary"
-                                                            [matMenuTriggerFor]="menutask">
-                                                            <i class="fa fa-ellipsis-h"></i>
-                                                        </button>
-                                                    </div>
-                                                    <mat-menu #menutask="matMenu" xPosition="before">
-
-                                                        <ng-container *ngIf="IsAdmin()&& CheckClosedTask()">
-                                                            <button mat-menu-item (click)="UpdateWorkProcess();">
-                                                                <i class="fas fa-user-cog pd-0"
-                                                                    style="color: green;"></i>
-                                                                Chỉnh sửa người theo dõi công việc
-                                                            </button>
-                                                        </ng-container>
-
-                                                        <button mat-menu-item>
-                                                            <mat-checkbox class="example-margin p-0 "
-                                                                [disabled]="!(CheckRoles(22) && CheckClosedProject())"
-                                                                [checked]="item.closed"
-                                                                (change)="ClosedTask($event.checked)">
-                                                            </mat-checkbox>
-                                                            <span (click)="$event.stopPropagation();" class="pl-3"
-                                                                style="font-size: 11pt"
-                                                                translate="work.dongcongviec"></span>
-                                                        </button>
-
-                                                        <ng-container *ngIf="IsAdmin()&& CheckClosedTask()">
-
-                                                            <button mat-menu-item (click)="DeleteTask()">
-                                                                <i class="flaticon2-delete"
-                                                                    style="color: red;"></i>&nbsp;
-                                                                <span translate="work.xoacongviec"></span>
-                                                            </button>
-                                                        </ng-container>
-                                                    </mat-menu>
-                                                </div>
+                                                </div> 
 
                                             </div>
 
