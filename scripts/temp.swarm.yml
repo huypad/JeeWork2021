@@ -1,9 +1,7 @@
 version: '3.9'
 
 networks:
-  vault_vault_network:
-    external: true
-  traefik_traefik-network:
+  gateway-network:
     external: true
   kafka-network:
     external: true
@@ -12,8 +10,7 @@ services:
   api:
     image: ${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}-api:latest
     networks:
-      - vault_vault_network
-      - traefik_traefik-network
+      - gateway-network
       - kafka-network
     environment:
       ASPNETCORE_ENVIRONMENT: Production
@@ -42,7 +39,7 @@ services:
         order: start-first
       labels:
         - traefik.enable=true
-        - traefik.docker.network=traefik_traefik-network
+        - traefik.docker.network=gateway-network
         - traefik.constraint-label=traefik-public
         - traefik.http.routers.${PROJECT_NAME}-api-http.rule=Host(`${PROJECT_NAME}-api.${DOMAIN}`)
         - traefik.http.routers.${PROJECT_NAME}-api-http.entrypoints=http
@@ -56,7 +53,7 @@ services:
   backend:
     image: ${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}-backend:latest
     networks:
-      - traefik_traefik-network
+      - gateway-network
     deploy:
       mode: replicated
       replicas: 1
@@ -68,7 +65,7 @@ services:
         order: start-first
       labels:
         - traefik.enable=true
-        - traefik.docker.network=traefik_traefik-network
+        - traefik.docker.network=gateway-network
         - traefik.constraint-label=traefik-public
         - traefik.http.routers.${PROJECT_NAME}-backend-http.rule=Host(`${PROJECT_NAME}.${DOMAIN}`)
         - traefik.http.routers.${PROJECT_NAME}-backend-http.entrypoints=http

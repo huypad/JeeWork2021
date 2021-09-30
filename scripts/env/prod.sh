@@ -8,7 +8,7 @@ export PROJECT_NAME=jeework
 export DOMAIN=jee.vn
 
 export VAULT_ENDPOINT=http://vault_vault:8200
-export VAULT_TOKEN=s.TGHgooNiWf5x56yUoTPr56C0
+export VAULT_TOKEN=s.F2Ds4Bv6q1KxIO6uk58k9Tfu
 export KAFKA_BROKER=kafka1:9999,kafka2:9999,kafka3:9999
 export HOST_JEEWORK_BE=https://jeework.jee.vn
 export HOST_JEEWORK_API=https://jeework-api.jee.vn
