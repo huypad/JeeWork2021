@@ -38,6 +38,16 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<WidgetsController> _logger;
+
+        static string sql_isquahan = " w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ";
+        static string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null ) and w.end_date is null";
+        static string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
+        static string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
+        static string sqlhoanthanh = " w.end_date is not null ";
+        // kiểm tra điều kiện hoành thành
+        string queryhoanthanh = " and w.end_date is not null ";
+        string querydangthuchien = " and w.end_date is null ";
+
         public WidgetsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WidgetsController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -332,12 +342,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     where p.disabled=0 and u.disabled=0 
                                     and u.id_user in (" + ids + ") " +
                                     "group by u.id_user";
-                    sqlq += @";select id_row, id_nv, status, iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-                                    iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                                    iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as dangthuchien, 
-                                    iIf(w.Status in (" + list_Deadline + @") , 1, 0) as is_quahan
+                    sqlq += @$";select id_row, id_nv, status,
+                                     iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+                                    iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
+                                    iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
                                     from v_wework_new w 
                                     where id_nv in (" + ids + ") " + strW + " (parent)";
+                    
+
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -612,17 +625,29 @@ namespace JeeWork_Core2021.Controllers.Wework
                         string hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                         string quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
                         string todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
-                        if (tinhtrang == "todo")
+                        //if (tinhtrang == "todo")
+                        //{
+                        //    strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                        //}
+                        //else if (tinhtrang == "deadline")
+                        //{
+                        //    strW += $" and w.status in ({quahan}) ";
+                        //}
+                        //else
+                        //{
+                        //    strW += $" and w.status in ({hoanthanh}) ";
+                        //};
+                         if (tinhtrang == "todo")
                         {
-                            strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                            strW += " and" + sql_dangthuchien; ;
                         }
                         else if (tinhtrang == "deadline")
                         {
-                            strW += $" and w.status in ({quahan}) ";
+                            strW += " and" + sql_isquahan;
                         }
                         else
                         {
-                            strW += $" and w.status in ({hoanthanh}) ";
+                            strW += queryhoanthanh;
                         };
 
                     }
@@ -729,8 +754,14 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     string columnName = "id_project_team";
                     string strW = $"  and w.id_department in ({listDept}) ";
+
                     if (!string.IsNullOrEmpty(query.filter["loaicongviec"]))
                     {
+                        if (int.Parse(query.filter["loaicongviec"].ToString()) == 10)
+                        {
+                            return CongviecNhanvien(query);
+                        }
+
                         if (int.Parse(query.filter["loaicongviec"].ToString()) == 1) // công việc tôi được giao 
                         {
                             strW += " and (w.id_nv=@iduser or w.id_row in (select distinct id_parent from v_wework_new ww where ww.id_nv=@iduser and id_parent > 0))";
@@ -774,17 +805,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                         string hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                         string quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
                         string todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
+
                         if (tinhtrang == "todo")
                         {
-                            strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                            strW += " and" + sql_dangthuchien; ;
                         }
                         else if (tinhtrang == "deadline")
                         {
-                            strW += $" and w.status in ({quahan}) ";
+                            strW += " and" + sql_isquahan;
                         }
                         else
                         {
-                            strW += $" and w.status in ({hoanthanh}) ";
+                            strW += queryhoanthanh;
                         };
                     }
 
@@ -901,17 +933,29 @@ namespace JeeWork_Core2021.Controllers.Wework
                         string hoanthanh = ReportController.GetListStatusDynamic(listDept, cnn, " IsFinal "); // IsFinal
                         string quahan = ReportController.GetListStatusDynamic(listDept, cnn, "IsDeadline"); // IsDeadline
                         string todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo"); //IsTodo
+                        //if (tinhtrang == "todo")
+                        //{
+                        //    strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                        //}
+                        //else if (tinhtrang == "deadline")
+                        //{
+                        //    strW += $" and w.status in ({quahan}) ";
+                        //}
+                        //else
+                        //{
+                        //    strW += $" and w.status in ({hoanthanh}) ";
+                        //};
                         if (tinhtrang == "todo")
                         {
-                            strW += $" and w.status not in ({quahan},{hoanthanh}) ";
+                            strW += " and" + sql_dangthuchien; ;
                         }
                         else if (tinhtrang == "deadline")
                         {
-                            strW += $" and w.status in ({quahan}) ";
+                            strW += " and" + sql_isquahan;
                         }
                         else
                         {
-                            strW += $" and w.status in ({hoanthanh}) ";
+                            strW += queryhoanthanh;
                         };
                     }
                     #region group
@@ -1216,12 +1260,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                     where w_user.Disabled = 0 and w_user.loai = 1 and we_work.id_project_team = " + query.filter["id_project_team"] + "and id_work = ";
                     result.Columns.Add("Tags", typeof(DataTable));
                     result.Columns.Add("User", typeof(DataTable));
+                    result.Columns.Add("DataStatus", typeof(DataTable));
                     result.Columns.Add("id_nv", typeof(string));
                     if (result.Rows.Count > 0)
                     {
                         foreach (DataRow dr in result.Rows)
                         {
-                            dr["comments"] = dt_comments.Compute("count(id_row)", "object_id =" + dr["id_row"].ToString() + "").ToString();
+                            dr["comments"] = WorkClickupController.SoluongComment(dr["id_row"].ToString(),cnn);//  dt_comments.Compute("count(id_row)", "object_id =" + dr["id_row"].ToString() + "").ToString();
                             dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
                             DataTable dt_u = cnn.CreateDataTable(queryUser + dr["id_row"]);
                             #region Map info account từ JeeAccount
@@ -1239,6 +1284,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                             #endregion
                             dr["User"] = dt_u;
+                            dr["DataStatus"] = WorkClickupController.list_status_user(dr["id_row"].ToString(), dr["id_project_team"].ToString(), loginData, ConnectionString, DataAccount); 
                         }
                     }
                     DataTable dt_data = new DataTable();
@@ -1764,16 +1810,23 @@ namespace JeeWork_Core2021.Controllers.Wework
                             {"urgent","urgent" }
                         };
             #endregion
+            /*
+                      
+iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
+iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
+iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as is_danglam, 
+iIf(w.Status in (" + list_Deadline + @$") , 1, 0) as is_quahan,
+                     */
             if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Trả dữ liệu về backend để hiển thị lên giao diện
             string sqlq = @$"select Distinct w.*, '' as hoten_nguoigiao
 , Iif(fa.id_row is null ,0,1) as favourite 
 ,coalesce( f.count,0) as num_file,coalesce( com.count,0) as num_com,
-iIf(w.Status in (" + list_Complete + @") and w.end_date>w.deadline,1,0) as is_htquahan,
-iIf(w.Status  in (" + list_Complete + @") and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_htdunghan,
-iIf(w.Status not in (" + list_Complete + "," + list_Deadline + @") , 1, 0) as is_danglam, 
-iIf(w.Status in (" + list_Deadline + @$") , 1, 0) as is_quahan,
+ iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
+iIf({sqlhoanthanhdunghan} ,1,0) as is_htdunghan,
+iIf( {sql_dangthuchien} , 1, 0) as is_danglam, 
+iIf( {sql_isquahan} , 1, 0) as is_quahan,
 iif(convert(varchar, w.deadline,103) like convert(varchar, GETUTCDATE(),103),1,0) as duetoday,
 iif(w.status=1 and w.start_date is null,1,0) as require,
 '' as NguoiTao, '' as NguoiSua from v_wework_clickup_new w 

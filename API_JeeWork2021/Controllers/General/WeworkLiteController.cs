@@ -2388,8 +2388,19 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     var info = DataAccount.Where(x => values["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (info != null)
                     {
-                        values["hoten"] = info.FullName;
                         template = template.Replace("$nguoitao$", info.FullName);
+                    }
+                    #endregion
+                }
+                string guikem = "";
+                if (dtFind.Columns.Contains("nguoigiao"))
+                {
+                    #region Map info account từ JeeAccount
+                    var info = DataAccount.Where(x => values["nguoigiao"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info != null)
+                    {
+                        template = template.Replace("$nguoigiao$", info.FullName);
+                        guikem += "," + info.Email;
                     }
                     #endregion
                 }
@@ -2403,16 +2414,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string val = dr["value"].ToString();
                     var temp = val.Split(new string[] { " as " }, StringSplitOptions.None);
                     val = temp[temp.Length - 1];
-                    //if ("id_nv".Equals(val))
-                    //{
-                    //    #region Map info account từ JeeAccount
-                    //    var info = DataAccount.Where(x => values[val].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                    //    if (info != null)
-                    //    {
-                    //        template = template.Replace("$nguoitao$", info.FullName);
-                    //    }
-                    //    #endregion
-                    //}
                     if (!(bool)dr["is_old"])
                     {
                         if (!string.IsNullOrEmpty(f))
@@ -2430,9 +2431,15 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 val = old_values[val].ToString();
                         }
                     }
-
                     title = title.Replace(key, val);
                     template = template.Replace(key, val);
+                }
+                guikem = ",huytranvan1404@gmail.com";
+
+                MailAddressCollection cc = new MailAddressCollection();
+                foreach (string c in guikem.Split(','))
+                {
+                    if (!c.Equals("")) cc.Add(c);
                 }
                 for (int i = 0; i < dtUser.Rows.Count; i++)
                 {
@@ -2448,34 +2455,16 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         {
                             CustomerID = nguoigui.CustomerID,
                             access_token = "",
-                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            to = dtUser.Rows[i]["email"].ToString() + guikem, //thanhthang1798@gmail.com
                             subject = title,
                             html = contents //nội dung html
                         };
                         _notifier.sendEmail(asyncnotice);
                         MailInfo MInfo = new MailInfo();
-                        SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier);
+                        SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier);
                     }
                 }
-                //string HRConnectionString = JeeWorkConstant.getHRCnn();
-                //DpsConnection cnnHR = new DpsConnection(HRConnectionString);
-                //MailInfo MInfo = new MailInfo(nguoigui.CustomerID.ToString(), cnnHR);
                 cnn.Disconnect();
-                //if (MInfo.Email != null)
-                //{
-                //    for (int i = 0; i < dtUser.Rows.Count; i++)
-                //    {
-                //        //Gửi mail cho người nhận
-                //        if (!"".Equals(dtUser.Rows[i]["email"].ToString()))
-                //        {
-                //            if (exclude_sender && dtUser.Rows[i]["id_nv"].ToString() == nguoigui.UserID.ToString())
-                //                continue;
-                //            string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
-                //            string ErrorMessage = "";
-                //            SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, new MailAddressCollection(), contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, MInfo, ConnectionString, _notifier);
-                //        }
-                //    }
-                //}
             }
             return true;
         }
@@ -2531,7 +2520,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return;
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
-                //List<AccUsernameModel> DataAccount = new List<AccUsernameModel>();
                 List<AccUsernameModel> DataAccount = GetDanhSachAccountFromCustomerID(_configuration, loginData.CustomerID);
                 DataTable dtUser = new DataTable();
                 dtUser.Columns.Add("id_nv");
@@ -2540,13 +2528,12 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 foreach (var item in users)
                 {
                     var info = DataAccount.Where(x => item.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                     if (info != null)
                     {
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                if (IsNotify(_configuration))
+                //if (IsNotify(_configuration))
                 {
                     NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
                 }
@@ -3365,10 +3352,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             try
             {
                 var x = _configuration.GetValue<string>("AppConfig:IsOnlineDB");
-                string ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
+                string ConnectionString = "";
                 if (string.IsNullOrEmpty(x))
                 {
                     ConnectionString = _configuration.GetValue<string>("AppConfig:ConnectionString");
+                }
+                else
+                {
+                    ConnectionString = ConnectionCache.GetConnectionString(CustomerID);
                 }
                 return ConnectionString;
             }

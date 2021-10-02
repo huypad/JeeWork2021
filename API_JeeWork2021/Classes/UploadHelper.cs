@@ -301,7 +301,9 @@ namespace JeeWork_Core2021.Classes
                 {".csv", "text/csv"},
                 {".rar","application/vnd.rar" },
                 {".zip","application/zip" },
-                {".7z","application/x-7z-compressed" }
+                {".7z","application/x-7z-compressed" },
+                {".sql","application/sql" }
+
             };
         }
         private static Dictionary<string, string> GetIcon()
@@ -318,7 +320,7 @@ namespace JeeWork_Core2021.Classes
                 {"image/jpeg","jpg.png"},
                 {"image/gif","gif.png"},
                 {"text/csv","csv.png"},
-
+                {"application/sql", "sql.png"},
             };
         }
         public static string GetIcon(string type)

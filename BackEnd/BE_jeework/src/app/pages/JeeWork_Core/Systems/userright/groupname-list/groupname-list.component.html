@@ -57,6 +57,7 @@
 		</ng-container>
 	</kt-portlet-header>
 	<kt-portlet-body>
+		<!-- <span [innerHtml]="$description$">$description$</span><br /> -->
 		<div class="example-container mat-table__wrapper" [ngStyle]="{ height: getHeight() }">
 			<table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" matSort matSortActive="id"
 				style="width: 100%" matSortDirection="asc" matSortDisableClear>
@@ -95,8 +96,7 @@
 							matTooltip="{{ 'phanquyen.phanquyen' | translate }}">
 							<mat-icon>settings</mat-icon>
 						</button>&nbsp;
-						<button mat-icon-button color="info" type="button"
-							(click)="DanhSachNguoiDung(item)"
+						<button mat-icon-button color="info" type="button" (click)="DanhSachNguoiDung(item)"
 							matTooltip="{{ 'phanquyen.danhsachnguoidung' | translate }}">
 							<mat-icon>people</mat-icon>
 						</button>&nbsp;

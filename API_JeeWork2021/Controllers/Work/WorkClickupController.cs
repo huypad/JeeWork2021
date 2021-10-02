@@ -6639,7 +6639,7 @@ where u.disabled = 0 and u.loai = 2";
             {
                 SqlConditions conds = new SqlConditions();
                 conds.Add("w_user.disabled", 0);
-                string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as image, id_work,w_user.loai
+                string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as image, id_work,w_user.loai,w_user.CreatedBy
                                         from we_work_user w_user 
                                         join we_work on we_work.id_row = w_user.id_work where (where)";
                 if ("id_project_team".Equals(columnName))
@@ -6727,6 +6727,9 @@ where u.disabled = 0 and u.loai = 2";
                                         image = us["image"],
                                         loai = us["loai"],
                                     },
+                             NguoiGiao = from us in dt_Users.AsEnumerable()
+                                     where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
+                                     select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
                              UsersInfo = from us in dt_Users.AsEnumerable()
                                          where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                          select new
@@ -7408,7 +7411,6 @@ where u.disabled = 0 and u.loai = 2";
                                   "where id_project_team  = " + id_project_team + " and FieldID = " + field_custom;
                                 }
                                 column = "custom";
-                              
                                 dt_filter = cnn.CreateDataTable(querySQL);
                                 DataRow newRow = dt_filter.NewRow();
                                 newRow[0] = 0;

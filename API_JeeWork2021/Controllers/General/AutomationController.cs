@@ -630,7 +630,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         IDdepartment = long.Parse(cnn.ExecuteScalar($@"select top 1 id_row from we_department where Disabled = 0 and ParentID is null and 
 (id_row = (select id_department from we_project_team where id_row = {id})
  or ( id_row = (select ParentID from we_department where Disabled = 0 and ParentID is not null 
- and id_row = (select id_department from we_project_team where id_row = {id}))) )").ToString());
+ and id_row = (select id_department from we_project_team where id_row = {id}))))").ToString());
                     }
                     
                     string sql_space = "", sql_project = "", sql_folder = "", where_department = "",sql_task="";

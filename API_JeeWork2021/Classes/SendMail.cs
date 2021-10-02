@@ -553,7 +553,7 @@ namespace JeeWork_Core2021.Classes
                 DpsConnection cnn1 = new DpsConnection(ConnectionString);
                 try
                 {
-                    //s.Send(m);
+                    s.Send(m);
                     emailMessage asyncnotice = new emailMessage()
                     {
                         CustomerID = long.Parse(CustemerID),

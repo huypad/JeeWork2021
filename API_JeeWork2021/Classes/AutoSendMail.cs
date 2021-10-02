@@ -42,7 +42,7 @@ namespace JeeWork_Core2021.Classes
             TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             //60p chạy 1 lần - 3600000
-            TimerAutoUpdate = new System.Timers.Timer(3600000);
+            TimerAutoUpdate = new System.Timers.Timer(60000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(Timer60Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
@@ -165,11 +165,11 @@ namespace JeeWork_Core2021.Classes
         }
         void Timer60Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (WeworkLiteController.IsNotify(_configuration))
+            //if (WeworkLiteController.IsNotify(_configuration))
             {
                 if (Time60IsRun) return;
                 Time60IsRun = true;
-                string _connection = ""; string ham = "EveryDayReminderEveryDayReminder - Dòng 168"; string idkh = "0"; string listKH = "";
+                string _connection = ""; string ham = "EveryDayReminderEveryDayReminder - Dòng 172"; string idkh = "0"; string listKH = "";
                 try
                 {
                     #region danh sách customer
@@ -189,7 +189,7 @@ namespace JeeWork_Core2021.Classes
                                         EveryDayReminder(cnn, CustomerID, _connection);
                                         if (cnn.LastError != null)
                                         {
-                                            string content = " Timer60minute. Lỗi Database: " + cnn.LastError.Message;
+                                            string content = " Timer60Minute_Elapsed. Lỗi Database: " + cnn.LastError.Message;
                                             string error_message = "";
                                             string CustemerID1 = "0";
                                             //Gửi thông báo khi phát sinh lỗi
@@ -550,13 +550,12 @@ namespace JeeWork_Core2021.Classes
             Hashtable has = new Hashtable();
             SqlConditions conds = new SqlConditions();
             DateTime today = UTCdate.Date;
-            //DateTime today = UTCdate.Date;
             DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
-            string select = @"select (SELECT datediff(hour , GETDATE(), deadline)) as thoigianconlai, w.* 
+            string select = @"select (select datediff(hour, GETDATE(), deadline)) as thoigianconlai, w.* 
             from v_wework_new w where disabled = 0 
-            and deadline is not null and Id_NV is not null and deadline <= Getdate()
-            and deadline >= '" + currentTime + "' " +
-            "and deadline < '" + currentTime.AddDays(1) + "'";
+            and deadline is not null and Id_NV is not null
+            and cast(deadline as date) >= '" + currentTime + "' " +
+            "and cast(deadline as date) < '" + currentTime.AddDays(1) + "'";
             DataTable dt = cnn.CreateDataTable(select);
             UserJWT loginData = new UserJWT();
             loginData.CustomerID = int.Parse(CustemerID);
@@ -592,6 +591,31 @@ namespace JeeWork_Core2021.Classes
                         bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
                     }
                     #endregion
+                }
+            }
+        }
+        private void CongViecHetHanTruoc1Ngay(DpsConnection cnn, string CustemerID, string ConnectionString)
+        {
+            PushNotifyModel notify = new PushNotifyModel();
+            Hashtable has = new Hashtable();
+            SqlConditions conds = new SqlConditions();
+            DateTime today = UTCdate.Date;
+            DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
+            string select = @"select (select datediff(hour, GETDATE(), deadline)) as thoigianconlai, w.* 
+            from v_wework_new w where disabled = 0 
+            and deadline is not null and id_nv is not null and end_date is null
+            and cast(deadline as date) >= '" + currentTime.AddDays(1) + "' " +
+            "and cast(deadline as date) < '" + currentTime.AddDays(2) + "'";
+            DataTable dt = cnn.CreateDataTable(select);
+            UserJWT loginData = new UserJWT();
+            loginData.CustomerID = int.Parse(CustemerID);
+            loginData.LastName = "Hệ thống";
+            loginData.UserID = 0;
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 45, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
                 }
             }
         }
@@ -754,6 +778,7 @@ namespace JeeWork_Core2021.Classes
                                 IsNhacnho = true;
                         }
                     }
+                    //if (CustomerID == 25)
                     if (IsNhacnho)
                     {
                         DateTime Gionhactieptheo = Gionhacnho.AddDays(1);
@@ -764,20 +789,22 @@ namespace JeeWork_Core2021.Classes
                         val.Add("giatri", Gionhactieptheo.ToString());
                         cnn.Update(val, cond, "tbl_thamso");
                         #region Chạy các hàm nhắc nhở
-                        ham = "CongViecHetHanTrongNgay";
-                        CongViecHetHanTrongNgay(cnn, CustomerID.ToString(), ConnectionString);
-                        ham = "CongViecHetHan";
-                        CongViecHetHan(cnn, CustomerID.ToString(), ConnectionString);
-                        ham = "DuAnSapHetHan";
-                        DuAnSapHetHan(cnn, CustomerID.ToString(), ConnectionString);
-                        ham = "DuAnHetHan";
-                        DuAnHetHan(cnn, CustomerID.ToString(), ConnectionString);
-                        ham = "TaoCongViecTuDong";
-                        TaoCongViecTuDong(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "CapNhatCongViecTreHan";
-                        //CapNhatCongViecTreHan(cnn, CustomerID.ToString(), ConnectionString);
-                        ham = "CapNhatDuAnTreHan";
-                        CapNhatDuAnTreHan(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "CongViecHetHanTruoc1Ngay";
+                        CongViecHetHanTruoc1Ngay(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "CongViecHetHanTrongNgay";
+                        //CongViecHetHanTrongNgay(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "CongViecHetHan";
+                        //CongViecHetHan(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "DuAnSapHetHan";
+                        //DuAnSapHetHan(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "DuAnHetHan";
+                        //DuAnHetHan(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "TaoCongViecTuDong";
+                        //TaoCongViecTuDong(cnn, CustomerID.ToString(), ConnectionString);
+                        ////ham = "CapNhatCongViecTreHan";
+                        ////CapNhatCongViecTreHan(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "CapNhatDuAnTreHan";
+                        //CapNhatDuAnTreHan(cnn, CustomerID.ToString(), ConnectionString);
                         #endregion
                     }
                     if (cnn.LastError != null)
