@@ -42,7 +42,7 @@ namespace JeeWork_Core2021.Classes
             TimerSendNotify = new System.Timers.Timer(600000);
             TimerSendNotify.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             //60p chạy 1 lần - 3600000
-            TimerAutoUpdate = new System.Timers.Timer(60000);
+            TimerAutoUpdate = new System.Timers.Timer(3600000);
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(Timer60Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
@@ -791,20 +791,20 @@ namespace JeeWork_Core2021.Classes
                         #region Chạy các hàm nhắc nhở
                         ham = "CongViecHetHanTruoc1Ngay";
                         CongViecHetHanTruoc1Ngay(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "CongViecHetHanTrongNgay";
-                        //CongViecHetHanTrongNgay(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "CongViecHetHan";
-                        //CongViecHetHan(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "DuAnSapHetHan";
-                        //DuAnSapHetHan(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "DuAnHetHan";
-                        //DuAnHetHan(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "TaoCongViecTuDong";
-                        //TaoCongViecTuDong(cnn, CustomerID.ToString(), ConnectionString);
-                        ////ham = "CapNhatCongViecTreHan";
-                        ////CapNhatCongViecTreHan(cnn, CustomerID.ToString(), ConnectionString);
-                        //ham = "CapNhatDuAnTreHan";
-                        //CapNhatDuAnTreHan(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "CongViecHetHanTrongNgay";
+                        CongViecHetHanTrongNgay(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "CongViecHetHan";
+                        CongViecHetHan(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "DuAnSapHetHan";
+                        DuAnSapHetHan(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "DuAnHetHan";
+                        DuAnHetHan(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "TaoCongViecTuDong";
+                        TaoCongViecTuDong(cnn, CustomerID.ToString(), ConnectionString);
+                        //ham = "CapNhatCongViecTreHan";
+                        //CapNhatCongViecTreHan(cnn, CustomerID.ToString(), ConnectionString);
+                        ham = "CapNhatDuAnTreHan";
+                        CapNhatDuAnTreHan(cnn, CustomerID.ToString(), ConnectionString);
                         #endregion
                     }
                     if (cnn.LastError != null)

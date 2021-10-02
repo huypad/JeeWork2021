@@ -2434,8 +2434,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     title = title.Replace(key, val);
                     template = template.Replace(key, val);
                 }
-                guikem = ",huytranvan1404@gmail.com";
-
+                //guikem = ",huytranvan1404@gmail.com"; -- để test
                 MailAddressCollection cc = new MailAddressCollection();
                 foreach (string c in guikem.Split(','))
                 {
