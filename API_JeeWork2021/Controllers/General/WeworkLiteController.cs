@@ -2454,7 +2454,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         {
                             CustomerID = nguoigui.CustomerID,
                             access_token = "",
-                            to = dtUser.Rows[i]["email"].ToString() + guikem, //thanhthang1798@gmail.com
+                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
+                            cc = guikem,
                             subject = title,
                             html = contents //nội dung html
                         };
