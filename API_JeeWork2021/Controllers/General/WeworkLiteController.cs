@@ -2533,7 +2533,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
                     }
                 }
-                //if (IsNotify(_configuration))
+                if (IsNotify(_configuration))
                 {
                     NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
                 }

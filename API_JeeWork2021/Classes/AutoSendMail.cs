@@ -619,6 +619,21 @@ namespace JeeWork_Core2021.Classes
                 }
             }
         }
+        public bool CheckTurnOnSendMail(int loai, bool ismail, ConfigNotify config)
+        {
+            switch (loai)
+            {
+                case 1: return ismail ? config.LeaveApplication : config.NLeaveApplication;
+                case 6: return ismail ? config.RecruitmentRequirements : config.NRecruitmentRequirements;
+                case 12: return ismail ? config.OTApplication : config.NOTApplication;
+                case 13: return ismail ? config.Donxinthoiviec : config.NDonxinthoiviec;
+                case 14: return ismail ? config.Phieudanhgiaquatrinhthuviec : config.NPhieudanhgiaquatrinhthuviec;
+                case 18: return ismail ? config.Donxindoicalamviec : config.NDonxindoicalamviec;
+                case 19: return ismail ? config.Dongiaitrinhchamcong : config.NDongiaitrinhchamcong;
+                case 20: return ismail ? true : false;
+                default: return false;
+            }
+        }
         private void CongViecHetHan(DpsConnection cnn, string CustemerID, string ConnectionString)
         {
             PushNotifyModel notify = new PushNotifyModel();
