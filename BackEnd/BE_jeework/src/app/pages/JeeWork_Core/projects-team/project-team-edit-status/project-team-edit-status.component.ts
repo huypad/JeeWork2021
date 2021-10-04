@@ -233,8 +233,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   LoadStatusDuan() {
-    console.log(this);
-    console.log(this.listStatus);
     if (this.listStatus && this.isStatusNow) {
       // this.listSTT = this.listStatus;
       const listTemp = [];
@@ -257,6 +255,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         listTemp.push(item);
       });
       this.listSTT = listTemp;
+      console.log(this.listSTT);
       this.changeDetectorRefs.detectChanges();
     }
   }
@@ -400,6 +399,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   ChangeColor(value, status) {
+    debugger
     if (this.TempSelected > 0 && !this.isStatusNow) {
       const _item = new UpdateQuickModel();
       _item.clear();
@@ -416,7 +416,14 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.Color = value;
 
       item.Description = status.Description;
-      item.Id_project_team = status.id_project_team;
+
+      if( status.Id_project_team){
+        item.Id_project_team = status.id_project_team;
+      }
+      if(status.id_department){
+        item.id_department = status.id_department;
+      }
+     
       //   item.Follower = status.Follower;
       item.Type = status.Type ? status.Type : "2";
       this.UpdateStatus(item);
@@ -508,7 +515,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     this.isAddStatus = false;
     if (!value) {
       return;
-    }
+    } 
     if (!this.isStatusNow) {
       const _item = new UpdateQuickModel();
       _item.clear();
@@ -625,17 +632,17 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   UpdateStatus(item) {
-    console.log(item);
-    return;
-    // this._service.UpdateStatus(item).subscribe((res) => {
-    //     if (res && res.status == 1) {
-    //         this.ListStatusDynamic();
-    //     } else {
-    //         this.layoutUtilsService.showError(
-    //             res.error.message
-    //         );
-    //     }
-    // });
+    // console.log(item);
+    // return;
+    this._service.UpdateStatus(item).subscribe((res) => {
+        if (res && res.status == 1) {
+            this.ListStatusDynamic();
+        } else {
+            this.layoutUtilsService.showError(
+                res.error.message
+            );
+        }
+    });
   }
 
   @HostListener("document:keydown", ["$event"])

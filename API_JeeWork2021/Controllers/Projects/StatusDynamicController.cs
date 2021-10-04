@@ -98,7 +98,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     // lấy ra ID tiếp theo nhưng phải nhỏ hơn
                     conds.Add("disabled", 0);
                     conds.Add("StatusName", data.StatusName);
-                    string strCheck = "select count(*) from we_status where (where)";
+                    string strCheck = "select * from we_status where (where)";
                     DataTable dt_check = new DataTable();
                     dt_check = cnn.CreateDataTable(strCheck, "(where)", conds);
                     if (dt_check.Rows.Count > 0)
@@ -139,7 +139,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string strRe = "";
                 if (string.IsNullOrEmpty(data.StatusName))
                     strRe += (strRe == "" ? "" : ",") + "tên status";
-                if (data.Id_project_team <= 0)
+                if (data.Id_project_team <= 0 && data.id_department <= 0)
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin dự án/phòng ban";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
