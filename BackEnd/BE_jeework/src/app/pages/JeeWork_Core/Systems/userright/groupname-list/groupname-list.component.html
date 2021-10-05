@@ -66,6 +66,7 @@
 						<span translate="phanquyen.id_nhom" class="text-uppercase"></span>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode">
+
 						{{item.ID_Nhom}}
 					</td>
 				</ng-container>
@@ -76,6 +77,8 @@
 							[activeDirection]="sorting.direction" (sort)="sortField($event)"></app-sort-icon>
 					</th>
 					<td mat-cell *matCellDef="let item" class="mat-column-vinCode" style="width: 60%;">
+						<i [ngStyle]="{'color': item.color_class }" matTooltip="{{ item.tooltip }}"
+							class="{{item.icon_class}}"></i>&nbsp;
 						{{item.TenNhom}}
 					</td>
 				</ng-container>
@@ -101,8 +104,8 @@
 							<mat-icon>people</mat-icon>
 						</button>&nbsp;
 						<button mat-icon-button color="warn" type="button"
-							*ngIf="!item.IsAdmin && permitService.Visible_Group" (click)="deleteItem(item)"
-							matTooltip="{{ 'GeneralKey.xoa' | translate }}">
+							*ngIf="(!item.IsAdmin && item.grouptype == null) && permitService.Visible_Group"
+							(click)="deleteItem(item)" matTooltip="{{ 'GeneralKey.xoa' | translate }}">
 							<mat-icon>delete</mat-icon>
 						</button>&nbsp;
 					</td>

@@ -540,7 +540,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         item.Id_project_team = this.data.id_row;
         item.id_department = 0;
       }
-      debugger
       item.Type = "2";
       this._service.InsertStatus(item).subscribe((res) => {
         if (res && res.status == 1) {

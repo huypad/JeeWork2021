@@ -3820,35 +3820,28 @@ td .mat-chip-list-wrapper .mat-chip .mat-standard-chip {
 	height: auto;
 	width: auto;
 }
-
-.btn-trolai {
-	background-color: #AEAEAE !important;
-	;
-	color: #F4F4F4;
+.btn-luudong{
+    background-color: #0A9562;
+    color: #FFF;
+    border-color: #0A9562;
 }
 
-.btn-luudong {
-	background-color: #77A942;
-	color: #F4F4F4;
-	border-color: #77A942;
+.btn-themmoi{
+    color: #FFF;
+    background-color: #0A9562;
+    border-color: #0A9562;
 }
 
-.btn-themmoi {
-	color: #F4F4F4;
-	background-color: #77A942;
-	border-color: #77A942;
+.btn-luutieptuc{
+    color: #FFF;
+    background-color: #3598DC;
+    border-color: #3598DC;
 }
 
-.btn-luutieptuc {
-	color: #F4F4F4;
-	background-color: #1863AD;
-	border-color: #1863AD;
-}
-
-.btn-luuthietlap {
-	color: #F4F4F4;
-	background-color: #1863AD;
-	border-color: #1863AD;
+.btn-luuthietlap{
+    color: #FFF;
+    background-color: #3598DC;
+    border-color: #3598DC;
 }
 
 // custom css from bootstrap
@@ -3933,11 +3926,6 @@ td .mat-chip-list-wrapper .mat-chip .mat-standard-chip {
     border-color: #77A942;
 }
 
-.btn-luutieptuc {
-    color: #F4F4F4;
-    background-color: #1863AD;
-    border-color: #1863AD;
-}
 
 .btn-luuthietlap {
     color: #F4F4F4;

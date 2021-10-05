@@ -561,7 +561,7 @@ namespace JeeWork_Core2021.Classes
             return dt.AddDays(-1 * diff).Date;
         }
 
-       
+
         public static DateTime convertStringToDatetime(string strNgay)
         {
             string[] formats = new string[] { "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH", "dd/MM/yyyy",
@@ -603,6 +603,54 @@ namespace JeeWork_Core2021.Classes
             }
             error = tmp_error;
             return dt;
+        }
+        public static bool InsertGroupType(DpsConnection cnn, long CustomerID)
+        {
+            long group_type = 1;
+            string[,] arr = {
+                    {"Nhóm quản trị phòng ban", "1","3402,3403,3501,3502,3503,3610,3700,3800"},
+                    {"Nhóm quản lý dự án", "2","3501,3502,3503,3610"}
+                    //{"Thành viên", "3","0"}
+                    };
+            for (int i = 0; i < arr.GetLength(0); i++)
+            {
+                group_type = long.Parse(arr[i, 1].ToString());
+                SqlConditions cond = new SqlConditions();
+                cond.Add("CustemerID", CustomerID);
+                cond.Add("GroupType", group_type);
+                DataTable dt = new DataTable();
+                string sqlq = "select * from tbl_group where (where)";
+                dt = cnn.CreateDataTable(sqlq, "(where)", cond);
+                if (dt.Rows.Count == 0)
+                {
+                    Hashtable val = new Hashtable();
+                    val.Add("groupname", arr[i, 0]);
+                    val.Add("grouptype", arr[i, 1]);
+                    val.Add("datecreated", GetDateTime());
+                    val.Add("custemerid", CustomerID);
+                    val.Add("module", 0);
+                    val.Add("isadmin", 0);
+                    if (cnn.Insert(val, "tbl_group") == 1)
+                    {
+                        var MaxId_Group = int.Parse(cnn.ExecuteScalar("SELECT ISNULL(MAX(Id_Group), 0) from tbl_group").ToString());
+                        foreach (var tmp in arr[i, 2].Split(","))
+                        {
+                            Hashtable _sub = new Hashtable();
+                            _sub.Add("id_group", MaxId_Group);
+                            _sub.Add("id_permit", tmp);
+                            if (cnn.Insert(_sub, "tbl_group_permit") != 1)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
         public static string GetThamSo(DpsConnection cnn, string CustemerID, int id)
         {

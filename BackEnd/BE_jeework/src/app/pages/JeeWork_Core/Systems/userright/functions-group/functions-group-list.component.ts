@@ -194,7 +194,6 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle(val: any) {
-		debugger
 		if (val.checked) {
 			this.productsResult.forEach(row => {
 				if (row.IsRead_Enable == true && row.IsReadPermit == true) {
@@ -222,18 +221,34 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle1(val: any) {
-
+		debugger
+		// if (val.checked) {
+		// 	this.productsResult.forEach(row => {
+		// 		if (row.IsEdit_Enable == true) {
+		// 			row.IsEdit = true;
+		// 		}
+		// 	});
+		// }
+		// else {
+		// 	this.productsResult.forEach(row => {
+		// 		if (row.IsEdit_Enable == true) {
+		// 			row.IsEdit = false;
+		// 		}
+		// 	});
+		// }
 		if (val.checked) {
 			this.productsResult.forEach(row => {
-				if (row.IsEdit_Enable == true) {
-					row.IsEdit = true;
+				if (row.IsRead_Enable == true && row.IsReadPermit == true) {
+					row.IsRead = true;
+				} else {
+					row.IsRead = false;
 				}
 			});
 		}
 		else {
 			this.productsResult.forEach(row => {
-				if (row.IsEdit_Enable == true) {
-					row.IsEdit = false;
+				if (row.IsRead_Enable == true) {
+					row.IsRead = false;
 				}
 			});
 		}

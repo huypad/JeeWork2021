@@ -19,6 +19,7 @@ using System.Drawing;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.Logger;
 using Newtonsoft.Json;
+using DPSinfra.Notifier;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -32,13 +33,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<AttachmentController> _logger;
-        public AttachmentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<AttachmentController> logger)
+        private INotifier _notifier;
+        public AttachmentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<AttachmentController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
             _logger = logger;
+            _notifier = notifier;
         }
         /// <summary>
         /// 
@@ -116,6 +119,44 @@ namespace JeeWork_Core2021.Controllers.Wework
                         data = JsonConvert.SerializeObject(data)
                     };
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
+                    #region Bổ sung tài liệu cho dự án/phòng ban -- Thành viên trong dự án
+                    if (data.object_type == 4)
+                    {
+                        string sqlproject = "select id_user from we_project_team_user where Disabled = 0 and id_project_team = " + data.object_id;
+                        DataTable dtproject = cnn.CreateDataTable(sqlproject) ;
+                        // lấy thông tin người gửi + cc owner phòng ban tương ứng
+                        List<long> dsuser = dtproject.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+
+                        #region Lấy thông tin để thông báo
+                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(19, ConnectionString);
+                        #endregion
+                        WeworkLiteController.mailthongbao(data.object_id, dsuser, 19, loginData, ConnectionString, _notifier, _configuration);
+                        #region Notify thiết lập vai trò member
+                        //for (int i = 0; i < users_member.Count; i++)
+                        //{
+                        //    NotifyModel notify_model = new NotifyModel();
+                        //    has_replace = new Hashtable();
+                        //    has_replace.Add("nguoigui", loginData.Username);
+                        //    has_replace.Add("project_team", data.title);
+                        //    notify_model.AppCode = "WORK";
+                        //    notify_model.From_IDNV = loginData.UserID.ToString();
+                        //    notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                        //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                        //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                        //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                        //    notify_model.ReplaceData = has_replace;
+                        //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                        //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        //    if (info is not null)
+                        //    {
+                        //        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                        //    }
+                        //}
+                        #endregion
+                    }
                     #endregion
                     return JsonResultCommon.ThanhCong();
                 }

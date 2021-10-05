@@ -58,7 +58,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
             if (DataAccount == null)
                 return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
             #endregion
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -69,24 +68,27 @@ namespace JeeWork_Core2021.Controllers.Wework
             ErrorModel error = new ErrorModel();
             string sqlq = "";
             SqlConditions Conds = new SqlConditions();
-            string orderByStr = "GroupName asc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
+            string orderByStr = "isadmin desc, GroupType desc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
             string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
             DataTable dt = new DataTable();
+            bool Visible = true;
             try
             {
-                Conds.Add("CustemerID", loginData.customdata.jeeAccount.customerID);
-                Conds.Add("Module", query.filter["Module"]);
-                Dictionary<string, string> sortableFields = new Dictionary<string, string>
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region khởi tạo dữ liệu quyền cho nhóm quản trị
+                        Common.InsertGroupType(cnn, loginData.CustomerID);
+                    #endregion
+                    Conds.Add("CustemerID", loginData.customdata.jeeAccount.customerID);
+                    Conds.Add("Module", query.filter["Module"]);
+                    Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
                             { "TenNhom", "GroupName"},
                         };
-                if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
-                {
-                    orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
-                }
-                bool Visible = true;
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
-                {
+                    if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
+                    {
+                        orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
+                    }
                     #region Kiểm tra quyền chỉ xem
                     Common permit = new Common(ConnectionString);
                     if (Common.IsReadOnlyPermit("3900", loginData.Username))
@@ -94,26 +96,25 @@ namespace JeeWork_Core2021.Controllers.Wework
                         Visible = false;
                     }
                     #endregion
-                    sqlq = $@"select Id_group, GroupName, isadmin, DateCreated, LastModified
+                    sqlq = $@"select Id_group, GroupName, isadmin, DateCreated, LastModified, GroupType
                             from Tbl_Group
                             where { whereStr } order by { orderByStr}";
                     dt = cnn.CreateDataTable(sqlq, Conds);
                     if (dt == null || cnn.LastError != null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    int total = dt.Rows.Count;
+                    if (total == 0)
+                        return JsonResultCommon.ThanhCong(null, pageModel, Visible);
+                    if (query.more)
+                    {
+                        query.page = 1;
+                        query.record = pageModel.TotalCount;
+                    }
+                    pageModel.TotalCount = total;
+                    pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
+                    pageModel.Size = query.record;
+                    pageModel.Page = query.page;
                 }
-                int total = dt.Rows.Count;
-                if (total == 0)
-                    return JsonResultCommon.ThanhCong(null, pageModel, Visible);
-                if (query.more)
-                {
-                    query.page = 1;
-                    query.record = pageModel.TotalCount;
-                }
-                pageModel.TotalCount = total;
-                pageModel.AllPage = (int)Math.Ceiling(total / (decimal)query.record);
-                pageModel.Size = query.record;
-                pageModel.Page = query.page;
-
                 // Phân trang
                 dt = dt.AsEnumerable().Skip((query.page - 1) * query.record).Take(query.record).CopyToDataTable();
                 var data = from r in dt.AsEnumerable()
@@ -122,6 +123,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                                TenNhom = r["GroupName"],
                                ID_Nhom = r["id_group"],
                                IsAdmin = r["Isadmin"],
+                               grouptype = r["GroupType"],
+                               icon_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "fa fa-cog" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString())? "fa fa-check-double" : "fa fa-check"):""),
+                               color_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "#82c91e" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "#4dabf7" : "#ffd43b") : ""),
+                               tooltip = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "Quản trị hệ thống" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "Nhóm quản trị phòng ban/thư mục" : "Nhóm quản lý dự án") : ""),
                                DateCreated = string.Format("{0:dd/MM/yyyy HH:mm}", r["DateCreated"]),
                                LastModified = r["LastModified"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["LastModified"]),
                            };
@@ -357,7 +362,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     where Username = @Username";
                     DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     string role = "";
-                   if(dt.Rows.Count > 0)
+                    if (dt.Rows.Count > 0)
                     {
                         List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
                         role = string.Join(",", listrole);
@@ -441,7 +446,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     join tbl_Group_Account g_a  on g.id_group=g_a.id_group 
                                     where Username = @Username";
                     DataTable dts = cnn.CreateDataTable(sqlq, Conds);
-                    string role = ""; 
+                    string role = "";
                     if (dts.Rows.Count > 0)
                     {
                         List<string> listrole = dts.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
@@ -787,19 +792,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         else dr["IsEdit"] = false;
                     }
-                    if (isgroup) 
+                    if (isgroup)
                     {
                         // Xét trường hợp group admin thì disabled check
                         Conds = new SqlConditions();
                         Conds.Add("id_group", query.filter["id_group"]);
                         Conds.Add("IsAdmin", 1);
                         DataTable dtAdmin = cnn.CreateDataTable("select Id_group  from tbl_group where (where)", "(where)", Conds);
-                        if(dtAdmin.Rows.Count > 0)
+                        if (dtAdmin.Rows.Count > 0)
                         {
                             foreach (DataRow dr in dt.Rows)
-                            { 
+                            {
                                 dr["IsRead_Enable"] = false;
-                                dr["IsEdit_Enable"] = false; 
+                                dr["IsEdit_Enable"] = false;
                             }
                         }
 

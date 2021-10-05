@@ -77,7 +77,7 @@ namespace JeeWork_Core2021.ConsumerServices
                 {
                     string conn = WeworkLiteController.getConnectionString(_cache, kq.CustomerID, _config); ;
                     List<string> roles_admin = ConsumerHelper.getRoles(conn);
-                    Console.WriteLine("New customer has in app !!");
+                    Console.WriteLine("New customer has in app");
                     Console.WriteLine(Common.GetDateTime());
                     Console.WriteLine(roles);
                     if (kq.IsInitial) //cấp luôn roles Admin

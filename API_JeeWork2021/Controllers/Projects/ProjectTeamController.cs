@@ -2107,33 +2107,39 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         }
                         if (id_template > 0)
                         {
+                            // lấy thông tin người gửi + cc owner phòng ban tương ứng
+                            List<long> dsuser = data.Users.Where(x => x.id_row > 0).Select(x => x.id_user).ToList();
+                            //List<long> dsowner = getOwnerDepartmentofProjectteam(cnn,data.id_row.ToString());
+                            //dsuser.AddRange(dsowner);
+                            //List<long> demo = dsuser.Distinct().ToList();
+
                             #region Lấy thông tin để thông báo
                             noti = WeworkLiteController.GetInfoNotify(id_template, ConnectionString);
                             #endregion
-                            WeworkLiteController.mailthongbao(data.id_row, data.Users.Where(x => x.id_row > 0).Select(x => x.id_user).ToList(), id_template, loginData, ConnectionString, _notifier, _configuration, old);
+                            WeworkLiteController.mailthongbao(data.id_row, dsuser, id_template, loginData, ConnectionString, _notifier, _configuration, old);
                             #region Notify thiết lập vai trò member
-                            for (int i = 0; i < users_member.Count; i++)
-                            {
-                                NotifyModel notify_model = new NotifyModel();
-                                has_replace = new Hashtable();
-                                has_replace.Add("nguoigui", loginData.Username);
-                                has_replace.Add("project_team", data.title);
-                                notify_model.AppCode = "WORK";
-                                notify_model.From_IDNV = loginData.UserID.ToString();
-                                notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
-                                notify_model.ReplaceData = has_replace;
-                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                if (info is not null)
-                                {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                                }
-                            }
+                            //for (int i = 0; i < users_member.Count; i++)
+                            //{
+                            //    NotifyModel notify_model = new NotifyModel();
+                            //    has_replace = new Hashtable();
+                            //    has_replace.Add("nguoigui", loginData.Username);
+                            //    has_replace.Add("project_team", data.title);
+                            //    notify_model.AppCode = "WORK";
+                            //    notify_model.From_IDNV = loginData.UserID.ToString();
+                            //    notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                            //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                            //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                            //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                            //    notify_model.ReplaceData = has_replace;
+                            //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                            //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                            //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            //    if (info is not null)
+                            //    {
+                            //        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            //    }
+                            //}
                             #endregion
                         }
                     }
@@ -3833,6 +3839,28 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 default:
                     return "Không xét";
             }
+        }
+
+        public static string getDepartmentofProjectTeam(DpsConnection cnn,string id_project_team)
+        {
+            string sql = "select  * from we_department where id_row = (select id_department from we_project_team where id_row = 1)";
+
+            return "";
+        }
+        public static List<long> getOwnerDepartmentofProjectteam(DpsConnection cnn,string id_project_team)
+        {
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_project_team", id_project_team);
+            string sql = @"select  do.* from we_department d
+inner join we_department_owner do on d.id_row = do.id_department
+where d.id_row = (select id_department from we_project_team where id_row = @id_project_team) and do.disabled = 0 and type = 1";
+            DataTable dtowner = cnn.CreateDataTable(sql,conds);
+            if(dtowner.Rows.Count == 0)
+            {
+                return new List<long>();
+            }
+            List<long> listOwner = dtowner.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+            return listOwner;
         }
     }
 }

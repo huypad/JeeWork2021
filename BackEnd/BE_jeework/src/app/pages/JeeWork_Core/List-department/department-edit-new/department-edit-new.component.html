@@ -424,11 +424,11 @@
 
                     <ng-container *ngIf="this.item.RowID > 0">
                         <div class="item-template mb-1 url" (click)="isSpaceStatus = true;LoadSpaceStatus();"
-                        [ngClass]="{'template-selected': isSpaceStatus}">
-                        {{ 'department.cactrangthaidangsudung'|translate}}
-                    </div>
+                            [ngClass]="{'template-selected': isSpaceStatus}">
+                            {{ 'department.cactrangthaidangsudung'|translate}}
+                        </div>
                     </ng-container>
-                    
+
 
                     <div class="item-template mb-1 url" (click)="isSpaceStatus = false;LoadListSTT();"
                         [ngClass]="{'template-selected': !isSpaceStatus}">
@@ -465,8 +465,8 @@
                             <div class="header-view-title w-100">
                                 {{ 'department.danhsachtemplates'|translate}}&nbsp;({{litsTemplateDemo.length}})
                             </div>
-                            <i class="fas fa-plus url text-success " *ngIf="RoleUpdate() " (click)="addTemplate()" 
-                                style="font-size: 20px;" matTooltipPosition="above" 
+                            <i class="fas fa-plus url text-success " *ngIf="RoleUpdate() " (click)="addTemplate()"
+                                style="font-size: 20px;" matTooltipPosition="above"
                                 matTooltip="{{ 'department.themmaumoi'|translate}}"></i>
                         </div>
                         <div class="row">
@@ -482,7 +482,7 @@
                                         </app-focus-block>
                                     </ng-template>
                                 </div>
-                                <div class="edit-template "  *ngIf="RoleUpdate() && demo.visible" >
+                                <div class="edit-template " *ngIf="RoleUpdate() && demo.visible">
                                     <mat-icon class="-hover url " (click)="updateTemp=demo.id_row"
                                         matTooltip="Chỉnh sửa">edit</mat-icon>
                                     <mat-icon class="-hover url" (click)="Delete_Templete(demo.id_row,false)"
@@ -490,7 +490,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row"  *ngIf="RoleUpdate() ">
+                        <div class="row" *ngIf="RoleUpdate() ">
                             <div class="add-new-template w-100">
                                 <button class="btn text-success" (click)="addTemplate()" *ngIf="!isAddTemplate">
                                     <i class="fas fa-plus"></i> &nbsp;
@@ -573,14 +573,16 @@
                             </div>
                             <div class="row w-100" cdkDropList (cdkDropListDropped)="drop($event)">
                                 <ng-container *ngFor="let stt of listSTTHoatdong(); let index = index">
-                                    <div class="status-input col-12 form-control" *ngIf="!stt.IsFinal && !stt.IsDeadline" cdkDrag>
+                                    <div class="status-input col-12 form-control"
+                                        *ngIf="!stt.IsFinal && !stt.IsDeadline" cdkDrag>
                                         <div class="w-10 drag-icon">
                                             <i class="material-icons" cdkDragHandle>reorder</i>
                                         </div>
                                         <mat-menu #color="matMenu" yPosition="above" xPosition="after">
                                             <div class="row" style="width:200px;">
                                                 <div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-                                                    (click)="ChangeColor(color,stt)" *ngFor="let color of defaultColors">
+                                                    (click)="ChangeColor(color,stt)"
+                                                    *ngFor="let color of defaultColors">
                                                 </div>
                                             </div>
                                         </mat-menu>
@@ -588,13 +590,13 @@
                                             [matMenuTriggerFor]="color"></button>
                                         <div class="box-color" (click)="changeColor.click();"
                                             [ngStyle]="{'backgroundColor': stt.color }">
-    
+
                                         </div>
                                         <div class="input">
                                             <input type="text" #input (focus)="sttFocus(stt.id_row)"
                                                 (keyup.enter)="sttFocusout($event.target.value,stt)"
-                                                (focusout)="sttFocusout($event.target.value,stt)" [value]="stt.StatusName"
-                                                class="">
+                                                (focusout)="sttFocusout($event.target.value,stt)"
+                                                [value]="stt.StatusName" class="">
                                         </div>
                                         <div class="action-input">
                                             <i class="fas fa-check url text-success"
@@ -605,11 +607,11 @@
                                         <mat-menu #menu1="matMenu">
                                             <button mat-menu-item (click)="input.focus()">
                                                 {{ 'department.doiten'|translate}}
-    
+
                                             </button>
                                             <button mat-menu-item (click)="changeColor.click();">
                                                 {{ 'department.doimau'|translate}}
-    
+
                                             </button>
                                             <button mat-menu-item (click)="Delete_Status(stt)" *ngIf="!stt.IsTodo">
                                                 {{ 'GeneralKey.xoa'|translate}}
@@ -617,7 +619,7 @@
                                         </mat-menu>
                                     </div>
                                 </ng-container>
-                            </div> 
+                            </div>
 
                             <div class="status-input col-12 form-control" *ngIf="isAddStatus">
                                 <div class="input">

@@ -21,7 +21,7 @@ namespace JeeWork_Core2021.ConsumerServices
             {
                 //Chuẩn bị dữ liệu để insert
                 Hashtable _item = new Hashtable();
-                _item.Add("GroupName", (isAdmin == 0) ? "Default" : "Admin");
+                _item.Add("GroupName", (isAdmin == 0) ? "Thành viên" : "Nhóm quản trị hệ thống");
                 _item.Add("DateCreated", Common.GetDateTime());
                 _item.Add("CustemerID", idCustomer);
                 _item.Add("Module", 0);

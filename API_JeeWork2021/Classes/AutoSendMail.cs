@@ -433,18 +433,20 @@ namespace JeeWork_Core2021.Classes
                     has.Add("islate", 1);
                     cnn.Update(has, conds, "we_work");
                     // nếu có người mới gửi thông báo
-                    if (_item["id_nv"] != DBNull.Value)
+                    UserJWT loginData = new UserJWT();
+                    loginData.CustomerID = int.Parse(CustemerID);
+                    loginData.LastName = "Hệ thống";
+                    loginData.UserID = 0;
+                    var users = WorkClickupController.getUserTask(cnn, long.Parse(_item["id_row"].ToString()));
+                    WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);
+                    //if (_item["id_nv"] != DBNull.Value)
+                    if (users.Count > 0)
                     {
-                        var users = new List<long> { long.Parse(_item["id_nv"].ToString()) };
-                        UserJWT loginData = new UserJWT();
-                        loginData.CustomerID = int.Parse(CustemerID);
-                        loginData.LastName = "Hệ thống";
-                        loginData.UserID = 0;
+                        // var users = new List<long> { long.Parse(_item["id_nv"].ToString()) }; 
                         #region Lấy thông tin để thông báo
                         SendNotifyModel noti = WeworkLiteController.GetInfoNotify(17, ConnectionString);
                         #endregion
                         #region Notify nhắc nhở công việc hết hạn
-                        WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);
                         Hashtable has_replace = new Hashtable();
                         for (int i = 0; i < users.Count; i++)
                         {
@@ -651,32 +653,36 @@ namespace JeeWork_Core2021.Classes
             loginData.UserID = 0;
             foreach (DataRow dr in dt.Rows)
             {
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 17, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
+                var users = WorkClickupController.getUserTask(cnn, long.Parse(dr["id_row"].ToString()));  
+                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
                 #region Lấy thông tin để thông báo
                 SendNotifyModel noti = WeworkLiteController.GetInfoNotify(17, ConnectionString);
                 #endregion
-                #region Notify thêm mới công việc
-                Hashtable has_replace = new Hashtable();
-                NotifyModel notify_model = new NotifyModel();
-                has_replace = new Hashtable();
-                has_replace.Add("nguoigui", loginData.Username);
-                has_replace.Add("tencongviec", dr["id_row"].ToString());
-                notify_model.AppCode = "WORK";
-                notify_model.From_IDNV = loginData.UserID.ToString();
-                notify_model.To_IDNV = dr["id_row"].ToString().ToString();
-                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thongbaocvtrehan", "", "vi");
-                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
-                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dr["id_row"].ToString());
-                notify_model.ReplaceData = has_replace;
-                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
-                notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
-
-                List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
-                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                if (info is not null)
+                #region Notify công việc trễ hạn
+                for (int i = 0; i < users.Count; i++)
                 {
-                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                }
+                    Hashtable has_replace = new Hashtable();
+                    NotifyModel notify_model = new NotifyModel();
+                    has_replace = new Hashtable();
+                    has_replace.Add("nguoigui", loginData.Username);
+                    has_replace.Add("tencongviec", dr["id_row"].ToString());
+                    notify_model.AppCode = "WORK";
+                    notify_model.From_IDNV = loginData.UserID.ToString();
+                    notify_model.To_IDNV = users[i].ToString();
+                    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thongbaocvtrehan", "", "vi");
+                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.LastName);
+                    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dr["id_row"].ToString());
+                    notify_model.ReplaceData = has_replace;
+                    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
+                    notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
+
+                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info is not null)
+                    {
+                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                    }
+                } 
                 #endregion
             }
         }

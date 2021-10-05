@@ -2340,8 +2340,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string link = jeework_be + dt.Rows[0]["link"].ToString().Replace("$id$", object_id.ToString());
                 string title = dt.Rows[0]["title"].ToString();
                 string template = dt.Rows[0]["template"].ToString();
-                title = title.Replace("$nguoigui$", nguoigui.Username);
-                template = template.Replace("$nguoigui$", nguoigui.Username);
+                title = title.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
+                template = template.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
                 template = template.Replace("$link$", link);
                 //get key_value replace
                 sql = "select * from we_template_key where id_key in (" + dt.Rows[0]["keys"] + ") order by id_key";
@@ -2358,7 +2358,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     sqlq = sqlq.Replace("v_wework_new", "we_work");
                 }
                 DataTable dtFind = cnn.CreateDataTable(sqlq);
-                if (cnn.LastError != null)
+                if (cnn.LastError != null && dtFind.Rows.Count == 0)
                     return false;
                 #region Xử lý khi gửi file đính kèm thảo luận qua Email (id_template = 16 - Thảo luận)
                 //if (id_template == 16)
@@ -2404,6 +2404,32 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     }
                     #endregion
                 }
+                // đóng công việc
+                if (dtFind.Columns.Contains("closed_work_by"))
+                {
+                    #region Map info account từ JeeAccount
+                    var info = DataAccount.Where(x => values["closed_work_by"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info != null)
+                    {
+                        template = template.Replace("$nguoidong$", info.FullName); 
+                    }
+                    #endregion
+                }
+                // lấy thông tin follower cc
+                List<long> follower = getFollowerinTask(cnn, id_template, object_id);
+                if (follower.Count > 0)
+                {
+                    foreach (var item in follower)
+                    {
+                        #region Map info account từ JeeAccount
+                        var info = DataAccount.Where(x => item.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            guikem += "," + info.Email;
+                        }
+                        #endregion
+                    }
+                }
                 DataRow old_values = dtOld == null ? null : dtOld.Rows[0];
                 foreach (DataRow dr in dtKey.Rows)
                 {
@@ -2413,7 +2439,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string key = dr["key"].ToString();
                     string val = dr["value"].ToString();
                     var temp = val.Split(new string[] { " as " }, StringSplitOptions.None);
-                    val = temp[temp.Length - 1];
+                    val = temp[temp.Length - 1].Trim();
                     if (!(bool)dr["is_old"])
                     {
                         if (!string.IsNullOrEmpty(f))
@@ -2449,13 +2475,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             continue;
                         string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
                         string ErrorMessage = "";
+                        var x = guikem.Split(',');
                         //s.Send(m);
                         emailMessage asyncnotice = new emailMessage()
                         {
                             CustomerID = nguoigui.CustomerID,
                             access_token = "",
-                            to = dtUser.Rows[i]["email"].ToString(), //thanhthang1798@gmail.com
-                            cc = guikem,
+                            to = dtUser.Rows[i]["email"].ToString(),
+                            cc = string.Join(",", guikem.Split(',').Where(x => !string.IsNullOrEmpty(x))),
                             subject = title,
                             html = contents //nội dung html
                         };
@@ -4016,6 +4043,51 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             }
             return true;
         }
+
+        public static List<long> getFollowerinTask(DpsConnection cnn, int idtemplate, long object_id)
+        {
+            List<long> listOwner = new List<long>();
+
+            switch (idtemplate)
+            {
+                case 20:
+                case 21:
+                case 22:
+                case 23:
+                case 24:
+                case 25:
+                case 26:
+                case 27:
+                case 28:
+                case 29:
+                case 30:
+                case 31:
+                case 32:
+                case 33:
+                case 34:
+                case 41:
+                case 43:
+                case 44:
+                case 45:
+                    {
+                        SqlConditions conds = new SqlConditions();
+                        conds.Add("id_row", object_id);
+                        string sql = @"  select wu.* from we_work_user wu  
+ where  wu.Disabled = 0 and wu.id_work = @id_row and wu.loai = 2";
+                        DataTable dtowner = cnn.CreateDataTable(sql, conds);
+                        if (dtowner.Rows.Count == 0)
+                        {
+                            return new List<long>();
+                        }
+                        listOwner = dtowner.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
+                        return listOwner;
+                    }
+                default:
+                    break;
+            }
+            return new List<long>();
+        }
+
         public static string GetColorName(string name)
         {
             switch (name)
