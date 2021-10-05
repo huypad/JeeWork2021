@@ -417,7 +417,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 
       item.Description = status.Description;
 
-      if( status.Id_project_team){
+      if( status.Id_project_team || status.Id_project_team == undefined){
         item.Id_project_team = status.id_project_team;
       }
       if(status.id_department){
@@ -530,7 +530,17 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.clear();
       item.StatusName = value;
       item.Color = "rgb(29, 126, 236)";
-      item.Id_project_team = this.data.id_row;
+      if (this.data.columnname=='id_department')
+      {
+        item.id_department = this.data.id_row;
+        item.Id_project_team = 0;
+      }
+      else
+      {
+        item.Id_project_team = this.data.id_row;
+        item.id_department = 0;
+      }
+      debugger
       item.Type = "2";
       this._service.InsertStatus(item).subscribe((res) => {
         if (res && res.status == 1) {

@@ -15,15 +15,13 @@ namespace JeeWork_Core2021.ConsumerServices
 {
     public static class ConsumerHelper
     {
-        public static int createNhom(string connectStr, long idUser, long idCustomer, List<string> lst_roles, int isAdmin = 0)
+        public static int createNhom(string connectStr, long idCustomer, List<string> lst_roles, int isAdmin = 0)
         {
             using (DpsConnection cnn = new DpsConnection(connectStr))
             {
                 //Chuẩn bị dữ liệu để insert
                 Hashtable _item = new Hashtable();
                 _item.Add("GroupName", (isAdmin == 0) ? "Default" : "Admin");
-                //_item.Add("Ma", (isAdmin == 0) ? "Default" : "Admin");
-                //_item.Add("DisplayOrder",1);
                 _item.Add("DateCreated", Common.GetDateTime());
                 _item.Add("CustemerID", idCustomer);
                 _item.Add("Module", 0);
@@ -72,16 +70,6 @@ namespace JeeWork_Core2021.ConsumerServices
                 Hashtable _item = new Hashtable();
                 _item.Add("Username", userName);
                 _item.Add("Id_Group", idgroup);
-                //_item.Add("IdUser", 0);
-                //_item.Add("NguoiKy", 1);
-                //_item.Add("XuLyViec", 1);
-                //_item.Add("LanhDao", 1);
-                //_item.Add("NhanVanBan", 1);
-                //_item.Add("Locked", 0);
-                //_item.Add("Priority", 1);
-                //_item.Add("Disabled", 0);
-                //_item.Add("CreatedDate", Common.GetDateTime());
-                //_item.Add("CreatedBy", 0);
                 cnn.BeginTransaction();
                 if (cnn.Insert(_item, "tbl_group_account") == 1)
                 {
@@ -103,9 +91,8 @@ namespace JeeWork_Core2021.ConsumerServices
                 Hashtable _item = new Hashtable();
                 _item.Add("Username", userName);
                 _item.Add("Id_Group", idgroup);
-
                 cnn.BeginTransaction();
-                if (cnn.Delete(new SqlConditions { { "Username", userName }, { "Id_Group", 1 } }, "") < 0)
+                if (cnn.Delete(new SqlConditions { { "Username", userName }, { "Id_Group", 1 } }, "tbl_group_account") < 0)
                 {
                     cnn.RollbackTransaction();
                     return 0;
@@ -121,7 +108,6 @@ namespace JeeWork_Core2021.ConsumerServices
         public static void publishUpdateCustom(IProducer producer, string topic, long idUser, string roles)
         {
             //publish lại mess gửi lại jee-account
-
             UpdateMessage updateMess = new UpdateMessage();
             var topicUpdateAccount = topic;
             updateMess.userID = idUser;
@@ -136,7 +122,6 @@ namespace JeeWork_Core2021.ConsumerServices
                 fieldValue = datas
             };
             var mess_send2 = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-
            producer.PublishAsync(topicUpdateAccount, mess_send2);
         }
 

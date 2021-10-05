@@ -82,7 +82,7 @@ const tinyMCE = {
                     size = size / 1024; // KB
                     if (size > allowedSize) {
                         // alert('Hình ảnh đã vượt qua kích thước tối đa.');
-                        editor.windowManager.alert('Hình ảnh đã vượt qua kích thước tối đa.');
+                        editor.windowManager.alert('Hình ảnh đã vượt qua kích thước tối đa');
                         // editor.notificationManager.open({
                         // 	text: 'An error occurred.',
                         // 	type: 'error'

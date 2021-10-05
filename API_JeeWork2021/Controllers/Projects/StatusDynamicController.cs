@@ -52,7 +52,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string strRe = "";
                 if (string.IsNullOrEmpty(data.StatusName))
                     strRe += (strRe == "" ? "" : ",") + "tên trạng thái";
-                if (data.Id_project_team <= 0)
+                if (data.Id_project_team == 0 && data.id_department == 0)
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin dự án/phòng ban";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
