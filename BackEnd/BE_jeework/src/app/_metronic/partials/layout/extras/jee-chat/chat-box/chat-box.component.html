@@ -222,7 +222,8 @@
                     <a href="{{hostjeechat}}" target="_blank"
                        *ngIf="(messageService.messageThread$ | async)?.length==100">Xem thêm tin nhắn</a>
                     <li class="pd-5" *cdkVirtualFor="let message of (messageService.messageThread$ | async)">
-
+                        <div class="displaytimeGroup"   [innerHTML]="DisplayTime(message.disPlaytimeGroup)">
+                        </div>
                         <div [ngClass]=" message.UserName !==userCurrent ? 'd-flex' : 'parent-sent' ">
                             <div class="mr" *ngIf="message.UserName !== userCurrent">
                                 <div *ngFor="let info of  message.InfoUser">
@@ -346,6 +347,13 @@
 
 
                                 </div>
+                                
+                                <div *ngIf="message.Videos.length>0&&!message.IsHidenAll">
+                                    <div *ngFor="let video of message.Videos">
+                                        <video [src]="video.path" height="100" controls></video>
+
+                                    </div>
+                                </div>
                                 <div *ngIf="!message.IsHidenAll&&!message.IsDelAll&&!message.isInsertMember&&message.Content_mess!==''"
                                      class="message-body "
                                      [class.message-send]="message.UserName === userCurrent&&!message.IsHidenAll">
@@ -363,6 +371,19 @@
                             </div>
                         </div>
                     </li>
+                    <div *ngIf="myFilesVideo.length">
+                        <div *ngFor="let video of myFilesVideo;let indexvd=index">
+
+
+                            <div style="width: 20px;">
+                                <button (click)="RemoveVideos(indexvd)" class="closebtn" mat-button mat-icon-button>
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <video [src]="video" height="100" controls></video>
+
+                        </div>
+                    </div>
                 </ul>
 
             </cdk-virtual-scroll-viewport>
@@ -433,21 +454,28 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                 <div>
 
                     <button (click)="hiddenfileinput_image.click()" class="btn-class" matTooltip="Hỉnh ảnh"
-                            mat-icon-button aria-label="Example icon button with a home icon">
+                        mat-icon-button aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">image</mat-icon>
                     </button>
                     <button (click)="hiddenfileinput.click()" class="btn-class" matTooltip="File" mat-icon-button
-                            aria-label="Example icon button with a home icon">
+                        aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">attachment</mat-icon>
                     </button>
+
+                    <button   class="btn-class" (click)="hiddenfileinput_video.click()"  matTooltip="Videos" mat-icon-button
+                    aria-label="Example icon button with a home icon">
+                    <mat-icon class="sizeiconreaction">video_library</mat-icon>
+                </button>
+                <input type='file' accept="video/mp4,video/x-m4v,video/*" id="PDFInpdd"
+                #hiddenfileinput_video (change)="onSelectVideo($event)"  style="display: none;">
                     <input type='file' accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" id="PDFInpdd"
-                           #hiddenfileinput_image (change)="onSelectFile_PDF($event)" multiple style="display: none;">
+                        #hiddenfileinput_image (change)="onSelectFile_PDF($event)" multiple style="display: none;">
 
                     <input
-                            accept="application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                        accept="application/vnd.ms-excel, application/vnd.ms-powerpoint,
                           text/plain, application/pdf,application/msword,.pdf, .xls, .xlsx, application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                            type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
-                            style="display: none;">
+                        type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
+                        style="display: none;">
 
                 </div>
 
@@ -457,21 +485,20 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
 
                 <div class="input-group">
                     <div class="input-group-append">
-                        <button [disabled]="AttachFileChat.length>0|| list_image.length>0" *ngIf="!show"
-                                matTooltip="Đa phương tiện" (click)="showPT()" mat-icon-button style="color:#4E4EFA ;"
-                                aria-label="Example icon button with a home icon">
+                        <button [disabled]="AttachFileChat.length>0|| list_image.length>0" *ngIf="!show" matTooltip="Đa phương tiện" (click)="showPT()" mat-icon-button
+                            style="color:#7B7B7E ;" aria-label="Example icon button with a home icon">
                             <mat-icon style="font-size: 25px;">control_point</mat-icon>
                         </button>
                         <button *ngIf="show" matTooltip="Đóng" (click)="showPT()" mat-icon-button
-                                style="color:#4E4EFA ;" aria-label="Example icon button with a home icon">
+                            style="color:#7B7B7E ;" aria-label="Example icon button with a home icon">
                             <mat-icon style="font-size: 25px;">cancel</mat-icon>
                         </button>
-
+                     
                         <!-- <button [disabled]=""  style="background:#6993FF"class="btn btn-primary" type="submit">Send</button> -->
                     </div>
                     <form style="width: 86%;
                     display: flex;" #messageForm="ngForm" (ngSubmit)="sendMessage()" autocomplete="off">
-                        <input (ngModelChange)="saverange($event)"
+                        <input (paste)="onPaste($event)" (ngModelChange)="saverange($event)"
                                style="   font-size: 15px;background: #F0F2F5;border-radius: 20px;" type="text"
                                name="messageContent" required [(ngModel)]="messageContent" class="form-control input-sm"
                                placeholder="Send a private message" (focus)="onFocusEvent($event)">

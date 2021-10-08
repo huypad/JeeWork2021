@@ -1,3 +1,5 @@
+import { ConversationService } from './../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/conversation.service';
+import { ConversationModel } from './../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/conversation';
 import {LayoutUtilsService} from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import {TokenStorage} from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -40,7 +42,7 @@ export class MembersComponent {
                 private menuAsideService: MenuAsideService,
                 private translate: TranslateService,
                 private changeDetectorRefs: ChangeDetectorRef,
-                private router: Router,
+                private router: Router,private conversation_sevices: ConversationService,
                 private _service: ProjectsTeamService,
                 private chatService: ChatService,
                 public WeWorkService: WeWorkService,
@@ -84,6 +86,7 @@ export class MembersComponent {
                 this.menuAsideService.loadMenu();
             }
         });
+        this.GetDanhBa();
     }
 
     CheckAdmin(data) {
@@ -198,10 +201,57 @@ export class MembersComponent {
         // this.layoutUtilsService.showInfo("add " + (admin ? "admin" : "member"));
     }
 
-    chatWith(id_nv) {
-        this.layoutUtilsService.showInfo('chatWith ' + id_nv);
+    chatWith(user) {
+        // this.layoutUtilsService.showInfo('chatWith ' + user.username);
+        this.chatService.GetChatWithFriend(user.username).subscribe(res=>{
+            console.log(res);
+            if(res && res.status === 1){
+                if(res.data?.length > 0){
+                    this.selectUser(res.data[0]);
+                }else{
+                    this.CreateConverSation(user);
+                }
+            }
+        })
     }
-
+    listDanhBa = [];
+    GetDanhBa() {
+        this.conversation_sevices.GetDanhBaNotConversation().subscribe(res => {
+          this.listDanhBa = res.data;
+          this.changeDetectorRefs.detectChanges();
+        })
+      }
+    ItemConversation(ten_group: string, data: any): ConversationModel {
+        var listUser = [];
+        listUser.push(data);
+        const item = new ConversationModel();
+        item.GroupName = ten_group;
+        item.IsGroup = false;
+    
+        item.ListMember = listUser.slice();
+    
+    
+        return item
+      }
+    
+      CreateConverSation(item) {
+          if(this.listDanhBa){
+              var user = this.listDanhBa.find(x=>x.UserID = item.id_nv);
+              if(user){
+                let it = this.ItemConversation(user.FullName, user);
+                this.conversation_sevices.CreateConversation(it).subscribe(res => {
+                  if (res && res.status === 1) {
+                      if(res.data?.length > 0){
+                          this.selectUser(res.data[0]);
+                      }
+                    //   console.log(res.data);
+                    // this.listUser = []
+                    // this.CloseDia(res.data);
+                  }
+                })
+              }
+          } 
+      }
     viewProfile(id_nv) {
         this.layoutUtilsService.showInfo('viewProfile ' + id_nv);
     }

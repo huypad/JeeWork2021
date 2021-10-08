@@ -255,7 +255,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         #region Ghi log trong project
                         string LogContent = "", LogEditContent = "";
                         LogContent = LogEditContent = $"Thêm automation {item.title} vào : {item.departmentid} ";
-                        Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                        Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
                         #endregion 
                         #region Ghi log lên CDN
                         var d2 = new ActivityLog()
@@ -309,7 +309,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Ghi log trong project
                     string LogContent = "", LogEditContent = "";
                     LogContent = LogEditContent = $" xóa automation {id}. ";
-                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
                     #endregion
                     #region Ghi log lên CDN
                     var d2 = new ActivityLog()
@@ -488,7 +488,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Ghi log trong project
                     string LogContent = "", LogEditContent = "";
                     LogContent = LogEditContent = $"Chỉnh sửa automation {data.title} của : {data.departmentid} ";
-                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
                     #endregion
                     #region Ghi log lên CDN
                     var d2 = new ActivityLog()
@@ -563,7 +563,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Ghi log trong project
                     string LogContent = "", LogEditContent = "";
                     LogContent = LogEditContent = $"Chỉnh sửa status automation {rowid} ";
-                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username);
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
                     #endregion
                     #region Ghi log lên CDN
                     var d2 = new ActivityLog()

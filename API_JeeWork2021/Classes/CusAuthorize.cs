@@ -17,6 +17,12 @@ namespace JeeWork_Core2021.Classes
         public string Roles { get; set; }
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {
+            //if (string.IsNullOrEmpty(Roles))
+            //{
+            //    actionContext.Result = new UnauthorizedResult();
+            //    return;
+            //}
+
             try
             {
                 IHeaderDictionary _d = actionContext.HttpContext.Request.Headers;

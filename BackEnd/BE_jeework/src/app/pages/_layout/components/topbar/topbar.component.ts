@@ -1,3 +1,4 @@
+import { ChatService } from './../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
 import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import {LayoutConfigService} from './../../../../_metronic/jeework_old/core/_base/layout/services/layout-config.service';
 import {Component, OnInit, AfterViewInit, ChangeDetectorRef} from '@angular/core';
@@ -42,6 +43,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     desktopHeaderDisplay: boolean;
     SoLuongNhacNho: number = 0;
     UserData: any = {};
+    unread:number;
 
     constructor(
         private layout: LayoutService, private auth: AuthService,
@@ -50,6 +52,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
         private tokenStorage: TokenStorage,
         private changeDetectorRefs: ChangeDetectorRef,
         private remind_sevices: RemindService,
+        private chatServices:ChatService,
         private socketService: SocketioService,
     ) {
         this.user$ = this.auth.getAuthFromLocalStorage();
@@ -91,6 +94,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
         this.LoadData();
         this.EventNhacNho();
         this.LoadDataNhacNho();
+        this.eventSubcribeCountMessUnread();
     }
 
     LoadData() {
@@ -112,6 +116,16 @@ export class TopbarComponent implements OnInit, AfterViewInit {
             this.numberInfo = dem;
             this.changeDetectorRefs.detectChanges();
         });
+    }
+    eventSubcribeCountMessUnread()
+    {
+      this.chatServices.UnreadMess$.subscribe(res=>{
+       
+          this.unread=res;
+          console.log('unread :',this.unread);
+         
+      })
+      this.changeDetectorRefs.detectChanges();
     }
 
     ngAfterViewInit(): void {

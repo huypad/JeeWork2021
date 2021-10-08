@@ -421,7 +421,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   UpdateAuto(_item, isclose) {
     this.automationService.UpdateAutomation(_item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.layoutUtilsService.showActionNotification("Thêm mới thành công");
+        this.layoutUtilsService.showActionNotification("Cập nhật thành công");
         this.eventClose.emit(isclose)
       } else {
         this.layoutUtilsService.showError(res.error.message);

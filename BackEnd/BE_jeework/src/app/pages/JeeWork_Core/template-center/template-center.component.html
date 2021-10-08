@@ -871,14 +871,14 @@
             </div>
 
             <div class="cu-template-center-use-template__footer-buttons">
-                <div
-                    class="cu-template-center-use-template__footer-button cu-template-center-use-template__footer-button-cancel">
+                <button [disabled]="disabledBtn"
+                    class="btn cu-template-center-use-template__footer-button cu-template-center-use-template__footer-button-cancel">
                     {{ 'template.cancel' | translate }}
-                </div>
-                <div class="cu-template-center-use-template__footer-button " (click)="Onsubmit()">
+                </button>
+                <button class="btn cu-template-center-use-template__footer-button "  [disabled]="disabledBtn" (click)="Onsubmit()">
                     <!-- cu-template-center-use-template__footer-button-disabled -->
                     {{ 'template.usetemp' | translate }}
-                </div>
+                </button>
             </div>
         </div>
     </div>

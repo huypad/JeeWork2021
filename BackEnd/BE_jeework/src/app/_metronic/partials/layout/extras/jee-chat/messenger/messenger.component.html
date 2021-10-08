@@ -38,10 +38,18 @@
 </style>
 <div class="card friend-list">
 
-    <div style="padding: 0 0 0 20px;
+    <div style="padding:0px;
     " class="card-header">
+        <!-- <div style="display: flex; align-items: center;">
+            <h4 class="text-primary">Messages</h4>
+            <button  [routerLink]="['/Messages']"  mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+                <mat-icon>fullscreen</mat-icon>
+              </button>
+           
+        </div> -->
 
-        <div style="display: flex; align-items: center; flex-direction: row-reverse;">
+        <div style="display: flex; align-items: center; flex-direction: row-reverse; background: #F7F7F7;">
+
 
             <button matTooltip="Tạo Nhóm Chat" style="padding: 5px;" (click)="CreaterGroupChat()"
                 style="margin-top: -7px;" mat-icon-button aria-label="Example icon-button with a heart icon">
@@ -52,7 +60,17 @@
                 mat-icon-button aria-label="Example icon-button with a heart icon">
                 <mat-icon>person_add</mat-icon>
             </button>
+            <div style="padding-right: 40px;">
 
+
+                <select #sel (change)="changed(sel.value)" style="    border: none;
+            outline: none;background-color: #F7F7F7;margin-top: 5px;font-size: 13px;cursor: pointer;">
+                    <option value="1">Tất cả tin nhắn</option>
+                    <option value="2">Tin nhắn chưa đọc</option>
+                    <option value="3">Tin nhắn đã đọc</option>
+                </select>
+                <span style="padding-left: 20px;" (click)="AllRead()" class="allread">Đánh dấu đã đọc</span>
+            </div>
         </div>
     </div>
     <perfect-scrollbar style="height: auto;position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
@@ -110,7 +128,7 @@
                                     *ngIf="item.LastMess.length>0">
                                     <p class="dot"></p>
                                     <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'}}</p>
-<!--                                    <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'| timelast}}</p>-->
+                                    <!--                                    <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'| timelast}}</p>-->
 
                                 </div>
 
@@ -199,7 +217,7 @@
                                         *ngIf="item.LastMess.length>0">
                                         <p class="dot"></p>
                                         <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'}}</p>
-<!--                                        <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'| timelast}}</p>-->
+                                        <!--                                        <p>{{item.LastMess[0].CreatedDate | date : 'yyyy/M/dd h:mm'| timelast}}</p>-->
 
                                     </div>
                                 </div>

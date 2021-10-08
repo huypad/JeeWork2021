@@ -1,6 +1,14 @@
-<div class="custum-item-user">
+<style>
+    .title-project{
+        display: flex;
+    align-items: center;
+    padding-left: 55px;
+    }
+</style>
+
+<div class="custum-item-user"  *ngIf="image!='department';else departmenticon">
     <div class="avatar">
-        <div class="user url" *ngIf="image!='department';else departmenticon">
+        <div class="user url">
             <ngx-avatar size="35"
                 matTooltip="{{name}}"
                 src="{{image}}"
@@ -15,13 +23,6 @@
                 </ngx-avatar>
             </ng-template>
         </div>
-        <ng-template #departmenticon>
-            <div class="department">
-                <div class="text-inner">
-                    {{ name[0] }}
-                </div>
-            </div>
-        </ng-template>
     </div>
     <div class="name" [ngStyle]="{'color': textcolor}">
         <span class="url">{{name}}</span>
@@ -30,3 +31,19 @@
         <span > {{info}} </span>
     </div>
 </div>
+
+<ng-template #departmenticon>
+    <div class="custum-item-user title-project">
+        <div class="avatar">
+            <div class="department" [ngStyle]="{'background-color': WeWorkService.getColorNameUser(name[0])}">
+                <div class="text-inner">
+                    {{ name[0] }}
+                </div>
+            </div>
+        </div>
+        <div class="name" [ngStyle]="{'color': textcolor}">
+            <span class="url">{{name}}</span>
+        </div> 
+    </div>
+</ng-template>
+

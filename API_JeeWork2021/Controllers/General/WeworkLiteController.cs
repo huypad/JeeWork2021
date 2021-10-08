@@ -2340,8 +2340,16 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string link = jeework_be + dt.Rows[0]["link"].ToString().Replace("$id$", object_id.ToString());
                 string title = dt.Rows[0]["title"].ToString();
                 string template = dt.Rows[0]["template"].ToString();
-                title = title.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
-                template = template.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
+                if (nguoigui.customdata != null )
+                {
+                    title = title.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
+                    template = template.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
+                }
+                else
+                {
+                    title = title.Replace("$nguoigui$", nguoigui.LastName);
+                    template = template.Replace("$nguoigui$", nguoigui.LastName);
+                } 
                 template = template.Replace("$link$", link);
                 //get key_value replace
                 sql = "select * from we_template_key where id_key in (" + dt.Rows[0]["keys"] + ") order by id_key";

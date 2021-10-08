@@ -2,7 +2,7 @@
 <div id="kt_quick_panel" class="offcanvas" [ngClass]="extrasQuickPanelOffcanvasDirectionCSSClass">
   <!--begin::Header-->
   <div class="offcanvas-header offcanvas-header-navs d-flex align-items-center justify-content-between">
-    <ul class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-10 mg-0">
+    <ul class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-10" role="tablist">
       <li class="nav-item">
         <a [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')"></a>
         <div style="display: flex; align-items: center;">
@@ -15,6 +15,9 @@
             <span class="fa fa-search form-control-feedback"></span>
             <input [(ngModel)]="search" name="search" type="text" class="form-control" placeholder="Search">
           </div>
+          <a href="#" class="btn btn-xs btn-icon btn-light btn-hover-primary" id="kt_quick_panel_close">
+            <i class="ki ki-close icon-xs text-muted"></i>
+          </a>
         </div>
       </li>
     </ul>
@@ -22,16 +25,19 @@
   <!--end::Header-->
 
   <!--begin::Content-->
-  <div class="tab-content">
-    <!--begin::Tabpane-->
-    <div class="tab-pane fade pt-2 pr-5 mr-n5" id="kt_quick_panel_notifications"
-      [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')" role="tabpanel">
-      <!--begin::Nav-->
-      <kt-messenger [PData]="search" id="{{elementId}}"></kt-messenger>
-      <!--end::Nav-->
+  <div class="offcanvas-content ">
+    <div class="tab-content">
+      <!--begin::Tabpane-->
+      <div class="tab-pane fade pt-2 pr-5 mr-n5" id="kt_quick_panel_notifications"
+        [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')" role="tabpanel">
+        <!--begin::Nav-->
+        <kt-messenger [PData]="search" id="{{elementId}}"></kt-messenger>
+        <!--end::Nav-->
+      </div>
+      <!--end::Tabpane-->
     </div>
-    <!--end::Tabpane-->
   </div>
+  
   <!--end::Content-->
 </div>
 <!--end::Quick Panel-->

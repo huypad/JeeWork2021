@@ -1507,11 +1507,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         #endregion
                         #region Load dữ liệu hiển thị gắn thẻ quan trong 
-                        if (dr["id_action"].ToString().Equals("8"))
-                        {
-                            dr["oldvalue"] = ProjectTeamController.getDouutien(dr["oldvalue"].ToString());
-                            dr["newvalue"] = ProjectTeamController.getDouutien(dr["newvalue"].ToString());
-                        }
+                        //if (dr["id_action"].ToString().Equals("8"))
+                        //{
+                        //    dr["oldvalue"] = ProjectTeamController.getDouutien(dr["oldvalue"].ToString());
+                        //    dr["newvalue"] = ProjectTeamController.getDouutien(dr["newvalue"].ToString());
+                        //}
                         #endregion
                         #region Map info account từ JeeAccount 
                         if (dr["object_type"].ToString().Equals("3"))
@@ -1593,6 +1593,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                               view_detail = u["view_detail"],
                                                               log_content = u["log_content"],
                                                               icon = u["icon"],
+                                                              id_action = u["id_action"],
+                                                              ColorStatus_Old = u["ColorStatus_Old"],
+                                                              ColorStatus_New = u["ColorStatus_New"],
                                                               oldvalue = u["oldvalue"],
                                                               newvalue = u["newvalue"],
                                                               CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", u["CreatedDate"]),

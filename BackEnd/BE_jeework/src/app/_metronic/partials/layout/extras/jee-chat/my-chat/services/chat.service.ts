@@ -16,7 +16,10 @@ export class ChatService {
     public reload$ = new BehaviorSubject<boolean>(false);
     public InforUserChatWith$ = new BehaviorSubject<any>([]);
 
+    public UnreadMess$ = new BehaviorSubject<number>(0);
     public OpenMiniChat$ = new BehaviorSubject<any>(null);
+    public OneMessage$ = new BehaviorSubject<number>(0);
+    public CloseMiniChat$ = new BehaviorSubject<any>(null);
 
     ChangeDatachat(data) {
         console.log('data service:', data);
@@ -40,7 +43,33 @@ export class ChatService {
         const httpHeader = this.getHttpHeaders();
         return this.http.post<any>(url, null, {headers: httpHeader});
     }
-
+    publishMessNotifi(token:string,IdGroup:number,mesage:string,fullname:string,avatar:string)
+    {
+      const url =this.baseUrl+`/notifi/publishMessNotifiTwoUser?token=${token}&IdGroup=${IdGroup}
+      &mesage=${mesage}&fullname=${fullname}&avatar=${avatar}`;
+      const httpHeader = this.getHttpHeaders();
+      return this.http.get<any>(url,{ headers: httpHeader});
+    }
+    publishMessNotifiGroup(token:string,IdGroup:number,mesage:string,fullname:string)
+    {
+      const url =this.baseUrl+`/notifi/publishMessNotifiGroup?token=${token}&IdGroup=${IdGroup}
+      &mesage=${mesage}&fullname=${fullname}`;
+      const httpHeader = this.getHttpHeaders();
+      return this.http.get<any>(url,{ headers: httpHeader});
+    }
+    
+  GetUserReaction(idchat:number,type:number)
+  {
+    const url =this.baseUrl+`/chat/GetUserReaction?idchat=${idchat}&type=${type}`
+    const httpHeader = this.getHttpHeaders();
+    return this.http.get<any>(url,{ headers: httpHeader});
+  }
+  UpdateUnReadGroup(IdGroup:number,userUpdateRead:any,key:string)
+  {
+    const url =this.baseUrl+`/chat/UpdateDataUnreadInGroup?IdGroup=${IdGroup}&userUpdateRead=${userUpdateRead}&key=${key}`
+    const httpHeader = this.getHttpHeaders();
+    return this.http.post<any>(url,null,{ headers: httpHeader});
+  }
     GetUserById(IdUser: number) {
         const url = this.baseUrl + `/chat/GetnforUserById?IdUser=${IdUser}`;
         const httpHeader = this.getHttpHeaders();
@@ -57,6 +86,11 @@ export class ChatService {
         }
     }
 
+    GetChatWithFriend(username){
+        const url = this.baseUrl + `/chat/GetChatWithFriend?usernamefriend=${username}`;
+        const httpHeader = this.getHttpHeaders();
+        return this.http.get<any>(url, {headers: httpHeader});
+    }
 
     public getAuthFromLocalStorage(): any {
         return this.auth.getAuthFromLocalStorage();
@@ -75,7 +109,12 @@ export class ChatService {
         });
         return result;
     }
-
+    getlist_Reaction()
+    {
+      const url =this.baseUrl+'/chat/GetDSReaction'
+      const httpHeader = this.getHttpHeaders();
+      return this.http.get<any>(url,{ headers: httpHeader});
+    }
     GetContactChatUser() {
 
         const url = this.baseUrl + '/chat/Get_Contact_Chat';

@@ -884,6 +884,8 @@ namespace JeeWork_Core2021.Classes
         {
             if (ControllerContext != null)
                 Pagename = ControllerContext.ActionDescriptor.ControllerName + "_" + ControllerContext.ActionDescriptor.ActionName;
+            //if("updatebykey".Equals(ControllerContext.ActionDescriptor.ActionName.ToLower()))
+            //    Pagename = ControllerContext.ActionDescriptor.ControllerName + "_" + ControllerContext.ActionDescriptor.ActionName+"_"+DateTime.Now.ToString("yyyyMMddHHmmss");
             if (!"".Equals(LogEditcontent))
             {
                 WriteLogByFunction(Pagename, LogEditcontent, CustemerID, username);

@@ -63,6 +63,7 @@
     "lodash.range": "^3.2.0",
     "material-design-icons": "^3.0.1",
     "moment": "^2.27.0",
+    "moment-timezone": "^0.5.33",
     "ng-apexcharts": "^1.5.1",
     "ng-copytoclipboard": "^1.1.1",
     "ng-drag-drop": "^5.0.0",

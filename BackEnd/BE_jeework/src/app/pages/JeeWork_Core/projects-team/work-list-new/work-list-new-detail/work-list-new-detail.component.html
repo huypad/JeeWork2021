@@ -22,8 +22,9 @@
                                     class="w-100">
                                     <ng-container mPortletBody>
                                         <div class="kt-form__group" style="padding:0 15px; line-height: 25px;">
-                                            
-                                            <div class=" row position-relative"  style="font-size: 12px;" [attr.style]="('margin-right :'+ line2right.offsetWidth + 'px !important')">
+
+                                            <div class=" row position-relative" style="font-size: 12px;"
+                                                [attr.style]="('margin-right :'+ line2right.offsetWidth + 'px !important')">
                                                 <div>{{item.department}} / {{item.project_team}}</div>
                                                 <div style="font-weight: 600;font-size: 18px;" class=" row  w-100"
                                                     *ngIf="!(CheckRoles(7) && CheckClosedTask()) || isclosed">
@@ -32,9 +33,11 @@
                                                 <!-- matTooltip="{{item.department}} / {{item.project_team}}" -->
                                                 <input style="font-weight: 600;font-size: 18px;" id="txttitle{{DataID}}"
                                                     [value]="item.title" type="text" class="form-input-title row  w-100"
-                                                    [hidden]="!(CheckRoles(7) && CheckClosedTask()) || isclosed" (focusout)="UpdateTitle()">
-                                                <div>Tạo bởi {{ item.createdby?.hoten }} lúc  {{item.createddate | timezone:' HH:mm DD/MM/YYYY'}} </div>
-                                
+                                                    [hidden]="!(CheckRoles(7) && CheckClosedTask()) || isclosed"
+                                                    (focusout)="UpdateTitle()">
+                                                <div>Tạo bởi {{ item.createdby?.hoten }} lúc {{item.createddate |
+                                                    timezone:' HH:mm DD/MM/YYYY'}} </div>
+
                                                 <div #line2right class="action item__header_line_2_right">
 
                                                     <div class="title row">
@@ -85,7 +88,7 @@
                                                     </mat-menu>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="row" style="margin-bottom: 10px!important;">
                                                 <div class="row task__header task__mobile-display-for-details w-100">
                                                     <div class="task__column task__toolbar task__toolbar_first"
@@ -258,7 +261,7 @@
                                             </div>
                                             <div class="row position-relative" style="margin-bottom: 15px!important;">
 
-                                                <div class="row" >
+                                                <div class="row">
                                                     <div class="view-nomal">
                                                         <ng-container *ngTemplateOutlet="changeassign"></ng-container>
                                                         <ng-container *ngTemplateOutlet="changefollower"></ng-container>
@@ -296,7 +299,7 @@
                                                         </ng-container>
 
                                                     </mat-menu>
-                                                </div> 
+                                                </div>
 
                                             </div>
 
@@ -308,6 +311,7 @@
                                             </div> -->
 
                                             <div class="row" style="margin-bottom: 20px!important;">
+                                                <h4 class="title mt-6">Mô tả công việc</h4>
                                                 <div class="action float-right"
                                                     style="flex-grow: 1; text-align: right; margin: 10px 0">
                                                     <button class="btn  {{disabledBtn?'btn-secondary':'btn-primary'}}"
@@ -318,6 +322,17 @@
                                                         &nbsp;<i class="fa fa-check text-success" style="color: green;"
                                                             *ngIf="showsuccess"></i>
                                                     </button>
+                                                    <!-- <button mat-raised-button
+                                                        style="    border-radius: 20px;"
+                                                        class="btn  {{disabledBtn?'btn-secondary':'btn-primary'}}"
+                                                        *ngIf="CheckRoles(9) && CheckClosedTask()" [disabled]="isclosed"
+                                                        (click)="UpdateDescription()">
+
+                                                        {{ chinhsuamota?'Lưu':'Chỉnh sửa'}}
+
+                                                        <i class="fa fa-check text-success ml-1" style="color: green;"
+                                                            *ngIf="showsuccess"></i>
+                                                    </button> -->
                                                     <button class="btn -hover text-muted" [disabled]="isclosed"
                                                         (click)="View_Log_Description();">
                                                         <i class="fas fa-history pd-0"
@@ -330,6 +345,19 @@
                                                         style="margin-bottom: 15px;">
                                                     </editor>
                                                 </div>
+                                                <!-- <div class="col-md-12 pd-0 m--margin-bottom-10-mobile" [hidden]="!chinhsuamota">
+                                                    <editor apiKey="lvp9xf6bvvm3nkaupm67ffzf50ve8femuaztgg7rkgkmsws3" [(ngModel)]="description_tiny"
+                                                        [init]="tinyMCE" style="margin-bottom: 15px;">
+                                                    </editor>
+                                                </div>
+                                                <div class="col-md-12 pd-0 m--margin-bottom-10-mobile" *ngIf="!chinhsuamota">
+                                                    <ng-container *ngIf="description_tiny;else khongconoidung">
+                                                        <span [innerHTML]="description_tiny"></span>
+                                                    </ng-container>
+                                                    <ng-template #khongconoidung>
+                                                        <span class="text-danger"> Chưa nhập nội dung mô tả.</span>
+                                                    </ng-template>
+                                                </div> -->
                                             </div>
 
                                             <div class="row" *ngIf="IsShow_MoTaCV">

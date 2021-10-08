@@ -1,145 +1,277 @@
 
 .child-right{
-    margin-left: auto;
-    order: 2;
-    display: flex;
-    align-items: center;
+  margin-left: auto;
+  order: 2;
+  display: flex;
+  align-items: center;
 }
-
+.hidentime
+{
+margin-left: 20px;
+  margin-bottom: -0.1px !important;
+}
+.displaytimeGroup
+{
+text-align: center;
+color: gray;
+padding: 5px;
+}
 .message-body {
-    float: left;
-    background-color: rgba(230, 225, 225, 0.603);
-    border-radius: 10px;
-    padding: 5px;
-    // max-width: 80%;
-    max-width: 210px;
-    margin-bottom: 1rem;
-   
+  float: left;
+  // background-color: rgba(230, 225, 225, 0.603);
+  background-color: #435F7A;
+  border-radius: 10px;
+  padding: 5px;
+  color: white;
+  // max-width: 80%;
+  max-width: 190px;
+  margin-bottom: 1rem;
+ 
 }
 
 .message-send{
-    background-color: rgba(73, 73, 250, 0.972);
-    color: white;
-    margin-right: 5px;
-    float: right;
+  // background-color: rgba(73, 73, 250, 0.972);
+  background-color: #F5F5F5;
+  color: black;
+  margin-right: 5px;
+  float: right;
 }
 
 .parent-sent{
-    display: flex;
-    flex-direction:row;
-    justify-content: flex-end;
+  display: flex;
+  flex-direction:row;
+  justify-content: flex-end;
 }
 
 .test > br
 {
-  content: '';
+content: '';
 }
 // img{
 //     max-height: 50px;
 // }
 
 .chat{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    padding-left: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-left: 7px;
 }
 
 .chat-box{
-    position: fixed;
-    max-width: 320px;
-    width: 300px;
-    // z-index: 999;
-    right: 250px;
-  bottom: 1px;
-  //  bottom: -149px;
+  position: fixed;
+  max-width: 320px;
+  width: 300px;
+  // z-index: 999;
+  right: 250px;
+bottom: 1px;
+//  bottom: -149px;
 }
 
 .small-img{
-    max-height: 25px;
+  max-height: 25px;
 }
 
 .pd-5{
-    padding: 2px;
+  padding: 2px;
 }
 .chat-frame{
-    max-height: 350px;
-    // overflow-y: auto;
+  max-height: 350px;
+  // overflow-y: auto;
 }
 
 
 
 ::ng-deep .cdk-virtual-scroll-content-wrapper {
-   contain: none !important;
+ contain: none !important;
 }
 
 
 .disable
 {
-    display: none;
+  display: none;
 }
 
 .activechatbox
 {
-    display: block;
+  display: block;
 }
 .hidenmess
-  {
-    display: flex;
-      font-size: 15px;
-    color: gray !important;
-    background-color: #E5EFFF !important;
-    border-radius: 10px;
-    padding: 5px;
-  }
+{
+  display: flex;
+    font-size: 15px;
+  color: gray !important;
+  background-color: #E5EFFF !important;
+  border-radius: 10px;
+  padding: 5px;
+}
 
 .chatmore {
 
-    flex-grow: 1;
-  padding-left: 10px;
+  flex-grow: 1;
+padding-left: 10px;
 
-  
-    .chatshow {
-        flex-grow: 1;
-        /*font-size: 15px;*/
-        color: black;
-  line-height: 27px;
+
+  .chatshow {
+      flex-grow: 1;
+      /*font-size: 15px;*/
+      color: black;
+line-height: 27px;
 //   width: 100%;
 //   height: 100%;
-  
-       
+
+     
+  }
+
+  &:hover {
+          .action {
+              display: inline-block !important;
+          }
+      }
+
+  .action {
+      display: none !important;
+      font-size: 17px !important;
+
+      &:hover {
+          border: solid 1px #eee;
+          border-radius: 50%;
+          color: white;
+        background-color: #c0c5c0;
+      }
+  }
+}
+
+.online:after {
+content: "";
+width: 10px;
+height: 10px;
+border: 1px solid #fff;
+-moz-border-radius: 6px;
+-webkit-border-radius: 6px;
+border-radius: 6px;
+position: absolute;
+left: 13%;
+top: 35px;
+background-color: #63b814;
+z-index: 100;
+}
+.reply
+{
+background: lightblue;
+padding: 10px;
+border-radius: 10px;
+}
+.reply-user
+{
+background: #b9b4b4;
+padding: 10px;
+border-radius: 10px;
+}
+
+
+.reation {
+
+
+
+.reationshow {
+    flex-grow: 1;
+    /*font-size: 15px;*/
+    color: black;
+line-height: 27px;
+width: 100%;
+height: 100%;
+
+   
+}
+
+&:hover {
+        .action {
+            display: inline-block !important;
+        }
     }
-  
+
+.action {
+    display: none;
+    font-size: 15px !important;
+
     &:hover {
-            .action {
-                display: inline-block !important;
-            }
-        }
-  
-    .action {
-        display: none !important;
-        font-size: 17px !important;
-  
-        &:hover {
-            border: solid 1px #eee;
-            border-radius: 50%;
-            color: white;
-          background-color: #c0c5c0;
-        }
+        border: solid 1px #eee;
+        border-radius: 50%;
+        color: white;
+      background-color: #c0c5c0;
+    }
+}
+}.reaction-box-container {
+.popover-body {
+  padding: 0;
+}
+
+.arrow {
+  display: none;
+}
+
+.reaction-box {
+  position: absolute;
+  width: 190px;
+  height: 33px;
+  background-color: #fff;
+  -moz-box-shadow: 0 2px 10px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 2px 10px 0px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px 0px rgba(0,0,0,0.1);
+  border-radius: 28px;
+  // left: -60px;
+  right: 0;
+  bottom: 0px;
+  z-index: 200;
+
+  .reaction-icon {
+    width: 20px;
+    height: 36px;
+    display: block;
+    float: left;
+    position: relative;
+    cursor: pointer;
+    border-radius: 20px;
+ margin-left: 5px;
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &:hover {
+      transform: scale(1.3);
+
+      label {
+        visibility: visible;
+      }
+    }
+
+    label {
+      padding: 3px 5px 3px 5px;
+      position: absolute;
+      top: -24px;
+      left: 3px;
+      border-radius: 10px;
+      font-size: 11px;
+      color: #FFF;
+      background: #333;
+      visibility: hidden;
+    }
+
+    .reaction-img {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 15px;
+      height: 15px;
+
+      img {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
-  
-.online:after {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border: 1px solid #fff;
-  -moz-border-radius: 6px;
-  -webkit-border-radius: 6px;
-  border-radius: 6px;
-  position: absolute;
-  left: 13%;
-  top: 35px;
-  background-color: #63b814;
-  z-index: 100;
+}
 }

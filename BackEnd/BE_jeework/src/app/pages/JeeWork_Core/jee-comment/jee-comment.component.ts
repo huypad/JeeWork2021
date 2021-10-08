@@ -68,7 +68,6 @@ export class JeeCommentComponent implements OnInit {
   @Input() number: number;
   @Input() componentName: string;
   @Input() showonpopup: boolean = false;
-  @Input() hidecomment: boolean = false;
   @Output() changeValue = new EventEmitter<any>();
   public lstObjectID: string[] = [];
 
@@ -81,7 +80,9 @@ export class JeeCommentComponent implements OnInit {
     public cd: ChangeDetectorRef,
     public signalrService: JeeCommentSignalrService,
     private elementRef: ElementRef
-  ) {}
+  ) {
+    console.log('==================================================');
+  }
 
   ngOnInit() {
     if (this.objectID) {
@@ -114,6 +115,7 @@ export class JeeCommentComponent implements OnInit {
           this.signalrService.showChange$
               .pipe(
                   tap((result: ReturnFilterComment) => {
+                    console.log(result,'result ================');
                     if (result) {
                       if (result.LstCreate.length > 0 || result.LstEdit.length > 0 || result.LstDelete.length > 0) {
                         if (result.LstCreate.length > 0) {
@@ -129,6 +131,7 @@ export class JeeCommentComponent implements OnInit {
                         this.isDeteachChange$.next(true);
                       }
                     }
+                    this.cd.detectChanges();
                   }),
                   catchError((err) => {
                     this._isLoading$.next(false);
@@ -157,6 +160,7 @@ export class JeeCommentComponent implements OnInit {
       .showTopicCommentByObjectID(this.objectID, this.filter())
       .pipe(
         tap((topic: TopicCommentDTO) => {
+          console.log(topic,'topic',this.isFirstTime);
           if (this.isFirstTime) {
             this.item = topic;
           } else {

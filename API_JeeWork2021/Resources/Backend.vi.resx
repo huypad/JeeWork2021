@@ -177,6 +177,12 @@
   <data name="ww_thietlapvaitrothanhvien" xml:space="preserve">
     <value>$nguoigui$ đã thiết lập vai trò của bạn trong $loai$ $project_team$ là thành viên</value>
   </data>
+  <data name="ww_thongbaoboxulycongviec" xml:space="preserve">
+    <value>$nguoigui$ bạn không là quản lý trạng thái của công việc $tencongviec$</value>
+  </data>
+  <data name="ww_thongbaocvsaptrehan" xml:space="preserve">
+    <value>$tencongviec$ mà bạn thực hiện sẽ hết hạn lúc $deadline$</value>
+  </data>
   <data name="ww_thongbaocvtrehan" xml:space="preserve">
     <value>$tencongviec$ mà bạn thực hiện đã hết hạn</value>
   </data>
@@ -185,6 +191,9 @@
   </data>
   <data name="ww_thongbaowework" xml:space="preserve">
     <value>Thông báo JeeWork</value>
+  </data>
+  <data name="ww_thongbaoxulycongviec" xml:space="preserve">
+    <value>$nguoigui$ đã thêm bạn quản lý trạng thái của công việc $tencongviec$</value>
   </data>
   <data name="ww_updatethaoluan" xml:space="preserve">
     <value>$nguoigui$ đã cập nhật thảo luận</value>

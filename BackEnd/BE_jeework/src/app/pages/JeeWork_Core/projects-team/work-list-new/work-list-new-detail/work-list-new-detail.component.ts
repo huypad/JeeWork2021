@@ -1,44 +1,44 @@
-import {WorkProcessEditComponent} from './../work-process-edit/work-process-edit.component';
-import {QueryFilterComment} from './../../../jee-comment/jee-comment.model';
-import {DanhMucChungService} from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import {QueryParamsModelNew} from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {MenuPhanQuyenServices} from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {SubheaderService} from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
+import { WorkProcessEditComponent } from './../work-process-edit/work-process-edit.component';
+import { QueryFilterComment } from './../../../jee-comment/jee-comment.model';
+import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {StatusDynamicModel} from './../../Model/status-dynamic.model';
-import {StatusDynamicDialogComponent} from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
-import {ProjectsTeamService} from './../../Services/department-and-project.service';
+import { StatusDynamicModel } from './../../Model/status-dynamic.model';
+import { StatusDynamicDialogComponent } from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import {
     AttachmentModel,
     FileUploadModel,
 } from './../../Model/department-and-project.model';
-import {CheckListEditComponent} from './../../../work/check-list-edit/check-list-edit.component';
+import { CheckListEditComponent } from './../../../work/check-list-edit/check-list-edit.component';
 import {
     UpdateByKeyModel,
     ChecklistModel,
     ChecklistItemModel,
 } from './../../../update-by-keys/update-by-keys.model';
-import {MatDialog} from '@angular/material/dialog';
-import {WeWorkService} from './../../../services/wework.services';
-import {AttachmentService} from './../../../services/attachment.service';
-import {UpdateByKeyService} from './../../../update-by-keys/update-by-keys.service';
-import {DatePipe} from '@angular/common';
-import {ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {WorkService} from './../../../work/work.service';
-import {PopoverContentComponent} from 'ngx-smart-popover';
+import { MatDialog } from '@angular/material/dialog';
+import { WeWorkService } from './../../../services/wework.services';
+import { AttachmentService } from './../../../services/attachment.service';
+import { UpdateByKeyService } from './../../../update-by-keys/update-by-keys.service';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { WorkService } from './../../../work/work.service';
+import { PopoverContentComponent } from 'ngx-smart-popover';
 import {
     WorkModel,
     UserInfoModel,
     UpdateWorkModel,
 } from './../../../work/work.model';
-import {BehaviorSubject, ReplaySubject, of, throwError} from 'rxjs';
-import {FormGroup, FormControl, FormBuilder} from '@angular/forms';
-import {DialogData} from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { BehaviorSubject, ReplaySubject, of, throwError } from 'rxjs';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { DialogData } from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
     Component,
     OnInit,
@@ -58,12 +58,12 @@ import {
     switchMap,
     map,
 } from 'rxjs/operators';
-import {UpdateByKeysComponent} from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
-import {JeeCommentService} from '../../../jee-comment/jee-comment.service';
-import {CommunicateService} from '../work-list-new-service/communicate.service';
-import {LogWorkDescriptionComponent} from '../../../log-work-description/log-work-description.component';
-import {tinyMCE} from 'src/app/_metronic/jeework_old/components/tinyMCE';
-import {DomSanitizer} from '@angular/platform-browser';
+import { UpdateByKeysComponent } from './../../../update-by-keys/update-by-keys-edit/update-by-keys-edit.component';
+import { JeeCommentService } from '../../../jee-comment/jee-comment.service';
+import { CommunicateService } from '../work-list-new-service/communicate.service';
+import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
+import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'kt-work-list-new-detail',
@@ -139,10 +139,10 @@ export class WorkListNewDetailComponent implements OnInit {
     AssignChecklist: any = [];
     list_priority: any = [];
     options_assign: any = {};
-    @ViewChild('Assign', {static: true})
+    @ViewChild('Assign', { static: true })
     myPopover_Assign: PopoverContentComponent;
     selected_Assign: any[] = [];
-    @ViewChild('hiddenText_Assign', {static: true}) text_Assign: ElementRef;
+    @ViewChild('hiddenText_Assign', { static: true }) text_Assign: ElementRef;
     _Assign = '';
     list_Assign: any[] = [];
     status_dynamic: any[] = [];
@@ -177,8 +177,8 @@ export class WorkListNewDetailComponent implements OnInit {
     File = '';
     filemodel: any;
     tinyMCE = {};
-    @ViewChild('csvInput', {static: true}) myInputVariable: ElementRef;
-    @ViewChild('resultInput', {static: true}) result: ElementRef;
+    @ViewChild('csvInput', { static: true }) myInputVariable: ElementRef;
+    @ViewChild('resultInput', { static: true }) result: ElementRef;
     list_User: any[] = [];
     selectedDate: any = {
         startDate: '',
@@ -368,7 +368,7 @@ export class WorkListNewDetailComponent implements OnInit {
         saveMessageTranslateParam += ID_log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = this.item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, {data: {ID_log}, width: '1000px'});
+        const dialogRef = this.dialog.open(LogWorkDescriptionComponent, { data: { ID_log }, width: '1000px' });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 // this.ngOnInit();
@@ -1192,16 +1192,23 @@ export class WorkListNewDetailComponent implements OnInit {
             this.UpdateByKeyNew(this.item, 'title', this.item.title);
         }
     }
-
+    chinhsuamota = false;
     UpdateDescription() {
-        if (this.item.description.trim() != this.description_tiny.trim()) {
-            this.disabledBtn = true;
-            if (!this.KiemTraThayDoiCongViec(this.item, 'description')) {
-                this.description_tiny = this.item.description;
-                return;
+        // if (!this.chinhsuamota) {
+        //   this.chinhsuamota = !this.chinhsuamota;
+        //   return;
+        // }else 
+        {
+            if (this.item.description.trim() != this.description_tiny.trim()) {
+                this.disabledBtn = true;
+                if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
+                    this.description_tiny = this.item.description;
+                    return;
+                }
+                this.item.description = this.description_tiny;
+                this.UpdateByKeyNew(this.item, "description", this.description_tiny);
             }
-            this.item.description = this.description_tiny;
-            this.UpdateByKeyNew(this.item, 'description', this.description_tiny);
+            this.chinhsuamota = !this.chinhsuamota;
         }
     }
 
@@ -1255,7 +1262,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(UpdateByKeysComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1291,7 +1298,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
-            data: {_item, IsCheckList: true},
+            data: { _item, IsCheckList: true },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1372,7 +1379,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
-            data: {_item, IsCheckList: false},
+            data: { _item, IsCheckList: false },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1777,7 +1784,7 @@ export class WorkListNewDetailComponent implements OnInit {
         const dialogRef = this.dialog.open(WorkProcessEditComponent, {
             // width: "40vw",
             // minHeight: "200px",
-            data: {Process: this.item.Process, id_project_team: this.Id_project_team},
+            data: { Process: this.item.Process, id_project_team: this.Id_project_team },
         });
         dialogRef.afterClosed().subscribe((res) => {
             this.LoadData();

@@ -1,6 +1,6 @@
-import { ReplaySubject } from 'rxjs';
-import { FormControl } from '@angular/forms';
-import { FileUploadModel } from './../discussions/Model/Topic.model';
+import { ReplaySubject } from "rxjs";
+import { FormControl } from "@angular/forms";
+import { FileUploadModel } from "./../discussions/Model/Topic.model";
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
 import { ProjectTeamUserModel } from "./../projects-team/Model/department-and-project.model";
 import { ProjectTeamModel } from "src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model";
@@ -59,9 +59,12 @@ export class TemplateCenterComponent implements OnInit {
   start_date = "";
   end_date = "";
   UserID = localStorage.getItem("idUser");
-  iconspace = "https://cdn1.iconfinder.com/data/icons/space-exploration-and-next-big-things-5/512/676_Astrology_Planet_Space-512.png";
-  iconfolder = "https://png.pngtree.com/png-vector/20190215/ourlarge/pngtree-vector-folder-icon-png-image_554064.jpg";
-  iconlist = "https://img.pngio.com/list-icons-free-download-png-and-svg-list-icon-png-256_256.png";
+  iconspace =
+    "https://cdn1.iconfinder.com/data/icons/space-exploration-and-next-big-things-5/512/676_Astrology_Planet_Space-512.png";
+  iconfolder =
+    "https://png.pngtree.com/png-vector/20190215/ourlarge/pngtree-vector-folder-icon-png-image_554064.jpg";
+  iconlist =
+    "https://img.pngio.com/list-icons-free-download-png-and-svg-list-icon-png-256_256.png";
   constructor(
     public dialogRef: MatDialogRef<TemplateCenterComponent>,
     private layoutUtilsService: LayoutUtilsService,
@@ -71,14 +74,12 @@ export class TemplateCenterComponent implements OnInit {
     private departmentServices: ListDepartmentService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.userFilterCtrl.valueChanges
-      .pipe()
-      .subscribe(() => {
-        this.filterUsers();
-      });
+    this.userFilterCtrl.valueChanges.pipe().subscribe(() => {
+      this.filterUsers();
+    });
     //load type
     this.templatecenterService.getTemplateTypes().subscribe((res) => {
       if (res && res.status == 1) {
@@ -266,7 +267,7 @@ export class TemplateCenterComponent implements OnInit {
     TCinsert.group_statusid = this.TemplateDetail.group_statusid;
     TCinsert.viewid = this.TemplateDetail.viewid;
     if (this.TemplateDetail.sample_id > 0) {
-      TCinsert.sample_id = '' + this.TemplateDetail.sample_id;
+      TCinsert.sample_id = "" + this.TemplateDetail.sample_id;
     }
     // kiểm tra title
     let titleTemplate = (<HTMLInputElement>(
@@ -289,8 +290,9 @@ export class TemplateCenterComponent implements OnInit {
           this.layoutUtilsService.showError("Vị trí lưu trữ không hợp lệ.");
           return;
         } else {
-          TCinsert.ParentID = this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
-        } 
+          TCinsert.ParentID =
+            this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
+        }
       } else {
         this.layoutUtilsService.showError(
           "Vị trí lưu trữ không được để trống."
@@ -347,7 +349,7 @@ export class TemplateCenterComponent implements OnInit {
       }
     }
 
-    var istemplatelist = this.TemplateDetail.istemplatelist
+    var istemplatelist = this.TemplateDetail.istemplatelist;
     if (this.TemplateDetail.addtolibrary) {
       istemplatelist = true;
       TCinsert.id_row = this.TemplateDetail.save_as_id;
@@ -355,22 +357,26 @@ export class TemplateCenterComponent implements OnInit {
 
     setTimeout(() => {
       this.SudungMau(TCinsert, istemplatelist);
-    }, 5); 
+    }, 5);
   }
   SudungMau(_item: TemplateCenterModel, istemplatelist) {
     this.disabledBtn = true;
-    this.templatecenterService.Sudungmau(_item, istemplatelist).subscribe((res) => {
-      this.disabledBtn = false;
-      this.changeDetectorRefs.detectChanges();
-      if (res && res.status === 1) {
-        this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
-        setTimeout(() => {
-          window.location.reload();
-        }, 10);
-      } else {
-        this.layoutUtilsService.showError(res.error.message);
-      }
-    });
+    this.layoutUtilsService.showWaitingDiv();
+    this.templatecenterService
+      .Sudungmau(_item, istemplatelist)
+      .subscribe((res) => {
+        if (res && res.status === 1) {
+          this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+          setTimeout(() => {
+            window.location.reload();
+          }, 10);
+        } else {
+          this.layoutUtilsService.showError(res.error.message);
+        }
+        this.disabledBtn = false;
+        this.layoutUtilsService.OffWaitingDiv();
+        this.changeDetectorRefs.detectChanges();
+      });
   }
   disabledBtn = false;
   Create(_item: DepartmentModel, withBack: boolean) {
@@ -419,45 +425,51 @@ export class TemplateCenterComponent implements OnInit {
   onSelectFile(event) {
     var icondata: any;
     const file = new FileUploadModel();
-    file.clear()
+    file.clear();
 
     if (event.target.files && event.target.files[0]) {
       var filesAmount = event.target.files[0];
-      var Strfilename = filesAmount.name.split('.');
+      var Strfilename = filesAmount.name.split(".");
 
-      event.target.type = 'text';
-      event.target.type = 'file';
+      event.target.type = "text";
+      event.target.type = "file";
       var reader = new FileReader();
       let base64Str: any;
       reader.onload = (event) => {
-        base64Str = event.target["result"]
-        var metaIdx = base64Str.indexOf(';base64,');
+        base64Str = event.target["result"];
+        var metaIdx = base64Str.indexOf(";base64,");
         let strBase64 = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
-        icondata = { filename: filesAmount.name, strBase64: strBase64, base64Str: base64Str };
+        icondata = {
+          filename: filesAmount.name,
+          strBase64: strBase64,
+          base64Str: base64Str,
+        };
         this.TemplateDetail.img_temp = base64Str;
         file.filename = filesAmount.name;
         file.strBase64 = strBase64;
         file.IdRow = this.TemplateDetail.id_row;
         this.changeDetectorRefs.detectChanges();
-      }
+      };
       reader.readAsDataURL(filesAmount);
     }
     setTimeout(() => {
-      this.templatecenterService.UpdateFileTemplate(file, this.TemplateDetail.istemplatelist).subscribe((res) => {
-        this.disabledBtn = false;
-        this.changeDetectorRefs.detectChanges();
-        if (res && res.status === 1) {
-          this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 10);
-        } else {
-          this.layoutUtilsService.showError(res.error.message);
-        }
-      });
+      this.templatecenterService
+        .UpdateFileTemplate(file, this.TemplateDetail.istemplatelist)
+        .subscribe((res) => {
+          this.disabledBtn = false;
+          this.changeDetectorRefs.detectChanges();
+          if (res && res.status === 1) {
+            this.layoutUtilsService.showActionNotification(
+              "Thêm Mẫu thành công"
+            );
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 10);
+          } else {
+            this.layoutUtilsService.showError(res.error.message);
+          }
+        });
     }, 50);
-
-
   }
   getBackground(text) {
     return "#1DB954";
@@ -564,10 +576,10 @@ export class TemplateCenterComponent implements OnInit {
     var object = {
       templateid: this.TemplateDetail.id_row,
       list_share: new Array<TempalteUserModel>(user),
-    }
-    this.templatecenterService.add_template_library(object).subscribe(res => {
+    };
+    this.templatecenterService.add_template_library(object).subscribe((res) => {
       if (res && res.status == 1) {
-        this.layoutUtilsService.showInfo('thêm vào thư viện thành công');
+        this.layoutUtilsService.showInfo("thêm vào thư viện thành công");
         this.isAddsuccess = true;
       } else {
         this.layoutUtilsService.showError(res.error.message);
@@ -575,14 +587,16 @@ export class TemplateCenterComponent implements OnInit {
     });
   }
   delete_library() {
-    this.templatecenterService.delete_library(this.TemplateDetail.id_row).subscribe(res => {
-      if (res && res.status == 1) {
-        this.buocthuchien = 1;
-        this.LoadTC();
-      } else {
-        this.layoutUtilsService.showError(res.error.message);
-      }
-    });
+    this.templatecenterService
+      .delete_library(this.TemplateDetail.id_row)
+      .subscribe((res) => {
+        if (res && res.status == 1) {
+          this.buocthuchien = 1;
+          this.LoadTC();
+        } else {
+          this.layoutUtilsService.showError(res.error.message);
+        }
+      });
   }
   LoadDatafield() {
     // this.ListField.filter((item) => item.checked)
@@ -592,7 +606,9 @@ export class TemplateCenterComponent implements OnInit {
       this.importall = false;
       var i = 0;
       this.ListField.forEach((element) => {
-        var x = this.TemplateDetail.data_fields.find(x => x.id_field == element.id_field);
+        var x = this.TemplateDetail.data_fields.find(
+          (x) => x.id_field == element.id_field
+        );
         i++;
         if (x) {
           element.checked = true;
@@ -616,7 +632,9 @@ export class TemplateCenterComponent implements OnInit {
     }
     // filter the banks
     this.filteredUsecase.next(
-      this.TemplateTypes.filter(bank => bank.title.toLowerCase().indexOf(search) > -1)
+      this.TemplateTypes.filter(
+        (bank) => bank.title.toLowerCase().indexOf(search) > -1
+      )
     );
   }
 }

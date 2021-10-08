@@ -76,8 +76,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
-                    bool Visible = Common.CheckRoleByUserID(loginData, 3400, cnn);
-                    //WeworkLiteController.Insert_Template(cnn, loginData.CustomerID.ToString());
+                    //bool Visible = Common.CheckRoleByUserID(loginData, 3400, cnn);
+                    bool Visible = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = "de.disabled=0 and (idkh = @CustemerID)";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))

@@ -1,3 +1,5 @@
+import { TimeMessPipe } from './jee-chat/date-time-format.pipe';
+import { PopoverModule } from 'ngx-smart-popover';
 import {JeeWork_CoreModule} from './../../../../pages/JeeWork_Core/JeeWork_Core.module';
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
@@ -55,6 +57,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     declarations: [
         CreateConversationUserComponent,
         FilterPipe,
+        TimeMessPipe,
         SearchDropdownInnerComponent,
         NotificationsDropdownInnerComponent,
         QuickActionsDropdownInnerComponent,
@@ -98,6 +101,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         MatChipsModule,
         MatAutocompleteModule,
         MatInputModule,
+        PopoverModule
     ],
     providers: [
         {

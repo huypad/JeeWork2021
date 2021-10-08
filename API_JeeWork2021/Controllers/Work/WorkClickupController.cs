@@ -4951,14 +4951,14 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         }
                     }
                     #region Ghi log trong project
-                    string LogContent = "", LogEditContent = "";
-                    LogEditContent = Common.GetEditLogContent(old, dt);
-                    if (!LogEditContent.Equals(""))
-                    {
-                        LogEditContent = "Chỉnh sửa dữ liệu (ID: " + data.id_row + ": " + data.key + "=" + data.value + ") : " + LogEditContent;
-                        LogContent = "Chỉnh sửa dữ liệu công việc (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
-                    }
-                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    //string LogContent = "", LogEditContent = "";
+                    //LogEditContent = Common.GetEditLogContent(old, dt);
+                    //if (!LogEditContent.Equals(""))
+                    //{
+                    //    LogEditContent = "Chỉnh sửa dữ liệu (ID: " + data.id_row + ": " + data.key + "=" + data.value + ") : " + LogEditContent;
+                    //    LogContent = "Chỉnh sửa dữ liệu công việc (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
+                    //}
+                    //Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
                     #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -5313,7 +5313,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         #region Lấy thông tin để thông báo
                         SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
                         #endregion
-                        DataTable tblU = cnn.CreateDataTable("select * from we_work_user where disavbled = 0 and id_work = " + dr["id_row"]);
+                        DataTable tblU = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and id_work = " + dr["id_row"]);
                         List<long> dataUser = tblU.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
                         WeworkLiteController.mailthongbao(idc, dataUser, 10, loginData, ConnectionString, _notifier, _configuration);
                         #region Notify thêm mới công việc
@@ -6738,7 +6738,7 @@ where u.disabled = 0 and u.loai = 2";
             {
                 SqlConditions conds = new SqlConditions();
                 conds.Add("w_user.disabled", 0);
-                string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as image, id_work,w_user.loai,w_user.CreatedBy
+                string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as email,'' as image, id_work,w_user.loai,w_user.CreatedBy
                                         from we_work_user w_user 
                                         join we_work on we_work.id_row = w_user.id_work where (where)";
                 if ("id_project_team".Equals(columnName))
@@ -6757,6 +6757,7 @@ where u.disabled = 0 and u.loai = 2";
                         {
                             item["hoten"] = info.FullName;
                             item["image"] = info.AvartarImgURL;
+                            item["email"] = info.Email;
                         }
                     }
                 }
@@ -6824,6 +6825,7 @@ where u.disabled = 0 and u.loai = 2";
                                         id_nv = us["id_user"],
                                         hoten = us["hoten"],
                                         image = us["image"],
+                                        email = us["email"],
                                         loai = us["loai"],
                                     },
                              NguoiGiao = from us in dt_Users.AsEnumerable()
@@ -6842,6 +6844,7 @@ where u.disabled = 0 and u.loai = 2";
                                             id_nv = us["id_user"],
                                             hoten = us["hoten"],
                                             image = us["image"],
+                                            email = us["email"],
                                             loai = us["loai"],
                                         },
                              FollowerInfo = from us in dt_Users.AsEnumerable()
@@ -6941,7 +6944,7 @@ where u.disabled = 0 and u.loai = 2";
                                     },
                              DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
                          };
-                return re.Distinct().ToList().OrderByDescending(x => x.createddate);
+                return re.Distinct().ToList(); // .OrderByDescending(x => x.createddate);
             }
         }
         public static long SoluongComment(string idwork, DpsConnection cnn)

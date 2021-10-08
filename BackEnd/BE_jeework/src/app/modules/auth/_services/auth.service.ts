@@ -173,6 +173,8 @@ export class AuthService implements OnDestroy {
     }
 
     logout() {
+        this.ClearChatBox();
+        localStorage.clear();
         const access_token = this.getAccessToken_cookie();
         if (access_token) {
             this.logoutToSSO().subscribe(
@@ -187,9 +189,12 @@ export class AuthService implements OnDestroy {
             this.prepareLogout();
         }
     }
-
+    ClearChatBox()
+    {
+      localStorage.removeItem('chatboxusers');
+      localStorage.removeItem('chatGroup');
+    }
     prepareLogout() {
-        localStorage.clear();
         this.deleteAccessRefreshToken_cookie();
         let url = '';
         if (document.location.port) {

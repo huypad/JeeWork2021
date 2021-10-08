@@ -52,3 +52,26 @@
 23/09/2021 13:24:26 - Đóng công việc (218885)
 23/09/2021 13:25:10 - Chỉnh sửa dữ liệu công việc (218885), Chi tiết xem trong log chỉnh sửa chức năng
 23/09/2021 13:27:41 - Update user: ID24057 - admin = True
+06/10/2021 04:46:31 - Chỉnh sửa dữ liệu công việc (217682), Chi tiết xem trong log chỉnh sửa chức năng
+07/10/2021 08:00:25 - Thêm mới dữ liệu công việc: title=Công việc ngày 07/10, id_project_team=23404
+07/10/2021 08:04:12 - Thêm mới dữ liệu công việc: title=Công việc 2, id_project_team=23404
+07/10/2021 08:04:43 - Thêm mới dữ liệu công việc: title=Công việc 3, id_project_team=23404
+07/10/2021 08:05:54 - Thêm mới dữ liệu công việc: title=Pad tạo mới, id_project_team=23404
+07/10/2021 08:06:12 - Thêm mới dữ liệu công việc: title=Pad tạo 1, id_project_team=23404
+07/10/2021 08:24:09 - Thêm mới dữ liệu công việc: title=Công việc 3, id_project_team=23404
+07/10/2021 08:25:57 - Thêm mới dữ liệu công việc: title=Công việc 4, id_project_team=23404
+07/10/2021 08:28:36 - Thêm mới dữ liệu công việc: title=Công việc 5, id_project_team=23404
+08/10/2021 01:14:14 - Thêm mới dữ liệu công việc: title=Công việc ngày 8, id_project_team=23404
+08/10/2021 01:14:48 - Thêm mới dữ liệu công việc: title=Công việc ngày 8.1, id_project_team=23404
+08/10/2021 01:30:39 - Thêm mới dữ liệu công việc: title=Công việc bàn giao, id_project_team=23404
+08/10/2021 01:45:06 - Xóa dữ liệu công việc (220026)
+08/10/2021 01:45:11 - Xóa dữ liệu công việc (220016)
+08/10/2021 01:45:17 - Xóa dữ liệu công việc (220017)
+08/10/2021 01:45:23 - Xóa dữ liệu công việc (220020)
+08/10/2021 01:45:27 - Xóa dữ liệu công việc (220018)
+08/10/2021 01:45:31 - Xóa dữ liệu công việc (220019)
+08/10/2021 01:45:35 - Xóa dữ liệu công việc (220021)
+08/10/2021 01:45:41 - Xóa dữ liệu công việc (220022)
+08/10/2021 01:45:45 - Xóa dữ liệu công việc (220023)
+08/10/2021 01:46:04 - Xóa dữ liệu công việc (220024)
+08/10/2021 01:46:09 - Xóa dữ liệu công việc (220025)

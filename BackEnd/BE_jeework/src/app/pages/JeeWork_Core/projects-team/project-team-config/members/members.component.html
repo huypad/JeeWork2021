@@ -48,7 +48,7 @@
                     <popover-content #myPopover placement="bottom" [closeOnClickOutside]="true">
                         <div class="setting-item">
                             <i class="las la-comments"></i>
-                            <span (click)="chatWith(user.id_nv)"> {{'topic.chatvoi'|translate}}
+                            <span (click)="chatWith(user)"> {{'topic.chatvoi'|translate}}
                                 <b>{{user.hoten}}</b></span>
                         </div>
                         <!-- <div class="setting-item">
@@ -144,7 +144,7 @@
                     <popover-content #myPopover1 placement="bottom" [closeOnClickOutside]="true">
                         <div class="setting-item">
                             <i class="las la-comments"></i>
-                            <span (click)="chatWith(user.id_nv)"> {{'topic.chatvoi'|translate}}
+                            <span (click)="chatWith(user)"> {{'topic.chatvoi'|translate}}
                                 <b>{{user.hoten}}</b></span>
                         </div>
                         <!-- <div class="setting-item">
