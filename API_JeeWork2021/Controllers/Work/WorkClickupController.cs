@@ -6506,7 +6506,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             }
             if (!string.IsNullOrEmpty(query.filter["status"]))
             {
-                where_string += " and status=" + query.filter["status"];
+                dieukien_where += " and status=" + query.filter["status"];
             }
             sqlq += where_string;
             //người theo dõi
