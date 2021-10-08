@@ -108,6 +108,8 @@ namespace JeeWork_Core2021.ConsumerServices
                     }
                     else
                     {
+                        // roles = "3400, 3500"; //quyền mặc định: gửi yêu cầu vpp
+                        // List<string> rol_df = new List<string>() { "3400", "3500" };
                         roles = "0";
                         List<string> rol_df = new List<string>() { roles };
                         int idnhom = ConsumerHelper.createNhom(conn, kq.CustomerID, rol_df);

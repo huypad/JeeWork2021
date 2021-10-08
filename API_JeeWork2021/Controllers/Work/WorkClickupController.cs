@@ -3882,70 +3882,71 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         return JsonResultCommon.Custom("Dự án đã đóng không thể cập nhật");
                     }
                     bool istaskuser = Common.CheckTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
+                    var txterror = "Bạn không có quyền cập nhật công việc này";
                     if (!istaskuser)
                     {
-                        var txterror = "Bạn không có quyền cập nhật công việc này";
-                        if (data.id_role > 0)
-                        {
-                            bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
-                            switch (data.key)
-                            {
-                                //case "status": return value.ToString() == "2" ? 2 : 3;//1: đang làm, 2: hoàn thành, 3: chờ review
-                                case "deadline":
-                                    txterror = "Bạn không có quyền thay đổi hạn chót của công việc này";
-                                    break;
-                                //case "clickup_prioritize": return 8;
-                                case "Tags":
-                                    txterror = "Bạn không có quyền thay đổi nhãn của công việc này";
-                                    break;
-                                //case "Attachments": return 10;
-                                case "start_date":
-                                    txterror = "Bạn không có quyền sửa ngày bắt đầu của công việc này";
-                                    break;
-                                case "id_group":
-                                    txterror = "Bạn không có quyền sửa nhóm công việc của công việc này";
-                                    break;
-                                //case "Attachments_result": return 13;
-                                //case "result": return 14;
-                                case "assign":
-                                    txterror = "Bạn không có quyền sửa người làm của công việc này";
-                                    break;
-                                case "follower":
-                                    txterror = "Bạn không có quyền sửa người theo dõi của công việc này";
-                                    break;
-                                case "deleteassign":
-                                    txterror = "Bạn không có quyền xóa người làm của công việc này";
-                                    break;
-                                case "deletefollower":
-                                    txterror = "Bạn không có quyền xóa người theo dõi của công việc này";
-                                    break;
-                                case "description":
-                                    txterror = "Bạn không có quyền chỉnh sửa mô tả của công việc này";
-                                    break;
-                                case "title":
-                                    txterror = "Bạn không có quyền chỉnh sửa tên công việc của công việc này";
-                                    break;
-                                //case "subtasks": return 40;
-                                //case "moved": return 41;
-                                // case "dublicate": return 42;
-                                //case "favorites": return 43;
-                                case "status":
-                                    txterror = "Bạn không có quyền thay đổi trạng thái công việc của công việc này";
-                                    break;
-                                //case "new_field": return 1;
-                                case "estimates":
-                                    txterror = "Bạn không có quyền thay đổi thời gian làm của công việc của công việc này";
-                                    break;
-                                default:
-                                    txterror = "Bạn không có quyền thay đổi nội dung của công việc này của công việc này";
-                                    break;
-                            }
-                            if (!rs)
-                            {
-                                return JsonResultCommon.Custom(txterror);
-                            }
-                        }
                         return JsonResultCommon.Custom(txterror);
+                    }
+
+                    if (data.id_role > 0)
+                    {
+                        bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
+                        switch (data.key)
+                        {
+                            //case "status": 
+                            case "deadline":
+                                txterror = "Bạn không có quyền thay đổi hạn chót của công việc này";
+                                break;
+                            //case "clickup_prioritize": return 8;
+                            case "Tags":
+                                txterror = "Bạn không có quyền thay đổi nhãn của công việc này";
+                                break;
+                            //case "Attachments": return 10;
+                            case "start_date":
+                                txterror = "Bạn không có quyền sửa ngày bắt đầu của công việc này";
+                                break;
+                            case "id_group":
+                                txterror = "Bạn không có quyền sửa nhóm công việc của công việc này";
+                                break;
+                            //case "Attachments_result": return 13;
+                            //case "result": return 14;
+                            case "assign":
+                                txterror = "Bạn không có quyền sửa người làm của công việc này";
+                                break;
+                            case "follower":
+                                txterror = "Bạn không có quyền sửa người theo dõi của công việc này";
+                                break;
+                            case "deleteassign":
+                                txterror = "Bạn không có quyền xóa người làm của công việc này";
+                                break;
+                            case "deletefollower":
+                                txterror = "Bạn không có quyền xóa người theo dõi của công việc này";
+                                break;
+                            case "description":
+                                txterror = "Bạn không có quyền chỉnh sửa mô tả của công việc này";
+                                break;
+                            case "title":
+                                txterror = "Bạn không có quyền chỉnh sửa tên công việc của công việc này";
+                                break;
+                            //case "subtasks": return 40;
+                            //case "moved": return 41;
+                            // case "dublicate": return 42;
+                            //case "favorites": return 43;
+                            case "status":
+                                txterror = "Bạn không có quyền thay đổi trạng thái công việc của công việc này";
+                                break;
+                            //case "new_field": return 1;
+                            case "estimates":
+                                txterror = "Bạn không có quyền thay đổi thời gian làm của công việc của công việc này";
+                                break;
+                            default:
+                                txterror = "Bạn không có quyền thay đổi nội dung của công việc này của công việc này";
+                                break;
+                        }
+                        if (!rs)
+                        {
+                            return JsonResultCommon.Custom(txterror);
+                        }
                     }
                     //Data datapost = new Data();
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
