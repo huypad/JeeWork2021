@@ -37,7 +37,7 @@ namespace JeeWork_Core2021.ConsumerServices
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var topicProduceByAccount1 = _config.GetValue<string>("KafkaConfig:TopicConsume:JeeplatformInitialization");
+           var topicProduceByAccount1 = _config.GetValue<string>("KafkaConfig:TopicConsume:JeeplatformInitialization");
             var topicProduceByAccount2 = _config.GetValue<string>("KafkaConfig:TopicConsume:JeeplatformUpdateAdmin");
             _ = Task.Run(() =>
             {
@@ -108,10 +108,8 @@ namespace JeeWork_Core2021.ConsumerServices
                     }
                     else
                     {
-                        // roles = "3400, 3500"; //quyền mặc định: gửi yêu cầu vpp
-                        // List<string> rol_df = new List<string>() { "3400", "3500" };
-                        roles = "0";
-                        List<string> rol_df = new List<string>() { roles };
+                        roles = "3502, 3610"; //quyền mặc định 
+                        List<string> rol_df = new List<string>() { "3502", "3610" }; 
                         int idnhom = ConsumerHelper.createNhom(conn, kq.CustomerID, rol_df);
                         if (idnhom > 0)
                         {

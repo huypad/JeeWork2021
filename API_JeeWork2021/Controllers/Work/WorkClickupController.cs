@@ -6614,7 +6614,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
-                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%' or tao.Username like N'%@keyword%' or sua.Username like N'%@keyword%')";
+                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%' )";
                 dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
             }
             #endregion

@@ -501,11 +501,11 @@ left join(select count(*) as tong, id_parent from we_comment where disabled = 0 
                     data.object_id = long.Parse(objectdata[1]);
                     if (objectdata[0] == "kt-task")
                     {
-                        data.object_type = 1;
+                        data.object_type = 1; // công việc
                     }
                     else
                     {
-                        data.object_type = 2;
+                        data.object_type = 2; // thảo luận
                     }
                     if (string.IsNullOrEmpty(data.comment))
                         strRe += (strRe == "" ? "" : ",") + "nội dung";

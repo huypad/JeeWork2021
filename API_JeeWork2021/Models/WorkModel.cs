@@ -100,7 +100,6 @@ namespace JeeWork_Core2021.Models
             {
                 switch (key)
                 {
-                    //case "status": return value.ToString() == "2" ? 2 : 3;//1: đang làm, 2: hoàn thành, 3: chờ review
                     case "deadline": return 10; 
                     //case "clickup_prioritize": return 8;
                     case "Tags": return 20;
