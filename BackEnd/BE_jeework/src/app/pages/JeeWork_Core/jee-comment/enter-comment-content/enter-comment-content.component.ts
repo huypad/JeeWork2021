@@ -147,17 +147,14 @@ export class JeeCommentEnterCommentContentComponent implements OnInit, AfterView
             tap(
                 (res) => {
                     const objSave: any = {};
-                    //           TopicCommentID: string;
-                    // CommentID: string;
-                    // ReplyCommentID: string;
-                    // Text: string;
-                    // Attachs: Attach;
                     objSave.id_topic = res.Id;
                     objSave.comment = model.Text ? model.Text : 'has comment';
                     objSave.id_parent = 0;
                     objSave.object_type = 0;
                     objSave.object_id_new = model.TopicCommentID;
                     this.Luulogcomment(objSave);
+
+                    
                 },
                 catchError((err) => {
                     return of();
