@@ -56,7 +56,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     public weworkService: WeWorkService,
     public _Services: ListDepartmentService,
     public commonService: CommonService
-  ) {}
+  ) { }
   litsTemplateDemo: any = [];
   listSTT: any = [];
   listStatus: any = [];
@@ -145,7 +145,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   dropPosition(_item) {
     if (this.isStatusNow) {
       this._service.dropPosition(_item).subscribe((res) => {
-        if (res && res.status == 1) { 
+        if (res && res.status == 1) {
           this.ListStatusDynamic();
         } else {
           this.layoutUtilsService.showError(res.error.message);
@@ -153,7 +153,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       });
     } else {
       this._service.dropPositionTemplate(_item).subscribe((res) => {
-        if (res && res.status == 1) { 
+        if (res && res.status == 1) {
           this.LoadDataTemp();
         } else {
           this.layoutUtilsService.showError(res.error.message);
@@ -276,7 +276,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     if (this.data.columnname === "id_project_team") {
       this.IsSave = true;
     } else {
-    //   debugger;
+      //   debugger;
       this.itemde.id = this.data.id_row;
       this.itemde.templateid_new = this.TempSelected;
       this.itemde.templateid_old = this.data.id_template;
@@ -390,8 +390,17 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.Color = status.color;
 
       item.Description = status.Description;
-      item.Id_project_team = status.id_project_team;
-      item.id_department = status.id_department;
+      // item.Id_project_team = status.id_project_team;
+      // item.id_department = status.id_department;
+      if (status.Id_project_team || status.Id_project_team == undefined) {
+        if (status.id_project_team == null)
+          item.Id_project_team = 0;
+        else
+          item.Id_project_team = status.id_project_team;
+      }
+      if (status.id_department) {
+        item.id_department = status.id_department;
+      }
       //   item.Follower = status.Follower;
       item.Type = status.Type ? status.Type : "2";
       this.UpdateStatus(item);
@@ -417,16 +426,16 @@ export class ProjectTeamEditStatusComponent implements OnInit {
 
       item.Description = status.Description;
 
-      if( status.Id_project_team || status.Id_project_team == undefined){
+      if (status.Id_project_team || status.Id_project_team == undefined) {
         if (status.id_project_team == null)
-        item.Id_project_team =  0;
+          item.Id_project_team = 0;
         else
-        item.Id_project_team =  status.id_project_team;
+          item.Id_project_team = status.id_project_team;
       }
-      if(status.id_department){
+      if (status.id_department) {
         item.id_department = status.id_department;
       }
-     
+
       //   item.Follower = status.Follower;
       item.Type = status.Type ? status.Type : "2";
       this.UpdateStatus(item);
@@ -513,12 +522,12 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         });
       }
     }
-  } 
+  }
   focusOutSTT(value) {
     this.isAddStatus = false;
     if (!value) {
       return;
-    } 
+    }
     if (!this.isStatusNow) {
       const _item = new UpdateQuickModel();
       _item.clear();
@@ -533,13 +542,11 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.clear();
       item.StatusName = value;
       item.Color = "rgb(29, 126, 236)";
-      if (this.data.columnname=='id_department')
-      {
+      if (this.data.columnname == 'id_department') {
         item.id_department = this.data.id_row;
         item.Id_project_team = 0;
       }
-      else
-      {
+      else {
         item.Id_project_team = this.data.id_row;
         item.id_department = 0;
       }
@@ -647,13 +654,13 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     // console.log(item);
     // return;
     this._service.UpdateStatus(item).subscribe((res) => {
-        if (res && res.status == 1) {
-            this.ListStatusDynamic();
-        } else {
-            this.layoutUtilsService.showError(
-                res.error.message
-            );
-        }
+      if (res && res.status == 1) {
+        this.ListStatusDynamic();
+      } else {
+        this.layoutUtilsService.showError(
+          res.error.message
+        );
+      }
     });
   }
 
