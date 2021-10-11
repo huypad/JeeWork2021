@@ -418,7 +418,10 @@ export class ProjectTeamEditStatusComponent implements OnInit {
       item.Description = status.Description;
 
       if( status.Id_project_team || status.Id_project_team == undefined){
-        item.Id_project_team = status.id_project_team;
+        if (status.id_project_team == null)
+        item.Id_project_team =  0;
+        else
+        item.Id_project_team =  status.id_project_team;
       }
       if(status.id_department){
         item.id_department = status.id_department;
