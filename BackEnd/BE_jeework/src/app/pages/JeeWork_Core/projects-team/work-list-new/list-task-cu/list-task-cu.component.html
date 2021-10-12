@@ -5,7 +5,7 @@
                 <ng-container *ngIf="selectedTab == 2;else normal">
                     <div class="text-dark filter-search">
                         <i class="fas fa-filter"
-                           style="padding: 5px; border: 1px solid #ccc; border-radius: 50%;vertical-align: text-bottom;"></i>
+                            style="padding: 5px; border: 1px solid #ccc; border-radius: 50%;vertical-align: text-bottom;"></i>
                         &nbsp;
                         <span style="font-size: 20px;font-weight: 500;">{{ 'summary.boloctuychinh' | translate }}:
                             <span class="-hover url" [matMenuTriggerFor]="menu"> {{showTitleFilter(idFilter)}} </span>
@@ -30,9 +30,9 @@
                             <ng-container>
                                 <div class="cu-search-filter cu-search-filter_v5" style=" padding: 0 10px;">
                                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched"
-                                           style="border:0;outline:0" (keyup.enter)="LoadSampleList()"
-                                           [(ngModel)]="keyword" type="text"
-                                           placeholder="{{ 'work.filterbytaskname' | translate}}">
+                                        style="border:0;outline:0" (keyup.enter)="LoadSampleList()"
+                                        [(ngModel)]="keyword" type="text"
+                                        placeholder="{{ 'work.filterbytaskname' | translate}}">
                                     <div class="cu-search-filter__extra">
                                         <div class="cu-filter-value-list-dropdown ng-star-inserted">
                                             <div class="cu-dropdown_left cu-dropdown">
@@ -52,27 +52,27 @@
                                 <i class="fas fa-chevron-down"></i>
                             </div>
                             <div class="filter" [matMenuTriggerFor]="menu"
-                                 matTooltip="{{'report.clicktoupdate'|translate}}">
+                                matTooltip="{{'report.clicktoupdate'|translate}}">
                                 <em>{{column_sort.title}}</em>
                                 &nbsp;
                                 <i class="fas fa-chevron-down"></i>
                                 <mat-menu #menu="matMenu">
                                     <button mat-menu-item *ngFor="let item of sortField"
-                                            [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
-                                            (click)="SelectedField(item)">{{item.title}}</button>
+                                        [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                                        (click)="SelectedField(item)">{{item.title}}</button>
                                 </mat-menu>
                             </div>
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
                                 <div class="icon-user border" (click)="filterwork=1;ChangeData()"
-                                     matTooltip="Công việc giao cho tôi">
+                                    matTooltip="Công việc giao cho tôi">
                                     <i class="fas fa-user" [ngClass]="{'text-success': filterwork===1}"></i>
                                 </div>
                                 <div class="icon-user border" (click)="filterwork=2;ChangeData()"
-                                     matTooltip="Công việc tôi giao đi">
+                                    matTooltip="Công việc tôi giao đi">
                                     <i class="fas fa-user-check" [ngClass]="{'text-success': filterwork===2}"></i>
                                 </div>
                                 <div class="icon-user border" (click)="filterwork=0;ChangeData()"
-                                     matTooltip="Danh sách công việc">
+                                    matTooltip="Danh sách công việc">
                                     <i class="fas fa-users" [ngClass]="{'text-success': filterwork===0}"></i>
                                 </div>
                             </div>
@@ -93,20 +93,20 @@
                                         </button>
                                         <button mat-menu-item class="d-flex">
                                             <div style="line-height: 2;margin-right: 10px;flex-grow: 1;"
-                                                 (click)="ShowCloseTask()">
+                                                (click)="ShowCloseTask()">
                                                 <span translate="viewsetting.showclosedtask"></span>
                                             </div>
                                             <mat-slide-toggle [(ngModel)]="showclosedtask"
-                                                              (ngModelChange)="LoadSampleList()">
+                                                (ngModelChange)="LoadSampleList()">
                                             </mat-slide-toggle>
                                         </button>
                                         <button mat-menu-item class="d-flex">
                                             <div style="line-height: 2;margin-right: 10px;flex-grow: 1;"
-                                                 (click)="ShowClosesubTask()">
+                                                (click)="ShowClosesubTask()">
                                                 <span translate="viewsetting.showclosedsubtask"></span>
                                             </div>
                                             <mat-slide-toggle [(ngModel)]="showclosedsubtask"
-                                                              (ngModelChange)="LoadSampleList()">
+                                                (ngModelChange)="LoadSampleList()">
                                             </mat-slide-toggle>
                                         </button>
                                         <!--                                        <button mat-menu-item (click)="showemptystatus=!showemptystatus">-->
@@ -127,7 +127,7 @@
 
 
     <div class="kt-portlet-body pd-0 overflow-auto" style="background-color: #eeeeee;"
-         [ngStyle]="{'height.px': getHeight()}">
+        [ngStyle]="{'height.px': getHeight()}">
         <div class="kt-form__filtration">
             <div class="form-group kt-form__group row">
                 <div style="padding: 25px;    flex-grow: 1;">
@@ -136,13 +136,13 @@
                             <div class="cu-task-list">
                                 <div class="task-list-header text-dark">
                                     <div class="task-list-header__item task-list-header__item_main"
-                                         style="flex-grow: 1;">
+                                        style="flex-grow: 1;">
                                         <div class="cu-task-list-header__item-label ng-star-inserted">
                                             <div
-                                                    class="cu-task-list-header__item-label-body cu-task-list-header__item-label-body-fill ng-star-inserted text-success">
+                                                class="cu-task-list-header__item-label-body cu-task-list-header__item-label-body-fill ng-star-inserted text-success">
                                                 <div class="cu-task-list-header__item-label-body-inner">
                                                     <div class="cu-group-header__header-status ng-star-inserted url text-success"
-                                                         style="font-weight: 500;font-size: 11pt;">
+                                                        style="font-weight: 500;font-size: 11pt;">
                                                         <div class="row">
                                                             <span class="text-uppercase" style="padding-right: 5px;">
                                                                 {{lstcongviec.title}}
@@ -153,11 +153,11 @@
                                             </div>
                                         </div>
                                         <div class="cu-task-list-header__item cu-task-list-header__count cu-task-list-header-field ng-star-inserted"
-                                             sorttitle="Sort by task name">
+                                            sorttitle="Sort by task name">
                                             <div class="cu-dropdown-head">
                                                 <div class="cu-task-list-header-field__title">
                                                     <div class="cu-task-list-header-field__title-text"
-                                                         style="padding-top: 6px;">
+                                                        style="padding-top: 6px;">
                                                         {{lstcongviec.data.length}} {{ 'work.tasks' | translate}}
                                                     </div>
                                                 </div>
@@ -165,7 +165,7 @@
                                         </div>
                                     </div>
                                     <div cdkDropList cdkDropListOrientation="horizontal"
-                                         class=" cu-task-list-header__items" (cdkDropListDropped)="drop2($event)">
+                                        class=" cu-task-list-header__items" (cdkDropListDropped)="drop2($event)">
                                         <div class="cu-task-list-header-field" *ngFor="let item of listField" cdkDrag>
                                             <div class="cu-dropdown-head" style="width:100px">
                                                 <div class="cu-task-list-header-field__title">
@@ -188,45 +188,45 @@
 
                                         <!-- cmt node thằng cha -->
                                         <div class="node-title"
-                                             *ngIf="!(this.showclosedtask && isItemFinal(node.status) && !(node.id_parent>0))">
+                                            *ngIf="!(this.showclosedtask && isItemFinal(node.status) && !(node.id_parent>0))">
                                             <div class="cu-task-row__placeholder cu-hidden" culazyitemplaceholder=""
-                                                 style="padding-left: 34px; min-height: 36px;">
+                                                style="padding-left: 34px; min-height: 36px;">
                                                 <div class="cu-task-row__placeholder-dot ng-tns-c111-86 ng-star-inserted"
-                                                     style="background: rgb(46, 205, 111);"></div>
+                                                    style="background: rgb(46, 205, 111);"></div>
                                             </div>
 
                                             <div class="cu-task-row__container row">
                                                 <div class="cu-task-row__main url position-sticky">
                                                     <div class="cu-task-row-status_dot cu-task-row-status">
                                                         <div cudropdown="" class="cu-dropdown ng-star-inserted"
-                                                             *ngIf="CheckRoleskeypermit('status',node.id_project_team) && CheckClosedTask(node);else norolestatus1"
-                                                             [matMenuTriggerFor]="status1">
+                                                            *ngIf="CheckRoleskeypermit('status',node.id_project_team) && CheckClosedTask(node);else norolestatus1"
+                                                            [matMenuTriggerFor]="status1">
                                                             <div class="cu-task-row-status__item cu-dropdown__toggle"
-                                                                 cudropdowntoggle="" cupreventdefault=""
-                                                                 tooltipmargin="10"
-                                                                 [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
+                                                                cudropdowntoggle="" cupreventdefault=""
+                                                                tooltipmargin="10"
+                                                                [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
                                                             </div>
                                                         </div>
                                                         <ng-template #norolestatus1>
                                                             <div cudropdown=""
-                                                                 class="cu-dropdown ng-star-inserted url-disabled">
+                                                                class="cu-dropdown ng-star-inserted url-disabled">
                                                                 <div class="cu-task-row-status__item cu-dropdown__toggle"
-                                                                     cudropdowntoggle="" cupreventdefault=""
-                                                                     tooltipmargin="10"
-                                                                     [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
+                                                                    cudropdowntoggle="" cupreventdefault=""
+                                                                    tooltipmargin="10"
+                                                                    [ngStyle]="{'color': getColorStatus(node.id_project_team,node.status)}">
                                                                 </div>
                                                             </div>
                                                         </ng-template>
                                                         <mat-menu #status1="matMenu">
                                                             <button mat-menu-item
-                                                                    *ngFor="let status of node.DataStatus | allow_update_status"
-                                                                    (click)="UpdateStatus(node,status)"
-                                                                    [ngStyle]="{color: status.color}">
+                                                                *ngFor="let status of node.DataStatus | allow_update_status"
+                                                                (click)="UpdateStatus(node,status)"
+                                                                [ngStyle]="{color: status.color}">
                                                                 <div class="row">
                                                                     <div class="cu-task-row-status1"
-                                                                         style="width:20px;padding-right:5px">
+                                                                        style="width:20px;padding-right:5px">
                                                                         <div class="point"
-                                                                             [ngStyle]="{'backgroundColor': status.color}">
+                                                                            [ngStyle]="{'backgroundColor': status.color}">
                                                                         </div>
                                                                     </div>
 
@@ -240,39 +240,40 @@
                                                             <div class="cu-task-row-main__link-container row">
                                                                 <div class="cu-task-row-main__link-text">
                                                                     <input id="task{{node.id_row}}" type="text"
-                                                                           class="form-control"
-                                                                           [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
-                                                                           (keyup.enter)="focusOutFunction($event,node)"
-                                                                           (focusout)="focusOutFunction($event,node)"
-                                                                           [value]="node.title">
+                                                                        class="form-control"
+                                                                        [ngStyle]="{'display': isEdittitle == node.id_row?'block':'none'}"
+                                                                        (keyup.enter)="focusOutFunction($event,node)"
+                                                                        (focusout)="focusOutFunction($event,node)"
+                                                                        [value]="node.title">
                                                                     <ng-container *ngIf="isEdittitle != node.id_row">
                                                                         <p style="font-size: 11px;"
-                                                                           class="mg-0 text-muted"
-                                                                           *ngIf="tasklocation">
-                                                                            {{ node.department ? node.department : getTasklocation(node.id_project_team) }}
+                                                                            class="mg-0 text-muted"
+                                                                            *ngIf="tasklocation">
+                                                                            {{ node.department ? node.department :
+                                                                            getTasklocation(node.id_project_team) }}
                                                                         </p>
                                                                         <span
-                                                                                class=" cu-task-row-main__link-text-inner position-relative  url">
+                                                                            class=" cu-task-row-main__link-text-inner position-relative  url">
                                                                             <span class="-hover"
-                                                                                  (click)="ViewDetai(node)">{{node.title}}</span>
+                                                                                (click)="ViewDetai(node)">{{node.title}}</span>
 
                                                                             <ng-container
-                                                                                    *ngIf="node.Childs.length > 0">
+                                                                                *ngIf="node.Childs.length > 0">
                                                                                 <div class="cu-task-row-subtasks-count url"
-                                                                                     style="font-size: 13px;">
+                                                                                    style="font-size: 13px;">
                                                                                     <div class="cu-task-row-subtasks-count__item ng-star-inserted -hover"
-                                                                                         (click)="ExpandNode(node)">
+                                                                                        (click)="ExpandNode(node)">
                                                                                         <div class="cu-task-row-subtasks-count__item-icon cu-task-row-subtasks-count__item-icon_open"
-                                                                                             style="min-width:20px;padding:0 5px;    display: flex;
+                                                                                            style="min-width:20px;padding:0 5px;    display: flex;
 																								align-items: center;">
                                                                                             <svg width="16" height="16"
-                                                                                                 xmlns="http://www.w3.org/2000/svg"
-                                                                                                 viewBox="0 0 16 16"
-                                                                                                 id="svg-sprite-cu2-subtask">
+                                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                                viewBox="0 0 16 16"
+                                                                                                id="svg-sprite-cu2-subtask">
                                                                                                 <path
-                                                                                                        fill-rule="evenodd"
-                                                                                                        clip-rule="evenodd"
-                                                                                                        d="M2 4.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h1.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V6.95A2.5 2.5 0 012 4.5zM4.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
+                                                                                                    fill-rule="evenodd"
+                                                                                                    clip-rule="evenodd"
+                                                                                                    d="M2 4.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h1.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V6.95A2.5 2.5 0 012 4.5zM4.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
                                                                                                 </path>
                                                                                             </svg>
                                                                                             &nbsp;
@@ -280,60 +281,60 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="add-new-task -hover"
-                                                                                         *ngIf="CheckRoles(15,node.id_project_team) && CheckClosedTask(node)"
-                                                                                         (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                         matTooltip="{{ 'work.addsubtask' | translate }}">
+                                                                                        *ngIf="CheckRoles(15,node.id_project_team) && CheckClosedTask(node)"
+                                                                                        (click)="AddnewTask(node.id_row);node.isExpanded=true"
+                                                                                        matTooltip="{{ 'work.addsubtask' | translate }}">
                                                                                         <i class="fas fa-plus"></i>
                                                                                     </div>
                                                                                 </div>
                                                                             </ng-container>
                                                                             <span class="action-inline text-muted"
-                                                                                  *ngIf="CheckRoles(7,node.id_project_team) && CheckClosedTask(node)">
+                                                                                *ngIf="CheckRoles(7,node.id_project_team) && CheckClosedTask(node)">
                                                                                 <i class="fas fa-pencil-alt"
-                                                                                   (click)="editTitle(node.id_row)"
-                                                                                   matTooltip="{{ 'work.renametask' | translate }}"></i>
+                                                                                    (click)="editTitle(node.id_row)"
+                                                                                    matTooltip="{{ 'work.renametask' | translate }}"></i>
                                                                                 <!-- <i class="fas fa-tasks"
                                                                                     *ngIf="node.Childs.length == 0"
                                                                                     (click)="AddnewTask(node.id_row);node.isExpanded=true"
                                                                                     matTooltip="{{ 'work.addsubtask' | translate }}"></i> -->
                                                                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                     *ngIf="!(node.id_parent>0) && node.Childs.length == 0"
-                                                                                     (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                                     matTooltip="{{ 'work.addsubtask' | translate }}"
-                                                                                     width="20" height="20"
-                                                                                     viewBox="0 0 16 16"
-                                                                                     id="svg-sprite-cu2-subtask-plus">
+                                                                                    *ngIf="!(node.id_parent>0) && node.Childs.length == 0"
+                                                                                    (click)="AddnewTask(node.id_row);node.isExpanded=true"
+                                                                                    matTooltip="{{ 'work.addsubtask' | translate }}"
+                                                                                    width="20" height="20"
+                                                                                    viewBox="0 0 16 16"
+                                                                                    id="svg-sprite-cu2-subtask-plus">
                                                                                     <path fill-rule="evenodd"
-                                                                                          clip-rule="evenodd"
-                                                                                          d="M2 3.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h2.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V5.95A2.5 2.5 0 012 3.5zM4.5 2a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 9a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm0-10a.5.5 0 01.5.5V3h1.5a.5.5 0 010 1H13v1.5a.5.5 0 01-1 0V4h-1.5a.5.5 0 010-1H12V1.5a.5.5 0 01.5-.5z">
+                                                                                        clip-rule="evenodd"
+                                                                                        d="M2 3.5a2.5 2.5 0 113 2.45V9.5A2.5 2.5 0 007.5 12h2.55a2.5 2.5 0 110 1H7.5A3.5 3.5 0 014 9.5V5.95A2.5 2.5 0 012 3.5zM4.5 2a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 9a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm0-10a.5.5 0 01.5.5V3h1.5a.5.5 0 010 1H13v1.5a.5.5 0 01-1 0V4h-1.5a.5.5 0 010-1H12V1.5a.5.5 0 01.5-.5z">
                                                                                     </path>
                                                                                 </svg>
                                                                                 <i class="fas fa-tags"
-                                                                                   *ngIf="CheckRoles(20,node.id_project_team) && CheckClosedTask(node)"
-                                                                                   matTooltip="{{ 'work.chinhsuatag' | translate }}"
-                                                                                   [matMenuTriggerFor]="selecedtag"
-                                                                                   (menuOpened)="node.showtag = true"
-                                                                                   (menuClosed)="node.showtag = false"></i>
+                                                                                    *ngIf="CheckRoles(20,node.id_project_team) && CheckClosedTask(node)"
+                                                                                    matTooltip="{{ 'work.chinhsuatag' | translate }}"
+                                                                                    [matMenuTriggerFor]="selecedtag"
+                                                                                    (menuOpened)="node.showtag = true"
+                                                                                    (menuClosed)="node.showtag = false"></i>
                                                                             </span>
                                                                         </span>
 
                                                                         <ng-container *ngFor="let tag of node.Tags">
                                                                             <kt-cu-tag [node]="node" [tag]="tag"
-                                                                                       [role]="CheckRoles(20,node.id_project_team) && CheckClosedTask(node)"
-                                                                                       (RemoveTag)="RemoveTag(tag,node)">
+                                                                                [role]="CheckRoles(20,node.id_project_team) && CheckClosedTask(node)"
+                                                                                (RemoveTag)="RemoveTag(tag,node)">
                                                                             </kt-cu-tag>
                                                                         </ng-container>
 
                                                                         <mat-menu #selecedtag="matMenu">
                                                                             <ng-container *ngIf="node.showtag">
                                                                                 <kt-choose-milestone-and-tags
-                                                                                        (click)="$event.stopPropagation()"
-                                                                                        [options]="list_Tag"
-                                                                                        [project_team]="project_team"
-                                                                                        [id_project_Team]="node.id_project_team"
-                                                                                        [Id]="node.id_row" [Id_key]="9"
-                                                                                        [Loai]="'Tags'"
-                                                                                        (ItemSelected)="ReloadData($event)">
+                                                                                    (click)="$event.stopPropagation()"
+                                                                                    [options]="list_Tag"
+                                                                                    [project_team]="project_team"
+                                                                                    [id_project_Team]="node.id_project_team"
+                                                                                    [Id]="node.id_row" [Id_key]="9"
+                                                                                    [Loai]="'Tags'"
+                                                                                    (ItemSelected)="ReloadData($event)">
                                                                                 </kt-choose-milestone-and-tags>
                                                                             </ng-container>
                                                                         </mat-menu>
@@ -347,16 +348,16 @@
                                                 </div>
                                                 <ng-container *ngFor="let item of listField">
                                                     <div class="text-center position-relative url -hover"
-                                                         style="width:100px;color: #646c9a;">
+                                                        style="width:100px;color: #646c9a;">
 
 
                                                         <ng-container
-                                                                *ngIf="item.type == 'datetime';else nosetdatetime">
+                                                            *ngIf="item.type == 'datetime';else nosetdatetime">
                                                             <app-task-datetime
-                                                                    (valueChange)="updateDate(node,$event,item.fieldname)"
-                                                                    [fieldname]="item.fieldname"
-                                                                    [value]="node[item.fieldname]"
-                                                                    [role]="CheckRoles(10,node.id_project_team) && CheckClosedTask(node)">
+                                                                (valueChange)="updateDate(node,$event,item.fieldname)"
+                                                                [fieldname]="item.fieldname"
+                                                                [value]="node[item.fieldname]"
+                                                                [role]="CheckRoles(10,node.id_project_team) && CheckClosedTask(node)">
                                                             </app-task-datetime>
 
                                                         </ng-container>
@@ -372,47 +373,49 @@
                                                                 <ng-container [ngSwitch]="item.fieldname">
                                                                     <ng-container *ngSwitchCase="'estimates'">
                                                                         <div class="w-100 h-100 d-flex"
-                                                                             style="align-items: center;">
+                                                                            style="align-items: center;">
                                                                             <time-estimates-view style="margin:auto"
-                                                                                                 [role]="CheckRoles(19,node.id_project_team) && CheckClosedTask(node)"
-                                                                                                 [time]="node[item.fieldname]"
-                                                                                                 (submit)="Updateestimates(node,$event)">
+                                                                                [role]="CheckRoles(19,node.id_project_team) && CheckClosedTask(node)"
+                                                                                [time]="node[item.fieldname]"
+                                                                                (submit)="Updateestimates(node,$event)">
                                                                             </time-estimates-view>
                                                                         </div>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'status'">
                                                                         <div class="w-100 h-100"
-                                                                             *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team) && CheckClosedTask(node); else norolestatus"
-                                                                             [ngStyle]="{'backgroundColor': getColorStatus(node.id_project_team,node.status)}"
-                                                                             [matMenuTriggerFor]="status">
+                                                                            *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team) && CheckClosedTask(node); else norolestatus"
+                                                                            [ngStyle]="{'backgroundColor': getColorStatus(node.id_project_team,node.status)}"
+                                                                            [matMenuTriggerFor]="status">
                                                                             <div class="text-white text-uppercase cu-task-row-status1"
-                                                                                 matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
+                                                                                matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
                                                                                 <span
-                                                                                        class="hide-more-text">{{bindStatus(node.id_project_team, node[item.fieldname])}}</span>
+                                                                                    class="hide-more-text">{{bindStatus(node.id_project_team,
+                                                                                    node[item.fieldname])}}</span>
 
                                                                             </div>
                                                                         </div>
                                                                         <ng-template #norolestatus>
                                                                             <div class="w-100 h-100 url-disabled"
-                                                                                 [ngStyle]="{'backgroundColor': getColorStatus(node.id_project_team,node.status)}">
+                                                                                [ngStyle]="{'backgroundColor': getColorStatus(node.id_project_team,node.status)}">
                                                                                 <div class="text-white text-uppercase cu-task-row-status1"
-                                                                                     matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
-                                                                                <span
-                                                                                        class="hide-more-text">{{bindStatus(node.id_project_team, node[item.fieldname])}}</span>
+                                                                                    matTooltip="{{bindStatus(node.id_project_team,node[item.fieldname])}}">
+                                                                                    <span
+                                                                                        class="hide-more-text">{{bindStatus(node.id_project_team,
+                                                                                        node[item.fieldname])}}</span>
 
                                                                                 </div>
                                                                             </div>
                                                                         </ng-template>
                                                                         <mat-menu #status="matMenu">
                                                                             <button mat-menu-item
-                                                                                    *ngFor="let status of node.DataStatus | allow_update_status"
-                                                                                    (click)="UpdateStatus(node,status)"
-                                                                                    [ngStyle]="{color: status.color}">
+                                                                                *ngFor="let status of node.DataStatus | allow_update_status"
+                                                                                (click)="UpdateStatus(node,status)"
+                                                                                [ngStyle]="{color: status.color}">
                                                                                 <div class="row">
                                                                                     <div class="cu-task-row-status1"
-                                                                                         style="width:20px;padding-right:5px">
+                                                                                        style="width:20px;padding-right:5px">
                                                                                         <div class="point"
-                                                                                             [ngStyle]="{'backgroundColor': status.color}">
+                                                                                            [ngStyle]="{'backgroundColor': status.color}">
                                                                                         </div>
                                                                                     </div>
                                                                                     {{status.statusname}}
@@ -422,54 +425,53 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'id_nv'">
                                                                         <div class="item-field"
-                                                                             *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team) && CheckClosedTask(node); else noroleuser">
+                                                                            *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team) && CheckClosedTask(node); else noroleuser">
                                                                             <ng-container
-                                                                                    *ngFor="let us of node.User;let index = index">
+                                                                                *ngFor="let us of node.User;let index = index">
                                                                                 <div *ngIf="index < 3"
-                                                                                     class="user url scale-hover-02 position-relative"
-                                                                                     style="justify-content: flex-end;">
+                                                                                    class="user url scale-hover-02 position-relative"
+                                                                                    style="justify-content: flex-end;">
                                                                                     <i class="far fa-times-circle url view-hover bg-white"
-                                                                                       style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 8pt;"
-                                                                                       (click)="ItemSelected(us,node)"></i>
+                                                                                        style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 8pt;"
+                                                                                        (click)="ItemSelected(us,node)"></i>
                                                                                     <ng-container>
                                                                                         <kt-avatar-user
-                                                                                                (click)="clickmenu.click();loadOptionprojectteam(node)"
-                                                                                                [image]="us.image"
-                                                                                                size="25"
-                                                                                                [name]="us.hoten">
+                                                                                            (click)="clickmenu.click();loadOptionprojectteam(node)"
+                                                                                            [image]="us.image" size="25"
+                                                                                            [name]="us.hoten">
                                                                                         </kt-avatar-user>
                                                                                     </ng-container>
                                                                                 </div>
                                                                             </ng-container>
                                                                             <ng-container
-                                                                                    *ngIf="node.User && node.User.length > 3">
+                                                                                *ngIf="node.User && node.User.length > 3">
 
                                                                                 <div class="m--img-rounded m--marginless m--img-centered background"
-                                                                                     [matMenuTriggerFor]="menu1"
-                                                                                     [ngStyle]="{'width.px': 30,'height.px':30}">
+                                                                                    [matMenuTriggerFor]="menu1"
+                                                                                    [ngStyle]="{'width.px': 30,'height.px':30}">
                                                                                     <div class="user w-100"
-                                                                                         style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
-                                                                                         [ngStyle]="{'font-size.px': 15}">
+                                                                                        style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                                                                        [ngStyle]="{'font-size.px': 15}">
                                                                                         +{{node.User.length - 3}}
                                                                                     </div>
                                                                                 </div>
                                                                                 <mat-menu #menu1="matMenu">
                                                                                     <div *ngFor="let user of node.User;let index = index"
-                                                                                         style="justify-content: flex-end;">
+                                                                                        style="justify-content: flex-end;">
                                                                                         <ng-container *ngIf="index > 2">
                                                                                             <div
-                                                                                                    class="position-relative">
+                                                                                                class="position-relative">
                                                                                                 <i class="fas fa-times scale-hover-01 url"
-                                                                                                   style="position: absolute;top:0;right:0"
-                                                                                                   (click)="ItemSelected(user,node)"></i>
+                                                                                                    style="position: absolute;top:0;right:0"
+                                                                                                    (click)="ItemSelected(user,node)"></i>
                                                                                                 <div class="row"
-                                                                                                     (click)="clickmenu.click();loadOptionprojectteam(node)">
+                                                                                                    (click)="clickmenu.click();loadOptionprojectteam(node)">
                                                                                                     <kt-avatar-user
-                                                                                                            [image]="user.image"
-                                                                                                            size="35"
-                                                                                                            [name]="user.hoten"
-                                                                                                            [showFull]="true"
-                                                                                                            [info]="'@' + user.username">
+                                                                                                        [image]="user.image"
+                                                                                                        size="35"
+                                                                                                        [name]="user.hoten"
+                                                                                                        [showFull]="true"
+                                                                                                        [info]="'@' + user.username">
                                                                                                     </kt-avatar-user>
                                                                                                 </div>
                                                                                             </div>
@@ -478,93 +480,94 @@
                                                                                 </mat-menu>
                                                                             </ng-container>
                                                                             <div matTooltip="{{ 'work.assignee' | translate }}"
-                                                                                 *ngIf="!node.User || ( node.User && node.User.length == 0) "
-                                                                                 (click)="clickmenu.click();loadOptionprojectteam(node)"
-                                                                                 matTooltipPosition="above"
-                                                                                 style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
+                                                                                *ngIf="!node.User || ( node.User && node.User.length == 0) "
+                                                                                (click)="clickmenu.click();loadOptionprojectteam(node)"
+                                                                                matTooltipPosition="above"
+                                                                                style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
                                                                                 <i class="fas fa-user-plus pd-0"
-                                                                                   style="font-size: 13px; "></i>
+                                                                                    style="font-size: 13px; "></i>
                                                                             </div>
                                                                         </div>
                                                                         <ng-template #noroleuser>
                                                                             <div class="item-field url-disabled">
                                                                                 <ng-container
-                                                                                        *ngFor="let us of node.User;let index = index">
+                                                                                    *ngFor="let us of node.User;let index = index">
                                                                                     <div *ngIf="index < 3"
-                                                                                         class="user url-disabled"
-                                                                                         style="justify-content: flex-end;">
+                                                                                        class="user url-disabled"
+                                                                                        style="justify-content: flex-end;">
                                                                                         <ng-container>
                                                                                             <kt-avatar-user
-                                                                                                    [image]="us.image"
-                                                                                                    size="25"
-                                                                                                    [name]="us.hoten">
+                                                                                                [image]="us.image"
+                                                                                                size="25"
+                                                                                                [name]="us.hoten">
                                                                                             </kt-avatar-user>
                                                                                         </ng-container>
                                                                                     </div>
                                                                                 </ng-container>
                                                                                 <ng-container
-                                                                                        *ngIf="node.User && node.User.length > 3">
+                                                                                    *ngIf="node.User && node.User.length > 3">
                                                                                     <div class="m--img-rounded m--marginless m--img-centered background"
-                                                                                         [ngStyle]="{'width.px': 30,'height.px':30}">
+                                                                                        [ngStyle]="{'width.px': 30,'height.px':30}">
                                                                                         <div class="user w-100"
-                                                                                             style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
-                                                                                             [ngStyle]="{'font-size.px': 15}">
+                                                                                            style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                                                                            [ngStyle]="{'font-size.px': 15}">
                                                                                             +{{node.User.length - 3}}
                                                                                         </div>
                                                                                     </div>
                                                                                 </ng-container>
                                                                                 <div matTooltip="{{ 'work.assignee' | translate }}"
-                                                                                     *ngIf="!node.User || ( node.User && node.User.length == 0) "
-                                                                                     matTooltipPosition="above"
-                                                                                     style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
+                                                                                    *ngIf="!node.User || ( node.User && node.User.length == 0) "
+                                                                                    matTooltipPosition="above"
+                                                                                    style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
                                                                                     <i class="fas fa-user-plus pd-0"
-                                                                                       style="font-size: 13px; "></i>
+                                                                                        style="font-size: 13px; "></i>
                                                                                 </div>
                                                                             </div>
                                                                         </ng-template>
                                                                         <div class="date-picker position-picker"
-                                                                             [matMenuTriggerFor]="assignee" #clickmenu>
+                                                                            [matMenuTriggerFor]="assignee" #clickmenu>
                                                                         </div>
                                                                         <mat-menu #assignee="matMenu">
                                                                             <div class="page-work-detail">
                                                                                 <kt-choose-users
-                                                                                        [options]="options_assign"
-                                                                                        (IsSearch)="stopPropagation($event)"
-                                                                                        (ItemSelected)="ItemSelected($event,node)">
+                                                                                    [options]="options_assign"
+                                                                                    (IsSearch)="stopPropagation($event)"
+                                                                                    (ItemSelected)="ItemSelected($event,node)">
                                                                                 </kt-choose-users>
                                                                             </div>
                                                                         </mat-menu>
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'clickup_prioritize'">
                                                                         <div class="item-field"
-                                                                             *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team) && CheckClosedTask(node);else noroleprio"
-                                                                             [matMenuTriggerFor]="priority">
+                                                                            *ngIf="CheckRoleskeypermit(item.fieldname,node.id_project_team) && CheckClosedTask(node);else noroleprio"
+                                                                            [matMenuTriggerFor]="priority">
                                                                             <ng-container
-                                                                                    *ngIf="node[item.fieldname]>0;else nosetprio">
+                                                                                *ngIf="node[item.fieldname]>0;else nosetprio">
                                                                                 <i
-                                                                                        class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
+                                                                                    class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
                                                                             </ng-container>
                                                                             <ng-template #nosetprio>
                                                                                 <i class="far fa-flag pd-0"
-                                                                                   style="font-size: 13px;"></i>
+                                                                                    style="font-size: 13px;"></i>
                                                                             </ng-template>
                                                                         </div>
                                                                         <ng-template #noroleprio>
                                                                             <div class="item-field url-disabled">
                                                                                 <ng-container
-                                                                                        *ngIf="node[item.fieldname]>0;else nosetprio">
-                                                                                    <i class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
+                                                                                    *ngIf="node[item.fieldname]>0;else nosetprio">
+                                                                                    <i
+                                                                                        class="{{getPriority(node[item.fieldname]).icon}} pd-r-10"></i>
                                                                                 </ng-container>
                                                                                 <ng-template #nosetprio>
                                                                                     <i class="far fa-flag pd-0"
-                                                                                       style="font-size: 13px;"></i>
+                                                                                        style="font-size: 13px;"></i>
                                                                                 </ng-template>
                                                                             </div>
                                                                         </ng-template>
                                                                         <mat-menu #priority="matMenu">
                                                                             <button mat-menu-item
-                                                                                    *ngFor="let prio of list_priority"
-                                                                                    (click)="updatePriority(node,item.fieldname,prio.value)">
+                                                                                *ngFor="let prio of list_priority"
+                                                                                (click)="updatePriority(node,item.fieldname,prio.value)">
                                                                                 <i class="{{prio.icon}} pd-r-10"></i>
                                                                                 {{ 'priority.' + prio.name |translate }}
                                                                             </button>
@@ -573,9 +576,9 @@
                                                                     <ng-container *ngSwitchCase="'comments'">
                                                                         <div class="item-field hide-more-text">
                                                                             <app-task-comment
-                                                                                    (submit)="this.LoadSampleList()"
-                                                                                    [id_row]="node.id_row"
-                                                                                    [value]="node[item.fieldname]">
+                                                                                (submit)="this.LoadSampleList()"
+                                                                                [id_row]="node.id_row"
+                                                                                [value]="node[item.fieldname]">
                                                                             </app-task-comment>
 
                                                                         </div>
@@ -583,9 +586,9 @@
                                                                     <ng-container *ngSwitchCase="'createdby'">
                                                                         <div class="item-field">
                                                                             <kt-avatar-user
-                                                                                    [image]=" node[item.fieldname].image"
-                                                                                    size="25"
-                                                                                    [name]=" node[item.fieldname].hoten">
+                                                                                [image]=" node[item.fieldname].image"
+                                                                                size="25"
+                                                                                [name]=" node[item.fieldname].hoten">
                                                                             </kt-avatar-user>
                                                                         </div>
                                                                     </ng-container>
@@ -606,73 +609,75 @@
 
                                                 <div class="cu-task-row-menu">
                                                     <div class="action-task -hover url">
-                                                        <i class="fas fa-ellipsis-h"
-                                                           *ngIf=" CheckClosedTask(node)"
-                                                           style="font-size: 18px;" [matMenuTriggerFor]="menuline"></i>
+                                                        <i class="fas fa-ellipsis-h" *ngIf=" CheckClosedTask(node)"
+                                                            style="font-size: 18px;" [matMenuTriggerFor]="menuline"></i>
                                                         <mat-menu #menuline="matMenu" style="padding: 0;">
                                                             <div class="card" style="border:none">
                                                                 <div class="card-body pd-0">
                                                                     <button mat-menu-item color="accent"
-                                                                            (click)="editTitle(node.id_row)"
-                                                                            *ngIf="CheckRoles(7,node.id_project_team) && CheckClosedTask(node)">
+                                                                        (click)="editTitle(node.id_row)"
+                                                                        *ngIf="CheckRoles(7,node.id_project_team) && CheckClosedTask(node)">
                                                                         <i class="fas fa-pencil-alt"></i>&nbsp;
                                                                         <span class="icon-custom -hover"
-                                                                              style="font-size: 9pt"> {{ 'work.renametask'| translate }} </span>
+                                                                            style="font-size: 9pt"> {{
+                                                                            'work.renametask'| translate }} </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
-                                                                            (click)="AddnewTask(node.id_row);node.isExpanded=true"
-                                                                            *ngIf="CheckRoles(1,node.id_project_team) && !node.id_parent  && CheckClosedTask(node)">
+                                                                        (click)="AddnewTask(node.id_row);node.isExpanded=true"
+                                                                        *ngIf="CheckRoles(1,node.id_project_team) && !node.id_parent  && CheckClosedTask(node)">
                                                                         <i class="fas fa-plus"></i>&nbsp;
                                                                         <span class="icon-custom -hover"
-                                                                              style="font-size: 9pt"> {{ 'work.addsubtask'| translate }}
+                                                                            style="font-size: 9pt"> {{
+                                                                            'work.addsubtask'| translate }}
                                                                         </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
-                                                                            (click)="DeleteByKey(node,'id_parent');node.isExpanded=true"
-                                                                            *ngIf="CheckRoles(1,node.id_project_team) && node.id_parent  && CheckClosedTask(node)">
+                                                                        (click)="DeleteByKey(node,'id_parent');node.isExpanded=true"
+                                                                        *ngIf="CheckRoles(1,node.id_project_team) && node.id_parent  && CheckClosedTask(node)">
                                                                         <i class="fas fa-exchange-alt"></i>&nbsp;
                                                                         <span class="icon-custom -hover"
-                                                                              style="font-size: 9pt"> {{'work.converttotask' | translate }}
+                                                                            style="font-size: 9pt">
+                                                                            {{'work.converttotask' | translate }}
                                                                         </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
-                                                                            *ngIf="CheckRoles(7,node.id_project_team)  && CheckClosedTask(node)"
-                                                                            (click)="ViewDetai(node)">
+                                                                        *ngIf="CheckRoles(7,node.id_project_team)  && CheckClosedTask(node)"
+                                                                        (click)="ViewDetai(node)">
                                                                         <i class="flaticon2-edit"
-                                                                           style="color: royalblue;"></i>&nbsp;<span
+                                                                            style="color: royalblue;"></i>&nbsp;<span
                                                                             style="font-size: 9pt"
                                                                             translate="work.chinhsuathongtincongviec"></span>
                                                                     </button>
                                                                     <button mat-menu-item (click)="assign(node)"
-                                                                            *ngIf="CheckRoles(14,node.id_project_team) && CheckClosedTask(node)">
+                                                                        *ngIf="CheckRoles(14,node.id_project_team) && CheckClosedTask(node)">
                                                                         <i class="flaticon2-user-1"
-                                                                           style="color: #0A9562;"></i>&nbsp;
+                                                                            style="color: #0A9562;"></i>&nbsp;
                                                                         <span>
                                                                             <span style="font-size: 9pt"
-                                                                                  translate="work.giaolaichonguoikhac"></span>
+                                                                                translate="work.giaolaichonguoikhac"></span>
                                                                         </span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
-                                                                            (click)="duplicateNew(node,1)">
+                                                                        (click)="duplicateNew(node,1)">
                                                                         <i class="flaticon2-layers"
-                                                                           style="color: rgb(73, 62, 218);"></i>&nbsp;<span
+                                                                            style="color: rgb(73, 62, 218);"></i>&nbsp;<span
                                                                             style="font-size: 9pt"
                                                                             translate="work.nhanbancongviec"></span>
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
-                                                                            (click)="duplicateNew(node,2)">
+                                                                        (click)="duplicateNew(node,2)">
                                                                         <i class="flaticon2-copy"
-                                                                           style="color: rgb(34, 167, 52);"></i>&nbsp;<span
+                                                                            style="color: rgb(34, 167, 52);"></i>&nbsp;<span
                                                                             style="font-size: 9pt"
                                                                             translate="work.nhanbancongviecvaoprojectkhac"></span>
                                                                     </button>
                                                                     <button mat-menu-item (click)="DeleteTask(node)"
-                                                                            *ngIf="CheckRoles(13,node.id_project_team) && CheckClosedTask(node)">
+                                                                        *ngIf="CheckRoles(13,node.id_project_team) && CheckClosedTask(node)">
                                                                         <i class="flaticon2-delete"
-                                                                           style="color: red;"></i>&nbsp;
+                                                                            style="color: red;"></i>&nbsp;
                                                                         <span>
                                                                             <span style="font-size: 9pt"
-                                                                                  translate="work.xoacongviec"></span>
+                                                                                translate="work.xoacongviec"></span>
                                                                         </span>
                                                                     </button>
                                                                 </div>
@@ -686,37 +691,38 @@
                                         <!-- ở dưới bind thằng con -->
 
                                         <div *ngIf="!node.id_parent && node.isExpanded  && (node.Childs.length || addNodeitem==node.id_row)"
-                                             class="node-children" [id]="node.id_row">
+                                            class="node-children" [id]="node.id_row">
 
                                             <div class="cu-task-list__subtasks">
                                                 <ng-container *ngFor="let child of node.Childs">
                                                     <div *ngIf="!(this.showclosedsubtask && isItemFinal(child.status))"
-                                                         class="cu-task-row row">
+                                                        class="cu-task-row row">
                                                         <ng-container
-                                                                *ngTemplateOutlet="tmplNode1,context:{node:child}">
+                                                            *ngTemplateOutlet="tmplNode1,context:{node:child}">
                                                         </ng-container>
                                                     </div>
                                                 </ng-container>
                                             </div>
                                             <div class="cu-task-row-new ng-tns-c79-35 cu-task-row-new_subtask ng-star-inserted cu-task-row-new_active"
-                                                 *ngIf="CheckRoles(1,node.id_project_team) && CheckClosedTask(node)">
+                                                *ngIf="CheckRoles(1,node.id_project_team) && CheckClosedTask(node)">
                                                 <!-- (clickOutside)="clickOutside()" click out side ở đây đang bị 1 số lỗi -->
                                                 <div class="cu-add-new-task bg-white">
                                                     <div class="btn-add-new" *ngIf="addNodeitem!=node.id_row"
-                                                         style="padding-bottom: 3px;">
+                                                        style="padding-bottom: 3px;">
                                                         <span class="cu-dropdown-head text-muted -hover"
-                                                              (click)="AddnewTask(node.id_row);logItem(node)">
-                                                            <i class="fas fa-plus"></i> {{ 'work.addsubtask' | translate}}
+                                                            (click)="AddnewTask(node.id_row);logItem(node)">
+                                                            <i class="fas fa-plus"></i> {{ 'work.addsubtask' |
+                                                            translate}}
                                                         </span>
                                                     </div>
                                                     <ng-container *ngIf="addNodeitem==node.id_row">
                                                         <kt-add-task [item]="node" [loai]="'subtask'" [nhom]="getNhom()"
-                                                                     (Close)="CloseAddnewTask($event)"
-                                                                     [ID_Project]="node.id_project_team"
-                                                                     (dataTask)="CreateTask($event)"
-                                                                     [roleassign]="CheckRoles(14,node.id_project_team)"
-                                                                     [roleprioritize]="CheckRoleskeypermit('clickup_prioritize',node.id_project_team)"
-                                                                     [roledeadline]="CheckRoles(10,node.id_project_team)">
+                                                            (Close)="CloseAddnewTask($event)"
+                                                            [ID_Project]="node.id_project_team"
+                                                            (dataTask)="CreateTask($event)"
+                                                            [roleassign]="CheckRoles(14,node.id_project_team)"
+                                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize',node.id_project_team)"
+                                                            [roledeadline]="CheckRoles(10,node.id_project_team)">
                                                         </kt-add-task>
                                                     </ng-container>
 
@@ -731,11 +737,11 @@
                                 </ng-template>
 
                                 <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="lstcongviec.data"
-                                     [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
-                                     [cdkDropListSortingDisabled]="true">
+                                    [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
+                                    [cdkDropListSortingDisabled]="true">
 
                                     <div class="cu-task-row row"
-                                         *ngFor="let node of lstcongviec.data;trackBy: trackByFn">
+                                        *ngFor="let node of lstcongviec.data;trackBy: trackByFn">
 
                                         <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}"></ng-container>
 
@@ -743,13 +749,13 @@
                                 </div>
                                 <ng-container *ngIf="newtask == lstcongviec.id">
                                     <div
-                                            class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
+                                        class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
                                         <kt-add-task [item]="lstcongviec" [loai]="'task'"
-                                                     (Close)="CloseAddnewTask($event)" [ID_Project]="lstcongviec.id"
-                                                     (dataTask)="CreateTask($event)"
-                                                     [roleprioritize]="CheckRoleskeypermit('clickup_prioritize',lstcongviec.id)"
-                                                     [roleassign]="CheckRoles(14,lstcongviec.id)"
-                                                     [roledeadline]="CheckRoles(10,lstcongviec.id)"></kt-add-task>
+                                            (Close)="CloseAddnewTask($event)" [ID_Project]="lstcongviec.id"
+                                            (dataTask)="CreateTask($event)"
+                                            [roleprioritize]="CheckRoleskeypermit('clickup_prioritize',lstcongviec.id)"
+                                            [roleassign]="CheckRoles(14,lstcongviec.id)"
+                                            [roledeadline]="CheckRoles(10,lstcongviec.id)"></kt-add-task>
                                     </div>
                                 </ng-container>
                                 <ng-container *ngIf="CheckRoles(1,lstcongviec.id) && IsaddTask()">
@@ -757,7 +763,7 @@
                                         <div class="cu-task-list-footer__item cu-task-list-footer__item_main">
                                             <div class="cu-task-list-footer__add">
                                                 <div class="cu-task-list-footer__add-text"
-                                                     (click)="AddnewTask(lstcongviec.id,true)">
+                                                    (click)="AddnewTask(lstcongviec.id,true)">
                                                     <button class="btn cu-dropdown-head text-muted -hover">
                                                         <i class="fas fa-plus"></i> {{ 'work.newtask' | translate}}
                                                     </button>

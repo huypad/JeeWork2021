@@ -321,7 +321,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges() {}
+  ngOnChanges() { }
 
   LoadDetailProject() {
     this._service.DeptDetail(this.ID_Project).subscribe((res) => {
@@ -478,7 +478,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {}
+  masterToggle() { }
 
   async LoadData(loading = true) {
     this.clearList();
@@ -665,7 +665,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return "Chưa phân loại";
   }
 
-  UpdateValue() {}
+  UpdateValue() { }
 
   filterConfiguration(): any {
     const filter: any = {};
@@ -726,8 +726,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             a.id_project_team > b.id_project_team
               ? -1
               : b.id_project_team > a.id_project_team
-              ? 1
-              : 0
+                ? 1
+                : 0
           ); // nào chọn xếp trước
           this.changeDetectorRefs.detectChanges();
         }
@@ -753,7 +753,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.ListTasks.forEach((element) => {
         element.isExpanded =
           this.filter_subtask.value == "show" ||
-          this.addNodeitem == element.id_row
+            this.addNodeitem == element.id_row
             ? true
             : false;
         this.listFilter.forEach((val) => {
@@ -900,7 +900,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
 
   DragDropItemWork(item) {
     const dropItem = new DrapDropItem();
-    this._service.DragDropItemWork(item).subscribe((res) => {});
+    this._service.DragDropItemWork(item).subscribe((res) => { });
   }
 
   UpdateCol(fieldname) {
@@ -944,7 +944,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.editmail = idtask.toString() + idfield.toString();
   }
 
-  setCheckField(event) {}
+  setCheckField(event) { }
 
   onSelectFile(event) {
     if (event.target.files && event.target.files[0]) {
@@ -1184,15 +1184,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       .forEach((element) => element.classList.remove("drop-inside"));
   }
 
-  AddnewTask(val, task = false) {
-    if (task) {
-      this.newtask = val;
-      this.addNodeitem = 0;
-    } else {
-      this.addNodeitem = val;
-      this.newtask = -1;
-    }
-  }
+
 
   editTitle(val) {
     this.isEdittitle = val;
@@ -1216,18 +1208,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.UpdateByKey(node, "title", event.target.value.trim());
   }
 
-  focusFunction(val) {}
+  focusFunction(val) { }
 
-  CloseAddnewTask(val) {
-    if (val) {
-      this.addNodeitem = 0;
-      this.newtask = -1;
-    }
-  }
+
 
   AddTask(item) {
-    // WorkModel
-
     const task = new WorkModel();
     task.status = item.id_row;
     task.title = this.taskinsert.title;
@@ -1431,23 +1416,39 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.filter_subtask = item;
     // this.loadSubtask();
   }
-
+  CloseAddnewTask(val) {
+    if (val) {
+      this.addNodeitem = 0;
+      this.newtask = -1;
+    }
+  }
+  AddnewTask(val, task = false) {
+    if (task) {
+      this.newtask = val;
+      this.addNodeitem = 0;
+    } else {
+      this.addNodeitem = val;
+      this.newtask = -1;
+    }
+    debugger
+  }
   CreateTask(val) {
     const x = this.newtask;
     this.CloseAddnewTask(true);
-    // setTimeout(() => {
-    //     this.newtask = x;
-    // }, 1000);
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadData();
         setTimeout(() => {
           this.newtask = x;
-        }, 1000);
+        }, 500);
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
+    setTimeout(() => {
+      debugger
+      this.AddnewTask(val.status, true);
+    }, 500);
   }
 
   DeleteTask(task) {

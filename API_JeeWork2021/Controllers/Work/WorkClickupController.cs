@@ -3908,8 +3908,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             case "id_group":
                                 txterror = "Bạn không có quyền sửa nhóm công việc của công việc này";
                                 break;
-                            //case "Attachments_result": return 13;
-                            //case "result": return 14;
                             case "assign":
                                 txterror = "Bạn không có quyền sửa người làm của công việc này";
                                 break;
@@ -4065,7 +4063,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 }
                                 val.Add(data.key, data.value);
                             }
-
                             #region Nếu key là deadline thì kiểm tra rồi cập nhật trạng thái tương ứng
                             if ("deadline".Equals(data.key) && data.value != null)
                             {
@@ -4257,7 +4254,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         #endregion
                         if (data.key == "title")
                         {
-
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {

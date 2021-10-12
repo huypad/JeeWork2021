@@ -1,4 +1,4 @@
-import {WorkListNewDetailComponent} from './../../projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
+import { WorkListNewDetailComponent } from './../../projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
 import {
     Component,
     OnInit,
@@ -11,27 +11,27 @@ import {
     Input,
     SimpleChange
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import {MatDialog} from '@angular/material/dialog';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {SelectionModel} from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
-import {debounceTime, distinctUntilChanged, tap} from 'rxjs/operators';
-import {fromEvent, merge, ReplaySubject, BehaviorSubject} from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { fromEvent, merge, ReplaySubject, BehaviorSubject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 // Services
-import {LayoutUtilsService, MessageType} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 // Models
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {LogActivitiesComponent} from '../log-activities/log-activities.component';
-import {ActivitiesService} from '../activities.service';
-import {WeWorkService} from '../../services/wework.services';
-import {FormControl} from '@angular/forms';
-import {DialogSelectdayComponent} from '../../report/dialog-selectday/dialog-selectday.component';
-import {SearchBoxCustomComponent} from '../../projects-team/work-list-new/field-custom/search-box-custom/search-box-custom.component';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { LogActivitiesComponent } from '../log-activities/log-activities.component';
+import { ActivitiesService } from '../activities.service';
+import { WeWorkService } from '../../services/wework.services';
+import { FormControl } from '@angular/forms';
+import { DialogSelectdayComponent } from '../../report/dialog-selectday/dialog-selectday.component';
+import { SearchBoxCustomComponent } from '../../projects-team/work-list-new/field-custom/search-box-custom/search-box-custom.component';
 
 @Component({
     selector: 'kt-list-activities',
@@ -66,23 +66,23 @@ export class ListActivitiesComponent {
     public projectFilterCtrl: FormControl = new FormControl();
     public filtereproject: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
     public listStatus: any[] = [
-        {ID: 1, Title: 'In progres', Checked: false},
-        {ID: 2, Title: 'Overdue', Checked: false},
-        {ID: 3, Title: 'Done late', Checked: false},
-        {ID: 4, Title: 'Done ontime', Checked: false},
+        { ID: 1, Title: 'In progres', Checked: false },
+        { ID: 2, Title: 'Overdue', Checked: false },
+        { ID: 3, Title: 'Done late', Checked: false },
+        { ID: 4, Title: 'Done ontime', Checked: false },
     ];
-    @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-    @ViewChild('custombox', {static: true}) custombox: SearchBoxCustomComponent;
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+    @ViewChild('custombox', { static: true }) custombox: SearchBoxCustomComponent;
 
     constructor(public _actServices: ActivitiesService,
-                public dialog: MatDialog,
-                private layoutUtilsService: LayoutUtilsService,
-                private weworkService: WeWorkService,
-                private translate: TranslateService,
-                private activatedRoute: ActivatedRoute,
-                private changeDetectorRefs: ChangeDetectorRef,
-                private router: Router,
-                private tokenStorage: TokenStorage,) {
+        public dialog: MatDialog,
+        private layoutUtilsService: LayoutUtilsService,
+        private weworkService: WeWorkService,
+        private translate: TranslateService,
+        private activatedRoute: ActivatedRoute,
+        private changeDetectorRefs: ChangeDetectorRef,
+        private router: Router,
+        private tokenStorage: TokenStorage,) {
         this.language = localStorage.getItem('language');
         this.list_priority = this.weworkService.list_priority;
     }
@@ -243,12 +243,14 @@ export class ListActivitiesComponent {
             width: '500px',
             data: this.filterDay,
         });
-
+        const today = new Date();
+        // endDate: new Date(today.setMonth(today.getMonth() + 1)),
+        // startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         dialogRef.afterClosed().subscribe((result) => {
             if (result != undefined) {
                 this.selecteddate = 0;
-                this.filterDay.startDate = new Date(result.startDate);
-                this.filterDay.endDate = new Date(result.endDate);
+                this.filterDay.startDate = new Date(today.getFullYear(), today.getMonth() - 6, 1);
+                this.filterDay.endDate = new Date(today.setMonth(today.getMonth() + 1));
                 this.loadDataList();
             }
         });
@@ -325,7 +327,7 @@ export class ListActivitiesComponent {
         saveMessageTranslateParam += ID_Log > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = ID_Log > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(LogActivitiesComponent, {data: {ID_Log}});
+        const dialogRef = this.dialog.open(LogActivitiesComponent, { data: { ID_Log } });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 // this.ngOnInit();
@@ -337,7 +339,7 @@ export class ListActivitiesComponent {
     }
 
     Viewdetail(item) {
-        this.router.navigate(['', {outlets: {auxName: 'aux/detail/' + item.object_id},}]);
+        this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.object_id }, }]);
     }
 
     f_convertDate(v: any) {

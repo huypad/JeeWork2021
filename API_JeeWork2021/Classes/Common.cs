@@ -608,8 +608,8 @@ namespace JeeWork_Core2021.Classes
         {
             long group_type = 1;
             string[,] arr = {
-                    {"Nhóm quản trị phòng ban", "1","3402,3403,3501,3502,3503,3610,3700,3800"},
-                    {"Nhóm quản lý dự án", "2","3501,3502,3503,3610"}
+                    {"Nhóm thành viên", "3","3402,3403,3501,3502,3503,3610,3700,3800"},
+                    //{"Nhóm quản lý dự án", "2","3501,3502,3503,3610"}
                     //{"Thành viên", "3","0"}
                     };
             for (int i = 0; i < arr.GetLength(0); i++)

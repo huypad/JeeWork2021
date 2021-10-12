@@ -1,36 +1,36 @@
-import {filter} from 'rxjs/operators';
-import {SubheaderService} from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
-import {TokenStorage} from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {DanhMucChungService} from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import {MenuPhanQuyenServices} from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {MessageType, LayoutUtilsService} from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {QueryParamsModelNew} from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {filterEditComponent} from './../../../filter/filter-edit/filter-edit.component';
-import {workAddFollowersComponent} from './../../../work/work-add-followers/work-add-followers.component';
-import {WorkAssignedComponent} from './../../../work/work-assigned/work-assigned.component';
-import {DuplicateWorkComponent} from './../../../work/work-duplicate/work-duplicate.component';
-import {DuplicateTaskNewComponent} from './../duplicate-task-new/duplicate-task-new.component';
-import {WorkListNewDetailComponent} from './../work-list-new-detail/work-list-new-detail.component';
-import {DialogSelectdayComponent} from './../../../report/dialog-selectday/dialog-selectday.component';
-import {DropInfo} from './../work-list-new.component';
-import {WorkModel, UserInfoModel, UpdateWorkModel, WorkDuplicateModel, FilterModel} from './../../../work/work.model';
-import {SelectionModel} from '@angular/cdk/collections';
-import {WeWorkService} from './../../../services/wework.services';
-import {TranslateService} from '@ngx-translate/core';
-import {FormBuilder} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
-import {MatTable} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
-import {Router, ActivatedRoute} from '@angular/router';
-import {WorkService} from './../../../work/work.service';
-import {ProjectsTeamService} from './../../Services/department-and-project.service';
-import {DOCUMENT, DatePipe} from '@angular/common';
-import {DrapDropItem, ColumnWorkModel} from './../drap-drop-item.model';
-import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart} from '@angular/cdk/drag-drop';
-import {Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges} from '@angular/core';
+import { filter } from 'rxjs/operators';
+import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
+import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { MessageType, LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { filterEditComponent } from './../../../filter/filter-edit/filter-edit.component';
+import { workAddFollowersComponent } from './../../../work/work-add-followers/work-add-followers.component';
+import { WorkAssignedComponent } from './../../../work/work-assigned/work-assigned.component';
+import { DuplicateWorkComponent } from './../../../work/work-duplicate/work-duplicate.component';
+import { DuplicateTaskNewComponent } from './../duplicate-task-new/duplicate-task-new.component';
+import { WorkListNewDetailComponent } from './../work-list-new-detail/work-list-new-detail.component';
+import { DialogSelectdayComponent } from './../../../report/dialog-selectday/dialog-selectday.component';
+import { DropInfo } from './../work-list-new.component';
+import { WorkModel, UserInfoModel, UpdateWorkModel, WorkDuplicateModel, FilterModel } from './../../../work/work.model';
+import { SelectionModel } from '@angular/cdk/collections';
+import { WeWorkService } from './../../../services/wework.services';
+import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTable } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { Router, ActivatedRoute } from '@angular/router';
+import { WorkService } from './../../../work/work.service';
+import { ProjectsTeamService } from './../../Services/department-and-project.service';
+import { DOCUMENT, DatePipe } from '@angular/common';
+import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
+import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
+import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
 import * as moment from 'moment';
-import {ReplaySubject, SubscriptionLike} from 'rxjs';
-import {CommunicateService} from '../work-list-new-service/communicate.service';
+import { ReplaySubject, SubscriptionLike } from 'rxjs';
+import { CommunicateService } from '../work-list-new-service/communicate.service';
 
 @Component({
     selector: 'kt-list-task-cu',
@@ -83,7 +83,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     ListTags: any = [];
     // col
     displayedColumnsCol: string[] = [];
-    @ViewChild(MatSort, {static: true}) sort: MatSort;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
     previousIndex: number;
     ListAction: any = [];
     addNodeitem = 0;
@@ -205,7 +205,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         const today = new Date();
         this.filterDay = {
             endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(),today.getMonth() - 6, 1),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         };
         this.column_sort = this.sortField[0];
         this.route.params.subscribe(res => {
@@ -300,7 +300,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                         this.filterDanhSach();
                         this.changeDetectorRefs.detectChanges();
                     }
-                },(err)=>{
+                }, (err) => {
                     this.layoutUtilsService.OffWaitingDiv();
                 });
             } else {
@@ -311,7 +311,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                         this.filterDanhSach();
                         this.changeDetectorRefs.detectChanges();
                     }
-                },(err)=>{
+                }, (err) => {
                     this.layoutUtilsService.OffWaitingDiv();
                 });
             }
@@ -323,7 +323,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                     this.filterDanhSach();
                     this.changeDetectorRefs.detectChanges();
                 }
-            },(err)=>{
+            }, (err) => {
                 this.layoutUtilsService.OffWaitingDiv();
             });
         }
@@ -675,6 +675,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     CloseAddnewTask(val) {
+        debugger
         if (val) {
             this.addNodeitem = 0;
             this.newtask = -1;
@@ -801,7 +802,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     ViewDetai(item) {
-        this.router.navigate(['', {outlets: {auxName: 'aux/detail/' + item.id_row},}]);
+        this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
     }
 
     f_convertDate(v: any) {
@@ -860,10 +861,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     CreateTask(val) {
         const x = this.newtask;
         this.CloseAddnewTask(true);
+        this.layoutUtilsService.showWaitingDiv();
         setTimeout(() => {
-            this.newtask = x;
+        this.newtask = x;
         }, 1000);
         this._service.InsertTask(val).subscribe(res => {
+            this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
                 this.CloseAddnewTask(true);
                 this.LoadData();
@@ -872,6 +875,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
+        debugger
+        this.AddnewTask(val, true);
     }
 
     DeleteTask(task) {
@@ -879,7 +884,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             if (res && res.status === 1) {
                 this.LoadData();
                 this.LoadSampleList();
-            }else{
+            } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
@@ -1002,7 +1007,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
             width: '40vw',
             minHeight: '60vh',
-            data: {_item, type}
+            data: { _item, type }
         });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
@@ -1029,7 +1034,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         saveMessageTranslateParam += 'JeeHR.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = MessageType.Create;
-        const dialogRef = this.dialog.open(DuplicateWorkComponent, {data: {_item}});
+        const dialogRef = this.dialog.open(DuplicateWorkComponent, { data: { _item } });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 this.ngOnInit();
@@ -1050,7 +1055,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         const item = this.options_assign;
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
-            data: {item, ID_Project: node.id_project_team}
+            data: { item, ID_Project: node.id_project_team }
         });
         dialogRef.afterClosed().subscribe(res => {
             if (res) {
@@ -1066,7 +1071,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         saveMessageTranslateParam += _item.id_row > 0 ? 'JeeHR.capnhatthanhcong' : 'JeeHR.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(workAddFollowersComponent, {data: {_item}});
+        const dialogRef = this.dialog.open(workAddFollowersComponent, { data: { _item } });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 this.ngOnInit();
@@ -1164,7 +1169,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         saveMessageTranslateParam += _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(filterEditComponent, {data: {_item}});
+        const dialogRef = this.dialog.open(filterEditComponent, { data: { _item } });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 return;

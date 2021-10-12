@@ -96,7 +96,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom(error);
                     #endregion
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "ht", dieukien_where = " ";
+                    string dieukienSort = "p.title", dieukien_where = " ";
                     if (string.IsNullOrEmpty(query.filter["id_department"]))
                         return JsonResultCommon.Custom("Ban bắt buộc nhập");
                     dieukien_where += " and id_department=@id_department";
@@ -271,7 +271,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom(error);
                     #endregion
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "ht", dieukien_where = " ";
+                    string dieukienSort = "p.title", dieukien_where = " ";
                     string sqldepartment = @$" select id_row from we_department where disabled = 0 and ( id_row = { query.filter["id_department"]} or parentid = { query.filter["id_department"]})";
                     if (string.IsNullOrEmpty(query.filter["id_department"]))
                         return JsonResultCommon.Custom("Ban bắt buộc nhập");
@@ -313,7 +313,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     left join (select count(*) as tong,COUNT(CASE WHEN w.end_date is not null THEN 1 END) as ht
                                     , COUNT(CASE WHEN w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null THEN 1 END) as quahan
                                     ,w.id_project_team from v_wework_new w group by w.id_project_team) w on p.id_row=w.id_project_team
-                                    where p.Disabled=0 and de.Disabled = 0 " + dieukien_where + "  order by " + dieukienSort;
+                                    where p.disabled=0 and de.disabled = 0 " + dieukien_where + "  order by " + dieukienSort;
                     sqlq += @$";select u.*,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image from we_project_team_user u 
                                 join we_project_team p on p.id_row=u.id_project_team 
                                 and id_department in ({sqldepartment}) where u.disabled=0 ";
@@ -441,7 +441,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     bool Visible = Common.CheckRoleByUserID(loginData, 3500, cnn);
                     string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     SqlConditions Conds = new SqlConditions();
-                    string dieukienSort = "ht desc", dieukien_where = " p.disabled=0 and de.disabled = 0 and idkh = " + loginData.CustomerID + "";
+                    string dieukienSort = "p.createddate desc", dieukien_where = " p.disabled=0 and de.disabled = 0 and idkh = " + loginData.CustomerID + "";
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
                         dieukien_where += " and (p.title like N'%@keyword%' or p.description like N'%@keyword%')";
@@ -3737,6 +3737,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     #region Ghi log trong project
                     string LogContent = "", LogEditContent = "";
                     LogEditContent = Common.GetEditLogContent(old, dt);

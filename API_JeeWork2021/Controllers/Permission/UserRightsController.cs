@@ -126,7 +126,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                grouptype = r["GroupType"],
                                icon_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "fa fa-cog" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString())? "fa fa-check-double" : "fa fa-check"):""),
                                color_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "#82c91e" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "#4dabf7" : "#ffd43b") : ""),
-                               tooltip = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "Quản trị hệ thống" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "Nhóm quản trị phòng ban/thư mục" : "Nhóm quản lý dự án") : ""),
+                               tooltip = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "Quản trị hệ thống" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "Nhóm quản trị phòng ban/thư mục" : "Nhóm thành viên") : ""),
                                DateCreated = string.Format("{0:dd/MM/yyyy HH:mm}", r["DateCreated"]),
                                LastModified = r["LastModified"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["LastModified"]),
                            };
