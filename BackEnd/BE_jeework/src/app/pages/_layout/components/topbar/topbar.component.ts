@@ -120,10 +120,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     eventSubcribeCountMessUnread()
     {
       this.chatServices.UnreadMess$.subscribe(res=>{
-       
           this.unread=res;
-          console.log('unread :',this.unread);
-         
       })
       this.changeDetectorRefs.detectChanges();
     }

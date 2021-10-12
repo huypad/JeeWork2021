@@ -81,7 +81,6 @@ export class JeeCommentComponent implements OnInit {
     public signalrService: JeeCommentSignalrService,
     private elementRef: ElementRef
   ) {
-    console.log('==================================================');
   }
 
   ngOnInit() {
@@ -115,7 +114,6 @@ export class JeeCommentComponent implements OnInit {
           this.signalrService.showChange$
               .pipe(
                   tap((result: ReturnFilterComment) => {
-                    console.log(result,'result ================');
                     if (result) {
                       if (result.LstCreate.length > 0 || result.LstEdit.length > 0 || result.LstDelete.length > 0) {
                         if (result.LstCreate.length > 0) {

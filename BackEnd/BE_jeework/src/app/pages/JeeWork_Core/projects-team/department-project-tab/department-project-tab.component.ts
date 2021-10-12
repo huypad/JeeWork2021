@@ -383,7 +383,6 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
             templateid: res.data.Template?.[0]?.TemplateID,
             title: 'Dự án trực tiếp của phòng ban',
           }
-          console.log(itemhientai);
           this.dataFolder.unshift(itemhientai)
           this.loadListfolder = true;
           this.changeDetectorRefs.detectChanges();

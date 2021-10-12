@@ -393,7 +393,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
     this.chatService.GetContactChatUser().subscribe((res) => {
       this.lstContact = res.data;
       this.listTam = res.data;
-      console.log("lstContact", this.lstContact);
       this.getSoLuongMessUnread();
       this.filteredGroups.next(this.lstContact.slice());
 
@@ -412,7 +411,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 
     if (user.UnreadMess > 0) {
       this.dem = this.dem - 1;
-      console.log("ĐẾM", this.dem);
       this.chatService.UnreadMess$.next(this.dem);
       this.UpdateUnreadMess(user.IdGroup, user.UserId, user.UnreadMess);
     }
@@ -667,7 +665,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
         this.listAllread.push(item);
       }
     });
-    console.log("this.listAllread", this.listAllread);
     this.listAllread.forEach((item) => {
       //user bt
 

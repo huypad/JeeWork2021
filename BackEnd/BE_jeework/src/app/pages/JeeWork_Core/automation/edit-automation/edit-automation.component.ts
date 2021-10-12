@@ -458,6 +458,5 @@ export class EditAutomationComponent implements OnInit, OnChanges {
   }
 
   ChangeData(){
-    console.log('change')
   }
 }

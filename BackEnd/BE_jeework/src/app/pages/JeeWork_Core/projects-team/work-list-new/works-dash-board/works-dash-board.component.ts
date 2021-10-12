@@ -486,7 +486,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         this.LoadData();
     }
     GroupCustomBy(item) {
-        console.log(item);
         if (item == this.filter_groupby) {
             return;
         }
@@ -561,7 +560,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
                 res.data.forEach(element => {
                     element.value = 'custom';
                 });
-                console.log('custom field',res.data);
                 this.listFilterCustom_Groupby = res.data;
                 this.changeDetectorRefs.detectChanges();
             }

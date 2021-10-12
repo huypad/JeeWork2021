@@ -97,7 +97,6 @@ export class FunctionsGroupListComponent implements OnInit {
 	ngOnInit() {
 		this.applySelectedColumns();
 		this.item = this.data._item;
-		debugger
 		this.IsGroup = this.data.IsGroup;
 		if (this.IsGroup) {
 			this.Title = this.data._item.TenNhom;
@@ -150,7 +149,6 @@ export class FunctionsGroupListComponent implements OnInit {
 						this.disthEdit = true;
 					}
 					if (item.IsRead_Enable && item.IsReadPermit) {
-						debugger
 						this.disthRead = true;
 					}
 				})
@@ -221,7 +219,6 @@ export class FunctionsGroupListComponent implements OnInit {
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	masterToggle1(val: any) {
-		debugger
 		// if (val.checked) {
 		// 	this.productsResult.forEach(row => {
 		// 		if (row.IsEdit_Enable == true) {

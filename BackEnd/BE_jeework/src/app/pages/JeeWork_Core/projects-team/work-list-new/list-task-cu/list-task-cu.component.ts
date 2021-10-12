@@ -675,7 +675,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     CloseAddnewTask(val) {
-        debugger
         if (val) {
             this.addNodeitem = 0;
             this.newtask = -1;
@@ -875,7 +874,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
-        debugger
         this.AddnewTask(val, true);
     }
 

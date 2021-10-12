@@ -103,14 +103,12 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   listUser: any[];
 
   ngOnInit() {
-    console.log(this.data);
     this.TempSelected = this.data.id_template > 0 ? this.data.id_template : 0;
     this.LoadDataTemp();
     this.ListStatusDynamic();
     this.LoadListAccount();
   }
   drop(event: CdkDragDrop<string[]>) {
-    console.log(event);
     moveItemInArray(
       this.listSTTHoatdong(),
       event.previousIndex,
@@ -118,7 +116,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     );
     const previous = this.listSTTHoatdong()[event.previousIndex];
     const curent = this.listSTTHoatdong()[event.currentIndex];
-    console.log(previous, curent);
     const positon = new PositionModel();
     positon.id_row_from = previous.id_row;
     positon.position_from = previous.Position;
@@ -126,7 +123,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     positon.position_to = curent.Position;
     positon.columnname = this.data.columnname;
     positon.id_columnname = this.data.id_row;
-    console.log(positon);
     this.dropPosition(positon);
     // debugger
     // if (event.previousContainer === event.container) {
@@ -255,7 +251,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         listTemp.push(item);
       });
       this.listSTT = listTemp;
-      console.log(this.listSTT);
       this.changeDetectorRefs.detectChanges();
     }
   }
@@ -408,7 +403,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   ChangeColor(value, status) {
-    debugger
     if (this.TempSelected > 0 && !this.isStatusNow) {
       const _item = new UpdateQuickModel();
       _item.clear();

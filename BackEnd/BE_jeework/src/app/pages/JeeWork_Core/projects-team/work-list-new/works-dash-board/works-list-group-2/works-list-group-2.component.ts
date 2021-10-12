@@ -582,7 +582,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const filter: any = this.filter;
         filter.id_project_team = this.ID_Project;
         filter.displayChild = 1;
-        console.log(this.filter);
         return filter;
     }
 
@@ -635,7 +634,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                         itemPush = itemPush.concat(element.datawork)
                     });
                     this.ListTasks = itemPush;
-                    console.log('ds list',this.ListTasks);
                     this.prepareDragDrop(this.ListTasks);
                     // this.LoadListStatus();
                     this.changeDetectorRefs.detectChanges();

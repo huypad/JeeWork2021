@@ -579,7 +579,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
       var file_name = blob;
       const reader = new FileReader();
       reader.onload = (evt: any) => {
-        console.log(evt.target.result); // data url!
         this.list_image.push(evt.target.result);
         var metaIdx = this.list_image[0].indexOf(";base64,");
         base64Str = this.list_image[0].substr(metaIdx + 8);

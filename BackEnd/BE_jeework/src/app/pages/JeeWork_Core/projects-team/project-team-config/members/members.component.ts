@@ -81,7 +81,6 @@ export class MembersComponent {
             if (res && res.status === 1) {
                 this.CheckAdmin(res.data);
             } else {
-                debugger;
                 this.router.navigate(['']);
                 this.menuAsideService.loadMenu();
             }
@@ -100,12 +99,12 @@ export class MembersComponent {
                 if (x.admin === true || +x.admin === 1 || +x.owner === 1 || +x.parentowner === 1) {
                     return true;
                 } else {
-                    debugger;
+                    ;
                     this.router.navigate(['project', this.id_project_team]);
                     return;
                 }
             } else {
-                debugger;
+                ;
                 this.router.navigate(['']);
                 return;
                 this.menuAsideService.loadMenu();
@@ -261,7 +260,7 @@ export class MembersComponent {
         this._services.Delete_user(id_row).subscribe(res => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
-                debugger
+                
                 this.ngOnInit();
                 this.LoadParent(true);
             } else {

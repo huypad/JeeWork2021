@@ -1006,8 +1006,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     UpdateSpaceStatus(item) {
-        console.log(item);
-
         this._Services.department_detail(item.id).subscribe((res) => {
             if (res && res.status == 1) {
                 const dataDialog = {

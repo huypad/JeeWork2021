@@ -606,7 +606,7 @@ namespace JeeWork_Core2021.Classes
         }
         public static bool InsertGroupType(DpsConnection cnn, long CustomerID)
         {
-            long group_type = 1;
+            long group_type = 3;
             string[,] arr = {
                     {"Nhóm thành viên", "3","3402,3403,3501,3502,3503,3610,3700,3800"},
                     //{"Nhóm quản lý dự án", "2","3501,3502,3503,3610"}

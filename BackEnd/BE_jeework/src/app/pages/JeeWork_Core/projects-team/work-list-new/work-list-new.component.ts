@@ -691,7 +691,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     } else {
       filter.everyone = !this.isAssignforme;
     }
-    console.log(filter);
     return filter;
   }
 
@@ -1369,7 +1368,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   GroupCustomBy(item) {
-    console.log(item);
     if (item == this.filter_groupby) {
       return;
     }
@@ -1430,7 +1428,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.addNodeitem = val;
       this.newtask = -1;
     }
-    debugger
   }
   CreateTask(val) {
     const x = this.newtask;
@@ -1446,7 +1443,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     });
     setTimeout(() => {
-      debugger
       this.AddnewTask(val.status, true);
     }, 500);
   }
@@ -2073,7 +2069,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   UpdateField(item) {
-    console.log(item);
     const _item = new ColumnWorkModel();
     _item.id_row = item.Id_row;
     _item.id_project_team = this.ID_Project;
@@ -2334,7 +2329,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             res.data.forEach((element) => {
               element.value = "custom";
             });
-            console.log("custom field", res.data);
             this.listFilterCustom_Groupby = res.data;
             this.changeDetectorRefs.detectChanges();
           }

@@ -289,7 +289,6 @@ export class DepartmentEditNewComponent implements OnInit {
         this.litsTemplateDemo = res.data;
         if (this.TempSelected == 0 || !this.IsInListCustom(this.TempSelected)) {
           this.TempSelected = this.litsTemplateDemo[0].id_row;
-          console.log("set - default", this.TempSelected);
         }
         if (this.item.RowID == 0) {
           this.LoadListSTT();
@@ -1010,7 +1009,6 @@ export class DepartmentEditNewComponent implements OnInit {
     Đổi vị trí
   */
   drop(event: CdkDragDrop<string[]>) {
-    console.log(event);
     moveItemInArray(
       this.listSTTHoatdong(),
       event.previousIndex,
@@ -1018,7 +1016,6 @@ export class DepartmentEditNewComponent implements OnInit {
     );
     const previous = this.listSTTHoatdong()[event.previousIndex];
     const curent = this.listSTTHoatdong()[event.currentIndex];
-    console.log(previous, curent);
     // this.listSTTHoatdong()[event.previousIndex] = curent;
     // this.listSTTHoatdong()[event.currentIndex] = previous;
     // const positon = new PositionModel();
@@ -1031,7 +1028,6 @@ export class DepartmentEditNewComponent implements OnInit {
     // console.log(positon);
     // this.dropPosition(positon);
     this.MoveItem(curent, previous);
-    // debugger
     // if (event.previousContainer === event.container) {
     //     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     //   } else {

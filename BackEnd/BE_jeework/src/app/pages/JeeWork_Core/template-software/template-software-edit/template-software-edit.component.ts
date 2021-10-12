@@ -49,7 +49,6 @@ export class templateSoftwareEditComponent implements OnInit {
 
 
 	ngOnInit() {
-		console.log(this.data);
 		this.TempSelected = this.data.id_template > 0 ? this.data.id_template : 0;
 		if(this.TempSelected === 0){
 			this.isAddTemplate = true;
@@ -58,11 +57,9 @@ export class templateSoftwareEditComponent implements OnInit {
 		// this.ListStatusDynamic();
 	}
 	drop(event: CdkDragDrop<string[]>) {
-		console.log(event);
 		moveItemInArray(this.listSTTHoatdong(), event.previousIndex, event.currentIndex);
 		const previous = this.listSTTHoatdong()[event.previousIndex];
 		const curent = this.listSTTHoatdong()[event.currentIndex];
-		console.log(previous,curent);
 		const positon = new PositionModel();
 		positon.id_row_from = previous.id_row;
 		positon.position_from = previous.Position;
@@ -70,7 +67,6 @@ export class templateSoftwareEditComponent implements OnInit {
 		positon.position_to = curent.Position;
 		positon.columnname = this.data.columnname;
 		positon.id_columnname = this.data.id_row;
-		console.log(positon);
 		this.dropPosition(positon);
 	}
 	/**
@@ -152,8 +148,6 @@ export class templateSoftwareEditComponent implements OnInit {
 	}
 
 	LoadStatusDuan() {
-		console.log(this);
-		console.log(this.listStatus);
 		// if (this.listStatus && this.isStatusNow) {
 		// 	// this.listSTT = this.listStatus;
 		// 	const listTemp = [];
@@ -196,7 +190,6 @@ export class templateSoftwareEditComponent implements OnInit {
 		if(this.data.columnname === 'id_project_team'){
 			this.IsSave=true;
 		}else{
-			console.log('Update status department')
 		}
 	}
 
@@ -510,7 +503,6 @@ export class templateSoftwareEditComponent implements OnInit {
 	}
 
 	UpdateStatus(item) {
-		console.log(item);
 		return;
 		// this._service.UpdateStatus(item).subscribe((res) => {
 		//     if (res && res.status == 1) {
