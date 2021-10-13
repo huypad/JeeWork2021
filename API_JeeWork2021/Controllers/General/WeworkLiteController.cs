@@ -2340,7 +2340,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 string link = jeework_be + dt.Rows[0]["link"].ToString().Replace("$id$", object_id.ToString());
                 string title = dt.Rows[0]["title"].ToString();
                 string template = dt.Rows[0]["template"].ToString();
-                if (nguoigui.customdata != null )
+                if (nguoigui.customdata != null)
                 {
                     title = title.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
                     template = template.Replace("$nguoigui$", nguoigui.customdata.personalInfo.Fullname);
@@ -2349,7 +2349,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 {
                     title = title.Replace("$nguoigui$", nguoigui.LastName);
                     template = template.Replace("$nguoigui$", nguoigui.LastName);
-                } 
+                }
                 template = template.Replace("$link$", link);
                 //get key_value replace
                 sql = "select * from we_template_key where id_key in (" + dt.Rows[0]["keys"] + ") order by id_key";
@@ -2419,7 +2419,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     var info = DataAccount.Where(x => values["closed_work_by"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (info != null)
                     {
-                        template = template.Replace("$nguoidong$", info.FullName); 
+                        template = template.Replace("$nguoidong$", info.FullName);
                     }
                     #endregion
                 }
@@ -3936,6 +3936,38 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return new { };
         }
+        public static object get_info_status(string statusid, DpsConnection cnn)
+        {
+            DataTable dt = new DataTable();
+            string query = "";
+            SqlConditions conds = new SqlConditions();
+            conds.Add("disabled", 0);
+            conds.Add("id_row", statusid);
+            query = $@"select id_row, statusname, description, id_project_team, id_department, istodo
+                    ,type, isdefault, color, position, isfinal, follower, isdeadline
+                    from we_status 
+                    where (where)";
+            dt = cnn.CreateDataTable(query, "(where)", conds);
+            if (cnn.LastError != null || dt == null)
+                return new DataTable();
+            var data = new
+            {
+                id_row = dt.Rows[0]["id_row"],
+                statusname = dt.Rows[0]["StatusName"].ToString(),
+                id_project_team = dt.Rows[0]["id_project_team"].ToString(),
+                id_department = dt.Rows[0]["id_department"].ToString(),
+                isdefault = dt.Rows[0]["IsDefault"],
+                color = dt.Rows[0]["color"].ToString(),
+                position = dt.Rows[0]["Position"].ToString(),
+                isfinal = dt.Rows[0]["IsFinal"].ToString(),
+                follower = dt.Rows[0]["Follower"].ToString(),
+                isdeadline = dt.Rows[0]["IsDeadline"].ToString(),
+                istodo = dt.Rows[0]["IsToDo"].ToString(),
+                description = dt.Rows[0]["description"].ToString(),
+                type = dt.Rows[0]["Type"].ToString(),
+            };
+            return data;
+        }
         public static string Get_SpaceName(string id_parent, string ConnectionString)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -4021,7 +4053,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return false;
             }
             return true;
-
         }
         public static bool CheckCustomerID(long id, string TableName, UserJWT loginData, DpsConnection cnn)
         {

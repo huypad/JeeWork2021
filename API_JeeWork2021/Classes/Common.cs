@@ -786,7 +786,7 @@ namespace JeeWork_Core2021.Classes
             if (dt.Rows.Count > 0) return true;
             return false;
         }
-        public static bool CheckTaskUser(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn, string ConnectionString)
+        public static bool CheckViewTaskUser(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
             if (IsAdminTeam(id_project_team, loginData, cnn, ConnectionString))
             {

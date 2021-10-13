@@ -2318,6 +2318,11 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                     {
                         id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
                     }
+                    bool istaskuser = Common.CheckViewTaskUser(id_project_team.ToString(), loginData.UserID, id, loginData, cnn, ConnectionString);
+                    if (!istaskuser)
+                    {
+                        return JsonResultCommon.Custom("Bạn không có quyền xem công việc này");
+                    }
                     SqlConditions cond = new SqlConditions();
                     cond.Add("disabled", 0);
                     cond.Add("id_row", id_project_team);
@@ -3881,7 +3886,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         return JsonResultCommon.Custom("Dự án đã đóng không thể cập nhật");
                     }
-                    bool istaskuser = Common.CheckTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
+                    bool istaskuser = Common.CheckViewTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
                     var txterror = "Bạn không có quyền cập nhật công việc này";
                     if (!istaskuser)
                     {
@@ -4263,7 +4268,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 var users = getUserTask(cnn, data.id_row);
                                 WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
                                 if (users.Count > 0)
-                                { 
+                                {
                                     #region Lấy thông tin để thông báo
                                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
                                     #endregion
@@ -5419,7 +5424,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     #region Check dự án đó có gửi gửi mail khi xóa không
                     long id_project = long.Parse(cnn.ExecuteScalar("select id_project_team from we_work where id_row = " + id).ToString());
                     if (WeworkLiteController.CheckNotify_ByConditions(id_project, "email_delete_work", false, ConnectionString))
-                    { 
+                    {
                         WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
                         if (users.Count > 0) // dt_user.Rows.Count > 0
                         {
@@ -5593,7 +5598,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     DataTable dtcvold = cnn.CreateDataTable(cvold, "(where)", sqlcondcv);
                     // gửi thông báo cho user mới
                     if (!string.IsNullOrEmpty(data.checker))
-                    { 
+                    {
                         if (dtcvold.Rows.Count > 0)
                         {
                             var users = new List<long> { long.Parse(data.checker) };
@@ -5636,11 +5641,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
 
                     // gửi thông báo cho user cũ hủy bỏ theo dõi
                     if (string.IsNullOrEmpty(old.Rows[0]["checker"].ToString()) || "0".Equals(old.Rows[0]["checker"].ToString()))
-                    { 
+                    {
                     }
                     else
                     { // gửi thông tin bị bỏ quyền 
-                        var users = new List<long> { long.Parse( old.Rows[0]["checker"].ToString() ) };
+                        var users = new List<long> { long.Parse(old.Rows[0]["checker"].ToString()) };
                         WeworkLiteController.mailthongbao(data.workid, users, 46, loginData, ConnectionString, _notifier, _configuration);
                         if (users.Count > 0)
                         {
@@ -5675,7 +5680,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             }
                             #endregion
                         }
-                    } 
+                    }
 
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -6814,6 +6819,7 @@ where u.disabled = 0 and u.loai = 2";
                              clickup_prioritize = r["clickup_prioritize"],
                              activity_date = r["ActivityDate"],
                              comments = SoluongComment(r["id_row"].ToString(), cnn),
+                             status_info = WeworkLiteController.get_info_status(r["status"].ToString(), cnn),
                              DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
                              User = from us in dt_Users.AsEnumerable()
                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
@@ -6826,8 +6832,8 @@ where u.disabled = 0 and u.loai = 2";
                                         loai = us["loai"],
                                     },
                              NguoiGiao = from us in dt_Users.AsEnumerable()
-                                     where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
-                                     select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
+                                         where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
+                                         select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
                              UsersInfo = from us in dt_Users.AsEnumerable()
                                          where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                          select new
@@ -7667,7 +7673,7 @@ where u.disabled = 0 and u.loai = 2";
  union all
  select CreatedBy as id_user from we_work_user wu  
  where  wu.Disabled = 0 and wu.id_work = @id_work ";
-            DataTable dtuser= cnn.CreateDataTable(sql, conds);
+            DataTable dtuser = cnn.CreateDataTable(sql, conds);
             if (dtuser.Rows.Count == 0)
             {
                 return new List<long>();
@@ -7675,7 +7681,6 @@ where u.disabled = 0 and u.loai = 2";
             List<long> listUser = dtuser.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
             return listUser;
         }
-
         private object calendar_getphanloai(string id_row, UserJWT loginData, string ConnectionString)
         {
             DataTable dt = new DataTable();
