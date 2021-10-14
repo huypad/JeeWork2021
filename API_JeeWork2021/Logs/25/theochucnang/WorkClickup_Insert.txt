@@ -1,0 +1,27 @@
+huytran - 13/10/2021 02:11:18 - Thêm mới dữ liệu công việc: title=Pad tạp, id_project_team=23389
+huytran - 13/10/2021 02:11:45 - Thêm mới dữ liệu công việc: title=Pad tạo 1, id_project_team=24599
+huytran - 13/10/2021 02:12:09 - Thêm mới dữ liệu công việc: title=Task 2, id_project_team=23405
+huytran - 13/10/2021 02:12:14 - Thêm mới dữ liệu công việc: title=Task 2, id_project_team=23405
+huytran - 13/10/2021 02:12:18 - Thêm mới dữ liệu công việc: title=Task 3, id_project_team=23405
+huytran - 13/10/2021 02:17:36 - Thêm mới dữ liệu công việc: title=Pad tạo, id_project_team=23405
+huytran - 13/10/2021 02:21:23 - Thêm mới dữ liệu công việc: title=Pad nhập, id_project_team=23405
+huytran - 13/10/2021 02:21:39 - Thêm mới dữ liệu công việc: title=Task 1, id_project_team=23405
+huytran - 13/10/2021 03:58:45 - Thêm mới dữ liệu công việc: title=Task 1, id_project_team=23389
+huytran - 13/10/2021 04:30:29 - Thêm mới dữ liệu công việc: title=Task 2, id_project_team=23389
+huytran - 13/10/2021 04:30:34 - Thêm mới dữ liệu công việc: title=Task 4, id_project_team=23389
+huytran - 13/10/2021 04:30:39 - Thêm mới dữ liệu công việc: title=Task 5, id_project_team=23389
+huytran - 13/10/2021 04:30:44 - Thêm mới dữ liệu công việc: title=Task 6, id_project_team=23389
+huytran - 13/10/2021 04:30:56 - Thêm mới dữ liệu công việc: title=Task 7, id_project_team=23389
+huytran - 13/10/2021 04:31:04 - Thêm mới dữ liệu công việc: title=Task 8, id_project_team=23572
+hangptt - 13/10/2021 04:34:16 - Thêm mới dữ liệu công việc: title=Pad tạo test, id_project_team=23558
+hangptt - 13/10/2021 04:34:21 - Thêm mới dữ liệu công việc: title=abc, id_project_team=23558
+huytran - 14/10/2021 01:40:34 - Thêm mới dữ liệu công việc: title=Pad tạo, id_project_team=23547
+huytran - 14/10/2021 01:40:40 - Thêm mới dữ liệu công việc: title=Pad tạo 1, id_project_team=23547
+huytran - 14/10/2021 01:40:45 - Thêm mới dữ liệu công việc: title=Pad tạo 3, id_project_team=23547
+huytran - 14/10/2021 01:42:56 - Thêm mới dữ liệu công việc: title=Task 1, id_project_team=23404
+huytran - 14/10/2021 01:43:01 - Thêm mới dữ liệu công việc: title=Task 2, id_project_team=23404
+huytran - 14/10/2021 01:50:57 - Thêm mới dữ liệu công việc: title=Task 3, id_project_team=23404
+huytran - 14/10/2021 01:51:08 - Thêm mới dữ liệu công việc: title=Task 4, id_project_team=23404
+huytran - 14/10/2021 01:51:14 - Thêm mới dữ liệu công việc: title=Task 5, id_project_team=23404
+huytran - 14/10/2021 01:51:21 - Thêm mới dữ liệu công việc: title=Task 6, id_project_team=23404
+huytran - 14/10/2021 02:36:45 - Thêm mới dữ liệu công việc: title=CV pad tạo, id_project_team=23404

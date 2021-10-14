@@ -3936,37 +3936,40 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return new { };
         }
-        public static object get_info_status(string statusid, DpsConnection cnn)
+        public static object get_info_status(string statusid, string ConnectionString)
         {
-            DataTable dt = new DataTable();
-            string query = "";
-            SqlConditions conds = new SqlConditions();
-            conds.Add("disabled", 0);
-            conds.Add("id_row", statusid);
-            query = $@"select id_row, statusname, description, id_project_team, id_department, istodo
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                DataTable dt = new DataTable();
+                string query = "";
+                SqlConditions conds = new SqlConditions();
+                conds.Add("disabled", 0);
+                conds.Add("id_row", statusid);
+                query = $@"select id_row, statusname, description, id_project_team, id_department, istodo
                     ,type, isdefault, color, position, isfinal, follower, isdeadline
                     from we_status 
                     where (where)";
-            dt = cnn.CreateDataTable(query, "(where)", conds);
-            if (cnn.LastError != null || dt == null)
-                return new DataTable();
-            var data = new
-            {
-                id_row = dt.Rows[0]["id_row"],
-                statusname = dt.Rows[0]["StatusName"].ToString(),
-                id_project_team = dt.Rows[0]["id_project_team"].ToString(),
-                id_department = dt.Rows[0]["id_department"].ToString(),
-                isdefault = dt.Rows[0]["IsDefault"],
-                color = dt.Rows[0]["color"].ToString(),
-                position = dt.Rows[0]["Position"].ToString(),
-                isfinal = dt.Rows[0]["IsFinal"].ToString(),
-                follower = dt.Rows[0]["Follower"].ToString(),
-                isdeadline = dt.Rows[0]["IsDeadline"].ToString(),
-                istodo = dt.Rows[0]["IsToDo"].ToString(),
-                description = dt.Rows[0]["description"].ToString(),
-                type = dt.Rows[0]["Type"].ToString(),
-            };
-            return data;
+                dt = cnn.CreateDataTable(query, "(where)", conds);
+                if (cnn.LastError != null || dt == null)
+                    return new DataTable();
+                var data = new
+                {
+                    id_row = dt.Rows[0]["id_row"],
+                    statusname = dt.Rows[0]["StatusName"].ToString(),
+                    id_project_team = dt.Rows[0]["id_project_team"].ToString(),
+                    id_department = dt.Rows[0]["id_department"].ToString(),
+                    isdefault = dt.Rows[0]["IsDefault"],
+                    color = dt.Rows[0]["color"].ToString(),
+                    position = dt.Rows[0]["Position"].ToString(),
+                    isfinal = dt.Rows[0]["IsFinal"].ToString(),
+                    follower = dt.Rows[0]["Follower"].ToString(),
+                    isdeadline = dt.Rows[0]["IsDeadline"].ToString(),
+                    istodo = dt.Rows[0]["IsToDo"].ToString(),
+                    description = dt.Rows[0]["description"].ToString(),
+                    type = dt.Rows[0]["Type"].ToString(),
+                };
+                return data;
+            }
         }
         public static string Get_SpaceName(string id_parent, string ConnectionString)
         {

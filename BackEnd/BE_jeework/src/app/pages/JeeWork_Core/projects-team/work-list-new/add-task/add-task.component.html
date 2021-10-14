@@ -19,9 +19,10 @@
 
                 <div class="cu-task-row-new__main">
                     <div class="input-text">
-                        <input [(ngModel)]="title" (keyup)="isError=false" (keyup.enter)="AddTask()" autocomplete="off"
-                            id="addnewtask" class="cu-task-row-new__input" container="body" cuslashcommandinput=""
-                            placement="top" triggers="" type="text" placeholder=" {{ 'work.taskname' | translate}}">
+                        <input #input [(ngModel)]="title" (keyup)="isError=false" (keyup.enter)="AddTask()"
+                            autocomplete="off" id="addnewtask" class="cu-task-row-new__input" container="body"
+                            cuslashcommandinput="" placement="top" triggers="" type="text" id="input"
+                            placeholder=" {{ 'work.taskname' | translate}}">
                     </div>
                 </div>
             </div>

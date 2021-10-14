@@ -1,23 +1,23 @@
-import {WorkGroupEditComponent} from '../../../../work/work-group-edit/work-group-edit.component';
+import { WorkGroupEditComponent } from '../../../../work/work-group-edit/work-group-edit.component';
 import {
     LayoutUtilsService,
     MessageType,
 } from '../../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {SubheaderService} from '../../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
-import {TokenStorage} from '../../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {QueryParamsModelNew} from '../../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {MenuPhanQuyenServices} from '../../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {AttachmentService} from '../../../../services/attachment.service';
+import { SubheaderService } from '../../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
+import { TokenStorage } from '../../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { QueryParamsModelNew } from '../../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { MenuPhanQuyenServices } from '../../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { AttachmentService } from '../../../../services/attachment.service';
 import {
     AttachmentModel,
     FileUploadModel,
 } from '../../../Model/department-and-project.model';
-import {AddNewFieldsComponent} from '../../add-new-fields/add-new-fields.component';
-import {StatusDynamicDialogComponent} from '../../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
-import {WorkService} from '../../../../work/work.service';
-import {DuplicateTaskNewComponent} from '../../duplicate-task-new/duplicate-task-new.component';
-import {WorkListNewDetailComponent} from '../../work-list-new-detail/work-list-new-detail.component';
-import {DialogSelectdayComponent} from '../../../../report/dialog-selectday/dialog-selectday.component';
+import { AddNewFieldsComponent } from '../../add-new-fields/add-new-fields.component';
+import { StatusDynamicDialogComponent } from '../../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+import { WorkService } from '../../../../work/work.service';
+import { DuplicateTaskNewComponent } from '../../duplicate-task-new/duplicate-task-new.component';
+import { WorkListNewDetailComponent } from '../../work-list-new-detail/work-list-new-detail.component';
+import { DialogSelectdayComponent } from '../../../../report/dialog-selectday/dialog-selectday.component';
 import {
     WorkModel,
     UpdateWorkModel,
@@ -25,7 +25,7 @@ import {
     WorkDuplicateModel,
     WorkGroupModel,
 } from '../../../../work/work.model';
-import {ColumnWorkModel, DrapDropItem} from '../../drap-drop-item.model';
+import { ColumnWorkModel, DrapDropItem } from '../../drap-drop-item.model';
 import {
     filter,
     tap,
@@ -38,13 +38,13 @@ import {
     switchMap,
     map,
 } from 'rxjs/operators';
-import {element} from 'protractor';
-import {WeWorkService} from '../../../../services/wework.services';
-import {DatePipe, DOCUMENT} from '@angular/common';
-import {TranslateService} from '@ngx-translate/core';
-import {FormBuilder, FormControl} from '@angular/forms';
-import {Router, ActivatedRoute} from '@angular/router';
-import {ProjectsTeamService} from '../../../Services/department-and-project.service';
+import { element } from 'protractor';
+import { WeWorkService } from '../../../../services/wework.services';
+import { DatePipe, DOCUMENT } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder, FormControl } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProjectsTeamService } from '../../../Services/department-and-project.service';
 import {
     CdkDropList,
     CdkDragDrop,
@@ -66,18 +66,18 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import {MatTable} from '@angular/material/table';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSort} from '@angular/material/sort';
-import {cloneDeep, find, values} from 'lodash';
+import { MatTable } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
+import { cloneDeep, find, values } from 'lodash';
 import * as moment from 'moment';
-import {SelectionModel} from '@angular/cdk/collections';
-import {workAddFollowersComponent} from '../../../../work/work-add-followers/work-add-followers.component';
+import { SelectionModel } from '@angular/cdk/collections';
+import { workAddFollowersComponent } from '../../../../work/work-add-followers/work-add-followers.component';
 // import { WorkEditDialogComponent } from "../../../work/work-edit-dialog/work-edit-dialog.component";
-import {WorkAssignedComponent} from '../../../../work/work-assigned/work-assigned.component';
-import {DuplicateWorkComponent} from '../../../../work/work-duplicate/work-duplicate.component';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {BehaviorSubject, of, throwError} from 'rxjs';
+import { WorkAssignedComponent } from '../../../../work/work-assigned/work-assigned.component';
+import { DuplicateWorkComponent } from '../../../../work/work-duplicate/work-duplicate.component';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 
 @Component({
     selector: 'app-works-list-group-2',
@@ -140,7 +140,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     statusDefault = 0;
     // col
     displayedColumnsCol: string[] = [];
-    @ViewChild(MatSort, {static: true}) sort: MatSort;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
     previousIndex: number;
     ListAction: any = [];
     addNodeitem = 0;
@@ -548,15 +548,15 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                     return;
                 }
             }
-        }else{
-            if(value){
+        } else {
+            if (value) {
                 value = moment(value).format('DD/MM/YYYY HH:mm');
             }
         }
         const _item = new UpdateWorkModel();
         _item.clear();
         _item.FieldID = field.Id_row;
-        _item.Value = value != null?value:'';
+        _item.Value = value != null ? value : '';
         _item.WorkID = idWork;
         _item.TypeID = field.TypeID;
         this._service.UpdateNewField(_item).subscribe((res) => {
@@ -630,7 +630,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                 if (res && res.status === 1) {
                     this.listStatus = res.data;
                     var itemPush = [];
-                    this.listStatus.forEach(element =>{
+                    this.listStatus.forEach(element => {
                         itemPush = itemPush.concat(element.datawork)
                     });
                     this.ListTasks = itemPush;
@@ -641,7 +641,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                 this.layoutUtilsService.OffWaitingDiv();
 
             }, (err) => (this.layoutUtilsService.OffWaitingDiv()));
-        
+
     }
     LoadNewField() {
         this.WeWorkService.GetValuesNewFields(this.ID_Project).subscribe(res => {
@@ -658,9 +658,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         if (status.datawork.length == 0 && this.showemptystatus) {
             return true;
         }
-        if (this.Emtytask && status.id_row ==  this.statusDefault) {
+        if (this.Emtytask && status.id_row == this.statusDefault) {
             if (this.newtask < 0) {
-                this.newtask =  this.statusDefault;
+                this.newtask = this.statusDefault;
             }
             return true;
         }
@@ -843,7 +843,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                 : b.id_department > a.id_department
                     ? 1
                     : 0
-        ); 
+        );
 
         this.changeDetectorRefs.detectChanges();
     }
@@ -935,7 +935,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     drop(event) {
-        // debugger
         // if (this.CheckRoles(15)) {
         //     this.isAssignforme = true;
         // }
@@ -944,7 +943,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const parentItemId = event.previousContainer.id; // từ thằng cha hiện tại
         const status = 0;
         const listdata = this.ListTasks;
-        if (!this.dropActionTodo ) { //|| this.dropActionTodo.targetId == draggedItemId 
+        if (!this.dropActionTodo) { //|| this.dropActionTodo.targetId == draggedItemId 
             return;
         }
         // load list new data
@@ -1277,7 +1276,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     ViewDetai(item) {
         this.router.navigate([
             '',
-            {outlets: {auxName: 'aux/detail/' + item.id_row}},
+            { outlets: { auxName: 'aux/detail/' + item.id_row } },
         ]);
         // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
         //   width: "90vw",
@@ -1420,7 +1419,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             item.IsStaff = true;
         }
         this._service._UpdateByKey(item).subscribe((res) => {
-                this.ReloadData();
+            this.ReloadData();
             if (res && res.status == 1) {
             } else {
                 this.layoutUtilsService.showError(res.error.message);
@@ -1516,7 +1515,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
             width: '40vw',
             minHeight: '60vh',
-            data: {_item, type},
+            data: { _item, type },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1542,7 +1541,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = MessageType.Create;
         const dialogRef = this.dialog.open(DuplicateWorkComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1570,7 +1569,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
             height: '500px',
-            data: {item},
+            data: { item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             this.UpdateByKey(node, 'assign', res.id_nv);
@@ -1589,7 +1588,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(workAddFollowersComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -1634,7 +1633,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
             width: '500px',
             height: '500px',
-            data: {item, ID_Project: this.ID_Project},
+            data: { item, ID_Project: this.ID_Project },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (res) {
@@ -1725,7 +1724,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             const _saveMessage = this.translate.instant(saveMessageTranslateParam);
             const _messageType = MessageType.Create;
             const dialogRef = this.dialog.open(DuplicateTaskNewComponent, {
-                data: {getOnlyIDproject: true},
+                data: { getOnlyIDproject: true },
             });
             dialogRef.afterClosed().subscribe((res) => {
                 if (res) {
@@ -1809,9 +1808,9 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     ReloadData(event = false) {
-        if(event){
+        if (event) {
             this.pageReload.emit(true);
-        }else{
+        } else {
             this.LoadDataTaskNew();
         }
     }
@@ -1887,7 +1886,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(WorkGroupEditComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {

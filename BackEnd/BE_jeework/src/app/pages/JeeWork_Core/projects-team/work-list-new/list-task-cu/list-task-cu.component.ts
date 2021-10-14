@@ -860,12 +860,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     CreateTask(val) {
         const x = this.newtask;
         this.CloseAddnewTask(true);
-        this.layoutUtilsService.showWaitingDiv();
+        // this.layoutUtilsService.showWaitingDiv();
         setTimeout(() => {
-        this.newtask = x;
+            this.newtask = x;
         }, 1000);
         this._service.InsertTask(val).subscribe(res => {
-            this.layoutUtilsService.OffWaitingDiv();
+            // this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
                 this.CloseAddnewTask(true);
                 this.LoadData();
@@ -874,7 +874,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
-        this.AddnewTask(val, true);
+        // this.AddnewTask(val, true);
     }
 
     DeleteTask(task) {

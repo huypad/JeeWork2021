@@ -1435,16 +1435,14 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
         this.LoadData();
-        setTimeout(() => {
-          this.newtask = x;
-        }, 500);
+        // setTimeout(() => {
+        this.newtask = x;
+        this.AddnewTask(val.status, true);
+        // }, 1000);
       } else {
         this.layoutUtilsService.showError(res.error.message);
       }
     });
-    setTimeout(() => {
-      this.AddnewTask(val.status, true);
-    }, 500);
   }
 
   DeleteTask(task) {

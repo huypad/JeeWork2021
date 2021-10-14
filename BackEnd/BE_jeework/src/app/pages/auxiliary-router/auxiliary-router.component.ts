@@ -3,6 +3,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Component, OnInit} from '@angular/core';
 import {WorkListNewDetailComponent} from '../JeeWork_Core/projects-team/work-list-new/work-list-new-detail/work-list-new-detail.component';
+import { MessageType } from 'src/app/_metronic/jeework_old/core/_base/crud';
+import { LayoutUtilsService } from 'src/app/_metronic/jeework_old/core/utils/layout-utils.service';
 
 @Component({
     selector: 'app-auxiliary-router',
@@ -15,7 +17,9 @@ export class AuxiliaryRouterComponent implements OnInit {
         private router: Router,
         public dialog: MatDialog,
         public projectsTeamService: ProjectsTeamService,
-        private activatedRoute: ActivatedRoute
+        private activatedRoute: ActivatedRoute,
+        private layoutUtilsService: LayoutUtilsService,
+
     ) {
     }
 
@@ -31,7 +35,17 @@ export class AuxiliaryRouterComponent implements OnInit {
             if (res && res.status === 1) {
                 this.openDialog(res.data);
             } else {
-                alert(res.error.message);
+                // alert(res.error.message);
+                this.layoutUtilsService.showActionNotification(
+                    res.error.message,
+                    MessageType.Update,
+                    9999999999,
+                    true,
+                    false,
+                    3000,
+                    'top',
+                    0
+                );
                 this.router.navigate(['/error']);
             }
         });

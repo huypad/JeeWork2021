@@ -202,14 +202,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                id_project_team = u["id_project_team"],
                                                id_user = u["id_user"],
                                                admin = u["admin"],
-                                               //id_nv = u["id_nv"],
                                                hoten = u["hoten"],
                                                username = u["username"],
                                                tenchucdanh = u["tenchucdanh"],
                                                mobile = u["mobile"],
                                                image = u["image"],
                                                favourite = u["favourite"],
-                                               //image = WeworkLiteController.genLinkImage(domain, 1119, "16116", _hostingEnvironment.ContentRootPath)
                                            },
                                    Count = new
                                    {
@@ -1266,7 +1264,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         foreach (DataRow dr in result.Rows)
                         {
-                            dr["comments"] = WorkClickupController.SoluongComment(dr["id_row"].ToString(),cnn);//  dt_comments.Compute("count(id_row)", "object_id =" + dr["id_row"].ToString() + "").ToString();
+                            dr["comments"] = WorkClickupController.SoluongComment(dr["id_row"].ToString(), ConnectionString);//  dt_comments.Compute("count(id_row)", "object_id =" + dr["id_row"].ToString() + "").ToString();
                             dr["Tags"] = cnn.CreateDataTable(queryTag + dr["id_row"]);
                             DataTable dt_u = cnn.CreateDataTable(queryUser + dr["id_row"]);
                             #region Map info account từ JeeAccount

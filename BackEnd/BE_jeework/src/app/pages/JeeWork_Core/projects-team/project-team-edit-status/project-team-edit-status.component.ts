@@ -124,7 +124,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     positon.columnname = this.data.columnname;
     positon.id_columnname = this.data.id_row;
     this.dropPosition(positon);
-    // debugger
     // if (event.previousContainer === event.container) {
     //     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     //   } else {
@@ -271,7 +270,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
     if (this.data.columnname === "id_project_team") {
       this.IsSave = true;
     } else {
-      //   debugger;
       this.itemde.id = this.data.id_row;
       this.itemde.templateid_new = this.TempSelected;
       this.itemde.templateid_old = this.data.id_template;

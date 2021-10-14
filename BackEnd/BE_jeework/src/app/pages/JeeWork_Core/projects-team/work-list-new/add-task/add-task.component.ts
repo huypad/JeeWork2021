@@ -12,8 +12,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import { DOCUMENT, DatePipe } from '@angular/common';
 import { WorkModel, UserInfoModel } from './../../../work/work.model';
-import { Component, OnInit, Input, Inject, ChangeDetectorRef, EventEmitter, Output, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, Inject, ChangeDetectorRef, EventEmitter, Output, AfterViewInit, ViewChild, ElementRef, ViewChildren } from '@angular/core';
 import * as moment from 'moment';
+import { MatInput } from '@angular/material/input';
 @Component({
   selector: 'kt-add-task',
   templateUrl: './add-task.component.html',
@@ -42,6 +43,8 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
   Tags: any = [];
   list_priority: any = [];
   isError = false;
+  // @ViewChildren('input') vc;
+  // @ViewChild('myInput', { static: true }) input: MatInput;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,// multi level
@@ -57,27 +60,25 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     public datepipe: DatePipe,
     private weworkService: WeWorkService,
     private tokenStorage: TokenStorage,
-    private danhMucChungService: DanhMucChungService
+    private danhMucChungService: DanhMucChungService,
   ) {
     this.list_priority = this.weworkService.list_priority;
   }
 
   ngOnInit() {
-
     this.LoadData();
+    setTimeout(function () { document.getElementById('input').focus(); }, 100);
   }
-
   ngAfterViewInit() {
-
     var idname = "addnewtask";
     let ele = (<HTMLInputElement>document.getElementById(idname));
 
     setTimeout(() => {
-      if (ele){
+      if (ele) {
         ele.focus();
-      } 
+      }
     }, 10);
-
+    setTimeout(function () { document.getElementById('input').focus(); }, 100);
   }
 
   OnChanges() {

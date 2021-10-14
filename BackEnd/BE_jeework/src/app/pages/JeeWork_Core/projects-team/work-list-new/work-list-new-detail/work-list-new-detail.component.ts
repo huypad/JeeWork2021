@@ -276,30 +276,29 @@ export class WorkListNewDetailComponent implements OnInit {
                     return true;
                 }
             }
-        }
-        ;
+        };
         var txtError = '';
         switch (key) {
             case 'assign':
-                txtError = 'Bạn không có quyền thay đổi người làm của công việc này.';
+                txtError = 'Bạn không có quyền thay đổi người làm của công việc này';
                 break;
             case 'status':
-                txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này.';
+                txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này';
                 break;
             case 'estimates':
-                txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này.';
+                txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này';
                 break;
             case 'checklist':
-                txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này.';
+                txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này';
                 break;
             case 'title':
-                txtError = 'Bạn không có quyền đổi tên của công việc này.';
+                txtError = 'Bạn không có quyền đổi tên của công việc này';
                 break;
             case 'description':
-                txtError = 'Bạn không có quyền đổi mô tả của công việc này.';
+                txtError = 'Bạn không có quyền đổi mô tả của công việc này';
                 break;
             default:
-                txtError = 'Bạn không có quyền chỉnh sửa công việc này.';
+                txtError = 'Bạn không có quyền chỉnh sửa công việc này';
                 break;
         }
         this.layoutUtilsService.showError(txtError);
@@ -385,6 +384,7 @@ export class WorkListNewDetailComponent implements OnInit {
         if (this.loading) {
             this.layoutUtilsService.showWaitingDiv();
         }
+
         this.weworkService.ListStatusDynamic(this.Id_project_team)
             .subscribe((res) => {
                 if (res && res.status === 1) {
@@ -502,8 +502,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     return true;
                 }
             }
-        }
-        ;
+        };
         return false;
     }
 
@@ -1134,6 +1133,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     this.changeDetectorRefs.detectChanges();
                     if (res && res.status === 1) {
                         this.IsShow_MoTaCV = !this.IsShow_MoTaCV;
+
                         this.projectsTeamService.WorkDetail(model.id_row).subscribe((res) => {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
@@ -1570,6 +1570,20 @@ export class WorkListNewDetailComponent implements OnInit {
                     if (res && res.status == 1) {
                         this.LoadData();
                         this.SendMessage(true);
+                    }
+                    else {
+                        // alert(res.error.message);
+                        this.layoutUtilsService.showActionNotification(
+                            res.error.message,
+                            MessageType.Update,
+                            9999999999,
+                            true,
+                            false,
+                            3000,
+                            'top',
+                            0
+                        );
+                        this.LoadData();
                     }
                 });
             }, 100);

@@ -383,14 +383,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
-                    var dt_data = ds.Tables[0].Rows.Count;
+                    DataTable dt_work = ds.Tables[0];
+                    dt_work.DefaultView.Sort = "ActivityDate desc";
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                     var Children = from rr in dtG.AsEnumerable()
                                    select new
                                    {
                                        id = rr["id_row"],
                                        title = rr["title"],
-                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], ds.Tables[0].AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
+                                       data = getChild(domain, loginData.CustomerID, columnName, displayChild, rr["id_row"], dt_work.AsEnumerable(), tags, DataAccount, loginData, ConnectionString)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -6399,7 +6400,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
             #region Code filter
-            string dieukienSort = "id_row";
+            string dieukienSort = "w.createddate";
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
             {
                 dieukien_where += " and id_project_team=@id_project_team";
@@ -6515,7 +6516,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                         where u.disabled = 0 and u.loai = 2";
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
             ds.Tables[0].Columns.Add("PhanLoai");
-            ds.Tables[0].Columns.Add("ActivityDate");
+            ds.Tables[0].Columns.Add("ActivityDate", typeof(DateTime));
             string sql_activity = @"SELECT b.maxdate, a.*
                                             from we_work a
                                             join
@@ -6558,13 +6559,19 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                         DataRow[] dr = dt_activity.Select("id_row =" + item["id_row"].ToString());
                         if (dr.Length > 0)
                         {
-                            item["ActivityDate"] = dr[0]["maxdate"].ToString();
+                            item["ActivityDate"] = Convert.ToDateTime(dr[0]["maxdate"]);
                         }
                     }
                 }
                 else
-                    item["ActivityDate"] = item["CreatedDate"];
+                    item["ActivityDate"] = Convert.ToDateTime(item["createddate"]);
             }
+            //ds.Tables[0].DefaultView.Sort = "ActivityDate desc";
+            //ds.Tables[0] = ds.Tables[0].DefaultView;
+            // DataView dv = ds.Tables[0].DefaultView;
+            // dv.Sort = "ActivityDate ";
+            //ds.Tables[0] = dv.ToTable();
+            //ds.Tables[0] = dt_table0;
             foreach (DataRow item in ds.Tables[2].Rows)
             {
                 var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6772,57 +6779,79 @@ where u.disabled = 0 and u.loai = 2";
                         dt_User2 = dr.CopyToDataTable();
                     }
                 }
-                //columnName="" : không group
-                // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))
-                // k có phần này thì workclickup lấy dữ liệu không map theo id dự án
-                var re = from r in temp
-                         where r["id_parent"].Equals(parent) && (columnName == "" || (columnName != "" && r[columnName].ToString().Equals(id.ToString()))) //(parent == null &&  r[columnName].Equals(id)) || (r["id_parent"].Equals(parent) && parent != null)
-                         select new
-                         {
-                             id_parent = r["id_parent"],
-                             id_row = r["id_row"],
-                             title = r["title"],
-                             description = r["description"],
-                             id_project_team = r["id_project_team"],
-                             project_team = r["project_team"],
-                             deadline = r["deadline"],
-                             end_date = r["end_date"],
-                             urgent = r["urgent"],
-                             important = r["important"],
-                             start_date = r["start_date"],
-                             prioritize = r["prioritize"],
-                             favourite = r["favourite"],
-                             status = r["status"],
-                             id_milestone = r["id_milestone"],
-                             milestone = r["milestone"],
-                             num_file = r["num_file"],
-                             num_com = r["num_com"],
-                             trehan = r["TreHan"],
-                             estimates = r["estimates"],
-                             hoanthanh = r["done"],
-                             danglam = r["Doing"],
-                             closed = r["closed"],
-                             closed_work_date = r["closed_work_date"],
-                             closed_work_by = r["closed_work_by"],
-                             accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
-                             activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
-                             activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
-                             closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
-                             closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
-                             state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
-                             createddate = r["CreatedDate"],
-                             createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
-                             nguoitao = r["NguoiTao"],
-                             updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                             updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                             nguoisua = r["NguoiSua"],
-                             clickup_prioritize = r["clickup_prioritize"],
-                             activity_date = r["ActivityDate"],
-                             comments = SoluongComment(r["id_row"].ToString(), cnn),
-                             status_info = WeworkLiteController.get_info_status(r["status"].ToString(), cnn),
-                             DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
-                             User = from us in dt_Users.AsEnumerable()
-                                    where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+            }
+
+            //columnName="" : không group
+            // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))
+            // k có phần này thì workclickup lấy dữ liệu không map theo id dự án
+            var re = from r in temp
+                     where r["id_parent"].Equals(parent) && (columnName == "" || (columnName != "" && r[columnName].ToString().Equals(id.ToString()))) //(parent == null &&  r[columnName].Equals(id)) || (r["id_parent"].Equals(parent) && parent != null)
+                     orderby r["ActivityDate"] descending
+                     select new
+                     {
+                         id_parent = r["id_parent"],
+                         id_row = r["id_row"],
+                         title = r["title"],
+                         description = r["description"],
+                         id_project_team = r["id_project_team"],
+                         project_team = r["project_team"],
+                         deadline = r["deadline"],
+                         end_date = r["end_date"],
+                         urgent = r["urgent"],
+                         important = r["important"],
+                         start_date = r["start_date"],
+                         prioritize = r["prioritize"],
+                         favourite = r["favourite"],
+                         status = r["status"],
+                         id_milestone = r["id_milestone"],
+                         milestone = r["milestone"],
+                         num_file = r["num_file"],
+                         num_com = r["num_com"],
+                         trehan = r["TreHan"],
+                         estimates = r["estimates"],
+                         hoanthanh = r["done"],
+                         danglam = r["Doing"],
+                         closed = r["closed"],
+                         closed_work_date = r["closed_work_date"],
+                         closed_work_by = r["closed_work_by"],
+                         accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
+                         activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
+                         activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
+                         closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
+                         closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
+                         state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
+                         createddate = r["CreatedDate"],
+                         createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                         nguoitao = r["NguoiTao"],
+                         updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
+                         updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                         nguoisua = r["NguoiSua"],
+                         clickup_prioritize = r["clickup_prioritize"],
+                         activity_date = r["ActivityDate"],
+                         comments = SoluongComment(r["id_row"].ToString(), ConnectString),
+                         status_info = WeworkLiteController.get_info_status(r["status"].ToString(), ConnectString),
+                         DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
+                         User = from us in dt_Users.AsEnumerable()
+                                where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                                select new
+                                {
+                                    id_nv = us["id_user"],
+                                    hoten = us["hoten"],
+                                    image = us["image"],
+                                    email = us["email"],
+                                    loai = us["loai"],
+                                },
+                         NguoiGiao = from us in dt_Users.AsEnumerable()
+                                     where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
+                                     select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
+                         UsersInfo = from us in dt_Users.AsEnumerable()
+                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                                     select new
+                                     {
+                                         data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                                     },
+                         Follower = from us in dt_Users.AsEnumerable()
+                                    where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
                                     select new
                                     {
                                         id_nv = us["id_user"],
@@ -6831,58 +6860,38 @@ where u.disabled = 0 and u.loai = 2";
                                         email = us["email"],
                                         loai = us["loai"],
                                     },
-                             NguoiGiao = from us in dt_Users.AsEnumerable()
-                                         where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
-                                         select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
-                             UsersInfo = from us in dt_Users.AsEnumerable()
-                                         where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
-                                         select new
-                                         {
-                                             data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                                         },
-                             Follower = from us in dt_Users.AsEnumerable()
+                         FollowerInfo = from us in dt_Users.AsEnumerable()
                                         where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
                                         select new
                                         {
-                                            id_nv = us["id_user"],
-                                            hoten = us["hoten"],
-                                            image = us["image"],
-                                            email = us["email"],
-                                            loai = us["loai"],
+                                            data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                                         },
-                             FollowerInfo = from us in dt_Users.AsEnumerable()
-                                            where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
-                                            select new
-                                            {
-                                                data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                                            },
-                             Tags = from t in tags
-                                    where r["id_row"].Equals(t["id_work"])
-                                    select new
-                                    {
-                                        id_row = t["id_tag"],
-                                        title = t["title"],
-                                        color = t["color"]
-                                    },
-                             Status = from s in dt_status.AsEnumerable()
-                                      select new
-                                      {
-                                          id_row = s["id_row"],
-                                          statusname = s["StatusName"],
-                                          description = s["description"],
-                                          id_project_team = s["id_project_team"],
-                                          typeid = s["type"],
-                                          color = s["color"],
-                                          position = s["position"],
-                                          IsFinal = s["isfinal"],
-                                          IsDeadline = s["isdeadline"],
-                                          IsDefault = s["Isdefault"],
-                                          IsToDo = s["istodo"]
-                                      },
-                             Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectString, r["id_row"])
-                         };
-                return re.Distinct().ToList().OrderByDescending(x => x.activity_date);
-            }
+                         Tags = from t in tags
+                                where r["id_row"].Equals(t["id_work"])
+                                select new
+                                {
+                                    id_row = t["id_tag"],
+                                    title = t["title"],
+                                    color = t["color"]
+                                },
+                         Status = from s in dt_status.AsEnumerable()
+                                  select new
+                                  {
+                                      id_row = s["id_row"],
+                                      statusname = s["StatusName"],
+                                      description = s["description"],
+                                      id_project_team = s["id_project_team"],
+                                      typeid = s["type"],
+                                      color = s["color"],
+                                      position = s["position"],
+                                      IsFinal = s["isfinal"],
+                                      IsDeadline = s["isdeadline"],
+                                      IsDefault = s["Isdefault"],
+                                      IsToDo = s["istodo"]
+                                  },
+                         Childs = displayChild == "0" ? new List<string>() : getChild(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectString, r["id_row"])
+                     };
+            return re;
         }
         public static object GetChildTask(string domain, long IdKHDPS, string columnName, string displayChild, object id, EnumerableRowCollection<DataRow> temp, EnumerableRowCollection<DataRow> tags, List<AccUsernameModel> DataAccount, UserJWT loginData, string ConnectionString, DataTable dt_Users, object parent = null)
         {
@@ -6932,7 +6941,7 @@ where u.disabled = 0 and u.loai = 2";
                              updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
                              updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
                              clickup_prioritize = r["clickup_prioritize"],
-                             comments = SoluongComment(r["id_row"].ToString(), cnn),
+                             comments = SoluongComment(r["id_row"].ToString(), ConnectionString),
                              children = displayChild == "0" ? new List<string>() : GetChildTask(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectionString, dt_Users, r["id_row"]),
                              Users = from us in dt_Users.AsEnumerable()
                                      where r["id_row"].ToString().Equals(us["id_work"].ToString())
@@ -6950,10 +6959,13 @@ where u.disabled = 0 and u.loai = 2";
                 return re.Distinct().ToList(); // .OrderByDescending(x => x.createddate);
             }
         }
-        public static long SoluongComment(string idwork, DpsConnection cnn)
+        public static long SoluongComment(string idwork, string ConnectionString)
         {
-            long comment = long.Parse(cnn.ExecuteScalar("select iif(num_comment is null , 0 , num_comment) from we_work WHERE id_row =  " + idwork).ToString());
-            return comment;
+            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            {
+                long comment = long.Parse(cnn.ExecuteScalar("select iif(num_comment is null , 0 , num_comment) from we_work WHERE id_row =  " + idwork).ToString());
+                return comment;
+            }
         }
         public static EnumerableRowCollection<DataRow> filterWork(EnumerableRowCollection<DataRow> enumerableRowCollections, FilterModel filter)
         {
