@@ -272,7 +272,7 @@ export class DepartmentEditComponent implements OnInit {
               false
             )
             .afterDismissed()
-            .subscribe((tt) => {});
+            .subscribe((tt) => { });
           // this.focusInput.nativeElement.focus();
         }
       } else {
@@ -377,9 +377,9 @@ export class DepartmentEditComponent implements OnInit {
 
     var index = this.selectedUser.findIndex((x) => x.id_nv == data.id_nv);
     if (index >= 0) {
-      if(this.selectedUser[index] && this.selectedUser[index].type == 1){
+      if (this.selectedUser[index] && this.selectedUser[index].type == 1) {
         return;
-      }else{
+      } else {
         this.selectedUser.splice(index, 1);
       }
     } else {

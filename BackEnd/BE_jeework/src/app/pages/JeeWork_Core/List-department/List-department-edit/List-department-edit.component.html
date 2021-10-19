@@ -16,7 +16,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12 row kt--margin-bottom-10-mobile">
-					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{
+					<span style="padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{
 						'projects.members' | translate }} : </span>
 					<div class="row" style="flex-grow: 1;">
 						<ng-container *ngFor="let us of this.selectedUser;let index = index">
@@ -32,7 +32,6 @@
 							</div>
 						</ng-container>
 						<ng-container *ngIf="this.selectedUser && this.selectedUser.length > 3">
-
 							<div class="m--img-rounded m--marginless m--img-centered background url"
 								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
 								<div class="user w-100 h-100"

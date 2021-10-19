@@ -3,6 +3,7 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
 
 export interface Locale {
   lang: string;
@@ -42,20 +43,18 @@ export class TranslationService {
   }
 
   setLanguage(lang) {
-    if (lang) {
-      this.translate.use(this.translate.getDefaultLang());
-      this.translate.use(lang);
-      localStorage.setItem(LOCALIZATION_LOCAL_STORAGE_KEY, lang);
-    }
+    debugger
+  	if (lang) {
+			this.translate.use(this.translate.getDefaultLang());
+			this.translate.use(lang);
+			localStorage.setItem('language', lang);
+		}
   }
-
   /**
    * Returns selected language
    */
-  getSelectedLanguage(): any {
-    return (
-      localStorage.getItem(LOCALIZATION_LOCAL_STORAGE_KEY) ||
-      this.translate.getDefaultLang()
-    );
-  }
+   public getSelectedLanguage(): Observable<any> {
+    debugger
+		return of(localStorage.getItem('language') || this.translate.getDefaultLang());
+	}
 }

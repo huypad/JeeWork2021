@@ -64,7 +64,7 @@ export class UpdateStatusProjectComponent implements OnInit {
 	ngOnInit() {
 		this.title = this.translate.instant("GeneralKey.choncocautochuc") + '';
 		this.item1 = this.data._item;
-		
+
 		this.IsEdit = this.data._IsEdit;
 		this.IsProject = this.data.is_project;
 		// if(this.IsProject)
@@ -113,7 +113,7 @@ export class UpdateStatusProjectComponent implements OnInit {
 
 		this.itemForm = this.fb.group({
 			title: [this.item1.title, Validators.required],
-			status: [''+this.item1.status, Validators.required],
+			status: ['' + this.item1.status, Validators.required],
 			description: [this.item1.stage_description],
 		});
 		// this.itemForm.controls["title"].markAsTouched();

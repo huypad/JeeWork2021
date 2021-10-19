@@ -17,6 +17,8 @@ const API_work_CU = environment.APIROOTS + '/api/work-click-up';
 const API_Status = environment.APIROOTS + '/api/status-dynamic';
 const api_department = environment.APIROOTS + '/api/department';
 const api_template = environment.APIROOTS + '/api/template';
+const api_config_notify = environment.APIROOTS + '/api/config-notify';
+
 
 
 
@@ -202,7 +204,15 @@ export class ProjectsTeamService {
         const url = `${API_Project_Team}/get-config-email?id=${id}`;
         return this.http.get<any>(url, { headers: httpHeaders });
     }
-
+    get_list_config(id: any, langcode: string): Observable<any> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        const url = `${api_config_notify}/get-list-config?id=${id}&langcode=${langcode}`;
+        return this.http.get<any>(url, { headers: httpHeaders });
+    }
+    save_notify(item): Observable<any> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        return this.http.post<any>(api_config_notify + '/save_notify', item, { headers: httpHeaders });
+    }
     //#region quyền
     ListRole(id: any): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();

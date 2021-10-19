@@ -87,8 +87,6 @@ const tinyMCE = {
                         // 	text: 'An error occurred.',
                         // 	type: 'error'
                         // });
-
-                        console.log('Max size Error');
                         e.preventDefault();
                         e.stopPropagation();
                     }

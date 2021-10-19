@@ -203,7 +203,6 @@ export class MembersComponent {
     chatWith(user) {
         // this.layoutUtilsService.showInfo('chatWith ' + user.username);
         this.chatService.GetChatWithFriend(user.username).subscribe(res=>{
-            console.log(res);
             if(res && res.status === 1){
                 if(res.data?.length > 0){
                     this.selectUser(res.data[0]);
@@ -243,7 +242,6 @@ export class MembersComponent {
                       if(res.data?.length > 0){
                           this.selectUser(res.data[0]);
                       }
-                    //   console.log(res.data);
                     // this.listUser = []
                     // this.CloseDia(res.data);
                   }

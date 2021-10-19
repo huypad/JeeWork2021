@@ -91,19 +91,15 @@ export class MessageService {
             this.reaction.next(data);
           });
           this.hubConnection.on("HidenMessage", (data) => {
-            //  console.log('HHHHHHidenMessage',data)
             this.hidenmess.next(data);
           });
           this.hubConnection.on("CloseMessage", (data) => {
-            console.log("CloseMessage", data);
             this.chatservices.CloseMiniChat$.next(data);
           });
           this.hubConnection.on("Composing", (data) => {
-            // console.log('Composing',data)
             this.ComposingMess.next(data);
           });
           this.hubConnection.on("NewMessage", (message) => {
-            console.log("mesenger", message);
             // this.messageReceived.emit(message)
             this.messageThread$.pipe(take(1)).subscribe((messages) => {
               this.messageThreadSource.next([...messages, message[0]]);

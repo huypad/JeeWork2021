@@ -191,7 +191,7 @@ export class ProjectsTeamComponent implements OnInit {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-        this.layoutUtilsService.OffWaitingDiv();
+        // this.layoutUtilsService.OffWaitingDiv();
 
     }
 

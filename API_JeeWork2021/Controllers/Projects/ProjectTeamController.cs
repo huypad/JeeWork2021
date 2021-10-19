@@ -50,7 +50,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConfiguration _configuration;
         private IProducer _producer;
         private readonly ILogger<ProjectTeamController> _logger;
-
         public ProjectTeamController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache, IConfiguration configuration, ILogger<ProjectTeamController> logger, IProducer producer)
         {
             ConnectionCache = _cache;
@@ -275,7 +274,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqldepartment = @$" select id_row from we_department where disabled = 0 and ( id_row = { query.filter["id_department"]} or parentid = { query.filter["id_department"]})";
                     if (string.IsNullOrEmpty(query.filter["id_department"]))
                         return JsonResultCommon.Custom("Ban bắt buộc nhập");
-                    dieukien_where += " and id_department in ( "+ sqldepartment + " )";
+                    dieukien_where += " and id_department in ( " + sqldepartment + " )";
                     Conds.Add("id_department", query.filter["id_department"]);
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
@@ -481,10 +480,19 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                         dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                     #region get list trạng thái status 
-                    List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where IsFinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-                    List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
-                    string strhoanthanh = string.Join(",", lstHoanthanh);
-                    string strquahan = string.Join(",", lstQuahan);
+                    List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where isfinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+                    List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isdeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+                    string strhoanthanh = "0", strquahan = "0";
+                    strhoanthanh = string.Join(",", lstHoanthanh);
+                    strquahan = string.Join(",", lstQuahan);
+                    if (string.IsNullOrEmpty(strhoanthanh))
+                    {
+                        strhoanthanh = "0";
+                    }
+                    if (string.IsNullOrEmpty(strquahan))
+                    {
+                        strquahan = "0";
+                    }
                     #endregion
                     string sqlq = @$"select distinct p.id_row, icon, p.title, p.description, p.id_department
                                     , p.loai, p.start_date, p.end_date, p.color, p.template, p.status
@@ -643,7 +651,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         [Route("Detail")]
         [HttpGet]
         public object Detail(long id)
@@ -669,7 +676,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    if (!WeworkLiteController.CheckCustomerID(id, "we_project_team",loginData,cnn))
+                    if (!WeworkLiteController.CheckCustomerID(id, "we_project_team", loginData, cnn))
                     {
                         return JsonResultCommon.Custom("Dự án không tồn tại");
                     }
@@ -1137,7 +1144,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
                     Hashtable val1 = new Hashtable();
                     val1["id_project_team"] = idc;
@@ -1186,7 +1192,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             {
                                 cnn.RollbackTransaction();
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                            } 
+                            }
                             WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
                         }
                         else
@@ -1213,10 +1219,10 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                     cnn.RollbackTransaction();
                                     return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
-                                WeworkLiteController.update_position_status(idc, cnn,"id_project_team");
+                                WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
                             }
                         }
-                    } 
+                    }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
@@ -1467,7 +1473,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                             }
                         }
                     }
-
                     WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
@@ -1703,8 +1708,8 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     #endregion
                     // Tạo status mặc định cho project này dựa vào id_department
                     // thêm status từ phòng ban
-                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = "+ data.id_department).ToString());
-                    if(soluongstatus > 0)
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = " + data.id_department).ToString());
+                    if (soluongstatus > 0)
                     {
                         string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
                         select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.id_department + "";
@@ -1759,7 +1764,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                                 WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
                             }
                         }
-                    } 
+                    }
                     #region Khởi tạo các cột hiển thị mặc định cho công việc
                     if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
                     {
@@ -3118,12 +3123,12 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         id_template = 6;//thiết lập vai trò admin
                         thongbao = "ww_thietlapvaitroadmin";
                     }
-                        
+
                     else
                     {
                         id_template = 7;//Thay đổi vai trò từ admin thành member
                         thongbao = "ww_thietlapvaitrothanhvien";
-                    }   
+                    }
                     #region Lấy thông tin để thông báo
                     SendNotifyModel noti = WeworkLiteController.GetInfoNotify(id_template, ConnectionString);
                     #endregion
@@ -3389,7 +3394,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     }
                     else
                     {
-                        Conds.Add("from","");
+                        Conds.Add("from", "");
                     }
                     if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                     {
@@ -3447,7 +3452,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
-                    DataTable dtnew = new DataTable(); 
+                    DataTable dtnew = new DataTable();
 
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
@@ -3842,21 +3847,21 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             }
         }
 
-        public static string getDepartmentofProjectTeam(DpsConnection cnn,string id_project_team)
+        public static string getDepartmentofProjectTeam(DpsConnection cnn, string id_project_team)
         {
             string sql = "select  * from we_department where id_row = (select id_department from we_project_team where id_row = 1)";
 
             return "";
         }
-        public static List<long> getOwnerDepartmentofProjectteam(DpsConnection cnn,string id_project_team)
+        public static List<long> getOwnerDepartmentofProjectteam(DpsConnection cnn, string id_project_team)
         {
             SqlConditions conds = new SqlConditions();
             conds.Add("id_project_team", id_project_team);
             string sql = @"select  do.* from we_department d
 inner join we_department_owner do on d.id_row = do.id_department
 where d.id_row = (select id_department from we_project_team where id_row = @id_project_team) and do.disabled = 0 and type = 1";
-            DataTable dtowner = cnn.CreateDataTable(sql,conds);
-            if(dtowner.Rows.Count == 0)
+            DataTable dtowner = cnn.CreateDataTable(sql, conds);
+            if (dtowner.Rows.Count == 0)
             {
                 return new List<long>();
             }

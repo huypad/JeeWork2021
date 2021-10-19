@@ -64,6 +64,7 @@ import { CommunicateService } from '../work-list-new-service/communicate.service
 import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
+import { previewlistComponent } from '../../../preview/preview-list/preview-list.component';
 
 @Component({
     selector: 'kt-work-list-new-detail',
@@ -1224,12 +1225,13 @@ export class WorkListNewDetailComponent implements OnInit {
             item.IsStaff = true;
         }
         if (this.loading) {
-            // this.layoutUtilsService.showWaitingDiv();
         }
+        this.layoutUtilsService.showWaitingDiv();
         this.projectsTeamService._UpdateByKey(item).pipe(
             tap(() => {
             }),
             map(res => {
+                this.layoutUtilsService.OffWaitingDiv();
                 if (res && res.status == 1) {
                     this.SendMessage(true);
                     this.LoadData();
@@ -1834,6 +1836,10 @@ export class WorkListNewDetailComponent implements OnInit {
             this.DownloadFile(file.path);
         } else {
             this.layoutUtilsService.ViewDoc(file.path);
+            // return this.dialog.open(previewlistComponent, {
+            //     data: file.path,
+            //     width: '95vw'
+            // });
         }
     }
 
@@ -2040,5 +2046,4 @@ export class WorkListNewDetailComponent implements OnInit {
 
     imagesUploadHandler = (blobInfo, success, failure) => {
     };
-
 }

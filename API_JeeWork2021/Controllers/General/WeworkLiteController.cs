@@ -2315,7 +2315,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 noti_mess.Domain = JeeWork_BE;
                 noti_mess.oslink = linkmobile + notify_model.To_Link_MobileApp;
                 string html = "<h1>Gửi nội dung thông báo</h1>";
-                notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration);
+                Task.Run(()=> notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration));
                 return true;
             }
             return true;
@@ -2494,9 +2494,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             subject = title,
                             html = contents //nội dung html
                         };
-                        _notifier.sendEmail(asyncnotice);
+                        Task.Run(()=>_notifier.sendEmail(asyncnotice));
                         MailInfo MInfo = new MailInfo();
-                        SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier);
+                        Task.Run(() => SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
                     }
                 }
                 cnn.Disconnect();
@@ -2570,7 +2570,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 }
                 if (IsNotify(_configuration))
                 {
-                    NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld);
+                   Task.Run(()=> NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld));
                 }
             }
         }
@@ -4184,6 +4184,18 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
                     return "#BA08C7";
                 default: return "#21BD1C";
             }
+        }
+        public static DataTable dt_notify(DpsConnection cnn)
+        {
+            DataTable dt_notify = new DataTable();
+            string sql_log = "";
+            sql_log = "select id_row, action, action_en, object_type" +
+                ", show_in_activities, view_detail, icon, langkey, id_template_mail " +
+                "from we_log_action order by object_type";
+            dt_notify = cnn.CreateDataTable(sql_log);
+            dt_notify.Columns.Add("isnotify");
+            dt_notify.Columns.Add("isemail");
+            return dt_notify;
         }
     }
 }

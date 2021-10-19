@@ -643,7 +643,6 @@ export class ProjectTeamEditStatusComponent implements OnInit {
   }
 
   UpdateStatus(item) {
-    // console.log(item);
     // return;
     this._service.UpdateStatus(item).subscribe((res) => {
       if (res && res.status == 1) {

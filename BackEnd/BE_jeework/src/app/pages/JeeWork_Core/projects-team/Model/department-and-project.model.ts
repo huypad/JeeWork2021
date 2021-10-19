@@ -301,3 +301,17 @@ export class ChangeTemplateModel {
         this.isproject = false;
     }
 }
+export class ConfigNotifyModel extends BaseModel {
+	id_row: number;
+    id_project_team: number;
+	values: boolean;
+	isnotify: boolean;
+	isemail: boolean;
+	clear() {
+        this.id_project_team = 0;
+		this.id_row = 0;
+		this.values = false;
+		this.isnotify = true;
+		this.isemail = false;
+	}
+}

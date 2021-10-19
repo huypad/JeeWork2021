@@ -1,6 +1,6 @@
-import {ProjectsTeamService} from './../Services/department-and-project.service';
-import {WeWorkService} from './../../services/wework.services';
-import {TokenStorage} from 'src/app/_metronic/jeework_old/core/auth/_services';
+import { ProjectsTeamService } from './../Services/department-and-project.service';
+import { WeWorkService } from './../../services/wework.services';
+import { TokenStorage } from 'src/app/_metronic/jeework_old/core/auth/_services';
 import {
     Component,
     OnInit,
@@ -10,17 +10,17 @@ import {
     Input,
     HostListener,
 } from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {FormGroup, FormBuilder} from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {WorkService} from '../../work/work.service';
-import {MatDialog} from '@angular/material/dialog';
-import {ExportDialogComponent} from './export_dialog/export_dialog.component';
-import {MenuPhanQuyenServices} from 'src/app/_metronic/jeework_old/core/_base/layout';
+import { WorkService } from '../../work/work.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ExportDialogComponent } from './export_dialog/export_dialog.component';
+import { MenuPhanQuyenServices } from 'src/app/_metronic/jeework_old/core/_base/layout';
 
 @Component({
     selector: 'm-project-team-config',
@@ -81,7 +81,7 @@ export class ProjectTeamConfigComponent implements OnInit {
 
     export() {
         this.dialog
-            .open(ExportDialogComponent, {data: {}, width: '500px'})
+            .open(ExportDialogComponent, { data: {}, width: '500px' })
             .afterClosed()
             .subscribe((res) => {
                 if (res) {
@@ -90,7 +90,7 @@ export class ProjectTeamConfigComponent implements OnInit {
                         var headers = response.headers;
                         let filename = headers.get('x-filename');
                         let type = headers.get('content-type');
-                        let blob = new Blob([response.body], {type: type});
+                        let blob = new Blob([response.body], { type: type });
                         const fileURL = URL.createObjectURL(blob);
                         var link = document.createElement('a');
                         link.href = fileURL;

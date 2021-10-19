@@ -180,7 +180,7 @@ namespace JeeWork_Core2021.Classes
             return list;
         }
 
-
+        
         public string[] GetRolesForUser(string username, long CustomerID)
         {
             SqlConditions Conds = new SqlConditions();

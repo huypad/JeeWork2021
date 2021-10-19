@@ -1049,7 +1049,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     #region Map info account từ JeeAccount
-
                     foreach (DataRow item in ds.Tables[4].Rows)
                     {
                         var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -1173,7 +1172,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<object> SaveAsTemplate(TemplateCenterModel data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1194,7 +1192,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Custom(error);
                     }
-
                     long sampleid = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_sample_data where parentid is null").ToString());
                     long group_id = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_status_group").ToString());
                     long iduser = loginData.UserID;
@@ -1264,14 +1261,12 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-
                     #region insert data vào bảng tạm
                     if (!InsertDataToTemp(idc, data.types, long.Parse(data.save_as_id), loginData.UserID, cnn, out error))
                     {
                         return JsonResultCommon.Custom(error);
                     }
                     #endregion
-
                     data.id_row = idc;
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1469,7 +1464,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<BaseModel<object>> add_template_library(add_template_library_Model data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1852,7 +1846,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<BaseModel<object>> SaveasImage(FileUploadModel data, bool istemplatelist = false)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1882,18 +1875,14 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         }
                         cnn.EndTransaction();
                     }
-
-
                 }
                 return JsonResultCommon.ThanhCong(data);
-
             }
             catch (Exception ex)
             {
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         #endregion
     }
 }

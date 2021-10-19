@@ -2899,10 +2899,9 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-
                     if (Common.IsProjectClosed(data.id_project_team.ToString(), cnn))
                     {
-                        return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc.");
+                        return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc");
                     }
                     Common comm = new Common(ConnectionString);
                     // quyền 1 : tạo mới công việc
@@ -2911,7 +2910,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         return JsonResultCommon.Custom("Bạn không có quyền tạo mới công việc");
                     }
-
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -2939,6 +2937,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             if (RowStatus.Length > 0)
                             {
                                 val.Add("status", RowStatus[0]["id_row"]);
+                                data.status = long.Parse(RowStatus[0]["id_row"].ToString());
                             }
                         }
                     }
@@ -3879,13 +3878,13 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     postauto.departmentid = long.Parse(old.Rows[0]["id_department"].ToString()); // id_department
                     postauto.customerid = loginData.CustomerID;
                     Common comm = new Common(ConnectionString);
-                    if (Common.IsTaskClosed(data.id_row, cnn))
-                    {
-                        return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật");
-                    }
                     if (Common.IsProjectClosed(old.Rows[0]["id_project_team"].ToString(), cnn))
                     {
                         return JsonResultCommon.Custom("Dự án đã đóng không thể cập nhật");
+                    }
+                    if (Common.IsTaskClosed(data.id_row, cnn))
+                    {
+                        return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật");
                     }
                     bool istaskuser = Common.CheckViewTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
                     var txterror = "Bạn không có quyền cập nhật công việc này";
@@ -3893,66 +3892,21 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         return JsonResultCommon.Custom(txterror);
                     }
-
                     if (data.id_role > 0)
                     {
-                        bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
-                        switch (data.key)
+                        DataTable dt_role = new DataTable();
+                        string sql_role = "";
+                        sql_role = "select * from we_role where disabled = 0 where id_row = " + data.id_role;
+                        dt_role = cnn.CreateDataTable(sql_role);
+                        if (dt_role.Rows.Count > 0)
                         {
-                            //case "status": 
-                            case "deadline":
-                                txterror = "Bạn không có quyền thay đổi hạn chót của công việc này";
-                                break;
-                            //case "clickup_prioritize": return 8;
-                            case "Tags":
-                                txterror = "Bạn không có quyền thay đổi nhãn của công việc này";
-                                break;
-                            //case "Attachments": return 10;
-                            case "start_date":
-                                txterror = "Bạn không có quyền sửa ngày bắt đầu của công việc này";
-                                break;
-                            case "id_group":
-                                txterror = "Bạn không có quyền sửa nhóm công việc của công việc này";
-                                break;
-                            case "assign":
-                                txterror = "Bạn không có quyền sửa người làm của công việc này";
-                                break;
-                            case "follower":
-                                txterror = "Bạn không có quyền sửa người theo dõi của công việc này";
-                                break;
-                            case "deleteassign":
-                                txterror = "Bạn không có quyền xóa người làm của công việc này";
-                                break;
-                            case "deletefollower":
-                                txterror = "Bạn không có quyền xóa người theo dõi của công việc này";
-                                break;
-                            case "description":
-                                txterror = "Bạn không có quyền chỉnh sửa mô tả của công việc này";
-                                break;
-                            case "title":
-                                txterror = "Bạn không có quyền chỉnh sửa tên công việc của công việc này";
-                                break;
-                            //case "subtasks": return 40;
-                            //case "moved": return 41;
-                            // case "dublicate": return 42;
-                            //case "favorites": return 43;
-                            case "status":
-                                txterror = "Bạn không có quyền thay đổi trạng thái công việc của công việc này";
-                                break;
-                            //case "new_field": return 1;
-                            case "estimates":
-                                txterror = "Bạn không có quyền thay đổi thời gian làm của công việc của công việc này";
-                                break;
-                            default:
-                                txterror = "Bạn không có quyền thay đổi nội dung của công việc này của công việc này";
-                                break;
-                        }
-                        if (!rs)
-                        {
-                            return JsonResultCommon.Custom(txterror);
+                            bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
+                            if (!rs)
+                            {
+                                return JsonResultCommon.Custom("Bạn không có quyền " + dt_role.Rows[0]["title"].ToString());
+                            }
                         }
                     }
-                    //Data datapost = new Data();
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
                         "from we_work " +
                         "where id_row = @id_row", new SqlConditions() { { "id_row", data.id_row } });
@@ -4143,7 +4097,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         if ("clickup_prioritize".Equals(data.key))
                         {
                             postauto.eventid = 2;
-
                             if (string.IsNullOrEmpty(old.Rows[0]["clickup_prioritize"].ToString()))
                             {
                                 postauto.data_input = "any"; // giá trị cũ
@@ -4178,14 +4131,12 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         notify_model.AppCode = "WORK";
                                         notify_model.From_IDNV = loginData.UserID.ToString();
                                         notify_model.To_IDNV = users[i].ToString();
-
                                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thaydoidouutiencongviec", "", "vi");
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
                                         notify_model.ReplaceData = has_replace;
                                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
@@ -4225,7 +4176,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         notify_model.AppCode = "WORK";
                                         notify_model.From_IDNV = loginData.UserID.ToString();
                                         notify_model.To_IDNV = users[i].ToString();
-
                                         notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhatthoigianuoctinh", "", "vi");
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                         notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
@@ -4233,7 +4183,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         notify_model.ReplaceData = has_replace;
                                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
@@ -4258,288 +4207,28 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             Automation.SendAutomation(postauto, _configuration, _producer);
                         }
                         #endregion
-                        if (data.key == "title")
+                        #region Send notify
+                        if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                         {
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                            var users = getUserTask(cnn, data.id_row);
+                            switch (data.key)
                             {
-
-                                cnn.EndTransaction();
-                                // DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                var users = getUserTask(cnn, data.id_row);
-                                WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
-                                if (users.Count > 0)
-                                {
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuacongviec", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                            }
-                            #endregion
-                        }
-                        if (data.key == "deadline")
-                        {
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                            {
-                                int templateguimail = 0;
-                                cnn.EndTransaction();
-                                if (data.value != null)
-                                    templateguimail = 12;
-                                else
-                                    templateguimail = 33;
-                                // DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                var users = getUserTask(cnn, data.id_row);
-                                WeworkLiteController.mailthongbao(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
-
-                                if (users.Count > 0)
-                                {
-                                    // var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) }; 
-                                    //WeworkLiteController.mailthongbao(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(templateguimail, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuadeadline", "", "vi");
-                                        if (data.value == null)
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoadeadline", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                            }
-                            #endregion
-                        }
-                        if (data.key == "start_date")
-                        {
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                            {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                if (dt_user.Rows.Count > 0)
-                                {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                #region Hạn chót
+                                case "deadline":
+                                    int templateguimail = 0;
                                     cnn.EndTransaction();
-                                    int idtemplateguimail = 0;
                                     if (data.value != null)
-                                    {
-                                        idtemplateguimail = 27;
-                                    }
+                                        templateguimail = 12;
                                     else
+                                        templateguimail = 33;
+                                    users = getUserTask(cnn, data.id_row);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
+                                    if (users.Count > 0)
                                     {
-                                        idtemplateguimail = 32;
-                                    }
-                                    WeworkLiteController.mailthongbao(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuathoigianbatdau", "", "vi");
-                                        if (data.value == null)
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoathoigianbatdau", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                            }
-                            #endregion
-                        }
-                        if (data.key == "description")
-                        {
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                            {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                if (dt_user.Rows.Count > 0)
-                                {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                    cnn.EndTransaction();
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 28, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(28, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuamota", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                            }
-                            #endregion
-                        }
-                        if (data.key == "result")
-                        {
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                            {
-                                DataTable dt_user = cnn.CreateDataTable("select distinct * from ( select id_nv from v_wework_new where (where) and id_nv is not null union all select CreatedBy from v_wework_new where (where) and id_nv is not null ) US", "(where)", sqlcond);
-                                if (dt_user.Rows.Count > 0)
-                                {
-                                    var users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
-                                    cnn.EndTransaction();
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(31, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhatketquacongviec", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                            }
-                            #endregion
-                        }
-                        if (data.key == "status")
-                        {
-                            #region gửi event post automation
-                            postauto.eventid = 1;
-                            if (string.IsNullOrEmpty(old.Rows[0]["status"].ToString()))
-                            {
-                                postauto.data_input = "any";
-                            }
-                            else
-                            {
-                                postauto.data_input = old.Rows[0]["status"].ToString(); // giá trị cũ
-                            }
-                            postauto.data_input += "," + data.value; // giá trị mới
-                            //postauto.data_input = datapost;
-                            Automation.SendAutomation(postauto, _configuration, _producer);
-                            #endregion
-                            cnn.EndTransaction();
-                            //WeworkLiteController.ProcessWork(data.id_row, long.Parse(data.value.ToString()), loginData, _config, ConnectionString, _notifier);
-                            DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                            if (dt_user.Rows.Count > 0)
-                            {
-                                #region Check dự án đó có gửi gửi mail khi cập nhật tình trạng hay không
-                                if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_status", false, ConnectionString))
-                                {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                    string lst_user = string.Join(",", users);
-                                    var userProcess = cnn.CreateDataTable($"select * from we_work_process where WorkID = {data.id_row} and StatusID = {data.value} and Checker not in ({ string.Join(",", users) })");
-                                    if (userProcess.Rows.Count > 0)
-                                    {
-                                        foreach (DataRow item in userProcess.Rows)
-                                        {
-                                            users.Add(long.Parse(item["checker"].ToString()));
-                                        }
-                                    }
-                                    DataTable dts = cnn.CreateDataTable("select * from we_status where id_row = " + data.value);
-                                    if (dts.Rows.Count > 0)
-                                    {
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 21, loginData, ConnectionString, _notifier, _configuration);
                                         #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(21, ConnectionString);
+                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(templateguimail, ConnectionString);
                                         #endregion
-                                        #region Notify cập nhật trạng thái công việc
+                                        #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
                                         for (int i = 0; i < users.Count; i++)
                                         {
@@ -4550,25 +4239,14 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             notify_model.AppCode = "WORK";
                                             notify_model.From_IDNV = loginData.UserID.ToString();
                                             notify_model.To_IDNV = users[i].ToString();
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhattrangthaicongviec", "", "vi");
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuadeadline", "", "vi");
+                                            if (data.value == null)
+                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoadeadline", "", "vi");
                                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$trangthai$", dts.Rows[0]["StatusName"].ToString());
                                             notify_model.ReplaceData = has_replace;
                                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-                                            try
-                                            {
-                                                if (notify_model != null)
-                                                {
-                                                    Knoti = new APIModel.Models.Notify();
-                                                    //bool kq = Knoti.PushNotify(notify_model.From_IDNV, notify_model.To_IDNV, notify_model.AppCode, notify_model.TitleLanguageKey, notify_model.ReplaceData, notify_model.To_Link_WebApp, notify_model.To_Link_MobileApp, notify_model.ComponentName, notify_model.Component);
-                                                }
-                                            }
-                                            catch
-                                            { }
-
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
@@ -4577,10 +4255,269 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         }
                                         #endregion
                                     }
-                                }
+                                    break;
                                 #endregion
+                                //case "Tags":
+                                //    txterror = "Bạn không có quyền thay đổi nhãn của công việc này";
+                                //    break;
+                                #region Ngày bắt đầu
+                                case "start_date":
+                                    DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                                    if (dt_user.Rows.Count > 0)
+                                    {
+                                        users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                        cnn.EndTransaction();
+                                        int idtemplateguimail = 0;
+                                        if (data.value != null)
+                                        {
+                                            idtemplateguimail = 27;
+                                        }
+                                        else
+                                        {
+                                            idtemplateguimail = 32;
+                                        }
+                                        WeworkLiteController.mailthongbao(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
+                                        #region Lấy thông tin để thông báo
+                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
+                                        #endregion
+                                        #region Notify chỉnh sửa công việc
+                                        Hashtable has_replace = new Hashtable();
+                                        for (int i = 0; i < users.Count; i++)
+                                        {
+                                            NotifyModel notify_model = new NotifyModel();
+                                            has_replace = new Hashtable();
+                                            has_replace.Add("nguoigui", loginData.Username);
+                                            has_replace.Add("tencongviec", workname);
+                                            notify_model.AppCode = "WORK";
+                                            notify_model.From_IDNV = loginData.UserID.ToString();
+                                            notify_model.To_IDNV = users[i].ToString();
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuathoigianbatdau", "", "vi");
+                                            if (data.value == null)
+                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoathoigianbatdau", "", "vi");
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                                            notify_model.ReplaceData = has_replace;
+                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                            if (info is not null)
+                                            {
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                #endregion
+                                //case "id_group":
+                                //    txterror = "Bạn không có quyền sửa nhóm công việc của công việc này";
+                                //    break;
+                                //case "assign":
+                                //    txterror = "Bạn không có quyền sửa người làm của công việc này";
+                                //    break;
+                                //case "follower":
+                                //    txterror = "Bạn không có quyền sửa người theo dõi của công việc này";
+                                //    break;
+                                //case "deleteassign":
+                                //    txterror = "Bạn không có quyền xóa người làm của công việc này";
+                                //    break;
+                                //case "deletefollower":
+                                //    txterror = "Bạn không có quyền xóa người theo dõi của công việc này";
+                                //    break;
+                                #region Mô tả
+                                case "description":
+                                    dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                                    if (dt_user.Rows.Count > 0)
+                                    {
+                                        users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                        cnn.EndTransaction();
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 28, loginData, ConnectionString, _notifier, _configuration, old);
+                                        #region Lấy thông tin để thông báo
+                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(28, ConnectionString);
+                                        #endregion
+                                        #region Notify chỉnh sửa công việc
+                                        Hashtable has_replace = new Hashtable();
+                                        for (int i = 0; i < users.Count; i++)
+                                        {
+                                            NotifyModel notify_model = new NotifyModel();
+                                            has_replace = new Hashtable();
+                                            has_replace.Add("nguoigui", loginData.Username);
+                                            has_replace.Add("tencongviec", workname);
+                                            notify_model.AppCode = "WORK";
+                                            notify_model.From_IDNV = loginData.UserID.ToString();
+                                            notify_model.To_IDNV = users[i].ToString();
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuamota", "", "vi");
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                                            notify_model.ReplaceData = has_replace;
+                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                            if (info is not null)
+                                            {
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                #endregion
+                                #region Tiêu đề
+                                case "title":
+                                    cnn.EndTransaction();
+                                    users = getUserTask(cnn, data.id_row);
+                                    WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
+                                    if (users.Count > 0)
+                                    {
+                                        #region Lấy thông tin để thông báo
+                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
+                                        #endregion
+                                        #region Notify chỉnh sửa công việc
+                                        Hashtable has_replace = new Hashtable();
+                                        for (int i = 0; i < users.Count; i++)
+                                        {
+                                            NotifyModel notify_model = new NotifyModel();
+                                            has_replace = new Hashtable();
+                                            has_replace.Add("nguoigui", loginData.Username);
+                                            has_replace.Add("tencongviec", workname);
+                                            notify_model.AppCode = "WORK";
+                                            notify_model.From_IDNV = loginData.UserID.ToString();
+                                            notify_model.To_IDNV = users[i].ToString();
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuacongviec", "", "vi");
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                                            notify_model.ReplaceData = has_replace;
+                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                            if (info is not null)
+                                            {
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                #endregion
+                                #region Trạng thái
+                                case "status":
+                                    #region gửi event post automation
+                                    postauto.eventid = 1;
+                                    if (string.IsNullOrEmpty(old.Rows[0]["status"].ToString()))
+                                    {
+                                        postauto.data_input = "any";
+                                    }
+                                    else
+                                    {
+                                        postauto.data_input = old.Rows[0]["status"].ToString(); // giá trị cũ
+                                    }
+                                    postauto.data_input += "," + data.value; // giá trị mới
+                                                                             //postauto.data_input = datapost;
+                                    Automation.SendAutomation(postauto, _configuration, _producer);
+                                    #endregion
+                                    cnn.EndTransaction();
+                                    dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                                    if (dt_user.Rows.Count > 0)
+                                    {
+                                        users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                        string lst_user = string.Join(",", users);
+                                        var userProcess = cnn.CreateDataTable($"select * from we_work_process where WorkID = {data.id_row} and StatusID = {data.value} and Checker not in ({ string.Join(",", users) })");
+                                        if (userProcess.Rows.Count > 0)
+                                        {
+                                            foreach (DataRow item in userProcess.Rows)
+                                            {
+                                                users.Add(long.Parse(item["checker"].ToString()));
+                                            }
+                                        }
+                                        DataTable dts = cnn.CreateDataTable("select * from we_status where id_row = " + data.value);
+                                        if (dts.Rows.Count > 0)
+                                        {
+                                            WeworkLiteController.mailthongbao(data.id_row, users, 21, loginData, ConnectionString, _notifier, _configuration);
+                                            #region Lấy thông tin để thông báo
+                                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(21, ConnectionString);
+                                            #endregion
+                                            #region Notify cập nhật trạng thái công việc
+                                            Hashtable has_replace = new Hashtable();
+                                            for (int i = 0; i < users.Count; i++)
+                                            {
+                                                NotifyModel notify_model = new NotifyModel();
+                                                has_replace = new Hashtable();
+                                                has_replace.Add("nguoigui", loginData.Username);
+                                                has_replace.Add("tencongviec", workname);
+                                                notify_model.AppCode = "WORK";
+                                                notify_model.From_IDNV = loginData.UserID.ToString();
+                                                notify_model.To_IDNV = users[i].ToString();
+                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhattrangthaicongviec", "", "vi");
+                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$trangthai$", dts.Rows[0]["StatusName"].ToString());
+                                                notify_model.ReplaceData = has_replace;
+                                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                                                try
+                                                {
+                                                    if (notify_model != null)
+                                                    {
+                                                        Knoti = new APIModel.Models.Notify();
+                                                    }
+                                                }
+                                                catch
+                                                { }
+                                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                                if (info is not null)
+                                                {
+                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                }
+                                            }
+                                            #endregion
+                                        }
+                                    }
+                                    break;
+                                #endregion
+                                #region Kết quả công việc
+                                case "result":
+                                    dt_user = cnn.CreateDataTable("select distinct * from ( select id_nv from v_wework_new where (where) and id_nv is not null union all select CreatedBy from v_wework_new where (where) and id_nv is not null ) US", "(where)", sqlcond);
+                                    if (dt_user.Rows.Count > 0)
+                                    {
+                                        users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
+                                        cnn.EndTransaction();
+                                        WeworkLiteController.mailthongbao(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
+                                        #region Lấy thông tin để thông báo
+                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(31, ConnectionString);
+                                        #endregion
+                                        #region Notify chỉnh sửa công việc
+                                        Hashtable has_replace = new Hashtable();
+                                        for (int i = 0; i < users.Count; i++)
+                                        {
+                                            NotifyModel notify_model = new NotifyModel();
+                                            has_replace = new Hashtable();
+                                            has_replace.Add("nguoigui", loginData.Username);
+                                            has_replace.Add("tencongviec", workname);
+                                            notify_model.AppCode = "WORK";
+                                            notify_model.From_IDNV = loginData.UserID.ToString();
+                                            notify_model.To_IDNV = users[i].ToString();
+                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhatketquacongviec", "", "vi");
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
+                                            notify_model.ReplaceData = has_replace;
+                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                            if (info is not null)
+                                            {
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                    #endregion
+                                    //case "estimates":
+                                    //    txterror = "Bạn không có quyền thay đổi thời gian làm của công việc của công việc này";
+                                    //    break;
                             }
                         }
+                        #endregion
                     }
                     else
                     {
@@ -4660,8 +4597,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                                 notify_model.ReplaceData = has_replace;
                                                 notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
@@ -4705,7 +4640,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         {
                                             idtemplatemail = 22;
                                         }
-
                                     }
                                     else
                                     {
@@ -4749,7 +4683,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         notify_model.ReplaceData = has_replace;
                                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
@@ -4771,7 +4704,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         id_log_action = 55;
                                     if (data.key == "follower")
                                         id_log_action = 57;
-
                                 }
                                 postauto.data_input += data.value;
                                 if (data.key == "assign")
@@ -4780,7 +4712,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 }
                                 #endregion
                             } //data.key == "assign"
-
                         }
                         if (data.key == "Tags")//thêm 1 tag mới
                         {
@@ -4843,8 +4774,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         notify_model.ReplaceData = has_replace;
                                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
-
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
@@ -4879,7 +4808,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     }
                                 }
                             }
-
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                             if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
@@ -5382,7 +5310,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcondQ);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
-                    //code xóa cv con
+                    bool _delete = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), 13, loginData, cnn, ConnectionString);
+                    if (!_delete)
+                        return JsonResultCommon.Custom("Bạn không có quyền xóa công việc");
                     if (Common.IsTaskClosed(id, cnn))
                     {
                         return JsonResultCommon.Custom("Công việc đã đóng không thể xóa công việc");
@@ -5392,7 +5322,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc");
                     }
                     string xoacon = " in ( select id_row from v_wework_clickup_new where (id_row = " + id + " or id_parent = " + id + ") and  disabled = 0 ) ";
-                    string sqlq = "update we_work set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row " + xoacon;
+                    string sqlq = "update we_work set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row " + xoacon;
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
@@ -5696,7 +5626,6 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
         [HttpGet]
         public object ListEvent([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -6016,7 +5945,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         [HttpGet]
         public async Task<object> Close(long id, bool closed = true)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -6033,6 +5961,9 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
+                    bool checkrole = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), 22, loginData, cnn, ConnectionString);
+                    if (!checkrole)
+                        return JsonResultCommon.Custom("Bạn không có quyền đóng/mở công việc");
                     if (old.Rows[0]["closed"] != DBNull.Value && (bool)old.Rows[0]["closed"] == closed)
                         return JsonResultCommon.Custom("Công việc này vẫn chưa " + (closed ? "mở" : "đóng"));
                     long iduser = loginData.UserID;
@@ -6048,13 +5979,11 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-
                     if (!WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, id, iduser, "", null))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-
                     #region Ghi log trong project
                     string LogContent = "Đóng công việc (" + id + ")";
                     Common.Ghilogfile(loginData.CustomerID.ToString(), "", LogContent, loginData.Username, ControllerContext);
@@ -6095,7 +6024,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                                 notify_model.AppCode = "WORK";
                                 notify_model.From_IDNV = loginData.UserID.ToString();
                                 notify_model.To_IDNV = users[i].ToString();
-
                                 notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(txtnoti, "", "vi");
                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                                 notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", old.Rows[0]["title"].ToString());

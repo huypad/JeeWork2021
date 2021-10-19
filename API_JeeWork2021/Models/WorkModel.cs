@@ -21,7 +21,7 @@ namespace JeeWork_Core2021.Models
         public bool prioritize { get; set; } = false;
         public long urgent { get; set; }
         public long id_parent { get; set; }
-        public long status { get; set; } // thang viet
+        public long status { get; set; }
         /// <summary>
         /// assign và follower
         /// </summary>

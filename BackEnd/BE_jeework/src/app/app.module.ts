@@ -51,6 +51,8 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {CommunicateService} from './pages/JeeWork_Core/projects-team/work-list-new/work-list-new-service/communicate.service';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatDialogModule} from '@angular/material/dialog';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AngularFileViewerModule } from '@taldor-ltd/angular-file-viewer';
 
 // #fake-end#
 
@@ -90,6 +92,7 @@ function appInitializer(authService: AuthService) {
         MatMenuModule,
         MatIconModule,
         MatMomentDateModule,
+        AngularFileViewerModule
     ],
     providers: [
         AclService,
@@ -147,3 +150,4 @@ function appInitializer(authService: AuthService) {
 })
 export class AppModule {
 }
+platformBrowserDynamic().bootstrapModule(AppModule);

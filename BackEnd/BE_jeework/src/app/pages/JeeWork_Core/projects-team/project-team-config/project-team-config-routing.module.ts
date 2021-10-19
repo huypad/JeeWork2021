@@ -8,6 +8,7 @@ import { MembersComponent } from './members/members.component';
 import { EmailComponent } from './email/email.component';
 import { RoleComponent } from './role/role.component';
 import { ImportComponent } from './import/import.component';
+import { ConfigNotifyComponent } from './config-notify/config-notify.component';
 const routes: Routes = [
 	{
 		path: '',
@@ -29,6 +30,10 @@ const routes: Routes = [
 				path: 'email',
 				component: EmailComponent
 			},
+			// {
+			// 	path: 'email',
+			// 	component: ConfigNotifyComponent
+			// },
 			{
 				path: 'repeated',
 				component: RepeatedListComponent

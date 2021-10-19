@@ -197,7 +197,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
             .UpdateUnRead(this.user.user.IdGroup, this.user.user.UserId, "read")
             .subscribe((res) => {
               if (!res) {
-                console.log("Eror Update read Message");
               }
             });
           this.chatService.OneMessage$.next(0);
@@ -603,7 +602,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
   listReply: any[] = [];
   ReplyMess(item) {
     this.listReply.push(item);
-    console.log("AAAA", this.listReply);
     this.ref.detectChanges();
   }
   DeleteReply() {
@@ -647,7 +645,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
   private subscribeToEventsSendReaction(): void {
     this._ngZone.run(() => {
       this.messageService.reaction.subscribe((res) => {
-        console.log("REACTION", res);
         if (res) {
           this.messageService.messageThread$.forEach((element) => {
             let index = element.findIndex(

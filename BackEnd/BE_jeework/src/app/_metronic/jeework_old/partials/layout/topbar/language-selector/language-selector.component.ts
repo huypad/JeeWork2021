@@ -1,6 +1,6 @@
 import { TranslationService } from './../../../../core/_base/layout/services/translation.service';
 // Angular
-import { Component, HostBinding, OnInit, Input } from '@angular/core';
+import { Component, HostBinding, OnInit, Input, ElementRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 // RxJS
 import { filter } from 'rxjs/operators';
@@ -67,7 +67,7 @@ export class LanguageSelectorComponent implements OnInit {
 	 * @param translationService: TranslationService
 	 * @param router: Router
 	 */
-	constructor(private translationService: TranslationService, private router: Router) {
+	constructor(private translationService: TranslationService, private router: Router, private el: ElementRef) {
 	}
 
 	/**
@@ -101,12 +101,22 @@ export class LanguageSelectorComponent implements OnInit {
 			}
 		});
 		this.translationService.setLanguage(lang);
+		(<DOMTokenList>this.el.nativeElement.classList).remove('m-dropdown--open');
 	}
 
 	/**
 	 * Set selected language
 	 */
+	// setSelectedLanguage(): any {
+	// 	this.setLanguage(this.translationService.getSelectedLanguage());
+	// }
 	setSelectedLanguage(): any {
-		this.setLanguage(this.translationService.getSelectedLanguage());
+		this.translationService.getSelectedLanguage().subscribe(lang => {
+			if (lang) {
+				setTimeout(() => {
+					this.setLanguage(lang);
+				});
+			}
+		});
 	}
 }

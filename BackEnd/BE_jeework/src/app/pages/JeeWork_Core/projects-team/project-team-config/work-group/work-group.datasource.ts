@@ -25,5 +25,5 @@ export class WorkGroupDataSource extends BaseDataSource {
 				finalize(() => this.loadingSubject.next(false))
 			).subscribe(res => {
 			});
-	} 
+	}
 }

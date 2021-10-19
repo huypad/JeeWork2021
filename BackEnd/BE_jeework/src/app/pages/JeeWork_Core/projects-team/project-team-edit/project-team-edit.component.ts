@@ -83,9 +83,9 @@ export class ProjectTeamEditComponent implements OnInit {
 			this.tendapb = this.translate.instant("projects.phongban") + '';
 			this.mota = this.translate.instant("projects.motangangonvephongban") + '';
 		}
-		if(+this.item.id_department > 0){
+		if (+this.item.id_department > 0) {
 			this.isChangeDept = false;
-		}else{
+		} else {
 			this.isChangeDept = true;
 		}
 		const filter: any = {};
@@ -108,7 +108,7 @@ export class ProjectTeamEditComponent implements OnInit {
 				var index = this.listUser.find(
 					(x) => x.id_nv == this.UserId
 				);
-				if(index && !(this.item.id_row > 0)){
+				if (index && !(this.item.id_row > 0)) {
 					this.selected.push(index);
 				}
 				this.options = this.getOptions();
@@ -147,7 +147,7 @@ export class ProjectTeamEditComponent implements OnInit {
 		this.icon = {};
 		if (this.item.icon)
 			this.icon.src = this.item.icon;
-		else{
+		else {
 			this.icon.src = "https://img.icons8.com/fluent/48/000000/add-image.png";
 		}
 		this.itemForm = this.fb.group({
@@ -218,14 +218,14 @@ export class ProjectTeamEditComponent implements OnInit {
 			(x) => x.id_nv == data.id_nv
 		);
 
-		if(index >= 0){
+		if (index >= 0) {
 			this.selected.splice(index, 1);
 		}
-		else{
+		else {
 			var index2 = this.selected_Assign.findIndex(
 				(x) => x.id_nv == data.id_nv
 			);
-			if(index2>=0){
+			if (index2 >= 0) {
 				this.selected_Assign.splice(index2, 1);
 			}
 			this.selected.push(data);
@@ -253,10 +253,10 @@ export class ProjectTeamEditComponent implements OnInit {
 	click_Assign($event, vi = -1) {
 		this.myPopover_Assign.hide();
 	}
-	
+
 	ItemSelected_Assign(data) {
 		this.IsChangeUser = true;
-		
+
 		if (data.id_nv == this.UserId && !(this.item.id_row > 0)) {
 			return;
 		}
@@ -264,14 +264,14 @@ export class ProjectTeamEditComponent implements OnInit {
 			(x) => x.id_nv == data.id_nv
 		);
 
-		if(index >= 0){
+		if (index >= 0) {
 			this.selected_Assign.splice(index, 1);
 		}
-		else{
+		else {
 			var index2 = this.selected.findIndex(
 				(x) => x.id_nv == data.id_nv
 			);
-			if(index2>=0){
+			if (index2 >= 0) {
 				this.selected.splice(index2, 1);
 			}
 			this.selected_Assign.push(data);
@@ -444,7 +444,7 @@ export class ProjectTeamEditComponent implements OnInit {
 		const _description = this.translate.instant('GeneralKey.bancomuonthoat');
 		const _waitDesciption = this.translate.instant('GeneralKey.dangdong');
 		const _deleteMessage = this.translate.instant('GeneralKey.thaydoithanhcong');
-		if(this.isChangeData()){
+		if (this.isChangeData()) {
 			const dialogRef = this.layoutUtilsService.deleteElement(_title, _description, _waitDesciption);
 			dialogRef.afterClosed().subscribe(res => {
 				if (!res) {
@@ -455,14 +455,14 @@ export class ProjectTeamEditComponent implements OnInit {
 		} else this.dialogRef.close();
 	}
 
-	isChangeData(){
+	isChangeData() {
 		const val1 = this.prepare();
-		if(val1.title != this.item.title) return true;
-		if(val1.color != this.item.color) return true;
-		if(val1.id_department != this.item.id_department) return true;
-		if(val1.description != this.item.description) return true;
-		if(val1.loai != this.item.loai) return true;
-		if(this.IsChangeUser) return true;
+		if (val1.title != this.item.title) return true;
+		if (val1.color != this.item.color) return true;
+		if (val1.id_department != this.item.id_department) return true;
+		if (val1.description != this.item.description) return true;
+		if (val1.loai != this.item.loai) return true;
+		if (this.IsChangeUser) return true;
 		return false;
 	}
 	reset() {
@@ -494,7 +494,7 @@ export class ProjectTeamEditComponent implements OnInit {
 
 	stopPropagation(event) {
 		event.stopPropagation();
-	} 
+	}
 
 	onSelectFile(event) {
 		if (event.target.files && event.target.files[0]) {

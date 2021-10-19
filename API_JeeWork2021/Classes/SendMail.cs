@@ -224,73 +224,73 @@ namespace JeeWork_Core2021.Classes
         {
             GetDateTime UTCdate = new GetDateTime();
             string email = "hrm@dps.com.vn";
-                string username = "hrm@dps.com.vn";
-                string SmtpClient = "smtp.gmail.com";
-                bool EnableSSL = true;
-                int port = 587;
-                string password = "3mailHRm@dps";
-                SmtpClient s = new SmtpClient(SmtpClient, port);
-                s.UseDefaultCredentials = false;
-                s.EnableSsl = true;
-                s.Credentials = new NetworkCredential(username, password);
-                s.DeliveryMethod = SmtpDeliveryMethod.Network;
-                MailMessage m = new MailMessage();
-                string guiden = "", guikem = "";
-                for (int i = 0; i < mailTo.Count; i++)
+            string username = "hrm@dps.com.vn";
+            string SmtpClient = "smtp.gmail.com";
+            bool EnableSSL = true;
+            int port = 587;
+            string password = "3mailHRm@dps";
+            SmtpClient s = new SmtpClient(SmtpClient, port);
+            s.UseDefaultCredentials = false;
+            s.EnableSsl = true;
+            s.Credentials = new NetworkCredential(username, password);
+            s.DeliveryMethod = SmtpDeliveryMethod.Network;
+            MailMessage m = new MailMessage();
+            string guiden = "", guikem = "";
+            for (int i = 0; i < mailTo.Count; i++)
+            {
+                m.To.Add(mailTo[i]);
+                guiden += "," + mailTo[i];
+            }
+            m.From = new MailAddress(email);
+            if ((!"".Equals(AttacheFile)) && (File.Exists(AttacheFile)))
+            {
+                Attachment att = new Attachment(AttacheFile);
+                m.Attachments.Add(att);
+            }
+            for (int i = 0; i < cc.Count; i++)
+            {
+                m.CC.Add(cc[i]);
+                guikem += "," + cc[i];
+            }
+            m.IsBodyHtml = true;
+            m.Subject = title;
+            m.Body = contents;
+            if (!"".Equals(guiden)) guiden = guiden.Substring(1);
+            try
+            {
+                s.Send(m);
+                //Lưu lại email đã gửi
+                Hashtable val = new Hashtable();
+                val.Add("MailTo", guiden);
+                val.Add("Title", title);
+                if (!"".Equals(guikem)) guikem = guikem.Substring(1);
+                val.Add("Cc", guikem);
+                val.Add("Contents", contents);
+                val.Add("SendTime", UTCdate.Date);
+                val.Add("SendDate", DateTime.Today);
+                val.Add("SendFrom", email);
+                val.Add("CustemerID", CustemerID);
+                cnn.Insert(val, "Sys_SendMail");
+            }
+            catch (Exception ex)
+            {
+                if (SaveCannotSend)
                 {
-                    m.To.Add(mailTo[i]);
-                    guiden += "," + mailTo[i];
-                }
-                m.From = new MailAddress(email);
-                if ((!"".Equals(AttacheFile)) && (File.Exists(AttacheFile)))
-                {
-                    Attachment att = new Attachment(AttacheFile);
-                    m.Attachments.Add(att);
-                }
-                for (int i = 0; i < cc.Count; i++)
-                {
-                    m.CC.Add(cc[i]);
-                    guikem += "," + cc[i];
-                }
-                m.IsBodyHtml = true;
-                m.Subject = title;
-                m.Body = contents;
-                if (!"".Equals(guiden)) guiden = guiden.Substring(1);
-                try
-                {
-                    s.Send(m);
-                    //Lưu lại email đã gửi
                     Hashtable val = new Hashtable();
-                    val.Add("MailTo", guiden);
                     val.Add("Title", title);
-                    if (!"".Equals(guikem)) guikem = guikem.Substring(1);
-                    val.Add("Cc", guikem);
+                    val.Add("Email", guiden);
                     val.Add("Contents", contents);
-                    val.Add("SendTime", UTCdate.Date);
-                    val.Add("SendDate", DateTime.Today);
-                    val.Add("SendFrom", email);
+                    val.Add("LastSend", UTCdate.Date);
+                    val.Add("Lan", 1);
+                    val.Add("Error", ex.Message);
                     val.Add("CustemerID", CustemerID);
-                    cnn.Insert(val, "Sys_SendMail");
+                    if (!"".Equals(guikem)) guikem = guikem.Substring(1);
+                    val.Add("cc", guikem);
+                    cnn.Insert(val, "Tbl_emailchuaguiduoc");
                 }
-                catch (Exception ex)
-                {
-                    if (SaveCannotSend)
-                    {
-                        Hashtable val = new Hashtable();
-                        val.Add("Title", title);
-                        val.Add("Email", guiden);
-                        val.Add("Contents", contents);
-                        val.Add("LastSend", UTCdate.Date);
-                        val.Add("Lan", 1);
-                        val.Add("Error", ex.Message);
-                        val.Add("CustemerID", CustemerID);
-                        if (!"".Equals(guikem)) guikem = guikem.Substring(1);
-                        val.Add("cc", guikem);
-                        cnn.Insert(val, "Tbl_emailchuaguiduoc");
-                    }
-                    //SaveMailCannotSend(title, mailTo, contents, ex.Message, cc, CustemerID);
-                }
-                //});
+                //SaveMailCannotSend(title, mailTo, contents, ex.Message, cc, CustemerID);
+            }
+            //});
             ErrorMessage = "";
             return true;
         }
@@ -553,13 +553,13 @@ namespace JeeWork_Core2021.Classes
                 DpsConnection cnn1 = new DpsConnection(ConnectionString);
                 try
                 {
-                    s.Send(m);
+                    //s.Send(m);
                     emailMessage asyncnotice = new emailMessage()
                     {
                         CustomerID = long.Parse(CustemerID),
                         access_token = "",
-                        //from = "derhades1998@gmail.com",
-                        //to = "thanhthang1798@gmail.com", //
+                        //from = "huypaddaica@gmail.com",
+                        //to = "huytv@dps.com.vn",
                         to = guiden, //
                         subject = title,
                         html = contents //nội dung html

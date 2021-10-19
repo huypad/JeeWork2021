@@ -994,6 +994,9 @@ export const locale = {
             chuacothanhviennao: 'Chưa có thành viên nào',
             sodongtrentrang: 'Số dòng trên trang',
             trongtongso: 'trong tổng số',
+            thongbaonoify: 'Thông báo qua app/trình duyệt',
+            thongbaonoify_email: 'Gửi qua email',
+            danhsach: 'Danh sách thông báo'
         },
         filter: {
             tuan: 'TUẦN',

@@ -1,0 +1,62 @@
+<style>
+    .view {
+        padding-bottom: 15px;
+    }
+
+    .css-button-green {
+        background-color: green;
+        color: #fff;
+
+    }
+
+    .css-button-blue {
+        background-color: darkblue;
+        color: #fff;
+    }
+
+    .setting {
+        color: blue;
+    }
+
+    .setting:hover {
+        font-style: italic;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+<div class="kt-form  role-setting-container">
+    <ng-container>
+        <div class=" kt-form__group  form-group" style="border-bottom:solid 1px #eee">
+            <div class="row">
+
+            </div>
+            <div class="col-md-12 kt--margin-bottom-10-mobile">
+                <table class="w-100 text-center">
+                    <tr class="role-title">
+                        <th class="text-left">{{'notify.danhsach' | translate }}</th>
+                        <th>{{'notify.thongbaonoify' | translate }}</th>
+                        <th>{{'notify.thongbaonoify_email' | translate }}</th>
+                    </tr>
+                    <tr *ngFor="let item of listconfig" class="role">
+                        <td class="text-left">
+                            <div class="role-name">
+                                {{item.langkey}}
+                            </div>
+                            <div class="role-info">
+                                <!-- {{item.object_type}} -->
+                            </div>
+                        </td>
+                        <td>
+                            <mat-slide-toggle [checked]="item.isnotify" (change)="ChangIsNotify($event, item, true)">
+                            </mat-slide-toggle>
+                        </td>
+                        <td>
+                            <mat-slide-toggle [checked]="item.isemail" (change)="ChangIsNotify($event, item, false)">
+                            </mat-slide-toggle>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </ng-container>
+</div>

@@ -689,7 +689,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
           .subscribe((res) => {
             if (res.status === 1) {
             } else {
-              console.log("Eror");
             }
           });
       }

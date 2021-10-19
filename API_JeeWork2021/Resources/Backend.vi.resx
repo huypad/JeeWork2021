@@ -117,11 +117,182 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="project_addmember" xml:space="preserve">
+    <value>Thêm thành viên trong dự án</value>
+  </data>
+  <data name="project_add_view" xml:space="preserve">
+    <value>Thêm cách hiển thị công việc</value>
+  </data>
+  <data name="project_automation_create" xml:space="preserve">
+    <value>tạo mới tự động hóa</value>
+  </data>
+  <data name="project_automation_delete" xml:space="preserve">
+    <value>Xóa tự động hóa</value>
+  </data>
+  <data name="project_automation_update" xml:space="preserve">
+    <value>Chỉnh sửa tự động hóa</value>
+  </data>
+  <data name="project_create" xml:space="preserve">
+    <value>Tạo mới dự án</value>
+  </data>
+  <data name="project_delete" xml:space="preserve">
+    <value>Xóa dự án</value>
+  </data>
+  <data name="project_delete_view" xml:space="preserve">
+    <value>Xóa cách hiển thị công việc</value>
+  </data>
+  <data name="project_exchangetype" xml:space="preserve">
+    <value>Chuyển loại dự án</value>
+  </data>
+  <data name="project_favourite" xml:space="preserve">
+    <value>Yêu thích dự án</value>
+  </data>
+  <data name="project_template_create" xml:space="preserve">
+    <value>Tạo mới mô hình dự án</value>
+  </data>
+  <data name="project_template_delete" xml:space="preserve">
+    <value>Xóa mô hình dự án</value>
+  </data>
+  <data name="project_template_update" xml:space="preserve">
+    <value>Chỉnh sửa mô hình dự án</value>
+  </data>
+  <data name="project_update" xml:space="preserve">
+    <value>Cập nhật thông tin dự án</value>
+  </data>
+  <data name="project_updaterole" xml:space="preserve">
+    <value>Cập nhật quyền của thành viên trong dự án</value>
+  </data>
+  <data name="project_updatestage" xml:space="preserve">
+    <value>Cập nhật trạng thái dự án</value>
+  </data>
+  <data name="project_update_view" xml:space="preserve">
+    <value>Cập nhật cách hiển thị công việc</value>
+  </data>
   <data name="thietlapvaitroadmin" xml:space="preserve">
     <value>$nguoigui$ đã thiết lập vai trò của bạn trong $project_team$ là admin</value>
   </data>
   <data name="thietlapvaitrothanhvien" xml:space="preserve">
     <value>$nguoigui$ đã thiết lập vai trò của bạn trong $project_team$ là thành viên</value>
+  </data>
+  <data name="topic_comment" xml:space="preserve">
+    <value>Bình luận trong thảo luận</value>
+  </data>
+  <data name="topic_delete" xml:space="preserve">
+    <value>Xóa thảo luận</value>
+  </data>
+  <data name="topic_favourite" xml:space="preserve">
+    <value>Yêu thích thảo luận</value>
+  </data>
+  <data name="topic_follow" xml:space="preserve">
+    <value>Theo dõi thảo luận</value>
+  </data>
+  <data name="topic_follower" xml:space="preserve">
+    <value>Thêm người theo dõi trong thảo luận</value>
+  </data>
+  <data name="topic_taotopic" xml:space="preserve">
+    <value>Tạo thảo luận</value>
+  </data>
+  <data name="topic_unfollow" xml:space="preserve">
+    <value>Bỏ theo dõi thảo luận</value>
+  </data>
+  <data name="topic_update" xml:space="preserve">
+    <value>Cập nhật thảo luận</value>
+  </data>
+  <data name="topic_xoafollower" xml:space="preserve">
+    <value>Xóa người theo dõi trong thảo luận</value>
+  </data>
+  <data name="work_addfollower" xml:space="preserve">
+    <value>Thêm thành viên vào theo dõi công việc</value>
+  </data>
+  <data name="work_capnhatfilekqcongviec" xml:space="preserve">
+    <value>Cập nhật file kết quả công việc</value>
+  </data>
+  <data name="work_capnhatkqcv" xml:space="preserve">
+    <value>Cập nhật kết quả công việc</value>
+  </data>
+  <data name="work_chinhsuahanchot" xml:space="preserve">
+    <value>Chỉnh sửa hạn chót</value>
+  </data>
+  <data name="work_chinhsuangaybd" xml:space="preserve">
+    <value>Chỉnh sửa ngày bắt đầu</value>
+  </data>
+  <data name="work_closed" xml:space="preserve">
+    <value>Đóng công việc</value>
+  </data>
+  <data name="work_comment" xml:space="preserve">
+    <value>Bình luận trong công việc</value>
+  </data>
+  <data name="work_converttosubtasks" xml:space="preserve">
+    <value>Chuyển công việc thành subtasks</value>
+  </data>
+  <data name="work_danhdauchuahoanthanh" xml:space="preserve">
+    <value>Đánh dấu chưa hoàn thành công việc</value>
+  </data>
+  <data name="work_danhdauhoanthanh" xml:space="preserve">
+    <value>Đánh dấu hoàn thành công việc</value>
+  </data>
+  <data name="work_deletecolumn" xml:space="preserve">
+    <value>Xóa cột hiển thị trong công việc</value>
+  </data>
+  <data name="work_deletefollower" xml:space="preserve">
+    <value>Xóa thành viên theo dõi công việc</value>
+  </data>
+  <data name="work_deletetotask" xml:space="preserve">
+    <value>Xóa thành viên thực hiện khỏi công việc</value>
+  </data>
+  <data name="work_dichuyendennhom" xml:space="preserve">
+    <value>Di chuyển đến nhóm công việc</value>
+  </data>
+  <data name="work_duplicate" xml:space="preserve">
+    <value>Nhân bản công việc</value>
+  </data>
+  <data name="work_estimate" xml:space="preserve">
+    <value>Cập nhật thời gian ước tính</value>
+  </data>
+  <data name="work_favorites" xml:space="preserve">
+    <value>Yêu thích công việc</value>
+  </data>
+  <data name="work_giaoviec" xml:space="preserve">
+    <value>Giao việc</value>
+  </data>
+  <data name="work_mota" xml:space="preserve">
+    <value>Chỉnh sửa mô tả công việc</value>
+  </data>
+  <data name="work_move" xml:space="preserve">
+    <value>Di chuyển công việc</value>
+  </data>
+  <data name="work_nhankhancap" xml:space="preserve">
+    <value>Gắn nhãn khẩn cấp cho công việc</value>
+  </data>
+  <data name="work_nhanquantrong" xml:space="preserve">
+    <value>Gắn nhãn quan trọng</value>
+  </data>
+  <data name="work_open" xml:space="preserve">
+    <value>Mở lại công việc</value>
+  </data>
+  <data name="work_status" xml:space="preserve">
+    <value>Chuyển trạng thái cho công việc</value>
+  </data>
+  <data name="work_suaxoanhan" xml:space="preserve">
+    <value>Thêm xóa sửa nhãn</value>
+  </data>
+  <data name="work_taocongviecmoi" xml:space="preserve">
+    <value>Tạo công việc mới</value>
+  </data>
+  <data name="work_tencongviec" xml:space="preserve">
+    <value>Chỉnh sửa tên công việc</value>
+  </data>
+  <data name="work_themchecklist" xml:space="preserve">
+    <value>Thêm checklist</value>
+  </data>
+  <data name="work_themchecklistitem" xml:space="preserve">
+    <value>Thêm check list item</value>
+  </data>
+  <data name="work_themfilecongviec" xml:space="preserve">
+    <value>Thêm file tài liệu cho công việc</value>
+  </data>
+  <data name="work_xoacongviec" xml:space="preserve">
+    <value>Xóa công việc</value>
   </data>
   <data name="ww_assign" xml:space="preserve">
     <value>$nguoigui$ đã giao công việc $tencongviec$ cho bạn</value>

@@ -122,6 +122,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isDeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
                     string strhoanthanh = string.Join(",", lstHoanthanh);
                     string strquahan = string.Join(",", lstQuahan);
+                    if (string.IsNullOrEmpty(strhoanthanh))
+                    {
+                        strhoanthanh = "0";
+                    }
+                    if (string.IsNullOrEmpty(strquahan))
+                    {
+                        strquahan = "0";
+                    }
                     #endregion
                     string sqlq = @$"select p.*, de.title as department,coalesce(w.tong,0) as tong
                                     ,coalesce( w.ht,0) as ht, coalesce(w.quahan,0) as quahan

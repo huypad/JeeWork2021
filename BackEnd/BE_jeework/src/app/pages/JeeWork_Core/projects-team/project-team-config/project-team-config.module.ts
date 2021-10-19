@@ -26,13 +26,14 @@ import { RepeatedListComponent } from '../../work/repeated-list/repeated-list.co
 import { MatChipsModule } from '@angular/material/chips';
 import { AvatarModule } from 'ngx-avatar';
 import { WorkGroupComponent } from './work-group/work-group.component';
+import { ConfigNotifyComponent } from './config-notify/config-notify.component';
 
 @NgModule({
 	imports: [
 		CommonModule,
 		RouterModule,
 		HttpClientModule,
-		 PartialsModule,
+		PartialsModule,
 		FormsModule,
 		ReactiveFormsModule,
 		TranslateModule.forChild(),
@@ -55,6 +56,7 @@ import { WorkGroupComponent } from './work-group/work-group.component';
 		ProjectTeamConfigComponent,
 		SettingComponent,
 		EmailComponent,
+		ConfigNotifyComponent,
 		MembersComponent,
 		AddUsersDialogComponent,
 		RoleComponent,
@@ -64,9 +66,10 @@ import { WorkGroupComponent } from './work-group/work-group.component';
 		// RepeatedListComponent
 	],
 	exports: [
-		ProjectTeamConfigComponent, 
+		ProjectTeamConfigComponent,
 		SettingComponent,
 		EmailComponent,
+		ConfigNotifyComponent,
 		MembersComponent,
 		AddUsersDialogComponent,
 		RoleComponent,
