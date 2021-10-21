@@ -1078,6 +1078,8 @@ export const locale = {
             thutuuutien: 'Thứ tự ưu tiên',
             trangthai: 'Trạng thái',
             tuychonhienthi: 'Tùy chọn hiển thị',
+            sum_estimates: 'Tổng số giờ',
+            sum_estimates_ht: 'Tổng số giờ hoàn thành',
             vieckhancap: 'Việc khẩn cấp',
             vohieuhoa: 'Vô hiệu hóa',
             ngaybatdau: 'Ngày bắt đầu',

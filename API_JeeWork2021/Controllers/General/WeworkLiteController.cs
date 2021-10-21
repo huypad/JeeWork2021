@@ -139,7 +139,50 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
+        /// <summary>
+        /// DS dự án theo user tham gia (quản lý)
+        /// </summary>
+        /// <returns></returns>
+        [Route("lite_project_by_manager")]
+        [HttpGet]
+        public object Lite_Project_By_Manager(string keyword = "")
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    DataTable dt = project_by_manager(loginData.UserID, loginData.CustomerID, cnn, keyword);
+                    if (cnn.LastError != null || dt == null)
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    var data = from r in dt.AsEnumerable()
+                               select new
+                               {
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   isproject = r["is_project"],
+                                   start_date = r["start_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["start_date"]),
+                                   end_date = r["end_date"] == DBNull.Value ? "" : string.Format("{0:dd/MM/yyyy HH:mm}", r["end_date"]),
+                                   color = r["color"],
+                                   status = r["status"],
+                                   title_full = r["title"] + " [" + r["spacename"] + "]",
+                                   locked = r["locked"],
+                                   position = r["position"],
+                                   createdby = r["CreatedBy"],
+                                   style = r["CreatedBy"].ToString().Equals(loginData.UserID.ToString()) ? "card-project-for-me" : "card-project"
+                               };
+                    data = data.OrderBy(x => x.position);
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
         /// <summary>
         /// DS dự án theo user tham gia (quản lý hoặc thành viên)
         /// </summary>
@@ -3681,6 +3724,41 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                      where u.disabled = 0 and id_user = " + userid + " " +
                                     "and p.disabled = 0 and d.disabled = 0 " +
                                     "and idkh=" + customerid + "" + str_where + " order by d.title";
+            dt = cnn.CreateDataTable(sql);
+            dt.Columns.Add("Position", typeof(int));
+            if (cnn.LastError != null || dt == null)
+                return new DataTable();
+            else
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    if (item["CreatedBy"].ToString().Equals(userid.ToString()))
+                    {
+                        item["Position"] = 1;
+                    }
+                    else
+                        item["Position"] = 2;
+                }
+            }
+            return dt;
+        }
+        public static DataTable project_by_manager(long userid, long customerid, DpsConnection cnn, string keyword)
+        {
+            DataTable dt = new DataTable();
+            string str_where = "";
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
+            }
+            string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
+                                    , color, status, locked, d.title as spacename, p.createdby
+                                    from we_project_team p
+                                    join we_department d on d.id_row = p.id_department
+                                    join we_project_team_user u on u.id_project_team = p.id_row
+                                     where u.disabled = 0 and id_user = " + userid + " " +
+                                    "and p.disabled = 0 and d.disabled = 0 and admin = 1 " +
+                                    "and idkh=" + customerid + "" + str_where + " " +
+                                    "order by p.title";
             dt = cnn.CreateDataTable(sql);
             dt.Columns.Add("Position", typeof(int));
             if (cnn.LastError != null || dt == null)

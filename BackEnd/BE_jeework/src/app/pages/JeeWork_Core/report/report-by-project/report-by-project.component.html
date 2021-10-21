@@ -5,67 +5,68 @@
                 <div class="hd-report">
                     <div class="filters">
                         <div class="filter " (click)="openDialog()">{{'filter.tu'|translate}}:
-                            <em>{{  selectedDate.startDate | date:'dd/MM'}} -
+                            <em>{{ selectedDate.startDate | date:'dd/MM'}} -
                                 {{ selectedDate.endDate | date:'dd/MM/yyyy'}}</em>
                             <i class="fas fa-chevron-down"></i>
                         </div>
-        
-                        <div class="filter -menu-op cot-20" [matMenuTriggerFor]="menu" matTooltip="{{'report.clicktoupdate'|translate}}">
+
+                        <div class="filter -menu-op cot-20" [matMenuTriggerFor]="menu"
+                            matTooltip="{{'report.clicktoupdate'|translate}}">
                             <em>{{column_sort.title}}</em>
                             <i class="fas fa-chevron-down"></i>
                             <mat-menu #menu="matMenu">
                                 <button mat-menu-item *ngFor="let item of sortField"
-                                [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
-                                (click)="SelectedField(item)">{{item.title}}</button>
+                                    [ngStyle]="{'font-weight': column_sort.value==item.value?'bold':''}"
+                                    (click)="SelectedField(item)">{{item.title}}</button>
                             </mat-menu>
                         </div>
-        
+
                         <div class="filter -menu-op cot-20 url-disabled">
-                            <em> {{ ProjectTeam.title  }}</em>
-                                <i class="fas fa-lock"></i>
+                            <em> {{ ProjectTeam.title }}</em>
+                            <i class="fas fa-lock"></i>
                         </div>
-                        
-        
+
+
                         <div class="filter -menu-op cot-20" [matMenuTriggerFor]="project">
                             <em> {{filterCVC.title}} </em>
                             <i class="fas fa-chevron-down"></i>
                             <mat-menu #project="matMenu">
                                 <button (click)="Filter(item)"
-                                    [ngStyle]="{'font-weight': filterCVC.value==item.value?'bold':''}"
-                                    mat-menu-item *ngFor="let item of _filterCV"> {{item.title}}</button>
+                                    [ngStyle]="{'font-weight': filterCVC.value==item.value?'bold':''}" mat-menu-item
+                                    *ngFor="let item of _filterCV"> {{item.title}}</button>
                             </mat-menu>
                         </div>
-        
-        
+
+
                         <div class="filter -menu-op cot-20" [matMenuTriggerFor]="status">
                             <em>{{trangthai.title}}</em>
                             <i class="fas fa-chevron-down"></i>
                             <mat-menu #status="matMenu">
-                                <button (click)="Filter(item)" 
-                                    [ngStyle]="{'font-weight': trangthai.id_row==item.id_row?'bold':''}"
-                                    mat-menu-item *ngFor="let item of _filterTT">
+                                <button (click)="Filter(item)"
+                                    [ngStyle]="{'font-weight': trangthai.id_row==item.id_row?'bold':''}" mat-menu-item
+                                    *ngFor="let item of _filterTT">
                                     {{item.title}}</button>
                             </mat-menu>
                         </div>
-        
+
                     </div>
                 </div>
-        
+
                 <div class="colum-items">
                     <div class="row">
                         <ng-container *ngFor="let item of ListOverview">
-                            <div class="col box" *ngIf="item.isShow" >
+                            <div class="col box" *ngIf="item.isShow">
                                 <kt-item-group [value]="item"></kt-item-group>
-                            </div>    
+                            </div>
                         </ng-container>
-                        
+
                     </div>
                 </div>
-        
+
                 <div class="rp-title">
                     <span class="text-uppercase" translate="report.baocaocongviec"></span>
                 </div>
-        
+
                 <div class="info-rp db-grid">
                     <div class="row">
                         <div class="col-4">
@@ -87,23 +88,25 @@
                                         </div>
                                     </div> -->
                                     <div id="chart-pie" style="display: block;margin-top: 0;margin-bottom: 30px;">
-                                            <!-- col-3 margin sử dụng mặc định -->
+                                        <!-- col-3 margin sử dụng mặc định -->
                                         <canvas baseChart [data]="pieChartData" [legend]="pieChartLegend"
-                                            [labels]="pieChartLabel" [chartType]="pieChartType" [options]="pieChartOptions"
-                                            [colors]="pieChartColor">
+                                            [labels]="pieChartLabel" [chartType]="pieChartType"
+                                            [options]="pieChartOptions" [colors]="pieChartColor">
                                         </canvas>
                                         <div class="text-in-chart" style="top:50%">
                                             <!-- col-3 thì bỏ top -->
-                                            <div style="font-size:24px;font-weight: 500;color:black">{{Tongcongviec}}</div>
+                                            <div style="font-size:24px;font-weight: 500;color:black">{{Tongcongviec}}
+                                            </div>
                                             <span translate="report.congviec"></span>
                                         </div>
                                     </div>
-        
+
                                     <div class="row">
                                         <div class="col-6 row" *ngFor="let item of Trangthai">
                                             <div class="circle" [ngStyle]="{'background': item.color}">
                                             </div>
-                                            <div class="hide-text" matTooltip={{item.trangthai}} style="padding-left:10px">
+                                            <div class="hide-text" matTooltip={{item.trangthai}}
+                                                style="padding-left:10px">
                                                 {{item.trangthai}}
                                             </div>
                                         </div>
@@ -117,14 +120,15 @@
                                     <b translate="report.thanhvienxuatsac"></b>
                                 </div>
                                 <div class="card-body pd-0 overflow-auto" style="padding:10px">
-                                    <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffExcellent">
-                                        <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
-                                            [info]=getInfoCVHT(item.hoanthanh,item.num_work)>
+                                    <div class="border-bottom" style="padding: 5px 0;"
+                                        *ngFor="let item of StaffExcellent">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [matMenuTriggerFor]="user" [info]=getInfoCVHT(item.hoanthanh,item.num_work)>
                                         </kt-custom-user>
                                         <mat-menu #user="matMenu">
                                             <div style="max-width:250px">
-                                                <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
-                                                    [info]="item.tenchucdanh">
+                                                <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                                    [matMenuTriggerFor]="menu" [info]="item.tenchucdanh">
                                                 </kt-custom-user>
                                             </div>
                                         </mat-menu>
@@ -143,7 +147,8 @@
                                             <canvas height="50" width="200" style="margin-left: -40%;" baseChart
                                                 [data]="[item[1].value,item[0].value==0?1:(item[0].value - item[1].value)]"
                                                 [legend]="pieKhongdunghan.legend" [labels]="pieKhongdunghan.labels"
-                                                [chartType]="'pie'" [options]="pieKhongdunghan.options" [colors]="item[2]">
+                                                [chartType]="'pie'" [options]="pieKhongdunghan.options"
+                                                [colors]="item[2]">
                                             </canvas>
                                             <span class="center"> {{ item[1].value / item[0].value | percent}} </span>
                                         </div>
@@ -152,10 +157,11 @@
                                                 <span style="font-size: 24px;font-weight: 600;"
                                                     [ngStyle]="{'color': listpieColor[i]}"> {{ item[1].value }} </span>
                                                 <span> {{item[1].trangthai}} </span>
-        
+
                                             </div>
                                             <div class="hide-more-text">
-                                                <span>{{'filter.tren'|translate}} <b class="text-dark">{{ item[0].value }}</b>
+                                                <span>{{'filter.tren'|translate}} <b class="text-dark">{{ item[0].value
+                                                        }}</b>
                                                     {{item[0].trangthai}}</span>
                                             </div>
                                         </div>
@@ -187,7 +193,7 @@
                                             <div class="area x00">
                                                 <div class="txt"> {{Eisenhower.data.quantrong_khongkhancap}} </div>
                                             </div>
-        
+
                                             <div class="area x01">
                                                 <div class="txt"> {{Eisenhower.data.khancap_quantrong}} </div>
                                             </div>
@@ -197,10 +203,10 @@
                                             <div class="area x11">
                                                 <div class="txt"> {{Eisenhower.data.khancap_khongquantrong}} </div>
                                             </div>
-        
+
                                         </div>
                                     </div>
-        
+
                                 </div>
                             </div>
                             <!-- <div class="h-50">
@@ -257,13 +263,14 @@
                                 <div class="card-body position-relative" style="height: 400px;">
                                     <div
                                         style="position: absolute; top: 50%; left: -70px; transform: rotate(-90deg); font-size: 24px;">
-                                        <span translate="report.soluongcongviec"></span></div>
+                                        <span translate="report.soluongcongviec"></span>
+                                    </div>
                                     <div *ngIf="chart2Ready" style="display: block;margin-left: 30px;">
                                         <canvas baseChart [chartType]="chartType2" [datasets]="chartData2"
                                             [labels]="chartLabel2" [options]="chartOptions2" [legend]="chartLegend2"
                                             [colors]="chartColor2">
                                         </canvas>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -274,10 +281,12 @@
                                     <b translate="report.tonghoptheotuan"></b>
                                 </div>
                                 <div class="card-body position-relative" style="height: 400px;">
-                                    <div style="position: absolute; top: 50%; left: -65px; transform: rotate(-90deg); font-size: 20px;">
+                                    <div
+                                        style="position: absolute; top: 50%; left: -65px; transform: rotate(-90deg); font-size: 20px;">
                                         <span translate="report.soluongcongviec"></span>
                                     </div>
-                                    <div class="d-block" *ngIf="chartData3Ready" style="position: absolute; top: 20px;left: 25px;right: 0;bottom: 60px;">
+                                    <div class="d-block" *ngIf="chartData3Ready"
+                                        style="position: absolute; top: 20px;left: 25px;right: 0;bottom: 60px;">
                                         <canvas style=" float: right;" baseChart [chartType]="'bar'" height="325px"
                                             width="363px" [datasets]="chartData3" [labels]="chartLabel3"
                                             [options]="chartOptions3" [legend]='false' [colors]="chartColor3">
@@ -300,7 +309,7 @@
                                 <div class="card-header bg-white">
                                     <b translate="report.baocaochitiettheothanhvien"></b>
                                     <span (click)="ExportReportExcel('member')" *ngIf="Staff.length != 0"
-                                        class="url -hover float-right export-excel"><i class="fas fa-download"></i> 
+                                        class="url -hover float-right export-excel"><i class="fas fa-download"></i>
                                         <span translate="report.xuatbaocaoexcel"></span>
                                     </span>
                                 </div>
@@ -311,11 +320,18 @@
                                                 <span translate="report.thanhvien"></span>
                                             </div>
                                             <div class="item float-right">
-        
-                                                <div class="it item-text"> <span translate="filter.hoanthanh" matTooltip="{{ 'filter.hoanthanh' | translate}}"></span> </div>
-                                                <div class="it item-text"> <span translate="filter.hoanthanhmuon" matTooltip="{{ 'filter.hoanthanhmuon' | translate}}"></span> </div>
-                                                <div class="it item-text"> <span translate="filter.quahan" matTooltip="{{ 'filter.quahan' | translate}}"></span> </div>
-                                                <div class="it item-text"> <span translate="filter.dangthuchien" matTooltip="{{ 'filter.dangthuchien' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.sum_estimates"
+                                                    matTooltip="{{ 'filter.sum_estimates' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.hoanthanh"
+                                                        matTooltip="{{ 'filter.hoanthanh' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.hoanthanhmuon"
+                                                        matTooltip="{{ 'filter.hoanthanhmuon' | translate}}"></span>
+                                                </div>
+                                                <div class="it item-text"> <span translate="filter.quahan"
+                                                        matTooltip="{{ 'filter.quahan' | translate}}"></span> </div>
+                                                <div class="it item-text"> <span translate="filter.dangthuchien"
+                                                        matTooltip="{{ 'filter.dangthuchien' | translate}}"></span>
+                                                </div>
                                                 <!-- <div class="it item-text"> <span translate="filter.dangdanhgia" matTooltip="{{ 'filter.dangdanhgia' | translate}}"></span> </div> -->
                                             </div>
                                         </div>
@@ -323,8 +339,9 @@
                                             <div class="item" *ngFor="let item of Staff">
                                                 <div>
                                                     <div class="url">
-                                                        
-                                                        <kt-avatar-user [image]="item.image" [size]="35" [name]="item.hoten" >
+
+                                                        <kt-avatar-user [image]="item.image" [size]="35"
+                                                            [name]="item.hoten">
                                                         </kt-avatar-user>
                                                     </div>
                                                 </div>
@@ -335,9 +352,12 @@
                                                     <span style="color: black;">{{item.tenchucdanh}}</span>
                                                 </div>
                                                 <div class="side">
-                                                    
-                                                    <kt-crossbar-chart [title]="titleReportByStaff" [data]="item.datasets" [color]="colorCrossbar">
+
+                                                    <kt-crossbar-chart [title]="titleReportByStaff"
+                                                        [data]="item.datasets" [color]="colorCrossbar">
                                                     </kt-crossbar-chart>
+                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[3]}">
+                                                        {{item.sum_estimates}} </div>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
                                                         {{item.hoanthanh}} </div>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[1]}">
@@ -346,6 +366,7 @@
                                                         {{item.quahan}} </div>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[3]}">
                                                         {{item.danglam}} </div>
+                                                       
                                                     <!-- <div class="it item-text" [ngStyle]="{'color': colorCrossbar[4]}">
                                                         {{item.dangdanhgia}} </div> -->
                                                 </div>
@@ -361,19 +382,20 @@
                                     <b translate="report.congviecnhieunhat"></b>
                                 </div>
                                 <div class="card-body pd-0 overflow-auto" style="height: 500px;padding:10px">
-                                    <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffMostTask">
-                                        <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
-                                            [info]=getInfoCVDTH(item.danglam,item.num_work)>
+                                    <div class="border-bottom" style="padding: 5px 0;"
+                                        *ngFor="let item of StaffMostTask">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [matMenuTriggerFor]="user" [info]=getInfoCVDTH(item.danglam,item.num_work)>
                                         </kt-custom-user>
                                         <mat-menu #user="matMenu">
                                             <div style="max-width:250px">
-                                                <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
-                                                    [info]="item.tenchucdanh">
+                                                <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                                    [matMenuTriggerFor]="menu" [info]="item.tenchucdanh">
                                                 </kt-custom-user>
                                             </div>
                                         </mat-menu>
                                     </div>
-        
+
                                 </div>
                             </div>
                         </div>
@@ -383,14 +405,16 @@
                                     <b translate="report.lammuonnhieunhat"></b>
                                 </div>
                                 <div class="card-body pd-0 overflow-auto" style="height: 500px;padding:10px">
-                                    <div class="border-bottom" style="padding: 5px 0;" *ngFor="let item of StaffMostLate">
-                                        <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="user"
-                                            [info]=getInfoquahan(item.quahan,item.ht_quahan) [textcolor]="'red'">
+                                    <div class="border-bottom" style="padding: 5px 0;"
+                                        *ngFor="let item of StaffMostLate">
+                                        <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                            [matMenuTriggerFor]="user" [info]=getInfoquahan(item.quahan,item.ht_quahan)
+                                            [textcolor]="'red'">
                                         </kt-custom-user>
-                                        <mat-menu #user="matMenu"> 
+                                        <mat-menu #user="matMenu">
                                             <div style="max-width:250px">
-                                                <kt-custom-user [image]="item.image" [name]="item.hoten" [matMenuTriggerFor]="menu"
-                                                    [info]="item.tenchucdanh">
+                                                <kt-custom-user [image]="item.image" [name]="item.hoten"
+                                                    [matMenuTriggerFor]="menu" [info]="item.tenchucdanh">
                                                 </kt-custom-user>
                                             </div>
                                         </mat-menu>
@@ -400,7 +424,7 @@
                         </div>
                     </div>
                 </div>
-        
+
                 <!-- <div class="rp-title">
                     <span class="text-uppercase" translate="report.baocaotheodanhsachmuctieu">
                     </span>
@@ -452,11 +476,11 @@
                     </div>
                 </div>
          -->
-                
+
                 <div class="rp-title">
                     <span class="text-uppercase" translate="report.cacbaocaochuyensaukhac"></span>
                 </div>
-        
+
                 <div class="info-rp">
                     <div class="row">
                         <div class="col-7">
@@ -480,7 +504,8 @@
                                     <div class="position-relative w-100 h-100">
                                         <div class="grid-stats">
                                             <div class="note-thong-ke">
-                                               <span translate="report.chitinhcaccongviecbaocaotrongthoigianluachon"></span>
+                                                <span
+                                                    translate="report.chitinhcaccongviecbaocaotrongthoigianluachon"></span>
                                             </div>
                                             <div class="stat">
                                                 <div class="v">
@@ -512,11 +537,11 @@
                                             </div>
                                         </div>
                                     </div>
-        
+
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

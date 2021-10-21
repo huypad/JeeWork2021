@@ -75,3 +75,14 @@
 08/10/2021 01:45:45 - Xóa dữ liệu công việc (220023)
 08/10/2021 01:46:04 - Xóa dữ liệu công việc (220024)
 08/10/2021 01:46:09 - Xóa dữ liệu công việc (220025)
+21/10/2021 07:28:02 - Thêm mới dữ liệu project_team: title=JeeHR 2021, id_department=21762, loai=1
+21/10/2021 07:28:32 - Xóa dữ liệu user ra khỏi dự án (25552)
+21/10/2021 07:28:35 - Xóa dữ liệu user ra khỏi dự án (25554)
+21/10/2021 07:31:35 - Thêm mới dữ liệu project_team: title=Jee Plasform, id_department=21762, loai=1
+21/10/2021 07:32:27 - Thêm mới dữ liệu project_team: title=JeeWork, id_department=21762, loai=1
+21/10/2021 10:08:44 - Thêm mới dữ liệu project_team: title=Jee Test, id_department=21762, loai=1
+21/10/2021 10:18:19 - Thêm mới dữ liệu project_team: title=Jee New, id_department=21762, loai=1
+21/10/2021 10:26:30 - Thêm mới dữ liệu project_team: title=Jee Plasform 2021, id_department=21762, loai=1
+21/10/2021 10:27:29 - Thêm mới dữ liệu project_team: title=JeeWork 2021, id_department=21762, loai=1
+21/10/2021 10:29:48 - Thêm mới dữ liệu project_team: title=Jee Work 2021, id_department=21762, loai=1
+21/10/2021 10:31:14 - Thêm mới dữ liệu project_team: title=JeeHR 2021, id_department=21762, loai=1

@@ -138,7 +138,7 @@ export class ProjectsTeamComponent implements OnInit {
                 this.LoadData();
             }
         });
-        this.layoutUtilsService.showWaitingDiv();
+        // this.layoutUtilsService.showWaitingDiv();
         let path = this.router.url;
         if (path) {
             const arr = path.split('/');
@@ -178,7 +178,7 @@ export class ProjectsTeamComponent implements OnInit {
             }
         });
         this._Services.ListRole(this.ID_Project).subscribe((res) => {
-            this.layoutUtilsService.OffWaitingDiv();
+            // this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
                 this.roles = res.data;
             } else {
