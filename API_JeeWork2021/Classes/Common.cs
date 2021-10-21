@@ -796,9 +796,12 @@ namespace JeeWork_Core2021.Classes
             SqlConditions conds = new SqlConditions();
             conds.Add("userid", id_user);
             conds.Add("id_work", id_work);
-            string sql = "select * from v_wework_new where id_row = @id_work and ( createdby = @userid or id_nv = @userid)";
+            string sql = "select * from v_wework_new where id_row = @id_work and (createdby = @userid or id_nv = @userid)";
             DataTable dt = cnn.CreateDataTable(sql, conds);
-            if (dt.Rows.Count > 0)
+            string sql_follower = "";
+            sql_follower = "select* from we_work_user where id_user = " + id_user + " and loai = 2 and disabled = 0 and id_work =" + id_work;
+            DataTable dt_follower = cnn.CreateDataTable(sql_follower);
+            if (dt.Rows.Count > 0 || dt_follower.Rows.Count > 0)
             {
                 return true;
             }
