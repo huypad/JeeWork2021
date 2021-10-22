@@ -240,6 +240,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    bool Visible = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
@@ -251,27 +252,28 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string str_where = "";
                     if (!string.IsNullOrEmpty(keyword))
                     {
-                        str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
+                        str_where = " and (de.title like '%@keyword%')";
                     }
                     string sqlq = @$"select distinct de.*, '' as NguoiTao, '' as TenNguoiTao, '' as NguoiSua, '' as TenNguoiSua 
-                                    from we_department de where de.Disabled = 0";
-                    //if (!Visible)
-                    //{
-                    //    sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
-                    //        "where de.Disabled = 0 and (do.id_user = " + loginData.UserID + " " +
-                    //        "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
-                    //        "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
-                    //}
-                    //else
-                    //    sqlq = sqlq.Replace("(admin)", " where de.Disabled = 0  ");
+                                    from we_department de (admin)";
+                    if (!Visible)
+                    {
+                        //sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
+                        //    "where de.Disabled = 0 and (do.id_user = " + loginData.UserID + " " +
+                        //    "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
+                        //    "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
+                        sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
+                        "where and de.idkh = "+loginData.CustomerID+" and " +
+                        "de.Disabled = 0 and (do.id_user = " + loginData.UserID + ") and do.disabled = 0");
+                    }
+                    else
+                        sqlq = sqlq.Replace("(admin)", " where de.disabled = 0 and de.idkh = " + loginData.CustomerID + " ");
                     //DataTable dt = cnn.CreateDataTable(sqlq, Conds);
                     #endregion
-
-                    DataTable dt = cnn.CreateDataTable(sqlq, conds);
+                    DataTable dt = cnn.CreateDataTable(sqlq + str_where, conds);
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     #region Map info account từ JeeAccount
-
                     foreach (DataRow item in dt.Rows)
                     {
                         var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();

@@ -29,7 +29,6 @@ const tinyMCE = {
     images_upload_url: environment.APIROOTS + '/api/attachment/upload-img',
     default_link_target: '_blank',
     link_context_toolbar: true,
-    link_assume_external_targets: true,
     // automatic_uploads: true,
     // images_upload_base_path: '/images',
     // images_upload_credentials: true,

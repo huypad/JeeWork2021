@@ -910,15 +910,15 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("quahan", quahan);
-                    string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile
-                    , '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong
-                    ,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia,
-                     0.00 as sum_estimates, 0.00 as sum_total_estimates
-                    from we_project_team_user u
-                    left join we_project_team p on u.id_project_team=p.id_row 
-                    where u.id_user in ({listID}) 
-                    and id_project_team = " + query.filter["id_projectteam"];
+
+
+                    string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia
+                    from  we_project_team_user u
+                    left join we_project_team p on u.id_project_team=p.id_row where  u.id_user in ({listID}) and id_project_team = " + query.filter["id_projectteam"];
+
                     DataTable dt = cnn.CreateDataTable(queryuser);
+
+
                     List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                     if (nvs.Count == 0)
                         return JsonResultCommon.ThanhCong(nvs);
@@ -953,9 +953,8 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                     iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
                                     iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
                                     iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
-                                    iIf( {sql_isquahan} , 1, 0) as is_quahan,
-                                    ISNULL(estimates, 0) as estimates, 0.00 as sum_estimates, 0.00 as sum_total_estimates 
-                                    from v_wework_new w where 1=1 " + strW + " (parent) ";
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
+                                    from v_wework_new  w where 1=1 " + strW + " (parent) ";
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -971,7 +970,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     //DataTable listWork = cnn.CreateDataTable(sqlwork);
                     bool hasValue = dtW.Rows.Count > 0;
                     int total = 0, success = 0;
-                    //decimal sum_estimates = 0.00;
                     foreach (DataRow dr in dt.Rows)
                     {
                         DataRow[] row = dtW.Select("id_nv = " + dr["id_nv"].ToString());
@@ -983,11 +981,11 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                             dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             dr["dangdanhgia"] = 0;
-                            dr["sum_estimates"] = (hasValue ? (decimal)dtW.Compute("sum(estimates)", "id_nv=" + dr["id_nv"].ToString()) : 0.0);
                         }
                         else
                         {
-                            dr["sum_estimates"] = dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = dr["dangdanhgia"] = 0;
+                            dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = dr["dangdanhgia"] = 0;
+
                         }
                     }
                     for (int i = dt.Rows.Count - 1; i >= 0; i--)
@@ -1002,7 +1000,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     dt.AcceptChanges();
                     //Xuất dữ liệu
                     string title = "BÁO CÁO CHI TIẾT THEO THÀNH VIÊN";
-                    string[] header = { "Mã NV", "Họ tên", "Phòng ban/BP", "Chức danh", "Tổng số CV được giao", "Hoàn thành", "Hoàn thành quá hạn", "Quá hạn", "Đang làm", "Đang đánh giá", "Số giờ làm" };
+                    string[] header = { "Mã NV", "Họ tên", "Phòng ban/BP", "Chức danh", "Tổng số CV được giao", "Hoàn thành", "Hoàn thành quá hạn", "Quá hạn", "Đang làm", "Đang đánh giá" };
                     string[] width = { "100", "180", "120", "120", "100", "100", "100", "100", "100", "100" };
                     Hashtable format = new Hashtable();
                     string rowheight = "18.5";
@@ -1022,7 +1020,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                    dangdanhgia = int.Parse(r["dangdanhgia"].ToString()),
                                    ht_quahan = int.Parse(r["ht_quahan"].ToString()),
                                    quahan = int.Parse(r["quahan"].ToString()),
-                                   sum_estimates = r["sum_estimates"].ToString(),
                                    percentage = total == 0 ? 0 : (success * 100 / total)
                                };
                     if ("desc".Equals(query.sortOrder))

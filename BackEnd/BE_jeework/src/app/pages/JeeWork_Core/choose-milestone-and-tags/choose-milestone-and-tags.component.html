@@ -1,9 +1,10 @@
 <style>
-	.status-input{
+	.status-input {
 		display: flex;
-		margin: 3px 0 5px 0; 
+		margin: 3px 0 5px 0;
 	}
-	.status-input .box-color{
+
+	.status-input .box-color {
 		width: 15px;
 		height: 15px;
 		background-color: red;
@@ -11,23 +12,28 @@
 		margin-right: 5px;
 		cursor: pointer;
 	}
-	.status-input input{
+
+	.status-input input {
 		width: 100%;
-		border:none;
+		border: none;
 	}
-	.status-input .input input:focus{
-		border:none;
+
+	.status-input .input input:focus {
+		border: none;
 		outline: none;
 		border-bottom: 1px solid gray;
 	}
-	.status-input .input{
+
+	.status-input .input {
 		flex-grow: 1;
-		
+
 	}
-	.status-input .action-input{
+
+	.status-input .action-input {
 		min-width: 20px;
 	}
-	.delete-tag{
+
+	.delete-tag {
 		position: absolute;
 		right: 0;
 		top: 5px;
@@ -43,20 +49,23 @@
 	<div class="users-container" *ngIf="options" (click)="stopPropagation($event)">
 		<ng-container *ngFor="let item of list">
 
-			<button class="d-block border-bottom" *ngIf="item.id_row" mat-menu-item
-				type="button" [ngStyle]="{'color': item.color}">
+			<button class="d-block border-bottom" *ngIf="item.id_row" mat-menu-item type="button"
+				[ngStyle]="{'color': item.color}">
 				<!-- <mat-icon *ngIf="item.checked" class="text-success mg-0">check</mat-icon> -->
 				<div class="row">
 					<mat-menu #color2="matMenu" yPosition="above" xPosition="after">
-						<kt-color-picker2 [selected]="'red'" (click)="stopPropagation($event)" (ItemSelected)="UpdateTag($event,item)">
+						<kt-color-picker2 [selected]="'red'" (click)="stopPropagation($event)"
+							(ItemSelected)="UpdateTag($event,item)">
 						</kt-color-picker2>
 					</mat-menu>
-					<div class="cu-task-row-status1" [matMenuTriggerFor]="color2" *ngIf="Loai=='Tags'" style="width:20px;padding-right:5px">
+					<div class="cu-task-row-status1" [matMenuTriggerFor]="color2" *ngIf="Loai=='Tags'"
+						style="width:20px;padding-right:5px">
 						<div class="point" [ngStyle]="{'backgroundColor': item.color}">
 						</div>
 					</div>
 					<span (click)="selected(item)" class="-hover">{{item.title}}</span>
-					<mat-icon (click)="stopPropagation($event)" matTooltip="Xóa thẻ khỏi dự án" class="delete-tag" (click)="Delete(item.id_row)" *ngIf="Loai=='Tags'" >close</mat-icon>
+					<mat-icon (click)="stopPropagation($event)" matTooltip="Xóa thẻ khỏi dự án" class="delete-tag"
+						(click)="Delete(item.id_row)" *ngIf="Loai=='Tags'">close</mat-icon>
 				</div>
 			</button>
 		</ng-container>
@@ -78,7 +87,7 @@
 		</mat-menu>
 		<button class="pd-0 mg-0" style="visibility: hidden;width: 0;" #changeColor
 			[matMenuTriggerFor]="color"></button>
-		<div class="box-color"(click)="changeColor.click();" [ngStyle]="{'backgroundColor': colorNew }">
+		<div class="box-color" (click)="changeColor.click();" [ngStyle]="{'backgroundColor': colorNew }">
 		</div>
 		<div class="input">
 			<input type="text" placeholder="Nhấn enter để lưu" #input (keyup.enter)="Create()" class="">

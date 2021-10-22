@@ -108,14 +108,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.list_priority = this.weworkService.list_priority;
     this.UserID = this.auth.getUserId();
   }
-
   @Input() ID_Project = 0;
-
   @ViewChild("table1", { static: true }) table1: MatTable<any>;
   @ViewChild("table2", { static: true }) table2: MatTable<any>;
   @ViewChild("table3", { static: true }) table3: MatTable<any>;
   @ViewChild("list1", { static: true }) list1: CdkDropList;
-
   ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
   subscription: SubscriptionLike;
   data: any = [];
@@ -264,7 +261,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     },
   ];
 
-  async ngOnInit() {
+  ngOnInit() {
     // set ngày filter
     const today = new Date();
     this.filterDay = {
@@ -1235,7 +1232,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       task.end_date = moment(this.selectedDate.endDate).format("MM/DD/YYYY");
       task.deadline = moment(this.selectedDate.endDate).format("MM/DD/YYYY");
     }
-
+    debugger
     this._service.InsertTask(task).subscribe((res) => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);
@@ -1434,10 +1431,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.CloseAddnewTask(true);
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
-        // this.LoadData();
+        this.LoadData();
         // setTimeout(() => {
         this.newtask = x;
-        this.LoadDataTaskNew(true);
         this.AddnewTask(val.status, true);
         // }, 1000);
       } else {
@@ -2333,7 +2329,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
           }
         },
         (err) => {
-          console.log(err);
         }
       );
   }

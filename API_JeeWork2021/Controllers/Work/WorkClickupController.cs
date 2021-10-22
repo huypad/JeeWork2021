@@ -3086,7 +3086,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     };
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
                     #endregion
-
                     // thông báo nhắc nhở
                     foreach (var user in data.Users)
                     {
@@ -3131,7 +3130,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
