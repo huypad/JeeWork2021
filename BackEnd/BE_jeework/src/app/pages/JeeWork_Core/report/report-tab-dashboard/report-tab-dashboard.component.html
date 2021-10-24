@@ -1,5 +1,4 @@
 <style>
-
     .item-hethong {
         text-align: center;
         padding-top: 5px;
@@ -19,6 +18,7 @@
         font-weight: 600;
         font-size: 1.5;
     }
+
     .text-success {
         color: #219904 !important;
     }
@@ -314,7 +314,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-8">
+                <div class="col-12">
                     <div class="card line-3">
                         <div class="card-header bg-white">
                             <b translate="report.baocaochitiettheothanhvien"></b>
@@ -387,7 +387,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-6">
                     <div class="card">
                         <div class="card-header bg-white">
                             <b translate="report.congviecnhieunhat"></b>
@@ -407,7 +407,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-6">
                     <div class="card">
                         <div class="card-header bg-white">
                             <b translate="report.lammuonnhieunhat"></b>
@@ -817,9 +817,10 @@
 
     <div class="view-mat-menu-df" (click)="$event.stopPropagation();">
         <div class="cu2-space-row__item cu2-space-row__item_expanded" [hidden]="this.ID_department > 0">
-            <div matTooltipShowDelay="300"  (click)="selected_Dept(null)" [ngClass]="{'text-success font-weight-bolder': null === Selected}"
-                matTooltip="Xem tất cả" class="cu2-space-row__item-name">
-                Xem tất cả </div> 
+            <div matTooltipShowDelay="300" (click)="selected_Dept(null)"
+                [ngClass]="{'text-success font-weight-bolder': null === Selected}" matTooltip="Xem tất cả"
+                class="cu2-space-row__item-name">
+                Xem tất cả </div>
         </div>
         <ng-container *ngFor="let space of this.datatree | async">
             <div class="cu2-space-row__item cu2-space-row__item_expanded">
@@ -827,21 +828,24 @@
                     <ng-container *ngIf="space.parentid > 0;else itemspace">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                             <path
-                                    d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" />
+                                d="M6.083 4c1.38 1.612 2.578 3 4.917 3h11v13h-20v-16h4.083zm.917-2h-7v20h24v-17h-13c-1.629 0-2.305-1.058-4-3z" />
                         </svg>
                     </ng-container>
                     <ng-template #itemspace>
                         <div class="cu-project-avatar__item cu-avatar cu-project-avatar__text cu-project-avatar__text_bg"
-                             style="color: rgb(191, 74, 204);">
+                            style="color: rgb(191, 74, 204);">
                             <span> {{space.title.trim()[0]}} </span>
                         </div>
                     </ng-template>
 
                 </div>
-                <div matTooltipShowDelay="300"  (click)="selected_Dept(space)" [ngClass]="{'text-success font-weight-bolder': space === Selected}"
-                    matTooltip="{{space.title}}" class="cu2-space-row__item-name">
+                <div matTooltipShowDelay="300" (click)="selected_Dept(space)"
+                    [ngClass]="{'text-success font-weight-bolder': space === Selected}" matTooltip="{{space.title}}"
+                    class="cu2-space-row__item-name">
                     {{space.title}} </div>
-                <mat-icon class="mat-icon-rtl-mirror" *ngIf="hasChild(this.space)" (click)="space.expanded = !space.expanded"> {{ space.expanded ? 'expand_more' : 'chevron_right'}} </mat-icon>
+                <mat-icon class="mat-icon-rtl-mirror" *ngIf="hasChild(this.space)"
+                    (click)="space.expanded = !space.expanded"> {{ space.expanded ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
 
             </div>
             <ng-container *ngIf="space.expanded">
@@ -855,11 +859,12 @@
                             </svg>
                         </div>
                         &nbsp;
-                        <div matTooltipShowDelay="300" matTooltip="{{folder.title}}" (click)="selected_Dept(folder)" [ngClass]="{'text-success font-weight-bolder': folder === Selected || space === Selected}"
+                        <div matTooltipShowDelay="300" matTooltip="{{folder.title}}" (click)="selected_Dept(folder)"
+                            [ngClass]="{'text-success font-weight-bolder': folder === Selected || space === Selected}"
                             class="cu2-space-row__item-name"> {{folder.title}}
                         </div>
-                    </div>  
-                </ng-container> 
+                    </div>
+                </ng-container>
                 <hr>
             </ng-container>
         </ng-container>

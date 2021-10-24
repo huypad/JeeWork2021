@@ -30,6 +30,7 @@ using Google.Apis.Util.Store;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.Logger;
 using Newtonsoft.Json;
+using System.Collections.Specialized;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -6322,7 +6323,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
         }
         public static DataSet GetWorkByEmployee(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
         {
-            List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
+            //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
             #region Code filter
@@ -6455,7 +6456,45 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                                             where a.disabled = 0 " + where_string + " " +
                                     "order by maxdate desc";
             DataTable dt_activity = cnn.CreateDataTable(sql_activity);
+            DataTable dt_task = new DataTable();
+            dt_task = ds.Tables[0];
             #region Map info account từ JeeAccount
+            //StringCollection list_nguoitao = new StringCollection();
+            //StringCollection list_nguoiupdate = new StringCollection();
+            //StringCollection lits_nguoigiao = new StringCollection();
+            //StringCollection list_assign = new StringCollection();
+
+            //foreach (DataRow dr in ds.Tables[0].Rows)
+            //{
+            //    list_nguoitao.Add(dr["CreatedBy"].ToString());
+            //    list_nguoiupdate.Add(dr["UpdatedBy"].ToString());
+            //    lits_nguoigiao.Add(dr["nguoigiao"].ToString());
+            //    list_assign.Add(dr["Id_NV"].ToString());
+            //}
+            //DataRow row;
+            //foreach (var i_user in DataAccount)
+            //{
+            //    if (list_nguoitao.Contains(i_user.UserId.ToString()))
+            //    {
+            //        row = ds.Tables[0].NewRow();
+            //        row["NguoiTao"] = i_user.FullName;
+            //    }
+            //    if (list_nguoiupdate.Contains(i_user.UserId.ToString()))
+            //    {
+            //        row = ds.Tables[0].NewRow();
+            //        row["NguoiSua"] = i_user.FullName;
+            //    }
+            //    if (lits_nguoigiao.Contains(i_user.UserId.ToString()))
+            //    {
+            //        row = ds.Tables[0].NewRow();
+            //        row["hoten_nguoigiao"] = i_user.FullName;
+            //    }
+            //    if (list_assign.Contains(i_user.UserId.ToString()))
+            //    {
+            //        row = ds.Tables[0].NewRow();
+            //        row["hoten"] = i_user.FullName;
+            //    }
+            //}
             foreach (DataRow item in ds.Tables[0].Rows)
             {
                 var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6706,7 +6745,6 @@ where u.disabled = 0 and u.loai = 2";
                     }
                 }
             }
-
             //columnName="" : không group
             // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))
             // k có phần này thì workclickup lấy dữ liệu không map theo id dự án

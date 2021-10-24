@@ -18,6 +18,10 @@ using static JeeWork_Core2021.Controllers.Wework.ReportController.Simulate;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -47,7 +51,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         // kiểm tra điều kiện hoành thành
         string queryhoanthanh = " and w.end_date is not null ";
         string querydangthuchien = " and w.end_date is null ";
-
         public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportByProjectController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -99,7 +102,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
                 strP += " and p." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
 
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
@@ -111,7 +114,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom("Dự án không hợp lệ");
                 }
                 int id_projectteam = int.Parse(query.filter["id_projectteam"]);
-
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                 {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
@@ -129,12 +131,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                 {
                     displayChild = query.filter["displayChild"];
-                    if(displayChild == "0")
+                    if (displayChild == "0")
                     {
                         strW += " and id_parent is null ";
                     }
                 }
-
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -153,7 +154,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region get trạng thái của dự án - hoàn thành - đang làm 
                     long hoanthanh = GetStatusComplete(id_projectteam, cnn);
                     long deadline = GetStatusDeadline(id_projectteam, cnn);
-                    long danglam = GetStatusTodo(id_projectteam,cnn);
+                    long danglam = GetStatusTodo(id_projectteam, cnn);
                     #endregion
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("danglam", danglam);
@@ -162,14 +163,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string sqlq = @$"select count(*) as Tong, COUNT(CASE WHEN { sqlhoanthanh } THEN 1 END) as HoanThanh
 ,COUNT(CASE WHEN {sql_dangthuchien} THEN 1 END) as DangThucHien,COUNT(CASE WHEN {sql_isquahan} THEN 1 END) as TreHan from v_wework_clickup_new w
 join we_project_team p on p.id_row = w.id_project_team
-where w.disabled=0  " + strW; 
+where w.disabled=0  " + strW;
                     sqlq += @$";select count(*) as Tong,COUNT(CASE WHEN pu.admin = 1 THEN 1 END) as QuanTriVien,COUNT(CASE WHEN pu.admin = 0 THEN 1 END) as ThanhVien from we_project_team_user pu
 join we_project_team p on p.id_row=pu.id_project_team
 where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
-                    
+
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var data = new
                     {
                         //DuAn = ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0 ? new
@@ -211,7 +212,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -224,7 +225,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TongHopDuAn([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -257,7 +258,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and p." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -286,7 +287,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable(); //1: đúng tiến độ, 2: chậm tiến độ, 3: rủi ro cao,4: thành công, 5: thất bại,6: bị hủy
                     List<string> label = new List<string>() { "Đúng tiến độ", "Chậm tiến độ", "Có rủi to cao", "Dự án đóng và hoàn thành", "Dự án đóng và chưa hoàn thành", "Dự án đóng và tạm dừng" };
@@ -303,7 +304,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -316,7 +317,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object MucTieuTheoDepartment([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -349,7 +350,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and m." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -376,7 +377,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     var dtW = ds.Tables[0].AsEnumerable();
                     //var data = from r in dtW
@@ -396,7 +397,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -411,7 +412,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TrangThaiCongViec([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -444,7 +445,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -497,7 +498,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -554,7 +555,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -567,7 +568,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object QuaTrinhHoanThanh([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -600,7 +601,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     //strW += " and id_department=@id_department";
@@ -653,7 +654,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -680,7 +681,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                 tatca = _as.Count(),
                                 thuchien = (int)_as.CopyToDataTable().Compute("count(id_row)", " status =  " + todo),
                                 hoanthanh = (int)_as.CopyToDataTable().Compute("count(id_row)", " status= " + hoanthanh),
-                                quahan = (int)_as.CopyToDataTable().Compute("count(id_row)", " is_quahan= "+1)
+                                quahan = (int)_as.CopyToDataTable().Compute("count(id_row)", " is_quahan= " + 1)
                             });
                         }
                     }
@@ -690,7 +691,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -703,7 +704,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TongHopTheoTuan([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -736,7 +737,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     //strW += " and id_department=@id_department";
@@ -791,7 +792,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dtW = ds.Tables[0];
                     List<object> data = new List<object>();
@@ -807,7 +808,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                        tencot = WorkController.FirstDateOfWeek(year, g.Key).Day + " - " + WorkController.FirstDateOfWeek(year, g.Key).AddDays(6).ToString("dd/MM"),
                                        tatca = g.Count(),
                                        dangthuchien = (int)g.CopyToDataTable().Compute("count(id_row)", " dangthuchien = 1"),
-                                       hoanthanh = (int)g.CopyToDataTable().Compute("count(id_row)", " status = "+hoanthanh),
+                                       hoanthanh = (int)g.CopyToDataTable().Compute("count(id_row)", " status = " + hoanthanh),
                                        quahan = (int)g.CopyToDataTable().Compute("count(id_row)", " is_quahan=1 ")
                                    };
                     return JsonResultCommon.ThanhCong(Children);
@@ -816,10 +817,10 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-         
+
         /// <summary>
         /// Báo cáo chi tiết theo thành viên (Không cần tuyền params)
         /// </summary>
@@ -829,9 +830,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object ReportByStaff([FromQuery] QueryParams query)
         {
-           
-            //Token = "f3d23d99-8342-49fe-afbb-211f525cae73";
-            //UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -864,19 +862,19 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
                     cond.Add("id_department", query.filter["id_department"]);
-                } 
+                }
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
-                    strW += " and  id_project_team= @id_projectteam ";
+                    strW += " and id_project_team= @id_projectteam ";
                     cond.Add("id_projectteam", query.filter["id_projectteam"]);
                 }
                 if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiện (đang làm & phải làm)||2: đã xong
-                { 
+                {
                     if (query.filter["status"].ToString().Equals(1.ToString()))
                     {
                         // strW += " and w.status not in (select stt.id_row from we_status stt where stt.id_project_team = @id_projectteam and IsFinal = 1)";
@@ -904,30 +902,27 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-                    
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("quahan", quahan);
-
-
-                    string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia
-                    from  we_project_team_user u
-                    left join we_project_team p on u.id_project_team=p.id_row where  u.id_user in ({listID}) and id_project_team = " + query.filter["id_projectteam"];
-
+                    string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile
+                    , '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong
+                    ,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia,
+                     0.00 as sum_estimates, 0.00 as sum_estimates_done
+                    from we_project_team_user u
+                    left join we_project_team p on u.id_project_team=p.id_row 
+                    where u.id_user in ({listID}) 
+                    and id_project_team = " + query.filter["id_projectteam"];
                     DataTable dt = cnn.CreateDataTable(queryuser);
-
-
                     List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                     if (nvs.Count == 0)
                         return JsonResultCommon.ThanhCong(nvs);
                     #region Map info account từ JeeAccount
-
                     foreach (DataRow item in dt.Rows)
                     {
                         var info = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;
@@ -944,17 +939,14 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                     on p.id_row=u.id_project_team 
                                     where p.disabled=0 and u.disabled=0 " +
                                     "group by u.id_user";
-                    //sqlq += @";select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
-                    //                iIf(w.Status  = @hoanthanh and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
-                    //                 iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
-                    //                iIf(w.Status = @quahan, 1, 0) as is_quahan 
-                    //                from v_wework_new w where 1=1  " + strW + " (parent)";
                     sqlq += @$";select id_row, id_nv, status, CreatedDate, Deadline,
                                     iIf( {sqlhoanthanhquahan} ,1,0) as is_htquahan,
                                     iIf({sqlhoanthanhdunghan} ,1,0) as is_ht,
                                     iIf( {sql_dangthuchien} , 1, 0) as dangthuchien, 
-                                    iIf( {sql_isquahan} , 1, 0) as is_quahan
-                                    from v_wework_new  w where 1=1 " + strW + " (parent) ";
+                                    iIf( {sql_isquahan} , 1, 0) as is_quahan,
+                                    ISNULL(estimates, 0) as estimates
+                                    , 0.00 as sum_estimates, 0.00 as sum_estimates_done 
+                                    from v_wework_new w where id_nv is not null " + strW + " (parent) ";
                     if (displayChild == "0")
                         sqlq = sqlq.Replace("(parent)", " and id_parent is null");
                     else
@@ -980,59 +972,50 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                             dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
-                            dr["dangdanhgia"] = 0;
+                            //dr["dangdanhgia"] = 0;
+                            dr["sum_estimates"] = (hasValue ? (decimal)dtW.Compute("sum(estimates)", "id_nv=" + dr["id_nv"].ToString()) : 0.0);
+                            dr["sum_estimates_done"] = (hasValue ? (decimal)dtW.Compute("sum(estimates)", " id_nv=" + dr["id_nv"].ToString() + " and (is_ht=1 or is_htquahan=1)") : 0.0);
                         }
                         else
                         {
-                            dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = dr["dangdanhgia"] = 0;
-
+                            dr["sum_estimates"] = dr["sum_estimates_done"] = dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = 0;
                         }
                     }
-                    for (int i = dt.Rows.Count - 1; i >= 0; i--)
-                    {
-                        DataRow dr = dt.Rows[i];
-                        total = int.Parse(dr["tong"].ToString());
-                        if ((total) <= 0)
-                        {
-                            dr.Delete();
-                        }
-                    }
-                    dt.AcceptChanges();
                     //Xuất dữ liệu
                     string title = "BÁO CÁO CHI TIẾT THEO THÀNH VIÊN";
-                    string[] header = { "Mã NV", "Họ tên", "Phòng ban/BP", "Chức danh", "Tổng số CV được giao", "Hoàn thành", "Hoàn thành quá hạn", "Quá hạn", "Đang làm", "Đang đánh giá" };
+                    string[] header = { "Mã NV", "Họ tên", "Phòng ban/BP", "Chức danh", "Tổng số CV được giao", "Hoàn thành", "Hoàn thành quá hạn", "Quá hạn", "Đang làm", "Tổng số giờ làm", "Tổng số giờ đã hoàn thành" };
                     string[] width = { "100", "180", "120", "120", "100", "100", "100", "100", "100", "100" };
                     Hashtable format = new Hashtable();
                     string rowheight = "18.5";
                     excel_member = ExportExcelHelper.ExportToExcel(dt, title, header, width, rowheight, "26", format);
                     var data = from r in dt.AsEnumerable()
+                               where int.Parse(r["tong"].ToString()) > 0
                                select new
                                {
                                    id_nv = r["id_nv"],
                                    hoten = r["hoten"],
                                    tenchucdanh = r["tenchucdanh"],
                                    image = r["image"],
-                                   //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath),
-                                   num_project = 1,
                                    num_work = total = int.Parse(r["tong"].ToString()),
                                    danglam = int.Parse(r["danglam"].ToString()),
                                    hoanthanh = success = int.Parse(r["ht"].ToString()),
-                                   dangdanhgia = int.Parse(r["dangdanhgia"].ToString()),
+                                   //dangdanhgia = int.Parse(r["dangdanhgia"].ToString()),
                                    ht_quahan = int.Parse(r["ht_quahan"].ToString()),
                                    quahan = int.Parse(r["quahan"].ToString()),
+                                   sum_estimates = r["sum_estimates"].ToString(),
+                                   sum_estimates_done = r["sum_estimates_done"].ToString(),
                                    percentage = total == 0 ? 0 : (success * 100 / total)
                                };
                     if ("desc".Equals(query.sortOrder))
                         data = data.OrderByDescending(x => x.num_work);
                     else
                         data = data.OrderBy(x => x.num_work);
-                    // #update lại data trả về
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1047,7 +1030,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object ReportByConditions([FromQuery] QueryParams query)
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1093,7 +1075,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
                         strW += " and id_project_team=@id_projectteam";
@@ -1115,24 +1097,18 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
-                   
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("quahan", quahan);
-
-
                     string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia
                     from  we_project_team_user u
                     left join we_project_team p on u.id_project_team=p.id_row where u.id_user in (" + listID + ") and id_project_team = " + query.filter["id_projectteam"];
-
                     DataTable dt = cnn.CreateDataTable(queryuser);
-
                     List<string> nvs = dt.AsEnumerable().Select(x => x["id_nv"].ToString()).ToList();
                     if (nvs.Count == 0)
                         return JsonResultCommon.ThanhCong(nvs);
-
                     #region Map info account từ JeeAccount
 
                     foreach (DataRow item in dt.Rows)
@@ -1175,7 +1151,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataTable dtW = ds.Tables[1];
                     bool hasValue = dtW.Rows.Count > 0;
                     int total = 0, success = 0;
-                     int top = 10;
+                    int top = 10;
                     if ("excellent".Equals(query.filter["type"]))
                         top = 5;
                     else
@@ -1254,7 +1230,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1266,7 +1242,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object Eisenhower([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1300,7 +1276,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
                     strW += " and id_project_team=@id_projectteam";
@@ -1320,7 +1296,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         strW += queryhoanthanh;
                     }
                 }
-
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
@@ -1331,9 +1306,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     long quahan = GetStatusDeadline(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
-                    cond.Add("quahan", quahan); 
-
-
+                    cond.Add("quahan", quahan);
                     //string sqlq = @"select id_row, title, deadline, urgent, important, status, clickup_prioritize as level
                     //                ,iIf(w.Status = @quahan, 1, 0) as is_quahan
                     //                from v_wework_clickup_new w 
@@ -1354,7 +1327,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         quantrong_khongkhancap = hasValue ? dt.Compute("count( id_row)", " level = 2") : 0,
                         khancap_khongquantrong = hasValue ? dt.Compute("count( id_row)", " level = 3") : 0,
                         khongkhancap_khongquantrong = hasValue ? dt.Compute("count( id_row)", " level <> 1 and level <> 2 and level <> 3") : 0,
-                        dangdanhgia = hasValue ? dt.Compute("count(id_row)", "status not in ("+hoanthanh+","+quahan+")") : 0,
+                        dangdanhgia = hasValue ? dt.Compute("count(id_row)", "status not in (" + hoanthanh + "," + quahan + ")") : 0,
                         late = hasValue ? dt.Compute("count(id_row)", " is_quahan = 1") : 0,
                     });
                     var project_team = (new
@@ -1371,7 +1344,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1383,7 +1356,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object milestone([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1433,7 +1406,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         //strW += " and id_department=@id_department";
@@ -1547,7 +1520,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1559,7 +1532,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object Top_done_milestone([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1608,7 +1581,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
                         strW += " and id_project_team=@id_projectteam";
@@ -1677,7 +1650,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                             {
                                 dr["tong"] = row.Sum(x => int.Parse(x["tong"].ToString()));
                                 dr["ht"] = row.Sum(x => int.Parse(x["ht"].ToString()));
-
                             }
                             else
                             {
@@ -1706,11 +1678,11 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
- 
-         /// <summary>
+
+        /// <summary>
         /// Phân bổ cv theo department
         /// </summary>
         /// <param name="id"></param>
@@ -1719,7 +1691,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object CacConSoThongKe([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1753,7 +1725,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -1793,7 +1765,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                             from v_wework_clickup_new w where 1=1 " + strW;
                     string sql_comment = @$"select iif(sum(num_comment)>0,sum(num_comment),0) from we_work where id_row in (select id_row 
                             from v_wework_clickup_new w where 1=1 {strW})";
-                    string sql_object = @" select id_user from we_project_team_user where disabled = 0 and id_project_team = "+ query.filter["id_projectteam"] + " ; " +
+                    string sql_object = @" select id_user from we_project_team_user where disabled = 0 and id_project_team = " + query.filter["id_projectteam"] + " ; " +
                                             "select count(DISTINCT id_project_team) " +
                                             "from v_wework_new w where 1 = 1 " + strW + "(child) " +
                                             "group by id_project_team";
@@ -1804,7 +1776,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     }
                     DataSet ds_object = cnn.CreateDataSet(sql_object, cond);
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
-                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment= 0;
+                    double daynum, weeknum, work_of_week, work_of_member = 0, work_of_project = 0, comment = 0;
                     GetWeekInMonth(from, to, out daynum, out weeknum);
                     DataTable dt_work = ds.Tables[1];
                     work_of_week = dt_work.Rows.Count / weeknum;
@@ -1816,7 +1788,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     comment = double.Parse(cnn.ExecuteScalar(sql_comment, cond).ToString());
 
                     if (cnn.LastError != null || ds == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var
                                        data = new
                                        {
@@ -1831,14 +1803,14 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("TagCloud")]
         [HttpGet]
         public object TagCloud([FromQuery] QueryParams query)
         {
-           
+
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1871,7 +1843,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers , to.ToString()));
+                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -1929,7 +1901,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         /// <summary>
@@ -1937,7 +1909,6 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
         /// </summary>
         /// <param name="Loai">xls:Excel;doc:Word</param>
         /// <returns></returns>
-        [CusAuthorize]
         [Route("ExportExcel")]
         [HttpGet]
         public async Task<IActionResult> ExportExcel(string FileName)
@@ -1963,7 +1934,144 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             this.Response.Headers.Add("Access-Control-Expose-Headers", "X-Filename");
             return new FileContentResult(bytearr, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
+        [Route("ExportReportExcel")]
+        [HttpPost]
+        public BaseModel<object> ExportReportExcel([FromBody] List<ReportProject> data, string FileName)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            List<ReportProject> ListDetail = data;
+            string Tenfile = "";
+            string TenBC = "";
+            try
+            {
+                if (FileName == "member")
+                {
+                    Tenfile = "THANHVIEN";
+                    TenBC = "THEO THÀNH VIÊN";
+                }
+                if (ListDetail != null && ListDetail.Count > 0)
+                {
+                    using (MemoryStream mem = new MemoryStream())
+                    {
+                        using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(mem, SpreadsheetDocumentType.Workbook))
+                        {
+                            WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
+                            workbookPart.Workbook = new Workbook();
+                            DocumentFormat.OpenXml.Spreadsheet.Sheets sheets1 = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+                            #region
+                            WorksheetPart worksheetPart_K = workbookPart.AddNewPart<WorksheetPart>();
+                            worksheetPart_K.Worksheet = new Worksheet();
+                            MergeCells mergeCells_K = new MergeCells();
+                            // Adding style
+                            WorkbookStylesPart stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
+                            ExportExcelHelper excelHelper = new ExportExcelHelper();
+                            stylePart.Stylesheet = excelHelper.GenerateStylesheet();
+                            stylePart.Stylesheet.Save();
+                            SheetData sheetData_K = new SheetData();
+                            //DocumentFormat.OpenXml.Spreadsheet.Sheets sheets1_K = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+                            Sheet sheet_K = new Sheet();
+                            sheet_K.Id = spreadsheet.WorkbookPart.GetIdOfPart(worksheetPart_K);
+                            sheet_K.SheetId = 2; //sheet Id, anything but unique
+                            sheet_K.Name = "BÁO CÁO CHI TIẾT";
+                            sheets1.Append(sheet_K);
+                            DocumentFormat.OpenXml.Spreadsheet.Row rowTitle_Null = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            DocumentFormat.OpenXml.Spreadsheet.Cell dataCellnd_Null = new DocumentFormat.OpenXml.Spreadsheet.Cell();
+                            dataCellnd_Null.CellReference = "A1";
+                            dataCellnd_Null.DataType = CellValues.String;
+                            dataCellnd_Null.StyleIndex = 8;
+                            CellValue cellValue_Null = new CellValue();
+                            cellValue_Null.Text = ("BÁO CÁO CHI TIẾT " + TenBC);//"BÁO CÁO TỔNG HỢP TÌNH HÌNH XỬ LÝ CÔNG VIỆC";
+                            dataCellnd_Null.Append(cellValue_Null);
+                            rowTitle_Null.RowIndex = 1;
+                            rowTitle_Null.AppendChild(dataCellnd_Null);
+                            sheetData_K.AppendChild(rowTitle_Null);
 
+                            Row rowTitle2 = new Row();
+                            Cell dataCellnd2 = new Cell();
+                            dataCellnd2.CellReference = "A3";
+                            dataCellnd2.DataType = CellValues.String;
+                            dataCellnd2.StyleIndex = 10;
+                            CellValue cellValue2 = new CellValue();
+                            cellValue2.Text = "Tổng số dữ liệu: " + data.Count.ToString();
+                            dataCellnd2.Append(cellValue2);
+                            rowTitle2.RowIndex = 3;
+                            rowTitle2.AppendChild(dataCellnd2);
+                            sheetData_K.AppendChild(rowTitle2);
+
+                            MergeCells mergeCells_Null = new MergeCells();
+
+                            //append a MergeCell to the mergeCells for each set of merged cells
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A1:F1") });
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A2:F2") });
+                            mergeCells_K.Append(new MergeCell() { Reference = new StringValue("A3:F3") });
+
+                            // Constructing header
+                            DocumentFormat.OpenXml.Spreadsheet.Row row_K = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                            row_K.RowIndex = (uint)5;
+                            if (FileName == "member")
+                            {
+                                row_K.Append(
+                                  excelHelper.ConstructCell("STT", CellValues.String, 2),
+                                  excelHelper.ConstructCell("THÀNH VIÊN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
+                                  excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2)
+                               //excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)
+                               );
+                            }
+                            sheetData_K.AppendChild(row_K);
+                            int stt = 1;
+                            foreach (var item in ListDetail)
+                            {
+                                row_K = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                                //row.RowIndex = (uint)i + 3; //RowIndex must be start with 1, since i = 0
+                                row_K.RowIndex = (uint)(ListDetail.IndexOf(item) + 6); //RowIndex must be start with 1, since i = 0, khúc này là dòng sẽ insert vào Excel
+                                row_K.Append(
+                                excelHelper.ConstructCell(stt++.ToString(), CellValues.Number, 9),
+                                    excelHelper.ConstructCell(item.Ten, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col1, CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col2, CellValues.String, 4),
+                                    excelHelper.ConstructCell((item.col3), CellValues.String, 4),
+                                    excelHelper.ConstructCell(item.col4, CellValues.String, 4)
+                                //excelHelper.ConstructCell(item.col5, CellValues.String, 4)
+                                );
+                                sheetData_K.Append(row_K);
+                            }
+                            worksheetPart_K.Worksheet = new DocumentFormat.OpenXml.Spreadsheet.Worksheet(sheetData_K);
+                            #endregion
+                            worksheetPart_K.Worksheet.InsertAfter(mergeCells_K, worksheetPart_K.Worksheet.Elements<SheetData>().First());
+                            spreadsheet.WorkbookPart.Workbook.AppendChild<DocumentFormat.OpenXml.Spreadsheet.Sheets>(sheets1);
+                            workbookPart.Workbook.Save();
+                            spreadsheet.Close();
+                            FileContentResult file = new FileContentResult(mem.ToArray(), "application/octet-stream")
+                            {
+                                FileDownloadName = "BCTK_" + Tenfile + "_" + Common.GetDateTime().ToString("ddMMyyyymmss") + ".xlsx"
+                            };
+                            return JsonResultCommon.ThanhCong(file);
+                        }
+                    }
+                }
+                else
+                {
+                    return JsonResultCommon.Custom("Không có dữ liệu");
+                    //return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        public class ReportProject
+        {
+            public string Ten { get; set; }
+            public string col1 { get; set; }
+            public string col2 { get; set; }
+            public string col3 { get; set; }
+            public string col4 { get; set; }
+            public string col5 { get; set; }
+        }
         public static long GetStatusTodo(int id_projectteam, DpsConnection cnn)
         {
             SqlConditions cond = new SqlConditions();

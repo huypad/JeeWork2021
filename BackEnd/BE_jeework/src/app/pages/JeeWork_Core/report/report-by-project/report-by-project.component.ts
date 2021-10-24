@@ -1,16 +1,16 @@
-import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {LayoutUtilsService} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {environment} from 'src/environments/environment';
-import {ProjectsTeamService} from './../../projects-team/Services/department-and-project.service';
-import {ReportProjectService} from './../report-project.service';
-import {TranslateService} from '@ngx-translate/core';
-import {BaoCaoThongKeModel, ChartModal} from './../modal/report.modal';
-import {ReportService} from './../report.service';
-import {MatDialog} from '@angular/material/dialog';
-import {ChangeDetectorRef, Component, OnInit, Type} from '@angular/core';
-import {DialogSelectdayComponent} from '../dialog-selectday/dialog-selectday.component';
-import {Color} from 'ng2-charts';
+import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { environment } from 'src/environments/environment';
+import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
+import { ReportProjectService } from './../report-project.service';
+import { TranslateService } from '@ngx-translate/core';
+import { BaoCaoThongKeModel, ChartModal, MemberProjectModel } from './../modal/report.modal';
+import { ReportService } from './../report.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ChangeDetectorRef, Component, OnInit, Type } from '@angular/core';
+import { DialogSelectdayComponent } from '../dialog-selectday/dialog-selectday.component';
+import { Color } from 'ng2-charts';
 import * as Highcharts from 'highcharts';
 
 declare var require: any;
@@ -18,8 +18,8 @@ const More = require('highcharts/highcharts-more');
 More(Highcharts);
 
 import Histogram from 'highcharts/modules/histogram-bellcurve';
-import {WeWorkService} from '../../services/wework.services';
-import {ActivatedRoute} from '@angular/router';
+import { WeWorkService } from '../../services/wework.services';
+import { ActivatedRoute } from '@angular/router';
 
 Histogram(Highcharts);
 
@@ -36,7 +36,6 @@ export class ReportByProjectComponent implements OnInit {
     constructor(
         public dialog: MatDialog,
         public reportService: ReportProjectService,
-        public _reportService: ReportService,
         public projectsTeamService: ProjectsTeamService,
         private detectChange: ChangeDetectorRef,
         private translate: TranslateService,
@@ -50,19 +49,15 @@ export class ReportByProjectComponent implements OnInit {
             title: this.translate.instant('filter.tatcaphongban'),
             id_row: ''
         };
-
         const today = new Date();
         this.selectedDate = {
-            endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 1, 1),
+            endDate: new Date(today.setMonth(today.getMonth())),
         };
         this.filterCVC = this._filterCV[0];
         this.trangthai = this._filterTT[0];
         this.column_sort = this.sortField[0];
     }
-
-
-
     // ID_department: number = 0;
     ID_ProjectTeam = 0;
     ProjectTeam: any = [];
@@ -124,14 +119,10 @@ export class ReportByProjectComponent implements OnInit {
             loai: 'trangthai'
         },
     ];
-
     list_department: any[];
     filter_dept: any = {};
-
-
     // Load overview
     ListOverview = [];
-
     // Báo cáo trạng thái công việc
     listColor = ['#40FF00', '#F7FE2E', 'rgb(124, 181, 236)', '#FE2E2E'];
     public pieChartData = [];
@@ -142,18 +133,15 @@ export class ReportByProjectComponent implements OnInit {
         this.translate.instant('filter.quahan'),
         this.translate.instant('filter.chuacocongviec'),
     ];
-    public pieChartOptions = {cutoutPercentage: 80};
+    public pieChartOptions = { cutoutPercentage: 80 };
     public pieChartLegend = false;
     public pieChartColor = [{
         backgroundColor: this.listColor,
     }];
     public pieChartType = 'pie';
     public Tongcongviec = 0;
-
     Trangthai: any[];
-
     // Quá trình hoàn thành theo ngày
-
     listColor2 = ['rgb(72, 133, 108)', 'rgb(245, 78, 59)', 'rgb(20, 204, 63)'];
     public chart2Ready = false;
     public chartData2 = [];
@@ -171,14 +159,13 @@ export class ReportByProjectComponent implements OnInit {
     };
     public chartLegend2 = false;
     public chartColor2 = [
-        {backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
-        {backgroundColor: this.listColor2[1]},
-        {backgroundColor: this.listColor2[2]},
+        { backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
+        { backgroundColor: this.listColor2[1] },
+        { backgroundColor: this.listColor2[2] },
     ];
     public chartType2 = 'bar';
     ListLabel = [this.translate.instant('filter.tatca'), this.translate.instant('filter.quahan'), this.translate.instant('filter.hoanthanh')];
     DataChart2 = [];
-
     // Tổng hợp theo tuần
     titleChart3 = [
         {
@@ -215,16 +202,13 @@ export class ReportByProjectComponent implements OnInit {
     };
     public chartLegend3 = false;
     public chartColor3 = [
-        {backgroundColor: this.titleChart3[0].mau},
-        {backgroundColor: this.titleChart3[1].mau},
-        {backgroundColor: this.titleChart3[2].mau},
-        {backgroundColor: this.titleChart3[3].mau},
+        { backgroundColor: this.titleChart3[0].mau },
+        { backgroundColor: this.titleChart3[1].mau },
+        { backgroundColor: this.titleChart3[2].mau },
+        { backgroundColor: this.titleChart3[3].mau },
     ];
     public chartType3 = 'bar';
-
-
     Data3 = [];
-
     // chart 4 Tong hop theo du an
     listColorChart4 = ['#40FF00', '#F7FE2E', 'rgb(124, 181, 236)', '#FE2E2E', 'gray'];
     Data4: any;
@@ -233,44 +217,30 @@ export class ReportByProjectComponent implements OnInit {
     titleChart4: string[] = [];
     chartData4 = [];
     chartLabel4: string[] = [''];
-    chartOptions4 = {cutoutPercentage: 80};
+    chartOptions4 = { cutoutPercentage: 80 };
     chartLegend4 = false;
     chartColor4 = [{
         backgroundColor: this.listColorChart4,
     }];
     chartType4 = 'pie';
-
     // chart Công việc không đúng hạn
     tasknodeadline = 0;
     dataKhongdunghan = [];
     listpieColor = ['red', '#f7e015'];
-
     pieKhongdunghan = {
         legend: false,
         labels: ['', ''],
         chartType: 'pie',
         options: {
             cutoutPercentage: 70,
-            tooltips: {enabled: false},
-            hover: {mode: null},
+            tooltips: { enabled: false },
+            hover: { mode: null },
         },
         color: [],
     };
-
     // chart phân bổ công việc theo department
     dataPhanbocongviec = [];
     listColorPhanbocongviec = [];
-    // chartPhanbocongviecDepartment = {
-    //   label: [],
-    //   datasets: [
-    //     ],
-    //   legend: false,
-    //   options: {
-    //     responsive: true
-    //   },
-    //   color: [],
-    //   titleLegend:[]
-    // }
     public chartPhanbocongviecDepartment = new ChartModal();
     chartDeptReady = false;
     chartPhanbocongviecDepartmentData: any[] = [];
@@ -290,7 +260,6 @@ export class ReportByProjectComponent implements OnInit {
             status: this.translate.instant('filter.hoanthanh'),
             value: 72,
             color: 'rgb(20, 204, 63)'
-
         },
         {
             status: this.translate.instant('filter.hoanthanhmuon'),
@@ -310,13 +279,11 @@ export class ReportByProjectComponent implements OnInit {
     ];
 
     private options: any = {
-        legend: {position: 'bottom'},
+        legend: { position: 'bottom' },
         responsive: true,
         maintainAspectRatio: false,
     };
-
     Tagoptions: any;
-
     Staff: any[] = [];
     // Report by staff
     colorCrossbar = ['rgb(20, 204, 63)', 'blue', '#ff9900', 'green', 'violet'];
@@ -325,38 +292,28 @@ export class ReportByProjectComponent implements OnInit {
         this.translate.instant('filter.hoanthanhmuon'),
         this.translate.instant('filter.quahan'),
         this.translate.instant('filter.dangthuchien'),
-        this.translate.instant('filter.dangdanhgia'),
+        // this.translate.instant('filter.dangdanhgia'),
     ];
-
     // staff xuat sac nhat
     StaffExcellent: any = [];
-
     // staff con nhieu viec nhat
     StaffMostTask: any[] = [];
-
     // staff tre viec nhieu nhat
     StaffMostLate: any[] = [];
-
     // report by mileston
     Milestone: any[] = [];
     TopMilestone: any[] = [];
-
     // get Report By Department
     colorCrossbarDept = ['#8fc79c', '#dbd491', '#d1837d', '#a8d3f0'];
     Department: any[] = [];
-
     // get Report By Department
     ProjectTeams: any[] = [];
-
     // get Report By Department
     ReportToDepartments: any = {};
-
     // get Report By Department
     CacConSoThongKe: any = {};
-
     // get Report By Department
     Eisenhower: any = {};
-
     ngOnInit() {
         this.activatedRoute.params.subscribe(params => {
             if (params.id) {
@@ -370,7 +327,6 @@ export class ReportByProjectComponent implements OnInit {
         });
         this.LoadData();
     }
-
     Filter(item) {
         if (item.loai === 'displayChild') {
             this.filterCVC = item;
@@ -380,35 +336,27 @@ export class ReportByProjectComponent implements OnInit {
         }
         this.LoadData();
     }
-
     SelectedField(item) {
         this.column_sort = item;
         this.LoadData();
     }
-
     LoadDetailProject() {
-        // ID_ProjectTeam
         this.projectsTeamService.DeptDetail(this.ID_ProjectTeam).subscribe(res => {
             if (res && res.status === 1) {
                 this.ProjectTeam = res.data;
             }
         });
     }
-
     filterConfiguration(): any {
         const filter: any = {};
-        // filter.TuNgay = this.selectedDate.startDate;
-        // filter.DenNgay = this.selectedDate.endDate;
         filter.TuNgay = (this.f_convertDate(this.selectedDate.startDate)).toString();
         filter.DenNgay = (this.f_convertDate(this.selectedDate.endDate)).toString();
-        // filter.id_department = this.filter_dept.id_row;
         filter.id_projectteam = this.ID_ProjectTeam;
         filter.collect_by = this.column_sort.value;
         filter.displayChild = this.filterCVC.value;
         filter.status = this.trangthai.id_row;
         return filter;
     }
-
     NameDept = (id) => {
         let title = this.translate.instant('filter.tatcaphongban');
         if (this.list_department) {
@@ -420,7 +368,6 @@ export class ReportByProjectComponent implements OnInit {
         }
         return title;
     }
-
     LoadData() {
         this.layoutUtilsService.showWaitingDiv();
         this.LoadDetailProject();
@@ -430,37 +377,19 @@ export class ReportByProjectComponent implements OnInit {
         this.getChart4();
         this.getChartkhongdunghan();
         this.getOverview();
-        // this.getChartPhanbocongviecDepartment();
-        // this.GetMuctieuDepartment();
         this.DataTagClouds();
         this.ReportByStaff();
         this.getStaffMostTask();
         this.getStaffExcellent();
         this.getStaffMostLate();
-        // this.getReportByMilestone();
-        // this.getReportByDepartment();
-        // this.getReportByProjectTeam();
-        // this.getReportToDepartments();
         this.getCacConSoThongKe();
         this.getEisenhower();
         this.LoadDatafilter();
         setTimeout(() => {
             this.layoutUtilsService.OffWaitingDiv();
-        }, 500);
+        }, 100);
     }
-
     LoadDatafilter() {
-        // this.weworkService.lite_department().subscribe(res => {
-        //   if (res && res.status === 1) {
-        //     this.list_department = res.data;
-        //     this.list_department.unshift({
-        //       title: this.translate.instant('filter.tatcaphongban'),
-        //       id_row: ''
-        //     })
-        //   };
-        //   this.detectChange.detectChanges();
-        // });
-
         this.weworkService.ListStatusDynamic(this.ID_ProjectTeam).subscribe(res => {
             if (res && res.status === 1) {
                 this.status_dynamic = res.data;
@@ -480,7 +409,6 @@ export class ReportByProjectComponent implements OnInit {
         this.LoadData();
         // note
     }
-
     getOverview() {
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
@@ -515,8 +443,6 @@ export class ReportByProjectComponent implements OnInit {
                 this.ListOverview[1].text1 = arrdata.ThanhVien.QuanTriVien + ' ' + this.ListOverview[1].text1;
                 this.ListOverview[1].text2 = arrdata.ThanhVien.ThanhVien + ' ' + this.ListOverview[1].text2;
             }
-
-
         });
     }
 
@@ -544,11 +470,9 @@ export class ReportByProjectComponent implements OnInit {
             this.detectChange.detectChanges();
         });
     }
-
     getStrNowork() {
         return this.translate.instant('filter.chuacocongviec');
     }
-
     getChart2() {
         this.chartData2 = [];
         this.chartLabel2 = [];
@@ -592,16 +516,13 @@ export class ReportByProjectComponent implements OnInit {
         const text = 'report.congviecdangthuchien';
         return congviec + '/' + tongconviec + ' ' + this.translate.instant(text);
     }
-
     getInfoCVHT(congviec, tongconviec) {
         const text = 'report.congviecdahoanthanh';
         return congviec + '/' + tongconviec + ' ' + this.translate.instant(text);
     }
-
     getInfoquahan(quahan, ht_quahan) {
         return quahan + ' ' + this.translate.instant('filter.quahan') + '· ' + ht_quahan + ' ' + this.translate.instant('filter.hoanthanhmuon');
     }
-
     getChart3() {
         this.chartData3 = [];
         const queryParams = new QueryParamsModelNew(
@@ -721,7 +642,6 @@ export class ReportByProjectComponent implements OnInit {
                 return '';
         }
     }
-
     getChartPhanbocongviecDepartment() {
         this.chartPhanbocongviecDepartment = new ChartModal();
         this.chartPhanbocongviecDepartment.type = 'bar';
@@ -748,10 +668,10 @@ export class ReportByProjectComponent implements OnInit {
                 }
                 for (const index of this.keyObject) {
                     this.chartPhanbocongviecDepartment.datasets.push(
-                        {data: dt1[index], label: this.getTitle(index), }
+                        { data: dt1[index], label: this.getTitle(index), }
                     );
                     this.chartPhanbocongviecDepartment.color.push(
-                        {backgroundColor: this.getColor(index)}
+                        { backgroundColor: this.getColor(index) }
                     );
                     this.chartPhanbocongviecDepartment.titleLegend.push(
                         {
@@ -760,7 +680,6 @@ export class ReportByProjectComponent implements OnInit {
                         }
                     );
                 }
-
                 this.chartPhanbocongviecDepartmentData = this.chartPhanbocongviecDepartment.datasets;
                 this.chartPhanbocongviecDepartmentLabel = this.chartPhanbocongviecDepartment.label;
                 this.chartDeptReady = true;
@@ -769,7 +688,6 @@ export class ReportByProjectComponent implements OnInit {
             this.detectChange.detectChanges();
         });
     }
-
     GetMuctieuDepartment() {
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
@@ -785,16 +703,11 @@ export class ReportByProjectComponent implements OnInit {
             }
             this.detectChange.detectChanges();
         });
-
     }
-
-
     f_convertDate(pVal: any) {
         const a = pVal === '' ? new Date() : new Date(pVal);
         return ('0' + (a.getDate())).slice(-2) + '/' + ('0' + (a.getMonth() + 1)).slice(-2) + '/' + a.getFullYear();
     }
-
-
     openDialog(): void {
         const dialogRef = this.dialog.open(DialogSelectdayComponent, {
             width: '500px',
@@ -805,8 +718,6 @@ export class ReportByProjectComponent implements OnInit {
             if (result !== undefined) {
                 this.selectedDate.startDate = new Date(result.startDate);
                 this.selectedDate.endDate = new Date(result.endDate);
-                // this.filter.TuNgay = (this.f_convertDate(this.selectedDate.startDate)).toString();
-                // this.filter.DenNgay = (this.f_convertDate(this.selectedDate.endDate)).toString();
                 this.LoadData();
             }
         });
@@ -870,7 +781,6 @@ export class ReportByProjectComponent implements OnInit {
             }
         };
     }
-
     ReportByStaff() {
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
@@ -883,8 +793,7 @@ export class ReportByProjectComponent implements OnInit {
                         i.hoanthanh,
                         i.ht_quahan,
                         i.quahan,
-                        i.danglam,
-                        i.dangdanhgia,
+                        i.danglam
                     ];
                 }
             }
@@ -893,56 +802,28 @@ export class ReportByProjectComponent implements OnInit {
     }
 
     ExportReportExcel(filename: string) {
-        const list = new Array<BaoCaoThongKeModel>();
-        if (filename === 'member') {
+        const list = new Array<MemberProjectModel>();
             this.Staff.forEach(i => {
-                const item = new BaoCaoThongKeModel(
+                const item = new MemberProjectModel(
                     i.hoten,
                     i.hoanthanh,
                     i.ht_quahan,
                     i.quahan,
                     i.danglam,
-                    // i.dangdanhgia
+                    i.sum_estimates,
+                    i.sum_estimates_done
                 );
                 list.push(item);
             });
-        } else if (filename === 'project') {
-            this.ProjectTeam.forEach(i => {
-                const item = new BaoCaoThongKeModel(
-                    i.title,
-                    i.num_work,
-                    i.hoanthanh,
-                    i.quahan,
-                    i.danglam,
-                    i.dangdanhgia
-                );
-                list.push(item);
-            });
-        } else {
-            this.Department.forEach(i => {
-                const item = new BaoCaoThongKeModel(
-                    i.title,
-                    i.num_work,
-                    i.hoanthanh,
-                    i.quahan,
-                    i.danglam,
-                    i.dangdanhgia
-                );
-                list.push(item);
-            });
-        }
-        this._reportService.ExportReportExcel(list, filename).subscribe((res) => {
+        this.reportService.ExportReportExcel(list, filename).subscribe((res) => {
             const linkSource = `data:application/octet-stream;base64,${res.data.FileContents}`;
             const downloadLink = document.createElement('a');
             const fileName = res.data.FileDownloadName;
-
             downloadLink.href = linkSource;
             downloadLink.download = fileName;
             downloadLink.click();
         });
-
     }
-
     ExportExcel(filename: string) {
         const linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
         window.open(linkdownload);
@@ -1005,42 +886,16 @@ export class ReportByProjectComponent implements OnInit {
             }
             this.detectChange.detectChanges();
         });
-        this.reportService.TopMilestone(new QueryParamsModelNew(filter, )).subscribe(data => {
+        this.reportService.TopMilestone(new QueryParamsModelNew(filter,)).subscribe(data => {
             if (data && data.status === 1) {
                 this.TopMilestone = data.data;
             }
             this.detectChange.detectChanges();
         });
     }
-
     getPercentage(value) {
         return [+value, (100 - value)];
     }
-
-    getReportByDepartment() {
-        const filter: any = this.filterConfiguration();
-        filter.key = 'id_department';
-        const queryParams = new QueryParamsModelNew(
-            filter,
-        );
-        // queryParams.sortField = this.column_sort.value;
-        this.reportService.ReportByDepartment(queryParams).subscribe(data => {
-            if (data && data.status === 1) {
-                this.Department = data.data;
-                this.Department.forEach(i => {
-                    i.color = this.colorCrossbarDept;
-                    i.datasets = [
-                        +i.hoanthanh,
-                        +i.ht_quahan,
-                        +i.danglam,
-                        +i.dangdanhgia,
-                    ];
-                });
-            }
-            this.detectChange.detectChanges();
-        });
-    }
-
     getReportByProjectTeam() {
         const filter: any = this.filterConfiguration();
         filter.key = 'id_project_team';
@@ -1057,14 +912,13 @@ export class ReportByProjectComponent implements OnInit {
                         +i.hoanthanh,
                         +i.ht_quahan,
                         +i.danglam,
-                        +i.dangdanhgia,
+                        // +i.dangdanhgia,
                     ];
                 });
             }
             this.detectChange.detectChanges();
         });
     }
-
     getReportToDepartments() {
         const filter: any = this.filterConfiguration();
         const queryParams = new QueryParamsModelNew(
@@ -1078,7 +932,6 @@ export class ReportByProjectComponent implements OnInit {
             this.detectChange.detectChanges();
         });
     }
-
     getCacConSoThongKe() {
         const filter: any = this.filterConfiguration();
         const queryParams = new QueryParamsModelNew(
@@ -1090,31 +943,24 @@ export class ReportByProjectComponent implements OnInit {
                 this.CacConSoThongKe = data.data;
             }
             this.detectChange.detectChanges();
-
         });
     }
-
     getEisenhower() {
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
         );
         // queryParams.sortField = this.column_sort.value;
         this.reportService.Eisenhower(queryParams).subscribe(data => {
-
             if (data && data.status === 1) {
                 this.Eisenhower = data.data;
             }
             this.detectChange.detectChanges();
-
         });
     }
-
     getHeight() {
         return (window.innerHeight - 60 - this.tokenStorage.getHeightHeader());
     }
-
 }
-
 export interface DialogData {
     startDate: string;
     endDate: string;

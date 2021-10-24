@@ -1,0 +1,40 @@
+    .example-tree-invisible {
+        display: none;
+    }
+    .example-tree ul,
+    .example-tree li {
+        margin-top: 0;
+        margin-bottom: 0;
+        list-style-type: none;
+    }
+    .example-tree .mat-nested-tree-node div[role=group] {
+        padding-left: 40px;
+    }
+    .example-tree div[role=group]>.mat-tree-node {
+        padding-left: 40px;
+    }
+    .item-hethong {
+        text-align: center;
+        padding-top: 5px;
+        border: 1px solid #c8c5c5;
+        color: purple;
+    }
+    .item-hethong:not(:first-child) {
+        border-left: none;
+    }
+    .item-hethong .text-header {
+        font-weight: 400;
+        margin-bottom: 0;
+    }
+    .item-hethong .text-number {
+        font-weight: 600;
+        font-size: 150%;
+    }
+    .it.item-text {
+        // white-space:  !important;
+        white-space: pre-line !important;
+        width: 100px !important;
+        font-size: 14px !important;
+        text-align: center;
+    }
+    

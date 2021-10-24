@@ -304,7 +304,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-8">
+                        <div class="col-12">
                             <div class="card line-3">
                                 <div class="card-header bg-white">
                                     <b translate="report.baocaochitiettheothanhvien"></b>
@@ -321,7 +321,11 @@
                                             </div>
                                             <div class="item float-right">
                                                 <div class="it item-text"> <span translate="filter.sum_estimates"
-                                                    matTooltip="{{ 'filter.sum_estimates' | translate}}"></span> </div>
+                                                        matTooltip="{{ 'filter.sum_estimates' | translate}}"></span>
+                                                </div>
+                                                <div class="it item-text"> <span translate="filter.sum_estimates_ht"
+                                                        matTooltip="{{ 'filter.sum_estimates_ht' | translate}}"></span>
+                                                </div>
                                                 <div class="it item-text"> <span translate="filter.hoanthanh"
                                                         matTooltip="{{ 'filter.hoanthanh' | translate}}"></span> </div>
                                                 <div class="it item-text"> <span translate="filter.hoanthanhmuon"
@@ -339,7 +343,6 @@
                                             <div class="item" *ngFor="let item of Staff">
                                                 <div>
                                                     <div class="url">
-
                                                         <kt-avatar-user [image]="item.image" [size]="35"
                                                             [name]="item.hoten">
                                                         </kt-avatar-user>
@@ -352,12 +355,13 @@
                                                     <span style="color: black;">{{item.tenchucdanh}}</span>
                                                 </div>
                                                 <div class="side">
-
                                                     <kt-crossbar-chart [title]="titleReportByStaff"
                                                         [data]="item.datasets" [color]="colorCrossbar">
                                                     </kt-crossbar-chart>
-                                                    <div class="it item-text" [ngStyle]="{'color': colorCrossbar[3]}">
-                                                        {{item.sum_estimates}} </div>
+                                                    <div class="it item-text" style="color: rgb(224, 26, 26); font-weight: bold;">
+                                                        {{item.sum_estimates}}</div>
+                                                    <div class="it item-text" style="color: rgb(10, 151, 29); font-weight: bold;">
+                                                        {{item.sum_estimates_done}}</div>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
                                                         {{item.hoanthanh}} </div>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[1]}">
@@ -375,7 +379,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="col-6">
                             <div class="card">
                                 <div class="card-header bg-white">
                                     <b translate="report.congviecnhieunhat"></b>
@@ -398,7 +402,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-2">
+                        <div class="col-6">
                             <div class="card">
                                 <div class="card-header bg-white">
                                     <b translate="report.lammuonnhieunhat"></b>

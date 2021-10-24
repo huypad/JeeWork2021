@@ -36,8 +36,8 @@ export class ReportTabMemberComponent implements OnInit {
     ngOnInit() {
         var today = new Date();
         this.selectedDate = {
-            endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(),today.getMonth() - 6, 1),
+            startDate: new Date(today.getFullYear(),today.getMonth() - 1, 1),
+            endDate: new Date(today.setMonth(today.getMonth())),
         };
         this.ThongKeHeThong();
     }

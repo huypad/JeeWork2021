@@ -16,9 +16,7 @@ export class ReportProjectService {
         public httpUtils: HttpUtilsService
     ) {
     }
-
     RootURL = environment.APIROOTS + '/api/reportbyprojects/';
-
     GetTrangthai(queryParams: QueryParamsModelNew): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
@@ -28,7 +26,6 @@ export class ReportProjectService {
             params: httpParams
         });
     }
-
     GetQuaTrinh(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
@@ -38,7 +35,6 @@ export class ReportProjectService {
             params: httpParams
         });
     }
-
     GetTongHopTheoTuan(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
@@ -99,13 +95,11 @@ export class ReportProjectService {
         });
     }
 
-    ExportExcel(filename: string): Observable<any> {
+    ExportReportExcel(item, fileName): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
-        const url = this.RootURL + 'ExportExcel?FileName=' + filename;
-        return this.http.get(url, {
-            headers: httpHeaders,
-            responseType: 'blob',
-            observe: 'response'
+        const url = this.RootURL + 'ExportReportExcel?FileName=' + fileName;
+        return this.http.post<QueryResultsModel>(url, item, {
+            headers: httpHeaders
         });
     }
 

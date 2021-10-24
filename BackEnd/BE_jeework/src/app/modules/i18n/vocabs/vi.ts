@@ -1528,7 +1528,7 @@ export const locale = {
             phongban: 'Phòng ban',
             phongbanbenngoai: ' phòng ban bên ngoài',
             phongbannoibo: ' phòng ban nội bộ',
-            quatrinhhoanthanhtheongay: 'Quá trình hoành thành theo ngày',
+            quatrinhhoanthanhtheongay: 'Quá trình hoàn thành theo ngày',
             soluongcongviec: 'Số lượng công việc',
             thanhvien: 'Thành viên',
             thanhvienduan: 'Thành viên dự án',
