@@ -108,8 +108,8 @@ namespace JeeWork_Core2021.ConsumerServices
                     }
                     else
                     {
-                        roles = "3502, 3610"; //quyền mặc định 
-                        List<string> rol_df = new List<string>() { "3502", "3610" }; 
+                        roles = "3501,3502,3503,3610"; //quyền mặc định 
+                        List<string> rol_df = new List<string>() { "3502","3502","3503","3610" }; 
                         int idnhom = ConsumerHelper.createNhom(conn, kq.CustomerID, rol_df);
                         if (idnhom > 0)
                         {

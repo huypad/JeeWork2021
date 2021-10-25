@@ -263,7 +263,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //    "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
                         //    "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
                         sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
-                        "where and de.idkh = "+loginData.CustomerID+" and " +
+                        "where de.idkh = "+loginData.CustomerID+" and " +
                         "de.Disabled = 0 and (do.id_user = " + loginData.UserID + ") and do.disabled = 0");
                     }
                     else
