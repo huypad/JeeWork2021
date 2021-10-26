@@ -389,7 +389,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
         }
 
-
         #region Các API liên quan đến Template center (Cung cấp cho WorkFlow)
         /// <summary>
         /// GetListTemplateCenter
