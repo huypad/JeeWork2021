@@ -78,7 +78,7 @@ export class UpdateStatusProjectComponent implements OnInit {
 		// 	this.tendapb = this.translate.instant("projects.phongban") + '';
 		// 	this.mota = this.translate.instant("projects.motangangonvephongban") + '';
 		// }
-		this._service.DeptDetail(this.item1.id_row).subscribe(res => {
+		this._service.Detail(this.item1.id_row).subscribe(res => {
 			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status == 1) {
 				this.item1 = res.data;

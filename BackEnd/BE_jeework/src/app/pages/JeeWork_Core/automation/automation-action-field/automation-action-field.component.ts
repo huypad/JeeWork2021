@@ -75,7 +75,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       }
     });
     // list lựa chọn dự án ( cây ở bên template center có sẵn )
-    this.templatecenterService.LiteDepartmentFolder().subscribe((res) => {
+    this.templatecenterService.Lite_WorkSpace_tree_By_User().subscribe((res) => {
       if (res && res.status == 1) {
         this.ListDepartmentFolder = res.data;
       } else {
@@ -184,7 +184,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             this.value.taskname = dataTask.title;
             this.value.id_project_team = dataTask.id_project_team;
             this.projectsTeamService
-              .DeptDetail(this.value.id_project_team)
+              .Detail(this.value.id_project_team)
               .subscribe((res) => {
                 if (res && res.status == 1) {
                   this.value.title_project_team = res.data.title;
@@ -221,7 +221,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
           this.value.id_project_team = +this.data_actions.value;
           if(this.value.id_project_team > 0){
             this.projectsTeamService
-            .DeptDetail(this.value.id_project_team)
+            .Detail(this.value.id_project_team)
             .subscribe((res) => {
               if (res && res.status == 1) {
                 this.value.title_project_team = res.data.title;

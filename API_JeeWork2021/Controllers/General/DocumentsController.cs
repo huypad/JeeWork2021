@@ -101,7 +101,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "";
                     sqlq = @$"select att.id_row, att.object_type, att.object_id, att.path,
-                            filename, att.type, att.size, att.CreatedDate, att.CreatedBy, att.UpdatedDate,
+                            filename, att.type, att.size, att.CreatedDate, att.CreatedBy
+                            , att.UpdatedDate, att.link_cloud,
                             att.UpdatedBy, '' as username_tao, '' as username_sua,
                             '' as hoten_nguoitao,'' as hoten_nguoisua 
                             from we_attachment att join we_project_team project 
@@ -121,7 +122,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         var infoNguoitao = DataAccount.Where(x => item["createdby"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (infoNguoitao != null)
                         {
                             item["username_tao"] = infoNguoitao.Username;
@@ -129,7 +129,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                         if (infoNguoiSua != null)
                         {
-
                             item["username_sua"] = infoNguoiSua.Username;
                             item["hoten_nguoisua"] = infoNguoiSua.FullName;
                         }
@@ -159,6 +158,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    isImage = UploadHelper.IsImage(dr["type"].ToString()),
                                    icon = UploadHelper.GetIcon(dr["type"].ToString()),
                                    size = dr["size"],
+                                   link_cloud = dr["link_cloud"], // Link tài liệu của công việc
                                    NguoiTao = dr["hoten_nguoitao"],
                                    CreatedBy = dr["CreatedBy"],
                                    CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", dr["CreatedDate"])

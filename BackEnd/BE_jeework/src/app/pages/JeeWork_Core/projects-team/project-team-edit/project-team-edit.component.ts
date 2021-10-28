@@ -118,7 +118,8 @@ export class ProjectTeamEditComponent implements OnInit {
 		});
 		if (this.item.id_row > 0) {
 			this.viewLoading = true;
-			this._service.DeptDetail(this.item.id_row).subscribe(res => {
+			this._service.
+			Detail(this.item.id_row).subscribe(res => {
 				if (res && res.status == 1) {
 					this.item = res.data;
 					if (this.item.Users == undefined)

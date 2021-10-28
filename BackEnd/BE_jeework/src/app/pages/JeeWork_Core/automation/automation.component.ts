@@ -69,7 +69,7 @@ export class AutomationComponent implements OnInit {
     } else if (this.data.item.type == 3) {
       // project
       this.projectsTeamService
-        .DeptDetail(this.data.item.id)
+        .Detail(this.data.item.id)
         .subscribe((res) => {
           if (res && res.status == 1) {
             this.ID_department = res.data.id_department;

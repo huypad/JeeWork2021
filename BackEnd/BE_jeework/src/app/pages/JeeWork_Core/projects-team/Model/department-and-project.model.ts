@@ -205,8 +205,6 @@ export class TopicModel extends BaseModel {
     Users: Array<TopicUserModel> = [];
     Attachments: Array<FileUploadModel> = [];
     Follower: Array<TopicUserModel> = [];
-    Attachment: Array<FileUploadModel>;
-
     clear() {
         this.id_row = 0;
         this.title = '';
@@ -240,7 +238,7 @@ export class FileUploadModel extends BaseModel {
     IsAdd: boolean;
     IsDel: boolean;
     IsImagePresent: boolean;
-
+    link_cloud: string;
     clear() {
         this.IdRow = 0;
         this.strBase64 = '';
@@ -249,6 +247,7 @@ export class FileUploadModel extends BaseModel {
         this.IsAdd = false;
         this.IsDel = false;
         this.IsImagePresent = false;
+        this.link_cloud = '';
     }
 }
 
@@ -257,7 +256,6 @@ export class AttachmentModel extends BaseModel {
     object_id: number;
     id_user: number;
     item: FileUploadModel;
-
     clear() {
         this.object_type = 0;
         this.object_id = 0;

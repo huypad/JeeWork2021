@@ -318,8 +318,8 @@
                     <div class="card line-3">
                         <div class="card-header bg-white">
                             <b translate="report.baocaochitiettheothanhvien"></b>
-                            <span (click)="ExportReportExcel('member')" *ngIf="Staff.length > 0"
-                                class="url -hover float-right export-excel"><i class="fas fa-download"></i>
+                            <span (click)="ExportExcel('member')" *ngIf="Staff.length > 0"
+                                class="url -hover float-right export-excel"><i class="fas fa-download"></i>&nbsp;
                                 <span translate="report.xuatbaocaoexcel"></span>
                             </span>
                         </div>
@@ -330,34 +330,34 @@
                                         <span translate="report.thanhvien"></span>
                                     </div>
                                     <div class="item float-right">
-
-                                        <div class="it item-text" matTooltip="{{ 'filter.hoanthanh' | translate }}"
-                                            matTooltipPosition="above"> <span translate="filter.hoanthanh"></span>
+                                        <div class="it item-text"> <span translate="filter.tongsocongviec"
+                                                matTooltip="{{ 'filter.tongsocongviec' | translate}}"></span>
                                         </div>
-                                        <div class="it item-text" matTooltip="{{ 'filter.hoanthanhmuon' | translate }}"
-                                            matTooltipPosition="above"> <span translate="filter.hoanthanhmuon"></span>
+                                        <div class="it item-text"> <span translate="filter.sum_estimates"
+                                                matTooltip="{{ 'filter.sum_estimates' | translate}}"></span>
                                         </div>
-                                        <div class="it item-text" matTooltip="{{ 'filter.quahan' | translate }}"
-                                            matTooltipPosition="above"> <span translate="filter.quahan"></span> </div>
-                                        <div class="it item-text" matTooltip="{{ 'filter.dangthuchien' | translate }}"
-                                            matTooltipPosition="above"> <span translate="filter.dangthuchien"></span>
+                                        <div class="it item-text"> <span translate="filter.sum_estimates_ht"
+                                                matTooltip="{{ 'filter.sum_estimates_ht' | translate}}"></span>
                                         </div>
-                                        <!-- <div class="it item-text" matTooltip="{{ 'filter.dangdanhgia' | translate }}" matTooltipPosition="above"> <span translate="filter.dangdanhgia"></span> </div> -->
+                                        <div class="it item-text"> <span translate="filter.hoanthanh"
+                                                matTooltip="{{ 'filter.hoanthanh' | translate}}"></span> </div>
+                                        <div class="it item-text"> <span translate="filter.hoanthanhmuon"
+                                                matTooltip="{{ 'filter.hoanthanhmuon' | translate}}"></span>
+                                        </div>
+                                        <div class="it item-text"> <span translate="filter.quahan"
+                                                matTooltip="{{ 'filter.quahan' | translate}}"></span> </div>
+                                        <div class="it item-text"> <span translate="filter.dangthuchien"
+                                                matTooltip="{{ 'filter.dangthuchien' | translate}}"></span>
+                                        </div>
+                                        <!-- <div class="it item-text"> <span translate="filter.dangdanhgia" matTooltip="{{ 'filter.dangdanhgia' | translate}}"></span> </div> -->
                                     </div>
                                 </div>
                                 <div class="list-body">
                                     <div class="item" *ngFor="let item of Staff">
-                                        <div class="avatar pl-2">
-                                            <div class="user url">
-                                                <ngx-avatar size="35" matTooltip="{{item.hoten}}" src="{{item.image}}"
-                                                    *ngIf="item.image;else bindText">
-                                                </ngx-avatar>
-                                                <ng-template #bindText>
-                                                    <ngx-avatar textSizeRatio="2.5" matTooltip="{{item.hoten}}"
-                                                        size="35" [name]="weworkService.getNameUser(item.hoten)"
-                                                        bgColor="{{weworkService.getColorNameUser(item.hoten)}}">
-                                                    </ngx-avatar>
-                                                </ng-template>
+                                        <div>
+                                            <div class="url">
+                                                <kt-avatar-user [image]="item.image" [size]="35" [name]="item.hoten">
+                                                </kt-avatar-user>
                                             </div>
                                         </div>
                                         <div class="name">
@@ -367,9 +367,17 @@
                                             <span style="color: black;">{{item.tenchucdanh}}</span>
                                         </div>
                                         <div class="side">
-
                                             <kt-crossbar-chart [data]="item.datasets" [color]="colorCrossbar">
                                             </kt-crossbar-chart>
+                                            <div class="it item-text"
+                                                style="color: rgb(247, 26, 26); font-weight: bold;">
+                                                {{item.num_work}} </div>
+                                            <div class="it item-text"
+                                                style="color: rgb(230, 141, 8); font-weight: bold;">
+                                                {{item.sum_estimates}}</div>
+                                            <div class="it item-text"
+                                                style="color: rgb(10, 151, 29); font-weight: bold;">
+                                                {{item.sum_estimates_done}}</div>
                                             <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
                                                 {{item.hoanthanh}} </div>
                                             <div class="it item-text" [ngStyle]="{'color': colorCrossbar[1]}">
@@ -379,7 +387,7 @@
                                             <div class="it item-text" [ngStyle]="{'color': colorCrossbar[3]}">
                                                 {{item.danglam}} </div>
                                             <!-- <div class="it item-text" [ngStyle]="{'color': colorCrossbar[4]}">
-                                                {{item.dangdanhgia}} </div> -->
+                                                        {{item.dangdanhgia}} </div> -->
                                         </div>
                                     </div>
                                 </div>

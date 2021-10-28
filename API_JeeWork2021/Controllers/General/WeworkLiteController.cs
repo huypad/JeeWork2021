@@ -406,7 +406,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         conds.Add("id_row", DepartmentID);
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select id_row, title, id_cocau, templateid, parentid, id_template_list
-                                    from we_department where (where) and ( parentid is null or id_row = {DepartmentID} )";
+                                    from we_department 
+                                    where (where) 
+                                    and (parentid is null or id_row = {DepartmentID})";
                     #endregion
                     DataTable dt = cnn.CreateDataTable(sqlq, "(where)", conds);
                     if (cnn.LastError != null || dt == null)
@@ -1912,12 +1914,12 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
         }
         /// <summary>
-        /// DS loại template
+        /// Danh sách workspace theo user (Dạng tree)
         /// </summary>
         /// <returns></returns>
-        [Route("lite_department_folder_user")]
+        [Route("lite-workspace-tree-by-user")]
         [HttpGet]
-        public object Lite_Department_Folder_User()
+        public object Lite_WorkSpace_tree_By_User()
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)

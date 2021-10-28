@@ -6910,6 +6910,16 @@ where u.disabled = 0 and u.loai = 2";
                              Users = from us in dt_Users.AsEnumerable()
                                      where r["id_row"].ToString().Equals(us["id_work"].ToString())
                                      select us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                             User = from us in dt_Users.AsEnumerable()
+                                    where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                                    select new
+                                    {
+                                        id_nv = us["id_user"],
+                                        hoten = us["hoten"],
+                                        image = us["image"],
+                                        email = us["email"],
+                                        loai = us["loai"],
+                                    },
                              Tags = from t in tags
                                     where r["id_row"].ToString().Equals(t["id_work"].ToString())
                                     select new

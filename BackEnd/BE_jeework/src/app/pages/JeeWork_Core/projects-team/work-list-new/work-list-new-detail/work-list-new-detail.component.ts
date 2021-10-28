@@ -208,7 +208,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.DataID = this.data.id_row;
         this.Id_project_team = this.data.id_project_team;
         this.UserInfo = JSON.parse(localStorage.getItem('UserInfo'));
-        this.projectsTeamService.DeptDetail(this.Id_project_team).subscribe(
+        this.projectsTeamService.Detail(this.Id_project_team).subscribe(
             (res) => {
                 if (res && res.status == 1) {
                     this.require_evaluate = res.data.require_evaluate;

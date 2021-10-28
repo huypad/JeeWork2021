@@ -240,7 +240,7 @@ export class WorkKanBanComponent implements OnInit {
     }
 
     LoadDetailProject() {
-        this._service.DeptDetail(this.ID_Project).subscribe((res) => {
+        this._service.Detail(this.ID_Project).subscribe((res) => {
             if (res && res.status == 1) {
                 this.ProjectTeam = res.data;
             }
@@ -585,7 +585,7 @@ export class WorkKanBanComponent implements OnInit {
         this._service._UpdateByKey(model).subscribe((res) => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
-                // this.layoutUtilsService.showActionNotification(this.translate.instant('JeeHR.capnhatthanhcong'), MessageType.Read, 4000, true, false, 3000, 'top', 1);
+                // this.layoutUtilsService.showActionNotification(this.translate.instant('GeneralKey.capnhatthanhcong'), MessageType.Read, 4000, true, false, 3000, 'top', 1);
                 this.LoadData();
             } else {
                 this.layoutUtilsService.showActionNotification(

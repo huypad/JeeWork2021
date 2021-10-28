@@ -52,13 +52,13 @@ export class TemplateCenterUpdateComponent implements OnInit {
     public weWorkService: WeWorkService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.buocthuchien = this.data.buocthuchien;
     this.LoadDetailChoose();
     //load Department Folder
-    this.templatecenterService.LiteDepartmentFolder().subscribe((res) => {
+    this.templatecenterService.Lite_WorkSpace_tree_By_User().subscribe((res) => {
       if (res && res.status == 1) {
         this.ListDepartmentFolder = res.data;
       } else {
@@ -101,13 +101,13 @@ export class TemplateCenterUpdateComponent implements OnInit {
           var listTemplate = this.ItemNewSaveAs.Template;
           if (listTemplate && listTemplate.length > 0) {
             listTemplate.forEach((element) => {
-              if(element.Status){
-                Array.prototype.push.apply(this.listStatus,element.Status); 
+              if (element.Status) {
+                Array.prototype.push.apply(this.listStatus, element.Status);
               }
             });
           }
 
-          this.listDefaultView =  this.ItemNewSaveAs.DefaultView   ;
+          this.listDefaultView = this.ItemNewSaveAs.DefaultView;
         } else {
           this.layoutUtilsService.showError(res.error.message);
         }
@@ -116,7 +116,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
     } else if (this.data.item.type == 3) {
       // project
       this.projectsTeamService
-        .DeptDetail(this.data.item.id)
+        .Detail(this.data.item.id)
         .subscribe((res) => {
           if (res && res.status == 1) {
             this.ItemNewSaveAs = res.data;
@@ -129,7 +129,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
         .ListViewByProject(this.data.item.id)
         .subscribe((res) => {
           if (res && res.status == 1) {
-            this.listDefaultView =  res.data;
+            this.listDefaultView = res.data;
           } else {
             this.layoutUtilsService.showError(res.error.message);
           }
@@ -152,7 +152,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
     filter.keyword = this.keyword;
     return filter;
   }
-  close(){
+  close() {
     this.dialogRef.close();
   }
   LoadTC() {
@@ -473,31 +473,31 @@ export class TemplateCenterUpdateComponent implements OnInit {
       TCinsert.viewid = listviewID.join();
     }
 
-    
+
     if (this.listStatus && this.listStatus.length > 0) {
-      if(this.TemplateDetail.types == 1 || this.TemplateDetail.types == 2){
+      if (this.TemplateDetail.types == 1 || this.TemplateDetail.types == 2) {
         this.listStatus.forEach(element => {
           const status = new StatusListModel();
           status.clear();
           status.id_row = element.Id_row;
           status.StatusName = element.StatusName;
-          status.color = element.color?element.color:'';
-          status.IsDefault = element.IsDefault?element.IsDefault:false;
+          status.color = element.color ? element.color : '';
+          status.IsDefault = element.IsDefault ? element.IsDefault : false;
           status.IsFinal = element.IsFinal;
           status.IsDeadline = element.IsDeadline;
           status.IsToDo = element.IsTodo;
           status.Type = 1;
           TCinsert.list_status.push(status);
         });
-      }else{
+      } else {
         this.listStatus.forEach(element => {
           const status = new StatusListModel();
           status.clear();
           status.id_row = element.id_row;
           status.StatusName = element.statusname;
-          status.Description = element.Description?element.Description:'';
-          status.color = element.color?element.color:'';
-          status.IsDefault = element.IsDefault?element.IsDefault:false;
+          status.Description = element.Description ? element.Description : '';
+          status.color = element.color ? element.color : '';
+          status.IsDefault = element.IsDefault ? element.IsDefault : false;
           status.IsFinal = element.IsFinal;
           status.IsDeadline = element.IsDeadline;
           status.IsToDo = element.IsToDo;
@@ -511,19 +511,19 @@ export class TemplateCenterUpdateComponent implements OnInit {
     this.SaveAsTemplateCenter(TCinsert);
   }
 
-  LoadDatafield(){
+  LoadDatafield() {
     // this.ListField.filter((item) => item.checked)
-    if(this.ListField.length == this.TemplateDetail.data_fields.length){
+    if (this.ListField.length == this.TemplateDetail.data_fields.length) {
       this.importall = true;
-    }else{
+    } else {
       this.importall = false;
       var i = 0;
       this.ListField.forEach((element) => {
-        var x = this.TemplateDetail.data_fields.find(x=> x.id_field == element.id_field);
+        var x = this.TemplateDetail.data_fields.find(x => x.id_field == element.id_field);
         i++;
-        if(x){
+        if (x) {
           element.checked = true;
-        }else{
+        } else {
           element.checked = false;
         }
       });

@@ -344,5 +344,7 @@ namespace JeeWork_Core2021.Classes
         public bool IsAdd { get; set; } = false;
         public bool IsDel { get; set; } = false;
         public bool IsImagePresent { get; set; } = false;
+        public string link_cloud { get; set; }
+
     }
 }

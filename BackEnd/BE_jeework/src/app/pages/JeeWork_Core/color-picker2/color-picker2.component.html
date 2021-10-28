@@ -1,6 +1,5 @@
 <div class="row" style="width:200px;">
-	<div class="color-picker" [ngStyle]="{'backgroundColor': color}"
-	[ngClass]="{'active':selected==color}" (click)="select(color)"
-		*ngFor="let color of defaultColors">
+	<div class="color-picker" [ngStyle]="{'backgroundColor': color}" [ngClass]="{'active':selected==color}"
+		(click)="select(color)" *ngFor="let color of defaultColors">
 	</div>
 </div>

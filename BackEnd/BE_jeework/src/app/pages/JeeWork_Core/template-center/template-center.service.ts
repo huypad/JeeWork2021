@@ -41,9 +41,9 @@ export class TemplateCenterService {
     return this.http.get<any>(API_Lite + '/lite_template_types',
       { headers: httpHeaders });
   }
-  LiteDepartmentFolder(): Observable<any> {
+  Lite_WorkSpace_tree_By_User(): Observable<any> {
     const httpHeaders = this.httpUtils.getHTTPHeaders();
-    return this.http.get<any>(API_Lite + '/lite_department_folder_user',
+    return this.http.get<any>(API_Lite + '/lite-workspace-tree-by-user',
       { headers: httpHeaders });
   }
   LiteListField(): Observable<any> {

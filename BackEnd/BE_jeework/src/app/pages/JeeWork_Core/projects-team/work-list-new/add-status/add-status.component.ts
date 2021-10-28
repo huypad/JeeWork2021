@@ -135,7 +135,7 @@ export class AddStatusComponent implements OnInit {
 			this.viewLoading = true;
 			// filter.key = 'cocauid';
 			// filter.value = this.item.id_department;
-			this._service.DeptDetail(this.item.id_row).subscribe(res => {
+			this._service.Detail(this.item.id_row).subscribe(res => {
 				if (res && res.status == 1) {
 					this.item = res.data;
 					this.createForm();

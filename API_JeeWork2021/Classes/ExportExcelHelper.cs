@@ -125,7 +125,7 @@ namespace JeeWork_Core2021.Classes
                 StyleIndex = styleIndex,
             };
         }
-        public static string ExportToExcel(DataTable source, string title, string[] header, string[] columnwidth, string rowheight, string headerheight, Hashtable format, bool stt = true)
+        public static string ExportToExcel(DataTable source, string title, string[] header, string[] columnwidth, string rowheight, string headerheight, Hashtable format)
         {
             bool ismergeRow = false;
             StringBuilder result = new StringBuilder();
@@ -155,42 +155,41 @@ namespace JeeWork_Core2021.Classes
                            <Style ss:ID=""titlecolumn""> <Alignment ss:Horizontal=""Center"" ss:Vertical=""Center"" ss:WrapText=""1""/>  {0} <Font ss:FontName=""Arial"" x:Family=""Swiss"" ss:Size=""16"" ss:Bold=""1""/> </Style>
                            <Style ss:ID=""header""><Alignment ss:Horizontal=""Center"" ss:Vertical=""Center"" ss:WrapText=""1""/> {0} <Font ss:FontName=""Arial"" x:Family=""Swiss"" ss:Color=""#FFFFFF"" ss:Bold=""1""/> <Interior ss:Color=""#8DB4E3"" ss:Pattern=""Solid""/> </Style>
                            <Style ss:ID=""mergerow""><Alignment ss:Horizontal=""Left"" ss:Vertical=""Center"" ss:WrapText=""1""/> {0} <Font ss:FontName=""Arial"" x:Family=""Swiss"" ss:Bold=""1""/> <Interior ss:Color=""#D6DCE4"" ss:Pattern=""Solid""/> </Style>
-                           <Style ss:ID=""StringLiteralMerge""><Alignment ss:WrapText=""1""/>  {0} <NumberFormat ss:Format=""@""/> <Interior ss:Color=""#D6DCE4"" ss:Pattern=""Solid""/> </Style>
-                           <Style ss:ID=""DecimalMerge""><Alignment ss:WrapText=""1""/>  {0} {1} <Interior ss:Color=""#D6DCE4"" ss:Pattern=""Solid""/> </Style>
-                           <Style ss:ID=""IntegerMerge""><Alignment ss:WrapText=""1""/>  {0} <NumberFormat ss:Format=""#,##0""/>  <Interior ss:Color=""#D6DCE4"" ss:Pattern=""Solid""/></Style>
                           </Styles> ";
             startExcelXML = string.Format(startExcelXML, border, numberformat);
             const string endExcelXML = "</Workbook>";
             string ten = "";
             result.Append(startExcelXML);
-            result.Append("<Worksheet ss:Name=\"Sheet1\">");
-            result.Append("<Table x:FullColumns=\"1\" x:FullRows=\"1\">");
-            result.Append("<Column ss:Width=\"25\"/>");
-            for (int j = 0; j < columnwidth.Length; j++)
-            {
-                result.Append("<Column ss:Width=\"" + columnwidth[j] + "\"/>");
-            }
-            int socot = header.Length;
-            if (socot > source.Columns.Count) socot = source.Columns.Count;
-            result.Append("<Row>");
-            result.Append("<Cell ss:MergeAcross=\"" + socot.ToString() + "\" ss:StyleID=\"titlecolumn\"><Data ss:Type=\"String\">");
-            result.Append(title);
-            result.Append("</Data></Cell>");
-            result.Append("</Row>");
-            result.Append("<Row  ss:Height=\"" + headerheight + "\">");
-
-            if (stt)
-                result.Append("<Cell ss:StyleID=\"header\"><Data ss:Type=\"String\">STT</Data></Cell>");
-            for (int x = 0; x < header.Length; x++)
-            {
-                result.Append("<Cell ss:StyleID=\"header\"><Data ss:Type=\"String\">");
-                result.Append(header[x]);
-                result.Append("</Data></Cell>");
-            }
-            result.Append("</Row>");
             int i = 1;
             if (source.Rows.Count > 0)
             {
+                int socot = header.Length;
+                if (socot > source.Columns.Count) socot = source.Columns.Count;
+
+                ten = source.Rows[0][0].ToString();
+                result.Append("<Worksheet ss:Name=\"Danhsach\">");
+                result.Append("<Table x:FullColumns=\"1\" x:FullRows=\"1\">");
+                result.Append("<Column ss:Width=\"25\"/>");
+                for (int j = 0; j < columnwidth.Length; j++)
+                {
+                    result.Append("<Column ss:Width=\"" + columnwidth[j] + "\"/>");
+                }
+                result.Append("<Row>");
+
+                result.Append("<Cell ss:MergeAcross=\"" + socot.ToString() + "\" ss:StyleID=\"titlecolumn\"><Data ss:Type=\"String\">");
+                result.Append(title);
+                result.Append("</Data></Cell>");
+                result.Append("</Row>");
+                result.Append("<Row  ss:Height=\"" + headerheight + "\">");
+
+                result.Append("<Cell ss:StyleID=\"header\"><Data ss:Type=\"String\">STT</Data></Cell>");
+                for (int x = 0; x < header.Length; x++)
+                {
+                    result.Append("<Cell ss:StyleID=\"header\"><Data ss:Type=\"String\">");
+                    result.Append(header[x]);
+                    result.Append("</Data></Cell>");
+                }
+                result.Append("</Row>");
                 string template = "";
                 IFormatProvider fm = new CultureInfo("en-US", true);
                 //Kiểm tra cột merge_row có tồn tại
@@ -198,25 +197,11 @@ namespace JeeWork_Core2021.Classes
                 if (columns.Contains("merge_row")) ismergeRow = true;
                 foreach (DataRow x in source.Rows)
                 {
-                    bool styleMerge = false;//set style merge cho dòng
-                    if (columns.Contains("style_merge"))
-                    {
-                        if (x["style_merge"] != DBNull.Value)
-                        {
-                            styleMerge = x["style_merge"].Equals(bool.TrueString);
-                            if (!styleMerge)
-                                styleMerge = (bool)x["style_merge"];
-                        }
-                    }
                     bool mergeRow = false;
                     if (ismergeRow)
                     {
                         if (x["merge_row"] != DBNull.Value)
-                        {
                             mergeRow = x["merge_row"].Equals(bool.TrueString);
-                            if (!mergeRow)
-                                mergeRow = (bool)x["merge_row"];
-                        }
                     }
                     if (mergeRow)
                     {
@@ -231,20 +216,10 @@ namespace JeeWork_Core2021.Classes
                     else
                     {
                         result.Append("<Row ss:AutoFitHeight=\"0\" ss:Height=\"" + rowheight + "\" ss:StyleID=\"defaultrow\">");
-                        if (stt)
-                        {
-                            result.Append("<Cell ss:StyleID=\"centercolumn\"><Data ss:Type=\"Number\">");
-                            result.Append(i.ToString());
-                            result.Append("</Data></Cell>");
-                            i++;
-                        }
-                        string StringLiteral = "StringLiteral";
-                        string Integer = "Integer";
-                        if (styleMerge)
-                        {
-                            StringLiteral = "StringLiteralMerge";
-                            Integer = "IntegerMerge";
-                        }
+                        result.Append("<Cell ss:StyleID=\"centercolumn\"><Data ss:Type=\"Number\">");
+                        result.Append(i.ToString());
+                        result.Append("</Data></Cell>");
+                        i++;
                         for (int y = 0; y < socot; y++)
                         {
                             System.Type rowType;
@@ -257,7 +232,7 @@ namespace JeeWork_Core2021.Classes
                                     XMLstring = XMLstring.Replace("&", "&");
                                     XMLstring = XMLstring.Replace(">", ">");
                                     XMLstring = XMLstring.Replace("<", "<");
-                                    result.Append("<Cell ss:StyleID=\"" + StringLiteral + "\">" +
+                                    result.Append("<Cell ss:StyleID=\"StringLiteral\">" +
                                           "<Data ss:Type=\"String\">");
                                     result.Append(XMLstring);
                                     result.Append("</Data></Cell>");
@@ -292,7 +267,7 @@ namespace JeeWork_Core2021.Classes
                                     result.Append("</Data></Cell>");
                                     break;
                                 case "System.Boolean":
-                                    result.Append("<Cell ss:StyleID=\"" + StringLiteral + "\">" +
+                                    result.Append("<Cell ss:StyleID=\"StringLiteral\">" +
                                           "<Data ss:Type=\"String\">");
                                     result.Append(x[y].ToString());
                                     result.Append("</Data></Cell>");
@@ -301,7 +276,7 @@ namespace JeeWork_Core2021.Classes
                                 case "System.Int32":
                                 case "System.Int64":
                                 case "System.Byte":
-                                    result.Append("<Cell ss:StyleID=\"" + Integer + "\">" +
+                                    result.Append("<Cell ss:StyleID=\"Integer\">" +
                                           "<Data ss:Type=\"Number\"  >");
                                     result.Append(x[y].ToString());
                                     result.Append("</Data></Cell>");
@@ -310,14 +285,11 @@ namespace JeeWork_Core2021.Classes
                                 case "System.Decimal":
                                 case "System.Double":
                                 case "System.float":
-                                    if (styleMerge)
-                                        template = @"<Cell ss:StyleID=""DecimalMerge""><Data ss:Type=""Number"">{0}</Data></Cell>";
-                                    else
-                                        template = @"<Cell ss:StyleID=""Decimal""><Data ss:Type=""Number"">{0}</Data></Cell>";
+                                    template = @"<Cell ss:StyleID=""Decimal""><Data ss:Type=""Number"">{0}</Data></Cell>";
                                     result.AppendFormat(fm, template, new object[] { x[y] });
                                     break;
                                 case "System.DBNull":
-                                    result.Append("<Cell ss:StyleID=\"" + StringLiteral + "\">" +
+                                    result.Append("<Cell ss:StyleID=\"StringLiteral\">" +
                                           "<Data ss:Type=\"String\">");
                                     result.Append("</Data></Cell>");
                                     break;
@@ -328,9 +300,9 @@ namespace JeeWork_Core2021.Classes
                         result.Append("</Row>");
                     }
                 }
+                result.Append("</Table>");
+                result.Append(" </Worksheet>");
             }
-            result.Append("</Table>");
-            result.Append(" </Worksheet>");
             result.Append(endExcelXML);
             return result.ToString();
         }

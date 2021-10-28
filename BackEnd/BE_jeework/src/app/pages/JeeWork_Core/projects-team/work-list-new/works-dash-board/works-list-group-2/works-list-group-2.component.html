@@ -418,7 +418,7 @@
                                             <div class="item-field hide-more-text">
                                                 <div class="item-field"
                                                     *ngIf="CheckRoleskeypermit(item.fieldname) && CheckClosedTask(node);else noroleassign">
-                                                    <ng-container *ngFor="let us of node.User;let index = index">
+                                                    <ng-container *ngFor="let us of node.Users;let index = index">
                                                         <div *ngIf="index < 3"
                                                             class="user url scale-hover-02 position-relative"
                                                             style="justify-content: flex-end;">
@@ -432,7 +432,7 @@
                                                             </ng-container>
                                                         </div>
                                                     </ng-container>
-                                                    <ng-container *ngIf="node.User && node.User.length > 3">
+                                                    <ng-container *ngIf="node.Users && node.Users.length > 3">
 
                                                         <div class="m--img-rounded m--marginless m--img-centered background"
                                                             [matMenuTriggerFor]="menu1"
@@ -440,11 +440,11 @@
                                                             <div class="user w-100"
                                                                 style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                 [ngStyle]="{'font-size.px': 15}">
-                                                                +{{node.User.length-3}}
+                                                                +{{node.Users.length-3}}
                                                             </div>
                                                         </div>
                                                         <mat-menu #menu1="matMenu">
-                                                            <div *ngFor="let user of node.User;let index = index"
+                                                            <div *ngFor="let user of node.Users;let index = index"
                                                                 style="justify-content: flex-end;">
                                                                 <ng-container *ngIf="index > 2">
                                                                     <div class="position-relative">
@@ -464,7 +464,7 @@
                                                         </mat-menu>
                                                     </ng-container>
                                                     <div matTooltip="{{ 'work.assignee' | translate }}"
-                                                        *ngIf="!node.User || ( node.User && node.User.length == 0) "
+                                                        *ngIf="!node.Users || ( node.Users && node.Users.length == 0) "
                                                         (click)="clickmenu.click()" matTooltipPosition="above"
                                                         style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
                                                         <i class="fas fa-user-plus pd-0" style="font-size: 13px; "></i>
@@ -472,7 +472,7 @@
                                                 </div>
                                                 <ng-template #noroleassign>
                                                     <div class="item-field">
-                                                        <ng-container *ngFor="let us of node.User;let index = index">
+                                                        <ng-container *ngFor="let us of node.Users;let index = index">
                                                             <div *ngIf="index < 3" class="user url"
                                                                 style="justify-content: flex-end;">
                                                                 <ng-container>
@@ -482,18 +482,18 @@
                                                                 </ng-container>
                                                             </div>
                                                         </ng-container>
-                                                        <ng-container *ngIf="node.User && node.User.length > 3">
+                                                        <ng-container *ngIf="node.Users && node.Users.length > 3">
                                                             <div class="m--img-rounded m--marginless m--img-centered background"
                                                                 [ngStyle]="{'width.px': 30,'height.px':30}">
                                                                 <div class="user w-100"
                                                                     style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
                                                                     [ngStyle]="{'font-size.px': 15}">
-                                                                    +{{node.User.length-3}}
+                                                                    +{{node.Users.length-3}}
                                                                 </div>
                                                             </div>
                                                         </ng-container>
                                                         <div matTooltip="{{ 'work.assignee' | translate }}"
-                                                            *ngIf="!node.User || ( node.User && node.User.length == 0) "
+                                                            *ngIf="!node.Users || (node.Users && node.Users.length == 0) "
                                                             matTooltipPosition="above"
                                                             style="border: 1px dashed #676363;border-radius: 50%;padding: 2px;height: 26px;width: 26px;display: inline-block; ">
                                                             <i class="fas fa-user-plus pd-0"

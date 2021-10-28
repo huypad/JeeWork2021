@@ -102,7 +102,15 @@ export class ReportProjectService {
             headers: httpHeaders
         });
     }
-
+    ExportExcel(filename: string): Observable<any> {
+        const httpHeaders = this.httpUtils.getHTTPHeaders();
+        const url = this.RootURL + 'ExportExcel?FileName=' + filename;
+        return this.http.get(url, {
+            headers: httpHeaders,
+            responseType: 'blob',
+            observe: 'response'
+        });
+    }
     ReportByStaff(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);

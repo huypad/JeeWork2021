@@ -83,7 +83,6 @@ namespace JeeWork_Core2021.ConsumerServices
                 }
             }
         }
-
         public static int removeUserfromGroup(string connectStr, string userName, long idgroup)
         {
             using (DpsConnection cnn = new DpsConnection(connectStr))

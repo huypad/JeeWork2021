@@ -750,7 +750,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
-                    string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                    string displayChild = "1";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                         displayChild = query.filter["displayChild"];
 

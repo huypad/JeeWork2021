@@ -428,7 +428,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         const _item: any = [];
         let _project = new ProjectTeamModel();
         _project.clear(); // Set all defaults fields
-        this._Services.DeptDetail(id.id).subscribe((res) => {
+        this._Services.Detail(id.id).subscribe((res) => {
             if (res && res.status == 1) {
                 _project = res.data;
                 _project.is_project = is_project;
@@ -441,7 +441,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     ProjectTeamDetail(id) {
-        this._Services.DeptDetail(id).subscribe((res) => {
+        this._Services.Detail(id).subscribe((res) => {
             if (res && res.status == 1) {
                 // return res.data.locked;
                 // return res.data;
@@ -467,7 +467,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     ClosedProject(item) {
         let model = new ProjectTeamModel();
         model.clear(); // Set all defaults fields
-        this._Services.DeptDetail(item.id).subscribe((res) => {
+        this._Services.Detail(item.id).subscribe((res) => {
             if (res && res.status == 1) {
                 model = res.data;
                 this.Update_ClosedProject(model);
@@ -515,7 +515,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
 
     Update_DuplicateProject(_item: ProjectTeamDuplicateModel, id_project_team) {
         let newitem: any = [];
-        this._Services.DeptDetail(id_project_team).subscribe((res) => {
+        this._Services.Detail(id_project_team).subscribe((res) => {
             if (res && res.status == 1) {
                 newitem = res.data;
 
@@ -578,7 +578,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     updateStage(_item) {
-        this._Services.DeptDetail(_item.id).subscribe((res) => {
+        this._Services.Detail(_item.id).subscribe((res) => {
             if (res && res.status == 1) {
                 _item = res.data;
                 let saveMessageTranslateParam = '';
@@ -979,7 +979,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     UpdateStatus(item) {
-        this._Services.DeptDetail(item.id).subscribe((res) => {
+        this._Services.Detail(item.id).subscribe((res) => {
             if (res && res.status == 1) {
                 const dataDialog = {
                     id_row: res.data.id_row,

@@ -50,14 +50,18 @@ export class ReportByProjectComponent implements OnInit {
             id_row: ''
         };
         const today = new Date();
+        let set_thang = today.getMonth();
+        if (today.getDate() < 10)
+            set_thang = today.getMonth() - 1;
         this.selectedDate = {
-            startDate: new Date(today.getFullYear(), today.getMonth() - 1, 1),
+            startDate: new Date(today.getFullYear(), set_thang, 1),
             endDate: new Date(today.setMonth(today.getMonth())),
         };
         this.filterCVC = this._filterCV[0];
         this.trangthai = this._filterTT[0];
         this.column_sort = this.sortField[0];
     }
+    _day = 1;
     // ID_department: number = 0;
     ID_ProjectTeam = 0;
     ProjectTeam: any = [];
@@ -341,7 +345,7 @@ export class ReportByProjectComponent implements OnInit {
         this.LoadData();
     }
     LoadDetailProject() {
-        this.projectsTeamService.DeptDetail(this.ID_ProjectTeam).subscribe(res => {
+        this.projectsTeamService.Detail(this.ID_ProjectTeam).subscribe(res => {
             if (res && res.status === 1) {
                 this.ProjectTeam = res.data;
             }
@@ -803,18 +807,18 @@ export class ReportByProjectComponent implements OnInit {
 
     ExportReportExcel(filename: string) {
         const list = new Array<MemberProjectModel>();
-            this.Staff.forEach(i => {
-                const item = new MemberProjectModel(
-                    i.hoten,
-                    i.hoanthanh,
-                    i.ht_quahan,
-                    i.quahan,
-                    i.danglam,
-                    i.sum_estimates,
-                    i.sum_estimates_done
-                );
-                list.push(item);
-            });
+        this.Staff.forEach(i => {
+            const item = new MemberProjectModel(
+                i.hoten,
+                i.hoanthanh,
+                i.ht_quahan,
+                i.quahan,
+                i.danglam,
+                i.sum_estimates,
+                i.sum_estimates_done
+            );
+            list.push(item);
+        });
         this.reportService.ExportReportExcel(list, filename).subscribe((res) => {
             const linkSource = `data:application/octet-stream;base64,${res.data.FileContents}`;
             const downloadLink = document.createElement('a');
@@ -824,9 +828,22 @@ export class ReportByProjectComponent implements OnInit {
             downloadLink.click();
         });
     }
+    // RootURL = environment.APIROOTS + '/api/reportbyprojects/';
+
     ExportExcel(filename: string) {
-        const linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
-        window.open(linkdownload);
+        // const linkdownload = environment.APIROOTS + `/api/reportbyprojects/ExportExcel?FileName=` + filename;
+        // window.open(linkdownload);
+        this.reportService.ExportExcel(filename).subscribe((response) => {
+            var headers = response.headers;
+            let filename = headers.get('x-filename');
+            let type = headers.get('content-type');
+            let blob = new Blob([response.body], { type: type });
+            const fileURL = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = fileURL;
+            link.download = filename;
+            link.click();
+        });
     }
 
     getStaffExcellent() {

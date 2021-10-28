@@ -1287,7 +1287,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<object> SudungTemplate(TemplateCenterModel data, bool istemplatelist)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1353,7 +1352,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Cập nhật template center
         /// </summary>
@@ -1844,7 +1842,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         /// <returns></returns>
         [Route("save-image")]
         [HttpPost]
-        public async Task<BaseModel<object>> SaveasImage(FileUploadModel data, bool istemplatelist = false)
+        public async Task<BaseModel<object>> SaveImage(FileUploadModel data, bool istemplatelist = false)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)

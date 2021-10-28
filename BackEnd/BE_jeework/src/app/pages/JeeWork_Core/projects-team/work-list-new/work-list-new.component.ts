@@ -321,7 +321,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   ngOnChanges() { }
 
   LoadDetailProject() {
-    this._service.DeptDetail(this.ID_Project).subscribe((res) => {
+    this._service.Detail(this.ID_Project).subscribe((res) => {
       if (res && res.status == 1) {
         this.ProjectTeam = res.data;
       }
@@ -1232,7 +1232,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       task.end_date = moment(this.selectedDate.endDate).format("MM/DD/YYYY");
       task.deadline = moment(this.selectedDate.endDate).format("MM/DD/YYYY");
     }
-    debugger
     this._service.InsertTask(task).subscribe((res) => {
       if (res && res.status == 1) {
         this.CloseAddnewTask(true);

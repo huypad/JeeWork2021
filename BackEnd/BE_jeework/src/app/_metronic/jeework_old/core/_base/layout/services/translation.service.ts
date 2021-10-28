@@ -55,7 +55,6 @@ export class TranslationService {
 	 * @param lang: any
 	 */
 	setLanguage(lang) {
-		debugger
 		if (lang) {
 			this.translate.use(this.translate.getDefaultLang());
 			this.translate.use(lang);
@@ -67,7 +66,6 @@ export class TranslationService {
 	 * Returns selected language
 	 */
 	getSelectedLanguage(): any {
-		debugger
 		return localStorage.getItem('language') || this.translate.getDefaultLang();
 	}
 }

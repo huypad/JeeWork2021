@@ -71,7 +71,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         case 2: sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
                         // Bình luận
                         case 3: sqlq = "select ISNULL((select count(*) from we_comment where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
-                       // Kết quả công việc
+                        // Kết quả công việc
                         case 11: sqlq = "select ISNULL((select count(*) from we_work where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
                         // Dự án
                         case 4: sqlq = "select ISNULL((select count(*) from we_project_team where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
@@ -124,7 +124,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (data.object_type == 4)
                     {
                         string sqlproject = "select id_user from we_project_team_user where Disabled = 0 and id_project_team = " + data.object_id;
-                        DataTable dtproject = cnn.CreateDataTable(sqlproject) ;
+                        DataTable dtproject = cnn.CreateDataTable(sqlproject);
                         // lấy thông tin người gửi + cc owner phòng ban tương ứng
                         List<long> dsuser = dtproject.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
 
@@ -231,7 +231,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             var dirPath = Path.Combine(_hostingEnvironment.ContentRootPath, "Upload\\editor\\");
             var saveimg = Path.Combine(dirPath, file.FileName);
             string imgext = Path.GetExtension(file.FileName);
-            
+
             if (imgext.ToLower() == ".jpg" || imgext.ToLower() == ".png")
             {
                 using (var ms = new MemoryStream())
@@ -239,7 +239,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     file.CopyTo(ms);
                     var fileBytes = ms.ToArray();
                     string s = Convert.ToBase64String(fileBytes);
-
                     string x = "";
                     string folder = "/attachment/" + getFolderByType(1) + "/";
                     if (!UploadHelper.UploadFile(s, file.FileName, folder, _hostingEnvironment.ContentRootPath, ref x, _configuration))
@@ -279,28 +278,35 @@ namespace JeeWork_Core2021.Controllers.Wework
             if (item == null)
                 return false;
             string x = "";
+            Hashtable val = new Hashtable();
             string folder = "/attachment/" + getFolderByType(data.object_type) + "/";
-            
-            if (!UploadHelper.UploadFile(item.strBase64, item.filename, folder, ContentRootPath, ref x, _configuration))
+            if (string.IsNullOrEmpty(item.link_cloud))
             {
-                return false;
+                if (!UploadHelper.UploadFile(item.strBase64, item.filename, folder, ContentRootPath, ref x, _configuration))
+                {
+                    return false;
+                }
+                val.Add("path", x);
+                val.Add("size", Convert.FromBase64String(item.strBase64).Length);
+                val.Add("type", UploadHelper.GetContentType(x));
             }
-            Hashtable val2 = new Hashtable();
-            val2["object_type"] = data.object_type;//topic
-            val2["object_id"] = data.object_id;
-            val2.Add("path", x);
-            val2.Add("filename", item.filename);
-            val2.Add("size", Convert.FromBase64String(item.strBase64).Length);
-            val2.Add("type", UploadHelper.GetContentType(x));
-            val2["CreatedDate"] = Common.GetDateTime();
-            val2["CreatedBy"] = data.id_user;
-            if (cnn.Insert(val2, "we_attachment") != 1)
+            else
+                val.Add("path", item.link_cloud);
+            val["object_type"] = data.object_type;//1 work, 2 discussion, 3 comment, 4 Project, 11 work result
+            val["object_id"] = data.object_id;
+            val.Add("filename", item.filename);
+            val["CreatedDate"] = Common.GetDateTime();
+            val["CreatedBy"] = data.id_user;
+            if (string.IsNullOrEmpty(item.link_cloud))
+                val["link_cloud"] = DBNull.Value;
+            else
+                val["link_cloud"] = item.link_cloud;
+            if (cnn.Insert(val, "we_attachment") != 1)
             {
                 return false;
             }
             return true;
         }
-
         private static string getFolderByType(int type)
         {
             string re = "";
@@ -321,7 +327,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     {
         public FileUploadModel item { get; set; }
         /// <summary>
-        /// 1: work,2: topic, 3:comment, 11 - Kết quả công việc, 4 Dự án
+        /// 1 work, 2 discussion, 3 comment, 4 Project, 11 work result
         /// </summary>
         public int object_type { get; set; }
         public long object_id { get; set; }

@@ -25,8 +25,6 @@
                             <em> {{ ProjectTeam.title }}</em>
                             <i class="fas fa-lock"></i>
                         </div>
-
-
                         <div class="filter -menu-op cot-20" [matMenuTriggerFor]="project">
                             <em> {{filterCVC.title}} </em>
                             <i class="fas fa-chevron-down"></i>
@@ -36,8 +34,6 @@
                                     *ngFor="let item of _filterCV"> {{item.title}}</button>
                             </mat-menu>
                         </div>
-
-
                         <div class="filter -menu-op cot-20" [matMenuTriggerFor]="status">
                             <em>{{trangthai.title}}</em>
                             <i class="fas fa-chevron-down"></i>
@@ -48,10 +44,8 @@
                                     {{item.title}}</button>
                             </mat-menu>
                         </div>
-
                     </div>
                 </div>
-
                 <div class="colum-items">
                     <div class="row">
                         <ng-container *ngFor="let item of ListOverview">
@@ -59,14 +53,12 @@
                                 <kt-item-group [value]="item"></kt-item-group>
                             </div>
                         </ng-container>
-
                     </div>
                 </div>
 
                 <div class="rp-title">
                     <span class="text-uppercase" translate="report.baocaocongviec"></span>
                 </div>
-
                 <div class="info-rp db-grid">
                     <div class="row">
                         <div class="col-4">
@@ -308,8 +300,8 @@
                             <div class="card line-3">
                                 <div class="card-header bg-white">
                                     <b translate="report.baocaochitiettheothanhvien"></b>
-                                    <span (click)="ExportReportExcel('member')" *ngIf="Staff.length != 0"
-                                        class="url -hover float-right export-excel"><i class="fas fa-download"></i>
+                                    <span (click)="ExportExcel('member')" *ngIf="Staff.length != 0"
+                                        class="url -hover float-right export-excel"><i class="fas fa-download"></i>&nbsp;
                                         <span translate="report.xuatbaocaoexcel"></span>
                                     </span>
                                 </div>
@@ -320,6 +312,9 @@
                                                 <span translate="report.thanhvien"></span>
                                             </div>
                                             <div class="item float-right">
+                                                <div class="it item-text"> <span translate="filter.tongsocongviec"
+                                                    matTooltip="{{ 'filter.tongsocongviec' | translate}}"></span>
+                                            </div>
                                                 <div class="it item-text"> <span translate="filter.sum_estimates"
                                                         matTooltip="{{ 'filter.sum_estimates' | translate}}"></span>
                                                 </div>
@@ -358,9 +353,13 @@
                                                     <kt-crossbar-chart [title]="titleReportByStaff"
                                                         [data]="item.datasets" [color]="colorCrossbar">
                                                     </kt-crossbar-chart>
-                                                    <div class="it item-text" style="color: rgb(224, 26, 26); font-weight: bold;">
+                                                    <div class="it item-text" style="color: rgb(247, 26, 26); font-weight: bold;">
+                                                        {{item.num_work}} </div>
+                                                    <div class="it item-text"
+                                                        style="color: rgb(230, 141, 8); font-weight: bold;">
                                                         {{item.sum_estimates}}</div>
-                                                    <div class="it item-text" style="color: rgb(10, 151, 29); font-weight: bold;">
+                                                    <div class="it item-text"
+                                                        style="color: rgb(10, 151, 29); font-weight: bold;">
                                                         {{item.sum_estimates_done}}</div>
                                                     <div class="it item-text" [ngStyle]="{'color': colorCrossbar[0]}">
                                                         {{item.hoanthanh}} </div>

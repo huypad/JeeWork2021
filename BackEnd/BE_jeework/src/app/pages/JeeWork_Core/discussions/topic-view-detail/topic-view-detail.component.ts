@@ -1,5 +1,5 @@
-import {CommentService} from './../../comment/comment.service';
-import {SubheaderService} from './../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
+import { CommentService } from './../../comment/comment.service';
+import { SubheaderService } from './../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import {
     Component,
     OnInit,
@@ -9,12 +9,12 @@ import {
     ChangeDetectorRef,
     OnChanges, OnDestroy
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import {MatDialog} from '@angular/material/dialog';
-import {SelectionModel} from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material/dialog';
+import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
-import {tap, catchError, finalize, share, takeUntil} from 'rxjs/operators';
+import { tap, catchError, finalize, share, takeUntil } from 'rxjs/operators';
 import {
     merge,
     BehaviorSubject,
@@ -22,31 +22,30 @@ import {
     Subject,
     of,
 } from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 // Services
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {DanhMucChungService} from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
 import {
     FormGroup,
     FormBuilder,
     Validators,
     FormControl,
 } from '@angular/forms';
-import {isFulfilled} from 'q';
-import {DatePipe} from '@angular/common';
+import { isFulfilled } from 'q';
+import { DatePipe } from '@angular/common';
 import {
     TopicModel,
     TopicUserModel,
-    FileUploadModel,
 } from '../Model/Topic.model';
-import {WeWorkService} from '../../services/wework.services';
-import {DiscussionsService} from '../discussions.service';
-import {TopicEditComponent} from '../topic-edit/topic-edit.component';
-import {AttachmentService} from '../../services/attachment.service';
-import {AttachmentModel} from '../../projects-team/Model/department-and-project.model';
+import { WeWorkService } from '../../services/wework.services';
+import { DiscussionsService } from '../discussions.service';
+import { TopicEditComponent } from '../topic-edit/topic-edit.component';
+import { AttachmentService } from '../../services/attachment.service';
+import { AttachmentModel, FileUploadModel } from '../../projects-team/Model/department-and-project.model';
 
 @Component({
     selector: 'kt-topic-view-detail',
@@ -323,7 +322,7 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        const dialogRef = this.dialog.open(TopicEditComponent, {data: {_item}});
+        const dialogRef = this.dialog.open(TopicEditComponent, { data: { _item } });
         dialogRef.afterClosed().subscribe((res) => {
             // this.ngOnInit();
             this.LoadData();
@@ -507,7 +506,7 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
     TenFile: string = '';
     File: string = '';
     filemodel: any;
-    @ViewChild('csvInput', {static: true}) myInputVariable: ElementRef;
+    @ViewChild('csvInput', { static: true }) myInputVariable: ElementRef;
 
     save_file_Direct(evt: any) {
         if (evt.target.files && evt.target.files.length) {

@@ -29,7 +29,8 @@
                                 <div class="text-2-line" style="font-weight: bold; font-size: 15px;">
                                     <a [routerLink]="['/project', item.id_row]"
                                         matTooltip="{{ 'department.xemchitietduan' | translate }}">
-                                        <span style="color: rgb(33, 126, 5) !important; font-size: 13pt">{{item.title}}</span>
+                                        <span
+                                            style="color: rgb(33, 126, 5) !important; font-size: 13pt">{{item.title}}</span>
                                     </a>&nbsp;
                                 </div>
                                 <div>
@@ -37,7 +38,7 @@
                                         {{ 'workprocess.taoboi' | translate}}
                                     </span>
                                     <span style="color: black; font-size: 10pt; font-weight: bold;">
-                                       {{item.NguoiTao}}
+                                        {{item.NguoiTao}}
                                     </span>
                                     <span style="color: black; font-size: 10pt">
                                         {{'workprocess.luc' | translate}} {{item.CreatedDate | timezone}}
@@ -48,7 +49,7 @@
                                         {{ 'wuser.capnhat' | translate}}
                                     </span>
                                     <span style="color: black; font-size: 10pt; font-weight: bold;">
-                                       {{item.NguoiSua}}
+                                        {{item.NguoiSua}}
                                     </span>
                                     <span style="color: black; font-size: 10pt">
                                         {{'workprocess.luc' | translate}} {{item.UpdatedDate | timezone}}

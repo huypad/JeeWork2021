@@ -176,6 +176,7 @@ import { LogWorkDescriptionComponent } from './log-work-description/log-work-des
 import { AngularFileViewerModule, FileViewerComponent } from '@taldor-ltd/angular-file-viewer';
 import { previewlistComponent } from './preview/preview-list/preview-list.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { addlinkcloudEditComponent } from './add-link-cloud/add-link-cloud-edit/add-link-cloud-edit.component';
 @NgModule({
     imports: [
         JeeCommentModule,
@@ -356,7 +357,8 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
         AutomationTabBrowseComponent,
         AutomationTabManageComponent,
         DanhsachthumucComponent,
-        previewlistComponent
+        previewlistComponent,
+        addlinkcloudEditComponent
     ],
     declarations: [
         RepeatedListComponent,
@@ -439,7 +441,8 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
         AutomationTabManageComponent,
         AutomationLabelComponent,
         DanhsachthumucComponent,
-        previewlistComponent
+        previewlistComponent,
+        addlinkcloudEditComponent
     ],
     exports: [
         JeeCommentModule,
@@ -562,7 +565,8 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
         DanhsachthumucComponent,
         ApplicationPipesModule,
         FieldsCustomModule,
-        previewlistComponent
+        previewlistComponent,
+        addlinkcloudEditComponent
     ]
 })
 export class JeeWork_CoreModule {

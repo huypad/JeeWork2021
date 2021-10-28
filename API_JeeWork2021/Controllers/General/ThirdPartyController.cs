@@ -1204,7 +1204,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public async Task<BaseModel<object>> delete_library(long id)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

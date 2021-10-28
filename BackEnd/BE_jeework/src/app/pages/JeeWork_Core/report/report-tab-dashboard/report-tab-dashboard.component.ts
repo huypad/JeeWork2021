@@ -48,7 +48,10 @@ export class ReportTabDashboardComponent implements OnInit {
     dataSource = new MatTreeNestedDataSource<Department>();
     checklistSelection = new SelectionModel<Department>(true /* multiple */);
     public datatree: BehaviorSubject<any[]> = new BehaviorSubject([]);
-
+    selectedDate = {
+        startDate: new Date('09/01/2020'),
+        endDate: new Date('09/30/2020'),
+    };
     constructor(
         public dialog: MatDialog,
         public reportService: ReportService,
@@ -60,13 +63,18 @@ export class ReportTabDashboardComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         // private TongHopHieuQuaTuyenDungService:TongHopHieuQuaTuyenDungService
     ) {
+        const today = new Date();
+        let set_thang = today.getMonth();
+        if (today.getDate() < 10)
+            set_thang = today.getMonth() - 1;
+            this.selectedDate = {
+                startDate: new Date(today.getFullYear(), set_thang, 1),
+                endDate: new Date(today.setMonth(today.getMonth())),
+            };
     }
 
     hasChild = ( node: any) => !!node.data && node.data.length > 0;
-    selectedDate = {
-        startDate: new Date('09/01/2020'),
-        endDate: new Date('09/30/2020'),
-    };
+
     trangthai: any;
 
     ngOnInit() {
@@ -94,11 +102,14 @@ export class ReportTabDashboardComponent implements OnInit {
             title: this.translate.instant('filter.tatcaphongban'),
             id_row: ''
         };
-        var today = new Date();
-        this.selectedDate = {
-            endDate: new Date(today.setMonth(today.getMonth())),
-            startDate: new Date(today.getFullYear(),today.getMonth() - 1, 1),
-        };
+        const today = new Date();
+        let set_thang = today.getMonth();
+        if (today.getDate() < 10)
+            set_thang = today.getMonth() - 1;
+            this.selectedDate = {
+                startDate: new Date(today.getFullYear(), set_thang, 1),
+                endDate: new Date(today.setMonth(today.getMonth())),
+            };
         this.filterCVC = this._filterCV[0];
         this.trangthai = this._filterTT[0];
         this.column_sort = this.sortField[0];
@@ -879,6 +890,7 @@ export class ReportTabDashboardComponent implements OnInit {
         this.reportService.ReportByStaff(queryParams).subscribe(data => {
             if (data && data.status == 1) {
                 this.Staff = data.data;
+                debugger
                 for (let i of this.Staff) {
                     i.datasets = [
                         i.hoanthanh,
@@ -944,8 +956,19 @@ export class ReportTabDashboardComponent implements OnInit {
     }
 
     ExportExcel(filename: string) {
-        var linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
-        window.open(linkdownload);
+        // var linkdownload = environment.APIROOTS + `/api/report/ExportExcel?FileName=` + filename;
+        // window.open(linkdownload);
+        this.reportService.ExportExcel(filename).subscribe((response) => {
+            var headers = response.headers;
+            let filename = headers.get('x-filename');
+            let type = headers.get('content-type');
+            let blob = new Blob([response.body], { type: type });
+            const fileURL = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = fileURL;
+            link.download = filename;
+            link.click();
+        });
     }
 
     // staff xuat sac nhat

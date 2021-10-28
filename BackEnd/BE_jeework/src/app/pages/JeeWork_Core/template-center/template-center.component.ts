@@ -1,8 +1,8 @@
 import { ReplaySubject } from "rxjs";
 import { FormControl } from "@angular/forms";
-import { FileUploadModel } from "./../discussions/Model/Topic.model";
+// import { FileUploadModel } from "./../discussions/Model/Topic.model";
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
-import { ProjectTeamUserModel } from "./../projects-team/Model/department-and-project.model";
+import { FileUploadModel, ProjectTeamUserModel } from "./../projects-team/Model/department-and-project.model";
 import { ProjectTeamModel } from "src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model";
 import { ListDepartmentService } from "./../List-department/Services/List-department.service";
 import {
@@ -90,7 +90,7 @@ export class TemplateCenterComponent implements OnInit {
       }
     });
     //load Department Folder
-    this.templatecenterService.LiteDepartmentFolder().subscribe((res) => {
+    this.templatecenterService.Lite_WorkSpace_tree_By_User().subscribe((res) => {
       if (res && res.status == 1) {
         this.ListDepartmentFolder = res.data;
       } else {

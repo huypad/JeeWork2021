@@ -43,7 +43,6 @@ export class TranslationService {
   }
 
   setLanguage(lang) {
-    debugger
   	if (lang) {
 			this.translate.use(this.translate.getDefaultLang());
 			this.translate.use(lang);
@@ -54,7 +53,6 @@ export class TranslationService {
    * Returns selected language
    */
    public getSelectedLanguage(): Observable<any> {
-    debugger
 		return of(localStorage.getItem('language') || this.translate.getDefaultLang());
 	}
 }

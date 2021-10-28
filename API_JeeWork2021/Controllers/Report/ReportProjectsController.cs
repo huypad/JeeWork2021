@@ -44,11 +44,11 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConfiguration _configuration;
         private readonly ILogger<ReportByProjectController> _logger;
         string sql_isquahan = " w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ";
-        string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null ) and w.end_date is null";
+        string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null";
         string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
         string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
         string sqlhoanthanh = " w.end_date is not null ";
-        // kiểm tra điều kiện hoành thành
+        // kiểm tra điều kiện hoàn thành
         string queryhoanthanh = " and w.end_date is not null ";
         string querydangthuchien = " and w.end_date is null ";
         public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportByProjectController> logger)
@@ -225,7 +225,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TongHopDuAn([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -317,7 +316,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object MucTieuTheoDepartment([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -420,7 +418,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             {
                 if (query == null)
                     query = new QueryParams();
-
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -446,11 +443,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
                 cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
-                //if (!string.IsNullOrEmpty(query.filter["id_department"]))
-                //{
-                //    strW += " and id_department=@id_department";
-                //    cond.Add("id_department", query.filter["id_department"]);
-                //}
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
                     strW += " and id_project_team=@id_projectteam";
@@ -481,7 +473,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("quahan", quahan);
-
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     //string sqlq = @"select id_row, id_nv, status,iIf(w.Status=@hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
                     //                iIf(w.Status=@hoanthanh and (w.end_date <= w.deadline or w.end_date is null or w.deadline is null),1,0) as is_ht,
@@ -568,7 +559,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object QuaTrinhHoanThanh([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -576,7 +566,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             {
                 if (query == null)
                     query = new QueryParams();
-
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -628,7 +617,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -704,7 +692,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TongHopTheoTuan([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -773,8 +760,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("quahan", quahan);
-
-
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     //string sqlq = @"select id_row, id_nv, status, CreatedDate, Deadline,iIf(w.Status = @hoanthanh and w.end_date>w.deadline,1,0) as is_htquahan,
                     //                 iIf(w.Status not in (" + hoanthanh + "," + quahan + @") , 1, 0) as dangthuchien,
@@ -820,7 +805,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Báo cáo chi tiết theo thành viên (Không cần tuyền params)
         /// </summary>
@@ -907,10 +891,10 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     long todo = GetStatusTodo(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
                     cond.Add("hoanthanh", hoanthanh);
                     cond.Add("quahan", quahan);
-                    string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as mobile
-                    , '' as username, '' as Email, '' as image,'' as Tenchucdanh, 0 as tong
-                    ,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia,
-                     0.00 as sum_estimates, 0.00 as sum_estimates_done
+                    string queryuser = @$"select distinct u.id_user as Id_NV,'' as hoten,'' as Tenchucdanh, 
+                    0 as tong, 0.00 as sum_estimates, 0.00 as sum_estimates_done
+                    ,0 as ht,0 as ht_quahan,0 as quahan,0 as danglam,0 as dangdanhgia
+                     ,'' as mobile, '' as username, '' as Email, '' as image 
                     from we_project_team_user u
                     left join we_project_team p on u.id_project_team=p.id_row 
                     where u.id_user in ({listID}) 
@@ -955,11 +939,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     var asP = ds.Tables[0].AsEnumerable();
                     DataTable dtW = ds.Tables[1];
-                    //bool hasValue = dtW.Rows.Count > 0;
-
-                    // get công việc 
-                    //string sqlwork = @"select * from v_wework_new w where 1 =1 and" + strW;
-                    //DataTable listWork = cnn.CreateDataTable(sqlwork);
                     bool hasValue = dtW.Rows.Count > 0;
                     int total = 0, success = 0;
                     foreach (DataRow dr in dt.Rows)
@@ -967,26 +946,38 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         DataRow[] row = dtW.Select("id_nv = " + dr["id_nv"].ToString());
                         if (row.Length > 0)
                         {
+                            hasValue = dtW.Rows.Count > 0;
                             dr["tong"] = total = (hasValue ? (int)dtW.Compute("count(id_nv)", "id_nv=" + dr["id_nv"].ToString()) : 0);
-                            dr["ht"] = (hasValue ? (int)dtW.Compute("count(id_nv)", " is_ht=1 and id_nv=" + dr["id_nv"].ToString()) : 0);
-                            dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
-                            dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", " is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                            dr["ht"] = (hasValue ? (int)dtW.Compute("count(id_nv)", "is_ht=1 and id_nv=" + dr["id_nv"].ToString()) : 0);
+                            dr["ht_quahan"] = hasValue ? dtW.Compute("count(id_nv)", "is_htquahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
+                            dr["quahan"] = hasValue ? dtW.Compute("count(id_nv)", "is_quahan=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             dr["danglam"] = hasValue ? dtW.Compute("count(id_nv)", " dangthuchien=1 and id_nv=" + dr["id_nv"].ToString()) : 0;
                             //dr["dangdanhgia"] = 0;
-                            dr["sum_estimates"] = (hasValue ? (decimal)dtW.Compute("sum(estimates)", "id_nv=" + dr["id_nv"].ToString()) : 0.0);
-                            dr["sum_estimates_done"] = (hasValue ? (decimal)dtW.Compute("sum(estimates)", " id_nv=" + dr["id_nv"].ToString() + " and (is_ht=1 or is_htquahan=1)") : 0.0);
+                            dr["sum_estimates"] = hasValue ? (decimal)dtW.Compute("sum(estimates)", "id_nv=" + dr["id_nv"].ToString()) : 0.0;
+                            DataRow[] done_estimates = dtW.Select("id_nv=" + dr["id_nv"].ToString() + " and (is_ht=1 or is_htquahan=1)");
+                            if (done_estimates.Length <= 0)
+                            {
+                                hasValue = false;
+                            }
+                            dr["sum_estimates_done"] = hasValue ? (decimal)dtW.Compute("sum(estimates)", "id_nv=" + dr["id_nv"].ToString() + " and (is_ht=1 or is_htquahan=1)") : "0.00";
                         }
                         else
                         {
-                            dr["sum_estimates"] = dr["sum_estimates_done"] = dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = 0;
+                            dr["sum_estimates_done"] = dr["sum_estimates"] = dr["tong"] = dr["ht"] = dr["ht_quahan"] = dr["quahan"] = dr["danglam"] = 0;
                         }
                     }
                     //Xuất dữ liệu
                     string title = "BÁO CÁO CHI TIẾT THEO THÀNH VIÊN";
-                    string[] header = { "Mã NV", "Họ tên", "Phòng ban/BP", "Chức danh", "Tổng số CV được giao", "Hoàn thành", "Hoàn thành quá hạn", "Quá hạn", "Đang làm", "Tổng số giờ làm", "Tổng số giờ đã hoàn thành" };
-                    string[] width = { "100", "180", "120", "120", "100", "100", "100", "100", "100", "100" };
+                    string[] header = { "Mã NV", "Họ tên", "Chức danh", "Tổng số công việc được giao", "Tổng số giờ làm", "Tổng số giờ đã hoàn thành", "Hoàn thành", "Hoàn thành quá hạn", "Quá hạn", "Đang làm" };
+                    string[] width = { "80", "180", "160", "100", "100", "100", "100", "100", "100", "100" };
                     Hashtable format = new Hashtable();
                     string rowheight = "18.5";
+                    DataTable dt_excel = dt;
+                    DataRow[] r_excel = dt.Select("tong > 0");
+                    if (r_excel.Length > 0)
+                    {
+                        dt_excel = r_excel.CopyToDataTable();
+                    }
                     excel_member = ExportExcelHelper.ExportToExcel(dt, title, header, width, rowheight, "26", format);
                     var data = from r in dt.AsEnumerable()
                                where int.Parse(r["tong"].ToString()) > 0
@@ -999,7 +990,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                    num_work = total = int.Parse(r["tong"].ToString()),
                                    danglam = int.Parse(r["danglam"].ToString()),
                                    hoanthanh = success = int.Parse(r["ht"].ToString()),
-                                   //dangdanhgia = int.Parse(r["dangdanhgia"].ToString()),
                                    ht_quahan = int.Parse(r["ht_quahan"].ToString()),
                                    quahan = int.Parse(r["quahan"].ToString()),
                                    sum_estimates = r["sum_estimates"].ToString(),
@@ -1182,13 +1172,8 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     for (int i = dt.Rows.Count - 1; i >= 0; i--)
                     {
                         DataRow dr = dt.Rows[i];
-                        total = int.Parse(dr["tong"].ToString());
-                        if ((total) <= 0)
-                        {
-                            dr.Delete();
-                        }
                         // xóa có công việc nhưng không có công việc trễ
-                        else if ("late".Equals(query.filter["type"]))
+                        if ("late".Equals(query.filter["type"]))
                         {
                             int slquahan = int.Parse(dr["quahan"].ToString());
                             int htmuon = int.Parse(dr["ht_quahan"].ToString());
@@ -1242,7 +1227,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object Eisenhower([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1356,7 +1340,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object milestone([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1380,8 +1363,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
-
-
                     Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1532,7 +1513,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object Top_done_milestone([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1610,7 +1590,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                                         join we_project_team p on m.id_project_team=p.id_row
                                                         left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                                                         ,w.id_milestone from v_wework_new w where 1=1 " + strW + " group by w.id_milestone) w on m.id_row=w.id_milestone " +
-                                                        $"where m.Disabled=0 and m.person_in_charge in ({listID}) and ht > 0 order by title", cond);
+                                                        $"where m.disabled=0 and m.person_in_charge in ({listID}) and ht > 0 order by title", cond);
                     bool hasValue = dt_data.Rows.Count > 0;
                     #region Map info account từ JeeAccount
 
@@ -1656,14 +1636,10 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                 dr["tong"] = dr["ht"] = dr["percentage"] = 0;
                             }
                         }
-                        double total = int.Parse(dr["tong"].ToString());
-                        if ((total) <= 0)
-                        {
-                            dr.Delete();
-                        }
                     }
                     dt.AcceptChanges();
                     var data = from r in dt.AsEnumerable()
+                               where long.Parse(r["tong"].ToString()) > 0
                                select new
                                {
                                    id_nv = r["id_nv"],
@@ -1691,7 +1667,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object CacConSoThongKe([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1699,7 +1674,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
             {
                 if (query == null)
                     query = new QueryParams();
-
                 Dictionary<string, string> collect = new Dictionary<string, string>
                         {
                             { "CreatedDate", "CreatedDate"},
@@ -1810,7 +1784,6 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
         [HttpGet]
         public object TagCloud([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1932,6 +1905,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             var bytearr = Encoding.UTF8.GetBytes(excel);
             this.Response.Headers.Add("X-Filename", fileName);
             this.Response.Headers.Add("Access-Control-Expose-Headers", "X-Filename");
+            excel = "";
             return new FileContentResult(bytearr, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
         [Route("ExportReportExcel")]
@@ -2071,6 +2045,8 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
             public string col3 { get; set; }
             public string col4 { get; set; }
             public string col5 { get; set; }
+            public string col6 { get; set; }
+            public string col7 { get; set; }
         }
         public static long GetStatusTodo(int id_projectteam, DpsConnection cnn)
         {

@@ -2766,13 +2766,11 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpPost]
         public async Task<object> AddUser(AddUserToProjectTeamModel data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
             try
             {
-
                 #region Lấy dữ liệu account từ JeeAccount
                 DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
@@ -2784,7 +2782,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     strRe += (strRe == "" ? "" : ",") + "quản lý/thành viên";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-
                 string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {

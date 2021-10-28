@@ -17,6 +17,8 @@ import { ProjectsTeamService } from '../../projects-team/Services/department-and
 import { PaginatorState } from 'src/app/_metronic/shared/crud-table/models/paginator.model';
 import { SortState } from 'src/app/_metronic/shared/crud-table';
 import { DocumentDataSource } from '../Model/data-source/document.datasource';
+import { addlinkcloudEditComponent } from '../../add-link-cloud/add-link-cloud-edit/add-link-cloud-edit.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'kt-list-documents',
@@ -43,6 +45,7 @@ export class ListDocumentsComponent implements OnInit {
         private projectsTeamService: ProjectsTeamService,
         private activatedRoute: ActivatedRoute,
         private router: Router,
+        public dialog: MatDialog,
         private translate: TranslateService,
         private LayoutUtilsService: LayoutUtilsService,
         private changeDetectorRefs: ChangeDetectorRef,
@@ -104,7 +107,7 @@ export class ListDocumentsComponent implements OnInit {
             }
         }
     }
-    displayedColumns = ['filename', 'lichsu', 'size', 'action'];
+    displayedColumns = ['STT','filename', 'NguoiTao', 'CreatedDate', 'size', 'action'];
 
     getHeight() {
         return window.innerHeight - 300 - this.tokenStorage.getHeightHeader() + 'px';
@@ -116,7 +119,42 @@ export class ListDocumentsComponent implements OnInit {
     }
 
 
+    Add_Link_Cloud() {
+        const models = new AttachmentModel();
+        models.clear();
+        const arr = this.router.url.split('/');
+        const id_project_team = arr[2];
+        models.object_type = 4;
+        models.object_id = parseInt(id_project_team);
+        this.UploadLink(models);
+    }
 
+    UploadLink(_item: AttachmentModel) {
+        let saveMessageTranslateParam = '';
+        saveMessageTranslateParam +=
+            _item.object_id > 0
+                ? 'GeneralKey.capnhatthanhcong'
+                : 'GeneralKey.themthanhcong';
+        const _saveMessage = this.translate.instant(saveMessageTranslateParam);
+        const _messageType =
+            _item.object_id > 0 ? MessageType.Update : MessageType.Create;
+        const dialogRef = this.dialog.open(addlinkcloudEditComponent, { data: { _item } });
+        dialogRef.afterClosed().subscribe((res) => {
+            this.ngOnInit();
+            if (!res) {
+                this.changeDetectorRefs.detectChanges();
+            } else {
+                this.LayoutUtilsService.showActionNotification(
+                    _saveMessage,
+                    _messageType,
+                    4000,
+                    true,
+                    false
+                );
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
+    }
     filterConfiguration(): any {
         const filter: any = {};
         filter.keyword = this.keyword;

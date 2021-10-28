@@ -226,7 +226,7 @@ export class ProjectsTeamService {
     }
 
     //#endregion
-    DeptDetail(id: any): Observable<any> {
+    Detail(id: any): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const url = `${API_Project_Team}/Detail?id=${id}`;
         return this.http.get<any>(url, { headers: httpHeaders });

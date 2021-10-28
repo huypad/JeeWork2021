@@ -1,3 +1,4 @@
+import { FileUploadModel } from '../../projects-team/Model/department-and-project.model';
 import {BaseModel} from './../../../../_metronic/jeework_old/core/_base/crud/models/_base.model';
 
 export class TopicModel extends BaseModel {
@@ -31,25 +32,5 @@ export class TopicUserModel extends BaseModel {
         this.id_topic = 0;
         this.id_user = 0;
         this.favourite = false;
-    }
-}
-
-export class FileUploadModel extends BaseModel {
-    IdRow: number;
-    strBase64: string;
-    filename: string;
-    src: string;
-    IsAdd: boolean;
-    IsDel: boolean;
-    IsImagePresent: boolean;
-
-    clear() {
-        this.IdRow = 0;
-        this.strBase64 = '';
-        this.filename = '';
-        this.src = '';
-        this.IsAdd = false;
-        this.IsDel = false;
-        this.IsImagePresent = false;
     }
 }

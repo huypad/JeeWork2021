@@ -1,22 +1,44 @@
 <div class="card card-custom">
-  <div class="card-header">
-    <div class="card-title">
-      <h3 style="font-size: 14px; font-weight: 500; color: #000000; text-transform: uppercase" class="card-label">
-        <span translate="projects.tailieu"></span>
-      </h3>
-    </div>
-    <div class="card-toolbar">
-      <!-- <button mat-raised-button type="button" class="ja_btn-addnew" type="button" (click)="AddTemplate()"
-        matTooltip="{{ 'GeneralKey.themmoi' | translate }}">
-        <span translate="GeneralKey.themmoi"></span>
-      </button> -->
-      <button class="btn btn-outline-success" style="border-radius: 20px;padding-top: 6px;
-      padding-bottom: 6px;
-      transform: translatey(-2px);" (click)="csvInput.click()"><span translate="GeneralKey.themmoi"></span></button>
-      <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
+  <div class="kt-form__filtration projects-team-tablist">
+    <div class="row align-items-center" style="padding-left:25px">
+      <div class="action-left row">
+        <div class="col-search m--margin-bottom-10-mobile">
+          <div class="search-box float-left" style="margin-right:20px">
+            <div class="search">
+              <div class="input">
+                <span class="las la-search url"
+                  style="position: absolute; top: 2px; left: 10px; font-size: 18px;"></span>
+                <app-search-box-custom [placeholder]=" 'filter.filtertailieu' | translate "
+                  (submitSearch)="applyFilter($event)">
+                </app-search-box-custom>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="action-right row">
+        <div class="col-button m--margin-bottom-10-mobile d-flex align-items-center"
+          style="text-align: right; padding-right:40px">
+          <button mat-raised-button type="button" [matMenuTriggerFor]="menu1" class="ja_btn-addnew" type="button"
+            matTooltip="{{ 'GeneralKey.themmoi' | translate }}">
+            <span translate="GeneralKey.themmoi"></span>
+          </button>
+          <mat-menu #menu1="matMenu">
+            <button mat-menu-item (click)="Add_Link_Cloud()">
+              <mat-icon style="color:rgb(5, 116, 29)">cloud_upload</mat-icon>
+              <span translate="GeneralKey.uploadfromdrive"></span>
+            </button>
+            <button mat-menu-item (click)="csvInput.click()">
+              <mat-icon style="color:rgb(78, 24, 226)">attach_file</mat-icon>
+              <span translate="work.themtailieu"></span>
+            </button>
+            <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
+          </mat-menu>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="card-body">
+  <!-- <div class="card-header">
     <div class="m-form mb-5">
       <div class="m-form__filtration">
         <div class="row align-items-center">
@@ -29,44 +51,82 @@
           </div>
         </div>
       </div>
-      <!-- end::FILTERS -->
     </div>
+    <div class="card-toolbar">
+      <button mat-raised-button type="button" [matMenuTriggerFor]="menu1" class="ja_btn-addnew" type="button"
+        matTooltip="{{ 'GeneralKey.themmoi' | translate }}">
+        <span translate="GeneralKey.themmoi"></span>
+      </button>
+      <mat-menu #menu1="matMenu">
+        <button mat-menu-item (click)="Add_Link_Cloud()">
+          <mat-icon style="color:rgb(5, 116, 29)">cloud_upload</mat-icon>
+          <span translate="GeneralKey.uploadfromdrive"></span>
+        </button>
+        <button mat-menu-item (click)="csvInput.click()">
+          <mat-icon style="color:rgb(78, 24, 226)">attach_file</mat-icon>
+          <span translate="work.themtailieu"></span>
+        </button>
+        <input #csvInput hidden="true" type="file" (change)="onSelectFile_PDF($event)" />
+      </mat-menu>
+    </div>
+  </div> -->
+  <div class="card-body">
     <div class="example-container mat-table__wrapper" [ngStyle]="{ height: getHeight() }">
       <table mat-table class="lmat-elevation-z8" [dataSource]="dataSource" matSort matSortActive="id"
         style="width: 100%" matSortDirection="asc" matSortDisableClear>
-        <ng-container matColumnDef="filename">
-          <th mat-header-cell *matHeaderCellDef> Tên tài liệu </th>
-          <td mat-cell *matCellDef="let file">
-            <img src="{{file.icon}}" alt="{{file.filename}}"> {{file.filename}}
+        <ng-container matColumnDef="STT">
+          <th mat-header-cell *matHeaderCellDef class="mat-column-vinCode mat-header-cell-stt">
+            <span translate="GeneralKey.stt"></span>
+          </th>
+          <td mat-cell *matCellDef="let item; let vi = index" class="mat-column-vinCode mat-cell-stt text-center">
+            {{ vi + 1 }}
           </td>
         </ng-container>
-        <ng-container matColumnDef="lichsu">
-          <th mat-header-cell *matHeaderCellDef style="width:300px"> Lịch sử </th>
-          <td mat-cell *matCellDef="let file"> {{file.NguoiTao}} - {{file.CreatedDate}} </td>
+        <ng-container matColumnDef="filename">
+          <th mat-header-cell *matHeaderCellDef><span translate="attachment.tenfile"></span></th>
+          <td mat-cell *matCellDef="let file">
+            <img src="{{file.icon}}" alt="{{file.filename}}" *ngIf="!file.link_cloud">
+            <span *ngIf="!file.link_cloud">{{file.filename}}</span>
+            <a href="{{file.link_cloud}}" *ngIf="file.link_cloud" target="_blank">
+              <span>{{file.filename}}</span>
+            </a>
+          </td>
         </ng-container>
-
+        <ng-container matColumnDef="NguoiTao">
+          <th mat-header-cell *matHeaderCellDef style="width:200px"><span translate="GeneralKey.nguoitao"></span></th>
+          <td mat-cell *matCellDef="let file">{{file.NguoiTao}}</td>
+        </ng-container>
+        <ng-container matColumnDef="CreatedDate">
+          <th mat-header-cell *matHeaderCellDef style="width:200px"><span translate="GeneralKey.ngaytao"></span></th>
+          <td mat-cell *matCellDef="let file">{{file.CreatedDate}}</td>
+        </ng-container>
         <ng-container matColumnDef="size">
-          <th mat-header-cell *matHeaderCellDef class="text-center" style="width:150px"> Kích thước </th>
-          <td mat-cell *matCellDef="let file" class="text-center"> {{ (file.size/1024) | number: '1.0-0'}} kb </td>
+          <th mat-header-cell *matHeaderCellDef class="text-center" style="width:80px"><span
+              translate="attachment.kichthuoc"></span></th>
+          <td mat-cell *matCellDef="let file" class="text-center">
+            <span *ngIf="!file.link_cloud">{{(file.size/1024) | number: '1.0-0'}} kb</span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef style="width:200px" class="text-right"></th>
-          <td mat-cell *matCellDef="let file;let index = index" class="text-right">
-
-            <button mat-icon-button class="text-success" (click)="DownloadFile(file.path)" *ngIf="file.isImage"
-              type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+          <th mat-header-cell *matHeaderCellDef class="text-center"><span translate="GeneralKey.tacvu"></span></th>
+          <td mat-cell *matCellDef="let file;let index = index" style="justify-content: center" class="text-center">
+            <button mat-icon-button class="text-success" (click)="DownloadFile(file.path)"
+              *ngIf="file.isImage && !file.link_cloud" type="button"
+              matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
               <mat-icon>remove_red_eye</mat-icon>
             </button>
-            <button mat-icon-button class="text-success" (click)="preview(file.path)" *ngIf="!file.isImage"
-              type="button" matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
+            <button mat-icon-button class="text-success" (click)="preview(file.path)"
+              *ngIf="!file.isImage && !file.link_cloud" type="button"
+              matTooltip="{{ 'GeneralKey.xemtruoc' | translate}}">
               <mat-icon>remove_red_eye</mat-icon>
             </button>
-            <button mat-icon-button color="primary" (click)="DownloadFile(file.path)" *ngIf="!file.isImage"
-              type="button" matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
+            <button mat-icon-button color="primary" (click)="DownloadFile(file.path)"
+              *ngIf="!file.isImage && !file.link_cloud" type="button"
+              matTooltip="{{ 'GeneralKey.taixuong' | translate}}">
               <mat-icon>cloud_download</mat-icon>
             </button>
             <button mat-icon-button color="warn" type="button" (click)="Delete_File(file.id_row)"
-              matTooltip="{{ 'topic.xoafile' | translate}}">
+              matTooltip="{{ 'GeneralKey.xoa' | translate}}">
               <mat-icon>delete</mat-icon>
             </button>
           </td>

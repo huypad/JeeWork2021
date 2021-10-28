@@ -1,10 +1,10 @@
-import {HttpUtilsService} from './../../../_metronic/jeework_old/core/_base/crud/utils/http-utils.service';
-import {QueryResultsModel} from './../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
-import {QueryParamsModelNew} from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {environment} from 'src/environments/environment';
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import { HttpUtilsService } from './../../../_metronic/jeework_old/core/_base/crud/utils/http-utils.service';
+import { QueryResultsModel } from './../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
+import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -188,7 +188,6 @@ export class ReportService {
             params: httpParams
         });
     }
-
     Eisenhower(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
         const httpHeaders = this.httpUtils.getHTTPHeaders();
@@ -198,7 +197,6 @@ export class ReportService {
             params: httpParams
         });
     }
-
     ThongKeHeThong(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
         const httpHeaders = this.httpUtils.getHTTPHeaders();

@@ -357,7 +357,7 @@ export class ProjectsTeamComponent implements OnInit {
                     this.mywork = res.data;
                 }
             });
-            this._Services.DeptDetail(this.ID_Project).subscribe((res) => {
+            this._Services.Detail(this.ID_Project).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.item = res.data;
                     this.loaded = true;

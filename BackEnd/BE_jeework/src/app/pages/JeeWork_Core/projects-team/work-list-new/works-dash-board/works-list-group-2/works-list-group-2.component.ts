@@ -278,7 +278,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     LoadDetailProject() {
-        this._service.DeptDetail(this.ID_Project).subscribe((res) => {
+        this._service.Detail(this.ID_Project).subscribe((res) => {
             if (res && res.status == 1) {
                 this.ProjectTeam = res.data;
             }
@@ -682,7 +682,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             }
         }
         return false;
-    }
+    }fv
 
     isAssignForme(elementTask) {
         if (

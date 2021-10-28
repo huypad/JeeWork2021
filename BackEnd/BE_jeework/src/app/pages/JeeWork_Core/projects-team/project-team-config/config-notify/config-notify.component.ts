@@ -43,7 +43,6 @@ export class ConfigNotifyComponent {
 		this.langcode = localStorage.getItem('language');
 		if (this.langcode == null)
 			this.langcode = this.translate.getDefaultLang();
-		debugger
 		this._service.get_list_config(this.id_project_team, this.langcode).subscribe(res => {
 			this.listconfig = res.data;
 			this.changeDetectorRefs.detectChanges();
@@ -80,7 +79,6 @@ export class ConfigNotifyComponent {
 			_prod.isemail = true;
 		}
 		// list.push(_prod);
-		debugger
 		this._service.save_notify(_prod).subscribe(res => {
 			if (res && res.status == 1) {
 				this.LoadDataList();

@@ -75,3 +75,11 @@
 08/10/2021 01:45:45 - Xóa dữ liệu công việc (220023)
 08/10/2021 01:46:04 - Xóa dữ liệu công việc (220024)
 08/10/2021 01:46:09 - Xóa dữ liệu công việc (220025)
+25/10/2021 07:58:52 - Thêm mới dữ liệu project_team: title=JeeWork 2022, id_department=21762, loai=1
+27/10/2021 03:42:24 - Thêm mới file List cong viec - Moi.docx vào: loại :4  
+27/10/2021 07:03:49 - Thêm mới file 1265_CD-TTg_30092021-signed.pdf vào: loại :4  
+27/10/2021 09:24:42 - Thêm mới file https://docs.google.com/document/d/16cX5XTEY7VtQpehV_KITXRyNCSSAqFM8/edit#heading=h.gjdgxs vào: loại :4  
+27/10/2021 10:10:04 - Thêm mới file Work.xlsx vào: loại :4  
+28/10/2021 02:46:10 - Thêm mới file https://docs.google.com/spreadsheets/d/18wihTh44iVzcQw6a4-fwdTz69eJTfqYjv8bbru6z3qo/edit#gid=1386834576 vào: loại :4  
+28/10/2021 02:46:27 - Thêm mới file JeeWork_Role.xlsx vào: loại :4  
+28/10/2021 04:31:10 - Add view: view_name_new=Danh sách, viewid=1

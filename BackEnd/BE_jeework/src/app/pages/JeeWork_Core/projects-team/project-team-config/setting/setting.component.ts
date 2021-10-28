@@ -119,7 +119,7 @@ export class SettingComponent {
             }
         });
         this.layoutUtilsService.showWaitingDiv();
-        this._service.DeptDetail(this.id_project_team).subscribe((res) => {
+        this._service.Detail(this.id_project_team).subscribe((res) => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
                 this.item = res.data;

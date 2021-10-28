@@ -1,20 +1,20 @@
-import {WorkGroupEditComponent} from './../../../work/work-group-edit/work-group-edit.component';
+import { WorkGroupEditComponent } from './../../../work/work-group-edit/work-group-edit.component';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {SubheaderService} from './../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
-import {TokenStorage} from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {QueryParamsModelNew} from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {MenuPhanQuyenServices} from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {AttachmentService} from './../../../services/attachment.service';
+import { SubheaderService } from './../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
+import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { AttachmentService } from './../../../services/attachment.service';
 
-import {WorkService} from './../../../work/work.service';
-import {DialogSelectdayComponent} from './../../../report/dialog-selectday/dialog-selectday.component';
+import { WorkService } from './../../../work/work.service';
+import { DialogSelectdayComponent } from './../../../report/dialog-selectday/dialog-selectday.component';
 import {
     WorkModel,
 } from './../../../work/work.model';
-import { DrapDropItem} from './../drap-drop-item.model';
+import { DrapDropItem } from './../drap-drop-item.model';
 import {
     filter,
     tap,
@@ -26,13 +26,13 @@ import {
     startWith,
     switchMap,
 } from 'rxjs/operators';
-import {element} from 'protractor';
-import {WeWorkService} from './../../../services/wework.services';
-import {DatePipe, DOCUMENT} from '@angular/common';
-import {TranslateService} from '@ngx-translate/core';
-import {FormBuilder, FormControl} from '@angular/forms';
-import {Router, ActivatedRoute} from '@angular/router';
-import {ProjectsTeamService} from './../../Services/department-and-project.service';
+import { element } from 'protractor';
+import { WeWorkService } from './../../../services/wework.services';
+import { DatePipe, DOCUMENT } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder, FormControl } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProjectsTeamService } from './../../Services/department-and-project.service';
 
 import {
     Component,
@@ -45,19 +45,19 @@ import {
     OnDestroy,
     SimpleChanges,
 } from '@angular/core';
-import {MatTable} from '@angular/material/table';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSort} from '@angular/material/sort';
-import {cloneDeep, find, values} from 'lodash';
+import { MatTable } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
+import { cloneDeep, find, values } from 'lodash';
 import * as moment from 'moment';
-import {SelectionModel} from '@angular/cdk/collections';
-import {workAddFollowersComponent} from '../../../work/work-add-followers/work-add-followers.component';
+import { SelectionModel } from '@angular/cdk/collections';
+import { workAddFollowersComponent } from '../../../work/work-add-followers/work-add-followers.component';
 // import { WorkEditDialogComponent } from "../../work/work-edit-dialog/work-edit-dialog.component";
-import {WorkAssignedComponent} from '../../../work/work-assigned/work-assigned.component';
-import {DuplicateWorkComponent} from '../../../work/work-duplicate/work-duplicate.component';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {BehaviorSubject, of, Subject, SubscriptionLike, throwError} from 'rxjs';
-import {CommunicateService} from '../work-list-new-service/communicate.service';
+import { WorkAssignedComponent } from '../../../work/work-assigned/work-assigned.component';
+import { DuplicateWorkComponent } from '../../../work/work-duplicate/work-duplicate.component';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { BehaviorSubject, of, Subject, SubscriptionLike, throwError } from 'rxjs';
+import { CommunicateService } from '../work-list-new-service/communicate.service';
 
 
 @Component({
@@ -83,7 +83,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     addNodeitem = 0;
     newtask = -1;
     options_assign: any = {};
-    filter_groupby: any = [];   
+    filter_groupby: any = [];
     filter_subtask: any = [];
     list_milestone: any = [];
     Assign_me = -1;
@@ -98,7 +98,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     status_dynamic: any = [];
     list_priority: any[];
     UserID = 0;
-    listFilterCustom_Groupby : any = [];
+    listFilterCustom_Groupby: any = [];
     selection = new SelectionModel<WorkModel>(true, []);
     list_role: any = [];
     ItemFinal = 0;
@@ -229,7 +229,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
             return;
         }
         const queryParams = new QueryParamsModelNew(
-            {id_department : this.Id_Department}
+            { id_department: this.Id_Department }
         );
         this.layoutUtilsService.showWaitingDiv();
         this._service.findAllDataProjectByDepartment(queryParams).pipe(
@@ -340,7 +340,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     filterConfiguration(): any {
         const filter: any = {};
         filter.groupby = this.filter_groupby.value; //assignee
-        if(filter.groupby == 'custom'){
+        if (filter.groupby == 'custom') {
             filter.field_custom = this.filter_groupby.id_row;
             filter.field_type = this.filter_groupby.fieldname;
         }
@@ -356,7 +356,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         } else {
             filter.folderid = this.Id_Department;
         }
-        
+
         if (this.showclosedsubtask) {
             filter.subtask_done = this.showclosedsubtask;
         }
@@ -425,7 +425,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     }
 
     ViewDetai(item) {
-        this.router.navigate(['', {outlets: {auxName: 'aux/detail/' + item.id_row},}]);
+        this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
     }
 
     f_convertDate(v: any) {
@@ -466,15 +466,15 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         },
         {
             title: 'priority',
-            value: 'priority', 
+            value: 'priority',
         },
         {
             title: 'tags',
-            value: 'tags', 
+            value: 'tags',
         },
         {
             title: 'deadline',
-            value: 'deadline', 
+            value: 'deadline',
         },
     ];
 
@@ -513,7 +513,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     // }
 
 
-    SelectFilterDate() { 
+    SelectFilterDate() {
         const dialogRef = this.dialog.open(DialogSelectdayComponent, {
             width: '500px',
             data: this.filterDay,
@@ -550,23 +550,23 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
     }
 
     listNewfield: any = [];
-// =====================================================================
+    // =====================================================================
     // ========================= XỬ LÝ CUSTOM FIELD=========================
     // =====================================================================
-    GetCustomFields(){
-        this.WeWorkService.GetCustomFields(this.Id_Department,'id_deparment')
-        .subscribe((res)=>{
-            if(res && res.status === 1){
-                res.data.forEach(element => {
-                    element.value = 'custom';
-                });
-                this.listFilterCustom_Groupby = res.data;
-                this.changeDetectorRefs.detectChanges();
-            }
-        },
-        (err)=>{
-            console.log(err);
-        })
+    GetCustomFields() {
+        this.WeWorkService.GetCustomFields(this.Id_Department, 'id_deparment')
+            .subscribe((res) => {
+                if (res && res.status === 1) {
+                    res.data.forEach(element => {
+                        element.value = 'custom';
+                    });
+                    this.listFilterCustom_Groupby = res.data;
+                    this.changeDetectorRefs.detectChanges();
+                }
+            },
+                (err) => {
+                    console.log(err);
+                })
     }
 
     GetOptions_NewField() {
