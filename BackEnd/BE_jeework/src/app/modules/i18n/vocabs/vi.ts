@@ -357,6 +357,7 @@ export const locale = {
             upload: 'Upload file',
             updateexitingtemplate: 'Chỉnh sửa các mẫu khác',
             uploadfromdrive: 'Thêm từ link',
+            uploadfile: 'Thêm file tài liệu',
             // V
 
             //Q
@@ -1316,7 +1317,7 @@ export const locale = {
             xemchitietmuctieu: 'Xem chi tiết mục tiêu',
             xemchitietcongviec: 'Xem công việc trong tất cả dự án',
             xemchitietbaocao: 'Báo cáo - Thống kê',
-            newtask: 'Công việc mới',
+            newtask: 'Thêm mới công việc',
             newtaskname: 'Tên công việc mới',
             addtags: 'Gắn thẻ công việc',
             renametask: 'Cập nhật tên công việc',
