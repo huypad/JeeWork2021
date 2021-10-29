@@ -682,7 +682,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             }
         }
         return false;
-    }fv
+    } fv
 
     isAssignForme(elementTask) {
         if (

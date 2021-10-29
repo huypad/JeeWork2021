@@ -47,20 +47,22 @@
     <div class="card-body">
         <div class="textarea" style=" position: relative">
             <div style="padding-bottom: 10px;" class="form-group">
-                <div style="display: flex; align-items: center;">
-                    <span *ngIf="listTT_user.Avatar===null ||listTT_user.Avatar==='';then e1; else e2"></span>
-                    <ng-template #e2>
-                        <ngx-avatar size="50" src="{{listTT_user.Avatar}}"></ngx-avatar>
-                    </ng-template>
-                    <ng-template #e1>
-                        <ngx-avatar size="50" [name]="_user.user.customData.personalInfo.Name.slice(0,1)" *ngIf="user$ as _user"
-                            bgColor="{{_user.user.customData.personalInfo.BgColor}}"></ngx-avatar>
-                    </ng-template>
-                    <div style="display: flex;flex-direction: column;" *ngIf="user$ as _user">
-                        <span
-                            style="font-weight: bold; margin-left: 12px;">{{_user.user.customData.personalInfo.Fullname
-                            }}</span>
+                <div style="display: flex;
+                align-items: center;">
+                    <ngx-avatar [size]="45" src="{{listTT_user.Avatar}}" *ngIf="listTT_user.Avatar">
+                    </ngx-avatar>
+                    <ngx-avatar [size]="45" [name]="listTT_user.Fullname.slice(0, 1)"
+                        bgColor="{{ listTT_user.BgColor }}" *ngIf="!listTT_user.Avatar"></ngx-avatar>
+
+                    <div style="display: flex;flex-direction: column;">
+                        <span style="font-weight: bold; margin-left: 12px;">{{fullname}}</span>
                         <span style="margin-left: 12px;">Quản trị viên</span>
+
+                    </div>
+                    <div class="is-disabled" style="display: flex;padding-left: 28%;">
+                        <button mat-raised-button [disabled]="ten_group == ''" (click)="submit()" class="post">
+                            <span style="font-size:15px;">Tạo</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -83,15 +85,17 @@
                         </mat-chip>
                         <input [formControl]="userControl" [matChipInputFor]="chipList"
                             placeholder="{{'jeechat.moithanhvien' | translate}}"
+                            (keydown)="keyArrowInput($event, cellindex);" id="search"
                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
                     </mat-chip-list>
                 </mat-form-field>
 
-                <div style=" max-height:40vh; position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+                <div style=" max-height:40vh; overflow-y: auto;">
                     <div *ngFor="let item of listUser | async;let vi=index">
                         <div class="kt-notification__item-details list home-links"
                             style="display: flex;align-items: center;">
-                            <div (click)="addTagName(item)" class="li" style="border-radius: 5px; width: 95%;">
+                            <div (click)="addTagName(item)" class="li" style="border-radius: 5px; width: 95%;"
+                                id="row{{vi}}">
                                 <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
                                 <ng-template #e2>
                                     <ngx-avatar size="50" src="{{item.Avatar}}"></ngx-avatar>
@@ -111,11 +115,5 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="dialog-footer">
-        <button mat-raised-button [disabled]="noidungInput.errors?.required" style="width: 100%;" (click)="submit()"
-            class="post">
-            <span style="font-size:18px;" translate="jeechat.tao"></span>
-        </button>
     </div>
 </div>

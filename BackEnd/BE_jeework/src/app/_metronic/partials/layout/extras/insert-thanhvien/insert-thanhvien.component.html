@@ -1,0 +1,178 @@
+<style>
+    .post {
+        text-align: center;
+      
+        height: 35px;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        border-radius: 5px;
+        /* background-color:lightgreen;
+            color:#FFf; */
+            color: white;
+        background-color:green;
+        border: none;
+
+
+    }
+    ::placeholder {
+        color: black;
+        padding: 10px;
+    }
+    .mat-form-field-wrapper
+    {
+            padding-bottom: none !important;
+    }
+    .avatar {
+          border-radius: 50%;
+          -moz-border-radius: 50%;
+          -webkit-border-radius: 50%;
+          width: 42px;
+          height: 40px;
+          background-size: cover;
+        }
+   
+</style>
+<div class="row">
+    <div class="col-md-12" style="background: white;">
+        <div   class="__dialogwrapper" 
+        >
+        <div class="__dialogwrapper-inner">
+            <div class="__dialogmain">
+    
+                <div class="__dialogcontent simple-form">
+                    <div id="post-status" class="__apdialog" title="">
+                        <div class="title">
+    
+                            <span style="font-size:20px;text-align:center;">Thêm thành viên</span>
+                        
+                            
+                            <button (click)="goBack()" style="float: right;margin-top: -5px;"  mat-button
+                                mat-icon-button>
+                                <mat-icon style="font-size: 15px;">clear</mat-icon>
+                             
+                            </button>
+                        </div>
+                      
+                        <div >
+                            <form  id="post-create-fly"> 
+                                <div class="textarea " style=" position: relative">
+                                  
+                                
+                                        <div style="padding-bottom: 10px;" class="form-group">
+            
+            
+                                            <div  style="display: flex;
+                                            align-items: center;">
+            
+            <ngx-avatar [size]="45" src="{{ listTT_user.Avatar }}" *ngIf="listTT_user.Avatar"></ngx-avatar>
+            <ngx-avatar [size]="45" [name]="listTT_user.Name.slice(0, 1)" bgColor="{{ listTT_user.BgColor }}" *ngIf="!listTT_user.Avatar"></ngx-avatar>
+                                                
+                                                <div  style="display: flex;flex-direction: column;" 
+                                               >
+                                                <span style="font-weight: bold; margin-left: 12px;">{{name}}</span>
+                                                <span style="margin-left: 12px;">Quản trị viên</span>
+                                             
+                                            </div>
+                                               
+                                            </div>
+                                          
+            
+            
+                                        </div>
+                                       
+                                        <!-- <div style="border: 1px solid lightblue;border-radius: 5px;     border-radius: 10px;
+                                        padding: 0 10px;" class="example-form">
+                                            <mat-form-field appearance="none" style="width: 100%;">
+                                                <mat-label style="padding-top: 5px;">Tên Nhóm</mat-label>
+                                                <input  name="noidung" [(ngModel)]="ten_group" required #noidungInput="ngModel" matInput >
+                                              
+                                              </mat-form-field>
+                                          
+                                          
+                                          </div>
+             -->
+                                        <div style="padding-top: 20px;" >
+                                            <div class="ct_user">
+                                        
+                                                <mat-form-field   class="mat-form-field-fluid" style="border-radius: 10px;
+                                                border: 1px solid lightgray;
+                                                width: 100%;
+                                                padding: 0 10px 0 10px;">
+                                                  <mat-label>Mời thành viên(Không bắt buộc)</mat-label>
+                                                    <mat-chip-list #chipList required  >
+                                                        <mat-chip *ngFor="let dlht of user_tam" [selectable]="selectable" [removable]="removable"
+                                                            (removed)="remove(dlht)">
+                                                            {{dlht.Fullname}}
+                                                            <mat-icon matChipRemove *ngIf="removable">cancel
+                                                            </mat-icon>
+                                                        </mat-chip>
+                                                        <input
+                                                        [formControl]="userControl" 
+                                                        [matChipInputFor]="chipList"
+                                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                                       >
+                                                    </mat-chip-list>
+                                                   
+                                                </mat-form-field>
+                                            </div>
+                                        
+                                        <div  style=" max-height:40vh; position: relative;"  [perfectScrollbar]="{wheelPropagation: false}">
+                                        
+                                        
+                                        <div  *ngFor="let item of listUser | async;let vi=index">
+                                        
+                                            <div class="kt-notification__item-details list home-links" style="display: flex;align-items: center;">
+                                               
+                                               <div (click)="addTagName(item)" class="li" style="    border-radius: 5px;
+                                               width: 95%;
+                                           ">
+                                        
+                                            
+
+                                        <ngx-avatar [size]="45" src="{{ item.Avatar }}" *ngIf="item.Avatar"></ngx-avatar>
+                                        <ngx-avatar [size]="45" [name]="item.Fullname.slice(0, 1)" bgColor="{{ item.BgColor }}" *ngIf="!item.Avatar"></ngx-avatar>
+                                                
+                                                <span  style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
+                                                    {{item.Fullname}}
+                                                </span>
+                                               
+                                            </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                     
+            
+                                        <div class="is-disabled" style="display: flex;">
+            
+            
+                                            <button  mat-raised-button [disabled]="user_tam.length==0" style="width: 100%;" (click)="submit()"
+                                                class="post">
+                                                <span *ngIf="active" style="    margin-right: 10px;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            
+                                                <span style="font-size:18px;">Thêm</span>
+                                            </button>
+                                        </div>
+            
+                                    
+    
+                                
+                                </div>
+                             
+    
+                               
+                              
+    
+                            
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+   
+</div>

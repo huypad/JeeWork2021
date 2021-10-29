@@ -6,14 +6,14 @@
       <li class="nav-item">
         <a [ngClass]="getActiveCSSClasses('kt_quick_panel_notifications')"></a>
         <div style="display: flex; align-items: center;">
-          <h4 class="text-primary">Messages</h4>
           <a href="{{hostjeechat}}" target="_blank">
-            <mat-icon>fullscreen</mat-icon>
+            <h6 class="text-primary">Chat trực tuyến</h6>
+            <!-- <mat-icon>chat_bubble_outline</mat-icon> -->
           </a>
-          <div style="    margin: 0;
+          <div style="margin: 0;
             padding: 10px;" class="form-group has-search">
             <span class="fa fa-search form-control-feedback"></span>
-            <input [(ngModel)]="search" name="search" type="text" class="form-control" placeholder="Search">
+            <input [(ngModel)]="search" name="search" type="text" class="form-control" placeholder="Tìm kiếm">
           </div>
           <a href="#" class="btn btn-xs btn-icon btn-light btn-hover-primary" id="kt_quick_panel_close">
             <i class="ki ki-close icon-xs text-muted"></i>
@@ -37,7 +37,7 @@
       <!--end::Tabpane-->
     </div>
   </div>
-  
+
   <!--end::Content-->
 </div>
 <!--end::Quick Panel-->

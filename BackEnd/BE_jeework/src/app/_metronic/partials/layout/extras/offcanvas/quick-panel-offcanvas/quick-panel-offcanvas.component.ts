@@ -16,9 +16,7 @@ export class QuickPanelOffcanvasComponent implements OnInit {
     | 'kt_quick_panel_settings' = 'kt_quick_panel_notifications';
 
   constructor(private layout: LayoutService,private chatService:ChatService,
-    private _ngZone: NgZone,
-    
-    
+    private _ngZone: NgZone,  
     ) {}
   elementId:string;
   public CData: number;

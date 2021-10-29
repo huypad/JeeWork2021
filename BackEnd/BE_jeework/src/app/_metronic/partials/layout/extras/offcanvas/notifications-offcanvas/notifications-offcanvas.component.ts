@@ -61,16 +61,16 @@ export class NotificationsOffcanvasComponent implements OnInit {
         if (noti.message_json.AppCode != environment.APPCODE) {
           domain = noti.message_json.Domain
           window.open(domain + noti.message_json.Link, '_blank');
-        }else{
+        } else {
           // this.router.navigate([noti.message_json.Link]);
           this.router.navigateByUrl(noti.message_json.Link) //có link thì chuyển link
         }
       }
-      this.loadUnreadList.emit(true) 
+      this.loadUnreadList.emit(true)
     });
   }
 
-  DanhDauDaXem(){
+  DanhDauDaXem() {
     this.socketService.ReadAll().subscribe(res => {
       this.getListNoti();
       this.loadUnreadList.emit(true)

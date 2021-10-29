@@ -12,7 +12,7 @@ export class UserDropdownInnerComponent implements OnInit {
   extrasUserDropdownStyle: 'light' | 'dark' = 'light';
   user$: Observable<UserModel>;
 
-  constructor(private layout: LayoutService, private auth: AuthService) {}
+  constructor(private layout: LayoutService, private auth: AuthService) { }
 
   ngOnInit(): void {
     this.extrasUserDropdownStyle = this.layout.getProp(

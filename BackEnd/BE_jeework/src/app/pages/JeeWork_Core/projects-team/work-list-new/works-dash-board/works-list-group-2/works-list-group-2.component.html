@@ -332,8 +332,7 @@
                                                         <kt-choose-milestone-and-tags (click)="$event.stopPropagation()"
                                                             [options]="list_Tag" [project_team]="project_team"
                                                             [id_project_Team]="ID_Project" [Id]="node.id_row"
-                                                            [Id_key]="9" [Loai]="'Tags'"
-                                                            (ItemSelected)="ReloadData()">
+                                                            [Id_key]="9" [Loai]="'Tags'" (ItemSelected)="ReloadData()">
                                                         </kt-choose-milestone-and-tags>
                                                     </ng-container>
                                                 </mat-menu>
@@ -623,8 +622,8 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'email'">
-                                        <div class="w-100 h-100   padding-new-field item-field" 
-                                        (click)="GetDataNewField(node.id_row,item.Id_row)!='-'?'':focusInput(node.id_row,item.Id_row)">
+                                        <div class="w-100 h-100   padding-new-field item-field"
+                                            (click)="GetDataNewField(node.id_row,item.Id_row)!='-'?'':focusInput(node.id_row,item.Id_row)">
                                             <ng-container *ngIf="CheckCustomfield(node,item)">
                                                 <div class=" url hide-more-text"
                                                     *ngIf="GetDataNewField(node.id_row,item.Id_row)!='-'">
@@ -665,7 +664,7 @@
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'files'">
                                         <div class="w-100 h-100" (click)="file.click()">
-                                            <div class=" url"  *ngIf="editmail != node.id_row">
+                                            <div class=" url" *ngIf="editmail != node.id_row">
                                                 -
                                             </div>
                                             <input #file type="file" name="files" (change)="onSelectFile($event)"
@@ -674,9 +673,8 @@
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'number'">
                                         <div class="w-100 h-100  padding-new-field item-field"
-                                        (click)="focusInput(node.id_row,item.Id_row)">
-                                            <div class="url hide-more-text"
-                                                *ngIf="CheckCustomfield(node,item)">
+                                            (click)="focusInput(node.id_row,item.Id_row)">
+                                            <div class="url hide-more-text" *ngIf="CheckCustomfield(node,item)">
                                                 {{GetDataNewField(node.id_row,item.Id_row)}}
                                             </div>
                                             <ng-container *ngIf="!CheckCustomfield(node,item)">
@@ -688,9 +686,9 @@
                                         </div>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'text'">
-                                        <div class="w-100 h-100   padding-new-field item-field" (click)="focusInput(node.id_row,item.Id_row)">
-                                            <div class=" url hide-more-text" 
-                                                *ngIf="CheckCustomfield(node,item)">
+                                        <div class="w-100 h-100   padding-new-field item-field"
+                                            (click)="focusInput(node.id_row,item.Id_row)">
+                                            <div class=" url hide-more-text" *ngIf="CheckCustomfield(node,item)">
                                                 {{GetDataNewField(node.id_row,item.Id_row)}}
                                             </div>
                                             <ng-container *ngIf="!CheckCustomfield(node,item)">

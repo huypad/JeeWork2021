@@ -95,13 +95,16 @@
 
 .more {
   flex-grow: 1;
-  padding-left: 10px;
-  margin-top: -45px;
+padding-left: 10px;
+margin-top: -45px;
 
   .more-string {
       flex-grow: 1;
+      /*font-size: 15px;*/
       color: black;
-      line-height: 27px;
+line-height: 27px;
+
+
       .url {
           font-weight: normal;
           color: #4CAF50;
@@ -126,7 +129,25 @@
           border: solid 1px #eee;
           border-radius: 50%;
           color: white;
-          background-color: #c0c5c0;
+        background-color: #c0c5c0;
       }
   }
+}
+.allread
+{
+  padding: 5px;
+  float: right;
+  font-size: 12px;
+  cursor: pointer;
+}
+.allread:hover
+{
+  color: rgb(0, 47, 255)
+}
+.textlast {
+  display: block;
+  width: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

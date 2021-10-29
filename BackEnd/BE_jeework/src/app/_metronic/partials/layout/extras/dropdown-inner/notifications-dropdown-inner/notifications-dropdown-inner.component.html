@@ -23,11 +23,11 @@
 <!--begin::Content-->
 <div class="tab-content">
   <!--begin::Tabpane-->
-  <div class="tab-pane p-8" id="topbar_notifications_notifications"
-    role="tabpanel" [ngClass]="getActiveCSSClasses('topbar_notifications_notifications')">
+  <div class="tab-pane p-8" id="topbar_notifications_notifications" role="tabpanel"
+    [ngClass]="getActiveCSSClasses('topbar_notifications_notifications')">
     <!--begin::Scroll-->
     <div class="scroll pr-7 mr-n7 ps" style="position: relative; max-height: 200px;" perfectScrollbar>
-      <div class=" min-h-200px" >
+      <div class=" min-h-200px">
         <div *ngIf="listNoti && listNoti.length == 0">
           <div style="margin-left: 100px; margin-top: 50px;" translate="Common.notify_titile"></div>
         </div>
@@ -35,22 +35,22 @@
           <div *ngFor="let noti of listNoti">
             <div class="d-flex align-items-center mb-6">
               <div class="symbol symbol-40 symbol-light-primary mr-4" *ngIf="noti.message_json.Img != null">
-                <img  src="{{noti.message_json.Img}}" style="border-radius: 50%;max-width: 40px;">
+                <img src="{{noti.message_json.Img}}" style="border-radius: 50%;max-width: 40px;">
               </div>
               <div class="d-flex flex-column">
                 <a (click)="clickRead(noti)" class="text-hover-primary mb-1 font-size-lg url"
-                [ngClass]="{'unread': !noti.isRead, 'read': noti.isRead}">
-                  {{(noti.message_json.Content != null)  ? noti.message_json.Content : noti.message_text }}
+                  [ngClass]="{'unread': !noti.isRead, 'read': noti.isRead}">
+                  {{(noti.message_json.Content != null) ? noti.message_json.Content : noti.message_text }}
                 </a>
                 <span [ngClass]="{'time-unread': !noti.isRead, 'time-read': noti.isRead}">{{noti.createdDate}} </span>
               </div>
-              <span *ngIf="!noti.isRead" class="dot"></span> 
+              <span *ngIf="!noti.isRead" class="dot"></span>
             </div>
             <hr style="color:#EFEFEF">
           </div>
         </div>
-      </div> 
-     
+      </div>
+
     </div>
     <!--end::Scroll-->
   </div>

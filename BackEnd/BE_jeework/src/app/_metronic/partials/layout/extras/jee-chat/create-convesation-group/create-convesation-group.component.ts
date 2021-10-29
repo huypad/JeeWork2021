@@ -31,8 +31,9 @@ export class CreateConvesationGroupComponent implements OnInit {
   @ViewChild('userInput', { static: false }) userInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete;
   user$: Observable<any>;
-  ten_group: string;
+  ten_group: string='';
   listTT_user: any = {};
+  fullname: string;
   authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
   constructor(
     private router: Router,
@@ -40,8 +41,9 @@ export class CreateConvesationGroupComponent implements OnInit {
     private changeDetectorRefs: ChangeDetectorRef,
     private conversation_sevices: ConversationService,
     private dialogRef: MatDialogRef<CreateConvesationGroupComponent>,) {
-
+      const user = this.auth.getAuthFromLocalStorage()['user'];
     this.user$ = this.auth.getAuthFromLocalStorage();
+    this.fullname = user['customData']['personalInfo']['Fullname'];
   }
 
   CloseDia(data = undefined) {
@@ -85,13 +87,18 @@ export class CreateConvesationGroupComponent implements OnInit {
       vitri = index;
     }
     this.itemuser.splice(vitri, 1);
-
     this.listUser = this.userControl.valueChanges
       .pipe(
         startWith(''),
         map(state => state ? this._filterStates(state) : this.itemuser.slice())
 
       );
+    setTimeout(() => {
+      this.cellClick(this.cellindex);
+    }, 100);
+    this.userControl.setValue("");
+    document.getElementById('search').focus();
+    document.getElementById("row0").scrollIntoView({ behavior: "smooth" });
   }
 
   remove(user: string): void {
@@ -108,6 +115,11 @@ export class CreateConvesationGroupComponent implements OnInit {
           startWith(''),
           map(state => state ? this._filterStates(state) : this.itemuser.slice())
         );
+        setTimeout(() => {
+          this.cellClick(this.cellindex);
+          document.getElementById('search').focus();
+          document.getElementById("row0").scrollIntoView({ behavior: "smooth" });
+        }, 100);
     }
   }
 
@@ -122,12 +134,10 @@ export class CreateConvesationGroupComponent implements OnInit {
       if ((value || '').trim()) {
         this.user_tam.push(value.trim());
       }
-
       // Reset the input value
       if (input) {
         input.value = '';
       }
-
       this.userCtrl.setValue(null);
     }
   }
@@ -136,22 +146,16 @@ export class CreateConvesationGroupComponent implements OnInit {
 
     let obj = this.user_tam.find(x => x.Username == event.option.viewValue);
     if (obj) {
-      alert('Vui lòng chọn nhân viên khác !')
+      alert('Vui lòng chọn thành viên khác')
     }
     else {
-
       this.user_tam.push(
         {
           Username: event.option.viewValue,
         })
-
-
       this.remove(event.option.value);
       this.userInput.nativeElement.value = '';
       this.userCtrl.setValue(null);
-
-
-
     }
   }
 
@@ -159,9 +163,12 @@ export class CreateConvesationGroupComponent implements OnInit {
     return value.toLowerCase().replace(/\s/g, '');
   }
   private _filterStates(value: string): any[] {
-    //	const filterValue = value.toLowerCase();
-    const filterValue = this._normalizeValue(value);
-    return this.itemuser.filter(state => this._normalizeValue(state.Fullname).includes(filterValue));
+    const valie_vie = this.convertVietnamese(value);
+    const filterValue = this._normalizeValue(valie_vie);
+    setTimeout(() => {
+      this.cellClick(this.cellindex);
+    }, 100);
+    return this.itemuser.filter(state => this._normalizeValue(this.convertVietnamese(state.Fullname)).includes(filterValue));
   }
 
   loadTT() {
@@ -171,28 +178,25 @@ export class CreateConvesationGroupComponent implements OnInit {
         let vitri = this.itemuser.findIndex(x => x.UserId == this.user_tam[i].UserId)
         this.itemuser.splice(vitri, 1)
       }
-
-
-
       this.listUser = this.userControl.valueChanges
         .pipe(
           startWith(''),
           map(state => state ? this._filterStates(state) : this.itemuser.slice())
-
         );
+        setTimeout(() => {
+          this.cellClick(this.cellindex);
+        }, 100);
       this.changeDetectorRefs.detectChanges();
-
-
     })
-
   }
 
   loadTTuser() {
 
-    const authData = JSON.parse(localStorage.getItem(this.authLocalStorageToken));
+    // const authData = JSON.parse(localStorage.getItem(this.authLocalStorageToken));
+   const authData = this.auth.getAuthFromLocalStorage()
+    debugger
     this.listTT_user = authData.user.customData.personalInfo;
   }
-
   ngOnInit(): void {
     this.loadTT();
     this.loadTTuser();
@@ -267,5 +271,110 @@ export class CreateConvesationGroupComponent implements OnInit {
         return (result = 'rgb(211, 84, 0)');
     }
     return result;
+  }
+  
+  //=====================Bổ sung tìm kiếm không dấu và di chuyển mũi tên lên xuống 11/10/2021============================
+  convertVietnamese(str: any) {
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+    str = str.replace(/đ/g, "d");
+    str = str.replace(/^\-+|\-+$/g, "");
+    str = str.toLowerCase().replace(/\b[a-z](?=[a-z]{2})/g, (letter) => { return letter.toUpperCase(); });
+    return str;
+  }
+
+  cellselected: any;
+  cellSelect: any = {
+    rowInd: 0,
+    colInd: 0,
+    colName: "",
+    _editing: false,
+  };
+  displayedColumns = [];
+  public cellindex: number = 0;
+
+  cellClick(rInd: number, colName: string = 'name') {
+    this.cellSelect = {
+      rowInd: rInd,
+      colName: colName,
+    };
+    let t = document.querySelector(".li.focus");
+    let q = document.getElementById("row" + rInd);
+    if (t) t.classList.remove("focus");
+    if (q) {
+      q.classList.add("focus");
+      q.focus();
+    }
+    this.changeDetectorRefs.detectChanges();
+  }
+
+  keyArrowInput(e: any, rind: number) {
+    switch (e.keyCode) {
+      case 8:
+        setTimeout(() => {
+          this.cellClick(this.cellindex);
+          document.getElementById('search').focus();
+        }, 500);
+        break;
+      case 13:
+        this.selectedEdit(this.cellSelect.rowInd);
+        break;
+      case 38: // this is the ascii of arrow up
+        e.preventDefault();
+        break;
+      case 40: // this is the ascii of arrow down
+        e.preventDefault();
+        break;
+    }
+
+    rind = this.cellSelect.rowInd;
+    // left: 37, up: 38, right: 39, down: 40
+    let _move = false;
+    // colInd--;
+    switch (e.keyCode) {
+      case 38: //up, giữ cột, move row
+        _move = true;
+        if (rind > 0) {
+          rind--;
+        }
+        break;
+      case 40://down, giữ cột, giảm row
+        _move = true;
+        let listdata = this.GetListData();
+        if (rind < listdata.length - 1) {
+          rind++;
+        }
+        break;
+    }
+    if (_move) {
+      this.cellClick(rind);
+      document.getElementById("row" + rind).scrollIntoView({ behavior: "smooth" });
+    }
+
+    // this.myScrollContainer.nativeElement.focus();
+  }
+
+  selectedEdit(vi: any) {
+    if (this.userControl.value == null) {
+      this.userControl.setValue("");
+    }
+    const valie_vie = this.convertVietnamese(this.userControl.value);
+    const filterValue = this._normalizeValue(valie_vie);
+    let data = this.itemuser.filter(state => this._normalizeValue(this.convertVietnamese(state.Fullname)).includes(filterValue));
+    this.addTagName(data[vi]);
+  }
+
+  GetListData(): any[] {
+    if (this.userControl.value == null) {
+      this.userControl.setValue("");
+    }
+    const valie_vie = this.convertVietnamese(this.userControl.value);
+    const filterValue = this._normalizeValue(valie_vie);
+    return this.itemuser.filter(state => this._normalizeValue(this.convertVietnamese(state.Fullname)).includes(filterValue));
   }
 }

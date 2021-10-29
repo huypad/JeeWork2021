@@ -12,10 +12,7 @@
       <div class="text-dark m-0 flex-grow-1 mr-3 font-size-h5">
         {{ _user.firstname }} {{ _user.lastname }}
       </div>
-      <span
-        class="label label-light-success label-lg font-weight-bold label-inline"
-        >3 messages</span
-      >
+      <span class="label label-light-success label-lg font-weight-bold label-inline">3 messages</span>
       <!--end::Text-->
     </div>
     <div class="separator separator-solid"></div>
@@ -26,15 +23,12 @@
     <!--begin::Header-->
     <div
       class="d-flex align-items-center justify-content-between flex-wrap p-8 bgi-size-cover bgi-no-repeat rounded-top"
-      style="background-image: url('./assets/media/misc/bg-1.jpg');"
-    >
+      style="background-image: url('./assets/media/misc/bg-1.jpg');">
       <div class="d-flex align-items-center mr-2">
         <!--begin::Symbol-->
         <div class="symbol bg-white-o-15 mr-3">
-          <span
-            class="symbol-label text-success font-weight-bold font-size-h4"
-            >{{ _user.firstname | firstLetter }}</span
-          >
+          <span class="symbol-label text-success font-weight-bold font-size-h4">{{ _user.firstname | firstLetter
+            }}</span>
         </div>
         <!--end::Symbol-->
 
@@ -44,9 +38,7 @@
         </div>
         <!--end::Text-->
       </div>
-      <span class="label label-success label-lg font-weight-bold label-inline"
-        >3 messages</span
-      >
+      <span class="label label-success label-lg font-weight-bold label-inline">3 messages</span>
     </div>
     <!--end::Header-->
   </ng-container>
@@ -65,9 +57,7 @@
           </div>
           <div class="text-muted">
             Account settings and more
-            <span class="label label-light-danger label-inline font-weight-bold"
-              >update</span
-            >
+            <span class="label label-light-danger label-inline font-weight-bold">update</span>
           </div>
         </div>
       </div>
@@ -131,11 +121,7 @@
     <!--begin::Footer-->
     <div class="navi-separator mt-3"></div>
     <div class="navi-footer px-8 py-5">
-      <a
-        class="btn btn-light-primary font-weight-bold cursor-pointer"
-        (click)="logout()"
-        >Sign Out</a
-      >
+      <a class="btn btn-light-primary font-weight-bold cursor-pointer" (click)="logout()">Sign Out</a>
       <a class="btn btn-clean font-weight-bold cursor-pointer">Upgrade Plan</a>
     </div>
     <!--end::Footer-->

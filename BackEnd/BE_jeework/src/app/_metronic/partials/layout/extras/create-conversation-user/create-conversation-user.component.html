@@ -1,0 +1,38 @@
+<!-- 
+ <span class="fa fa-search form-control-feedback"></span> -->
+ <div style="display: flex;align-items: center;">
+    <input  [formControl]="searchControl"  type="text" class="form-control" placeholder="Tìm kiếm">
+    <button (click)="goBack()" style="margin-left: 15px;"  mat-button
+    mat-icon-button>
+    <mat-icon style="font-size: 15px;">clear</mat-icon>
+   
+   </button>
+ </div>
+
+<div  style=" max-height:40vh; position: relative;"  [perfectScrollbar]="{wheelPropagation: false}">
+                                        
+                                        
+    <div  *ngFor="let item of filteredGroups | async;let vi=index">
+    
+        <div class="kt-notification__item-details list home-links" style="display: flex;align-items: center;">
+           
+           <div (click)="CreateConverSation(item)"  class="li" style="    border-radius: 5px;
+           width: 95%;
+       ">
+    
+        
+
+              <ngx-avatar *ngIf="item.Avatar" [size]="45" src="{{item.Avatar}}">
+              </ngx-avatar>
+              <ngx-avatar [size]="45" [name]="item.FullName.slice(0, 1)" bgColor="{{ item.BgColor }}" *ngIf="!item.Avatar"></ngx-avatar>
+    
+    
+        
+            <span  style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
+                {{item.FullName}}
+            </span>
+           
+        </div>
+        </div>
+        </div>
+   </div>

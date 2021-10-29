@@ -1,0 +1,70 @@
+<mat-tab-group>
+    <mat-tab label="Thành viên"> 
+
+      <perfect-scrollbar style="max-height: 50vh;position: relative;" [perfectScrollbar]="{wheelPropagation: false}">
+        <div *ngFor="let item of lstThanhVien" style="padding-right: 20px;">
+            <div style="display: inline-flex; padding: 10px 0 10px 0;" *ngFor="let user of item.InforUser">
+                <ngx-avatar [size]="45" src="{{ user.Avatar }}" *ngIf="user.Avatar"></ngx-avatar>
+                <ngx-avatar [size]="45" [name]="user.Fullname.slice(0, 1)" bgColor="{{ user.BgColor }}" *ngIf="!user.Avatar"></ngx-avatar>
+              
+                    <div style="display: flex;flex-direction: column;  padding-left: 12px;">
+                        <p style=" margin: 0;"  class="name">{{user.Fullname}}</p>
+                        <span style="    color: #1888F2;
+                        background: #E7F3FF;" *ngIf="item.isAdmin">Quản trị viên nhóm</span>
+                    </div>
+                
+            </div>
+               
+            <button *ngIf="!adminGroup&&UserIdCurrent===item.UserId" style="float: right;" mat-icon-button [matMenuTriggerFor]="menu1" aria-label="Example icon-button with a menu">
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu1="matMenu">
+              <button (click)="LeaveGroup(item.UserId)" mat-menu-item > 
+                <!-- <mat-icon>dialpad</mat-icon> -->
+                <span>Rời khỏi nhóm</span>
+              </button>
+              </mat-menu>
+            <button *ngIf="adminGroup" style="float: right;" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button (click)="DeleteMember(item.UserId)" mat-menu-item > 
+                  <!-- <mat-icon>dialpad</mat-icon> -->
+                  <span>Xóa thành viên khỏi nhóm</span>
+                </button>
+                <button (click)="UpdateAdmin(item.UserId,0)"  *ngIf="adminGroup&&item.isAdmin" mat-menu-item>
+                  <!-- <mat-icon>dialpad</mat-icon> -->
+                  <span>Xóa quyền quản trị</span>
+                </button>
+                <button *ngIf="!item.isAdmin" (click)="UpdateAdmin(item.UserId,1)" mat-menu-item>
+                  <!-- <mat-icon>notifications_off</mat-icon> -->
+                  <span>Chỉ định làm quản trị viên</span>
+                </button>
+                <button *ngIf="UserIdCurrent===item.UserId" mat-menu-item>
+                  <!-- <mat-icon>notifications_off</mat-icon> -->
+                  <span>Rời khỏi nhóm</span>
+                </button>
+              </mat-menu>
+        </div>
+        </perfect-scrollbar>
+    </mat-tab>
+    <mat-tab label="Quản trị viên"> 
+      <div *ngFor="let item of lstThanhVien">
+        <div *ngIf="item.isAdmin">
+
+        
+        <div  style="display: inline-flex; padding: 10px 0 10px 0;" *ngFor="let user of item.InforUser">
+            <ngx-avatar [size]="45" src="{{ user.Avatar }}" *ngIf="user.Avatar"></ngx-avatar>
+            <ngx-avatar [size]="45" [name]="user.Fullname.slice(0, 1)" bgColor="{{ user.BgColor }}" *ngIf="!user.Avatar"></ngx-avatar>
+          
+                <div style="display: flex;flex-direction: column;  padding-left: 12px;">
+                    <p style=" margin: 0;"  class="name">{{user.Fullname}}</p>
+                    <span style="    color: #1888F2;
+                    background: #E7F3FF;" *ngIf="item.isAdmin">Quản trị viên nhóm</span>
+                </div>
+            </div>
+          </div>
+        </div>
+    
+    </mat-tab>
+  </mat-tab-group>

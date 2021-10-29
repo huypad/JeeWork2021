@@ -87,7 +87,7 @@ export class UserProfileComponent implements OnInit {
     public dialog: MatDialog,
     private cookieService: CookieService,
     private menuConfigService: MenuConfigService // private dungchungservice: DungChungServices,
-  ) {}
+  ) { }
 
   /**
    * @ Lifecycle sequences => https://angular.io/guide/lifecycle-hooks
@@ -146,7 +146,7 @@ export class UserProfileComponent implements OnInit {
   //   this.authService.logout(true, url);
   // }
 
-  loadLoGoKhachHang() {}
+  loadLoGoKhachHang() { }
 
   item: any;
   @Input() avatarr: string = "./assets/app/media/img/users/user4.jpg";
@@ -174,35 +174,6 @@ export class UserProfileComponent implements OnInit {
         }
       });
     }
-    // if ("serviceWorker" in navigator && "PushManager" in window) {
-    //   var auth = this.authService;
-    //   navigator.serviceWorker
-    //     .register("sw.js")
-    //     .then(function (swReg) {
-    //       swRegistration = swReg;
-    //       auth.CreateFCM().subscribe((res) => {
-    //         if (res && res.status == 1) {
-    //           var token = localStorage.getItem("PublicKey");
-    //           if (token != res.data) {
-    //             //token mới
-    //             localStorage.setItem("PublicKey", res.data);
-    //             swReg.active.postMessage(
-    //               JSON.stringify({
-    //                 Token: localStorage.getItem("accessToken"),
-    //                 ApiUrl: environment.ApiRoot,
-    //                 applicationServerPublicKey: res.data,
-    //               })
-    //             );
-    //           }
-    //         }
-    //       });
-    //     })
-    //     .catch(function (error) {
-    //       console.error("Service Worker Error", error);
-    //     });
-    // } else {
-    //   console.warn("Service Worker and Push is not supported");
-    // }
   }
   getRandomColor() {
     var color = Math.floor(0x1000000 * Math.random()).toString(16);
@@ -240,18 +211,11 @@ export class DialogOverviewExampleDialog {
     private changeDetectorRefs: ChangeDetectorRef,
     private tokenStore: TokenStorage,
     private layoutUtilsService: LayoutUtilsService
-  ) {}
+  ) { }
   ngOnInit(): void {
     this.checkPass();
     this.tokenStore.getIDUser().subscribe((res) => {
       this.id_user = res;
-    });
-    this.layoutService.findYeuCauDoManhPassWord().subscribe((res) => {
-      if (res && res.status === 1) {
-        let rs = res;
-        this.yeucaudomanhmatkhau = rs.data;
-        this.changeDetectorRefs.detectChanges();
-      }
     });
   }
 

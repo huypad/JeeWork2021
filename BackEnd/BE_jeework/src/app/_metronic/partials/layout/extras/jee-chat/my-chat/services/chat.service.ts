@@ -7,6 +7,7 @@ import {ReplaySubject} from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {PresenceService} from './presence.service';
 import {QueryParamsModelNewLazy, QueryResultsModel} from '../models/pagram';
+import { NotifyMessage } from '../models/NotifyMess';
 
 @Injectable({
     providedIn: 'root'
@@ -57,7 +58,12 @@ export class ChatService {
       const httpHeader = this.getHttpHeaders();
       return this.http.get<any>(url,{ headers: httpHeader});
     }
-    
+    GetTagNameGroup(IdGroup:number)
+    {
+      const url =this.baseUrl+`/chat/GetTagNameisGroup?IdGroup=${IdGroup}`
+      const httpHeader = this.getHttpHeaders();
+      return this.http.get<any>(url,{ headers: httpHeader});
+    }
   GetUserReaction(idchat:number,type:number)
   {
     const url =this.baseUrl+`/chat/GetUserReaction?idchat=${idchat}&type=${type}`
@@ -96,6 +102,12 @@ export class ChatService {
         return this.auth.getAuthFromLocalStorage();
     }
 
+    publishNotifi(item:NotifyMessage): Observable<any> 
+    {
+      const url =this.baseUrl+`/notifi/PushNotifiTagName`;
+      const httpHeader = this.getHttpHeaders();
+      return this.http.post<any>(url,item,{ headers: httpHeader});
+    }
     getHttpHeaders() {
 
         const data = this.getAuthFromLocalStorage();

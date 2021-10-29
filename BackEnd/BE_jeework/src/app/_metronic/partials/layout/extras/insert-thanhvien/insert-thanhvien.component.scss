@@ -78,7 +78,10 @@
     border-right: 1px solid #ccc;
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ccc;
+    // font-size: 16px;
     padding: 7px 9px;
+    // -moz-border-radius: 3px;
+    // -webkit-border-radius: 3px;
     border-radius: 3px;
     margin-top: 3px;
     margin-bottom: 8px;
@@ -88,6 +91,8 @@
     margin: 0;
     border: none;
     background: transparent;
+    // -webkit-box-sizing: border-box;
+    // -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
     display: block;
@@ -138,7 +143,10 @@ img {
     height: 32px;
 }
 .textarea {
+    
+    max-height: 500px;
     outline: none;
+    // overflow-y: scroll !important;
 }
 .textarea.wicon {
     padding: 5px 15px 15px 15px;
@@ -402,6 +410,7 @@ img {
        color: black !important;
 }
 }
+
 .list.home-links .li:hover{
     background-color:#E4E6E9;
     color:#65676B;
@@ -416,32 +425,8 @@ img {
     display: flex;
     align-items: center;
     // border-bottom: 1px solid #eee;
+   
   }
   
-  .list.home-links .li.focus{
-    background-color:#E4E6E9;
-    color:#65676B;
-    font-weight: bold;
-  }
-  .mat-standard-chip.mat-chip-with-trailing-icon{
-      padding-left: 0px;
-  }
-  .content {
-    position: absolute;
-    top: 0px;
-}
-.list.home-links .li.focus{
-    background-color:#E4E6E9;
-    color:#65676B;
-    font-weight: bold;
-    }
-    .mat-standard-chip.mat-chip-with-trailing-icon{
-    padding-left: 0px;
-    
-    }
-    .content {
-    position: absolute;
-    top: 0px;
-    
-    }
+  
 

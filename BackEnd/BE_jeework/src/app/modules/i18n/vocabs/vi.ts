@@ -1632,7 +1632,7 @@ export const locale = {
             timkiem: 'Tìm kiếm',
             send: 'Gửi',
             sendmess: 'Gửi tin nhắn riêng',
-            taonhom: 'Tạo nhóm',
+            taonhom: 'Tạo nhóm mới',
             xemchitiet: 'Xem chi tiết tin nhắn',
             tao: 'Tạo',
             tennhom: 'Tên nhóm',

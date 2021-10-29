@@ -162,10 +162,8 @@ export class MessageService {
       .catch(error => console.log(error));
   }
 
-
-
-  // async seenMessage(recipientUsername: string){    
-  //   return this.hubConnection.invoke('SeenMessage', recipientUsername)
-  //     .catch(error => console.log(error));
-  // }
+  async CloseMessage(IdGroup:number,UserCurrent:string){    
+    return  this.hubConnection .invoke('CloseMessage',IdGroup,UserCurrent)
+      .catch(error => console.log(error));
+  }
 }

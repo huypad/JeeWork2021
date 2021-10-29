@@ -96,9 +96,9 @@ export class SearchDropdownInnerComponent implements OnInit {
   data: any[] = null;
   loading: boolean;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   /**
    * Search
