@@ -713,12 +713,261 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
             }
         }
         /// <summary>
-        /// Tạo dự án từ JeeMeeting ==> generate-projects-auto
+        /// 
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        [Route("insert")]
+        [CusAuthorize(Roles = "3501")]
+        [Route("Insert")]
+        [HttpPost]
+        public async Task<object> Insert([FromBody] ProjectTeamModel data)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return JsonResultCommon.DangNhap();
+            try
+            {
+                string strRe = "";
+                if (string.IsNullOrEmpty(data.title))
+                    strRe += (strRe == "" ? "" : ",") + "tên dự án/phòng ban";
+                //if (data.id_department <= 0)
+                //    strRe += (strRe == "" ? "" : ",") + "ban";
+                if (data.is_project && data.loai <= 0)
+                    strRe += (strRe == "" ? "" : ",") + "loại dự án";
+                if (data.Users == null || data.Users.Count == 0)
+                    strRe += (strRe == "" ? "" : ",") + "người quản trị";
+                else
+                {
+                    if (data.Users.Where(x => x.admin).Count() == 0)
+                        strRe += (strRe == "" ? "" : ",") + "người quản trị";
+                }
+
+                if (strRe != "")
+                    return JsonResultCommon.BatBuoc(strRe);
+                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    long iduser = loginData.UserID;
+                    long idk = loginData.CustomerID;
+                    Hashtable val = new Hashtable();
+                    if (data.icon != null)
+                    {
+                        string x = "";
+                        string folder = "/logo/";
+                        if (!UploadHelper.UploadFile(data.icon.strBase64, data.icon.filename, folder, _hostingEnvironment.ContentRootPath, ref x, _configuration))
+                            return JsonResultCommon.Custom("Không thể cập nhật hình ảnh");
+                        val.Add("icon", x);
+                    }
+                    val.Add("title", data.title);
+                    val.Add("id_department", data.id_department);
+                    val.Add("description", string.IsNullOrEmpty(data.description) ? "" : data.description);
+                    val.Add("stage_description", string.IsNullOrEmpty(data.stage_description) ? "" : data.stage_description);
+                    val.Add("loai", data.loai);
+                    val.Add("is_project", data.is_project);
+                    if (data.start_date != DateTime.MinValue)
+                        val.Add("start_date", data.start_date);
+                    if (data.end_date != DateTime.MinValue)
+                        val.Add("end_date", data.end_date);
+                    val.Add("status", data.status);
+                    if (!string.IsNullOrEmpty(data.color))
+                        val.Add("color", data.color);
+                    val.Add("CreatedDate", Common.GetDateTime());
+                    val.Add("CreatedBy", iduser);
+                    string strCheck = "select count(*) from we_project_team where Disabled=0 and  (id_department=@id_department) and title=@name";
+                    if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "id_department", data.id_department }, { "name", data.title } }).ToString()) > 0)
+                    {
+                        return JsonResultCommon.Trung("Dự án/phòng ban");
+                    }
+                    cnn.BeginTransaction();
+                    if (cnn.Insert(val, "we_project_team") != 1)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
+                    Hashtable val1 = new Hashtable();
+                    val1["id_project_team"] = idc;
+                    val1["CreatedDate"] = Common.GetDateTime();
+                    val1["CreatedBy"] = iduser;
+                    foreach (var owner in data.Users)
+                    {
+                        val1["id_user"] = owner.id_user;
+                        val1["admin"] = owner.admin;
+                        if (cnn.Insert(val1, "we_project_team_user") != 1)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 31, idc, iduser, data.title))
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    // Tạo status mặc định cho project này dựa vào id_department
+                    string sql_insert = "";
+                    //long TemplateID = long.Parse(cnn.ExecuteScalar("select TemplateID from we_department").ToString());
+                    long soluongstatus = long.Parse(cnn.ExecuteScalar("select count(id_row) from we_status where disabled = 0 and id_department = " + data.id_department).ToString());
+                    if (soluongstatus > 0)
+                    {
+                        string insertSTT = $@"insert into we_status (StatusName, description,id_project_team, id_department, CreatedDate, CreatedBy, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description,{idc}, 0, GETUTCDATE(), { loginData.UserID}, Disabled,   Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference from we_status where Disabled = 0 and id_department = " + data.id_department + "";
+                        cnn.ExecuteNonQuery(insertSTT);
+                        if (cnn.LastError != null)
+                        {
+                            cnn.RollbackTransaction();
+                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                        }
+                    }
+                    else
+                    {
+                        long TemplateID = long.Parse(cnn.ExecuteScalar(@$"select iIf(TemplateID is not null,TemplateID,0) from we_department where id_row = (select id_department from we_project_team where id_row = {idc})").ToString());
+                        if (TemplateID > 0)
+                        {
+                            sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                            sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            if (cnn.LastError != null)
+                            {
+                                cnn.RollbackTransaction();
+                                return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                            }
+                            WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
+                        }
+                        else
+                        {
+                            // Tạo status mặc định cho project này nếu department không có view lấy mẫu template đầu tiên của customerid đó
+                            SqlConditions conds = new SqlConditions(); string sql = "";
+                            conds.Add("Disabled", 0);
+                            conds.Add("is_template_center", 0);
+                            conds.Add("CustomerID", loginData.CustomerID);
+                            sql = "select id_row, Title, Description, IsDefault, Color, id_department, TemplateID, CustomerID " +
+                                "from we_template_customer " +
+                                "where (where) ";
+                            DataTable dt_template = cnn.CreateDataTable(sql, "(where)", conds);
+                            if (cnn.LastError == null && dt_template.Rows.Count > 0)
+                            {
+                                TemplateID = long.Parse(dt_template.Rows[0]["id_row"].ToString());
+                                sql_insert = "";
+                                sql_insert = $@"update we_project_team set id_template = " + TemplateID + " where id_row = " + idc;
+                                sql_insert += $@";insert into we_status (StatusName, description, id_project_team, CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, StatusID_Reference)
+                        select StatusName, description, " + idc + ", CreatedDate, CreatedBy, Disabled, UpdatedDate, UpdatedBy, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo, id_row from we_template_status where Disabled = 0 and TemplateID = " + TemplateID + "";
+                                cnn.ExecuteNonQuery(sql_insert);
+                                if (cnn.LastError != null)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
+                                WeworkLiteController.update_position_status(idc, cnn, "id_project_team");
+                            }
+                        }
+                    }
+                    #region Khởi tạo các cột hiển thị mặc định cho công việc
+                    if (!WeworkLiteController.Insert_field_project_team(idc, cnn))
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    #endregion
+                    #region Ghi log trong project
+                    string LogContent = "", LogEditContent = "";
+                    LogContent = LogEditContent = "Thêm mới dữ liệu project_team: title=" + data.title + ", id_department=" + data.id_department + ", loai=" + data.loai;
+                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    #endregion
+                    #region Ghi log lên CDN
+                    var d2 = new ActivityLog()
+                    {
+                        username = loginData.Username,
+                        category = LogContent,
+                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                        data = JsonConvert.SerializeObject(data)
+                    };
+                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    #endregion
+                    cnn.EndTransaction();
+                    #region Lấy thông tin để thông báo
+                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(6, ConnectionString);
+                    #endregion
+                    data.id_row = idc;
+                    Hashtable has_replace = new Hashtable();
+                    List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
+                    List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
+                    WeworkLiteController.mailthongbao(idc, data.Users.Where(x => x.admin).Select(x => x.id_user).ToList(), 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+                    #region Notify thiết lập vai trò admin
+                    for (int i = 0; i < users_admin.Count; i++)
+                    {
+                        NotifyModel notify_model = new NotifyModel();
+                        has_replace = new Hashtable();
+                        has_replace.Add("nguoigui", loginData.Username);
+                        has_replace.Add("project_team", data.title);
+                        notify_model.AppCode = "WORK";
+                        notify_model.From_IDNV = loginData.UserID.ToString();
+                        notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                        var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info is not null)
+                        {
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                        }
+                    }
+                    #endregion
+                    #region Thông báo cho member
+                    noti = WeworkLiteController.GetInfoNotify(5, ConnectionString);
+                    #endregion
+                    WeworkLiteController.mailthongbao(idc, data.Users.Where(x => !x.admin).Select(x => x.id_user).ToList(), 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
+                    #region Notify thiết lập vai trò member
+                    for (int i = 0; i < users_member.Count; i++)
+                    {
+                        NotifyModel notify_model = new NotifyModel();
+                        has_replace = new Hashtable();
+                        has_replace.Add("nguoigui", loginData.Username);
+                        has_replace.Add("project_team", data.title);
+                        notify_model.AppCode = "WORK";
+                        notify_model.From_IDNV = loginData.UserID.ToString();
+                        notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                        notify_model.TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                        var info = DataAccount.Where(x => data.Users[i].id_user.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info is not null)
+                        {
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                        }
+                    }
+                    #endregion
+                    return JsonResultCommon.ThanhCong(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
+            }
+        }
+        /// <summary>
+        /// Tạo dự án từ JeeMeeting
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// 
+        [Route("generate-projects-auto")]
         [HttpPost]
         public async Task<object> Generate_Projects([FromBody] GenerateProjectAutoModel data)
         {
@@ -735,7 +984,11 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
+                    //string strCheck = @$"select id_row, id_department, id_template, meetingid 
+                    //                        from we_project_team where (where)";
                     SqlConditions conds = new SqlConditions();
+                    //conds.Add("meetingid", data.meetingid);
+                    //conds.Add("disabled", 0);
                     string strCheck = @$"select id_row, idkh, phanloaiid from we_department where (where)";
                     strCheck = @"select * from we_project_team where meetingid is not null 
                                 and id_department in (select id_row from we_department where idkh = " + loginData.CustomerID + ")";
@@ -778,6 +1031,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
                     data.listid = idc;
+                    //DataTable dt_member = new DataTable();
                     // insert thành viên
                     val = new Hashtable();
                     val["id_project_team"] = idc;

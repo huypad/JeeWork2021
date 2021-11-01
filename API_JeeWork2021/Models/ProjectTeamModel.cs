@@ -33,7 +33,6 @@ namespace JeeWork_Core2021.Models
         public List<ProjectTeamUserModel> Users { get; set; }
         public long id_template { get; set; } = 0;
         public TemplateCenterModel templatecenter { get; set; }
-
     }
     public class ProjectTeamUserModel
     {
