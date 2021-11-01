@@ -171,16 +171,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
-                    //string strCheck = @$"select id_row, id_department, id_template, meetingid 
-                    //                        from we_project_team where (where)";
                     SqlConditions conds = new SqlConditions();
-                    //conds.Add("meetingid", data.meetingid);
-                    //conds.Add("disabled", 0);
                     string strCheck = @$"select id_row, idkh, phanloaiid from we_department where (where)";
-                    strCheck = @"select * from we_project_team where meetingid is not null 
-                                and id_department in (select id_row from we_department where idkh = " + loginData.CustomerID + ")";
+                    strCheck = @"select * from we_project_team where meetingid is not null and disabled = 0
+                                and id_department in (select id_row from we_department where idkh = " + loginData.CustomerID + " and disabled = 0)";
                     conds.Add("idkh", loginData.CustomerID);
-                    //conds.Add("id_meeting", data.meetingid);
                     DataTable dt_check = cnn.CreateDataTable(strCheck);
                     if (cnn.LastError != null || dt_check == null)
                     {

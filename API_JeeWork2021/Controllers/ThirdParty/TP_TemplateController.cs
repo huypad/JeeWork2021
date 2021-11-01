@@ -583,7 +583,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
         }
         /// <summary>
-        /// 
+        /// Sử dụng template
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>

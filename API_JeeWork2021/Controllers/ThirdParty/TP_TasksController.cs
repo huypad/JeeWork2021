@@ -6729,11 +6729,11 @@ where u.disabled = 0 and u.loai = 2";
                 }
                 if (string.IsNullOrEmpty(query.filter["task_done"]))
                 {
-                    strW += " and  w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is null )";
+                    strW += " and w.id_row not in (select id_row from we_work where end_date is not null and id_parent is null )";
                 }
                 if (string.IsNullOrEmpty(query.filter["subtask_done"]))
                 {
-                    strW += " and w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is not null) ";
+                    strW += " and w.id_row not in (select id_row from we_work where end_date is not null and id_parent is not null) ";
                 }
                 if (!string.IsNullOrEmpty(query.filter["forme"]))
                 {

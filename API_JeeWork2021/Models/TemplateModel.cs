@@ -24,7 +24,6 @@ namespace JeeWork_Core2021.Models
         public long templateid_old { get; set; } = 0;
         public bool isproject { get; set; } = true;
     }
-   
     public class TemplateModel
     {
         public long id_row { get; set; }
