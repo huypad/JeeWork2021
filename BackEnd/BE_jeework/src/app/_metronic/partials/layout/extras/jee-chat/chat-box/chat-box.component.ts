@@ -276,8 +276,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
         res.data.forEach(element => {
           chuoi = chuoi + ',' + element.FullName
         });
-
-
         this.sendInsertMessage(chuoi.substring(1));
         this.GetInforUserChatwith(this.user.user.IdGroup)
         this.ref.detectChanges();
@@ -413,8 +411,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
         value = value.replace(/<img(.*?)>/g, "");
       }
       value = value.replace("<p><br></p>", "");
-      console.log("messageContent", value)
-
       this.messageContent = value;
 
 
@@ -456,7 +452,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this.myFilesVideo.splice(index, 1);
     this.AttachFileChat.splice(index, 1);
-    console.log("AttachFileChat Xoas", this.AttachFileChat)
     this.url = "";
     this.ref.detectChanges();
 
@@ -579,7 +574,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
         }
       }
     }
-    console.log("listChoseTagGroup", this.listChoseTagGroup)
   }
 
   sendMessage() {
@@ -619,8 +613,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
       if (res > 0) {
         this.chatService.UpdateUnRead(this.user.user.IdGroup, this.user.user.UserId, "read").subscribe(res => {
           if (!res) {
-            console.log("Error Update read Message")
-
           }
         })
         this.chatService.OneMessage$.next(0);
@@ -847,7 +839,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
         if (index < 0) {
           this.lstTagName.push(item.id)
         }
-        console.log("IIIIIIIIII", this.lstTagName)
         const editor = this.editor.quillEditor;
         insertItem(item);
         // necessary because quill-mention triggers changes as 'api' instead of 'user'
@@ -924,7 +915,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
   };
 
   GetTagNameisGroup(isGroup) {
-    console.log("AAA", isGroup)
     if (isGroup) {
       this.tam = [
         {
@@ -938,7 +928,6 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
     this.chatService.GetTagNameGroup(this.user.user.IdGroup).subscribe(res => {
       this.lisTagGroup = this.tam.concat(res.data);
       this.listTagGroupAll = res.data;
-      console.log("GetTagNameGroup", this.lisTagGroup)
       this.ref.detectChanges();
     })
   }

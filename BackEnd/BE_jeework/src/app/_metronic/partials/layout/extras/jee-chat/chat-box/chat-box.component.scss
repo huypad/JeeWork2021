@@ -45,7 +45,7 @@ margin-bottom: 0 !important;
 .parent-sent{
   display: flex;
   flex-direction:row;
-  justify-content: flex-end;
+  justify-content: center !important;
 }
 
 .test > br
@@ -302,3 +302,82 @@ height: 45px;
   border: 1px solid;
   border-radius: 20px;
 }
+::ng-deep p {
+        margin: 0 !important;
+    }
+
+    ::ng-deep pre {
+        word-wrap: break-word;
+        width: 190px;
+        white-space: pre-wrap;
+    }
+
+    .conntentmess {
+        font-size: 15px;
+    }
+
+    .body {
+        padding: 1.25rem !important;
+    }
+
+    .attchamentfile {
+        background: #F0F2F5;
+        display: flex;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        align-items: center;
+    }
+
+    .avatar-group {
+        display: flex;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        flex-wrap: wrap;
+        cursor: pointer;
+    }
+
+    .btn-class {
+
+        width: 60px;
+        margin: 0px 10px 8px;
+        background: #80808047;
+        border-radius: 10% !important;
+
+    }
+
+    .closebtn {
+        align-items: center;
+        display: flex;
+        width: 25px;
+        height: 25px;
+        justify-content: center;
+    }
+
+    .composing {
+        padding-left: 10px;
+    }
+
+    .sizeiconreaction {
+        font-size: 25px;
+        color: black;
+
+    }
+
+    .sizeicon {
+        font-size: 25px;
+    }
+
+    .leave {
+        display: flex;
+        /* padding: 10px; */
+        /* padding-right: 10px; */
+        /* background: rgb(0 0 0 / 8%); */
+        /* margin-bottom: 10px; */
+        border-radius: 10px;
+        font-size: 11px;
+        // justify-content: center !important;
+    }
+    .leave-center {
+      justify-content: center !important;
+  }

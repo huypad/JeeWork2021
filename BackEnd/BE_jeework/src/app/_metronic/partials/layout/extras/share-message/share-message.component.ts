@@ -40,14 +40,12 @@ list_delete:any[]=[];
     {
         this.chat_services.GetContactChatUser().subscribe(res=>{
           this.list_contact=res.data;
-          console.log("TTTTVVCHAT",this.list_contact);
           this.changeDetectorRefs.detectChanges();
         })
     }
   ngOnInit(): void {
   
     this.LoadDSThanhVien();
-    console.log("DATA SHARE",this.data.item)
     this.dulieu.setValue(this.data.item.Content_mess)
   }
 
@@ -56,8 +54,6 @@ list_delete:any[]=[];
   RemoveChooseMemeber(index)
   {this.list_contact.unshift(this.list_choose[index]);
     this.list_choose.splice(index,1);
-    console.log("ListChooseUser sau khi xóa",this.list_choose);
-   
   }
   ChooseMember(item)
   {
@@ -67,7 +63,6 @@ list_delete:any[]=[];
       this.searchText="";
   
       this.list_choose.push(this.list_contact[vitri]);
-      console.log("ListChooseUser",this.list_choose);
       this.list_contact.splice(vitri,1)
       // this.filteredGroups.next(this.list_thanhvien.slice());
       this.changeDetectorRefs.detectChanges();

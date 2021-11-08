@@ -158,7 +158,6 @@ export class JeeCommentComponent implements OnInit {
       .showTopicCommentByObjectID(this.objectID, this.filter())
       .pipe(
         tap((topic: TopicCommentDTO) => {
-          console.log(topic,'topic',this.isFirstTime);
           if (this.isFirstTime) {
             this.item = topic;
           } else {

@@ -195,6 +195,7 @@ export class AuthService implements OnDestroy {
       localStorage.removeItem('chatGroup');
     }
     prepareLogout() {
+        this.ClearChatBox();
         this.deleteAccessRefreshToken_cookie();
         let url = '';
         if (document.location.port) {

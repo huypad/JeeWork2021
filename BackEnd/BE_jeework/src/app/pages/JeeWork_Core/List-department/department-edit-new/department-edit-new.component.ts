@@ -972,10 +972,7 @@ export class DepartmentEditNewComponent implements OnInit {
       this.hasFormErrors = true;
       return;
     }
-
     const updatedegree = this.prepare();
-
-    console.log(updatedegree);
     // return;
     if (updatedegree.id_row > 0) {
       this.Update(updatedegree, true);

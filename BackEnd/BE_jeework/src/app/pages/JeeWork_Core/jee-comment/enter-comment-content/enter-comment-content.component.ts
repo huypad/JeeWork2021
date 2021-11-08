@@ -153,8 +153,6 @@ export class JeeCommentEnterCommentContentComponent implements OnInit, AfterView
                     objSave.object_type = 0;
                     objSave.object_id_new = model.TopicCommentID;
                     this.Luulogcomment(objSave);
-
-                    
                 },
                 catchError((err) => {
                     return of();

@@ -1,86 +1,7 @@
-<style>
-    ::ng-deep p {
-        margin: 0 !important;
-    }
-
-    ::ng-deep pre {
-        word-wrap: break-word;
-        width: 190px;
-        white-space: pre-wrap;
-    }
-
-    .conntentmess {
-        font-size: 15px;
-    }
-
-    .body {
-        padding: 1.25rem !important;
-    }
-
-    .attchamentfile {
-        background: #F0F2F5;
-        display: flex;
-        border-radius: 5px;
-        margin-bottom: 5px;
-        align-items: center;
-    }
-
-    .avatar-group {
-        display: flex;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        flex-wrap: wrap;
-        cursor: pointer;
-    }
-
-    .btn-class {
-
-        width: 60px;
-        margin: 0px 10px 8px;
-        background: #80808047;
-        border-radius: 10% !important;
-
-    }
-
-    .closebtn {
-        align-items: center;
-        display: flex;
-        width: 25px;
-        height: 25px;
-        justify-content: center;
-    }
-
-    .composing {
-        padding-left: 10px;
-    }
-
-    .sizeiconreaction {
-        font-size: 25px;
-        color: black;
-
-    }
-
-    .sizeicon {
-        font-size: 25px;
-    }
-
-    .leave {
-        display: flex;
-        /* padding: 10px; */
-        /* padding-right: 10px; */
-        /* background: rgb(0 0 0 / 8%); */
-        /* margin-bottom: 10px; */
-        border-radius: 10px;
-        font-size: 11px;
-        justify-content: center !important;
-    }
-</style>
 <div [ngClass]="getClass()" id="{{user.user.IdGroup}}" class="card chat-box">
     <div style="padding: 5px;" *ngIf="!user.user.isGroup" class="card-header">
         <div class="d-flex" *ngFor="let item of user.user.InfoGroupUser">
             <div [ngClass]="getClassActive(user.user.Active)">
-
                 <ngx-avatar [size]="45" src="{{item.Avatar}}">
                 </ngx-avatar>
                 <ngx-avatar [size]="45" [name]="item.Fullname.slice(0, 1)" bgColor="{{ item.BgColor }}"
@@ -139,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="mr">     <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" /></div> -->
+                    <!-- <div class="mr"><img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" /></div> -->
                     <div style="margin: auto;padding-left: 5px;">
                         <span *ngIf="user.user.GroupName.length<=15"
                             style="text-decoration: none;font-weight: bold;">{{gr.GroupName}}
@@ -194,7 +115,7 @@
                         </div>
                         <div [ngClass]=" message.UserName !==userCurrent ? 'd-flex' : 'parent-sent' ">
                             <div class="mr" *ngIf="message.UserName !== userCurrent">
-                                <div *ngFor="let info of  message.InfoUser">
+                                <div *ngFor="let info of message.InfoUser">
                                     <ngx-avatar
                                         *ngIf="info.Avatar&&!message.IsDelAll&&!message.isInsertMember&&!message.isHidenTime"
                                         [size]="20" src="{{info.Avatar}}">
@@ -222,35 +143,33 @@
                                 </ng-container>
                             </span>
                             <!-- begin nơi hiển thị mes xóa thành viên  -->
-                            <div *ngIf="message.IsDelAll&&!message.isInsertMember" class="leave">
-                                <span *ngIf="message.UserName===userCurrent" style="font-weight: bold;">Bạn&nbsp;</span>
-                                <span *ngIf="message.UserName!==userCurrent"
-                                    style="font-weight: bold;">{{message.InfoUser[0].Fullname}}&nbsp;</span>
-                                {{message.Content_mess}}&nbsp;
-                                <span style="font-weight: bold;">{{message.Note}}</span>&nbsp;khỏi nhóm
+                            <div *ngIf="message.IsDelAll&&!message.isInsertMember"
+                                style="justify-content: center !important;" class="leave">
+                                <div>
+                                    <span *ngIf="message.UserName===userCurrent"
+                                        style="font-weight: bold;">Bạn</span>&nbsp;
+                                    <span *ngIf="message.UserName!==userCurrent"
+                                        style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
+                                    {{message.Content_mess}}
+                                    <span style="font-weight: bold;">{{message.Note}}&nbsp;</span>khỏi nhóm
+                                </div>
                             </div>
                             <!-- end nơi hiển thị mes xóa thành viên  -->
                             <!-- begin nơi hiển thị mes insert thành viên  -->
-                            <div *ngIf="message.isInsertMember" class="leave">
-                                <!-- <div style=" margin: auto;padding-right: 5px;">
-                                    <ngx-avatar [size]="20" [name]="message.InfoUser[0].Fullname.slice(0, 1)"
-                                        bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
-                                    </ngx-avatar>
-                                    <ngx-avatar [size]="20" src="{{message.InfoUser[0].Avatar}}"
-                                        *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
+                            <div *ngIf="message.isInsertMember" style="justify-content: center !important;"
+                                class="leave">
+                                <div>
+                                    <span *ngIf="message.UserName===userCurrent"
+                                        style="font-weight: bold; ">Bạn&nbsp;</span>
+                                    <span *ngIf="message.UserName!==userCurrent"
+                                        style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}&nbsp;</span>
+                                    {{message.Content_mess}}&nbsp;
+                                    <span *ngIf="message.Note.length<30"
+                                        style="font-weight: bold;">{{message.Note}}&nbsp;</span>
+                                    <span *ngIf="message.Note.length>30"
+                                        style="font-weight: bold; ">{{message.Note|slice:0:30}}...</span>
+                                    vào nhóm
                                 </div>
-                                <div> -->
-                                <span *ngIf="message.UserName===userCurrent"
-                                    style="font-weight: bold; ">Bạn&nbsp;</span>
-                                <span *ngIf="message.UserName!==userCurrent"
-                                    style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}&nbsp;</span>
-                                {{message.Content_mess}}&nbsp;
-                                <span *ngIf="message.Note.length<30"
-                                    style="font-weight: bold;">{{message.Note}}&nbsp;</span>
-                                <span *ngIf="message.Note.length>30"
-                                    style="font-weight: bold; ">{{message.Note|slice:0:30}}...</span>
-                                vào nhóm
-                                <!-- </div> -->
                             </div>
                             <!-- end nơi hiển thị mes insert thành viên  -->
                             <!-- style="display: flex;" -->
@@ -259,7 +178,7 @@
                                     <div gallerize>
                                         <img *ngFor="let img of message.Attachment"
                                             (click)="loadlightbox(message.IdChat)"
-                                            style="width: 100px;padding-right:  5px;border-radius: inherit;cursor: pointer;"
+                                            style="width: 100px;padding-right: 5px;border-radius: inherit;cursor: pointer;"
                                             src="{{img.hinhanh}}">
                                     </div>
                                 </div>
@@ -295,7 +214,6 @@
                                         matTooltip="{{message.CreatedDate  | TimeMess: 'dddd,HH:mm:ss'}} ">
                                         <span [innerHTML]="urlify(message.Content_mess)">
                                         </span>
-                                        <!-- {{message.Content_mess}} -->
                                     </span>
                                     <span *ngIf="message.UserName!==userCurrent" class="reation like">
                                         <!--  begin show reaction -->
@@ -374,22 +292,19 @@
                                             <mat-icon class="action" style="font-size: 22px;">more_horiz</mat-icon>
                                         </button>
                                         <mat-menu #menu="matMenu">
-
                                             <button mat-menu-item (click)="HidenMess(message.IdChat,user.user.IdGroup)">
                                                 <mat-icon style="color: red">redo</mat-icon>
                                                 <span style="color: red">Thu hồi</span>
                                             </button>
-
                                         </mat-menu>
-
                                     </ng-container>
                                 </span>
                                 <!-- end  reply and reaction -->
-                                <div class="hidenmess" *ngIf="message.IsHidenAll">Tin nhắn đã thu hồi</div>
                             </div>
                             <div *ngIf="(messageService.seenMessage$ | async) === user.username">
                             </div>
                         </div>
+                        <div class="hidenmess" *ngIf="message.IsHidenAll">Tin nhắn đã thu hồi</div>
                     </li>
                     <div *ngIf="myFilesVideo.length">
                         <div *ngFor="let video of myFilesVideo;let indexvd=index">
@@ -402,7 +317,6 @@
                         </div>
                     </div>
                 </ul>
-
             </cdk-virtual-scroll-viewport>
             <div style="height: 20px;">
                 <span *ngIf="composing" class="composing ">{{composingname}} đang soạn tin...</span>

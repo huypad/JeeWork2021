@@ -79,9 +79,9 @@ export class MessageService {
 
           // load mess khi
           this.hubConnection.on("ReceiveMessageThread", (messages) => {
-            console.log("ReceiveMessageThread", messages);
             const reversed = messages.reverse();
             this.messageThreadSource.next(reversed);
+            // console.log('ReceiveMessageThread',messages)
           });
 
           this.hubConnection.on("SeenMessageReceived", (username) => {
@@ -148,7 +148,6 @@ export class MessageService {
     const data = this.auth.getAuthFromLocalStorage();
     let infoTokenCon = { "Token": _token, "UserID": _idUser };
     this.hubConnection.start().then((data: any) => {
-      console.log('Connect with ID', data);
       this.hubConnection.invoke("ReconnectToken", JSON.stringify(infoTokenCon)).then(() => {
       });
     }).catch((error: any) => {

@@ -126,6 +126,7 @@
 <!-- anh bỏ cái này ở layout tổng thể ý ..với lại hình như bị z-index rồi nó chồng lên cái chat -->
 <div>
 
-  <app-chat-box *ngFor="let item of chatBoxUsers" [right]="item.right" [user]="item" (removeChatBox)="removeChatBox($event)" (activedChatBoxEvent)="activedChatBox($event)"></app-chat-box>
-  </div>
+  <app-chat-box *ngFor="let item of chatBoxUsers" [right]="item.right" [user]="item"
+    (removeChatBox)="removeChatBox($event)" (activedChatBoxEvent)="activedChatBox($event)"></app-chat-box>
+</div>
 <!--end::Main-->
