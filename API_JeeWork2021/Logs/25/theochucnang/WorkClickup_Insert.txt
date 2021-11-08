@@ -25,3 +25,4 @@ huytran - 14/10/2021 01:51:08 - Thêm mới dữ liệu công việc: title=Task
 huytran - 14/10/2021 01:51:14 - Thêm mới dữ liệu công việc: title=Task 5, id_project_team=23404
 huytran - 14/10/2021 01:51:21 - Thêm mới dữ liệu công việc: title=Task 6, id_project_team=23404
 huytran - 14/10/2021 02:36:45 - Thêm mới dữ liệu công việc: title=CV pad tạo, id_project_team=23404
+huytran - 06/11/2021 02:03:05 - Thêm mới dữ liệu công việc: title=new, id_project_team=23572

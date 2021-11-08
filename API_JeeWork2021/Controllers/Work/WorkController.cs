@@ -450,7 +450,6 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             {
                 if (string.IsNullOrEmpty(query.filter["id_nv"]))
                     return BadRequest();
-
                 #region filter thời gian , keyword
                 DateTime from = Common.GetDateTime();
                 DateTime to = Common.GetDateTime();

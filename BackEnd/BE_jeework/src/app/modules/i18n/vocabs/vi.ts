@@ -1587,7 +1587,6 @@ export const locale = {
             subtask1: 'Công việc con',
             todos: 'Công việc đang làm',
         },
-
         uyquyen: {
             tieude: 'Ủy quyền duyệt phiếu',
             tieude1: 'Người ủy quyền',
@@ -1627,16 +1626,15 @@ export const locale = {
             title: 'Tên nhóm',
             nhomcongviec: 'Nhóm công việc'
         },
-
         jeechat: {
             timkiem: 'Tìm kiếm',
             send: 'Gửi',
             sendmess: 'Gửi tin nhắn riêng',
-            taonhom: 'Tạo nhóm mới',
+            taonhom: 'Tạo nhóm chat mới',
             xemchitiet: 'Xem chi tiết tin nhắn',
             tao: 'Tạo',
             tennhom: 'Tên nhóm',
-            moithanhvien: 'Mời thành viên',
+            moithanhvien: 'Thêm thành viên vào nhóm',
         },
         attachment: {
             title: 'Đường dẫn chứa tài liệu',

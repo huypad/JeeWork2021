@@ -6769,8 +6769,6 @@ where u.disabled = 0 and u.loai = 2";
                          status = r["status"],
                          id_milestone = r["id_milestone"],
                          milestone = r["milestone"],
-                         num_file = r["num_file"],
-                         num_com = r["num_com"],
                          trehan = r["TreHan"],
                          estimates = r["estimates"],
                          hoanthanh = r["done"],
@@ -6792,7 +6790,7 @@ where u.disabled = 0 and u.loai = 2";
                          nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
                          activity_date = r["ActivityDate"],
-                         comments = SoluongComment(r["id_row"].ToString(), ConnectString),
+                         comments = SoluongComment(r["id_row"].ToString(), ConnectString),  // SL bình luận
                          status_info = WeworkLiteController.get_info_status(r["status"].ToString(), ConnectString),
                          DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
                          User = from us in dt_Users.AsEnumerable()
@@ -6810,10 +6808,7 @@ where u.disabled = 0 and u.loai = 2";
                                      select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
                          UsersInfo = from us in dt_Users.AsEnumerable()
                                      where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
-                                     select new
-                                     {
-                                         data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                                     },
+                                     select us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                          Follower = from us in dt_Users.AsEnumerable()
                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
                                     select new

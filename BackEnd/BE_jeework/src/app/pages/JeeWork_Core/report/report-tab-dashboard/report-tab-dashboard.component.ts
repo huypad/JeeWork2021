@@ -890,7 +890,6 @@ export class ReportTabDashboardComponent implements OnInit {
         this.reportService.ReportByStaff(queryParams).subscribe(data => {
             if (data && data.status == 1) {
                 this.Staff = data.data;
-                debugger
                 for (let i of this.Staff) {
                     i.datasets = [
                         i.hoanthanh,

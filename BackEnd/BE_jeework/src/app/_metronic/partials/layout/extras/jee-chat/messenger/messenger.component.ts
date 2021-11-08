@@ -484,7 +484,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
     })
   }
   selectUser(user: any) {
-    debugger
     const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
     if (userChatBox) {
       this.chatBoxUsers = userChatBox;

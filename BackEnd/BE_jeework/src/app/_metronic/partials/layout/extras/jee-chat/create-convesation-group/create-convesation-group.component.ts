@@ -31,7 +31,7 @@ export class CreateConvesationGroupComponent implements OnInit {
   @ViewChild('userInput', { static: false }) userInput: ElementRef<HTMLInputElement>;
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete;
   user$: Observable<any>;
-  ten_group: string='';
+  ten_group: string = '';
   listTT_user: any = {};
   fullname: string;
   authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
@@ -41,7 +41,7 @@ export class CreateConvesationGroupComponent implements OnInit {
     private changeDetectorRefs: ChangeDetectorRef,
     private conversation_sevices: ConversationService,
     private dialogRef: MatDialogRef<CreateConvesationGroupComponent>,) {
-      const user = this.auth.getAuthFromLocalStorage()['user'];
+    const user = this.auth.getAuthFromLocalStorage()['user'];
     this.user$ = this.auth.getAuthFromLocalStorage();
     this.fullname = user['customData']['personalInfo']['Fullname'];
   }
@@ -115,11 +115,11 @@ export class CreateConvesationGroupComponent implements OnInit {
           startWith(''),
           map(state => state ? this._filterStates(state) : this.itemuser.slice())
         );
-        setTimeout(() => {
-          this.cellClick(this.cellindex);
-          document.getElementById('search').focus();
-          document.getElementById("row0").scrollIntoView({ behavior: "smooth" });
-        }, 100);
+      setTimeout(() => {
+        this.cellClick(this.cellindex);
+        document.getElementById('search').focus();
+        document.getElementById("row0").scrollIntoView({ behavior: "smooth" });
+      }, 100);
     }
   }
 
@@ -183,18 +183,16 @@ export class CreateConvesationGroupComponent implements OnInit {
           startWith(''),
           map(state => state ? this._filterStates(state) : this.itemuser.slice())
         );
-        setTimeout(() => {
-          this.cellClick(this.cellindex);
-        }, 100);
+      setTimeout(() => {
+        this.cellClick(this.cellindex);
+      }, 100);
       this.changeDetectorRefs.detectChanges();
     })
   }
 
   loadTTuser() {
-
     // const authData = JSON.parse(localStorage.getItem(this.authLocalStorageToken));
-   const authData = this.auth.getAuthFromLocalStorage()
-    debugger
+    const authData = this.auth.getAuthFromLocalStorage()
     this.listTT_user = authData.user.customData.personalInfo;
   }
   ngOnInit(): void {
@@ -272,7 +270,7 @@ export class CreateConvesationGroupComponent implements OnInit {
     }
     return result;
   }
-  
+
   //=====================Bổ sung tìm kiếm không dấu và di chuyển mũi tên lên xuống 11/10/2021============================
   convertVietnamese(str: any) {
     str = str.toLowerCase();

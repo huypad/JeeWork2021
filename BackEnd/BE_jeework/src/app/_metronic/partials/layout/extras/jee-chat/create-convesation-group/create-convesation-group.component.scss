@@ -444,4 +444,13 @@ img {
     top: 0px;
     
     }
-
+    .mat-chip-list-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 4px;
+    }
+    .chips{
+      justify-content: center !important;
+      background-color: #dce7fc !important; 
+      color: #0099ff !important;
+    }

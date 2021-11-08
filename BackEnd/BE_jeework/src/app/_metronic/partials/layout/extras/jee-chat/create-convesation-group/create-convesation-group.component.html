@@ -1,7 +1,6 @@
 <style>
     .post {
         text-align: center;
-
         height: 35px;
         margin-top: 10px;
         margin-left: 10px;
@@ -13,8 +12,6 @@
         color: white;
         background-color: green;
         border: none;
-
-
     }
 
     ::placeholder {
@@ -49,15 +46,14 @@
             <div style="padding-bottom: 10px;" class="form-group">
                 <div style="display: flex;
                 align-items: center;">
-                    <ngx-avatar [size]="45" src="{{listTT_user.Avatar}}" *ngIf="listTT_user.Avatar">
+                    <ngx-avatar [size]="30" src="{{listTT_user.Avatar}}" *ngIf="listTT_user.Avatar">
                     </ngx-avatar>
-                    <ngx-avatar [size]="45" [name]="listTT_user.Fullname.slice(0, 1)"
+                    <ngx-avatar [size]="30" [name]="listTT_user.Fullname.slice(0, 1)"
                         bgColor="{{ listTT_user.BgColor }}" *ngIf="!listTT_user.Avatar"></ngx-avatar>
 
                     <div style="display: flex;flex-direction: column;">
                         <span style="font-weight: bold; margin-left: 12px;">{{fullname}}</span>
                         <span style="margin-left: 12px;">Quản trị viên</span>
-
                     </div>
                     <div class="is-disabled" style="display: flex;padding-left: 28%;">
                         <button mat-raised-button [disabled]="ten_group == ''" (click)="submit()" class="post">
@@ -66,10 +62,9 @@
                     </div>
                 </div>
             </div>
-
             <div style="border: 1px solid lightblue;border-radius: 5px; border-radius: 10px; padding: 0 10px;">
                 <mat-form-field style="width: 100%;">
-                    <input [(ngModel)]="ten_group" required #noidungInput="ngModel" matInput
+                    <input [(ngModel)]="ten_group" autocomplete="off" required #noidungInput="ngModel" matInput
                         placeholder="{{'jeechat.tennhom' | translate}}" class="require">
                 </mat-form-field>
             </div>
@@ -77,9 +72,9 @@
                 <mat-form-field style="border-radius: 10px;
                             border: 1px solid lightgray; width: 100%; padding: 0 10px 0 10px;">
                     <mat-chip-list #chipList>
-                        <mat-chip *ngFor="let dlht of user_tam" [selectable]="selectable" [removable]="removable"
-                            (removed)="remove(dlht)">
-                            {{dlht.Fullname}}
+                        <mat-chip *ngFor="let dlht of user_tam" class="chips" [selectable]="selectable"
+                            [removable]="removable" (removed)="remove(dlht)">
+                            <span>&nbsp;</span> {{dlht.Fullname}}
                             <mat-icon matChipRemove *ngIf="removable">cancel
                             </mat-icon>
                         </mat-chip>
@@ -89,8 +84,7 @@
                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
                     </mat-chip-list>
                 </mat-form-field>
-
-                <div style=" max-height:40vh; overflow-y: auto;">
+                <div style=" max-height:30vh; overflow-y: auto;">
                     <div *ngFor="let item of listUser | async;let vi=index">
                         <div class="kt-notification__item-details list home-links"
                             style="display: flex;align-items: center;">
@@ -98,15 +92,14 @@
                                 id="row{{vi}}">
                                 <span *ngIf="item.Avatar===''||item.Avatar===null;then e1; else e2"></span>
                                 <ng-template #e2>
-                                    <ngx-avatar size="50" src="{{item.Avatar}}"></ngx-avatar>
+                                    <ngx-avatar size="25" src="{{item.Avatar}}"></ngx-avatar>
                                 </ng-template>
-
                                 <ng-template #e1>
-                                    <ngx-avatar size="50" [name]="getNameUser(item)"
+                                    <ngx-avatar size="25" [name]="getNameUser(item)"
                                         bgColor="{{getColorNameUser(item)}}">
                                     </ngx-avatar>
                                 </ng-template>
-                                <span style="font-weight: bold; padding-left: 7px;" class="kt-notification__item-title">
+                                <span style="padding-left: 7px; font-size: 13px" class="kt-notification__item-title">
                                     {{item.Fullname}}
                                 </span>
                             </div>

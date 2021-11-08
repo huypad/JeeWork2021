@@ -63,15 +63,17 @@
 
     .sizeicon {
         font-size: 25px;
-
     }
 
     .leave {
         display: flex;
-        padding: 10px;
-        background: rgb(0 0 0 / 8%);
-        margin-bottom: 10px;
+        /* padding: 10px; */
+        /* padding-right: 10px; */
+        /* background: rgb(0 0 0 / 8%); */
+        /* margin-bottom: 10px; */
         border-radius: 10px;
+        font-size: 11px;
+        justify-content: center !important;
     }
 </style>
 <div [ngClass]="getClass()" id="{{user.user.IdGroup}}" class="card chat-box">
@@ -83,38 +85,29 @@
                 </ngx-avatar>
                 <ngx-avatar [size]="45" [name]="item.Fullname.slice(0, 1)" bgColor="{{ item.BgColor }}"
                     *ngIf="!item.Avatar"></ngx-avatar>
-
             </div>
             <div style="padding-left: 10px;">
-
                 <span *ngIf="item.Fullname.length<25;then show1;else show2">
-
                 </span>
                 <ng-template #show1>
                     <a href="javascript:;" class="text-primary" style="text-decoration: none;">{{item.Fullname}}
-
                     </a>
                 </ng-template>
                 <ng-template #show2>
                     <a href="javascript:;" class="text-primary" style="text-decoration: none;">{{item.Fullname|
                         slice:0:15 }}...
-
                     </a>
                 </ng-template>
-
                 <!-- <div class="text-muted">{{user.lastActive}}</div> -->
-                <div *ngIf="user.user.Active" class="text-muted">Đang truy cập</div>
-                <div *ngIf="!user.user.Active" class="text-muted">
+                <div *ngIf="user.user.Active" style="font-size: 12px" class="text-muted">Đang truy cập</div>
+                <div *ngIf="!user.user.Active" style="font-size: 12px" class="text-muted">
                     <div *ngFor="let time of listInfor">
-
                         <span *ngIf="time.InfoGroupUser[0].TimeAgo.length>0">
                             {{time.InfoGroupUser[0].TimeAgo[0].Time | date : 'yyyy/M/dd h:mm'| timeAgo}}
-
                         </span>
                         <span *ngIf="time.InfoGroupUser[0].TimeAgo.length==0">
-                            Offline
+                            Vắng mặt
                         </span>
-
                     </div>
                 </div>
             </div>
@@ -124,47 +117,32 @@
                     <mat-icon>remove</mat-icon>
                 </a>
                 <a class="mr" href="javascript:;" (click)="closeBoxChat()">
-
                     <mat-icon>clear</mat-icon>
                 </a>
             </div>
         </div>
-
-
     </div>
-
     <div style="padding: 5px;" *ngIf="user.user.isGroup" class="card-header">
         <div class="d-flex">
             <div>
-
-
                 <div *ngFor="let gr of listInfor" style="display: -webkit-inline-box;">
                     <div class="avatar-group" (click)="OpenThanhVien()">
-
                         <div *ngFor="let mb of gr.ListMember | slice:0:4;let i=index">
-
                             <div *ngFor="let it of mb.InfoMemberUser ">
                                 <div *ngIf="i>=0&&i<3">
                                     <ngx-avatar [size]="25" [name]="it.Fullname.slice(0, 1)" bgColor="{{ it.BgColor }}"
                                         *ngIf="!it.Avatar"></ngx-avatar>
                                     <ngx-avatar [size]="25" src="{{ it.Avatar }}" *ngIf="it.Avatar"></ngx-avatar>
-
                                 </div>
-
                                 <ngx-avatar *ngIf="i==3&& gr.ListMember.length>=4" [size]="25"
                                     value="{{gr.ListMember.length-3}}" bgColor="#ad3838"></ngx-avatar>
-
                             </div>
                         </div>
                     </div>
-
                     <!-- <div class="mr">     <img src="./assets/iconGroup.jpg"  class="rounded-circle img-person" alt="" /></div> -->
-                    <div style="margin: auto;    padding-left: 5px;">
-
-
+                    <div style="margin: auto;padding-left: 5px;">
                         <span *ngIf="user.user.GroupName.length<=15"
                             style="text-decoration: none;font-weight: bold;">{{gr.GroupName}}
-
                         </span>
                         <span *ngIf="user.user.GroupName.length>15" style="text-decoration: none; font-weight: bold;
                             ">{{gr.GroupName| slice:0:10 }}...
@@ -186,7 +164,6 @@
                                         <span>Thêm thành viên</span>
                                     </button>
                                 </mat-menu>
-
                             </ng-container>
                         </span>
                         <br>
@@ -207,16 +184,13 @@
     </div>
     <div [collapse]="isCollapsed" [isAnimated]="true" id="collapseChatBox">
         <div>
-            <cdk-virtual-scroll-viewport itemSize="50" style="height: 350px;    width: 295px;" ngx-auto-scroll
+            <cdk-virtual-scroll-viewport itemSize="50" style="height: 350px; width: 295px;" ngx-auto-scroll
                 lock-y-offset="10" observe-attributes>
-
-
                 <ul class="chat chat-frame">
                     <a href="{{hostjeechat}}" target="_blank"
                         *ngIf="(messageService.messageThread$ | async)?.length==100">Xem thêm tin nhắn</a>
                     <li class="pd-5" *cdkVirtualFor="let message of (messageService.messageThread$ | async)">
                         <div class="displaytimeGroup" [innerHTML]="DisplayTime(message.disPlaytimeGroup)">
-
                         </div>
                         <div [ngClass]=" message.UserName !==userCurrent ? 'd-flex' : 'parent-sent' ">
                             <div class="mr" *ngIf="message.UserName !== userCurrent">
@@ -245,48 +219,38 @@
                                             <span style="color: red">Thu hồi</span>
                                         </button>
                                     </mat-menu>
-
                                 </ng-container>
                             </span>
                             <!-- begin nơi hiển thị mes xóa thành viên  -->
                             <div *ngIf="message.IsDelAll&&!message.isInsertMember" class="leave">
-                                <div style=" margin: auto;padding-right: 5px;">
-                                    <ngx-avatar [size]="20" [name]="message.InfoUser[0].Fullname.slice(0, 1)"
-                                        bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
-                                    </ngx-avatar>
-                                    <ngx-avatar [size]="20" src="{{message.InfoUser[0].Avatar}}"
-                                        *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
-                                </div>
-                                <div>
-                                    <span *ngIf="message.UserName===userCurrent" style="font-weight: bold;">Bạn</span>
-                                    <span *ngIf="message.UserName!==userCurrent"
-                                        style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
-                                    {{message.Content_mess}}
-                                    <span style="font-weight: bold;">{{message.Note}}</span>khỏi nhóm
-                                </div>
+                                <span *ngIf="message.UserName===userCurrent" style="font-weight: bold;">Bạn&nbsp;</span>
+                                <span *ngIf="message.UserName!==userCurrent"
+                                    style="font-weight: bold;">{{message.InfoUser[0].Fullname}}&nbsp;</span>
+                                {{message.Content_mess}}&nbsp;
+                                <span style="font-weight: bold;">{{message.Note}}</span>&nbsp;khỏi nhóm
                             </div>
                             <!-- end nơi hiển thị mes xóa thành viên  -->
                             <!-- begin nơi hiển thị mes insert thành viên  -->
-                            <div *ngIf="message.isInsertMember" class="leave ">
-
-                                <div style=" margin: auto;padding-right: 5px;">
+                            <div *ngIf="message.isInsertMember" class="leave">
+                                <!-- <div style=" margin: auto;padding-right: 5px;">
                                     <ngx-avatar [size]="20" [name]="message.InfoUser[0].Fullname.slice(0, 1)"
                                         bgColor="{{ message.InfoUser[0].BgColor }}" *ngIf="!message.InfoUser[0].Avatar">
                                     </ngx-avatar>
                                     <ngx-avatar [size]="20" src="{{message.InfoUser[0].Avatar}}"
                                         *ngIf="message.InfoUser[0].Avatar"></ngx-avatar>
                                 </div>
-                                <div>
-                                    <span *ngIf="message.UserName===userCurrent" style="font-weight: bold; ">Bạn</span>
-                                    <span *ngIf="message.UserName!==userCurrent"
-                                        style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}</span>
-                                    {{message.Content_mess}}
-                                    <span *ngIf="message.Note.length<30"
-                                        style="font-weight: bold;">{{message.Note}}</span>
-                                    <span *ngIf="message.Note.length>30"
-                                        style="font-weight: bold; ">{{message.Note|slice:0:30}}...</span>
-                                    vào nhóm
-                                </div>
+                                <div> -->
+                                <span *ngIf="message.UserName===userCurrent"
+                                    style="font-weight: bold; ">Bạn&nbsp;</span>
+                                <span *ngIf="message.UserName!==userCurrent"
+                                    style="font-weight: bold; ">{{message.InfoUser[0].Fullname}}&nbsp;</span>
+                                {{message.Content_mess}}&nbsp;
+                                <span *ngIf="message.Note.length<30"
+                                    style="font-weight: bold;">{{message.Note}}&nbsp;</span>
+                                <span *ngIf="message.Note.length>30"
+                                    style="font-weight: bold; ">{{message.Note|slice:0:30}}...</span>
+                                vào nhóm
+                                <!-- </div> -->
                             </div>
                             <!-- end nơi hiển thị mes insert thành viên  -->
                             <!-- style="display: flex;" -->
@@ -297,7 +261,6 @@
                                             (click)="loadlightbox(message.IdChat)"
                                             style="width: 100px;padding-right:  5px;border-radius: inherit;cursor: pointer;"
                                             src="{{img.hinhanh}}">
-
                                     </div>
                                 </div>
                                 <div style="background: #c3dcc3;
@@ -315,7 +278,6 @@
                                 <div *ngIf="message.Videos.length>0&&!message.IsHidenAll">
                                     <div *ngFor="let video of message.Videos">
                                         <video [src]="video.path" height="100" controls></video>
-
                                     </div>
                                 </div>
                                 <div *ngIf="!message.IsHidenAll&&!message.IsDelAll&&!message.isInsertMember&&message.Content_mess!==''"
@@ -324,18 +286,14 @@
                                     <div [ngClass]="getClassRepy(message.UserName)"
                                         *ngIf="message.Note!==''&&message.Note&&(message.Note | json) != ({} | json)">
                                         <mat-icon style="font-size: 20px;">reply</mat-icon>
-
                                         <label [innerHTML]="message.Note">
-
                                         </label>
                                     </div>
                                     <!-- <br *ngIf="message.Note!==''">
                                 <br *ngIf="message.Note!==''"> -->
                                     <span *ngIf="!message.IsHidenAll" class="conntentmess" matTooltipPosition="left"
                                         matTooltip="{{message.CreatedDate  | TimeMess: 'dddd,HH:mm:ss'}} ">
-
                                         <span [innerHTML]="urlify(message.Content_mess)">
-
                                         </span>
                                         <!-- {{message.Content_mess}} -->
                                     </span>
@@ -354,38 +312,27 @@
                                             </div>
                                         </popover-content>
                                         <ng-container class="reationshow">
-                                            <button style="       margin-top: -10px;
-                                position: absolute;
-                                margin-left: -15px;" *ngIf="!message.ReactionUser" mat-icon-button
-                                                [popover]="myPopover" [popoverOnHover]="true"
-                                                [popoverCloseOnMouseOutside]="true"
+                                            <button style="margin-top: -10px; position: absolute; margin-left: -15px;"
+                                                *ngIf="!message.ReactionUser" mat-icon-button [popover]="myPopover"
+                                                [popoverOnHover]="true" [popoverCloseOnMouseOutside]="true"
                                                 aria-label="Example icon-button with a menu">
                                                 <mat-icon class="action" style="color:#78787b ;">thumb_up</mat-icon>
                                             </button>
                                             <img *ngIf="message.ReactionUser" style="width: 15px;
-                              cursor: pointer;
-                              position: absolute;
-                              margin-top: 20px;
-                              margin-left: -10px;" [popover]="myPopover" [popoverOnHover]="true"
+                              cursor: pointer; position: absolute; margin-top: 20px; margin-left: -10px;"
+                                                [popover]="myPopover" [popoverOnHover]="true"
                                                 [popoverCloseOnMouseOutside]="true" src="{{message.ReactionUser.icon}}">
-
                                         </ng-container>
                                     </span>
-
                                     <!-- <br> -->
-
-                                    <span style="    padding-left: 20px;display: flex;"
+                                    <span style="padding-left: 20px;display: flex;"
                                         *ngFor="let rc of message.ReactionChat">
-
                                         <span>
-                                            <img style="    width: 15px;
-                                        cursor: pointer;
-                                       
-                                      " src="{{rc.icon}}" placement="top" [ngbTooltip]="tipContent"
+                                            <img style="width: 15px;
+                                        cursor: pointer;" src="{{rc.icon}}" placement="top" [ngbTooltip]="tipContent"
                                                 (mouseenter)="toggleWithGreeting(message.IdChat,rc.ID_like)">
                                             <label style="margin: 6px 8px 0 0;">{{rc.tong}}</label>
                                             <ng-template #tipContent>
-
                                                 <div *ngFor="let rc of  listreaction ">
                                                     <div *ngFor="let dt  of rc.user">
                                                         <span *ngIf="dt.Username===userCurrent">Bạn</span>
@@ -394,7 +341,6 @@
                                                 </div>
                                             </ng-template>
                                         </span>
-
                                     </span>
                                 </div>
                                 <!-- begin  reply and reaction -->
@@ -407,8 +353,8 @@
                                             <mat-icon class="action" style="font-size: 22px;">more_horiz</mat-icon>
                                         </button>
                                         <mat-menu #menu1="matMenu">
-                                            <button (click)="ReplyMess(message)" matTooltip="Trả lời tin nhắn" mat-menu-item
-                                                aria-label="Example icon-button with a menu">
+                                            <button (click)="ReplyMess(message)" matTooltip="Trả lời tin nhắn"
+                                                mat-menu-item aria-label="Example icon-button with a menu">
                                                 <mat-icon class="action" style="font-size: 22px;">reply</mat-icon>
                                                 <span>Trả lời</span>
                                             </button>
@@ -461,18 +407,10 @@
             <div style="height: 20px;">
                 <span *ngIf="composing" class="composing ">{{composingname}} đang soạn tin...</span>
             </div>
-
         </div>
         <div style="padding: 0px;">
-
-
             <!--  nơi hiên thị  hình ảnh -->
-            <div style="    height: 80px;
-display: flex;
-overflow-x: auto;
-overflow-y: hidden;" *ngIf="list_image.length>0">
-
-
+            <div style="height: 80px; display: flex; overflow-x: auto; overflow-y: hidden;" *ngIf="list_image.length>0">
                 <div style="display: flex;" *ngFor="let img of list_image;let viimg=index">
                     <div style="width: 20px;">
                         <button (click)="RemoveChoseImage(viimg)" class="closebtn" mat-button mat-icon-button>
@@ -480,7 +418,6 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                         </button>
                     </div>
                     <img [src]="img" style="width:50px;height:50px;margin: 10px;">
-
                 </div>
                 <button style="height: 80px;
             margin:auto;
@@ -519,21 +456,18 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                     type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
                     style="display: none;">
             </div>
-
             <div *ngIf="show">
-
                 <div>
-
-                    <button (click)="hiddenfileinput_image.click()" class="btn-class" matTooltip="Hình ảnh"
+                    <button (click)="hiddenfileinput_image.click()" class="btn-class" matTooltip="Đính kèm hình ảnh"
                         mat-icon-button aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">image</mat-icon>
                     </button>
-                    <button (click)="hiddenfileinput.click()" class="btn-class" matTooltip="File" mat-icon-button
-                        aria-label="Example icon button with a home icon">
+                    <button (click)="hiddenfileinput.click()" class="btn-class" matTooltip="Đính kèm tệp"
+                        mat-icon-button aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">attachment</mat-icon>
                     </button>
 
-                    <button class="btn-class" (click)="hiddenfileinput_video.click()" matTooltip="Videos"
+                    <button class="btn-class" (click)="hiddenfileinput_video.click()" matTooltip="Đính kèm video"
                         mat-icon-button aria-label="Example icon button with a home icon">
                         <mat-icon class="sizeiconreaction">video_library</mat-icon>
                     </button>
@@ -547,30 +481,21 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                           text/plain, application/pdf,application/msword,.pdf, .xls, .xlsx, application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                         type='file' id="PDFInpdd" #hiddenfileinput (change)="onSelectFile_PDF($event)" multiple
                         style="display: none;">
-
                 </div>
-
             </div>
             <div>
-
                 <div *ngFor="let itrp of  listReply " style="    margin: 0 5px 0 5px;
                 font-size: 13px;
                 background: lightgray;
                 border-radius: 10px;">
-
                     <span style="font-weight: bold;" *ngFor="let rp of itrp.InfoUser">
-                        <mat-icon style="    font-size: 20px;">reply</mat-icon>Trả lời {{rp.Fullname}}
-
+                        <mat-icon style="font-size: 20px;">reply</mat-icon>Trả lời {{rp.Fullname}}
                         <button matTooltip="Đóng" (click)="DeleteReply()" mat-icon-button color="primary">
                             <mat-icon style="font-size: 15px;">close</mat-icon>
                         </button>
                     </span>
-
                     <div [innerHTML]="itrp.Content_mess" style="padding-left: 25px; margin-top: -5px;">
-
-
                     </div>
-
                 </div>
                 <div class="input-group">
                     <div class="input-group-append">
@@ -583,26 +508,24 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
                             style="color:#7B7B7E ;" aria-label="Example icon button with a home icon">
                             <mat-icon style="font-size: 25px;">cancel</mat-icon>
                         </button>
-
                         <!-- <button [disabled]=""  style="background:#6993FF"class="btn btn-primary" type="submit">Send</button> -->
                     </div>
-                    <form style="width: 86%;
-                    display: flex;" #messageForm="ngForm" (ngSubmit)="sendMessage()" autocomplete="off">
+                    <form style="width: 86%; display: flex;" #messageForm="ngForm" (ngSubmit)="sendMessage()"
+                        autocomplete="off">
                         <!-- <input  (paste)="onPaste($event)" (ngModelChange)="saverange($event)"
                             style="   font-size: 15px;background: #F0F2F5;border-radius: 20px;" type="text"
                             name="messageContent" required [(ngModel)]="messageContent" class="form-control input-sm"
                             placeholder="Nhập tin nhắn" (focus)="onFocusEvent($event)"> -->
-                        <quill-editor (keydown.enter)="sendMessage()" placeholder="Nhập tin nhắn..."
-                            name="messageContent" [(ngModel)]="txttam" [modules]="modules"
-                            (focus)="onFocusEvent($event)" (ngModelChange)="saverange($event)" name="messageContent"
-                            (paste)="onPaste($event)">
+                        <quill-editor style=" height: calc(1.5em + 1.3rem + 2px) !important; margin-bottom: 15px;"
+                            (keydown.enter)="sendMessage()" placeholder="Nhập tin nhắn..." name="messageContent"
+                            [(ngModel)]="txttam" [modules]="modules" (focus)="onFocusEvent($event)"
+                            (ngModelChange)="saverange($event)" name="messageContent" (paste)="onPaste($event)">
                         </quill-editor>
                         <div class="input-group-append">
                             <button style="color:#7B7B7E ;" matTooltip="Gửi tin nhắn" mat-icon-button
                                 aria-label="Example icon button with a home icon">
                                 <mat-icon>send</mat-icon>
                             </button>
-
                             <!-- <button [disabled]=""  style="background:#6993FF"class="btn btn-primary" type="submit">Send</button> -->
                         </div>
 
@@ -612,7 +535,6 @@ overflow-y: hidden;" *ngIf="list_image.length>0">
         </div>
     </div>
 </div>
-
 <ng-template #itemTemplate let-index="index" let-type="type" let-data="data" let-currIndex="currIndex">
     <ng-container>
         <img [src]="data.src" />
