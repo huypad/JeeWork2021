@@ -90,7 +90,7 @@ namespace API_JeeWork2021.Classes
                                         {
                                             foreach (var account in DataAccount)
                                             {
-                                                ham = "SLCongviecUser"; idkh = item.ToString();
+                                                ham = "SLCongviecPhuTrach"; idkh = item.ToString();
                                                 SLCongviecPhuTrach(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
                                                 ham = "SLCongviecQuaHan"; idkh = item.ToString();
                                                 SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
@@ -156,11 +156,11 @@ namespace API_JeeWork2021.Classes
         }
 
         /// <summary>
-        /// Update số lượng công việc  +1 hoặc -1 với những tài kkhoan quy định mà không nhắc nhở theo định kì 
+        /// Update số lượng công việc  +1 hoặc -1 với những tài khoản quy định mà không nhắc nhở theo định kì 
         /// </summary>
-        public static void UpdateSoluongCV(long UserID, long CustomerID, string value, IConfiguration _configuration, IProducer _producer)
+        public static void UpdateQuantityTask(long UserID, long CustomerID, string value, IConfiguration _configuration, IProducer _producer)
         {
-            UpdateSoluongCongviecUser(UserID, CustomerID, value, _configuration, _producer);
+            UpdateQuantityTask_Users(UserID, CustomerID, value, _configuration, _producer);
         }
         public static void UpdateSoluongCVHetHan(long UserID, long CustomerID, string value, IConfiguration _configuration, IProducer _producer)
         {
@@ -168,7 +168,7 @@ namespace API_JeeWork2021.Classes
         }
         public static void UpdateCVHoanthanh(long UserID, long CustomerID, bool hasDeadline, IConfiguration _configuration, IProducer _producer)
         {
-            UpdateSoluongCongviecUser(UserID, CustomerID, "-", _configuration, _producer);
+            UpdateQuantityTask_Users(UserID, CustomerID, "-", _configuration, _producer);
             if (hasDeadline)
             {
                 UpdateSoluongCongviecHetHanUser(UserID, CustomerID, "-", _configuration, _producer);
@@ -186,7 +186,7 @@ namespace API_JeeWork2021.Classes
         /// <param name="ConnectionString"></param>
         /// <param name="_configuration"></param>
         /// <param name="_producer"></param>
-        public static void UpdateSoluongCongviecUser(long UserID, long CustomerID, string value, IConfiguration _configuration, IProducer _producer)
+        public static void UpdateQuantityTask_Users(long UserID, long CustomerID, string value, IConfiguration _configuration, IProducer _producer)
         {
             var demo = new Remider()
             {
@@ -218,18 +218,17 @@ namespace API_JeeWork2021.Classes
         {
             string StrW = " and id_nv = " + UserID +" ";
             DataSet ds = WorkClickupController.GetWorkByEmployee(null,cnn, new QueryParams(), UserID, DataAccount, StrW );
-            var cvdanglam = ds.Tables[0].Compute("count(id_row) ", " Doing = 1 ");
+            var sl = ds.Tables[0].Compute("count(id_row) ", " doing = 1 ");
             var demo = new Remider()
             {
                 PhanLoaiID = 503,
-                SoLuong = int.Parse(cvdanglam.ToString()),
-                //SoLuong = dt.Rows.Count,
+                SoLuong = int.Parse(sl.ToString()),
                 UserID = UserID,
                 CustomerID = CustomerID,
                 DataField = "Sophu1",
             };
             SendTestReminder(_configuration, _producer, demo);
-            return int.Parse(cvdanglam.ToString());
+            return int.Parse(sl.ToString());
         }
         public static long SLCongViecHetHanTrongNgay(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {

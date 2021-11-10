@@ -276,15 +276,7 @@ export class DepartmentEditComponent implements OnInit {
           // this.focusInput.nativeElement.focus();
         }
       } else {
-        this.layoutUtilsService.showActionNotification(
-          res.error.message,
-          MessageType.Read,
-          9999999999,
-          true,
-          false,
-          3000,
-          "top",
-          0
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, "top", 0
         );
       }
     });
@@ -306,15 +298,7 @@ export class DepartmentEditComponent implements OnInit {
         }
       } else {
         this.viewLoading = false;
-        this.layoutUtilsService.showActionNotification(
-          res.error.message,
-          MessageType.Read,
-          9999999999,
-          true,
-          false,
-          3000,
-          "top",
-          0
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, "top", 0
         );
       }
     });

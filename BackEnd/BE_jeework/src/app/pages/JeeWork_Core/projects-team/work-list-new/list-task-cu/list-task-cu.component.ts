@@ -263,10 +263,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             50,
             true
         );
-        this.layoutUtilsService.showWaitingDiv();
-        // this.DanhsSachCongViec = [];
+        this.DanhsSachCongViec = [];
         if (!this.getMystaff) {
             if (this.selectedTab === 2) {
+                this.layoutUtilsService.showWaitingDiv();
                 this._service.ListByFilter(queryParams).subscribe(res => {
                     this.layoutUtilsService.OffWaitingDiv();
                     if (res && res.status === 1) {
@@ -278,27 +278,29 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                     this.layoutUtilsService.OffWaitingDiv();
                 });
             } else {
+                // this.layoutUtilsService.showWaitingDiv();
                 this._service.ListByUserCU(queryParams1).subscribe(res => {
-                    this.layoutUtilsService.OffWaitingDiv();
+                    // this.layoutUtilsService.OffWaitingDiv();
                     if (res && res.status === 1) {
                         this.DanhsSachCongViec = res.data;
                         this.filterDanhSach();
                         this.changeDetectorRefs.detectChanges();
                     }
                 }, (err) => {
-                    this.layoutUtilsService.OffWaitingDiv();
+                    // this.layoutUtilsService.OffWaitingDiv();
                 });
             }
         } else {
+            // this.layoutUtilsService.showWaitingDiv();
             this._service.ListByManageCU(queryParams1).subscribe(res => {
-                this.layoutUtilsService.OffWaitingDiv();
+                // this.layoutUtilsService.OffWaitingDiv();
                 if (res && res.status === 1) {
                     this.DanhsSachCongViec = res.data;
                     this.filterDanhSach();
                     this.changeDetectorRefs.detectChanges();
                 }
             }, (err) => {
-                this.layoutUtilsService.OffWaitingDiv();
+                // this.layoutUtilsService.OffWaitingDiv();
             });
         }
     }

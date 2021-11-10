@@ -28,7 +28,7 @@ import {
   TopicCommentDTO,
   ChangeComment,
 } from "./jee-comment.model";
-import {JeeCommentSignalrService} from './jee-comment-signalr.service';
+import { JeeCommentSignalrService } from './jee-comment-signalr.service';
 
 @Component({
   selector: "app-jee-comment",
@@ -47,7 +47,7 @@ export class JeeCommentComponent implements OnInit {
     return this._errorMessage$.asObservable();
   }
 
-  
+
   item: TopicCommentDTO;
   hiddenLike: boolean = true;
   hiddenShare: boolean = true;
@@ -112,38 +112,38 @@ export class JeeCommentComponent implements OnInit {
         setTimeout(() => {
           this._isLoading$.next(true);
           this.signalrService.showChange$
-              .pipe(
-                  tap((result: ReturnFilterComment) => {
-                    if (result) {
-                      if (result.LstCreate.length > 0 || result.LstEdit.length > 0 || result.LstDelete.length > 0) {
-                        if (result.LstCreate.length > 0) {
-                          this.pushItemCommentInTopicComemnt(this.item, result.LstCreate);
-                        }
-                        if (result.LstEdit.length > 0) {
-                          this.editItemCommentInTopicComemnt(this.item, result.LstEdit);
-                        }
-                        if (result.LstDelete.length > 0) {
-                          this.deleteItemCommentInTopicComemnt(this.item, result.LstDelete);
-                        }
-                        this.filterDate = new Date();
-                        this.isDeteachChange$.next(true);
-                      }
+            .pipe(
+              tap((result: ReturnFilterComment) => {
+                if (result) {
+                  if (result.LstCreate.length > 0 || result.LstEdit.length > 0 || result.LstDelete.length > 0) {
+                    if (result.LstCreate.length > 0) {
+                      this.pushItemCommentInTopicComemnt(this.item, result.LstCreate);
                     }
-                    this.cd.detectChanges();
-                  }),
-                  catchError((err) => {
-                    this._isLoading$.next(false);
-                    this.signalrService.disconnectToken(this.objectID);
-                    this._errorMessage$.next(err);
-                    return of();
-                  }),
-                  finalize(() => {
-                    this._isLoading$.next(false);
-                    this.cd.detectChanges();
-                  }),
-                  takeUntil(this.onDestroy)
-              )
-              .subscribe();
+                    if (result.LstEdit.length > 0) {
+                      this.editItemCommentInTopicComemnt(this.item, result.LstEdit);
+                    }
+                    if (result.LstDelete.length > 0) {
+                      this.deleteItemCommentInTopicComemnt(this.item, result.LstDelete);
+                    }
+                    this.filterDate = new Date();
+                    this.isDeteachChange$.next(true);
+                  }
+                }
+                this.cd.detectChanges();
+              }),
+              catchError((err) => {
+                this._isLoading$.next(false);
+                this.signalrService.disconnectToken(this.objectID);
+                this._errorMessage$.next(err);
+                return of();
+              }),
+              finalize(() => {
+                this._isLoading$.next(false);
+                this.cd.detectChanges();
+              }),
+              takeUntil(this.onDestroy)
+            )
+            .subscribe();
         }, 500);
       } else {
         this.ShowSpinner$.next(false);
@@ -412,26 +412,26 @@ export class JeeCommentComponent implements OnInit {
   }
 
   LoadObjectID() {
-    if(this.componentName){
+    if (this.componentName) {
       this.service
-      .getTopicObjectIDByComponentName(this.componentName)
-      .pipe(
-        tap((res) => {
-          this.objectID = res;
-          this.ngOnInit();
-        }),
-        catchError((err) => {
-          return of();
-        }),
-        finalize(() => {}),
-        share()
-      )
-      .subscribe();
+        .getTopicObjectIDByComponentName(this.componentName)
+        .pipe(
+          tap((res) => {
+            this.objectID = res;
+            this.ngOnInit();
+          }),
+          catchError((err) => {
+            return of();
+          }),
+          finalize(() => { }),
+          share()
+        )
+        .subscribe();
     }
-    
+
   }
 
-  GetValueComment(event){
+  GetValueComment(event) {
     this.getShowChangeTopic();
     this.getShowTopic();
   }

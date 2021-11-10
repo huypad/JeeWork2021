@@ -8,8 +8,6 @@ import { QueryResultsModel } from '../models/query-models/query-results.model';
 import { environment } from 'src/environments/environment';
 
 const API_URL = environment.APIROOTS;
-const API_URL_Landingpage = environment.APIROOTSLANDING + '/apild';
-
 @Injectable()
 export class DanhMucChungService {
 	lastFilter$: BehaviorSubject<QueryParamsModel> = new BehaviorSubject(new QueryParamsModel({}, 'asc', '', 0, 10));

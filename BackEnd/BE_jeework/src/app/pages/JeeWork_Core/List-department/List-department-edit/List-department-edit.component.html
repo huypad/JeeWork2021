@@ -20,7 +20,7 @@
 						'projects.members' | translate }} : </span>
 					<div class="row" style="flex-grow: 1;">
 						<ng-container *ngFor="let us of this.selectedUser;let index = index">
-							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+							<div *ngIf="index < 9" class="user url scale-hover-02 position-relative"
 								style="justify-content: flex-end;">
 								<i class="far fa-times-circle url view-hover bg-white" *ngIf="us.type!=1"
 									(click)="ItemselectedUser(us)"
@@ -37,13 +37,13 @@
 								<div class="user w-100 h-100"
 									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
 									[ngStyle]="{'font-size.px': 16}">
-									+{{this.selectedUser.length-3}}
+									+{{this.selectedUser.length-10}}
 								</div>
 							</div>
 							<mat-menu #menu1="matMenu">
 								<div [ngStyle]="{'max-height.px': 215}">
 									<ng-container *ngFor="let user of this.selectedUser;let index = index">
-										<div *ngIf="index > 2" style="justify-content: flex-end;">
+										<div *ngIf="index > 9" style="justify-content: flex-end;">
 											<div class="position-relative mb-2"
 												[ngStyle]="{'padding-right.px': (icondel.offsetWidth + 5)}">
 												<i class="fas fa-times scale-hover-01 url" #icondel

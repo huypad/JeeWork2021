@@ -58,9 +58,6 @@ export class ListDepartmentListComponent implements OnInit {
 	listDept: any[] = [];
 	listquydinh: any[] = [];
 	showTruyCapNhanh: boolean = true;
-	id_menu: number = 40640;
-	ID_QuyTrinh: number = 10003;
-	TenQuyTrinh: string = 'Pad Trần Văn';
 	@ViewChild("tenphongban", { static: true }) tenphongban: ElementRef;
 
 	//[=======================================================]
@@ -174,7 +171,7 @@ export class ListDepartmentListComponent implements OnInit {
 	}
 	getHeight(): any {
 		let obj = window.location.href.split("/").find(x => x == "tabs-references");
-			let tmp_height = 0;
+		let tmp_height = 0;
 		if (obj) {
 			tmp_height = window.innerHeight - 214;
 		} else {
@@ -186,10 +183,10 @@ export class ListDepartmentListComponent implements OnInit {
 	Add(ID_Department = 0) {
 		const ObjectModels = new DepartmentModel();
 		ObjectModels.clear(); // Set all defaults fields
-		if(ID_Department > 0){
+		if (ID_Department > 0) {
 			ObjectModels.RowID = ID_Department;
 			this.Update(ObjectModels);
-		}else{
+		} else {
 			this.Create(ObjectModels);
 		}
 	}
@@ -198,7 +195,7 @@ export class ListDepartmentListComponent implements OnInit {
 		this.loadDataList();
 		// this.dataSource4.filter = filterValue.trim().toLowerCase();
 	}
-	loadDataList() { 
+	loadDataList() {
 		const queryParams = new QueryParamsModelNew(
 			this.filterConfiguration(),
 			'',
@@ -223,8 +220,13 @@ export class ListDepartmentListComponent implements OnInit {
 		saveMessageTranslateParam += _item.RowID > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.RowID > 0 ? MessageType.Update : MessageType.Create;
-		
-		const dialogRef = this.dialog.open(DepartmentEditComponent, { data: { _item, _IsEdit: _item.IsEdit } });
+		const IsUpdate = _item.RowID > 0 ? true : false;
+		// const dialogRef = this.dialog.open(DepartmentEditNewComponent, { data: { _item, _IsEdit: _item.IsEdit } });
+		const dialogRef = this.dialog.open(DepartmentEditNewComponent, {
+			// minHeight: '50vh',
+			data: { _item, _IsEdit: _item.IsEdit, IsUpdate },
+			minWidth: '650px',
+		});
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
 				return;
@@ -242,7 +244,7 @@ export class ListDepartmentListComponent implements OnInit {
 		saveMessageTranslateParam += _item.RowID > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.RowID > 0 ? MessageType.Update : MessageType.Create;
-		
+
 		const dialogRef = this.dialog.open(DepartmentEditNewComponent, { data: { _item, _IsEdit: _item.IsEdit } });
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
@@ -272,13 +274,12 @@ export class ListDepartmentListComponent implements OnInit {
 				if (res && res.status === 1) {
 					this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
 					this.menuAsideService.loadMenu();
-					this.ngOnInit(); 
+					this.ngOnInit();
 				}
 				else {
 					this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
 					this.ngOnInit();
 				}
-
 			});
 		});
 	}

@@ -93,10 +93,10 @@ export class ProjectTeamEditComponent implements OnInit {
 		// filter.value = this.item.id_department;
 		this.weworkService.lite_department().subscribe(res => {
 			this.disabledBtn = false;
-			this.changeDetectorRefs.detectChanges();
+			// this.changeDetectorRefs.detectChanges();
 			if (res && res.status === 1) {
 				this.listdepartment = res.data;
-				this.setUpDropSearchProject();
+				this.SearchProject();
 				this.changeDetectorRefs.detectChanges();
 			};
 		});
@@ -118,8 +118,7 @@ export class ProjectTeamEditComponent implements OnInit {
 		});
 		if (this.item.id_row > 0) {
 			this.viewLoading = true;
-			this._service.
-			Detail(this.item.id_row).subscribe(res => {
+			this._service.Detail(this.item.id_row).subscribe(res => {
 				if (res && res.status == 1) {
 					this.item = res.data;
 					if (this.item.Users == undefined)
@@ -278,7 +277,7 @@ export class ProjectTeamEditComponent implements OnInit {
 			this.selected_Assign.push(data);
 		}
 	}
-	setUpDropSearchProject() {
+	SearchProject() {
 		this.projectFilterCtrl.setValue('');
 		this.filterProject();
 		this.projectFilterCtrl.valueChanges
@@ -299,8 +298,27 @@ export class ProjectTeamEditComponent implements OnInit {
 			search = search.toLowerCase();
 		}
 		this.filtereproject.next(
-			this.listdepartment.filter(bank => bank.title.toLowerCase().indexOf(search) > -1)
+			this.listdepartment.filter(proj => proj.title.toLowerCase().indexOf(search) > -1)
 		);
+	}
+	BindUserDepartment(id: any) {
+		const filter: any = {};
+		filter.id_department = id;
+		this.weworkService.list_account(filter).subscribe(res => {
+			this.disabledBtn = false;
+			this.selected_Assign = [];
+			debugger
+			if (res && res.status === 1) {
+				this.listUser = res.data;
+				this.listUser.forEach((element) => {
+					if (element.id_nv != this.UserId) {
+						this.selected_Assign.push(element);
+					}
+				});
+				this.options_assign = this.getOptions_Assign();
+				this.changeDetectorRefs.detectChanges();
+			};
+		});
 	}
 	/** UI */
 	getTitle(): string {

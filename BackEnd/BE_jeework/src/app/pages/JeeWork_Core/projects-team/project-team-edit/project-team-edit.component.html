@@ -18,12 +18,31 @@
 					</mat-form-field>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-12 kt--margin-bottom-10-mobile">
+					<mat-form-field class="mat-form-field-fluid">
+						<mat-select formControlName="id_project_team" [disabled]="!isChangeDept" class="require"
+							required (selectionChange)="BindUserDepartment($event.value)"
+							placeholder="{{ 'department.department' | translate}}">
+							<mat-option>
+								<ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
+									[noEntriesFoundLabel]="''">
+								</ngx-mat-select-search>
+							</mat-option>
+							<mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
+								<span style="color: black;">{{ user.title }}</span>
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				</div>
+			</div>
 			<div class="form-group">
 				<div class="col-md-12 row kt--margin-bottom-10-mobile">
-					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{ 'projects.admins' | translate }} : </span> 
+					<span style="padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{
+						'projects.admins' | translate }} : </span>
 					<div class="row" style="flex-grow: 1;">
 						<ng-container *ngFor="let us of this.selected;let index = index">
-							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+							<div *ngIf="index < 10" class="user url scale-hover-02 position-relative"
 								style="justify-content: flex-end;">
 								<ng-container>
 									<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
@@ -31,20 +50,19 @@
 								</ng-container>
 							</div>
 						</ng-container>
-						<ng-container *ngIf="this.selected && this.selected.length > 3">
-
+						<ng-container *ngIf="this.selected && this.selected.length > 10">
 							<div class="m--img-rounded m--marginless m--img-centered background"
 								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
 								<div class="user w-100 h-100"
 									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
 									[ngStyle]="{'font-size.px': 16}">
-									+{{this.selected.length-3}}
+									+{{this.selected.length-10}}
 								</div>
 							</div>
 							<mat-menu #menu1="matMenu">
 								<div *ngFor="let user of this.selected;let index = index"
 									style="justify-content: flex-end;">
-									<ng-container *ngIf="index > 2">
+									<ng-container *ngIf="index > 9">
 										<div class="position-relative">
 											<i class="fas fa-times scale-hover-01 url"
 												style="position: absolute;top:0;right:0"
@@ -66,20 +84,21 @@
 						</div>
 					</div>
 					<mat-menu #owner="matMenu">
-                        <div class="page-work-detail">
-                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
-                                (ItemSelected)="ItemSelected($event)">
-                            </kt-choose-users>
-                        </div>
-                    </mat-menu>
+						<div class="page-work-detail">
+							<kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+								(ItemSelected)="ItemSelected($event)">
+							</kt-choose-users>
+						</div>
+					</mat-menu>
 				</div>
 			</div>
 			<div class="form-group">
 				<div class="col-md-12 row kt--margin-bottom-10-mobile">
-					<span style="    padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{ 'projects.members' | translate }} : </span> 
+					<span style="padding-right: 20px; align-items: center; font-size: 18px;" class="d-flex"> {{
+						'projects.members' | translate }} : </span>
 					<div class="row" style="flex-grow: 1;">
 						<ng-container *ngFor="let us of this.selected_Assign;let index = index">
-							<div *ngIf="index < 3" class="user url scale-hover-02 position-relative"
+							<div *ngIf="index < 10" class="user url scale-hover-02 position-relative"
 								style="justify-content: flex-end;">
 								<ng-container>
 									<kt-avatar-user [image]="us.image" size="25" [name]="us.hoten">
@@ -87,20 +106,19 @@
 								</ng-container>
 							</div>
 						</ng-container>
-						<ng-container *ngIf="this.selected_Assign && this.selected_Assign.length > 3">
-
+						<ng-container *ngIf="this.selected_Assign && this.selected_Assign.length > 10">
 							<div class="m--img-rounded m--marginless m--img-centered background"
 								[matMenuTriggerFor]="menu1" [ngStyle]="{'width.px': 29,'height.px':29}">
 								<div class="user w-100 h-100"
 									style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
 									[ngStyle]="{'font-size.px': 16}">
-									+{{this.selected_Assign.length-3}}
+									+{{this.selected_Assign.length-10}}
 								</div>
 							</div>
 							<mat-menu #menu1="matMenu">
 								<div *ngFor="let user of this.selected_Assign;let index = index"
 									style="justify-content: flex-end;">
-									<ng-container *ngIf="index > 2">
+									<ng-container *ngIf="index > 9">
 										<div class="position-relative">
 											<i class="fas fa-times scale-hover-01 url"
 												style="position: absolute;top:0;right:0"
@@ -122,34 +140,18 @@
 						</div>
 					</div>
 					<mat-menu #member="matMenu">
-                        <div class="page-work-detail">
-                            <kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
-                                (ItemSelected)="ItemSelected_Assign($event)">
-                            </kt-choose-users>
-                        </div>
-                    </mat-menu>
+						<div class="page-work-detail">
+							<kt-choose-users isNewView="true" [options]="options" (IsSearch)="stopPropagation($event)"
+								(ItemSelected)="ItemSelected_Assign($event)">
+							</kt-choose-users>
+						</div>
+					</mat-menu>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-12 kt--margin-bottom-10-mobile">
-					<mat-form-field class="mat-form-field-fluid">
-						<mat-select formControlName="id_project_team" [disabled]="!isChangeDept" class="require" required
-							placeholder="{{ 'department.department' | translate}}">
-							<mat-option>
-								<ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
-									[noEntriesFoundLabel]="''">
-								</ngx-mat-select-search>
-							</mat-option>
-							<mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
-								<span style="color: black;">{{ user.title }}</span>
-							</mat-option>
-						</mat-select>
-					</mat-form-field>
-				</div>
-			</div>
+
 			<div *ngIf="IsProject" class="row align-items-center">
 				<div class="col-md-12 m--margin-bottom-10-mobile">
-					
+
 					<label>{{ 'projects.loaiduan' | translate }}</label><br />
 					<mat-radio-group formControlName="loai">
 						<mat-radio-button value="1"><span translate="projects.duannoibo"></span>
@@ -189,7 +191,8 @@
 						</div>
 						<div class="col-md-6 m--margin-bottom-10-mobile">
 							<mat-form-field class="mat-form-field-fluid">
-								<input matInput [matDatepicker]="dp2" placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}"
+								<input matInput [matDatepicker]="dp2"
+									placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}"
 									[min]="itemForm.value.start_date" formControlName="end_date">
 								<mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
 								<mat-datepicker #dp2></mat-datepicker>
@@ -217,7 +220,7 @@
 					<ng-template #dong>
 						+ {{'projects.lessoptions'|translate}}
 					</ng-template>
-					
+
 				</button>
 
 			</div>

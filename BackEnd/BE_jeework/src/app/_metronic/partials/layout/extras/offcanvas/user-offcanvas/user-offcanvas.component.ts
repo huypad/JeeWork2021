@@ -1,12 +1,12 @@
-import {WeWorkService} from './../../../../../../pages/JeeWork_Core/services/wework.services';
-import {Router} from '@angular/router';
-import {TokenStorage} from './../../../../../jeework_old/core/auth/_services/token-storage.service';
-import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
-import {LayoutService} from '../../../../../core';
-import {Observable} from 'rxjs';
-import {UserModel} from '../../../../../../modules/auth/_models/user.model';
-import {AuthService} from '../../../../../../modules/auth/_services/auth.service';
-import {RemindService} from '../../../../../../modules/auth/_services/remind.service';
+import { WeWorkService } from './../../../../../../pages/JeeWork_Core/services/wework.services';
+import { Router } from '@angular/router';
+import { TokenStorage } from './../../../../../jeework_old/core/auth/_services/token-storage.service';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { LayoutService } from '../../../../../core';
+import { Observable } from 'rxjs';
+import { UserModel } from '../../../../../../modules/auth/_models/user.model';
+import { AuthService } from '../../../../../../modules/auth/_services/auth.service';
+import { RemindService } from '../../../../../../modules/auth/_services/remind.service';
 
 @Component({
     selector: 'app-user-offcanvas',

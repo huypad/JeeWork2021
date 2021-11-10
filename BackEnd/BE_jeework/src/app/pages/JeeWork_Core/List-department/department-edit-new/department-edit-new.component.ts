@@ -139,6 +139,7 @@ export class DepartmentEditNewComponent implements OnInit {
   /** LOAD DATA */
   ngOnInit() {
     this.IsUpdate = this.data.IsUpdate;
+    debugger
     if (this.IsUpdate) {
       this.step = 5;
       this.isComplete = true;

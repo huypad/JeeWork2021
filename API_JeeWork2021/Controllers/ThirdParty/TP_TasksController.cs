@@ -2690,7 +2690,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         if (user.loai == 1)
                         {
-                            NhacNho.UpdateSoluongCV(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
+                            NhacNho.UpdateQuantityTask_Users(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
                         }
                     }
                     #region gửi event insert công việc mới
@@ -4150,7 +4150,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     }
                                     if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
                                     {
-                                        NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
+                                        NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
                                     }
                                 }
                                 else
@@ -4168,7 +4168,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         }
                                         if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
                                         {
-                                            NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
+                                            NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
                                         }
                                         // thông báo cho người được xóa
                                         if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
@@ -4219,7 +4219,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     isAssign = true;
                                     if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở thêm người +1
                                     {
-                                        NhacNho.UpdateSoluongCV(long.Parse(data.value.ToString()), loginData.CustomerID, "+", _configuration, _producer);
+                                        NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "+", _configuration, _producer);
                                     }
                                 }
                                 #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
@@ -4823,7 +4823,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         List<long> danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
                         foreach (long idUser in danhsachU)
                         {
-                            NhacNho.UpdateSoluongCV(idUser, loginData.CustomerID, "-", _configuration, _producer);
+                            NhacNho.UpdateQuantityTask_Users(idUser, loginData.CustomerID, "-", _configuration, _producer);
                         }
                     }
                     return JsonResultCommon.ThanhCong();

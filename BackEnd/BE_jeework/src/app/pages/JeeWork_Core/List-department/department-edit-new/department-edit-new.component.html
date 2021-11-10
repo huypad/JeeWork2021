@@ -3,22 +3,15 @@
     <div class="position-relative" style="padding:35px">
 
         <ng-container [ngSwitch]="step">
-
             <ng-container *ngSwitchCase="1">
                 <ng-container *ngTemplateOutlet="buoc1"></ng-container>
             </ng-container>
-
-
             <ng-container *ngSwitchCase="2">
                 <ng-container *ngTemplateOutlet="buoc2"></ng-container>
             </ng-container>
-
-
             <ng-container *ngSwitchCase="3">
                 <ng-container *ngTemplateOutlet="chonstatus"></ng-container>
             </ng-container>
-
-
             <ng-container *ngSwitchCase="4">
                 <div class="cu-view-space">
                     <div class="close-dialog d-flex">
@@ -33,7 +26,6 @@
                             <mat-icon class="scale-2 url" (click)="close()">close</mat-icon>
                         </div>
                     </div>
-
                     <div class="view-template" style="min-height: 400px;">
                         <div class="row">
                             <div class="col-md-6 pd-0" *ngFor="let view of listDefaultView">
@@ -51,14 +43,11 @@
 
                         </div>
                     </div>
-
                     <button class="btn btn-success btn-next" type="button" (click)="Next();isComplete=true;">
                         {{ (isComplete?'department.trolaituychinh':'department.tieptheo')|translate}}
                     </button>
                 </div>
             </ng-container>
-
-
             <ng-container *ngSwitchDefault>
                 <div class="cu-view-space">
                     <div class="close-dialog d-flex">
@@ -255,7 +244,6 @@
             <div (click)="AddTemplate()" *ngIf="!(item.id_row > 0 )" class="btn-template text-hover-success"
                 translate="GeneralKey.templatecenter"></div>
         </div>
-
         <form class="kt-form" [formGroup]="itemFormGroup">
             <div class="kt-form__group">
                 <div class="row">
@@ -274,7 +262,6 @@
         </button>
     </div>
 </ng-template>
-
 <ng-template #buoc2>
     <div class="cu-view-space">
         <div class="close-dialog d-flex">
