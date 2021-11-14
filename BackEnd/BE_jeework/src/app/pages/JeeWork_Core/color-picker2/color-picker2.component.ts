@@ -15,7 +15,8 @@ export class ColorPicker2Component implements OnInit {
     @Output() ItemSelected = new EventEmitter<any>();
 
     public defaultColors: string[] = [
-        'rgb(187, 181, 181)',
+        '#848E9E',
+        // 'rgb(187, 181, 181)',
         'rgb(29, 126, 236)',
         'rgb(250, 162, 140)',
         'rgb(14, 201, 204)',

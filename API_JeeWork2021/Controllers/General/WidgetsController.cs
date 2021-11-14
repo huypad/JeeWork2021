@@ -898,13 +898,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
+                    string listIDNV = "0";
                     List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
                     if (DataStaff == null)
                         return JsonResultCommon.KhongCoDuLieu();
                     List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
-                    string listIDNV = string.Join(",", nvs);
-
+                    if (nvs.Count() > 0)
+                        listIDNV = string.Join(",", nvs);
                     string error = "";
                     string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")

@@ -31,7 +31,7 @@ export class ChooseUsersComponent implements OnInit, OnChanges {
 	@Output() IsSearch = new EventEmitter<any>();
 
 	listUser: any[] = [];
-	customStyle : any = [];
+	customStyle: any = [];
 	public filteredUsers: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
 	public userFilterCtrl: FormControl = new FormControl();
 	constructor(
@@ -96,7 +96,7 @@ export class ChooseUsersComponent implements OnInit, OnChanges {
 		// filter the banks
 		if (search[0] == '@') {
 			this.filteredUsers.next(
-				this.listUser.filter(bank => (bank.hoten.toLowerCase()).indexOf(search.replace('@','')) > -1)
+				this.listUser.filter(bank => (bank.hoten.toLowerCase()).indexOf(search.replace('@', '')) > -1)
 			);
 		}
 		else {

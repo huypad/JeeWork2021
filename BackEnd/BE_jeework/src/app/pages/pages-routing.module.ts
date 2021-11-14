@@ -11,6 +11,7 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'tasks',
+        // pathMatch: 'prefix',
         // canActivate: [AdminGuard],
       },
       {
@@ -43,6 +44,7 @@ const routes: Routes = [
         path: 'tasks',
         loadChildren: () =>
           import('./JeeWork_Core/work/work.module').then((m) => m.WorkModule),
+          // pathMatch: 'prefix',
       },
       {
         path: 'users',
@@ -73,6 +75,7 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: () =>
           import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+          pathMatch: 'full',
       },
       // {
       //   path: "ecommerce",

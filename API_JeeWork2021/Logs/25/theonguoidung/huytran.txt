@@ -83,3 +83,7 @@
 28/10/2021 02:46:10 - Thêm mới file https://docs.google.com/spreadsheets/d/18wihTh44iVzcQw6a4-fwdTz69eJTfqYjv8bbru6z3qo/edit#gid=1386834576 vào: loại :4  
 28/10/2021 02:46:27 - Thêm mới file JeeWork_Role.xlsx vào: loại :4  
 28/10/2021 04:31:10 - Add view: view_name_new=Danh sách, viewid=1
+06/11/2021 02:03:05 - Thêm mới dữ liệu công việc: title=new, id_project_team=23572
+10/11/2021 10:04:21 - Thêm mới dữ liệu công việc: title=Pad tạo 2, id_project_team=23404
+12/11/2021 03:10:56 - Chỉnh sửa dữ liệu department/Folder (23834), Chi tiết xem trong log chỉnh sửa chức năng
+12/11/2021 03:12:38 - Chỉnh sửa dữ liệu department/Folder (23834), Chi tiết xem trong log chỉnh sửa chức năng

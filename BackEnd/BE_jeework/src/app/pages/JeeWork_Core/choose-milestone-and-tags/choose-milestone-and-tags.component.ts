@@ -3,12 +3,12 @@ import { TagsService } from './../tags/tags.service';
 import { LayoutUtilsService, MessageType } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
 
 // Angular
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, Inject, Input, Output, EventEmitter, ViewEncapsulation, OnChanges, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, Input, Output, EventEmitter, ViewEncapsulation, OnChanges, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormControl } from '@angular/forms';
 // Material
 import { MatDialog } from '@angular/material/dialog';
 // RxJS
-import { Observable, BehaviorSubject, Subscription, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 // NGRX
 //Models
 
@@ -42,7 +42,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	@Input() Id_key?: number = 0;
 	@Input() auto = false;
 	@Input() Loai?: string = "startdate";
-	@ViewChild('input',{static:true}) input: ElementRef;
+	@ViewChild('input', { static: true }) input: ElementRef;
 	colorNew = "rgb(255, 0, 0)";
 	public filtered: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
 	public FilterCtrl: FormControl = new FormControl();
@@ -136,22 +136,22 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		});
 		this.changeDetectorRefs.detectChanges();
 	}
-	UpdateTag(color,_item, withBack: boolean=false) {
+	UpdateTag(color, _item, withBack: boolean = false) {
 		let tagItem = new TagsModel();
 		tagItem.id_row = _item.id_row;
 		tagItem.color = color;
 		tagItem.title = _item.title;
 		tagItem.id_project_team = this.id_project_Team;
 		this.TagsService.Update(tagItem).subscribe(res => {
-		  if (res && res.status === 1) {
-			this.ItemSelected.emit(true);
-			this.LoadTag();
-		  }
-		  else {
-			this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
-		  }
+			if (res && res.status === 1) {
+				this.ItemSelected.emit(true);
+				this.LoadTag();
+			}
+			else {
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
+			}
 		});
-	  }
+	}
 	createmilestone() { }
 	Update() {
 		this.item_mile.id_project_team = this.id_project_Team;
@@ -219,7 +219,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 	}
 
 	Create() {
-		if(!this.input.nativeElement.value || this.input.nativeElement.value == ''){
+		if (!this.input.nativeElement.value || this.input.nativeElement.value == '') {
 			return;
 		}
 		const ObjectModels = new TagsModel();
@@ -239,7 +239,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 			}
 		});
 	}
-	Delete(id) { 
+	Delete(id) {
 		this.TagsService.Delete(id).subscribe(res => {
 			if (res && res.status === 1) {
 				this.ItemSelected.emit(true);

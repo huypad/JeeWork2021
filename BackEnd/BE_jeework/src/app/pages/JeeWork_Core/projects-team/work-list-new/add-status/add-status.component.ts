@@ -566,7 +566,8 @@ export class AddStatusComponent implements OnInit {
 	}
 
 	resetdata() {
-		this.color_status = 'rgb(187, 181, 181)';
+		// this.color_status = 'rgb(187, 181, 181)';
+		this.color_status = '#848E9E';
 		this.statusname = '';
 		this.statusdesp = '';
 	}

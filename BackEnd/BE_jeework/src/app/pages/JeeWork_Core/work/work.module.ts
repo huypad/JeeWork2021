@@ -35,6 +35,7 @@ const routes: Routes = [
             {
                 path: '',
                 loadChildren: () => import('./work-list/work-list.module').then(m => m.WorkListModule),
+                 pathMatch: 'full',
             },
             {
                 path: 'team',

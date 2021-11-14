@@ -177,7 +177,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         // giao tiếp service
         this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
             if (message) {
-                this.LoadWork();
+                // this.LoadWork();
             }
         });
         // end giao tiếp service
@@ -196,30 +196,19 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 }
             }
             this.DanhsSachCongViec = [];
-            this.LoadWork();
+            // this.LoadWork();
         });
         this.selection = new SelectionModel<WorkModel>(true, []);
-
         this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
             if (res && res.status === 1) {
                 this.list_role = res.data.dataRole;
                 this.IsAdminGroup = res.data.IsAdminGroup;
             }
-
         });
-        this.LoadListStatusByProject();
-        this.GetField();
-        this.mark_tag();
-        this.LoadFilter();
-        this.LoadListAccount();
-        this.LoadDetailProject();
-        this.WeWorkService.ListAllStatusDynamic().subscribe(res => {
-            if (res && res.status === 1) {
-                this.ListAllStatusDynamic = res.data;
-                this.changeDetectorRefs.detectChanges();
-            }
-        });
+        this.BindDataLite();
+        this.LoadWork();
     }
+
     ngOnChanges() {
         if (this.detailWork > 0) {
             this._service.WorkDetail(this.detailWork).subscribe(res => {
@@ -263,6 +252,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             50,
             true
         );
+        // debugger
         this.DanhsSachCongViec = [];
         if (!this.getMystaff) {
             if (this.selectedTab === 2) {
@@ -278,46 +268,61 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                     this.layoutUtilsService.OffWaitingDiv();
                 });
             } else {
-                // this.layoutUtilsService.showWaitingDiv();
+                debugger
+                this.layoutUtilsService.showWaitingDiv();
                 this._service.ListByUserCU(queryParams1).subscribe(res => {
-                    // this.layoutUtilsService.OffWaitingDiv();
+                    this.layoutUtilsService.OffWaitingDiv();
                     if (res && res.status === 1) {
                         this.DanhsSachCongViec = res.data;
                         this.filterDanhSach();
                         this.changeDetectorRefs.detectChanges();
                     }
                 }, (err) => {
-                    // this.layoutUtilsService.OffWaitingDiv();
+                    this.layoutUtilsService.OffWaitingFlow();
                 });
             }
         } else {
-            // this.layoutUtilsService.showWaitingDiv();
+            this.layoutUtilsService.showWaitingDiv();
             this._service.ListByManageCU(queryParams1).subscribe(res => {
-                // this.layoutUtilsService.OffWaitingDiv();
+                this.layoutUtilsService.OffWaitingDiv();
                 if (res && res.status === 1) {
                     this.DanhsSachCongViec = res.data;
                     this.filterDanhSach();
                     this.changeDetectorRefs.detectChanges();
                 }
             }, (err) => {
-                // this.layoutUtilsService.OffWaitingDiv();
+                this.layoutUtilsService.OffWaitingDiv();
             });
         }
     }
-
-    unique(arr) {
-        const formArr = arr.sort();
-        const newArr = [formArr[0]];
-        for (let i = 1; i < formArr.length; i++) {
-            if (formArr[i] !== formArr[i - 1]) {
-                newArr.push(formArr[i]);
+    BindDataLite() {
+        this.LoadListStatusByProject();
+        this.GetField();
+        this.mark_tag();
+        this.LoadFilter();
+        this.LoadListAccount();
+        this.LoadDetailProject();
+        this.WeWorkService.ListAllStatusDynamic().subscribe(res => {
+            if (res && res.status === 1) {
+                this.ListAllStatusDynamic = res.data;
+                this.changeDetectorRefs.detectChanges();
             }
-        }
-        return newArr;
+        });
     }
-
-    clearList() {
-        this.selection = new SelectionModel<WorkModel>(true, []);
+    LoadListStatusByProject() {
+        this.data = [];
+        this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe(res => {
+            if (res && res.status === 1) {
+                this.status_dynamic = res.data;
+                // load ItemFinal
+                const x = this.status_dynamic.find(val => val.IsFinal === true);
+                if (x) {
+                    this.ItemFinal = x.id_row;
+                } else {
+                }
+                this.changeDetectorRefs.detectChanges();
+            }
+        });
     }
     LoadDetailProject() {
         this._service.Detail(this.ID_Project).subscribe(res => {
@@ -334,6 +339,58 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             }
         });
     }
+    getListStatus(team) {
+        if (this.ListAllStatusDynamic) {
+            const item = this.ListAllStatusDynamic.find(x => +x.id_row === team);
+            if (item) {
+                return item.status;
+            }
+        }
+        return [];
+    }
+    LoadListAccount() {
+        const filter: any = {};
+        this.WeWorkService.list_account(filter).subscribe(res => {
+            if (res && res.status === 1) {
+                this.listUser = res.data;
+                this.changeDetectorRefs.detectChanges();
+            }
+            this.options_assign = this.getOptions_Assign();
+        });
+    }
+    GetField() {
+        this.WeWorkService.GetListField(0, 3, false).subscribe(res => {
+            if (res && res.status === 1) {
+                this.listField = res.data;
+
+                const colDelete = ['title', 'id_row', 'id_parent'];
+                colDelete.forEach(element => {
+                    const indextt = this.listField.findIndex(x => x.fieldname === element);
+                    if (indextt >= 0) {
+                        this.listField.splice(indextt, 1);
+                    }
+                });
+                this.changeDetectorRefs.detectChanges();
+            } else {
+                this.layoutUtilsService.showInfo(res.error.message);
+            }
+        });
+    }
+    unique(arr) {
+        const formArr = arr.sort();
+        const newArr = [formArr[0]];
+        for (let i = 1; i < formArr.length; i++) {
+            if (formArr[i] !== formArr[i - 1]) {
+                newArr.push(formArr[i]);
+            }
+        }
+        return newArr;
+    }
+
+    clearList() {
+        this.selection = new SelectionModel<WorkModel>(true, []);
+    }
+
     CheckRoles(roleID: number, id_project_team) {
         const x = this.list_role.find(x => x.id_row === id_project_team);
         if (x) {
@@ -442,33 +499,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.selection.selected.splice(index, 1);
         }
     }
-
-    /** Selects all rows if they are not all selected; otherwise clear selection. */
-    masterToggle() {
-
-    }
-
     SelectedField(item) {
         this.column_sort = item;
         this.LoadWork();
     }
-
-    LoadListStatusByProject() {
-        this.data = [];
-        this.WeWorkService.ListStatusDynamic(this.ID_Project).subscribe(res => {
-            if (res && res.status === 1) {
-                this.status_dynamic = res.data;
-                // load ItemFinal
-                const x = this.status_dynamic.find(val => val.IsFinal === true);
-                if (x) {
-                    this.ItemFinal = x.id_row;
-                } else {
-                }
-                this.changeDetectorRefs.detectChanges();
-            }
-        });
-    }
-
     filterConfiguration2(): any {
         const filter: any = {};
         filter.groupby = this.filter_groupby.value; // assignee
@@ -541,34 +575,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         return '';
     }
-    getListStatus(team) {
-        if (this.ListAllStatusDynamic) {
-            const item = this.ListAllStatusDynamic.find(x => +x.id_row === team);
-            if (item) {
-                return item.status;
-            }
-        }
-        return [];
-    }
-
-    GetField() {
-        this.WeWorkService.GetListField(0, 3, false).subscribe(res => {
-            if (res && res.status === 1) {
-                this.listField = res.data;
-
-                const colDelete = ['title', 'id_row', 'id_parent'];
-                colDelete.forEach(element => {
-                    const indextt = this.listField.findIndex(x => x.fieldname === element);
-                    if (indextt >= 0) {
-                        this.listField.splice(indextt, 1);
-                    }
-                });
-                this.changeDetectorRefs.detectChanges();
-            } else {
-                this.layoutUtilsService.showInfo(res.error.message);
-            }
-        });
-    }
+    
 
     isItemFinal(id) {
         if (id === this.ItemFinal) {
@@ -688,16 +695,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.UpdateByKey(task, 'assign', val.id_nv);
     }
 
-    LoadListAccount() {
-        const filter: any = {};
-        this.WeWorkService.list_account(filter).subscribe(res => {
-            if (res && res.status === 1) {
-                this.listUser = res.data;
-                this.changeDetectorRefs.detectChanges();
-            }
-            this.options_assign = this.getOptions_Assign();
-        });
-    }
+   
 
     loadOptionprojectteam(node) {
         const id_project_team = node.id_project_team;

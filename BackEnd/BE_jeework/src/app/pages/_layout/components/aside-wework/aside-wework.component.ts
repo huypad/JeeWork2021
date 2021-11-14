@@ -243,6 +243,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             }
             this.changeDetectorRefs.detectChanges();
         });
+        this.layoutUtilsService.menuSelectColumns_On_Off();
     }
 
     getSideBarMenuItemClass(item, isMenuActive) {
@@ -462,6 +463,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 this.menuAsideService.loadMenu();
             }
         });
+        this.layoutUtilsService.menuSelectColumns_On_Off();
     }
 
     ClosedProject(item) {
@@ -718,12 +720,15 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                             false
                         );
                         this.changeDetectorRefs.detectChanges();
+                        this.layoutUtilsService.menuSelectColumns_On_Off();
+
                     }
                 });
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
+        this.layoutUtilsService.menuSelectColumns_On_Off();
     }
 
     NavigateTo(item) {

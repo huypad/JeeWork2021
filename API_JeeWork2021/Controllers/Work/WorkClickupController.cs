@@ -4524,7 +4524,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         {
                                             NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
                                         }
-                                        // thông báo cho người được xóa
+                                        // Thông báo cho người được xóa
                                         if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                                         {
                                             // var users = new List<long> { long.Parse(data.value.ToString()) };

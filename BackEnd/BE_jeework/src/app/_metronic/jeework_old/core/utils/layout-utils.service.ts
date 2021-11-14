@@ -1,15 +1,15 @@
-import {MatPaginator} from '@angular/material/paginator';
-import {environment} from 'src/environments/environment';
-import {TranslateService} from '@ngx-translate/core';
-import {HttpClient} from '@angular/common/http';
-import {UpdateStatusDialogComponent} from './../../_shared/update-status-dialog/update-status-dialog.component';
-import {FetchEntityDialogComponent} from './../../_shared/fetch-entity-dialog/fetch-entity-dialog.component';
-import {DeleteEntityDialogComponent} from './../../_shared/delete-entity-dialog/delete-entity-dialog.component';
-import {DocViewerComponent} from './../../_shared/doc-viewer/doc-viewer.component';
-import {Injectable} from '@angular/core';
-import {ActionNotificationComponent} from '../../_shared/action-natification/action-notification.component';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatPaginator } from '@angular/material/paginator';
+import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { UpdateStatusDialogComponent } from './../../_shared/update-status-dialog/update-status-dialog.component';
+import { FetchEntityDialogComponent } from './../../_shared/fetch-entity-dialog/fetch-entity-dialog.component';
+import { DeleteEntityDialogComponent } from './../../_shared/delete-entity-dialog/delete-entity-dialog.component';
+import { DocViewerComponent } from './../../_shared/doc-viewer/doc-viewer.component';
+import { Injectable } from '@angular/core';
+import { ActionNotificationComponent } from '../../_shared/action-natification/action-notification.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 export enum MessageType {
@@ -134,7 +134,7 @@ export class LayoutUtilsService {
     // Method returns instance of MatDialog
     deleteElement(title: string = '', description: string = '', waitDesciption: string = '', doPositiveBtn: string = 'Delete') {
         return this.dialog.open(DeleteEntityDialogComponent, {
-            data: {title, description, waitDesciption, doPositiveBtn},
+            data: { title, description, waitDesciption, doPositiveBtn },
             width: '440px'
         });
     }
@@ -150,7 +150,7 @@ export class LayoutUtilsService {
     // Method returns instance of MatDialog
     updateStatusForCustomers(title, statuses, messages) {
         return this.dialog.open(UpdateStatusDialogComponent, {
-            data: {title, statuses, messages},
+            data: { title, statuses, messages },
             width: '480px'
         });
     }
@@ -201,7 +201,6 @@ export class LayoutUtilsService {
         loader.classList.add(_hide);
 
     }
-
     // Dùng cho flowchart
     showWaitingFlow() {
         let v_idWaiting: string = 'flow-process-waiting-id';//id waiting
@@ -270,7 +269,7 @@ export class LayoutUtilsService {
      */
     updateStatusForEntities(title, statuses, messages) {
         return this.dialog.open(UpdateStatusDialogComponent, {
-            data: {title, statuses, messages},
+            data: { title, statuses, messages },
             width: '480px'
         });
     }
