@@ -61,7 +61,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             _notifier = notifier;
             _logger = logger;
             _producer = producer;
-
         }
         APIModel.Models.Notify Knoti;
         /// <summary>
@@ -4144,7 +4143,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         templateguimail = 12;
                                     else
                                         templateguimail = 33;
-                                    users = getUserTask(cnn, data.id_row);
                                     WeworkLiteController.mailthongbao(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
                                     if (users.Count > 0)
                                     {
@@ -4185,7 +4183,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                     if (dt_user.Rows.Count > 0)
                                     {
-                                        users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                        //users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
                                         int idtemplateguimail = 0;
                                         if (data.value != null)
@@ -4233,7 +4231,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                     if (dt_user.Rows.Count > 0)
                                     {
-                                        users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                        //users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
                                         WeworkLiteController.mailthongbao(data.id_row, users, 28, loginData, ConnectionString, _notifier, _configuration, old);
                                         #region Lấy thông tin để thông báo
@@ -4269,7 +4267,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 #region Tên công việc
                                 case "title":
                                     cnn.EndTransaction();
-                                    users = getUserTask(cnn, data.id_row);
+                                    ////users = getUserTask(cnn, data.id_row);
                                     WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
                                     if (users.Count > 0)
                                     {
@@ -4309,7 +4307,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                     if (dt_user.Rows.Count > 0)
                                     {
-                                        users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                        //users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         string lst_user = string.Join(",", users);
                                         var userProcess = cnn.CreateDataTable($"select * from we_work_process where WorkID = {data.id_row} and StatusID = {data.value} and Checker not in ({ string.Join(",", users) })");
                                         if (userProcess.Rows.Count > 0)
@@ -4366,10 +4364,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 #endregion
                                 #region Kết quả công việc
                                 case "result":
-                                    dt_user = cnn.CreateDataTable("select distinct * from ( select id_nv from v_wework_new where (where) and id_nv is not null union all select CreatedBy from v_wework_new where (where) and id_nv is not null ) US", "(where)", sqlcond);
+                                    dt_user = cnn.CreateDataTable("select distinct * from (select id_nv from v_wework_new where (where) and id_nv is not null union all select CreatedBy from v_wework_new where (where) and id_nv is not null ) US", "(where)", sqlcond);
                                     if (dt_user.Rows.Count > 0)
                                     {
-                                        users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
+                                        //users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
                                         cnn.EndTransaction();
                                         WeworkLiteController.mailthongbao(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
                                         #region Lấy thông tin để thông báo

@@ -252,7 +252,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             50,
             true
         );
-        // debugger
         this.DanhsSachCongViec = [];
         if (!this.getMystaff) {
             if (this.selectedTab === 2) {
@@ -268,7 +267,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                     this.layoutUtilsService.OffWaitingDiv();
                 });
             } else {
-                debugger
                 this.layoutUtilsService.showWaitingDiv();
                 this._service.ListByUserCU(queryParams1).subscribe(res => {
                     this.layoutUtilsService.OffWaitingDiv();
@@ -575,7 +573,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         return '';
     }
-    
+
 
     isItemFinal(id) {
         if (id === this.ItemFinal) {
@@ -695,7 +693,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.UpdateByKey(task, 'assign', val.id_nv);
     }
 
-   
+
 
     loadOptionprojectteam(node) {
         const id_project_team = node.id_project_team;

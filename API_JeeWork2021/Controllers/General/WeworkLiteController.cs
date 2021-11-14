@@ -125,6 +125,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    status = r["status"],
                                    title_full = r["title"] + " [" + r["spacename"] + "]",
                                    locked = r["locked"],
+                                   islate = r["islate"],
                                    position = r["position"],
                                    createdby = r["CreatedBy"],
                                    style = r["CreatedBy"].ToString().Equals(loginData.UserID.ToString()) ? "card-project-for-me" : "card-project"
@@ -170,6 +171,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    status = r["status"],
                                    title_full = r["title"] + " [" + r["spacename"] + "]",
                                    locked = r["locked"],
+                                   islate = r["islate"],
                                    position = r["position"],
                                    createdby = r["CreatedBy"],
                                    style = r["CreatedBy"].ToString().Equals(loginData.UserID.ToString()) ? "card-project-for-me" : "card-project"
@@ -3721,12 +3723,13 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
             }
             string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
-                                    , color, status, locked, d.title as spacename, p.CreatedBy
+                                    , color, status, locked, d.title as spacename, p.CreatedBy,
+                                    iif((p.end_date is not null and p.end_date < GETUTCDATE()) or p.status = 2,1,0) islate 
                                     from we_project_team p
                                     join we_department d on d.id_row = p.id_department
                                     join we_project_team_user u on u.id_project_team = p.id_row
                                      where u.disabled = 0 and id_user = " + userid + " " +
-                                    "and p.disabled = 0 and d.disabled = 0 " +
+                                    "and p.disabled = 0 and d.disabled = 0 and locked = 0 " +
                                     "and idkh=" + customerid + "" + str_where + " order by d.title";
             dt = cnn.CreateDataTable(sql);
             dt.Columns.Add("Position", typeof(int));
@@ -3755,12 +3758,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
             }
             string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
-                                    , color, status, locked, d.title as spacename, p.createdby
+                                    , color, status, locked, d.title as spacename, p.createdby,
+                                    iif((p.end_date is not null and p.end_date < GETUTCDATE()) or p.status = 2,1,0) islate 
                                     from we_project_team p
                                     join we_department d on d.id_row = p.id_department
                                     join we_project_team_user u on u.id_project_team = p.id_row
                                      where u.disabled = 0 and id_user = " + userid + " " +
-                                    "and p.disabled = 0 and d.disabled = 0 and admin = 1 " +
+                                    "and p.disabled = 0 and d.disabled = 0 " +
+                                    "and admin = 1 and locked = 0 " +
                                     "and idkh=" + customerid + "" + str_where + " " +
                                     "order by p.title";
             dt = cnn.CreateDataTable(sql);

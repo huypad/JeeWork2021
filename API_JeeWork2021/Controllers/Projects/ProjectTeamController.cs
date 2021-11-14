@@ -498,7 +498,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , p.loai, p.start_date, p.end_date, p.color, p.template, p.status
                                     , p.stage_description, allow_percent_done, require_evaluate
                                     , evaluate_by_assignner, allow_estimate_time, 
-                                    iif(p.end_date is not null and p.end_date < GETUTCDATE() and p.status = 2,1,0) islate,
+                                    iif((p.end_date is not null and p.end_date < GETUTCDATE()) or p.status = 2,1,0) islate,
                                      stop_reminder, note, is_project, period_type, p.priority
                                     , p.createddate, p.createdby, p.Locked, p.disabled, p.updatedDate
                                     , p.UpdatedBy, p.email_assign_work, p.email_update_work

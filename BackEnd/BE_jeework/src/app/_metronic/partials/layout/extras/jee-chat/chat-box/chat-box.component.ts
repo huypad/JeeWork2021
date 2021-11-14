@@ -412,18 +412,12 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
       }
       value = value.replace("<p><br></p>", "");
       this.messageContent = value;
-
-
-
       const data = this.auth.getAuthFromLocalStorage();
-
       var _token = data.access_token;
       this.messageService.Composing(_token, this.user.user.IdGroup);
     }
     else {
-
       return;
-
     }
   }
 
@@ -466,14 +460,9 @@ export class ChatBoxComponent implements AfterViewInit, OnInit, OnDestroy {
     const file = event.target.files && event.target.files;
     if (file) {
       var reader = new FileReader();
-
-
-
       // if(file.type.indexOf('video')> -1){
       //     this.format = 'video';
       //   }
-
-
       reader.onload = (event) => {
         this.myFilesVideo.push(event.target.result);
         var metaIdx = this.myFilesVideo[0].indexOf(';base64,');

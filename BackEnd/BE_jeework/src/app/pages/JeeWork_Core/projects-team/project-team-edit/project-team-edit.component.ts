@@ -307,7 +307,6 @@ export class ProjectTeamEditComponent implements OnInit {
 		this.weworkService.list_account(filter).subscribe(res => {
 			this.disabledBtn = false;
 			this.selected_Assign = [];
-			debugger
 			if (res && res.status === 1) {
 				this.listUser = res.data;
 				this.listUser.forEach((element) => {

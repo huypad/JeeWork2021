@@ -87,3 +87,4 @@
 10/11/2021 10:04:21 - Thêm mới dữ liệu công việc: title=Pad tạo 2, id_project_team=23404
 12/11/2021 03:10:56 - Chỉnh sửa dữ liệu department/Folder (23834), Chi tiết xem trong log chỉnh sửa chức năng
 12/11/2021 03:12:38 - Chỉnh sửa dữ liệu department/Folder (23834), Chi tiết xem trong log chỉnh sửa chức năng
+14/11/2021 07:09:44 - Thêm mới dữ liệu project_team: title=Dự án JeeHR, id_department=21756, loai=1
