@@ -6062,11 +6062,10 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         , process.checker, process.change_note , statusname, color, position, _status.id_row
                         , _status.type, isdefault, isfinal, isdeadline, istodo, '' as hoten_follower
                         from we_work_process process right join we_status _status
-                        on _status.id_row = process.statusid
-                        where _status.id_project_team = " + id_project_team + " " +
-                                "and _status.disabled = 0 and process.disabled = 0 " +
-                                "and workid = " + workid + " " +
-                                "order by position ";
+                        on _status.id_row = process.statusid and workid = "+ workid + " " +
+                        "and process.disabled = 0 " +
+                        "where _status.id_project_team = " + id_project_team +" " +
+                        "and _status.disabled = 0 order by position ";
                     bool admin_project = false;
                     object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
                     if (project_team != null)
