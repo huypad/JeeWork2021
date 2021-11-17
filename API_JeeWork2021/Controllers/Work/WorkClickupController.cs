@@ -4018,6 +4018,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         val.Add("closed_by", loginData.UserID); // user update isFilnal = 1
                                         data.value = StatusID;
                                         iscomplete = true;
+                                        if (StatusID.Equals(StatusPresent.ToString()))
+                                            return JsonResultCommon.ThanhCong(data);
                                     }
                                 }
                                 else // Xử lý trường hợp người dùng next status
