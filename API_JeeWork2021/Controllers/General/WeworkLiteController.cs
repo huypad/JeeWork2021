@@ -2352,6 +2352,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return true;
             if (IsNotify(_configuration))
             {
+                string image = loginData.customdata.personalInfo.Avatar.Equals("") ? "https://jeework.jee.vn/assets/images/Jee_Work.png" : loginData.customdata.personalInfo.Avatar;
                 string linkmobile = _configuration.GetValue<string>("Mobile:code");
                 string JeeWork_BE = _configuration.GetValue<string>("Host:JeeWork_BE");
                 notify = new Notification(notifier);
@@ -2359,7 +2360,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 noti_mess.AppCode = notify_model.AppCode;
                 noti_mess.Content = notify_model.TitleLanguageKey;
                 noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
-                noti_mess.Img = loginData.customdata.personalInfo.Avatar;
+                noti_mess.Img = image;
+                //noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
                 noti_mess.Link = notify_model.To_Link_WebApp;
                 noti_mess.Domain = JeeWork_BE;
                 noti_mess.oslink = linkmobile + notify_model.To_Link_MobileApp;
