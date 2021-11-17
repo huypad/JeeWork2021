@@ -835,7 +835,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (info is not null)
                     {
-                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _config);
+                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _config);
                     }
                 }
                 #endregion
@@ -883,7 +883,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _config);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _config);
                             }
                         }
                         #endregion

@@ -2732,7 +2732,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -2924,7 +2924,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -3737,7 +3737,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -3783,7 +3783,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -3847,7 +3847,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -3899,7 +3899,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -3952,7 +3952,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -3989,7 +3989,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4063,7 +4063,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
-                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                 }
                                             }
                                             #endregion
@@ -4102,7 +4102,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4197,7 +4197,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
-                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                 }
                                             }
                                             #endregion
@@ -4283,7 +4283,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4374,7 +4374,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4450,7 +4450,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4691,7 +4691,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -4811,7 +4811,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -4986,7 +4986,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                     if (info is not null)
                                     {
-                                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                     }
                                 }
                                 #endregion
@@ -5030,7 +5030,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -5460,7 +5460,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion

@@ -128,7 +128,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
                     DataTable dt_Fields = WeworkLiteController.ListField(int.Parse(query.filter["id_project_team"]), 3, cnn);
-                    var data = GetWorkByProjectsNew(Request.Headers, query.filter["id_project_team"], dt_Fields, ConnectionString, query, loginData, DataAccount);
+                    var data = GetTaskByProjects(Request.Headers, query.filter["id_project_team"], dt_Fields, ConnectionString, query, loginData, DataAccount);
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
             }
@@ -2467,6 +2467,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                        locked = pr["Locked"],
                                                        icon = pr["icon"],
                                                    },
+                                    //Child = displayChild == "0" ? new List<string>() : GetChildTask(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectionString, dt_Users, r["id_row"]),
                                     Childs = from rr in ds.Tables[0].AsEnumerable()
                                              where rr["id_parent"].Equals(r["id_row"]) && (rs || (!rs && (rr["id_nv"].ToString() == loginData.UserID.ToString() || rr["CreatedBy"].ToString() == loginData.UserID.ToString() || r["id_nv"].ToString() == loginData.UserID.ToString())))
                                              select new
@@ -2505,6 +2506,72 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                              updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
                                                              createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                                                          },
+                                                 Followers = from us in ds.Tables[2].AsEnumerable()
+                                                             where rr["id_row"].Equals(us["id_work"]) && us["loai"].ToString().Equals("2")
+                                                             select new
+                                                             {
+                                                                 id_nv = us["id_user"],
+                                                                 hoten = us["hoten"],
+                                                                 username = us["username"],
+                                                                 tenchucdanh = us["tenchucdanh"],
+                                                                 mobile = us["mobile"],
+                                                                 image = us["image"],
+                                                                 createddate = string.Format("{0:dd/MM/yyyy HH:mm}", rr["CreatedDate"]),
+                                                                 updateddate = rr["UpdatedDate"] == DBNull.Value ? "" : rr["UpdatedDate"],
+                                                                 updatedby = rr["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(rr["UpdatedBy"].ToString(), DataAccount),
+                                                                 createdby = rr["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(rr["CreatedBy"].ToString(), DataAccount),
+                                                             },
+                                                 Tags = from t in ds.Tables[1].AsEnumerable()
+                                                        select new
+                                                        {
+                                                            id_row = t["id_row"],
+                                                            title = t["title"],
+                                                            color = t["color"]
+                                                        },
+                                                 Attachments = from dr in ds.Tables[3].AsEnumerable()
+                                                               where dr["object_type"].ToString() == "1"
+                                                               select new
+                                                               {
+                                                                   id_row = dr["id_row"],
+                                                                   path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                                   filename = dr["filename"],
+                                                                   type = dr["type"],
+                                                                   isImage = UploadHelper.IsImage(dr["type"].ToString()),
+                                                                   icon = UploadHelper.GetIcon(dr["type"].ToString()),
+                                                                   size = dr["size"],
+                                                                   // NguoiTao = dr["username"],
+                                                                   Object_Type = dr["object_type"],
+                                                                   CreatedBy = dr["CreatedBy"],
+                                                                   CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", dr["CreatedDate"])
+                                                               },
+                                                 Attachments_Result = from dr in ds.Tables[3].AsEnumerable()
+                                                                      where dr["object_type"].ToString() == "11"
+                                                                      select new
+                                                                      {
+                                                                          id_row = dr["id_row"],
+                                                                          path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                                          filename = dr["filename"],
+                                                                          type = dr["type"],
+                                                                          isImage = UploadHelper.IsImage(dr["type"].ToString()),
+                                                                          icon = UploadHelper.GetIcon(dr["type"].ToString()),
+                                                                          size = dr["size"],
+                                                                          /// NguoiTao = dr["username"],
+                                                                          Object_Type = dr["object_type"],
+                                                                          CreatedBy = dr["CreatedBy"],
+                                                                          CreatedDate = string.Format("{0:dd/MM/yyyy HH:mm}", dr["CreatedDate"])
+                                                                      },
+                                                 Process = from t in ds.Tables[4].AsEnumerable()
+                                                           select new
+                                                           {
+                                                               id_row = t["id_row"],
+                                                               workid = t["workid"],
+                                                               statusname = t["statusName"],
+                                                               color = t["color"],
+                                                               checker = t["checker"],
+                                                               change_note = t["change_note"],
+                                                               position = t["Position"],
+                                                               statusid = t["statusid"],
+                                                           },
                                              }
                                 }).FirstOrDefault();
                     return JsonResultCommon.ThanhCong(data);
@@ -3133,7 +3200,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -3325,7 +3392,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -3894,7 +3961,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         DataTable dt_role = new DataTable();
                         string sql_role = "";
-                        sql_role = "select * from we_role where disabled = 0 where id_row = " + data.id_role;
+                        sql_role = "select * from we_role where disabled = 0 and id_row = " + data.id_role;
                         dt_role = cnn.CreateDataTable(sql_role);
                         if (dt_role.Rows.Count > 0)
                         {
@@ -3957,13 +4024,28 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 {
                                     if ("next".Equals(data.status_type)) // Lấy status tiếp theo
                                     {
-                                        sql_status += " and id_row > (select id_row from we_status where disabled = 0 and id_project_team = @id_project_team and id_row = " + data.value + ") order by IsFinal,id_row";
+                                        DataTable dt_final = new DataTable();
+                                        sql_status += " and Position > (select Position from we_status where disabled = 0 and id_project_team = @id_project_team and id_row = " + data.value + ") order by IsFinal,id_row";
                                         dt_StatusID = cnn.CreateDataTable(sql_status, new SqlConditions() { { "id_project_team", id_project_team.ToString() } });
                                         if (dt_StatusID.Rows.Count > 0)
                                             data.value = dt_StatusID.Rows[0][0].ToString();
                                         else
-                                            StatusID = cnn.ExecuteScalar("select id_row from we_status where disabled = 0 and id_project_team = @id_project_team and isfinal = 1 order by Position", new SqlConditions() { { "id_project_team", dt_infowork.Rows[0]["id_project_team"].ToString() } }).ToString();
-                                        if (StatusID != null)
+                                        {
+                                            string status_final = "select id_row from we_status where disabled = 0 and id_project_team = @id_project_team and isfinal = 1 order by Position";
+                                            SqlConditions conds = new SqlConditions();
+                                            conds.Add("id_project_team", dt_infowork.Rows[0]["id_project_team"].ToString());
+                                            dt_final = cnn.CreateDataTable(status_final, conds);
+                                            if (dt_final.Rows.Count > 0)
+                                            {
+                                                StatusID = dt_final.Rows[0]["id_row"].ToString();
+                                                data.value = StatusID;
+                                                if (StatusID.Equals(StatusPresent.ToString()))
+                                                    return JsonResultCommon.ThanhCong(data);
+                                            }
+                                            else
+                                                StatusID = "0";
+                                        }
+                                        if (!string.IsNullOrEmpty(StatusID))
                                         {
                                             data.value = StatusID;
                                             if (long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + StatusID + " and IsFinal = 1").ToString()) > 0)
@@ -4171,7 +4253,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4219,7 +4301,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4257,7 +4339,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4294,7 +4376,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4354,7 +4436,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
-                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                 }
                                             }
                                             #endregion
@@ -4393,7 +4475,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4427,7 +4509,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4459,7 +4541,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     break;
@@ -4549,7 +4631,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
-                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                 }
                                             }
                                             #endregion
@@ -4627,7 +4709,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4718,7 +4800,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4794,7 +4876,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -5208,7 +5290,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -5328,7 +5410,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -5503,7 +5585,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                     if (info is not null)
                                     {
-                                        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                     }
                                 }
                                 #endregion
@@ -5547,7 +5629,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -5977,7 +6059,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -6027,7 +6109,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         }
         public static DataTable list_status_user(string workid, string id_project_team, UserJWT loginData, string ConnectionString, List<AccUsernameModel> DataAccount)
         {
-
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 try
@@ -6062,9 +6143,9 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         , process.checker, process.change_note , statusname, color, position, _status.id_row
                         , _status.type, isdefault, isfinal, isdeadline, istodo, '' as hoten_follower
                         from we_work_process process right join we_status _status
-                        on _status.id_row = process.statusid and workid = "+ workid + " " +
+                        on _status.id_row = process.statusid and workid = " + workid + " " +
                         "and process.disabled = 0 " +
-                        "where _status.id_project_team = " + id_project_team +" " +
+                        "where _status.id_project_team = " + id_project_team + " " +
                         "and _status.disabled = 0 order by position ";
                     bool admin_project = false;
                     object project_team = cnn.ExecuteScalar("select admin from we_project_team_user where id_project_team = " + id_project_team + " and Disabled = 0 and id_user =" + loginData.UserID);
@@ -7180,7 +7261,7 @@ where u.disabled = 0 and u.loai = 2";
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-        private object GetWorkByProjectsNew(IHeaderDictionary _header, string id_project_team, DataTable dt_fields, string ConnectionString, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount)
+        private object GetTaskByProjects(IHeaderDictionary _header, string id_project_team, DataTable dt_fields, string ConnectionString, QueryParams query, UserJWT loginData, List<AccUsernameModel> DataAccount)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {

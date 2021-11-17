@@ -489,7 +489,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -654,7 +654,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -807,7 +807,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                         #endregion
                     }
@@ -902,7 +902,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         return JsonResultCommon.ThanhCong();

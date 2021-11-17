@@ -385,11 +385,12 @@ export class WorkListNewDetailComponent implements OnInit {
         if (this.loading) {
             this.layoutUtilsService.showWaitingDiv();
         }
-
         this.weworkService.ListStatusDynamic(this.Id_project_team)
             .subscribe((res) => {
                 if (res && res.status === 1) {
                     this.status_dynamic = res.data;
+                    debugger
+                    console.log("Dữ liệu trạng thái", res.data);
                     this.changeDetectorRefs.detectChanges();
                 }
             });

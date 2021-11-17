@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using DPSinfra.Logger;
 using Newtonsoft.Json;
 using DPSinfra.Notifier;
+using JeeWork_Core2021.Controller;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -34,6 +35,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConfiguration _configuration;
         private readonly ILogger<AttachmentController> _logger;
         private INotifier _notifier;
+        public List<AccUsernameModel> DataAccount;
         public AttachmentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<AttachmentController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -81,8 +83,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         switch (data.object_type)
                         {
-                            case 1:
-                                return JsonResultCommon.KhongTonTai("work");
+                            case 1: return JsonResultCommon.KhongTonTai("work");
                             case 2: return JsonResultCommon.KhongTonTai("Topic");
                             case 3: return JsonResultCommon.KhongTonTai("comment");
                             case 11: return JsonResultCommon.KhongTonTai("work");
@@ -91,6 +92,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                             default: break;
                         }
                     }
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
                     data.id_user = iduser;
                     cnn.BeginTransaction();
                     byte[] imageBytes = Convert.FromBase64String(data.item.strBase64);
@@ -123,41 +129,82 @@ namespace JeeWork_Core2021.Controllers.Wework
                     #region Bổ sung tài liệu cho dự án/phòng ban -- Thành viên trong dự án
                     if (data.object_type == 4)
                     {
+                        DataTable dt = new DataTable();
+                        dt = WeworkLiteController.GetInfoProject(data.object_id, loginData, cnn);
                         string sqlproject = "select id_user from we_project_team_user where Disabled = 0 and id_project_team = " + data.object_id;
                         DataTable dtproject = cnn.CreateDataTable(sqlproject);
                         // lấy thông tin người gửi + cc owner phòng ban tương ứng
-                        List<long> dsuser = dtproject.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
-
+                        List<long> list_user = dtproject.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
                         #region Lấy thông tin để thông báo
                         SendNotifyModel noti = WeworkLiteController.GetInfoNotify(19, ConnectionString);
                         #endregion
-                        WeworkLiteController.mailthongbao(data.object_id, dsuser, 19, loginData, ConnectionString, _notifier, _configuration);
-                        #region Notify thiết lập vai trò member
-                        //for (int i = 0; i < users_member.Count; i++)
-                        //{
-                        //    NotifyModel notify_model = new NotifyModel();
-                        //    has_replace = new Hashtable();
-                        //    has_replace.Add("nguoigui", loginData.Username);
-                        //    has_replace.Add("project_team", data.title);
-                        //    notify_model.AppCode = "WORK";
-                        //    notify_model.From_IDNV = loginData.UserID.ToString();
-                        //    notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
-                        //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                        //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
-                        //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
-                        //    notify_model.ReplaceData = has_replace;
-                        //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                        //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                        //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        //    if (info is not null)
-                        //    {
-                        //        bool kq_noti = WeworkLiteController.SendNotify(loginData.Username, info.Username, notify_model, _notifier, _configuration);
-                        //    }
-                        //}
+                        WeworkLiteController.mailthongbao(data.object_id, list_user, 19, loginData, ConnectionString, _notifier, _configuration);
+                        #region Notify upload file cho dự án
+                        for (int i = 0; i < list_user.Count; i++)
+                        {
+                            NotifyModel notify_model = new NotifyModel();
+                            Hashtable has_replace = new Hashtable();
+                            has_replace.Add("nguoigui", loginData.Username);
+                            has_replace.Add("title", dt.Rows[0]["title"].ToString());
+                            notify_model.AppCode = "WORK";
+                            notify_model.From_IDNV = loginData.UserID.ToString();
+                            notify_model.To_IDNV = list_user[i].ToString();
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("project_uploadfile", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$title$", dt.Rows[0]["title"].ToString());
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$filename$", data.item.filename.ToString());
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                            notify_model.ReplaceData = has_replace;
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.object_id.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.object_id.ToString());
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            }
+                        }
                         #endregion
                     }
                     #endregion
+                    if (data.object_type == 1 || data.object_type == 11)
+                    {
+                        var users = WorkClickupController.getUserTask(cnn, data.object_id);
+                        int templateID = 29;
+                        if (data.object_type == 11)
+                            templateID = 30;
+                        DataTable dt = new DataTable();
+                        dt = WeworkLiteController.GetInfoTask(data.object_id, loginData, cnn);
+                        #region Lấy thông tin để thông báo
+                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(templateID, ConnectionString);
+                        #endregion
+                        WeworkLiteController.mailthongbao(data.object_id, users, templateID, loginData, ConnectionString, _notifier, _configuration);
+                        #region Notify upload file cho công việc
+                        for (int i = 0; i < users.Count; i++)
+                        {
+                            NotifyModel notify_model = new NotifyModel();
+                            Hashtable has_replace = new Hashtable();
+                            has_replace.Add("nguoigui", loginData.Username);
+                            has_replace.Add("title", dt.Rows[0]["title"].ToString());
+                            notify_model.AppCode = "WORK";
+                            notify_model.From_IDNV = loginData.UserID.ToString();
+                            notify_model.To_IDNV = users[i].ToString();
+                            if (data.object_type == 1)
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themtailieucongviec", "", "vi");
+                            if (data.object_type == 11)
+                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("work_capnhatfilekqcongviec", "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dt.Rows[0]["title"].ToString());
+                            notify_model.ReplaceData = has_replace;
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.object_id.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.object_id.ToString());
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            }
+                        }
+                        #endregion
+                    }
                     return JsonResultCommon.ThanhCong();
                 }
             }

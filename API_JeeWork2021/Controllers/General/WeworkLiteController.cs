@@ -265,7 +265,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //    "or de.id_row in (select distinct p1.id_department from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
                         //    "where p1.Disabled = 0 and id_user = " + loginData.UserID + ")) and de.Disabled = 0 ");
                         sqlq = sqlq.Replace("(admin)", "left join we_department_owner do on de.id_row = do.id_department " +
-                        "where de.idkh = "+loginData.CustomerID+" and " +
+                        "where de.idkh = " + loginData.CustomerID + " and " +
                         "de.Disabled = 0 and (do.id_user = " + loginData.UserID + ") and do.disabled = 0");
                     }
                     else
@@ -1543,8 +1543,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     join we_department d on d.id_row = p.id_department
                     join we_project_team_user u on u.id_project_team = p.id_row
                     where u.Disabled = 0 and id_user = {loginData.UserID} 
-                    and p.Disabled = 0  and d.Disabled = 0 and  ( d.id_row= {id_department} or d.ParentID = {id_department} )
-                    and IdKH={loginData.CustomerID} )";
+                    and p.Disabled = 0  and d.Disabled = 0 and (d.id_row= {id_department} or d.ParentID = {id_department})
+                    and IdKH={loginData.CustomerID})";
                     query += " order by IsFinal,id_row";
                     DataTable dt = cnn.CreateDataTable(query);
                     if (cnn.LastError != null || dt == null)
@@ -2346,9 +2346,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         //    notify.notification("huypad", title);
         //    return "Oke";
         //}
-        public static bool SendNotify(string sender, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
+        public static bool SendNotify(UserJWT loginData, string receivers, NotifyModel notify_model, INotifier notifier, IConfiguration _configuration)
         {
-            if (sender == receivers)
+            if (loginData.Username == receivers)
                 return true;
             if (IsNotify(_configuration))
             {
@@ -2359,12 +2359,12 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 noti_mess.AppCode = notify_model.AppCode;
                 noti_mess.Content = notify_model.TitleLanguageKey;
                 noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
-                noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
+                noti_mess.Img = loginData.customdata.personalInfo.Avatar;
                 noti_mess.Link = notify_model.To_Link_WebApp;
                 noti_mess.Domain = JeeWork_BE;
                 noti_mess.oslink = linkmobile + notify_model.To_Link_MobileApp;
                 string html = "<h1>Gửi nội dung thông báo</h1>";
-                Task.Run(()=> notify.notification(sender, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration));
+                Task.Run(() => notify.notification(loginData.Username, receivers, notify_model.TitleLanguageKey, html, noti_mess, _configuration));
                 return true;
             }
             return true;
@@ -2543,7 +2543,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             subject = title,
                             html = contents //nội dung html
                         };
-                        Task.Run(()=>_notifier.sendEmail(asyncnotice));
+                        Task.Run(() => _notifier.sendEmail(asyncnotice));
                         MailInfo MInfo = new MailInfo();
                         Task.Run(() => SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
                     }
@@ -2619,7 +2619,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 }
                 if (IsNotify(_configuration))
                 {
-                   Task.Run(()=> NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld));
+                    Task.Run(() => NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld));
                 }
             }
         }
@@ -2832,6 +2832,46 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return false;
             }
         }
+
+        public static bool CheckSendNotify(long id_project, string key, bool IsProject, string ConnectionString)
+        {
+            DataTable dt_Key = new DataTable();
+            string sqlq = "";
+            SqlConditions cond = new SqlConditions();
+            try
+            {
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                    cond.Add("id_row", id_project);
+                    cond.Add("disabled", 0);
+                    //Kiểm tra trạng thái dừng nhắc nhở trước
+                    sqlq = "select stop_reminder from we_project_team where (where)";
+                    dt_Key = cnn.CreateDataTable(sqlq, "(where)", cond);
+                    if (dt_Key.Rows.Count > 0)
+                    {
+                        if ((bool)dt_Key.Rows[0][0])
+                            return true;
+                        else // Nếu không dừng nhắc nhở => Kiểm tra những điều kiện nào được nhắc.
+                        {
+                            sqlq = "select " + key.ToLower() + " as Key_Email from we_project_team where (where)";
+                            dt_Key = cnn.CreateDataTable(sqlq, "(where)", cond);
+                            if (dt_Key.Rows.Count > 0)
+                            {
+                                if ((bool)dt_Key.Rows[0][0])
+                                    return true;
+                            }
+                            return false;
+                        }
+                    }
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         public static DataTable StatusDynamic(long id, List<AccUsernameModel> DataAccount, DpsConnection cnn, bool isDepartment = false)
         {
             DataTable dt = new DataTable();
@@ -3784,6 +3824,48 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         item["Position"] = 2;
                 }
             }
+            return dt;
+        }
+        public static DataTable GetInfoProject(long id_row, UserJWT loginData, DpsConnection cnn)
+        {
+            DataTable dt = new DataTable();
+            string str_where = " p.disabled = 0 and locked = 0 and p.id_row = " + id_row;
+            bool IsAdmin = MenuController.CheckGroupAdministrator(loginData.Username, cnn, loginData.CustomerID);
+            string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
+                                    , color, status, locked, p.title as spacename, p.createdby,
+                                    iif((p.end_date is not null and p.end_date < GETUTCDATE()) or p.status = 2, 1, 0) islate
+                                    from we_project_team p";
+            if (!IsAdmin)
+                sql += @" join we_department d on d.id_row = p.id_department
+                        join we_project_team_user u 
+                        on u.id_project_team = p.id_row 
+                        where u.disabled = 0 
+                        and id_user = " + loginData.UserID + " " +
+                        "and d.disabled = 0 " +
+                        "and idkh=" + loginData.CustomerID + " and " + str_where;
+            else
+            {
+                sql += " where ";
+                str_where += " and p.id_department in (select id_row from we_department where disabled = 0 and idkh=" + loginData.CustomerID + ")";
+                sql += str_where;
+            }
+            dt = cnn.CreateDataTable(sql);
+            if (cnn.LastError != null || dt == null)
+                return new DataTable();
+            return dt;
+        }
+        public static DataTable GetInfoTask(long id_row, UserJWT loginData, DpsConnection cnn)
+        {
+            DataTable dt = new DataTable();
+            string sql = @"select * from v_wework_new 
+                            where id_row = " + id_row + " and Disabled = 0 and " +
+                            "id_project_team in (select id_row from we_project_team " +
+                            "where disabled = 0 and id_department " +
+                            "in (select id_row from we_department " +
+                            "where disabled = 0 and IdKH = " + loginData.CustomerID + "))";
+            dt = cnn.CreateDataTable(sql);
+            if (cnn.LastError != null || dt == null)
+                return new DataTable();
             return dt;
         }
         public static bool insert_processwork(DpsConnection cnn)
