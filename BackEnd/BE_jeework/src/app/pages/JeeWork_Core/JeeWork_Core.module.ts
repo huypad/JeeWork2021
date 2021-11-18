@@ -17,7 +17,6 @@ import { HttpUtilsService } from './../../_metronic/jeework_old/core/utils/http-
 import { DeleteEntityDialogComponent } from './../../_metronic/jeework_old/_shared/delete-entity-dialog/delete-entity-dialog.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
-
 //
 import { ProjectTeamEditStatusComponent } from './projects-team/project-team-edit-status/project-team-edit-status.component';
 import { DepartmentEditNewComponent } from './department/department-edit-new/department-edit-new.component';
@@ -54,7 +53,7 @@ import { DropdownTreeModule, DynamicComponentModule, ImageControlModule } from '
 import { WeWorkService } from './services/wework.services';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
-import { DepartmentEditComponent } from './department/department-edit/List-department-edit.component';
+import { DepartmentEditComponent } from './department/department-edit/department-edit.component';
 import { WorkService } from './work/work.service';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { ListDepartmentService } from './department/Services/List-department.service';

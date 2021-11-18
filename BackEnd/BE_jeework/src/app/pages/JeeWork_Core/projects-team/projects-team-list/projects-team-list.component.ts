@@ -14,7 +14,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 // Models
 
 // import { DynamicSearchFormService } from '../../../../dynamic-search-form/dynamic-search-form.service';
-import { DepartmentEditComponent } from '../../department/department-edit/List-department-edit.component';
+import { DepartmentEditComponent } from '../../department/department-edit/department-edit.component';
 import { DepartmentModel } from '../../department/Model/List-department.model';
 import { ProjectTeamEditComponent } from '../project-team-edit/project-team-edit.component';
 import { ProjectsTeamService } from '../Services/department-and-project.service';

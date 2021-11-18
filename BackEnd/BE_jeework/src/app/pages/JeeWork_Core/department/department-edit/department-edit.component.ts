@@ -18,14 +18,14 @@ import {
 import {
   LayoutUtilsService,
   MessageType,
-} from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+} from "../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 
 // import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { TranslateService } from "@ngx-translate/core";
 import { ReplaySubject, BehaviorSubject } from "rxjs";
 import { Router } from "@angular/router";
 import { ListDepartmentService } from "../Services/List-department.service";
-import { DanhMucChungService } from "./../../../../_metronic/jeework_old/core/services/danhmuc.service";
+import { DanhMucChungService } from "../../../../_metronic/jeework_old/core/services/danhmuc.service";
 import {
   DepartmentModel,
   DepartmentOwnerModel,
@@ -33,8 +33,8 @@ import {
 import { PopoverContentComponent } from "ngx-smart-popover";
 import { WeWorkService } from "../../services/wework.services";
 @Component({
-  selector: "kt-List-department-edit",
-  templateUrl: "./List-department-edit.component.html",
+  selector: "kt-department-edit",
+  templateUrl: "./department-edit.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DepartmentEditComponent implements OnInit {

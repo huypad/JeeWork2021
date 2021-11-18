@@ -20,7 +20,7 @@ import { DanhMucChungService } from '../../../../_metronic/jeework_old/core/serv
 import { TokenStorage } from '../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { SubheaderService } from '../../../../_metronic/partials/layout/subheader/_services/subheader.service';
 
-import { DepartmentEditComponent } from '../department-edit/List-department-edit.component';
+import { DepartmentEditComponent } from '../department-edit/department-edit.component';
 import { DepartmentModel } from '../Model/List-department.model';
 import { QueryParamsModelNew } from '../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { DepartmentDataSource } from '../Model/data-sources/List-department.datasource';
