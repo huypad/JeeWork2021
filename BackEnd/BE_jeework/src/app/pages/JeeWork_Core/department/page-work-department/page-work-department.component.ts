@@ -4,7 +4,7 @@ import { UpdateStatusProjectComponent } from './../../projects-team/update-statu
 import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
 import { DepartmentProjectDataSource } from './../../projects-team/Model/data-sources/department-and-project.datasource';
 import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import { ListDepartmentService } from './../../List-department/Services/List-department.service';
+import { ListDepartmentService } from './../../department/Services/List-department.service';
 import { SortState } from './../../../../_metronic/shared/crud-table/models/sort.model';
 import { PaginatorState } from './../../../../_metronic/shared/crud-table/models/paginator.model';
 import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
@@ -34,7 +34,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { BehaviorSubject, fromEvent, merge, throwError } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Models
-import { DepartmentModel } from '../../List-department/Model/List-department.model';
+import { DepartmentModel } from '../../department/Model/List-department.model';
 import { WeWorkService } from '../../services/wework.services';
 
 

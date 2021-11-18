@@ -7,10 +7,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ListDepartmentComponent } from './List-department.component';
+import { ListDepartmentComponent } from './department.component';
 import { ListDepartmentService } from './Services/List-department.service';
 import { JeeWork_CoreModule } from '../JeeWork_Core.module';
-import { ListDepartmentListComponent } from './List-department-list/List-department-list.component';
+import { ListDepartmentListComponent } from './department-list/department-list.component';
 const routes: Routes = [
 	{
 		path: '',
@@ -23,7 +23,7 @@ const routes: Routes = [
 			{
 				path: ':id',
 				// loadChildren: () => DepartmentTabModule,
-				loadChildren: () => import('./List-department-tab/List-department-tab.module').then(m => m.DepartmentTabModule),
+				loadChildren: () => import('./department-tab/List-department-tab.module').then(m => m.DepartmentTabModule),
 			},
 		]
 	}

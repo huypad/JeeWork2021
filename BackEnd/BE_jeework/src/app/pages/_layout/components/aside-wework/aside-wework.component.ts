@@ -1,4 +1,4 @@
-import { CreatQuickFolderComponent } from './../../../JeeWork_Core/List-department/creat-quick-folder/creat-quick-folder.component';
+import { CreatQuickFolderComponent } from './../../../JeeWork_Core/department/creat-quick-folder/creat-quick-folder.component';
 import { AutomationComponent } from './../../../JeeWork_Core/automation/automation.component';
 import { TemplateCenterComponent } from './../../../JeeWork_Core/template-center/template-center.component';
 import { TemplateCenterUpdateComponent } from './../../../JeeWork_Core/template-center/template-center-update/template-center-update.component';
@@ -9,8 +9,8 @@ import {
 } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectTeamEditStatusComponent } from './../../../JeeWork_Core/projects-team/project-team-edit-status/project-team-edit-status.component';
 import { AddStatusComponent } from './../../../JeeWork_Core/projects-team/work-list-new/add-status/add-status.component';
-import { DepartmentEditNewComponent } from './../../../JeeWork_Core/List-department/department-edit-new/department-edit-new.component';
-import { DepartmentModel } from './../../../JeeWork_Core/List-department/Model/List-department.model';
+import { DepartmentEditNewComponent } from './../../../JeeWork_Core/department/department-edit-new/department-edit-new.component';
+import { DepartmentModel } from './../../../JeeWork_Core/department/Model/List-department.model';
 import { UpdateStatusProjectComponent } from './../../../JeeWork_Core/projects-team/update-status-project/update-status-project.component';
 import { DuplicateProjectComponent } from './../../../JeeWork_Core/projects-team/duplicate-project/duplicate-project.component';
 import { ProjectTeamDuplicateModel } from './../../../JeeWork_Core/projects-team/Model/department-and-project.model';
@@ -18,7 +18,7 @@ import { ClosedProjectComponent } from './../../../JeeWork_Core/projects-team/cl
 import { ProjectTeamEditComponent } from './../../../JeeWork_Core/projects-team/project-team-edit/project-team-edit.component';
 import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
 import { ProjectsTeamService } from './../../../JeeWork_Core/projects-team/Services/department-and-project.service';
-import { ListDepartmentService } from './../../../JeeWork_Core/List-department/Services/List-department.service';
+import { ListDepartmentService } from './../../../JeeWork_Core/department/Services/List-department.service';
 import { OffcanvasOptions } from './../../../../_metronic/jeework_old/core/_base/layout/directives/offcanvas.directive';
 import { MenuOptions } from './../../../../_metronic/jeework_old/core/_base/layout/directives/menu.directive';
 import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';

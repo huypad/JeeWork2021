@@ -1,5 +1,5 @@
 import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import { DepartmentEditNewComponent } from './../../List-department/department-edit-new/department-edit-new.component';
+import { DepartmentEditNewComponent } from './../../department/department-edit-new/department-edit-new.component';
 import { SubheaderService } from './../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
@@ -14,8 +14,8 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 // Models
 
 // import { DynamicSearchFormService } from '../../../../dynamic-search-form/dynamic-search-form.service';
-import { DepartmentEditComponent } from '../../List-department/List-department-edit/List-department-edit.component';
-import { DepartmentModel } from '../../List-department/Model/List-department.model';
+import { DepartmentEditComponent } from '../../department/department-edit/List-department-edit.component';
+import { DepartmentModel } from '../../department/Model/List-department.model';
 import { ProjectTeamEditComponent } from '../project-team-edit/project-team-edit.component';
 import { ProjectsTeamService } from '../Services/department-and-project.service';
 import { ProjectTeamModel } from '../Model/department-and-project.model';

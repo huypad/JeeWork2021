@@ -1,7 +1,7 @@
 import { WorksListGroupComponent } from './projects-team/work-list-new/works-dash-board/works-list-group/works-list-group.component';
 import { WorksDashBoardComponent } from './projects-team/work-list-new/works-dash-board/works-dash-board.component';
 import { DanhsachthumucComponent } from './projects-team/danhsachthumuc/danhsachthumuc.component';
-import { CreatQuickFolderComponent } from './List-department/creat-quick-folder/creat-quick-folder.component';
+import { CreatQuickFolderComponent } from './department/creat-quick-folder/creat-quick-folder.component';
 import { AutomationService } from './automation/automation.service';
 import { TemplateCenterService } from './template-center/template-center.service';
 import { CRUDTableModule } from './../../_metronic/shared/crud-table/crud-table.module';
@@ -20,7 +20,7 @@ import { MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 
 //
 import { ProjectTeamEditStatusComponent } from './projects-team/project-team-edit-status/project-team-edit-status.component';
-import { DepartmentEditNewComponent } from './List-department/department-edit-new/department-edit-new.component';
+import { DepartmentEditNewComponent } from './department/department-edit-new/department-edit-new.component';
 import { AppFocusBlockComponent } from './projects-team/work-list-new/app-focus-block/app-focus-block.component';
 import { AddNewFieldsComponent } from './projects-team/work-list-new/add-new-fields/add-new-fields.component';
 import { ReportByProjectComponent } from './report/report-by-project/report-by-project.component';
@@ -54,10 +54,10 @@ import { DropdownTreeModule, DynamicComponentModule, ImageControlModule } from '
 import { WeWorkService } from './services/wework.services';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
-import { DepartmentEditComponent } from './List-department/List-department-edit/List-department-edit.component';
+import { DepartmentEditComponent } from './department/department-edit/List-department-edit.component';
 import { WorkService } from './work/work.service';
 import { EditorModule } from '@tinymce/tinymce-angular';
-import { ListDepartmentService } from './List-department/Services/List-department.service';
+import { ListDepartmentService } from './department/Services/List-department.service';
 import { DepartmentProjectTabComponent } from './projects-team/department-project-tab/department-project-tab.component';
 
 import { CommentService } from './comment/comment.service';
@@ -70,7 +70,7 @@ import { UpdateByKeyService } from './update-by-keys/update-by-keys.service';
 import { ChooseUsersComponent } from './choose-users/choose-users.component';
 import { ChooseTimeComponent } from './choose-time/choose-time.component';
 import { ChooseMilestoneAndTagComponent } from './choose-milestone-and-tags/choose-milestone-and-tags.component';
-import { milestoneDetailEditComponent } from './List-department/milestone-detail-edit/milestone-detail-edit.component';
+import { milestoneDetailEditComponent } from './department/milestone-detail-edit/milestone-detail-edit.component';
 import { filterEditComponent } from './filter/filter-edit/filter-edit.component';
 import { filterService } from './filter/filter.service';
 import { MyStaffComponent } from './mystaff/mystaff.component';

@@ -21,7 +21,7 @@ import {MenuPhanQuyenServices} from './_metronic/jeework_old/core/_base/layout/s
 import {MenuConfigService} from './_metronic/jeework_old/core/_base/layout/services/menu-config.service';
 import {MenuAsideService} from './_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
 import {HttpUtilsService} from './_metronic/jeework_old/core/_base/crud/utils/http-utils.service';
-import {ListDepartmentService} from './pages/JeeWork_Core/List-department/Services/List-department.service';
+import {ListDepartmentService} from './pages/JeeWork_Core/department/Services/List-department.service';
 import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';

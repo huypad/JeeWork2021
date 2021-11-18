@@ -14,10 +14,10 @@ import { ReplaySubject } from 'rxjs';
 
 import * as moment from 'moment';
 import { WeWorkService } from '../services/wework.services';
-import { ListDepartmentService } from '../List-department/Services/List-department.service';
+import { ListDepartmentService } from '../department/Services/List-department.service';
 import { UpdateWorkModel } from '../work/work.model';
 import { WorkService } from '../work/work.service';
-import { milestoneDetailEditComponent } from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import { milestoneDetailEditComponent } from '../department/milestone-detail-edit/milestone-detail-edit.component';
 import { TranslateService } from '@ngx-translate/core';
 import { TagsEditComponent } from '../tags/tags-edit/tags-edit.component';
 import { MilestoneModel, TagsModel } from '../projects-team/Model/department-and-project.model';

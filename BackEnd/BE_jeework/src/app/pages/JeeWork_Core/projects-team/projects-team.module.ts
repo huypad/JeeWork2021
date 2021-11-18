@@ -24,7 +24,7 @@ import {
 } from 'angular-gantt-schedule-timeline-calendar';
 import { GanttChart2Component } from './gantt-chart-2/gantt-chart-2.component';
 import { DynamicComponentModule } from 'dps-lib';
-import { ListDepartmentService } from '../List-department/Services/List-department.service';
+import { ListDepartmentService } from '../department/Services/List-department.service';
 import { ProjectListTabComponent } from './project-list-tab/project-list-tab.component';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { ProjectTeamRoutingModule } from './project-team-routing.module';

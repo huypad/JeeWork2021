@@ -7,8 +7,8 @@ import {
   Different_StatusesModel,
   MapModel,
   PositionModel,
-} from "./../../List-department/Model/List-department.model";
-import { ListDepartmentService } from "./../../List-department/Services/List-department.service";
+} from "./../../department/Model/List-department.model";
+import { ListDepartmentService } from "./../../department/Services/List-department.service";
 import {
   Component,
   OnInit,
@@ -30,7 +30,7 @@ import { ProjectsTeamService } from "../Services/department-and-project.service"
 import { PopoverContentComponent } from "ngx-smart-popover";
 // import { LayoutUtilsService } from 'app/core/_base/crud';
 
-import { UpdateQuickModel } from "../../List-department/Model/List-department.model";
+import { UpdateQuickModel } from "../../department/Model/List-department.model";
 import {
   CdkDrag,
   CdkDragDrop,

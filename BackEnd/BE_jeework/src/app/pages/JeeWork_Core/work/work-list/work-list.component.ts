@@ -4,7 +4,7 @@ import { MenuHorizontalService } from './../../../../_metronic/jeework_old/core/
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { locale } from './../../../../modules/i18n/vocabs/vi';
 import { MilestoneModel } from './../../projects-team/Model/department-and-project.model';
-import { milestoneDetailEditComponent } from './../../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import { milestoneDetailEditComponent } from './../../department/milestone-detail-edit/milestone-detail-edit.component';
 import { Component, OnInit, OnChanges, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, OnDestroy, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, PlatformLocation } from '@angular/common';

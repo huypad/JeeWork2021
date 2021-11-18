@@ -16,7 +16,7 @@ import { SubheaderService } from './../../../../_metronic/partials/layout/subhea
 
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 
-import { DepartmentModel } from '../../List-department/Model/List-department.model';
+import { DepartmentModel } from '../../department/Model/List-department.model';
 import { ProjectTeamEditComponent } from '../project-team-edit/project-team-edit.component';
 import { ProjectsTeamService } from '../Services/department-and-project.service';
 import { DepartmentProjectDataSource } from '../Model/data-sources/department-and-project.datasource';

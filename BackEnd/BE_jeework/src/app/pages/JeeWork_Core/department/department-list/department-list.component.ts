@@ -1,6 +1,6 @@
-import { DepartmentEditNewComponent } from './../department-edit-new/department-edit-new.component';
-import { MenuAsideService } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import { CommonService } from './../../../../_metronic/jeework_old/core/services/common.service';
+import { DepartmentEditNewComponent } from '../department-edit-new/department-edit-new.component';
+import { MenuAsideService } from '../../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
+import { CommonService } from '../../../../_metronic/jeework_old/core/services/common.service';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 // Material
@@ -12,24 +12,24 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { fromEvent, merge, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService, MessageType } from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ListDepartmentService } from '../Services/List-department.service';
 import { DatePipe } from '@angular/common';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { SubheaderService } from './../../../../_metronic/partials/layout/subheader/_services/subheader.service';
+import { DanhMucChungService } from '../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { TokenStorage } from '../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { SubheaderService } from '../../../../_metronic/partials/layout/subheader/_services/subheader.service';
 
-import { DepartmentEditComponent } from '../List-department-edit/List-department-edit.component';
+import { DepartmentEditComponent } from '../department-edit/List-department-edit.component';
 import { DepartmentModel } from '../Model/List-department.model';
-import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { QueryParamsModelNew } from '../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { DepartmentDataSource } from '../Model/data-sources/List-department.datasource';
 // Services
 // Models
 
 @Component({
-	selector: 'kt-List-department-list',
-	templateUrl: './List-department-list.component.html',
+	selector: 'kt-department-list',
+	templateUrl: './department-list.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
@@ -50,14 +50,7 @@ export class ListDepartmentListComponent implements OnInit {
 	//===============Khai báo value chi tiêt==================
 	item: DepartmentModel;
 	oldItem: DepartmentModel;
-	//================Danh sách trình độ ngoại ngữ========================================
-	itemTrinhDo: any;
-	showBtNV: boolean = false;
-	listQuytrinh: any[] = [];
-	listThongBao: any[] = [];
 	listDept: any[] = [];
-	listquydinh: any[] = [];
-	showTruyCapNhanh: boolean = true;
 	@ViewChild("tenphongban", { static: true }) tenphongban: ElementRef;
 
 	//[=======================================================]

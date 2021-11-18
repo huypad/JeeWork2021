@@ -1,7 +1,7 @@
 import { Auto_Task_Model } from "./../automation-model/automation.model";
 import { AutomationService } from "./../automation.service";
 import { PopoverContentComponent } from "ngx-smart-popover";
-import { ListDepartmentService } from "./../../List-department/Services/List-department.service";
+import { ListDepartmentService } from "./../../department/Services/List-department.service";
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
 import { ProjectsTeamService } from "./../../projects-team/Services/department-and-project.service";

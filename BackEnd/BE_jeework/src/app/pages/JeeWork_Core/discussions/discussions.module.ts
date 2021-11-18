@@ -14,7 +14,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DynamicComponentModule } from 'dps-lib';
-import { ListDepartmentService } from '../List-department/Services/List-department.service';
+import { ListDepartmentService } from '../department/Services/List-department.service';
 // import { JeeHRSubModule } from '../../JeeHRSub.module';
 import { TopicViewComponent } from './topic-view/topic-view.component';
 import { ViewTopicDetailComponent } from './topic-view-detail/topic-view-detail.component';

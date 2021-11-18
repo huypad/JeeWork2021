@@ -1,6 +1,6 @@
 import { UserProfileService } from './../../../_metronic/jeework_old/core/auth/_services/user-profile.service';
 import { TokenStorage } from './../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { milestoneDetailEditComponent } from './../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import { milestoneDetailEditComponent } from './../department/milestone-detail-edit/milestone-detail-edit.component';
 import { MilestoneModel } from './../projects-team/Model/department-and-project.model';
 import { LayoutUtilsService, MessageType } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
 

@@ -10,7 +10,7 @@ import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/uti
 import { DanhMucChungService } from "./../../../../_metronic/jeework_old/core/services/danhmuc.service";
 import { UserService } from "./../Services/user.service";
 import { PaginatorState } from "./../../../../_metronic/shared/crud-table/models/paginator.model";
-import { DepartmentModel } from "./../../List-department/Model/List-department.model";
+import { DepartmentModel } from "./../../department/Model/List-department.model";
 import { SelectionModel } from "@angular/cdk/collections";
 import { SortState } from "./../../../../_metronic/shared/crud-table/models/sort.model";
 import { Router, ActivatedRoute } from "@angular/router";

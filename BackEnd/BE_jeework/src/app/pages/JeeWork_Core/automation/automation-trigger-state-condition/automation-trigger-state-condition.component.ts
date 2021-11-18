@@ -1,5 +1,5 @@
 import { WeWorkService } from "./../../services/wework.services";
-import { ListDepartmentService } from "./../../List-department/Services/List-department.service";
+import { ListDepartmentService } from "./../../department/Services/List-department.service";
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
 import { ProjectsTeamService } from "./../../projects-team/Services/department-and-project.service";

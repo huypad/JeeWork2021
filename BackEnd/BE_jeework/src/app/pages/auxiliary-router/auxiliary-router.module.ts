@@ -63,7 +63,7 @@ import {TypesUtilsService} from '../../_metronic/jeework_old/core/_base/crud';
 import {LayoutUtilsService} from '../../_metronic/jeework_old/core/utils/layout-utils.service';
 import {WeWorkService} from '../JeeWork_Core/services/wework.services';
 import {WorkService} from '../JeeWork_Core/work/work.service';
-import {ListDepartmentService} from '../JeeWork_Core/List-department/Services/List-department.service';
+import {ListDepartmentService} from '../JeeWork_Core/department/Services/List-department.service';
 import {CommentService} from '../JeeWork_Core/comment/comment.service';
 import {UpdateByKeyService} from '../JeeWork_Core/update-by-keys/update-by-keys.service';
 import {filterService} from '../JeeWork_Core/filter/filter.service';

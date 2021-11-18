@@ -18,7 +18,7 @@ import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/se
 // Models
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { DepartmentModel } from '../../List-department/Model/List-department.model';
+import { DepartmentModel } from '../../department/Model/List-department.model';
 import { UserService } from '../Services/user.service';
 import { UserDataSource } from '../data-sources/user.datasource';
 

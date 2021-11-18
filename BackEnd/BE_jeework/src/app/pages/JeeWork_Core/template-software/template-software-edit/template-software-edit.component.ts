@@ -9,9 +9,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {ProjectsTeamService} from '../../projects-team/Services/department-and-project.service';
 import {LayoutUtilsService, MessageType} from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import {WeWorkService} from '../../services/wework.services';
-import {ListDepartmentService} from '../../List-department/Services/List-department.service';
+import {ListDepartmentService} from '../../department/Services/List-department.service';
 import {CdkDrag, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {Different_StatusesModel, MapModel, PositionModel, UpdateQuickModel} from '../../List-department/Model/List-department.model';
+import {Different_StatusesModel, MapModel, PositionModel, UpdateQuickModel} from '../../department/Model/List-department.model';
 import {StatusDynamicModel} from '../../projects-team/Model/status-dynamic.model';
 
 @Component({

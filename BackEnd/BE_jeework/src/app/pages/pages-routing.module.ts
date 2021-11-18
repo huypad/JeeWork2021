@@ -23,7 +23,7 @@ const routes: Routes = [
       {
         path: 'depts',
         loadChildren: () =>
-          import('./JeeWork_Core/List-department/List-department.module').then(
+          import('./JeeWork_Core/department/department.module').then(
             (m) => m.DepartmentModule
           ),
       },

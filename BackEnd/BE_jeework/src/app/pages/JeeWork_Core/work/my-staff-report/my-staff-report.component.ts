@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { UserDataSource } from '../../user/data-sources/user.datasource';
 import { SelectionModel } from '@angular/cdk/collections';
-import { DepartmentModel } from '../../List-department/Model/List-department.model';
+import { DepartmentModel } from '../../department/Model/List-department.model';
 import { tap } from 'rxjs/operators';
 import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { WorkService } from '../work.service';

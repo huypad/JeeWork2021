@@ -11,7 +11,7 @@ import {filterService} from '../../filter/filter.service';
 import {LayoutUtilsService, MessageType} from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import {filterEditComponent} from '../../filter/filter-edit/filter-edit.component';
 import {MilestoneModel} from '../../projects-team/Model/department-and-project.model';
-import {milestoneDetailEditComponent} from '../../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import {milestoneDetailEditComponent} from '../../department/milestone-detail-edit/milestone-detail-edit.component';
 
 @Component({
   selector: 'app-summary',

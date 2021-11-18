@@ -10,7 +10,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {TranslateModule} from '@ngx-translate/core';
 import {ChartsModule} from 'ng2-charts';
 import {ListDepartmentService} from '../Services/List-department.service';
-import {DepartmentTabComponent} from '../List-department-tab/List-department-tab.component';
+import {DepartmentTabComponent} from '../department-tab/List-department-tab.component';
 import {TabMucTieuComponent} from '../tab-muc-tieu/tab-muc-tieu.component';
 import {MilestoneDetailComponent} from '../milestone-detail/milestone-detail.component';
 import {JeeWork_CoreModule} from '../../JeeWork_Core.module';

@@ -34,7 +34,7 @@ import {Moment} from 'moment';
 import * as moment from 'moment';
 import {WorkDataSource} from '../work.datasource';
 import {FormControl} from '@angular/forms';
-import {DepartmentModel} from '../../List-department/Model/List-department.model';
+import {DepartmentModel} from '../../department/Model/List-department.model';
 import {LayoutUtilsService, MessageType} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import {WeWorkService} from '../../services/wework.services';
 import {RepeatedEditComponent} from '../repeated-edit/repeated-edit.component';

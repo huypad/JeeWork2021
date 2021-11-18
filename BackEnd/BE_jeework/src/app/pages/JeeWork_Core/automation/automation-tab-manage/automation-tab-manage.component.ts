@@ -4,7 +4,7 @@ import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/uti
 import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
 import { TemplateCenterService } from './../../template-center/template-center.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ListDepartmentService } from './../../List-department/Services/List-department.service';
+import { ListDepartmentService } from './../../department/Services/List-department.service';
 import { AutomationService } from './../automation.service';
 import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter, Input } from '@angular/core';
 import { AutomationListModel } from '../automation-model/automation.model';

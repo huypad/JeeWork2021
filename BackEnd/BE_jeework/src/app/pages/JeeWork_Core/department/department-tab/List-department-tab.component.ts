@@ -23,7 +23,7 @@ import {SubheaderService} from './../../../../_metronic/partials/layout/subheade
 
 import {ListDepartmentService} from '../Services/List-department.service';
 import {DepartmentModel} from '../Model/List-department.model';
-import {DepartmentEditComponent} from '../List-department-edit/List-department-edit.component';
+import {DepartmentEditComponent} from '../department-edit/List-department-edit.component';
 import {DepartmentDataSource} from '../Model/data-sources/List-department.datasource';
 
 @Component({

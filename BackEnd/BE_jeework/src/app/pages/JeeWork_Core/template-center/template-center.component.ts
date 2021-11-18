@@ -4,12 +4,12 @@ import { FormControl } from "@angular/forms";
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
 import { FileUploadModel, ProjectTeamUserModel } from "./../projects-team/Model/department-and-project.model";
 import { ProjectTeamModel } from "src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model";
-import { ListDepartmentService } from "./../List-department/Services/List-department.service";
+import { ListDepartmentService } from "./../department/Services/List-department.service";
 import {
   DepartmentModel,
   DepartmentOwnerModel,
   DepartmentViewModel,
-} from "./../List-department/Model/List-department.model";
+} from "./../department/Model/List-department.model";
 import { TranslateService } from "@ngx-translate/core";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { filter } from "rxjs/operators";

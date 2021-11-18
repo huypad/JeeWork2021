@@ -32,9 +32,9 @@ import {
     ProjectTeamModel,
     ProjectViewsModel,
 } from './Model/department-and-project.model';
-import {DepartmentModel} from '../List-department/Model/List-department.model';
+import {DepartmentModel} from '../department/Model/List-department.model';
 import {UpdateStatusProjectComponent} from './update-status-project/update-status-project.component';
-import {milestoneDetailEditComponent} from '../List-department/milestone-detail-edit/milestone-detail-edit.component';
+import {milestoneDetailEditComponent} from '../department/milestone-detail-edit/milestone-detail-edit.component';
 import {AutomationComponent} from '../automation/automation.component';
 import {TemplateCenterComponent} from '../template-center/template-center.component';
 import {TemplateCenterUpdateComponent} from '../template-center/template-center-update/template-center-update.component';
