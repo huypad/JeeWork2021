@@ -15,6 +15,7 @@ using System.Data;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using static JeeWork_Core2021.Classes.SendMail;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -46,7 +47,7 @@ namespace JeeWork_Core2021.Classes
             TimerAutoUpdate.Elapsed += new System.Timers.ElapsedEventHandler(Timer60Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
-            //ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
+            //ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
             _notifier = notifier;
         }
         public string MsgError;
@@ -100,7 +101,7 @@ namespace JeeWork_Core2021.Classes
         {
             try
             {
-                string _connection = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
+                string _connection = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration); // #update customerID
                 using (DpsConnection cnn = new DpsConnection(_connection))
                 {
 
@@ -126,13 +127,13 @@ namespace JeeWork_Core2021.Classes
             //try
             //{
             //    #region danh sách customer
-            //    List<long> list_customer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
+            //    List<long> list_customer = JeeWorkLiteController.GetDanhSachCustomerID(_configuration);
             //    if (list_customer != null)
             //    {
             //        //long CustomerID = 1119; // để test
             //        foreach (long CustomerID in list_customer)
             //        {
-            //            _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
+            //            _connection = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
             //            using (DpsConnection cnn = new DpsConnection(_connection))
             //            {
             //                CongViecHetHanTrongNgay(cnn, CustomerID.ToString(), ConnectionString);
@@ -165,7 +166,7 @@ namespace JeeWork_Core2021.Classes
         }
         void Timer60Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            //if (WeworkLiteController.IsNotify(_configuration))
+            //if (JeeWorkLiteController.IsNotify(_configuration))
             {
                 if (Time60IsRun) return;
                 Time60IsRun = true;
@@ -173,14 +174,14 @@ namespace JeeWork_Core2021.Classes
                 try
                 {
                     #region danh sách customer
-                    List<long> list_customer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
+                    List<long> list_customer = JeeWorkLiteController.GetDanhSachCustomerID(_configuration);
                     if (list_customer != null)
                     {
                         foreach (long CustomerID in list_customer)
                         {
                             if (CustomerID > 0)
                             {
-                                _connection = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
+                                _connection = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration); // #update customerID
                                 if (!string.IsNullOrEmpty(_connection))
                                 {
                                     using (DpsConnection cnn = new DpsConnection(_connection))
@@ -209,7 +210,7 @@ namespace JeeWork_Core2021.Classes
                             string content = " Timer60minute. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
                             string error_message = "";
                             string CustemerID1 = "0";
-                            _connection = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
+                            _connection = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
                             using (DpsConnection cnn = new DpsConnection(_connection))
                             {
                                 SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
@@ -343,9 +344,9 @@ namespace JeeWork_Core2021.Classes
                                                 loginData.CustomerID = int.Parse(CustemerID);
                                                 loginData.LastName = "Hệ thống";
                                                 loginData.UserID = 0;
-                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
+                                                JeeWorkLiteController.SendEmail(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
                                                 #region Lấy thông tin để thông báo
-                                                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
+                                                SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                                                 #endregion
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
@@ -438,13 +439,13 @@ namespace JeeWork_Core2021.Classes
                     loginData.LastName = "Hệ thống";
                     loginData.UserID = 0;
                     var users = WorkClickupController.getUserTask(cnn, long.Parse(_item["id_row"].ToString()));
-                    WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);
+                    JeeWorkLiteController.SendEmail(long.Parse(_item["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);
                     //if (_item["id_nv"] != DBNull.Value)
                     if (users.Count > 0)
                     {
                         // var users = new List<long> { long.Parse(_item["id_nv"].ToString()) }; 
                         #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(17, ConnectionString);
+                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(17, ConnectionString);
                         #endregion
                         #region Notify nhắc nhở công việc hết hạn
                         Hashtable has_replace = new Hashtable();
@@ -464,11 +465,11 @@ namespace JeeWork_Core2021.Classes
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", _item["id_row"].ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", _item["id_row"].ToString());
 
-                            List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                            List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -512,10 +513,10 @@ namespace JeeWork_Core2021.Classes
                             loginData.LastName = "Hệ thống";
                             loginData.UserID = 0;
                             #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(39, ConnectionString);
+                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(39, ConnectionString);
                             #endregion
                             #region Notify nhắc nhở dự án hết hạn
-                            WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 39, loginData, ConnectionString, _notifier, _configuration);
+                            JeeWorkLiteController.SendEmail(long.Parse(_item["id_row"].ToString()), users, 39, loginData, ConnectionString, _notifier, _configuration);
                             Hashtable has_replace = new Hashtable();
                             for (int i = 0; i < users.Count; i++)
                             {
@@ -533,11 +534,11 @@ namespace JeeWork_Core2021.Classes
                                 notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", _item["id_row"].ToString());
                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", _item["id_row"].ToString());
 
-                                List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                                List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -567,9 +568,9 @@ namespace JeeWork_Core2021.Classes
             {
                 foreach (DataRow dr in dt.Rows)
                 {
-                    WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 41, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
+                    JeeWorkLiteController.SendEmail(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 41, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(41, ConnectionString);
+                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(41, ConnectionString);
                     #endregion
                     #region Notify
                     Hashtable has_replace = new Hashtable();
@@ -586,11 +587,11 @@ namespace JeeWork_Core2021.Classes
                     notify_model.ReplaceData = has_replace;
                     notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
                     notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
-                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                    List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (info is not null)
                     {
-                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                     }
                     #endregion
                 }
@@ -617,7 +618,7 @@ namespace JeeWork_Core2021.Classes
             {
                 foreach (DataRow dr in dt.Rows)
                 {
-                    WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 45, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
+                    JeeWorkLiteController.SendEmail(long.Parse(dr["id_row"].ToString()), new List<long> { long.Parse(dr["Id_NV"].ToString()) }, 45, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
                 }
             }
         }
@@ -654,9 +655,9 @@ namespace JeeWork_Core2021.Classes
             foreach (DataRow dr in dt.Rows)
             {
                 var users = WorkClickupController.getUserTask(cnn, long.Parse(dr["id_row"].ToString()));  
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
+                JeeWorkLiteController.SendEmail(long.Parse(dr["id_row"].ToString()), users, 17, loginData, ConnectionString, _notifier, _configuration);//thông báo trễ hạn
                 #region Lấy thông tin để thông báo
-                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(17, ConnectionString);
+                SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(17, ConnectionString);
                 #endregion
                 #region Notify công việc trễ hạn
                 for (int i = 0; i < users.Count; i++)
@@ -676,11 +677,11 @@ namespace JeeWork_Core2021.Classes
                     notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
                     notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
 
-                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                    List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (info is not null)
                     {
-                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                     }
                 } 
                 #endregion
@@ -717,10 +718,10 @@ namespace JeeWork_Core2021.Classes
                             loginData.LastName = "Hệ thống";
                             loginData.UserID = 0;
                             #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(39, ConnectionString);
+                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(39, ConnectionString);
                             #endregion
                             #region Notify nhắc nhở dự án hết hạn
-                            WeworkLiteController.mailthongbao(long.Parse(_item["id_row"].ToString()), users, 39, loginData, ConnectionString, _notifier, _configuration);
+                            JeeWorkLiteController.SendEmail(long.Parse(_item["id_row"].ToString()), users, 39, loginData, ConnectionString, _notifier, _configuration);
                             Hashtable has_replace = new Hashtable();
                             for (int i = 0; i < users.Count; i++)
                             {
@@ -737,11 +738,11 @@ namespace JeeWork_Core2021.Classes
                                 notify_model.ReplaceData = has_replace;
                                 notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", _item["id_row"].ToString());
                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", _item["id_row"].ToString());
-                                List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
+                                List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, long.Parse(CustemerID));
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -772,7 +773,7 @@ namespace JeeWork_Core2021.Classes
             loginData.UserID = 0;
             foreach (DataRow dr in dt.Rows)
             {
-                WeworkLiteController.mailthongbao(long.Parse(dr["id_project_team"].ToString()), new List<long> { long.Parse(dr["id_user"].ToString()) }, 20, loginData, ConnectionString, _notifier, _configuration);//thông báo sắp hết hạn dự án
+                JeeWorkLiteController.SendEmail(long.Parse(dr["id_project_team"].ToString()), new List<long> { long.Parse(dr["id_user"].ToString()) }, 20, loginData, ConnectionString, _notifier, _configuration);//thông báo sắp hết hạn dự án
             }
         }
         private void EveryDayReminder(DpsConnection cnn, long CustomerID, string ConnectionString)

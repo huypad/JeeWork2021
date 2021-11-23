@@ -720,7 +720,7 @@ namespace JeeWork_Core2021.Classes
         }
         public static object UpdateCustomData(IConfiguration _configuration, string URL, ObjCustomData objCustomData)
         {
-            string internal_secret = WeworkLiteController.getSecretToken(_configuration);
+            string internal_secret = JeeWorkLiteController.getSecretToken(_configuration);
             var content = new ObjCustomData
             {
                 userId = objCustomData.userId.ToString(),

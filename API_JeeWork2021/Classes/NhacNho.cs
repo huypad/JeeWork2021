@@ -68,16 +68,16 @@ namespace API_JeeWork2021.Classes
             Time10IsRun = true;
             string ham = "Timer10Minute_Elapsed"; string idkh = "0"; string listKH = "";
             string ConnectionString = "";
-            if (WeworkLiteController.IsNotify(_configuration))
+            if (JeeWorkLiteController.IsNotify(_configuration))
             {
                 try
                 {
-                    List<long> DanhSachCustomer = WeworkLiteController.GetDanhSachCustomerID(_configuration);
+                    List<long> DanhSachCustomer = JeeWorkLiteController.GetDanhSachCustomerID(_configuration);
                     foreach (long item in DanhSachCustomer) // có danh sách Customer foreach lấy danh sách tài khoản
                     {
                         if (item > 0)
                         {
-                            ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, item, _configuration);
+                            ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, item, _configuration);
                             if (!string.IsNullOrEmpty(ConnectionString))
                             {
                                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -85,7 +85,7 @@ namespace API_JeeWork2021.Classes
                                     try
                                     {
                                         ham = "DataAccount"; idkh = item.ToString();
-                                        List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
+                                        List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
                                         if (DataAccount != null && !string.IsNullOrEmpty(ConnectionString))
                                         {
                                             foreach (var account in DataAccount)
@@ -132,7 +132,7 @@ namespace API_JeeWork2021.Classes
                         string content = " Timer60minute. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
                         string error_message = "";
                         string CustemerID1 = "0";
-                        ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
+                        ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
                         using (DpsConnection cnn = new DpsConnection(ConnectionString))
                         {
                             SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
@@ -302,7 +302,7 @@ namespace API_JeeWork2021.Classes
         }
         public static void SendTestReminder(IConfiguration _configuration, IProducer _producer, Remider remider)
         {
-            if (WeworkLiteController.IsNotify(_configuration))
+            if (JeeWorkLiteController.IsNotify(_configuration))
             {
                 string TopicCus = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeFlowUpdateReminder");
                 string obj = Newtonsoft.Json.JsonConvert.SerializeObject(remider);

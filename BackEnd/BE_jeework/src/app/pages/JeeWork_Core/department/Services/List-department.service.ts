@@ -68,7 +68,6 @@ export class ListDepartmentService {
     }
 
     findDataProject(queryParams: QueryParamsModelNew): Observable<QueryResultsModel> {
-
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         const httpParams = this.httpUtils.getFindHTTPParams(queryParams);
         const url = API_Project_Team + '/List-by-department';

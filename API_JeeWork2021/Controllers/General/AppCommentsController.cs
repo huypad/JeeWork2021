@@ -52,7 +52,7 @@ namespace JeeAccount.Controllers
                     return Unauthorized(NotFound(MessageReturnHelper.CustomDataKhongTonTai()));
                 }
                 var username = Ulities.GetUsernameByHeader(HttpContext.Request.Headers);
-                string Connectionstring = WeworkLiteController.getConnectionString(ConnectionCache, customData.CustomerID, _configuration);
+                string Connectionstring = JeeWorkLiteController.getConnectionString(ConnectionCache, customData.CustomerID, _configuration);
                 var topicObjectID = await _commentService.GetTopicObjectIDAsync(componentName, Connectionstring);
                 if (!string.IsNullOrEmpty(topicObjectID))
                 {
@@ -85,7 +85,7 @@ namespace JeeAccount.Controllers
             try
             { 
                 var username = Ulities.GetUsernameByHeader(HttpContext.Request.Headers);
-                string Connectionstring = WeworkLiteController.getConnectionString(ConnectionCache, customData.CustomerID, _configuration);
+                string Connectionstring = JeeWorkLiteController.getConnectionString(ConnectionCache, customData.CustomerID, _configuration);
                 var topicObjectID = await _commentService.GetTopicObjectIDAsync(componentName, Connectionstring);
                 if (!string.IsNullOrEmpty(topicObjectID))
                 {

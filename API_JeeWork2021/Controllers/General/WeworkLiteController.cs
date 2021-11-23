@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using DPSinfra.Utils;
 using JeeWork_Core2021.Controller;
 using System.Threading.Tasks;
+using static JeeWork_Core2021.Classes.SendMail;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -36,7 +37,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     /// <summary>
     /// các ds lite dành cho JeeWork
     /// </summary>
-    public class WeworkLiteController : ControllerBase
+    public class JeeWorkLiteController : ControllerBase
     {
         private static Notification notify;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -48,7 +49,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<IHostingEnvironment> _logger;
-        public WeworkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<IHostingEnvironment> logger)
+        public JeeWorkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<IHostingEnvironment> logger)
         {
             notify = new Notification(notifier);
             _hostingEnvironment = hostingEnvironment;
@@ -554,7 +555,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// DS work group lite by id_project_team
         /// </summary>
@@ -592,7 +592,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// DS account
         /// </summary>
@@ -969,7 +968,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Danh sách field mới
         /// </summary>
@@ -1091,7 +1089,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Danh sách giá trị new field
         /// </summary>
@@ -1139,7 +1136,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Danh sách giá trị new field
         /// </summary>
@@ -1587,7 +1583,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Danh sách tất cả status (Không phân biệt project) dùng để load cho Công việc cá nhân
         /// </summary>
@@ -1644,7 +1639,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Danh sách view theo project
         /// </summary>
@@ -1705,7 +1699,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         [Route("my-projects")]
         [HttpGet]
         public object MyProjects([FromQuery] QueryParams query)
@@ -2321,7 +2314,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         [HttpGet]
         [Route("test-getaccount-notoken")]
         public object GetAccountNonuseToken()
@@ -2545,9 +2537,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             subject = title,
                             html = contents //nội dung html
                         };
-                        Task.Run(() => _notifier.sendEmail(asyncnotice));
+                        //Task.Run(() => _notifier.sendEmail(asyncnotice));
                         MailInfo MInfo = new MailInfo();
-                        Task.Run(() => SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
+                        Task.Run(() => Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
                     }
                 }
                 cnn.Disconnect();
@@ -2600,7 +2592,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void mailthongbao(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, IConfiguration _configuration, DataTable dtOld = null)
+        public static void SendEmail(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, IConfiguration _configuration, DataTable dtOld = null)
         {
             if (users == null || users.Count == 0)
                 return;
@@ -2653,7 +2645,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return templatemodel;
             }
         }
-
         /// <summary>
         /// Lấy danh sách cột hiển thị
         /// </summary>
@@ -2834,46 +2825,97 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 return false;
             }
         }
-
-        public static bool CheckSendNotify(long id_project, string key, bool IsProject, string ConnectionString)
+        /// <summary>
+        /// Lấy danh sách user để notify theo điều kiện
+        /// </summary>
+        /// <param name="objectid"></param>
+        /// <param name="actionid">we_log_action - id_row</param>
+        /// <param name="position_notify">vị trí loại gửi thông báo 11000</param>
+        /// <param name="ConnectionString">chuỗi kết nối</param>
+        /// <returns></returns>
+        public static List<AccUsernameModel> GetUserSendNotify(UserJWT loginData, long objectid, long actionid, int position_notify, string ConnectionString)
         {
-            DataTable dt_Key = new DataTable();
-            string sqlq = "";
-            SqlConditions cond = new SqlConditions();
             try
             {
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    cond.Add("id_row", id_project);
-                    cond.Add("disabled", 0);
-                    //Kiểm tra trạng thái dừng nhắc nhở trước
-                    sqlq = "select stop_reminder from we_project_team where (where)";
-                    dt_Key = cnn.CreateDataTable(sqlq, "(where)", cond);
-                    if (dt_Key.Rows.Count > 0)
+                    string sql_action = "", sql_projectmgr = "", sql_creator = "", sql_asssignee = "", sql_follower = "", sql_othermember = "", sql_addminapp = "";
+                    int typeid = 0;
+                    string id_project_team = "";
+                    sql_action = "select * from we_log_action where id_row =" + actionid;
+                    DataTable dt = new DataTable();
+                    DataTable dt_projectmgr = new DataTable();
+                    DataTable dt_works = new DataTable();
+                    DataTable dt_creator = new DataTable();
+                    DataTable dt_asssignee = new DataTable();
+                    DataTable dt_follower = new DataTable();
+                    DataTable dt_othermember = new DataTable();
+                    DataTable dt_addminapp = new DataTable();
+                    dt = cnn.CreateDataTable(sql_action);
+                    if (dt.Rows.Count > 0)
                     {
-                        if ((bool)dt_Key.Rows[0][0])
-                            return true;
-                        else // Nếu không dừng nhắc nhở => Kiểm tra những điều kiện nào được nhắc.
-                        {
-                            sqlq = "select " + key.ToLower() + " as Key_Email from we_project_team where (where)";
-                            dt_Key = cnn.CreateDataTable(sqlq, "(where)", cond);
-                            if (dt_Key.Rows.Count > 0)
+                        typeid = int.Parse(dt.Rows[0]["loai_notify"].ToString());
+                    }
+                    string table_name = "notable";
+                    string column_key = "id_row";
+                    switch (typeid)
+                    {
+                        case 1:
                             {
-                                if ((bool)dt_Key.Rows[0][0])
-                                    return true;
+                                table_name = "we_department";
+                                column_key = "";
+                                break;
                             }
-                            return false;
+                        case 2:
+                            {
+                                table_name = "we_project_team";
+                                column_key = "";
+                                break;
+                            }
+                        case 3:
+                            {
+                                table_name = "we_work";
+                                column_key = "";
+                                // Lấy list project manager
+                                id_project_team = cnn.ExecuteScalar("select id_project_team from we_work where disabled = 0 and id_row =" + objectid).ToString();
+                                if (!string.IsNullOrEmpty(id_project_team))
+                                {
+                                    dt_projectmgr = ListUserByProject(cnn, long.Parse(id_project_team), loginData.CustomerID);
+                                }
+                                // Lấy người tạo công việc, người giao, người làm
+                                dt_works = cnn.CreateDataTable("select createdby, nguoigiao, id_nv from v_wework_new where id_row =" + objectid);
+                                break;
+                            }
+                    }
+                    string sqlq = "", where_project = "";
+                    SqlConditions conds = new SqlConditions();
+                    conds.Add("actionid", actionid);
+                    where_project = " projectid =" + objectid + "";
+                    sqlq = "select rowid, actionid, projectmgr, creator, asssignee, follower, othermember, addminapp, ProjectID " +
+                        "from sys_notifyconfig " +
+                        "where (where) " +
+                        "and (projectid =" + objectid + " or projectid = 0)";
+                    conds.Add("ProjectID", objectid);
+                    dt = new DataTable();
+                    dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+                    if (dt.Rows.Count > 0)
+                    {
+                        string characters = "00000";
+                        characters = dt.Rows[0]["projectmgr"].ToString();
+                        char vitri = characters[position_notify - 1];
+                        if ("1".Equals(vitri.ToString()))
+                        {
+
                         }
                     }
-                    return false;
+                    return new List<AccUsernameModel>();
                 }
             }
             catch (Exception ex)
             {
-                return false;
+                return null;
             }
         }
-
         public static DataTable StatusDynamic(long id, List<AccUsernameModel> DataAccount, DpsConnection cnn, bool isDepartment = false)
         {
             DataTable dt = new DataTable();
@@ -3106,7 +3148,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             }
             return true;
         }
-
         /// <summary>
         /// Khởi tạo cột mặc định cho space / folder
         /// </summary>
@@ -3244,7 +3285,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 return false;
                             }
                             var users = new List<long> { long.Parse(dt.Rows[0]["Checker"].ToString()) };
-                            mailthongbao(WorkID, users, 10, data, ConnectionString, _notifier, _configuration);
+                            SendEmail(WorkID, users, 10, data, ConnectionString, _notifier, _configuration);
                             return true;
                         }
                     }
@@ -4256,7 +4297,6 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             }
             return true;
         }
-
         public static List<long> getFollowerinTask(DpsConnection cnn, int idtemplate, long object_id)
         {
             List<long> listOwner = new List<long>();
@@ -4300,7 +4340,6 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             }
             return new List<long>();
         }
-
         public static string GetColorName(string name)
         {
             switch (name)
@@ -4367,6 +4406,44 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             dt_notify.Columns.Add("isnotify");
             dt_notify.Columns.Add("isemail");
             return dt_notify;
+        }
+        public static DataTable ListUserByProject(DpsConnection cnn, long id_project_team, long customerid)
+        {
+            string sqlq = "";
+            SqlConditions conds = new SqlConditions();
+            sqlq = "select * from we_project_team_user us " +
+                "join we_project_team p " +
+                "on p.id_row = us.id_project_team " +
+                "join we_department de " +
+                "on de.id_row = p.id_department where (where)";
+            conds.Add("p.disabled", 0);
+            conds.Add("us.disabled", 0);
+            conds.Add("de.disabled", 0);
+            conds.Add("us.id_project_team", id_project_team);
+            conds.Add("de.idkh", customerid);
+            return cnn.CreateDataTable(sqlq, "(where)", conds);
+        }
+        public static string GetTableNameNotify(int typeid)
+        {
+            try
+            {
+                if (typeid <= 0)
+                    return "";
+                switch (typeid)
+                {
+                    case 1:
+                        return "we_department";
+                    case 2:
+                        return "we_project_team";
+                    case 3:
+                        return "we_work";
+                    default: return "notable";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
         }
     }
 }

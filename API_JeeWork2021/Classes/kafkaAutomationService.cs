@@ -59,7 +59,7 @@ namespace API_JeeWork2021.Classes
         {
             Console.OutputEncoding = Encoding.UTF8;
             var data = JsonConvert.DeserializeObject<Post_Automation_Model>(value);
-            string connectionString = WeworkLiteController.getConnectionString(_cache, data.customerid, _config);
+            string connectionString = JeeWorkLiteController.getConnectionString(_cache, data.customerid, _config);
             ExecuteAutomation(data, connectionString);
         }
         public bool ExecuteAutomation(Post_Automation_Model data, string connectionString)
@@ -118,7 +118,7 @@ namespace API_JeeWork2021.Classes
 join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where autoid =" + autoid + "");
                                     if (dt_sub.Rows.Count > 0)
                                     {
-                                        process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn,connectionString, data.customerid);
+                                        process_automation_subaction(dt_sub, get_list_id(dt_execute), cnn, connectionString, data.customerid);
                                     }
                                     break;
                                 case 4: // comment 
@@ -151,19 +151,19 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     goto case 14;
                                 case 13:
                                 case 14:
-                                    doitinhtrang(columnname, data_auto, get_list_id(dt_execute), cnn,connectionString, data.customerid,TemplateID,TitleKey);
+                                    doitinhtrang(columnname, data_auto, get_list_id(dt_execute), cnn, connectionString, data.customerid, TemplateID, TitleKey);
                                     break;
                                 case 5:
                                     TitleKey = "ww_xoacongviec";
                                     TemplateID = 15;
-                                    doitinhtrang("Disabled", "1", get_list_id(dt_execute), cnn,connectionString, data.customerid, TemplateID, TitleKey);
+                                    doitinhtrang("Disabled", "1", get_list_id(dt_execute), cnn, connectionString, data.customerid, TemplateID, TitleKey);
                                     break;
                                 case 6:
                                     DuplicateTask(data_auto, get_list_id(dt_execute), cnn);
                                     break;
                                 case 2:
                                 case 3:
-                                    CreatedTask(dr["rowid"].ToString(), data.userid, cnn,connectionString,data.customerid);
+                                    CreatedTask(dr["rowid"].ToString(), data.userid, cnn, connectionString, data.customerid);
                                     break;
                                 default:
                                     break;
@@ -185,7 +185,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 list_id_task = list_id_task.Substring(1);
             return list_id_task;
         }
-        public bool process_automation_subaction(DataTable dt_sub, string condition_update, DpsConnection cnn,string ConnectionString,long CustomerID)
+        public bool process_automation_subaction(DataTable dt_sub, string condition_update, DpsConnection cnn, string ConnectionString, long CustomerID)
         {
             var sub3 = dt_sub.AsEnumerable().Where(x => x["subactionid"].ToString() == "3").FirstOrDefault();
             if (sub3 != null && sub3["value"].ToString() == "true")
@@ -195,7 +195,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                 for (int i = 0; i < listTask.Length; i++)
                 {
                     #region lấy danh sách tài khoản trước khi xóa để gửi thông báo
-                    DataTable dt = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = "+ listTask[i]);
+                    DataTable dt = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i]);
                     #endregion
                     Hashtable val2 = new Hashtable();
                     val2["UpdatedDate"] = UTCdate.Date;
@@ -203,14 +203,14 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                     val2["Disabled"] = 1;
                     SqlConditions cond = new SqlConditions();
                     cond.Add("id_work", listTask[i]);
-                    cond.Add("loai", 1 );
+                    cond.Add("loai", 1);
                     if (cnn.Update(val2, cond, sub3["tablename"].ToString()) < 0)
                     {
                         cnn.RollbackTransaction();
                         return false;
                     }
                     cnn.EndTransaction();
-                    if(dt.Rows.Count > 0 )
+                    if (dt.Rows.Count > 0)
                     {
                         foreach (DataRow dr in dt.Rows)
                         {
@@ -237,7 +237,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                 for (int i = 0; i < listTask.Length; i++)
                                 {
                                     #region kiểm tra người đó có trong công việc hay chưa
-                                    DataTable dtu = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i] + " and id_user = "+ item);
+                                    DataTable dtu = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and loai = 1 and id_work = " + listTask[i] + " and id_user = " + item);
                                     #endregion
                                     SqlConditions sqlcond123 = new SqlConditions();
                                     sqlcond123.Add("id_work", listTask[i]);
@@ -264,7 +264,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     if (dtu.Rows.Count == 0)
                                     {
                                         var users = new List<long> { long.Parse(item) };
-                                        SendNotifyAndMailAssign( 10 , ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_assign");
+                                        SendNotifyAndMailAssign(10, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_assign");
                                     }
                                 }
                             }
@@ -288,7 +288,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     {
                                         cnn.RollbackTransaction();
                                         return false;
-                                    } 
+                                    }
                                     cnn.EndTransaction();
                                     if (dtu.Rows.Count > 0)
                                     {
@@ -384,8 +384,8 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                                     // get danh sách người làm công việc đó và người theo dõi
                                     var sql = $@"select * from we_work_user where id_work = {listTask[i]} and Disabled = 0";
                                     DataTable dtu = cnn.CreateDataTable(sql);
-                                    if(dtu.Rows.Count > 0)
-                                    { 
+                                    if (dtu.Rows.Count > 0)
+                                    {
                                         var users = dtu.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
                                         SendNotifyAndMailAssign(34, ConnectionString, users, long.Parse(listTask[i]), CustomerID, "ww_capnhattag");
                                     }
@@ -500,7 +500,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             }
             return true;
         }
-        public bool doitinhtrang(string columnname, string data, string condition_update, DpsConnection cnn, string ConnectionString, long CustomerID, int TemplateID,string TitleKey)
+        public bool doitinhtrang(string columnname, string data, string condition_update, DpsConnection cnn, string ConnectionString, long CustomerID, int TemplateID, string TitleKey)
         {
             if (columnname == "start_date" || columnname == "deadline")
             {
@@ -553,7 +553,7 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
                     cnn.RollbackTransaction();
                     return false;
                 }
-                 
+
                 if (columnname == "id_project_team")
                 { // chuyển qua dự án mới thì update lại status
                     string sqlq1 = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + data + "),0)";
@@ -645,10 +645,10 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             return true;
         }
 
-        public bool CreatedTask(string AutoID, long userid, DpsConnection cnn,string ConnectionString, long CustomerID)
+        public bool CreatedTask(string AutoID, long userid, DpsConnection cnn, string ConnectionString, long CustomerID)
         {
             string sqlq = @"select at.* from Automation_Task at
-where AutoID = " + AutoID+ " order by RowID desc";
+where AutoID = " + AutoID + " order by RowID desc";
             DataTable dt = cnn.CreateDataTable(sqlq);
             if (cnn.LastError != null || dt.Rows.Count == 0)
             {
@@ -743,7 +743,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
             }
             #endregion
             //Insert người follow cho từng tình trạng của công việc
-            DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+            DataTable dt_status = JeeWorkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
             if (dt_status.Rows.Count > 0)
             {
                 foreach (DataRow item in dt_status.Rows)
@@ -781,7 +781,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
                 }
             }
 
-            cnn.EndTransaction(); 
+            cnn.EndTransaction();
             var users = dtUser.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
             SendNotifyAndMailAssign(10, ConnectionString, users, weworkID, CustomerID, "ww_assign");
             return true;
@@ -795,7 +795,7 @@ where AutoID = " + AutoID+ " order by RowID desc";
             loginData.UserID = 0;
 
             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
             {
                 var users = new List<long> { id_user };
                 int idtemplatemail = 0;
@@ -807,9 +807,9 @@ where AutoID = " + AutoID+ " order by RowID desc";
                 {
                     idtemplatemail = 22;
                 }
-                WeworkLiteController.mailthongbao(id_work, users, idtemplatemail, loginData, ConnectionString, _notifier, _config);
+                JeeWorkLiteController.SendEmail(id_work, users, idtemplatemail, loginData, ConnectionString, _notifier, _config);
                 #region Lấy thông tin để thông báo
-                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
+                SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
                 #endregion
                 #region Notify assign
                 Hashtable has_replace = new Hashtable();
@@ -831,11 +831,11 @@ where AutoID = " + AutoID+ " order by RowID desc";
                     notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id_work.ToString());
                     notify_model.To_Link_WebApp = noti.link.Replace("$id$", id_work.ToString());
 
-                    List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_config, CustemerID);
+                    List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_config, CustemerID);
                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                     if (info is not null)
                     {
-                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _config);
+                        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _config);
                     }
                 }
                 #endregion
@@ -853,14 +853,14 @@ where AutoID = " + AutoID+ " order by RowID desc";
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 DataTable dt_work = cnn.CreateDataTable("select * from we_work where disabled = 0 and id_row = " + id_work);
-                if(dt_work.Rows.Count > 0)
+                if (dt_work.Rows.Count > 0)
                 {
                     #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                    if (WeworkLiteController.CheckNotify_ByConditions(long.Parse(dt_work.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
+                    if (JeeWorkLiteController.CheckNotify_ByConditions(long.Parse(dt_work.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
                     {
-                        WeworkLiteController.mailthongbao(id_work, users, idtemplatemail, loginData, ConnectionString, _notifier, _config);
+                        JeeWorkLiteController.SendEmail(id_work, users, idtemplatemail, loginData, ConnectionString, _notifier, _config);
                         #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
+                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
                         #endregion
                         #region Notify assign
                         Hashtable has_replace = new Hashtable();
@@ -879,19 +879,18 @@ where AutoID = " + AutoID+ " order by RowID desc";
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id_work.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", id_work.ToString());
 
-                            List<AccUsernameModel> DataAccount = WeworkLiteController.GetDanhSachAccountFromCustomerID(_config, CustemerID);
+                            List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_config, CustemerID);
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _config);
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _config);
                             }
                         }
                         #endregion
                     }
                     #endregion
                 }
-
-            }            
+            }
         }
     }
 }

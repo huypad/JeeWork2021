@@ -13,6 +13,7 @@ using JeeWork_Core2021.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using DPSinfra.Notifier;
+using System.Linq;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -523,116 +524,116 @@ namespace JeeWork_Core2021.Classes
                     ErrorMessage = "Chưa cấu hình email";
                     return false;
                 }
-                SmtpClient s = new SmtpClient(smptclient, port);
-                s.UseDefaultCredentials = false;
-                s.EnableSsl = enablessl;
-                s.Credentials = new NetworkCredential(username, password);
-                s.DeliveryMethod = SmtpDeliveryMethod.Network;
-                MailMessage m = new MailMessage();
-                string guiden = "", guikem = "";
-                for (int i = 0; i < mailTo.Count; i++)
+                Task.Factory.StartNew(() =>
                 {
-                    m.To.Add(mailTo[i]);
-                    guiden += "," + mailTo[i];
-                }
-                m.From = new MailAddress(email);
-                if ((!"".Equals(AttacheFile)) && (File.Exists(AttacheFile)))
-                {
-                    Attachment att = new Attachment(AttacheFile);
-                    m.Attachments.Add(att);
-                }
-                for (int i = 0; i < cc.Count; i++)
-                {
-                    m.CC.Add(cc[i]);
-                    guikem += "," + cc[i];
-                }
-                m.IsBodyHtml = true;
-                m.Subject = title;
-                m.Body = contents;
-                if (!"".Equals(guiden)) guiden = guiden.Substring(1);
-                DpsConnection cnn1 = new DpsConnection(ConnectionString);
-                try
-                {
-                    s.Send(m);
-                    emailMessage asyncnotice = new emailMessage()
+                    SmtpClient s = new SmtpClient(smptclient, port);
+                    s.UseDefaultCredentials = false;
+                    s.EnableSsl = enablessl;
+                    s.Credentials = new NetworkCredential(username, password);
+                    s.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    MailMessage m = new MailMessage();
+                    string guiden = "", mailcc = "";
+                    for (int i = 0; i < mailTo.Count; i++)
                     {
-                        CustomerID = long.Parse(CustemerID),
-                        access_token = "",
-                        //from = "huypaddaica@gmail.com",
-                        //to = "huytv@dps.com.vn",
-                        to = guiden, //
-                        subject = title,
-                        html = contents //nội dung html
-                    };
-                    _notifier.sendEmail(asyncnotice);
-                    //Lưu lại email đã gửi
-                    Hashtable val = new Hashtable();
-                    val.Add("MailTo", guiden);
-                    val.Add("Title", title);
-                    if (!"".Equals(guikem)) guikem = guikem.Substring(1);
-                    val.Add("Cc", guikem);
-                    val.Add("Contents", contents);
-                    val.Add("SendTime", UTCdate.Date);
-                    val.Add("SendDate", DateTime.Today);
-                    val.Add("SendFrom", email);
-                    val.Add("CustemerID", CustemerID);
-                    cnn1.Insert(val, "Sys_SendMail");
-                    cnn1.Disconnect();
-                }
-                catch (Exception ex)
-                {
-                    if (SaveCannotSend)
+                        m.To.Add("huytranvan1404@gmail.com");
+                        guiden += "," + mailTo[i];
+                    }
+                    m.From = new MailAddress(email);
+                    if ((!"".Equals(AttacheFile)) && (File.Exists(AttacheFile)))
                     {
+                        Attachment att = new Attachment(AttacheFile);
+                        m.Attachments.Add(att);
+                    }
+                    for (int i = 0; i < cc.Count; i++)
+                    {
+                        //m.CC.Add(cc[i]);
+                        mailcc += "," + cc[i];
+                    }
+                    m.IsBodyHtml = true;
+                    m.Subject = title;
+                    m.Body = contents + guiden + mailcc;
+                    if (!"".Equals(guiden)) guiden = guiden.Substring(1);
+                    DpsConnection cnn1 = new DpsConnection(ConnectionString);
+                    try
+                    {
+                        s.Send(m);
+                        emailMessage asyncnotice = new emailMessage()
+                        {
+                            CustomerID = long.Parse(CustemerID),
+                            access_token = "",
+                            to = guiden,
+                            cc = string.Join(",", mailcc.Split(',').Where(x => !string.IsNullOrEmpty(x))),
+                            subject = title,
+                            html = contents //nội dung html
+                        };
+                        _notifier.sendEmail(asyncnotice);
+                        //Lưu lại email đã gửi
                         Hashtable val = new Hashtable();
+                        val.Add("MailTo", guiden);
                         val.Add("Title", title);
-                        val.Add("Email", guiden);
+                        if (!"".Equals(mailcc)) mailcc = mailcc.Substring(1);
+                        val.Add("cc", mailcc);
                         val.Add("Contents", contents);
-                        val.Add("LastSend", UTCdate.Date);
-                        val.Add("Lan", 1);
-                        val.Add("Error", ex.Message);
+                        val.Add("SendTime", UTCdate.Date);
+                        val.Add("SendDate", DateTime.Today);
+                        val.Add("SendFrom", email);
                         val.Add("CustemerID", CustemerID);
-                        if (!"".Equals(guikem)) guikem = guikem.Substring(1);
-                        val.Add("cc", guikem);
-                        cnn1.Insert(val, "Tbl_emailchuaguiduoc");
+                        cnn1.Insert(val, "Sys_SendMail");
                         cnn1.Disconnect();
                     }
-                    ErrorMessage = "Cấu hình sai email gửi đi";
-                    return false;
-                }
+                    catch (Exception ex)
+                    {
+                        if (SaveCannotSend)
+                        {
+                            Hashtable val = new Hashtable();
+                            val.Add("title", title);
+                            val.Add("Email", guiden);
+                            val.Add("Contents", contents);
+                            val.Add("LastSend", UTCdate.Date);
+                            val.Add("Lan", 1);
+                            val.Add("Error", ex.Message);
+                            val.Add("CustemerID", CustemerID);
+                            if (!"".Equals(mailcc)) mailcc = mailcc.Substring(1);
+                            val.Add("cc", mailcc);
+                            cnn1.Insert(val, "Tbl_emailchuaguiduoc");
+                            cnn1.Disconnect();
+                        }
+                    }
+                });
             }
             ErrorMessage = "";
             return true;
         }
-    }
-    public class MailInfo
-    {
-        public MailInfo(string CustemerID, DpsConnection cnn)
+        public class MailInfo
         {
-        }
-        public MailInfo()
-        {
-            InfoMailTest();
-        }
-        public MailInfo(string CustemerID, string ConnectionString)
-        {
-            using (DpsConnection cnn = new DpsConnection(ConnectionString))
+            public MailInfo(string CustemerID, DpsConnection cnn)
             {
             }
+            public MailInfo()
+            {
+                InfoMailTest();
+            }
+            public MailInfo(string CustemerID, string ConnectionString)
+            {
+                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                {
+                }
+            }
+            private void InfoMailTest()
+            {
+                Email = "hrm@dps.com.vn";
+                UserName = "hrm@dps.com.vn";
+                SmptClient = "smtp.gmail.com";
+                EnableSSL = true;
+                Port = 587;
+                Password = "3mailHRm@dps";
+            }
+            public string Email;
+            public string UserName;
+            public string SmptClient;
+            public string Password;
+            public bool EnableSSL;
+            public int Port;
         }
-        private void InfoMailTest()
-        {
-            Email = "hrm@dps.com.vn";
-            UserName = "hrm@dps.com.vn";
-            SmptClient = "smtp.gmail.com";
-            EnableSSL = true;
-            Port = 587;
-            Password = "3mailHRm@dps";
-        }
-        public string Email;
-        public string UserName;
-        public string SmptClient;
-        public string Password;
-        public bool EnableSSL;
-        public int Port;
     }
 }

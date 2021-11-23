@@ -27,7 +27,7 @@ import { ProjectsTeamService } from './../../Services/department-and-project.ser
 import { DOCUMENT, DatePipe } from '@angular/common';
 import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
-import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges, HostListener } from '@angular/core';
 import * as moment from 'moment';
 import { ReplaySubject, SubscriptionLike } from 'rxjs';
 import { CommunicateService } from '../work-list-new-service/communicate.service';
@@ -230,6 +230,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        debugger
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
@@ -749,8 +750,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             }
         });
     }
+
     ViewDetai(item) {
         this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
+        debugger
     }
     f_convertDate(v: any) {
         if (v != '' && v != undefined) {
@@ -1236,6 +1239,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 break;
         }
         this.layoutUtilsService.showError(txtError);
+        return false;
+    }
+    @HostListener('window:beforeunload', ['$event'])
+    beforeunloadHandler(event) {
         return false;
     }
 }

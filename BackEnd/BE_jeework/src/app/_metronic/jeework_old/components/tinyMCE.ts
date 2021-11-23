@@ -3,7 +3,7 @@ import { environment } from 'src/environments/environment';
 
 const tinyMCE = {
     // plugins: 'autoresize autosave paste print code preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
-    plugins: 'link image code paste table lists preview autolink',
+    plugins: 'link image code paste table lists preview autolink autosave',
     toolbar: 'undo redo | bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table | removeformat code paste pastetext preview ',
     image_uploadtab: true,
     paste_block_drop: true,
@@ -33,7 +33,8 @@ const tinyMCE = {
     // images_upload_base_path: '/images',
     // images_upload_credentials: true,
     autosave_ask_before_unload: true, // Tự động save
-    autosave_interval: '30s', // thời gian tự động save
+    autosave_interval: '10s', // thời gian tự động save
+    autosave_restore_when_empty: true,
     // apiKey : "lvp9xf6bvvm3nkaupm67ffzf50ve8femuaztgg7rkgkmsws3",
     images_upload_handler: function (blobInfo, success, failure) {
         var xhr, formData;

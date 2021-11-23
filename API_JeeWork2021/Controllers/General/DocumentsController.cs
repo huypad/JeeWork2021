@@ -59,17 +59,17 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -152,7 +152,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                select new
                                {
                                    id_row = dr["id_row"],
-                                   path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                   path = JeeWorkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                    filename = dr["filename"],
                                    type = dr["type"],
                                    isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -188,7 +188,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string sqlq = "";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -236,7 +236,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_attachment')").ToString());
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 21, idc, iduser, data.item.filename))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 21, idc, iduser, data.item.filename))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData , ControllerContext);
@@ -245,7 +245,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //cnn.EndTransaction();
 
                     //if (data.email)
-                    //WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData);
+                    //JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData);
                     //data.id_row = idc;
                     return JsonResultCommon.ThanhCong(data);
                 }

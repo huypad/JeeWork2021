@@ -75,7 +75,7 @@ namespace JeeWork_Core2021.ConsumerServices
                 Console.WriteLine(message);
                 if (kq.AppCode.Contains("WORK"))
                 {
-                    string conn = WeworkLiteController.getConnectionString(_cache, kq.CustomerID, _config); ;
+                    string conn = JeeWorkLiteController.getConnectionString(_cache, kq.CustomerID, _config); ;
                     List<string> roles_admin = ConsumerHelper.getRoles(conn);
                     Console.WriteLine("New customer has in app");
                     Console.WriteLine(Common.GetDateTime());

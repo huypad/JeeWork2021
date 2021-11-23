@@ -96,13 +96,13 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
                 strP += " and p." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
                 strP += " and p." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
 
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
@@ -136,18 +136,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_parent is null ";
                     }
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -252,12 +252,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and p." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and p." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -276,7 +276,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                         strW += queryhoanthanh;
                     }
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
@@ -343,12 +343,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and m." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and m." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -361,7 +361,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     cond.Add("status", query.filter["status"]);
                 }
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
@@ -437,12 +437,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
                     strW += " and id_project_team=@id_projectteam";
@@ -465,7 +465,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -585,12 +585,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     //strW += " and id_department=@id_department";
@@ -617,7 +617,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
 
@@ -719,12 +719,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     //strW += " and id_department=@id_department";
@@ -752,7 +752,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -841,12 +841,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 {
                     strW += " and id_department=@id_department";
@@ -873,16 +873,16 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1028,16 +1028,16 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (query == null)
                     query = new QueryParams();
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1060,12 +1060,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                    cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                    cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
                         strW += " and id_project_team=@id_projectteam";
@@ -1255,12 +1255,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                 {
                     strW += " and id_project_team=@id_projectteam";
@@ -1283,7 +1283,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long hoanthanh = GetStatusComplete(int.Parse(query.filter["id_projectteam"].ToString()), cnn);
@@ -1348,18 +1348,18 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (query == null)
                     query = new QueryParams();
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1382,12 +1382,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                    cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                    cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_department"]))
                     {
                         //strW += " and id_department=@id_department";
@@ -1488,7 +1488,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                    {
                                        tong = r["tong"],
                                        ht = r["ht"],
-                                       percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"])
+                                       percentage = JeeWorkLiteController.calPercentage(r["tong"], r["ht"])
                                    }
                                };
                     if (!string.IsNullOrEmpty(query.filter["istop"]) && int.Parse(query.filter["istop"].ToString()) == 1)
@@ -1521,18 +1521,18 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (query == null)
                     query = new QueryParams();
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1556,12 +1556,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     if (!from1)
                         return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                     strW += " and w." + collect_by + ">=@from";
-                    cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                    cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     if (!to1)
                         return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     strW += " and w." + collect_by + "<@to";
-                    cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                    cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     if (!string.IsNullOrEmpty(query.filter["id_projectteam"]))
                     {
                         strW += " and id_project_team=@id_projectteam";
@@ -1646,7 +1646,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                                    hoten = r["hoten"],
                                    username = r["username"],
                                    mobile = r["mobile"],
-                                   percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"]),
+                                   percentage = JeeWorkLiteController.calPercentage(r["tong"], r["ht"]),
                                    image = r["image"],
                                };
                     return JsonResultCommon.ThanhCong(data);
@@ -1694,12 +1694,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -1729,7 +1729,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
@@ -1811,12 +1811,12 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 if (!from1)
                     return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                 strW += " and w." + collect_by + ">=@from";
-                cond.Add("from", WeworkLiteController.GetUTCTime(Request.Headers, from.ToString()));
+                cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                 bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 if (!to1)
                     return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                 strW += " and w." + collect_by + "<@to";
-                cond.Add("to", WeworkLiteController.GetUTCTime(Request.Headers, to.ToString()));
+                cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                 //if (!string.IsNullOrEmpty(query.filter["id_department"]))
                 //{
                 //    strW += " and id_department=@id_department";
@@ -1845,7 +1845,7 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                 if (!string.IsNullOrEmpty(query.filter["displayChild"]))
                     displayChild = query.filter["displayChild"];
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = @"select tag.id_row,tag.title from we_tag tag 

@@ -15,8 +15,8 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class PresenceService {
-  hubUrl = environment.HOST_JEECHAT_API+'/hubs';
-   private hubConnection: HubConnection;
+  hubUrl = environment.HOST_JEECHAT_API + '/hubs';
+  private hubConnection: HubConnection;
   private onlineUsersSource = new BehaviorSubject<any[]>([]);
   onlineUsers$ = this.onlineUsersSource.asObservable();
 
@@ -26,10 +26,10 @@ export class PresenceService {
   private OpenmessageUsernameSource = new ReplaySubject<any>(1);
   OpenmessageUsername$ = this.OpenmessageUsernameSource.asObservable();
 
-  constructor( private router: Router,
-    private auth:AuthService
+  constructor(private router: Router,
+    private auth: AuthService
 
-    ) {
+  ) {
 
     //   this.connectToken();
     //   connection.onclose(()=>{
@@ -37,120 +37,107 @@ export class PresenceService {
     //       this.reconnectToken();
     //     },5000);
     //  })
-    }
+  }
 
 
-  connectToken(){
+  connectToken() {
     this.hubConnection = new HubConnectionBuilder()
-  .withUrl(this.hubUrl+'/presence', {
-    skipNegotiation: true,
-    transport: signalR.HttpTransportType.WebSockets
-  }).withAutomaticReconnect()
+      .withUrl(this.hubUrl + '/presence', {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      }).withAutomaticReconnect()
       .build()
-try
-{
+    try {
+      this.hubConnection.start().then(() => {
+        const data = this.auth.getAuthFromLocalStorage();
+        var _token = `Bearer ${data.access_token}`
+        try {
+          setTimeout(() => {
+            this.hubConnection.invoke("onConnectedTokenAsync", _token);
+          }, 2000);
 
-
-      this.hubConnection.start().then(()=>{
-
-      const data=this.auth.getAuthFromLocalStorage();
-
-         var _token =`Bearer ${data.access_token}`
-
-         try
-         {
-           setTimeout(() => {
-            this.hubConnection.invoke("onConnectedTokenAsync",_token);
-           }, 2000);
-
-         }catch(err)
-         {
+        } catch (err) {
           console.log(err)
-         }
-
-
+        }
         this.hubConnection.on('UserIsOnline', (username: any) => {
+          this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+            this.onlineUsersSource.next([...usernames, username])
+            // console.log('UserIsOnline',this.onlineUsers$)
+          })
+          // this.toastr.info(username.FullName+' has connect')
+          // this.toastr.info(username.displayName+ ' has connect')
+        })
 
-      this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
-        this.onlineUsersSource.next([...usernames, username])
-        // console.log('UserIsOnline',this.onlineUsers$)
+        this.hubConnection.on('UserIsOffline', (User: any) => {
+          this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
 
-      })
-      // this.toastr.info(username.FullName+' has connect')
-      // this.toastr.info(username.displayName+ ' has connect')
-    })
+            this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username), User])
+            // this.onlineUsersSource.next([...usernames, User])
 
-    this.hubConnection.on('UserIsOffline', (User: any) => {
-      this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+            // console.log('UserIsOffline',this.onlineUsers$)
+          })
+        })
+        this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
+          this.onlineUsersSource.next(usernames);
+        })
 
-        this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username),User])
-        // this.onlineUsersSource.next([...usernames, User])
-
-        // console.log('UserIsOffline',this.onlineUsers$)
-      })
-    })
-    this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
-      this.onlineUsersSource.next(usernames);
-    })
-
-    this.hubConnection.on('NewGroupChatReceived', data => {
-      // console.log('NewGroupChatReceived',data)
-      this.NewGroupSource.next(data);
-    })
-    this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
-      // console.log('NewMessageReceived',IdGroup)
-      this.OpenmessageUsernameSource.next(IdGroup)
-    })
+        this.hubConnection.on('NewGroupChatReceived', data => {
+          // console.log('NewGroupChatReceived',data)
+          this.NewGroupSource.next(data);
+        })
+        this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
+          // console.log('NewMessageReceived',IdGroup)
+          this.OpenmessageUsernameSource.next(IdGroup)
+        })
 
 
       }).catch(err => {
-         //document.write(err);
-        console.log("error",err);
+        //document.write(err);
+        console.log("error", err);
       });
     }
-    catch(err)
-    {
+    catch (err) {
       console.log(err)
     }
 
 
 
-}
+  }
 
-async NewGroup(token:string,item:ConversationModel,dl:any){
-  return  this.hubConnection .invoke('NewGroupChat',token,item,dl)
-    .catch(error => console.log(error));
-}
-
-
-disconnectToken(){
-  var _token = '';
-  var _userID = -1;
-  const data=this.auth.getAuthFromLocalStorage();
-      console.log("data",data);
-
-         var _token =`Bearer ${data.access_token}`
-
-         this.hubConnection.invoke("onDisconnectToken",_token);
-}
+  async NewGroup(token: string, item: ConversationModel, dl: any) {
+    return this.hubConnection.invoke('NewGroupChat', token, item, dl)
+      .catch(error => console.log(error));
+  }
 
 
-stopHubConnection() {
-  this.hubConnection.stop().catch(error => console.log(error));
-}
+  disconnectToken() {
+    var _token = '';
+    var _userID = -1;
+    const data = this.auth.getAuthFromLocalStorage();
+    console.log("data", data);
+
+    var _token = `Bearer ${data.access_token}`
+
+    this.hubConnection.invoke("onDisconnectToken", _token);
+  }
 
 
-reconnectToken(): void {
-  const data=this.auth.getAuthFromLocalStorage();
-     var _token =`Bearer ${data.access_token}`
-     this.hubConnection.start().then((data: any) => {
-      console.log('Connect with ID',data);
-      this.hubConnection.invoke("ReconnectToken", _token).then(()=>{
+  stopHubConnection() {
+    this.hubConnection.stop().catch(error => console.log(error));
+  }
+
+
+  reconnectToken(): void {
+    const data = this.auth.getAuthFromLocalStorage();
+    var _token = `Bearer ${data.access_token}`
+    this.hubConnection.start().then((data: any) => {
+      console.log('Connect with ID', data);
+      this.hubConnection.invoke("ReconnectToken", _token).then(() => {
       });
     }).catch((error: any) => {
-     console.log('Could not ReconnectToken! ',error);
+      console.log('Could not ReconnectToken! ', error);
     });
- ///  console.log('Connect with ID',this.proxy.id);
+    ///  console.log('Connect with ID',this.proxy.id);
   }
   // //endpoints.MapHub<PresenceHub>("hubs/presence") at startup file of backend
   // createHubConnection(user: User) {

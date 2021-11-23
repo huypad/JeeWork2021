@@ -56,7 +56,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin dự án/phòng ban";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions conds = new SqlConditions();
@@ -113,11 +113,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string idc = cnn.ExecuteScalar("select IDENT_CURRENT('we_status')").ToString();
                     if (data.Id_project_team > 0)
                     {
-                        WeworkLiteController.update_position_status(data.Id_project_team, cnn, "id_project_team");
+                        JeeWorkLiteController.update_position_status(data.Id_project_team, cnn, "id_project_team");
                     }
                     else
                     {
-                        WeworkLiteController.update_position_status(data.id_department, cnn, "id_department");
+                        JeeWorkLiteController.update_position_status(data.id_department, cnn, "id_department");
                     }
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -144,7 +144,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -211,11 +211,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     if (data.Id_project_team > 0)
                     {
-                        WeworkLiteController.update_position_status(data.Id_project_team, cnn, "id_project_team");
+                        JeeWorkLiteController.update_position_status(data.Id_project_team, cnn, "id_project_team");
                     }
                     else
                     {
-                        WeworkLiteController.update_position_status(data.id_department, cnn, "id_department");
+                        JeeWorkLiteController.update_position_status(data.id_department, cnn, "id_department");
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -235,7 +235,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -266,7 +266,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    WeworkLiteController.update_position_status(data.id_columnname, cnn, data.columnname);
+                    JeeWorkLiteController.update_position_status(data.id_columnname, cnn, data.columnname);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -285,7 +285,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -316,7 +316,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    WeworkLiteController.update_position_status_template(data.templateid, cnn);
+                    JeeWorkLiteController.update_position_status_template(data.templateid, cnn);
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -337,7 +337,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_status where disabled=0 and id_row = " + id + "),0)";
@@ -355,7 +355,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
 
-                    WeworkLiteController.update_position_status(id_project_team, cnn, "id_project_team");
+                    JeeWorkLiteController.update_position_status(id_project_team, cnn, "id_project_team");
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong();
                 }
@@ -386,7 +386,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin mẫu cũ";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -418,7 +418,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    WeworkLiteController.update_position_status(data.id_project_team, cnn, "id_project_team");
+                    JeeWorkLiteController.update_position_status(data.id_project_team, cnn, "id_project_team");
                     // insert người
                     #endregion
                     int status_todo = int.Parse(cnn.ExecuteScalar("select id_row from we_status where Disabled = 0 and id_project_team = " + data.id_project_team + " and istodo = 1").ToString());

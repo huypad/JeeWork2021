@@ -61,7 +61,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "a";
@@ -93,14 +93,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
                     data.id_user = iduser;
                     cnn.BeginTransaction();
                     byte[] imageBytes = Convert.FromBase64String(data.item.strBase64);
-                    long MaxSize = WeworkLiteController.GetMaxSize(_configuration);
+                    long MaxSize = JeeWorkLiteController.GetMaxSize(_configuration);
                     if (imageBytes.Length > MaxSize)
                     {
                         return JsonResultCommon.KhongTonTai("File không được lớn hơn " + MaxSize / 1000 + "MB");
@@ -130,15 +130,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (data.object_type == 4)
                     {
                         DataTable dt = new DataTable();
-                        dt = WeworkLiteController.GetInfoProject(data.object_id, loginData, cnn);
+                        dt = JeeWorkLiteController.GetInfoProject(data.object_id, loginData, cnn);
                         string sqlproject = "select id_user from we_project_team_user where Disabled = 0 and id_project_team = " + data.object_id;
                         DataTable dtproject = cnn.CreateDataTable(sqlproject);
                         // lấy thông tin người gửi + cc owner phòng ban tương ứng
                         List<long> list_user = dtproject.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
                         #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(19, ConnectionString);
+                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(19, ConnectionString);
                         #endregion
-                        WeworkLiteController.mailthongbao(data.object_id, list_user, 19, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(data.object_id, list_user, 19, loginData, ConnectionString, _notifier, _configuration);
                         #region Notify upload file cho dự án
                         for (int i = 0; i < list_user.Count; i++)
                         {
@@ -160,7 +160,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -173,11 +173,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         if (data.object_type == 11)
                             templateID = 30;
                         DataTable dt = new DataTable();
-                        dt = WeworkLiteController.GetInfoTask(data.object_id, loginData, cnn);
+                        dt = JeeWorkLiteController.GetInfoTask(data.object_id, loginData, cnn);
                         #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(templateID, ConnectionString);
+                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(templateID, ConnectionString);
                         #endregion
-                        WeworkLiteController.mailthongbao(data.object_id, users, templateID, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(data.object_id, users, templateID, loginData, ConnectionString, _notifier, _configuration);
                         #region Notify upload file cho công việc
                         for (int i = 0; i < users.Count; i++)
                         {
@@ -200,7 +200,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -230,7 +230,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select * from we_attachment where disabled=0 and id_row = " + id + "";
@@ -299,7 +299,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return new
                     {
                         succeeded = true,
-                        imageUrl = WeworkLiteController.genLinkAttachment(_configuration, x)
+                        imageUrl = JeeWorkLiteController.genLinkAttachment(_configuration, x)
                     };
                 }
             }

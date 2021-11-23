@@ -59,7 +59,7 @@ namespace JeeWork_Core2021.Classes
         public LoginData FindAsync(string userName, string password,long CustomerID, long cur_Vaitro = 0)
         {
             DataTable Tb = null;
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection Conn = new DpsConnection(ConnectionString))
             {
                 //                string sqlq = @"select u.*, dm.title as DonVi,dm.Code as MaDinhDanh, dm.Capcocau, dm.ID_Goc,cc1.ID_Goc as Id_Goc_Cha from Dps_User u 
@@ -149,7 +149,7 @@ namespace JeeWork_Core2021.Classes
             DataTable Tb = null;
             SqlConditions cond = new SqlConditions();
             string[] listrole = GetRolesForUser(username.ToString(), CustomerID);
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection Conn = new DpsConnection(ConnectionString))
             {
 
@@ -185,7 +185,7 @@ namespace JeeWork_Core2021.Classes
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("Username", username);
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection Conn = new DpsConnection(ConnectionString))
             {
                 DataTable Tb = Conn.CreateDataTable("select * from Tbl_Account_Permit where (where)", "(where)", Conds);
@@ -341,7 +341,7 @@ namespace JeeWork_Core2021.Classes
         {
             if (string.IsNullOrEmpty(password) || password.Length < 6)
                 return JsonResultCommon.Custom("Mật khẩu mới quá ngắn");
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection Conn = new DpsConnection(ConnectionString))
             {
                 var Tb = Conn.CreateDataTable("select PasswordHash from Dps_User where UserID = @Id", new SqlConditions() { { "Id", iduser } });
@@ -448,7 +448,7 @@ namespace JeeWork_Core2021.Classes
         public bool CheckNguoiDung(string UserNameorID, int loai, long CustomerID)
         {
             DataTable Tb = null;
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection Conn = new DpsConnection(ConnectionString))
             {
                 SqlConditions sqlcond = new SqlConditions();
@@ -482,7 +482,7 @@ namespace JeeWork_Core2021.Classes
         public bool CheckEmail(string email, long UserId,long CustomerID)
         {
             DataTable Tb = null;
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection Conn = new DpsConnection(ConnectionString))
             {
                 SqlConditions sqlcond = new SqlConditions();

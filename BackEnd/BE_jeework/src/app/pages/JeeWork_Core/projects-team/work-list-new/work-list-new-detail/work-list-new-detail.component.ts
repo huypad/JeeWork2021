@@ -35,7 +35,7 @@ import {
     UserInfoModel,
     UpdateWorkModel,
 } from './../../../work/work.model';
-import { BehaviorSubject, ReplaySubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, of, throwError, Subscription } from 'rxjs';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { DialogData } from './../../../report/report-tab-dashboard/report-tab-dashboard.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -47,6 +47,7 @@ import {
     ElementRef,
     ChangeDetectorRef,
     OnChanges,
+    HostListener,
 } from '@angular/core';
 import * as moment from 'moment';
 import {
@@ -72,6 +73,7 @@ import { previewlistComponent } from '../../../preview/preview-list/preview-list
     styleUrls: ['./work-list-new-detail.component.scss'],
 })
 export class WorkListNewDetailComponent implements OnInit {
+	private componentSubscriptions: Subscription;
     constructor(
         private workService: WorkService,
         private communicateService: CommunicateService,
@@ -157,6 +159,7 @@ export class WorkListNewDetailComponent implements OnInit {
     showChucnang = false;
     disabledBtn = false;
     showsuccess = false;
+    is_inputting = true;
     private readonly componentName: string = 'kt-task_';
     isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
         false
@@ -216,12 +219,10 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         );
         this.tinyMCE = tinyMCE;
-
         this.LoadData();
         this.LoadChecklist();
         this.LoadObjectID();
     }
-
     getHeight(): any {
         let obj = window.location.href.split('/').find(x => x == 'tabs-references');
         if (obj) {
@@ -389,7 +390,6 @@ export class WorkListNewDetailComponent implements OnInit {
             .subscribe((res) => {
                 if (res && res.status === 1) {
                     this.status_dynamic = res.data;
-                    debugger
                     console.log("Dữ liệu trạng thái", res.data);
                     this.changeDetectorRefs.detectChanges();
                 }
@@ -1140,6 +1140,7 @@ export class WorkListNewDetailComponent implements OnInit {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
                                 this.description_tiny = this.description;
+                                this.is_inputting = true;
                                 this.refreshData();
                                 // this.checklist = res.data.description;
                                 this.ngOnInit();
@@ -1205,9 +1206,11 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.disabledBtn = true;
                 if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
                     this.description_tiny = this.item.description;
+                    this.is_inputting = false;
                     return;
                 }
                 this.item.description = this.description_tiny;
+                this.is_inputting = false;
                 this.UpdateByKeyNew(this.item, "description", this.description_tiny);
             }
             this.chinhsuamota = !this.chinhsuamota;
@@ -1236,6 +1239,9 @@ export class WorkListNewDetailComponent implements OnInit {
                 if (res && res.status == 1) {
                     this.SendMessage(true);
                     this.LoadData();
+                    if (key == "description") {
+                        this.is_inputting = true;
+                    }
                 } else {
                     this.layoutUtilsService.showError(res.error.message);
                 }
@@ -1246,6 +1252,7 @@ export class WorkListNewDetailComponent implements OnInit {
             if (key == 'description') {
                 this.showsuccess = true;
                 setTimeout(() => {
+                    this.is_inputting = false;
                     this.showsuccess = false;
                     this.disabledBtn = false;
                 }, 2000);
@@ -1272,13 +1279,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.refreshData();
                 this.ngOnInit();
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    _saveMessage,
-                    _messageType,
-                    4000,
-                    true,
-                    false
-                );
+                this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
                 this.ngOnInit();
             }
         });
@@ -1294,12 +1295,9 @@ export class WorkListNewDetailComponent implements OnInit {
     _UpdateCheckList(_item: ChecklistModel) {
         let saveMessageTranslateParam = '';
         saveMessageTranslateParam +=
-            _item.id_row > 0
-                ? 'GeneralKey.capnhatthanhcong'
-                : 'GeneralKey.themthanhcong';
+            _item.id_row > 0 ? 'GeneralKey.capnhatthanhcong' : 'GeneralKey.themthanhcong';
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
-        const _messageType =
-            _item.id_row > 0 ? MessageType.Update : MessageType.Create;
+        const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(CheckListEditComponent, {
             data: { _item, IsCheckList: true },
         });
@@ -1310,13 +1308,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.changeDetectorRefs.detectChanges();
                 return;
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    _saveMessage,
-                    _messageType,
-                    4000,
-                    true,
-                    false
-                );
+                this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
             }
         });
         this.refreshData();
@@ -1332,15 +1324,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 // this.layoutUtilsService.showActionNotification('Update thành công', MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
             } else {
                 this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                    res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
                 this.LoadChecklist();
             }
         });
@@ -1357,15 +1341,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 // this.layoutUtilsService.showActionNotification('Update thành công', MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
             } else {
                 this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                    res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
                 this.LoadChecklist();
             }
             this.changeDetectorRefs.detectChanges();
@@ -1389,13 +1365,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.refreshData();
                 return;
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    _saveMessage,
-                    _messageType,
-                    4000,
-                    true,
-                    false
-                );
+                this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
             }
         });
     }
@@ -1417,15 +1387,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 ) as HTMLInputElement).value = '';
             } else {
                 this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                    res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1469,27 +1431,11 @@ export class WorkListNewDetailComponent implements OnInit {
             this.workService.Delete_CheckList(_item.id_row).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.layoutUtilsService.showActionNotification(
-                        _deleteMessage,
-                        MessageType.Delete,
-                        4000,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        1
-                    );
+                        _deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
                     this.LoadChecklist();
                 } else {
                     this.layoutUtilsService.showActionNotification(
-                        res.error.message,
-                        MessageType.Read,
-                        9999999999,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        0
-                    );
+                        res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
                 }
             });
         });
@@ -1517,28 +1463,10 @@ export class WorkListNewDetailComponent implements OnInit {
             }
             this.workService.DeleteItem(_item.id_row).subscribe((res) => {
                 if (res && res.status === 1) {
-                    this.layoutUtilsService.showActionNotification(
-                        _deleteMessage,
-                        MessageType.Delete,
-                        4000,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        1
-                    );
+                    this.layoutUtilsService.showActionNotification(_deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
                     this.LoadChecklist();
                 } else {
-                    this.layoutUtilsService.showActionNotification(
-                        res.error.message,
-                        MessageType.Read,
-                        9999999999,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        0
-                    );
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
                 }
             });
         });
@@ -1576,16 +1504,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     }
                     else {
                         // alert(res.error.message);
-                        this.layoutUtilsService.showActionNotification(
-                            res.error.message,
-                            MessageType.Update,
-                            9999999999,
-                            true,
-                            false,
-                            3000,
-                            'top',
-                            0
-                        );
+                        this.layoutUtilsService.showActionNotification(res.error.message,MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                         this.LoadData();
                     }
                 });
@@ -1957,16 +1876,7 @@ export class WorkListNewDetailComponent implements OnInit {
             if (res && res.status === 1) {
                 items.checked = !items.checked;
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true,false, 3000, 'top', 0);
             }
             this.changeDetectorRefs.detectChanges();
         });
@@ -1998,7 +1908,38 @@ export class WorkListNewDetailComponent implements OnInit {
             });
         }
     }
-
+    ngOnDestroy() {
+		debugger
+        if (this.componentSubscriptions) {
+			this.componentSubscriptions.unsubscribe();
+		}
+	}
+    @HostListener('window:keyup.esc') onKeyUp() {
+        let cn = confirm('Sure ?');
+        if (cn) {
+          this.dialogRef.close();
+        }
+      }
+      @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
+        console.log('event:', event);
+        event.returnValue = false;
+      }
+    
+    //   constructor(public dialogRef: MatDialogRef<ConfirmationDialog>) {}
+    
+    //   onYesClick(): void {
+    //     this.dialogRef.close(true);
+    //   }
+    goBack() {
+        this.dialogRef.disableClose = true;
+        this.dialogRef.backdropClick().subscribe((_) => {
+          let cn = confirm('Sure ?');
+          if (cn) {
+            this.dialogRef.close();
+          }
+        });
+        this.changeDetectorRefs.detectChanges();
+    }
     DeleteTask() {
         const _title = this.translate.instant('GeneralKey.xoa');
         const _description = this.translate.instant(
@@ -2047,4 +1988,9 @@ export class WorkListNewDetailComponent implements OnInit {
 
     imagesUploadHandler = (blobInfo, success, failure) => {
     };
+
+    @HostListener('window:beforeunload', ['$event'])
+    beforeunloadHandler(event) {
+        return false;
+    }
 }

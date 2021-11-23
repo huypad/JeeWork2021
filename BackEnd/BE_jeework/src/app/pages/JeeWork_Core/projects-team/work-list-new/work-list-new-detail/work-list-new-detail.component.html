@@ -5,7 +5,7 @@
         </ng-container>
         <ng-container ktPortletTools>
             <button mat-raised-button [ngClass]="{'d-none': !isback}" matTooltip="{{ 'GeneralKey.trolai' | translate }}"
-                type="button" (click)="this.dialogRef.close();">
+                type="button" (click)="$event.stopPropagation();goBack()">
                 <span translate="GeneralKey.trolai"></span>
             </button>
         </ng-container>

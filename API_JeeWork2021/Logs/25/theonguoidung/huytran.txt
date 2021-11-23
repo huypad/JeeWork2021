@@ -88,3 +88,26 @@
 12/11/2021 03:10:56 - Chỉnh sửa dữ liệu department/Folder (23834), Chi tiết xem trong log chỉnh sửa chức năng
 12/11/2021 03:12:38 - Chỉnh sửa dữ liệu department/Folder (23834), Chi tiết xem trong log chỉnh sửa chức năng
 14/11/2021 07:09:44 - Thêm mới dữ liệu project_team: title=Dự án JeeHR, id_department=21756, loai=1
+16/11/2021 06:42:32 - Thêm mới file a vào: loại :4  
+16/11/2021 06:43:05 - Thêm mới file a vào: loại :4  
+16/11/2021 06:59:42 - Xóa dữ liệu attachment (60527)  
+16/11/2021 06:59:46 - Xóa dữ liệu attachment (60528)  
+16/11/2021 06:59:54 - Thêm mới file https://docs.google.com/document/d/16cX5XTEY7VtQpehV_KITXRyNCSSAqFM8/edit#heading=h.gjdgxs vào: loại :4  
+16/11/2021 07:10:06 - Xóa dữ liệu attachment (60529)  
+16/11/2021 07:10:13 - Thêm mới file ERP - Vinh Long Television vào: loại :4  
+16/11/2021 07:12:15 - Xóa dữ liệu attachment (60530)  
+16/11/2021 07:12:23 - Thêm mới file aa vào: loại :4  
+16/11/2021 07:18:44 - Xóa dữ liệu attachment (60531)  
+16/11/2021 07:18:53 - Thêm mới file Pad 1 vào: loại :4  
+16/11/2021 07:22:48 - Xóa dữ liệu attachment (60532)  
+16/11/2021 07:22:57 - Thêm mới file Pad 2 vào: loại :4  
+16/11/2021 09:46:52 - Xóa dữ liệu attachment (60533)  
+16/11/2021 09:47:01 - Thêm mới file Bạc Liêu vào: loại :4  
+16/11/2021 09:48:07 - Add user
+16/11/2021 09:48:50 - Xóa dữ liệu attachment (60534)  
+16/11/2021 09:48:56 - Thêm mới file 10/12/2021, 4:22 PM vào: loại :4  
+16/11/2021 09:54:14 - Xóa dữ liệu attachment (60535)  
+16/11/2021 09:54:22 - Thêm mới file Pad nhập test vào: loại :4  
+16/11/2021 09:54:36 - Xóa dữ liệu attachment (60536)  
+16/11/2021 09:54:42 - Thêm mới file 0988712722 vào: loại :4  
+23/11/2021 03:46:29 - Thêm mới dữ liệu công việc: title=Kế hoạch phỏng vấn, id_project_team=23404

@@ -55,16 +55,16 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (loginData != null)
                 {
-                    string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                    string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                     using (DpsConnection Conn = new DpsConnection(ConnectionString))
                     {
                         Common.UpdatePermitNew(loginData, Conn);
                         #region Lấy dữ liệu account từ JeeAccount
-                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                        DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                         string err = "";
-                        string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
+                        string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
                         if (err != "")
                             return JsonResultCommon.Custom(err);
                         #endregion
@@ -260,7 +260,7 @@ and hienthi=@HienThi and ((CustemerID is null) or (CustemerID=@CustemerID)) orde
             try
             {
                 //ConnectionCache.GetConnectionString(CustomerID)
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection Conn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "";

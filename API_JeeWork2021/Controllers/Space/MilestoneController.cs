@@ -56,18 +56,18 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -173,13 +173,13 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
                                        username = r["username"],
                                        mobile = r["mobile"],
                                        image = r["image"],
-                                       //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       //image = JeeWorkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                    },
                                    Count = new
                                    {
                                        tong = r["tong"],
                                        ht = r["ht"],
-                                       percentage = WeworkLiteController.calPercentage(r["tong"], r["ht"])
+                                       percentage = JeeWorkLiteController.calPercentage(r["tong"], r["ht"])
                                    }
                                };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
@@ -204,18 +204,18 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -387,7 +387,7 @@ where w.disabled=0 and id_milestone = " + id;
                                         htquahan = htquahan,
                                         quahan = ds.Tables[1].AsEnumerable().Count(w => w["is_quahan"].ToString() == "1"),
                                         danglam = ds.Tables[1].AsEnumerable().Count(w => w["is_danglam"].ToString() == "1"),
-                                        percentage = WeworkLiteController.calPercentage(ds.Tables[1].Rows.Count, htdunghan + htquahan)
+                                        percentage = JeeWorkLiteController.calPercentage(ds.Tables[1].Rows.Count, htdunghan + htquahan)
                                     },
                                     CountByMucTieu = new
                                     {
@@ -396,7 +396,7 @@ where w.disabled=0 and id_milestone = " + id;
                                         htquahan = m_htquahan,
                                         quahan = ds.Tables[1].AsEnumerable().Count(w => w["Status"].ToString() == "1" && Common.GetDateTime() > (DateTime)w["m_deadline"]),
                                         danglam = ds.Tables[1].AsEnumerable().Count(w => w["Status"].ToString() == "1" && Common.GetDateTime() <= (DateTime)w["m_deadline"]),
-                                        percentage = WeworkLiteController.calPercentage(ds.Tables[1].Rows.Count, htdunghan + htquahan)
+                                        percentage = JeeWorkLiteController.calPercentage(ds.Tables[1].Rows.Count, htdunghan + htquahan)
                                     },
                                     //Count = new
                                     //{
@@ -451,7 +451,7 @@ where w.disabled=0 and id_milestone = " + id;
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -516,7 +516,7 @@ where w.disabled=0 and id_milestone = " + id;
                     strRe += (strRe == "" ? "" : ",") + "người phụ trách";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -583,7 +583,7 @@ where w.disabled=0 and id_milestone = " + id;
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_milestone where Disabled=0 and  id_row = " + id + "),0)";

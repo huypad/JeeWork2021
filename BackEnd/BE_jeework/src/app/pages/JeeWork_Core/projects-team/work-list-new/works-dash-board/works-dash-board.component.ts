@@ -223,7 +223,6 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         //     this.layoutUtilsService.OffWaitingDiv();
         // });
     }
-
     LoadListProject() {
         if (this.Id_Department <= 0) {
             return;

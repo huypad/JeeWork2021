@@ -65,17 +65,17 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -239,15 +239,15 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -351,7 +351,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                                                  select new
                                                  {
                                                      id_row = dr["id_row"],
-                                                     path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                     path = JeeWorkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                                      filename = dr["filename"],
                                                      type = dr["type"],
                                                      isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -397,7 +397,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -458,7 +458,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu topic: title=" + data.title + ", id_project_team=" + data.id_project_team + ", description=" + data.description + ", email=" + data.email;
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 21, idc, iduser, data.title))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 21, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -466,7 +466,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     data.id_row = idc;
                     cnn.EndTransaction();
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(16, ConnectionString);
+                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(16, ConnectionString);
                     #endregion
                     #region Notify assign
                     Hashtable has_replace = new Hashtable();
@@ -483,18 +483,18 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
 
-                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                        DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
                     if (data.email)
-                        WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
                     data.id_row = idc;
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -527,7 +527,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     strRe += (strRe == "" ? "" : ",") + "nội dung topic";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -623,7 +623,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     //    LogContent = "Chỉnh sửa dữ liệu topic (" + data.id_row + "), Chi tiết xem trong log chỉnh sửa chức năng";
                     //}
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 22, data.id_row, iduser))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 22, data.id_row, iduser))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -631,7 +631,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     cnn.EndTransaction();
 
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(16, ConnectionString);
+                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(16, ConnectionString);
                     #endregion
                     #region Notify assign
                     Hashtable has_replace = new Hashtable();
@@ -648,18 +648,18 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
 
-                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                        DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
                     if (data.email)
-                        WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(data.id_row, data.Users.Select(x => x.id_user).ToList(), 16, loginData, ConnectionString, _notifier, _configuration);
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -686,7 +686,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + id + "),0)";
@@ -701,7 +701,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                     }
                     //string LogContent = "Xóa dữ liệu topic (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 23, id, iduser))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 23, id, iduser))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -734,7 +734,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + topic + "),0)";
@@ -770,7 +770,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 25, topic, iduser, null, user))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 25, topic, iduser, null, user))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -782,10 +782,10 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         return JsonResultCommon.ThanhCong();
                     if (bool.Parse(dt_topic.Rows[0]["email"].ToString()))
                     {
-                        WeworkLiteController.mailthongbao(topic, new List<long>() { user }, 16, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(topic, new List<long>() { user }, 16, loginData, ConnectionString, _notifier, _configuration);
 
                         #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(16, ConnectionString);
+                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(16, ConnectionString);
                         #endregion
                         #region Notify assign
                         Hashtable has_replace = new Hashtable();
@@ -801,13 +801,13 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", topic.ToString());
 
 
-                        DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                        DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                         if (DataAccount == null)
                             return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                         #endregion
                     }
@@ -837,7 +837,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_topic where Disabled=0 and  id_row = " + topic + "),0)";
@@ -862,7 +862,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                                 return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                             }
                         }
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 26, topic, iduser, null, user))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 26, topic, iduser, null, user))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -878,9 +878,9 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         if (bool.Parse(dt_topic.Rows[0]["email"].ToString()))
                         {
                             #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(38, ConnectionString);
+                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(38, ConnectionString);
                             #endregion
-                            WeworkLiteController.mailthongbao(topic, new List<long>() { user }, 38, loginData, ConnectionString, _notifier, _configuration);
+                            JeeWorkLiteController.SendEmail(topic, new List<long>() { user }, 38, loginData, ConnectionString, _notifier, _configuration);
 
                             #region Notify assign
                             Hashtable has_replace = new Hashtable();
@@ -896,13 +896,13 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", topic.ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", topic.ToString());
 
-                            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                            DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                             if (DataAccount == null)
                                 return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         return JsonResultCommon.ThanhCong();

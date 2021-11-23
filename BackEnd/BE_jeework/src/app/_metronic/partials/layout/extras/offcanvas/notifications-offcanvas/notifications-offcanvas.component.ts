@@ -48,7 +48,6 @@ export class NotificationsOffcanvasComponent implements OnInit {
     }
   
     clickRead(noti: any) {
-      debugger
       this.socketService.readNotification(noti._id).subscribe(res => {
         this.listNoti.forEach(x => {
           if (x._id == noti._id) {

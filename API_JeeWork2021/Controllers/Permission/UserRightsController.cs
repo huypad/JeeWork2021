@@ -55,7 +55,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         public object Get_DSNhom([FromQuery] QueryParams query)
         {
             #region Lấy dữ liệu account từ JeeAccount
-            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+            DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
             if (DataAccount == null)
                 return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
             #endregion
@@ -69,7 +69,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             string sqlq = "";
             SqlConditions Conds = new SqlConditions();
             string orderByStr = "isadmin desc, GroupType desc", whereStr = "CustemerID=@CustemerID and (Module=@Module) ";
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
             DataTable dt = new DataTable();
             bool Visible = true;
             try
@@ -197,7 +197,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 #region Kiểm tra quyền chỉ xem
                 Common permit = new Common(ConnectionString);
                 if (Common.IsReadOnlyPermit("3900", loginData.Username))
@@ -213,7 +213,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dt == null | cnn.LastError != null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     #region Lấy danh sách nhân viên từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                     DataRow row;
@@ -290,7 +290,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 val.Add("LastModified", Common.GetDateTime());
                 val.Add("CustemerID", loginData.CustomerID);
                 val.Add("Module", data.Module);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = $@"select ISNULL((select count(*) from tbl_group 
@@ -329,7 +329,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             Hashtable val = new Hashtable();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     val.Add("username", data.UserName);
@@ -339,7 +339,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //Conds.Add("username", data.UserName);
 
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -414,11 +414,11 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 Conds.Add("username", data.UserName);
                 Conds.Add("id_group", data.ID_Nhom);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -498,7 +498,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 Conds.Add("id_group", id);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = $@"select ISNULL((select count(*) 
@@ -536,7 +536,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         public object Get_DSNguoiDung([FromQuery] QueryParams query)
         {
             #region Lấy dữ liệu account từ JeeAccount
-            DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+            DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
             if (DataAccount == null)
                 return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
@@ -583,7 +583,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
                 bool Visible = true;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 #region Kiểm tra quyền chỉ xem
                 Common permit = new Common(ConnectionString);
                 if (Common.IsReadOnlyPermit("3900", loginData.Username))
@@ -596,7 +596,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     Visible = Common.CheckRoleByUserID(loginData, 3900, cnn);
                     #region Lấy danh sách nhân viên từ JeeAccount
                     DataAccount = new List<AccUsernameModel>();
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ JeeAccount");
                     DataRow row;
@@ -731,7 +731,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     orderByStr = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 #region Kiểm tra quyền chỉ xem
                 Common permit = new Common(ConnectionString);
                 if (Common.IsReadOnlyPermit("3900", loginData.Username))
@@ -873,7 +873,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             StringCollection ReadOnlyPermit = new StringCollection();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     Conds = new SqlConditions();
@@ -1035,7 +1035,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 CustomerID = loginData.CustomerID;
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
                 DpsConnection Conn = new DpsConnection(ConnectionString);
                 string[] listrole = Common.GetRolesForUser_WeWork(username, Conn);
                 return listrole;

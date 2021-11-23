@@ -91,15 +91,15 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
-                    DataTable dt_Fields = WeworkLiteController.ListField(int.Parse(query.filter["id_project_team"]), 3, cnn);
+                    DataTable dt_Fields = JeeWorkLiteController.ListField(int.Parse(query.filter["id_project_team"]), 3, cnn);
                     var data = GetWorkByProjectsNew(Request.Headers, query.filter["id_project_team"], dt_Fields, ConnectionString, query, loginData, DataAccount);
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
@@ -128,11 +128,11 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -234,7 +234,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                         }
                     }
-                    DataTable dt_fields = WeworkLiteController.ListField(id, type, cnn);
+                    DataTable dt_fields = JeeWorkLiteController.ListField(id, type, cnn);
                     var data = from r in workspace.AsEnumerable()
                                select new
                                {
@@ -272,12 +272,12 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                 #endregion
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long IDNV = loginData.UserID;
@@ -394,16 +394,16 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                 if (error != "")
                     return JsonResultCommon.Custom(error);
                 #endregion
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long IDNV = loginData.UserID;
@@ -459,7 +459,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     // Phân trang
                     var dt_data = ds.Tables[0].Rows.Count;
-                    DataTable dt = WeworkLiteController.project_by_user(loginData.UserID, loginData.CustomerID, cnn, "");
+                    DataTable dt = JeeWorkLiteController.project_by_user(loginData.UserID, loginData.CustomerID, cnn, "");
                     if (cnn.LastError != null || dt == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -522,16 +522,16 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -624,22 +624,22 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
-                    List<AccUsernameModel> DataStaff = WeworkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
+                    List<AccUsernameModel> DataStaff = JeeWorkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
                     if (DataStaff == null)
                         return JsonResultCommon.ThanhCong(new List<string>());
                     List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
                     string listIDNV = string.Join(",", nvs);
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -762,16 +762,16 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -836,7 +836,7 @@ where act.object_type = 1 and view_detail=1 and l.CreatedBy in ({listID}) and l.
                                         tenchucdanh = r["tenchucdanh"],
                                         mobile = r["mobile"],
                                         image = r["image"]
-                                        //image = WeworkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                        //image = JeeWorkLiteController.genLinkImage(domain, loginData.CustomerID, r["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                     }
                                 }).FirstOrDefault();
                     return JsonResultCommon.ThanhCong(data);
@@ -860,18 +860,18 @@ where act.object_type = 1 and view_detail=1 and l.CreatedBy in ({listID}) and l.
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 if (data.id_project_team <= 0)
                     return JsonResultCommon.BatBuoc("Dự án/phòng ban");
                 if (data.Review || (!data.Review && data_import.dtW == null))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1135,7 +1135,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 }
                                 else
                                 {
-                                    DataTable table = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
+                                    DataTable table = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                                     if (dt.Rows.Count > 0)
                                     {
                                         DataRow[] RowStatus = table.Select("IsDefault = 1 and IsFinal = 0");
@@ -1257,7 +1257,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                     valW["CreatedDate"] = Common.GetDateTime();
                     valW["CreatedBy"] = loginData.UserID;
                     valW["id_project_team"] = data.id_project_team;
-                    DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
+                    DataTable dt = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                     if (dt.Rows.Count > 0)
                     {
                         DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
@@ -1344,7 +1344,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 }
                             }
                             //Insert người follow cho từng tình trạng của công việc
-                            DataTable dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
+                            DataTable dt_status = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                             if (dt_status.Rows.Count > 0)
                             {
                                 foreach (DataRow item in dt_status.Rows)
@@ -1422,7 +1422,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
             try
             {
                 string log_content = "";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -1479,7 +1479,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         }
                     }
                     bool re = true;
-                    re = WeworkLiteController.log(_logger, loginData.Username, cnn, 1, data.id_row, iduser, log_content);
+                    re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, data.id_row, iduser, log_content);
                     if (!re)
                     {
                         cnn.RollbackTransaction();
@@ -1530,16 +1530,16 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1662,12 +1662,12 @@ where act.object_type = 1 and view_detail=1 and l.object_id = " + id + " order b
                 if (string.IsNullOrEmpty(query.filter["id_project_team"]))
                     return BadRequest();
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return BadRequest();
 
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                 if (error != "")
                     return BadRequest();
                 #endregion
@@ -1698,7 +1698,7 @@ where act.object_type = 1 and view_detail=1 and l.object_id = " + id + " order b
                 temp.Add(new DataColumn() { ColumnName = "merge_title" });
                 DataColumn[] cols = temp.ToArray();
                 dt.Columns.AddRange(cols);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strG = @"select null as id_row, N'Chưa phân loại' as title union
@@ -1762,7 +1762,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_fields_project_team where disabled=0 and id_row = " + id + "),0)";
@@ -1820,19 +1820,19 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    if (!WeworkLiteController.CheckCustomerID(id, "we_work", loginData, cnn))
+                    if (!JeeWorkLiteController.CheckCustomerID(id, "we_work", loginData, cnn))
                     {
                         return JsonResultCommon.Custom("Công việc không tồn tại");
                     }
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -1945,10 +1945,10 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                     id_milestone = r["id_milestone"],
                                     milestone = r["milestone"],
                                     createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
-                                    nguoigiao = r["NguoiGiao"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["NguoiGiao"].ToString(), DataAccount),
+                                    nguoigiao = r["NguoiGiao"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["NguoiGiao"].ToString(), DataAccount),
                                     updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                                    updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                                    createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                    updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                    createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                                     clickup_prioritize = r["clickup_prioritize"],
                                     result = r["result"],
                                     estimates = r["estimates"],
@@ -1957,9 +1957,9 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                     closed_work_date = r["closed_work_date"],
                                     closed_work_by = r["closed_work_by"],
                                     accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
-                                    activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
+                                    activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
                                     activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
-                                    closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
+                                    closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
                                     closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
                                     state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
                                     DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
@@ -1975,8 +1975,8 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                                 image = us["image"],
                                                 createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
                                                 updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                                                updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                                                createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                                updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                                createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                                             },
                                     Followers = from us in ds.Tables[2].AsEnumerable()
                                                 where r["id_row"].Equals(us["id_work"]) && us["loai"].ToString().Equals("2")
@@ -1990,8 +1990,8 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                                     image = us["image"],
                                                     createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
                                                     updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                                                    updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                                                    createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                                    updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                                    createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                                                 },
                                     Tags = from t in ds.Tables[1].AsEnumerable()
                                            select new
@@ -2005,7 +2005,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                                   select new
                                                   {
                                                       id_row = dr["id_row"],
-                                                      path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                      path = JeeWorkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                                       filename = dr["filename"],
                                                       type = dr["type"],
                                                       isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -2021,7 +2021,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                                          select new
                                                          {
                                                              id_row = dr["id_row"],
-                                                             path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                             path = JeeWorkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                                              filename = dr["filename"],
                                                              type = dr["type"],
                                                              isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -2077,10 +2077,10 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                                  status = rr["status"],
                                                  milestone = rr["milestone"],
                                                  createddate = string.Format("{0:dd/MM/yyyy HH:mm}", rr["CreatedDate"]),
-                                                 nguoigiao = rr["NguoiGiao"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(rr["NguoiGiao"].ToString(), DataAccount),
+                                                 nguoigiao = rr["NguoiGiao"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(rr["NguoiGiao"].ToString(), DataAccount),
                                                  updateddate = rr["UpdatedDate"] == DBNull.Value ? "" : rr["UpdatedDate"],
-                                                 updatedby = rr["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(rr["UpdatedBy"].ToString(), DataAccount),
-                                                 createdby = rr["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(rr["CreatedBy"].ToString(), DataAccount),
+                                                 updatedby = rr["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(rr["UpdatedBy"].ToString(), DataAccount),
+                                                 createdby = rr["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(rr["CreatedBy"].ToString(), DataAccount),
                                                  Users = from us in ds.Tables[2].AsEnumerable()
                                                          where rr["id_row"].Equals(us["id_work"])
                                                          select new
@@ -2093,8 +2093,8 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                                                              image = us["image"],
                                                              createddate = string.Format("{0:dd/MM/yyyy HH:mm}", r["CreatedDate"]),
                                                              updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                                                             updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                                                             createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                                             updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                                             createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                                                          },
                                              }
                                 }).FirstOrDefault();
@@ -2127,17 +2127,17 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    string listDept = JeeWorkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -2299,16 +2299,16 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string listDept = WeworkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
+                    string listDept = JeeWorkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -2495,7 +2495,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (Common.IsProjectClosed(data.id_project_team.ToString(), cnn))
@@ -2510,7 +2510,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         return JsonResultCommon.Custom("Bạn không có quyền tạo mới công việc");
                     }
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -2529,7 +2529,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         val.Add("status", data.status);
                     else // Trường hợp người dùng không chọn status thì lấy status mặc định của project team
                     {
-                        DataTable dt = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
+                        DataTable dt = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                         if (dt.Rows.Count > 0)
                         {
                             DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");
@@ -2568,7 +2568,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
                     //Insert người follow cho từng tình trạng của công việc
-                    dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
+                    dt_status = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                     if (dt_status.Rows.Count > 0)
                     {
                         foreach (DataRow item in dt_status.Rows)
@@ -2664,7 +2664,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2709,9 +2709,9 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     #endregion
                     data.id_row = idc;
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
+                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                     #endregion
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
+                    JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
                     #region Notify thêm mới công việc
                     Hashtable has_replace = new Hashtable();
                     for (int i = 0; i < data.Users.Count; i++)
@@ -2732,7 +2732,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -2757,11 +2757,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -2842,10 +2842,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
 
                     var keys = new List<string> { "title", "description", "id_group" };
-                    var vals = WeworkLiteController.CheckKeyChange(keys, old, dt);
+                    var vals = JeeWorkLiteController.CheckKeyChange(keys, old, dt);
                     if (vals[0])
                     {
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 17, data.id_row, iduser, "", old.Rows[0]["title"], data.title))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 17, data.id_row, iduser, "", old.Rows[0]["title"], data.title))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2853,7 +2853,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     if (vals[1])
                     {
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 16, data.id_row, iduser, "", old.Rows[0]["description"], data.description))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 16, data.id_row, iduser, "", old.Rows[0]["description"], data.description))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -2861,16 +2861,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     if (vals[2])
                     {
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 12, data.id_row, iduser, "", old.Rows[0]["id_group"], data.id_group))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 12, data.id_row, iduser, "", old.Rows[0]["id_group"], data.id_group))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                         }
                     }
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
+                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                     #endregion
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
+                    JeeWorkLiteController.SendEmail(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
                     #region Ghi log trong project
                     string LogContent = "", LogEditContent = "";
                     LogEditContent = Common.GetEditLogContent(old, dt);
@@ -2924,7 +2924,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         if (info is not null)
                         {
-                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                         }
                     }
                     #endregion
@@ -2955,7 +2955,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 long idk = loginData.CustomerID;
                 DataTable dt = new DataTable();
                 string column_name = "id_project_team"; long WorkSpaceID = 0;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -3069,7 +3069,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "", columname = "", tablename = "", tablename_opts = "";
@@ -3145,7 +3145,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     strRe += (strRe == "" ? "" : ",") + "trường thông tin chi tiết";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -3258,7 +3258,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -3447,11 +3447,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             {
                 int id_log_action = data.id_log_action;
                 string log_content = "";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -3706,7 +3706,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             //postauto.data_input = datapost;
                             Automation.SendAutomation(postauto, _configuration, _producer);
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
@@ -3714,9 +3714,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                     cnn.EndTransaction();
                                     #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(25, ConnectionString);
+                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(25, ConnectionString);
                                     #endregion
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 25, loginData, ConnectionString, _notifier, _configuration, old);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, 25, loginData, ConnectionString, _notifier, _configuration, old);
                                     #region Notify chỉnh sửa công việc
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -3737,7 +3737,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -3751,16 +3751,16 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         if ("estimates".Equals(data.key))
                         {
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
                                 {
                                     var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                     cnn.EndTransaction();
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 26, loginData, ConnectionString, _notifier, _configuration, old);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, 26, loginData, ConnectionString, _notifier, _configuration, old);
                                     #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(26, ConnectionString);
+                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(26, ConnectionString);
                                     #endregion
                                     #region Notify chỉnh sửa công việc
                                     Hashtable has_replace = new Hashtable();
@@ -3783,7 +3783,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -3805,7 +3805,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         }
                         #endregion
                         #region Send notify
-                        if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                        if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                         {
                             var users = getUserTask(cnn, data.id_row);
                             switch (data.key)
@@ -3819,11 +3819,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     else
                                         templateguimail = 33;
                                     users = getUserTask(cnn, data.id_row);
-                                    WeworkLiteController.mailthongbao(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
                                     if (users.Count > 0)
                                     {
                                         #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
                                         #endregion
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
@@ -3847,7 +3847,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -3873,9 +3873,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         {
                                             idtemplateguimail = 32;
                                         }
-                                        WeworkLiteController.mailthongbao(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
+                                        JeeWorkLiteController.SendEmail(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
                                         #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
+                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
                                         #endregion
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
@@ -3899,7 +3899,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -3928,9 +3928,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     {
                                         users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                         cnn.EndTransaction();
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 28, loginData, ConnectionString, _notifier, _configuration, old);
+                                        JeeWorkLiteController.SendEmail(data.id_row, users, 28, loginData, ConnectionString, _notifier, _configuration, old);
                                         #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(28, ConnectionString);
+                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(28, ConnectionString);
                                         #endregion
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
@@ -3952,7 +3952,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -3963,11 +3963,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 case "title":
                                     cnn.EndTransaction();
                                     users = getUserTask(cnn, data.id_row);
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
                                     if (users.Count > 0)
                                     {
                                         #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
+                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(11, ConnectionString);
                                         #endregion
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
@@ -3989,7 +3989,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4029,9 +4029,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         DataTable dts = cnn.CreateDataTable("select * from we_status where id_row = " + data.value);
                                         if (dts.Rows.Count > 0)
                                         {
-                                            WeworkLiteController.mailthongbao(data.id_row, users, 21, loginData, ConnectionString, _notifier, _configuration);
+                                            JeeWorkLiteController.SendEmail(data.id_row, users, 21, loginData, ConnectionString, _notifier, _configuration);
                                             #region Lấy thông tin để thông báo
-                                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(21, ConnectionString);
+                                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(21, ConnectionString);
                                             #endregion
                                             #region Notify cập nhật trạng thái công việc
                                             Hashtable has_replace = new Hashtable();
@@ -4063,7 +4063,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
-                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                 }
                                             }
                                             #endregion
@@ -4078,9 +4078,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     {
                                         users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
                                         cnn.EndTransaction();
-                                        WeworkLiteController.mailthongbao(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
+                                        JeeWorkLiteController.SendEmail(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
                                         #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(31, ConnectionString);
+                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(31, ConnectionString);
                                         #endregion
                                         #region Notify chỉnh sửa công việc
                                         Hashtable has_replace = new Hashtable();
@@ -4102,7 +4102,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                             if (info is not null)
                                             {
-                                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
                                         }
                                         #endregion
@@ -4171,13 +4171,13 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
                                         }
                                         // thông báo cho người được xóa
-                                        if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                                        if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                                         {
                                             // var users = new List<long> { long.Parse(data.value.ToString()) };
                                             List<long> users = dtCheck.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
-                                            WeworkLiteController.mailthongbao(data.id_row, users, 22, loginData, ConnectionString, _notifier, _configuration);
+                                            JeeWorkLiteController.SendEmail(data.id_row, users, 22, loginData, ConnectionString, _notifier, _configuration);
                                             #region Lấy thông tin để thông báo
-                                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(22, ConnectionString);
+                                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(22, ConnectionString);
                                             #endregion
                                             #region Notify assign
                                             Hashtable has_replace = new Hashtable();
@@ -4197,7 +4197,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                 if (info is not null)
                                                 {
-                                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                 }
                                             }
                                             #endregion
@@ -4223,7 +4223,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     }
                                 }
                                 #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                                if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                                if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                                 {
                                     var users = new List<long> { long.Parse(data.value.ToString()) };
                                     int idtemplatemail = 0;
@@ -4249,9 +4249,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                             idtemplatemail = 24;
                                         }
                                     }
-                                    WeworkLiteController.mailthongbao(data.id_row, users, idtemplatemail, loginData, ConnectionString, _notifier, _configuration);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, idtemplatemail, loginData, ConnectionString, _notifier, _configuration);
                                     #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
+                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
                                     #endregion
                                     #region Notify assign
                                     Hashtable has_replace = new Hashtable();
@@ -4283,7 +4283,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4343,16 +4343,16 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 }
                             }
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
                                 {
                                     var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                     cnn.EndTransaction();
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 34, loginData, ConnectionString, _notifier, _configuration, old);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, 34, loginData, ConnectionString, _notifier, _configuration, old);
                                     #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(34, ConnectionString);
+                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(34, ConnectionString);
                                     #endregion
                                     #region Notify chỉnh sửa công việc
                                     Hashtable has_replace = new Hashtable();
@@ -4374,7 +4374,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4406,7 +4406,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 }
                             }
                             #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (WeworkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                             {
                                 DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                                 if (dt_user.Rows.Count > 0)
@@ -4422,9 +4422,9 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     {
                                         idtemplateguimail = 30;
                                     }
-                                    WeworkLiteController.mailthongbao(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
                                     #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = WeworkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
+                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
                                     #endregion
                                     #region Notify chỉnh sửa công việc
                                     Hashtable has_replace = new Hashtable();
@@ -4450,7 +4450,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                         var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                         if (info is not null)
                                         {
-                                            bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                         }
                                     }
                                     #endregion
@@ -4468,10 +4468,10 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             string temp = data.key;
                             if (temp == "assign" || temp == "follower")
                                 temp = "id_nv";
-                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, data.id_row, iduser, log_content, old.Rows[0][temp], data.value);
+                            re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, id_log_action, data.id_row, iduser, log_content, old.Rows[0][temp], data.value);
                         }
                         else
-                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, data.id_row, iduser, log_content, null, data.value);
+                            re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, id_log_action, data.id_row, iduser, log_content, null, data.value);
                         if (!re)
                         {
                             cnn.RollbackTransaction();
@@ -4531,7 +4531,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                 {
                     return JsonResultCommon.BatBuoc(strRe);
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -4585,7 +4585,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     string sqlq = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + data.id_project_team + "),0)";
                     var statusID = long.Parse(cnn.ExecuteScalar(sqlq).ToString());
                     //Insert người follow cho từng tình trạng của công việc
-                    DataTable dt_status = WeworkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
+                    DataTable dt_status = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                     foreach (DataRow dr in dt.Rows)
                     {
                         if (dt_status.Rows.Count > 0)
@@ -4666,11 +4666,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     foreach (DataRow dr in dt.Rows)
                     {
                         #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
+                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                         #endregion
                         DataTable tblU = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and id_work = " + dr["id_row"]);
                         List<long> dataUser = tblU.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
-                        WeworkLiteController.mailthongbao(idc, dataUser, 10, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(idc, dataUser, 10, loginData, ConnectionString, _notifier, _configuration);
                         #region Notify thêm mới công việc
                         Hashtable has_replace = new Hashtable();
                         for (int i = 0; i < dataUser.Count; i++)
@@ -4691,7 +4691,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                             if (info is not null)
                             {
-                                bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
                         }
                         #endregion
@@ -4719,11 +4719,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -4760,13 +4760,13 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    bool rs = WeworkLiteController.Delete_TableReference(id, "we_work", loginData, cnn);
+                    bool rs = JeeWorkLiteController.Delete_TableReference(id, "we_work", loginData, cnn);
                     if (!rs)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 18, id, iduser))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 18, id, iduser))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -4778,15 +4778,15 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     cnn.EndTransaction();
                     #region Check dự án đó có gửi gửi mail khi xóa không
                     long id_project = long.Parse(cnn.ExecuteScalar("select id_project_team from we_work where id_row = " + id).ToString());
-                    if (WeworkLiteController.CheckNotify_ByConditions(id_project, "email_delete_work", false, ConnectionString))
+                    if (JeeWorkLiteController.CheckNotify_ByConditions(id_project, "email_delete_work", false, ConnectionString))
                     {
-                        WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
                         if (users.Count > 0) // dt_user.Rows.Count > 0
                         {
                             // var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                            // WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
+                            // JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
                             #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(15, ConnectionString);
+                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(15, ConnectionString);
                             #endregion
                             object workname = cnn.ExecuteScalar("select title from we_work where disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
                             if (workname != null)
@@ -4811,7 +4811,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -4845,11 +4845,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -4957,11 +4957,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                         if (dtcvold.Rows.Count > 0)
                         {
                             var users = new List<long> { long.Parse(data.checker) };
-                            WeworkLiteController.mailthongbao(data.workid, users, 18, loginData, ConnectionString, _notifier, _configuration);
+                            JeeWorkLiteController.SendEmail(data.workid, users, 18, loginData, ConnectionString, _notifier, _configuration);
                             if (users.Count > 0)
                             {
                                 #region Lấy thông tin để thông báo
-                                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
+                                SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(11, ConnectionString);
                                 #endregion
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
@@ -4986,7 +4986,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                     if (info is not null)
                                     {
-                                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                     }
                                 }
                                 #endregion
@@ -5001,11 +5001,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                     else
                     { // gửi thông tin bị bỏ quyền 
                         var users = new List<long> { long.Parse(old.Rows[0]["checker"].ToString()) };
-                        WeworkLiteController.mailthongbao(data.workid, users, 46, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(data.workid, users, 46, loginData, ConnectionString, _notifier, _configuration);
                         if (users.Count > 0)
                         {
                             #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(46, ConnectionString);
+                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(46, ConnectionString);
                             #endregion
                             #region Notify chỉnh sửa công việc
                             Hashtable has_replace = new Hashtable();
@@ -5030,7 +5030,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -5060,15 +5060,15 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -5155,7 +5155,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                        classNames = "",
                                        id_nv = rr["id_nv"],
                                        phanloai = calendar_getphanloai(rr["id_row"].ToString(), loginData, ConnectionString)
-                                       //imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       //imageurl = JeeWorkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
@@ -5181,16 +5181,16 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -5245,7 +5245,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
                                        title = rr["title"],
                                        //classNames = new List<string>() { rr["status"].ToString() == "2" ? "success" : "", rr["is_quahan"].ToString() == "1" ? "overdue" : "" },
-                                       //imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       //imageurl = JeeWorkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
@@ -5268,11 +5268,11 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return BadRequest("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                 string error = "";
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                 if (error != "")
                     return BadRequest(error);
                 #endregion
@@ -5307,7 +5307,7 @@ where w.id_row = " + data.id_row + " and s.IsFinal = 1");
                 temp.Add(new DataColumn() { ColumnName = "merge_title" });
                 DataColumn[] cols = temp.ToArray();
                 dt.Columns.AddRange(cols);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     //                    string strG = @"select p.id_row, p.title from we_project_team_user u
@@ -5374,7 +5374,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -5403,7 +5403,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, id_log_action, id, iduser, "", null))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, id_log_action, id, iduser, "", null))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -5426,16 +5426,16 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
                     int TemplateId = closed ? 43 : 44;
                     string txtnoti = closed ? "ww_dongcongviec" : "ww_mocongviec";
-                    if (WeworkLiteController.CheckNotify_ByConditions(long.Parse(old.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
+                    if (JeeWorkLiteController.CheckNotify_ByConditions(long.Parse(old.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
                     {
                         DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
                         if (dt_user.Rows.Count > 0)
                         {
                             var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                             cnn.EndTransaction();
-                            WeworkLiteController.mailthongbao(id, users, TemplateId, loginData, ConnectionString, _notifier, _configuration, old);
+                            JeeWorkLiteController.SendEmail(id, users, TemplateId, loginData, ConnectionString, _notifier, _configuration, old);
                             #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = WeworkLiteController.GetInfoNotify(11, ConnectionString);
+                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(11, ConnectionString);
                             #endregion
                             #region Notify chỉnh sửa công việc
                             Hashtable has_replace = new Hashtable();
@@ -5454,13 +5454,13 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                                 notify_model.ReplaceData = has_replace;
                                 notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
                                 notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-                                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                                 if (DataAccount == null)
                                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                                 var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                 if (info is not null)
                                 {
-                                    bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                 }
                             }
                             #endregion
@@ -5655,14 +5655,14 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w.CreatedDate>=@from";
-                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w.CreatedDate<@to";
-                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+                Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -5776,14 +5776,14 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w." + collect_by + ">=@from";
-                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w." + collect_by + "<@to";
-                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+                Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
             }
             int nam = DateTime.Today.Year;
             int thang = DateTime.Today.Month;
@@ -5801,9 +5801,9 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 from = new DateTime(nam, thang, 1, 0, 0, 1);
                 to = new DateTime(nam, thang, lastDayOfMonth, 23, 59, 59);
                 dieukien_where += " and w." + collect_by + ">=@from";
-                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
                 dieukien_where += " and w." + collect_by + "<@to";
-                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+                Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -6000,14 +6000,14 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w.CreatedDate>=@from";
-                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
             {
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w.CreatedDate<@to";
-                Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+                Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
@@ -6143,7 +6143,7 @@ where u.disabled = 0 and u.loai = 2";
                 {
                     select_user += " and id_work in (select id_row from we_work where id_project_team = " + id + ")";
                 }
-                dt_status = WeworkLiteController.StatusDynamic(long.Parse(id.ToString()), DataAccount, cnn);
+                dt_status = JeeWorkLiteController.StatusDynamic(long.Parse(id.ToString()), DataAccount, cnn);
                 dt_Users = cnn.CreateDataTable(select_user, "(where)", conds);
                 #region Map info account từ JeeAccount
                 if (dt_Users.Rows.Count > 0)
@@ -6203,21 +6203,21 @@ where u.disabled = 0 and u.loai = 2";
                          closed_work_date = r["closed_work_date"],
                          closed_work_by = r["closed_work_by"],
                          accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
-                         activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
+                         activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
                          activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
-                         closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
+                         closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
                          closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
                          state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
                          createddate = r["CreatedDate"],
-                         createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                         createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                          nguoitao = r["NguoiTao"],
                          updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                         updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                         updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
                          nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
                          activity_date = r["ActivityDate"],
                          comments = SoluongComment(r["id_row"].ToString(), ConnectString),
-                         status_info = WeworkLiteController.get_info_status(r["status"].ToString(), ConnectString),
+                         status_info = JeeWorkLiteController.get_info_status(r["status"].ToString(), ConnectString),
                          DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
                          User = from us in dt_Users.AsEnumerable()
                                 where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
@@ -6231,12 +6231,12 @@ where u.disabled = 0 and u.loai = 2";
                                 },
                          NguoiGiao = from us in dt_Users.AsEnumerable()
                                      where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
-                                     select us["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
+                                     select us["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
                          UsersInfo = from us in dt_Users.AsEnumerable()
                                      where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                      select new
                                      {
-                                         data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                                         data = us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                                      },
                          Follower = from us in dt_Users.AsEnumerable()
                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
@@ -6252,7 +6252,7 @@ where u.disabled = 0 and u.loai = 2";
                                         where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
                                         select new
                                         {
-                                            data = us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                                            data = us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                                         },
                          Tags = from t in tags
                                 where r["id_row"].Equals(t["id_work"])
@@ -6317,23 +6317,23 @@ where u.disabled = 0 and u.loai = 2";
                              closed = r["closed"],
                              closed_work_date = r["closed_work_date"],
                              closed_work_by = r["closed_work_by"],
-                             activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
+                             activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
                              accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
-                             id_nv = r["id_nv"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["id_nv"].ToString(), DataAccount),
+                             id_nv = r["id_nv"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["id_nv"].ToString(), DataAccount),
                              activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
-                             closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
+                             closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
                              closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
                              state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
                              createddate = r["CreatedDate"],
-                             createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                             createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                              updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                             updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                             updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
                              clickup_prioritize = r["clickup_prioritize"],
                              comments = SoluongComment(r["id_row"].ToString(), ConnectionString),
                              children = displayChild == "0" ? new List<string>() : GetChildTask(domain, IdKHDPS, columnName, displayChild == "1" ? "0" : "2", id, temp, tags, DataAccount, loginData, ConnectionString, dt_Users, r["id_row"]),
                              Users = from us in dt_Users.AsEnumerable()
                                      where r["id_row"].ToString().Equals(us["id_work"].ToString())
-                                     select us["id_user"].Equals(DBNull.Value) ? new { } : WeworkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                                     select us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                              User = from us in dt_Users.AsEnumerable()
                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                     select new
@@ -6442,14 +6442,14 @@ where u.disabled = 0 and u.loai = 2";
                     {
                         DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                         strW += " and w." + collect_by + ">=@from";
-                        Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                        Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                     {
                         DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                         to = to.AddDays(1);
                         strW += " and w." + collect_by + "<@to";
-                        Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+                        Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["keyword"]))
                     {
@@ -6519,7 +6519,7 @@ where u.disabled = 0 and u.loai = 2";
                                             char[] array = row[1].ToString().Take(1).ToArray();
                                             word = array[0].ToString();
                                         }
-                                        row["color"] = WeworkLiteController.GetColorName(word);
+                                        row["color"] = JeeWorkLiteController.GetColorName(word);
                                     }
                                     break;
                                 }
@@ -6713,14 +6713,14 @@ where u.disabled = 0 and u.loai = 2";
                 {
                     DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                     strW += " and w." + collect_by + ">=@from";
-                    Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                    Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
                 }
                 if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                 {
                     DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                     to = to.AddDays(1);
                     strW += " and w." + collect_by + "<@to";
-                    Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString()));
+                    Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
                 }
                 if (!string.IsNullOrEmpty(query.filter["keyword"]))
                 {
@@ -6822,7 +6822,7 @@ where u.disabled = 0 and u.loai = 2";
                                         char[] array = row[1].ToString().Take(1).ToArray();
                                         word = array[0].ToString();
                                     }
-                                    row["color"] = WeworkLiteController.GetColorName(word);
+                                    row["color"] = JeeWorkLiteController.GetColorName(word);
                                 }
                                 break;
                             }
@@ -6845,7 +6845,7 @@ where u.disabled = 0 and u.loai = 2";
                         //                char[] array = row[1].ToString().Take(1).ToArray();
                         //                word = array[0].ToString();
                         //            }
-                        //            row["color"] = WeworkLiteController.GetColorName(word);
+                        //            row["color"] = JeeWorkLiteController.GetColorName(word);
                         //        }
                         //        break;
                         //    }
@@ -6868,7 +6868,7 @@ where u.disabled = 0 and u.loai = 2";
                         //                char[] array = row[1].ToString().Take(1).ToArray();
                         //                word = array[0].ToString();
                         //            }
-                        //            row["color"] = WeworkLiteController.GetColorName(word);
+                        //            row["color"] = JeeWorkLiteController.GetColorName(word);
                         //        }
                         //        break;
                         //    }
@@ -6896,7 +6896,7 @@ where u.disabled = 0 and u.loai = 2";
                                     }
                                     else
                                     {
-                                        item["color"] = WeworkLiteController.GetColorName("Chưa giao việc");
+                                        item["color"] = JeeWorkLiteController.GetColorName("Chưa giao việc");
                                     }
                                 }
                                 break;
@@ -6936,7 +6936,7 @@ where u.disabled = 0 and u.loai = 2";
                                     char[] array = newRow[1].ToString().Take(1).ToArray();
                                     word = array[0].ToString();
                                 }
-                                newRow[2] = WeworkLiteController.GetColorName(word);
+                                newRow[2] = JeeWorkLiteController.GetColorName(word);
                                 dt_filter.Rows.InsertAt(newRow, 0);
                                 dt_value = cnn.CreateDataTable("select fieldid, workid, typeid, value, id_project_team " +
                                     "from we_newfileds_values where FieldID = " + field_custom + " and id_project_team =" + id_project_team);

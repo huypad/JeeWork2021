@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using DPSinfra.Utils;
 using JeeWork_Core2021.Controller;
 using System.Threading.Tasks;
+using static JeeWork_Core2021.Classes.SendMail;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -2590,18 +2591,18 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         string ErrorMessage = "";
                         var x = guikem.Split(',');
                         //s.Send(m);
-                        emailMessage asyncnotice = new emailMessage()
-                        {
-                            CustomerID = nguoigui.CustomerID,
-                            access_token = "",
-                            to = dtUser.Rows[i]["email"].ToString(),
-                            cc = string.Join(",", guikem.Split(',').Where(x => !string.IsNullOrEmpty(x))),
-                            subject = title,
-                            html = contents //nội dung html
-                        };
-                        Task.Run(() => _notifier.sendEmail(asyncnotice));
+                        //emailMessage asyncnotice = new emailMessage()
+                        //{
+                        //    CustomerID = nguoigui.CustomerID,
+                        //    access_token = "",
+                        //    to = dtUser.Rows[i]["email"].ToString(),
+                        //    cc = string.Join(",", guikem.Split(',').Where(x => !string.IsNullOrEmpty(x))),
+                        //    subject = title,
+                        //    html = contents //nội dung html
+                        //};
+                        //Task.Run(() => _notifier.sendEmail(asyncnotice));
                         MailInfo MInfo = new MailInfo();
-                        Task.Run(() => SendMail.Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
+                        Task.Run(() => Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
                     }
                 }
                 cnn.Disconnect();

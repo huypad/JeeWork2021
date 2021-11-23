@@ -59,7 +59,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 if (query == null)
                     query = new QueryParams();
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     Dictionary<string, string> collect = new Dictionary<string, string>
@@ -132,12 +132,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = $@"";
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
@@ -234,7 +234,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 //    strRe += (strRe == "" ? "" : ",") + "tên chức năng thực thi tự động";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     cnn.BeginTransaction();
@@ -292,7 +292,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             { 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     cnn.BeginTransaction();
@@ -344,7 +344,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions cond = new SqlConditions();
@@ -478,7 +478,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                         }
                     }
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 52, data.rowid, iduser, data.title))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 52, data.rowid, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -523,7 +523,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions cond = new SqlConditions();
@@ -554,7 +554,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
 
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 52, rowid, loginData.UserID))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 52, rowid, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
@@ -597,7 +597,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 #region Lấy dữ liệu account từ JeeAccount
-                DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                 if (DataAccount == null)
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                 string err = "";
@@ -612,11 +612,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                         err = "lấy dữ liệu dự án";
                     }
                 }
-                string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
+                string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out err, _configuration);
                 if (err != "")
                     return JsonResultCommon.Custom(err);
                 #endregion
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long IDdepartment = 0;
@@ -729,7 +729,7 @@ where w.Disabled = 0 and id_parent is null and  w.id_department in (select id_ro
             List<object> result = new List<object>();
             if (autoid == 0)
                 return null;
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 DataTable dt = new DataTable();
@@ -849,7 +849,7 @@ where w.Disabled = 0 and id_parent is null and  w.id_department in (select id_ro
 
             if (autoid == 0)
                 return null;
-            string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
+            string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, CustomerID, _configuration);
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 DataTable dt = new DataTable();
@@ -1032,14 +1032,14 @@ where w.Disabled = 0 and id_parent is null and  w.id_department in (select id_ro
                             if (cnn.Insert(val1, "automation_task_tag") != 1)
                             {
                                 cnn.RollbackTransaction();
-                                error = "Lỗi truy xuất dữ liệu";
+                                error = cnn.LastError.Message;
                                 return false;
                             }
                         }
                     }
                 }
             }
-            if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 52, max_auto, iduser, data.title))
+            if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 52, max_auto, iduser, data.title))
             {
                 cnn.RollbackTransaction();
                 error = "Lỗi truy xuất dữ liệu";

@@ -67,18 +67,18 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -278,18 +278,18 @@ from we_repeated_user u where u.Disabled = 0");
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = WeworkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
 
                     //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
                     //string ids = string.Join(",", nvs);
                     string error = "";
-                    string listID = WeworkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
                         return JsonResultCommon.Custom(error);
                     #endregion
@@ -365,7 +365,7 @@ from we_repeated_Task task where task.Disabled=0";
                                                 hoten = dr["hoten"],
                                                 username = dr["username"],
                                                 mobile = dr["mobile"],
-                                                //image = WeworkLiteController.genLinkImage(loginData.CustomerID, dr["id_nv"].ToString())
+                                                //image = JeeWorkLiteController.genLinkImage(loginData.CustomerID, dr["id_nv"].ToString())
                                             },
                                     Tasks = from dr2 in ds.Tables[2].AsEnumerable()
                                             where dr2["id_repeated"].Equals(r["id_row"])
@@ -421,7 +421,7 @@ from we_repeated_Task task where task.Disabled=0";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -535,7 +535,7 @@ from we_repeated_Task task where task.Disabled=0";
                     strRe += (strRe == "" ? "" : ",") + "các ngày lặp lại";
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -691,7 +691,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id + "),0)";
@@ -735,7 +735,7 @@ from we_repeated_Task task where task.Disabled=0";
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -796,7 +796,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id + "),0)";
@@ -835,7 +835,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id + "),0)";
@@ -874,7 +874,7 @@ from we_repeated_Task task where task.Disabled=0";
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_repeated where Disabled=0 and  id_row = " + id_repeated + "),0)";
@@ -965,9 +965,9 @@ from we_repeated_Task task where task.Disabled=0";
                                             {
                                                 var users = new List<long> { long.Parse(row["id_user"].ToString()) };
                                                 #region Lấy thông tin để thông báo
-                                                SendNotifyModel noti = WeworkLiteController.GetInfoNotify(10, ConnectionString);
+                                                SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                                                 #endregion
-                                                WeworkLiteController.mailthongbao(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
+                                                JeeWorkLiteController.SendEmail(int.Parse(row["id_work"].ToString()), users, 10, loginData, ConnectionString, _notifier, _configuration);
                                                 #region Notify thêm mới công việc
                                                 Hashtable has_replace = new Hashtable();
                                                 for (int i = 0; i < users.Count; i++)
@@ -1001,7 +1001,7 @@ from we_repeated_Task task where task.Disabled=0";
                                                     var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                                                     if (info is not null)
                                                     {
-                                                        bool kq_noti = WeworkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                                        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                                     }
                                                 }
                                                 #endregion
@@ -1073,7 +1073,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("CreatedBy", runby);
                         val.Add("id_repeated", dr["id_row"].ToString());
                         val.Add("start_date", ngaybatdau);
-                        DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+                        DataTable dt_status = JeeWorkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
                         if (dt.Rows.Count > 0)
                         {
                             DataRow[] RowStatus = dt_status.Select("IsDefault = 1 and IsFinal = 0");
@@ -1196,7 +1196,7 @@ from we_repeated_Task task where task.Disabled=0";
                         val.Add("CreatedBy", runby);
                         val.Add("id_repeated", dr["id_row"].ToString());
                         val.Add("start_date", ngaybatdau);
-                        DataTable dt_status = WeworkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
+                        DataTable dt_status = JeeWorkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
                         if (dt.Rows.Count > 0)
                         {
                             DataRow[] RowStatus = dt.Select("IsDefault = 1 and IsFinal = 0");

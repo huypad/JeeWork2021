@@ -63,7 +63,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
@@ -155,7 +155,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     //dt = Common.GetListByManager(loginData.UserID.ToString(), cnn);//id_nv, hoten...
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
@@ -236,7 +236,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -355,7 +355,7 @@ left join {_config.HRCatalog}.dbo.Tbl_Account acc on g.reviewer=acc.id_nv where 
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_nv"]))
@@ -477,7 +477,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
                 temp.Add(new DataColumn() { ColumnName = "merge_title" });
                 DataColumn[] cols = temp.ToArray();
                 dt.Columns.AddRange(cols);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strG = @"select p.id_row, p.title from we_project_team_user u
@@ -538,7 +538,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_filter"]))
@@ -622,7 +622,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -740,7 +740,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -820,7 +820,7 @@ join we_project_team p on p.id_row=u.id_project_team where u.disabled=0 and p.Di
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -968,7 +968,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
@@ -1053,7 +1053,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
@@ -1161,7 +1161,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                                   select new
                                                   {
                                                       id_row = dr["id_row"],
-                                                      path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                      path = JeeWorkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                                       filename = dr["filename"],
                                                       type = dr["type"],
                                                       isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -1177,7 +1177,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                                          select new
                                                          {
                                                              id_row = dr["id_row"],
-                                                             path = WeworkLiteController.genLinkAttachment(_configuration, dr["path"]),
+                                                             path = JeeWorkLiteController.genLinkAttachment(_configuration, dr["path"]),
                                                              filename = dr["filename"],
                                                              type = dr["type"],
                                                              isImage = UploadHelper.IsImage(dr["type"].ToString()),
@@ -1227,7 +1227,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                     //                               hoten = item["hoten"],
                                     //                               username = item["username"],
                                     //                               mobile = item["mobile"],
-                                    //                               image = WeworkLiteController.genLinkImage(domain,loginData.CustomerID, item["id_nv"].ToString())
+                                    //                               image = JeeWorkLiteController.genLinkImage(domain,loginData.CustomerID, item["id_nv"].ToString())
                                     //                           },
                                     //                       }
                                     //             },
@@ -1306,7 +1306,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -1394,14 +1394,14 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //string LogContent = "", LogEditContent = "";
                     //LogContent = LogEditContent = "Thêm mới dữ liệu work: title=" + data.title + ", id_project_team=" + data.id_project_team;
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
                     cnn.EndTransaction();
                     data.id_row = idc;
-                    WeworkLiteController.mailthongbao(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
+                    JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
                     #region Notify thêm mới công việc
                     Hashtable has_replace = new Hashtable();
                     for (int i = 0; i < data.Users.Count; i++)
@@ -1452,7 +1452,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -1525,10 +1525,10 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
 
                     var keys = new List<string> { "title", "description", "id_group" };
-                    var vals = WeworkLiteController.CheckKeyChange(keys, old, dt);
+                    var vals = JeeWorkLiteController.CheckKeyChange(keys, old, dt);
                     if (vals[0])
                     {
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 17, data.id_row, iduser, "", old.Rows[0]["title"], data.title))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 17, data.id_row, iduser, "", old.Rows[0]["title"], data.title))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
@@ -1536,7 +1536,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     }
                     if (vals[1])
                     {
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 16, data.id_row, iduser, "", old.Rows[0]["description"], data.description))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 16, data.id_row, iduser, "", old.Rows[0]["description"], data.description))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
@@ -1544,13 +1544,13 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     }
                     if (vals[2])
                     {
-                        if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 12, data.id_row, iduser, "", old.Rows[0]["id_group"], data.id_group))
+                        if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 12, data.id_row, iduser, "", old.Rows[0]["id_group"], data.id_group))
                         {
                             cnn.RollbackTransaction();
                             return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                         }
                     }
-                    WeworkLiteController.mailthongbao(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
+                    JeeWorkLiteController.SendEmail(data.id_row, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
                     cnn.EndTransaction();
                     #region Notify chỉnh sửa công việc
                     Hashtable has_replace = new Hashtable();
@@ -1601,7 +1601,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             try
             {
                 string log_content = "";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -1638,7 +1638,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                WeworkLiteController.mailthongbao(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
+                                JeeWorkLiteController.SendEmail(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
                                 for (int i = 0; i < users.Count; i++)
@@ -1675,7 +1675,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                WeworkLiteController.mailthongbao(data.id_row, users, 12, loginData, ConnectionString, _notifier, _configuration, old);
+                                JeeWorkLiteController.SendEmail(data.id_row, users, 12, loginData, ConnectionString, _notifier, _configuration, old);
                                 #region Notify chỉnh sửa công việc
                                 Hashtable has_replace = new Hashtable();
                                 for (int i = 0; i < users.Count; i++)
@@ -1714,7 +1714,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 cnn.EndTransaction();
                                 if (int.Parse(data.value.ToString()) == 2)
                                 {
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 13, loginData, ConnectionString, _notifier, _configuration);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, 13, loginData, ConnectionString, _notifier, _configuration);
                                     #region Notify cập nhật trạng thái công việc hoàn thành
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -1745,7 +1745,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 }
                                 if (int.Parse(data.value.ToString()) == 1)
                                 {
-                                    WeworkLiteController.mailthongbao(data.id_row, users, 14, loginData, ConnectionString, _notifier, _configuration);
+                                    JeeWorkLiteController.SendEmail(data.id_row, users, 14, loginData, ConnectionString, _notifier, _configuration);
                                     #region Notify cập nhật trạng thái công việc đang làm
                                     Hashtable has_replace = new Hashtable();
                                     for (int i = 0; i < users.Count; i++)
@@ -1802,7 +1802,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                                 }
                             }
                             var users = new List<long> { long.Parse(data.value.ToString()) };
-                            WeworkLiteController.mailthongbao(data.id_row, users, 10, loginData, ConnectionString, _notifier, _configuration);
+                            JeeWorkLiteController.SendEmail(data.id_row, users, 10, loginData, ConnectionString, _notifier, _configuration);
                             #region Notify assign
                             Hashtable has_replace = new Hashtable();
                             for (int i = 0; i < users.Count; i++)
@@ -1910,10 +1910,10 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                             string temp = data.key;
                             if (temp == "assign")
                                 temp = "id_nv";
-                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, data.id_log_action, data.id_row, iduser, log_content, old.Rows[0][temp], data.value);
+                            re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, data.id_log_action, data.id_row, iduser, log_content, old.Rows[0][temp], data.value);
                         }
                         else
-                            re = WeworkLiteController.log(_logger, loginData.Username, cnn, data.id_log_action, data.id_row, iduser, log_content);
+                            re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, data.id_log_action, data.id_row, iduser, log_content);
                         if (!re)
                         {
                             cnn.RollbackTransaction();
@@ -1946,7 +1946,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             {
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select ISNULL((select count(*) from we_work where disabled=0 and id_row = " + id + "),0)";
@@ -1969,7 +1969,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     }
                     //string LogContent = "Xóa dữ liệu work (" + id + ")";
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 18, id, iduser))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 18, id, iduser))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
@@ -1978,7 +1978,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     if (dt_user.Rows.Count > 0)
                     {
                         var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                        WeworkLiteController.mailthongbao(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
+                        JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
                         object workname = cnn.ExecuteScalar("select title from we_work where Disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
                         if (workname != null)
                             workname = workname.ToString();
@@ -2033,7 +2033,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = "select * from we_work_user where disabled=0 and id_work=" + id + " and id_user=" + id_user;
@@ -2059,7 +2059,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
                     }
-                    if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 15, id, id_user))
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 15, id, id_user))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
@@ -2107,7 +2107,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                 {
                     return JsonResultCommon.BatBuoc(strRe);
                 }
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long iduser = loginData.UserID;
@@ -2158,7 +2158,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.UserName);
                     //log trong store
                     //long idw = long.Parse(dt.Rows[0]["id_row"].ToString());
-                    //if (!WeworkLiteController.log(_logger, loginData.Username, cnn, 1, idw, iduser))
+                    //if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, idw, iduser))
                     //{
                     //    cnn.RollbackTransaction();
                     //    return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
@@ -2188,7 +2188,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql = @$"select l.*, act.action, act.action_en, act.format, act.sql,w.title,acc.* from we_log l 
@@ -2285,7 +2285,7 @@ where act.object_type = 1 and view_detail=1 and l.id_row = " + id;
                 temp.Add(new DataColumn() { ColumnName = "merge_title" });
                 DataColumn[] cols = temp.ToArray();
                 dt.Columns.AddRange(cols);
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strG = @"select null as id_row, N'Chưa phân loại' as title union
@@ -2418,7 +2418,7 @@ select id_row, title from we_group g where disabled=0 and id_project_team=" + qu
                 return JsonResultCommon.DangNhap();
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 if (data.id_project_team <= 0)
                     return JsonResultCommon.BatBuoc("Dự án/phòng ban");
                 if (data.Review || (!data.Review && data_import.dtW == null))
@@ -2884,7 +2884,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             try
             {
 
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string strF = "select id_row from we_work_user where Disabled=0 and id_work=" + id + " and id_user=" + id_user;
@@ -2940,7 +2940,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             {
                 if (data.Users == null || data.Users.Count == 0)
                     return JsonResultCommon.BatBuoc("người theo dõi");
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     SqlConditions sqlcond = new SqlConditions();
@@ -3000,7 +3000,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region filter thời gian , keyword
@@ -3051,7 +3051,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
                                        title = rr["title"],
                                        classNames = new List<string>() { rr["status"].ToString() == "2" ? "success" : "", rr["is_quahan"].ToString() == "1" ? "overdue" : "" },
-                                       imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       imageurl = JeeWorkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
@@ -3077,7 +3077,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             try
             {
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     if (string.IsNullOrEmpty(query.filter["id_project_team"]))
@@ -3130,7 +3130,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                                        end = rr["end_date"] != DBNull.Value ? string.Format("{0:yyyy-MM-ddTHH:mm}", rr["end_date"]) : "",
                                        title = rr["title"],
                                        classNames = new List<string>() { rr["status"].ToString() == "2" ? "success" : "", rr["is_quahan"].ToString() == "1" ? "overdue" : "" },
-                                       imageurl = WeworkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
+                                       imageurl = JeeWorkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
                                        //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
@@ -3166,7 +3166,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
             {
                 DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
                 dieukien_where += " and w.CreatedDate>=@from";
-                Conds.Add("from", WeworkLiteController.GetUTCTime(_header, from.ToString()));
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
                 
             }
             if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
@@ -3174,7 +3174,7 @@ join {_config.HRCatalog}.dbo.v_account acc on u.id_user = acc.Id_NV where disabl
                 DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
                 to = to.AddDays(1);
                 dieukien_where += " and w.CreatedDate<@to";
-               Conds.Add("to", WeworkLiteController.GetUTCTime(_header, to.ToString())); 
+               Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString())); 
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {

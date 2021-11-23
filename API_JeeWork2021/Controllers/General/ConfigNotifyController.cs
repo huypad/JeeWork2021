@@ -55,7 +55,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             string[] arremail = new string[100];
             try
             {
-                string ConnectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sqlq = "select id_row, config_notify, config_email " +
@@ -65,7 +65,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
                     DataTable dt_notify = new DataTable();
                     ConfigNotify _config = new ConfigNotify();
-                    dt_notify = WeworkLiteController.dt_notify(cnn);
+                    dt_notify = JeeWorkLiteController.dt_notify(cnn);
                     if (dt.Rows.Count == 1)
                     {
                         DataRow row = dt.Rows[0];
@@ -130,7 +130,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 if (loginData != null)
                 {
                     #region Khai bao sử dụng ConnectionString
-                    string connectionString = WeworkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                    string connectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                     #endregion
                     using (DpsConnection cnn = new DpsConnection(connectionString))
                     {
@@ -140,7 +140,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         //where_customer = " and id_department in (select id_row from we_department where disabled = 0 " +
                         //    "and idkh = " + loginData.CustomerID+")";
                         DataTable dt = cnn.CreateDataTable(sqlq + where_customer);
-                        if (!WeworkLiteController.CheckCustomerID(data.id_project_team, "we_project_team", loginData, cnn))
+                        if (!JeeWorkLiteController.CheckCustomerID(data.id_project_team, "we_project_team", loginData, cnn))
                         {
                             return JsonResultCommon.Custom("Dự án không tồn tại");
                         }
