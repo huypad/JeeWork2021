@@ -1277,21 +1277,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         this.router.navigate([
             '',
             { outlets: { auxName: 'aux/detail/' + item.id_row } },
-        ]);
-        // const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-        //   width: "90vw",
-        //   height: "90vh",
-        //   data: item,
-        // });
-
-        // dialogRef.afterClosed().subscribe((result) => {
-        //   this.ReloadData(true);
-        // this.LoadData();
-        //   if (result != undefined) {
-        //     // this.selectedDate.startDate = new Date(result.startDate)
-        //     // this.selectedDate.endDate = new Date(result.endDate)
-        //   }
-        // });
+        ]);       
     }
 
     f_convertDate(v: any) {

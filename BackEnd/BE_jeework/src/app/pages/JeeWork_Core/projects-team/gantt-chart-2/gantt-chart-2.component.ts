@@ -814,20 +814,6 @@ export class GanttChart2Component implements OnInit {
 
 	Viewdetail(value) {
 		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+value.id_row }, }]);
-		// var item: any = {};
-		// item.id_row = value.replace("W", "");
-		// item.id_project_team = this.ID_Project;
-		// // this.DataID = this.data.id_row;
-		// // this.Id_project_team = this.data.id_project_team;
-		// const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-		// 	width: '90vw',
-		// 	height: '90vh',
-		// 	data: item
-		// });
-
-		// dialogRef.afterClosed().subscribe(result => {
-		// 	this.ngOnInit();
-		// });
 	}
 
 	test() {

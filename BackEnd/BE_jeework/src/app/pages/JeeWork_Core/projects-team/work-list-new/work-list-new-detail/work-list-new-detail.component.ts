@@ -198,9 +198,15 @@ export class WorkListNewDetailComponent implements OnInit {
 
     /** LOAD DATA */
     ngOnInit() {
+        this.dialogRef.disableClose = true;
+        this.dialogRef.backdropClick().subscribe((_) => {
+          let cn = confirm('Sure ?');
+          if (cn) {
+            this.dialogRef.close();
+          }
+        });
         this.workService.currentMessage.subscribe(message => {
         });
-
         this.data = this.datalog;
         if (this.data && this.data.notback) {
             this.isback = false;
@@ -334,6 +340,7 @@ export class WorkListNewDetailComponent implements OnInit {
         // this.DataID = item.id_row;
         // this.LoadData();
         // this.LoadChecklist();
+        debugger
         const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
             width: '90vw',
             height: '85vh',
@@ -1931,13 +1938,7 @@ export class WorkListNewDetailComponent implements OnInit {
     //     this.dialogRef.close(true);
     //   }
     goBack() {
-        this.dialogRef.disableClose = true;
-        this.dialogRef.backdropClick().subscribe((_) => {
-          let cn = confirm('Sure ?');
-          if (cn) {
-            this.dialogRef.close();
-          }
-        });
+       
         this.changeDetectorRefs.detectChanges();
     }
     DeleteTask() {

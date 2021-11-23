@@ -59,6 +59,7 @@ export class AuxiliaryRouterComponent implements OnInit {
     openDialog(item) {
         item.notback = true;
         item.notloading = true;
+        debugger
         const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
             width: '100vw',
             maxWidth: '100vw',

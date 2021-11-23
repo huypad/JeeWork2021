@@ -55,6 +55,7 @@ export class AuxiliaryRouterJWComponent implements OnInit {
     }
 
     openDialogJW(item) {
+        debugger
         const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
             width: '90vw',
             height: '90vh',

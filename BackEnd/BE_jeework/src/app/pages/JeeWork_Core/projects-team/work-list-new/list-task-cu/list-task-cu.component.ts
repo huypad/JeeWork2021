@@ -211,9 +211,11 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     ngOnChanges() {
         if (this.detailWork > 0) {
+            
             this._service.WorkDetail(this.detailWork).subscribe(res => {
                 if (res && res.status === 1) {
                     const item = res.data;
+                    debugger
                     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
                         width: '90vw',
                         height: '90vh',
@@ -753,7 +755,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     ViewDetai(item) {
         this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
-        debugger
     }
     f_convertDate(v: any) {
         if (v != '' && v != undefined) {

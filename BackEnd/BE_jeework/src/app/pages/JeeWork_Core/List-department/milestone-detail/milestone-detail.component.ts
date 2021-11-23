@@ -217,21 +217,7 @@ export class MilestoneDetailComponent {
 	}
 
 	ViewDetail(id_row){
-		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+ id_row }, }]);
-		// this.ProjectsTeamService.WorkDetail(id_row).subscribe(res => {
-		// 	if (res && res.status == 1) {
-		// 		const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
-		// 			width: '90vw',
-		// 			height: '90vh',
-		// 			data: res.data,
-		// 		  });
 
-		// 		  dialogRef.afterClosed().subscribe(result => {
-		// 			  this.ngOnInit();
-		// 		  });
-		// 	}
-		// 	else this.layoutUtilsService.showError(res.error.message)
-		// });
 	}
 
 	CheckedAll() {
