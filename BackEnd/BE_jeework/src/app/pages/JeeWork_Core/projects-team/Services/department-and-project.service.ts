@@ -461,7 +461,6 @@ export class ProjectsTeamService {
         return this.http.get<any>(url, { headers: httpHeaders });
     }
 
-
     DuplicateCU(item): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
         return this.http.post<any>(API_work_CU + '/Duplicate', item, { headers: httpHeaders });

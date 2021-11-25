@@ -1,0 +1,13 @@
+<div class="modal-header">
+	<h4 class="modal-title">{{ title }}</h4>
+</div>
+<div class="modal-body">
+	 <span style="font-size: 14px; color: black; white-space: pre-wrap !important; width: auto; display: block; min-height: 20px !important; max-height: 459px !important; height: auto;">
+		{{ message }}
+	 </span>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-label-primary" (click)="decline()">{{ btnCancelText }}</button>
+	<button type="button" class="btn btn-label-danger" (click)="accept()">{{ btnOkText }}</button>
+	<button mat-raised-button class="btn btn-success" (click)="dismiss()" #btnRef>{{ btnSaveChange }}</button>
+</div>

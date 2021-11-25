@@ -10,6 +10,8 @@ import { Injectable } from '@angular/core';
 import { ActionNotificationComponent } from '../../_shared/action-natification/action-notification.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationDialogComponent } from '../../_shared/action-confirm/confirmation-dialog.component';
 
 
 export enum MessageType {
@@ -45,15 +47,30 @@ export class LayoutUtilsService {
         private snackBar: MatSnackBar,
         private dialog: MatDialog,
         private http: HttpClient,
-        private translate: TranslateService
+        private translate: TranslateService,
+        private modalService: NgbModal
     ) {
     }
-
+    public confirm(
+        title: string,
+        message: string,
+        btnOkText: string = 'Hủy thay đổi và đóng',
+        btnCancelText: string = 'Đóng',
+        btnSaveChange: string = 'Lưu thay đổi và đóng',
+        dialogSize: 'sm' | 'lg' = 'sm'): Promise<boolean> {
+        const modalRef = this.modalService.open(ConfirmationDialogComponent, { size: '300px' });
+        modalRef.componentInstance.title = title;
+        modalRef.componentInstance.message = message;
+        modalRef.componentInstance.btnOkText = btnOkText;
+        modalRef.componentInstance.btnCancelText = btnCancelText;
+        modalRef.componentInstance.btnSaveChange = btnSaveChange;
+        return modalRef.result;
+    }
     // SnackBar for notifications
     showActionNotification(
         message: string,
         type: MessageType = MessageType.Create,
-        duration: number = 1000,
+        duration: number = 10000,
         showCloseButton: boolean = true,
         showUndoButton: boolean = false,
         undoButtonDuration: number = 3000,
@@ -108,10 +125,10 @@ export class LayoutUtilsService {
         message: string,
     ) {
         let type: MessageType = MessageType.Read,
-            duration: number = 300_000,
+            duration: number = 0,
             showCloseButton: boolean = true,
             showUndoButton: boolean = false,
-            undoButtonDuration: number = 300_000,
+            undoButtonDuration: number = 0,
             verticalPosition: 'top' | 'bottom' = 'top',
             mean: 0 | 1 = 0;
         return this.snackBar.openFromComponent(ActionNotificationComponent, {
@@ -124,7 +141,7 @@ export class LayoutUtilsService {
                 undoButtonDuration,
                 verticalPosition,
                 type,
-                action: 'Undo',
+                action: 'Đã hiểu',
                 meanMes: mean
             },
             verticalPosition: verticalPosition
@@ -132,13 +149,18 @@ export class LayoutUtilsService {
     }
 
     // Method returns instance of MatDialog
-    deleteElement(title: string = '', description: string = '', waitDesciption: string = '', doPositiveBtn: string = 'Delete') {
-        return this.dialog.open(DeleteEntityDialogComponent, {
-            data: { title, description, waitDesciption, doPositiveBtn },
-            width: '440px'
-        });
-    }
-
+    // deleteElement(title: string = '', description: string = '', waitDesciption: string = '', doPositiveBtn: string = 'Delete') {
+    //     return this.dialog.open(DeleteEntityDialogComponent, {
+    //         data: { title, description, waitDesciption, doPositiveBtn },
+    //         width: '440px'
+    //     });
+    // }
+	deleteElement(title: string = '', description: string = '', waitDesciption: string = '', NameButton:string='Đồng ý', CancelButton:string="Không") {
+		return this.dialog.open(DeleteEntityDialogComponent, {
+			data: { title, description, waitDesciption, NameButton, CancelButton },
+			width: '440px'
+		});
+	}
     // Method returns instance of MatDialog
     fetchElements(_data) {
         return this.dialog.open(FetchEntityDialogComponent, {

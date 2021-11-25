@@ -339,6 +339,7 @@ export class ListActivitiesComponent {
     }
 
     Viewdetail(item) {
+    debugger
         this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.object_id }, }]);
     }
 

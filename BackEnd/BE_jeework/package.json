@@ -3,7 +3,7 @@
   "version": "7.1.7",
   "scripts": {
     "ng": "ng",
-    "start": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve --port 4222",
+    "start": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve --port 1900",
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
@@ -61,6 +61,7 @@
     "highcharts": "^9.0.1",
     "highlight.js": "^10.4.0",
     "highlightjs-line-numbers.js": "^2.8.0",
+    "http-parser-js": "^0.5.3",
     "jsgantt-improved": "^2.8.4",
     "jwt-decode": "^3.1.2",
     "lodash.range": "^3.2.0",

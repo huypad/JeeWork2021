@@ -242,6 +242,7 @@ export class WorkCalendarComponent implements OnInit {
   }
 
   eventClicked(el) {
+    debugger
 		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+ el.event.extendedProps.id_row }, }]);
   }
   handleSelect(el) {

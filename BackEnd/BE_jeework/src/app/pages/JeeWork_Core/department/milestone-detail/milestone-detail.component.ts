@@ -1,9 +1,9 @@
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import { MatPaginator,PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatDialog,MatDialogRef,MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 // RXJS
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -47,10 +47,10 @@ export class MilestoneDetailComponent {
 	htquahan_mt: any;
 	quahan_mt: any;
 	danglam_mt: any;
-	image: any='';
-	hoten: any='';
-	username: any='';
-	mobile: any='';
+	image: any = '';
+	hoten: any = '';
+	username: any = '';
+	mobile: any = '';
 	Disabled_checkall: boolean = true;
 	Disabled_DuHoSo: boolean = true;
 	Disabled_Item: boolean = true;
@@ -216,8 +216,9 @@ export class MilestoneDetailComponent {
 		return chuoicheck;
 	}
 
-	ViewDetail(id_row){
-		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+ id_row }, }]);
+	ViewDetail(id_row) {
+		debugger
+		this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + id_row }, }]);
 	}
 
 	CheckedAll() {
@@ -235,12 +236,12 @@ export class MilestoneDetailComponent {
 	}
 	// get quan trọng khẩn cấp: 1:quan trọng khẩn cấp,2:quan trọng,3 khẩn cấp, 4 bình thường
 	getItemCssClassByLocked(status: number): string {
-		if(status < 2 && status > 0){
+		if (status < 2 && status > 0) {
 			return 'success';
 		}
 	}
 	getItemLockedString(condition: number): string {
-		if(condition < 2 && condition > 0){
+		if (condition < 2 && condition > 0) {
 			return this.translate.instant('filter.quantrong');
 		}
 	}

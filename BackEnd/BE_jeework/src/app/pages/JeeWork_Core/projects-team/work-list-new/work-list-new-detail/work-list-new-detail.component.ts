@@ -1,6 +1,5 @@
 import { WorkProcessEditComponent } from './../work-process-edit/work-process-edit.component';
 import { QueryFilterComment } from './../../../jee-comment/jee-comment.model';
-import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
 import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
@@ -8,7 +7,6 @@ import {
     LayoutUtilsService,
     MessageType,
 } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { StatusDynamicModel } from './../../Model/status-dynamic.model';
 import { StatusDynamicDialogComponent } from './../../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import {
@@ -26,7 +24,6 @@ import { WeWorkService } from './../../../services/wework.services';
 import { AttachmentService } from './../../../services/attachment.service';
 import { UpdateByKeyService } from './../../../update-by-keys/update-by-keys.service';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkService } from './../../../work/work.service';
 import { PopoverContentComponent } from 'ngx-smart-popover';
@@ -48,6 +45,8 @@ import {
     ChangeDetectorRef,
     OnChanges,
     HostListener,
+    ViewContainerRef,
+    ComponentFactoryResolver,
 } from '@angular/core';
 import * as moment from 'moment';
 import {
@@ -65,15 +64,14 @@ import { CommunicateService } from '../work-list-new-service/communicate.service
 import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
-import { previewlistComponent } from '../../../preview/preview-list/preview-list.component';
-
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
     styleUrls: ['./work-list-new-detail.component.scss'],
 })
 export class WorkListNewDetailComponent implements OnInit {
-	private componentSubscriptions: Subscription;
+    nameList: string[];
+    name: string;
     constructor(
         private workService: WorkService,
         private communicateService: CommunicateService,
@@ -92,7 +90,11 @@ export class WorkListNewDetailComponent implements OnInit {
         public dialogRef: MatDialogRef<WorkListNewDetailComponent>,
         @Inject(MAT_DIALOG_DATA) public datalog: DialogData,
         private menuServices: MenuPhanQuyenServices,
-        private sanitizer: DomSanitizer
+        private sanitizer: DomSanitizer,
+        private viewContainerRef: ViewContainerRef, private componentFactoryResolver: ComponentFactoryResolver
+        // public activeModal: NgbActiveModal,
+        // private confirmationDialogService: ConfirmationDialogService
+
     ) {
         this.list_priority = this.weworkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
@@ -198,13 +200,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
     /** LOAD DATA */
     ngOnInit() {
-        this.dialogRef.disableClose = true;
-        this.dialogRef.backdropClick().subscribe((_) => {
-          let cn = confirm('Sure ?');
-          if (cn) {
-            this.dialogRef.close();
-          }
-        });
+
         this.workService.currentMessage.subscribe(message => {
         });
         this.data = this.datalog;
@@ -215,6 +211,7 @@ export class WorkListNewDetailComponent implements OnInit {
             this.loading = false;
         }
         this.DataID = this.data.id_row;
+        this.LoadDataWorkDetail(this.DataID);
         this.Id_project_team = this.data.id_project_team;
         this.UserInfo = JSON.parse(localStorage.getItem('UserInfo'));
         this.projectsTeamService.Detail(this.Id_project_team).subscribe(
@@ -245,7 +242,6 @@ export class WorkListNewDetailComponent implements OnInit {
     OnChanges() {
         // this.ngOnInit();
     }
-
     LoadChecklist() {
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
@@ -345,6 +341,7 @@ export class WorkListNewDetailComponent implements OnInit {
             width: '90vw',
             height: '85vh',
             data: item,
+            disableClose: true
         });
 
         dialogRef.afterClosed().subscribe((result) => {
@@ -386,7 +383,22 @@ export class WorkListNewDetailComponent implements OnInit {
             }
         });
     }
-
+    LoadDataWorkDetail(WorkID) {
+        this.layoutUtilsService.showWaitingDiv();
+        this.projectsTeamService.WorkDetail(WorkID).subscribe((res) => {
+            this.layoutUtilsService.OffWaitingDiv();
+            if (res && res.status == 1) {
+                this.item = res.data;
+                this.isclosed = this.item.closed;
+                if (!this.description_tiny) {
+                    this.description_tiny = this.item.description;
+                }
+                this.changeDetectorRefs.detectChanges();
+            } else {
+                this.layoutUtilsService.showError(res.error.message);
+            }
+        });
+    }
     LoadData() {
         this.mark_tag();
         this.LoadLog();
@@ -554,8 +566,6 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     CheckRoles(roleID: number) {
-
-
         const x = this.list_role.find((res) => res.id_row == this.Id_project_team);
         if (x) {
             if (x.locked) {
@@ -845,26 +855,9 @@ export class WorkListNewDetailComponent implements OnInit {
             this.changeDetectorRefs.detectChanges();
             if (res && res.status == 1) {
                 this.layoutUtilsService.showActionNotification(
-                    this.translate.instant('GeneralKey.capnhatthanhcong'),
-                    MessageType.Read,
-                    4000,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    1
-                );
+                    this.translate.instant('GeneralKey.capnhatthanhcong'), MessageType.Read, 4000, true, false, 3000, 'top', 1);
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -911,8 +904,6 @@ export class WorkListNewDetailComponent implements OnInit {
             });
         });
     }
-
-
     setUpDropSearchNhanVien() {
         this.bankFilterCtrl.setValue('');
         this.filterBanks();
@@ -993,7 +984,6 @@ export class WorkListNewDetailComponent implements OnInit {
     onAlertClose($event) {
         this.hasFormErrors = false;
     }
-
     // ---------------------------------------------------------
 
     f_number(value: any) {
@@ -1292,7 +1282,17 @@ export class WorkListNewDetailComponent implements OnInit {
         });
         this.refreshData();
     }
+    public decline() {
+        // this.activeModal.close(false);
+    }
 
+    public accept() {
+        // this.activeModal.close(true);
+    }
+
+    public dismiss() {
+        // this.activeModal.dismiss();
+    }
     UpdateCheckList() {
         const model = new UpdateByKeyModel();
         model.clear(); // Set all defaults fields
@@ -1511,7 +1511,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     }
                     else {
                         // alert(res.error.message);
-                        this.layoutUtilsService.showActionNotification(res.error.message,MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                         this.LoadData();
                     }
                 });
@@ -1883,7 +1883,7 @@ export class WorkListNewDetailComponent implements OnInit {
             if (res && res.status === 1) {
                 items.checked = !items.checked;
             } else {
-                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true,false, 3000, 'top', 0);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
             }
             this.changeDetectorRefs.detectChanges();
         });
@@ -1916,29 +1916,34 @@ export class WorkListNewDetailComponent implements OnInit {
         }
     }
     ngOnDestroy() {
-		debugger
-        if (this.componentSubscriptions) {
-			this.componentSubscriptions.unsubscribe();
-		}
-	}
+    }
     @HostListener('window:keyup.esc') onKeyUp() {
-        let cn = confirm('Sure ?');
-        if (cn) {
-          this.dialogRef.close();
-        }
-      }
-      @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
+        // you have modified this work item. you can save your changes, discard your changes, or cancel to continue editing
+        // discard changes, save changes
+        this.layoutUtilsService.confirm('Xác nhận', 'Bạn đã sửa đổi công việc này. Bạn có thể lưu các thay đổi, hủy các thay đổi hoặc hủy để tiếp tục chỉnh sửa')
+            .then((close) => {
+                if (close) {
+                    this.dialogRef.close(true);
+                }
+            })
+            // .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+            .catch((err) => {
+                if (err == 'pad') {
+                    this.UpdateDescription();
+                    this.dialogRef.close(true);
+                }
+                else {
+                    // console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+                }
+                debugger
+            });
+    }
+    @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
         console.log('event:', event);
         event.returnValue = false;
-      }
-    
-    //   constructor(public dialogRef: MatDialogRef<ConfirmationDialog>) {}
-    
-    //   onYesClick(): void {
-    //     this.dialogRef.close(true);
-    //   }
+    }
     goBack() {
-       
+        this.onKeyUp();
         this.changeDetectorRefs.detectChanges();
     }
     DeleteTask() {
@@ -1990,8 +1995,5 @@ export class WorkListNewDetailComponent implements OnInit {
     imagesUploadHandler = (blobInfo, success, failure) => {
     };
 
-    @HostListener('window:beforeunload', ['$event'])
-    beforeunloadHandler(event) {
-        return false;
-    }
+
 }

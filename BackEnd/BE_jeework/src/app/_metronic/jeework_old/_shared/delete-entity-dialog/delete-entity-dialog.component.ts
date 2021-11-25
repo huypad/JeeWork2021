@@ -27,6 +27,6 @@ export class DeleteEntityDialogComponent implements OnInit {
 		this.viewLoading = true;
 		setTimeout(() => {
 			this.dialogRef.close(true); // Keep only this row
-		}, 0);
+		}, 500);
 	}
 }

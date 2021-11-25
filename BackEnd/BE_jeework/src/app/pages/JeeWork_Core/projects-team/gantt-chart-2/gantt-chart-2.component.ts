@@ -813,7 +813,10 @@ export class GanttChart2Component implements OnInit {
 	}
 
 	Viewdetail(value) {
+		debugger
 		this.router.navigate(['', { outlets: { auxName: 'aux/detail/'+value.id_row }, }]);
+		// this.router.navigate([], {queryParams: Object.assign({}, this.params, newParams)
+		//   })
 	}
 
 	test() {

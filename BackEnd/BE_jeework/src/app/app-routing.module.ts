@@ -25,7 +25,7 @@ export const routes: Routes = [
   {
     path: 'aux',
     outlet: 'auxName',
-    loadChildren: () => import('./pages/auxiliary-router/auxiliary-router.module').then(mod => mod.AuxiliaryRouterModule),
+    loadChildren: () => import('./pages/auxiliary-router/auxiliary-router.module').then((m) => m.AuxiliaryRouterModule),
   },
   { path: '**', redirectTo: 'error/404' },
 ];
