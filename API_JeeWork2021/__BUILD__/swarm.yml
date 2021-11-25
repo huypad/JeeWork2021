@@ -1,0 +1,48 @@
+version: '3.9'
+
+networks:
+  gateway-network:
+    external: true
+  kafka-network:
+    external: true
+
+services:
+  api:
+    image: ${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}:latest
+    networks:
+      - gateway-network
+      - kafka-network
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      VaultConfig__Endpoint: ${VAULT_ENDPOINT}
+      VaultConfig__Token: ${VAULT_TOKEN}
+      MinioConfig__MinioServer: ${HOST_CDN}
+      KafkaConfig__Brokers: ${KAFKA_BROKER}
+      Host__JeeWork_API: ${HOST_JEEWORK_API}
+      Host__JeeWork_BE: ${HOST_JEEWORK_BE}
+      Host__JeeAccount_API: ${HOST_ACCOUNT_API}
+      Host__JeeComment_API: ${HOST_JEECOMMENT_API}
+      Host__MinIOBrowser: https://${HOST_CDN}
+      AppConfig__IsOnlineDB: ${APP_ISONLINEDB}
+      AppConfig__SecretKey: ${APP_SECRETKEY}
+      AppConfig__Key: ${APP_KEY}
+      AppConfig__SizeUpload: ${SIZE_UPLOAD}
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        order: start-first
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=gateway-network
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.${PROJECT_NAME}-http.rule=Host(`${SUBDOMAIN}.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-http.entrypoints=http
+        - traefik.http.routers.${PROJECT_NAME}-http.middlewares=https-redirect
+        - traefik.http.routers.${PROJECT_NAME}-https.rule=Host(`${SUBDOMAIN}.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-https.entrypoints=https
+        - traefik.http.routers.${PROJECT_NAME}-https.tls=true
+        - traefik.http.routers.${PROJECT_NAME}-https.tls.certresolver=le
+        - traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port=80

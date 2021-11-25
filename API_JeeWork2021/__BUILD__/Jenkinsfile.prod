@@ -1,0 +1,54 @@
+pipeline {
+    environment {
+        REGISTRY_HOST = "registry.jee.vn"
+        REGISTRY_PUBLISHER = "dps"
+        REGISTRY_CRED = "registry"
+        PROJECT_NAME = "jeework-api"
+        
+        REMOTE_URL = "https://jenkins.jee.vn/view/jeework/job/REMOTE%20jeework%20api/build"
+        REMOTE_BUILD_TOKEN = "URvfMrgfPc3TE55mTGMYc2XNffFvgYgABNwLLtesQVRdg4Y2hHypV5mKGhPqMG2F"
+
+        service = ""
+    }
+    agent any
+    stages {
+        stage('Clone repository') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+        stage('Build image') {
+            steps {
+                script {
+                    dir("API_JeeWork2021"){
+                        service = docker.build("${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}:latest")
+                    }
+                }
+            }
+        }
+        stage('Push image') {
+            steps {
+                script {
+                    docker.withRegistry("https://${REGISTRY_HOST}", REGISTRY_CRED) {
+                        service.push("latest")
+                    }
+                }
+            }
+        }
+        stage('Call Remote') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'remotecall', usernameVariable: "USERNAME", passwordVariable: "PASSWORD")]) {
+                        sh """
+                            curl -u ${USERNAME}:${PASSWORD} -X POST \
+                            -H "Content-Type:application/json" \
+                            ${REMOTE_URL}?token=${REMOTE_BUILD_TOKEN}
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
