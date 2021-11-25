@@ -18,6 +18,7 @@ pipeline {
         HOST_ACCOUNT_API = "http://jeeaccount_api"
         HOST_JEECOMMENT_API = "http://jeecomment_api"
         APP_ISONLINEDB = "null"
+        APP_CONNECTIONSTRING="Data Source=192.168.199.4,1433;Initial Catalog=jeework;User ID=jeework;Password=Jee33W0rkdB"
         APP_SECRETKEY = "6LfyWeYUAAAAAPMDrJF8PQ6hsO0ytRLRIc2fKgds"
         APP_KEY = "ZbsHPbRqNvdgMfyG"
         SIZE_UPLOAD = "200000000"

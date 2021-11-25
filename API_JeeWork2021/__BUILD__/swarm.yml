@@ -24,6 +24,7 @@ services:
       Host__JeeComment_API: ${HOST_JEECOMMENT_API}
       Host__MinIOBrowser: https://${HOST_CDN}
       AppConfig__IsOnlineDB: ${APP_ISONLINEDB}
+      AppConfig__ConnectionString: ${APP_CONNECTIONSTRING}
       AppConfig__SecretKey: ${APP_SECRETKEY}
       AppConfig__Key: ${APP_KEY}
       AppConfig__SizeUpload: ${SIZE_UPLOAD}
