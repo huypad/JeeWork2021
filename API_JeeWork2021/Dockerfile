@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["./API_JeeWork2021.csproj", "API_JeeWork2021/"]
-COPY ../packages packages/
+COPY packages packages/
 RUN dotnet restore "API_JeeWork2021/API_JeeWork2021.csproj"
 COPY . API_JeeWork2021/
 WORKDIR "/src/API_JeeWork2021"

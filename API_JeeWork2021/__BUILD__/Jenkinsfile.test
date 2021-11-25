@@ -33,6 +33,13 @@ pipeline {
                 }
             }
         }
+        stage('Copy package folder') {
+            steps {
+                script {
+                    sh "cp -R packages API_JeeWork2021/packages/"
+                }
+            }
+        }
         stage('Build image') {
             steps {
                 script {
