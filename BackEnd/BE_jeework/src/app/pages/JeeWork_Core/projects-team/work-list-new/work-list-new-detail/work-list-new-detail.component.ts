@@ -409,7 +409,6 @@ export class WorkListNewDetailComponent implements OnInit {
             .subscribe((res) => {
                 if (res && res.status === 1) {
                     this.status_dynamic = res.data;
-                    console.log("Dữ liệu trạng thái", res.data);
                     this.changeDetectorRefs.detectChanges();
                 }
             });
@@ -1939,7 +1938,6 @@ export class WorkListNewDetailComponent implements OnInit {
             });
     }
     @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
-        console.log('event:', event);
         event.returnValue = false;
     }
     goBack() {

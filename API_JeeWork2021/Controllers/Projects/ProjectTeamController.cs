@@ -492,7 +492,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , default_view, p.id_template, p.meetingid, de.title as department
                                     ,coalesce(w.tong,0) as tong
                                     ,coalesce( w.ht,0) as ht, coalesce(w.quahan,0) as quahan
-                                    , '' as NguoiTao, '' as NguoiSua from we_project_team p 
+                                    , '' as NguoiTao, '' as NguoiSua, , 0 as is_manager 
+                                    from we_project_team p 
                                     left join we_department de on de.id_row=p.id_department
                                     left join (select count(*) as tong
                                     , COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
@@ -542,7 +543,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), pageModel);
                     #region Map info account từ JeeAccount
-                    foreach (DataRow item in ds.Tables[0].Rows)
+                    foreach (DataRow item in dt.Rows)
                     {
                         var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                         var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();

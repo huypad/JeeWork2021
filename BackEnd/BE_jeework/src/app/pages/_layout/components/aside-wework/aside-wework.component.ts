@@ -825,15 +825,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             this._Services.ChangeType(_item.RowID).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.layoutUtilsService.showActionNotification(
-                        _deleteMessage,
-                        MessageType.Delete,
-                        4000,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        1
-                    );
+                        _deleteMessage, MessageType.Delete, 4000, true, false, 3000, 'top', 1);
                     const _backUrl = `/wework/projects`;
                     this.router.navigateByUrl(_backUrl);
                 } else {

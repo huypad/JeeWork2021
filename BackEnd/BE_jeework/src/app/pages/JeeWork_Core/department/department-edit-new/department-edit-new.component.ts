@@ -1023,7 +1023,6 @@ export class DepartmentEditNewComponent implements OnInit {
     // positon.position_to = curent.Position;
     // positon.columnname = this.data.columnname;
     // positon.id_columnname = this.data.id_row;
-    // console.log(positon);
     // this.dropPosition(positon);
     this.MoveItem(curent, previous);
     // if (event.previousContainer === event.container) {

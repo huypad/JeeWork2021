@@ -34,31 +34,19 @@ export class AuxiliaryRouterJWComponent implements OnInit {
             if (ID && ID > 0) {
                 this.projectsTeamService.WorkDetail(ID).subscribe(res => {
                     if (res && res.status === 1) {
-
                         console.log("activatedRoute", AuxiliaryRouterJWComponent.dialogRef);
-                        if(AuxiliaryRouterJWComponent.dialogRef==null)
-                        this.openDialogJW(res.data);
+                        if (AuxiliaryRouterJWComponent.dialogRef == null)
+                            this.openDialogJW(res.data);
                     } else {
                         console.log("activatedRoute-close", res);
 
                         this.close();
                         // alert(res.error.message);
-                        this.layoutUtilsService.showActionNotification(
-                            res.error.message,
-                            MessageType.Update,
-                            9999999999,
-                            true,
-                            false,
-                            3000,
-                            'top',
-                            0
-                        );
+                        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                     }
                 });
             }
         });
-
-
     }
     close() {
         this.router.navigate(['', { outlets: { auxName: null } }]);

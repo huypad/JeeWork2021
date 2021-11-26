@@ -147,7 +147,6 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     const sbCreate = this.productsService.create(this.product).pipe(
       tap(() => this.router.navigate(['/ecommerce/products'])),
       catchError((errorMessage) => {
-        console.error('UPDATE ERROR', errorMessage);
         return of(this.product);
       })
     ).subscribe(res => this.product = res as Product);
