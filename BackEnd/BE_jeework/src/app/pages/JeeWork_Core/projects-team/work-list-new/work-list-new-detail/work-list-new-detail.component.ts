@@ -161,7 +161,8 @@ export class WorkListNewDetailComponent implements OnInit {
     showChucnang = false;
     disabledBtn = false;
     showsuccess = false;
-    is_inputting = true;
+    is_confirm = false;
+
     private readonly componentName: string = 'kt-task_';
     isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
         false
@@ -1136,7 +1137,6 @@ export class WorkListNewDetailComponent implements OnInit {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
                                 this.description_tiny = this.description;
-                                this.is_inputting = true;
                                 this.refreshData();
                                 // this.checklist = res.data.description;
                                 this.ngOnInit();
@@ -1202,11 +1202,9 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.disabledBtn = true;
                 if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
                     this.description_tiny = this.item.description;
-                    this.is_inputting = false;
                     return;
                 }
                 this.item.description = this.description_tiny;
-                this.is_inputting = false;
                 this.UpdateByKeyNew(this.item, "description", this.description_tiny);
             }
             this.chinhsuamota = !this.chinhsuamota;
@@ -1236,7 +1234,8 @@ export class WorkListNewDetailComponent implements OnInit {
                     this.SendMessage(true);
                     this.LoadData();
                     if (key == "description") {
-                        this.is_inputting = true;
+                        debugger
+                        this.is_confirm = false;
                     }
                 } else {
                     this.layoutUtilsService.showError(res.error.message);
@@ -1246,9 +1245,10 @@ export class WorkListNewDetailComponent implements OnInit {
             finalize(() => this.layoutUtilsService.OffWaitingDiv()),
         ).subscribe((res) => {
             if (key == 'description') {
+                debugger
                 this.showsuccess = true;
+                // this.is_confirm = true;
                 setTimeout(() => {
-                    this.is_inputting = false;
                     this.showsuccess = false;
                     this.disabledBtn = false;
                 }, 2000);
@@ -1916,6 +1916,11 @@ export class WorkListNewDetailComponent implements OnInit {
     }
     ngOnDestroy() {
     }
+    onChangeNote() {
+        this.is_confirm = true;
+        // console.log(this.description_tiny);
+        // debugger
+    }
     @HostListener('window:keyup.esc') onKeyUp() {
         // you have modified this work item. you can save your changes, discard your changes, or cancel to continue editing
         // discard changes, save changes
@@ -1941,7 +1946,10 @@ export class WorkListNewDetailComponent implements OnInit {
         event.returnValue = false;
     }
     goBack() {
-        this.onKeyUp();
+        if (!this.is_confirm)
+            this.dialogRef.close(true);
+        else
+            this.onKeyUp();
         this.changeDetectorRefs.detectChanges();
     }
     DeleteTask() {

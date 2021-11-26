@@ -34,8 +34,7 @@ const tinyMCE = {
     // images_upload_credentials: true,
     autosave_ask_before_unload: true, // Tự động save
     autosave_interval: '10s', // thời gian tự động save
-    autosave_restore_when_empty: true,
-    // apiKey : "lvp9xf6bvvm3nkaupm67ffzf50ve8femuaztgg7rkgkmsws3",
+    // autosave_restore_when_empty: true,
     images_upload_handler: function (blobInfo, success, failure) {
         var xhr, formData;
         xhr = new XMLHttpRequest();
@@ -95,6 +94,5 @@ const tinyMCE = {
             }
         });
     },
-    // content_style: '.tox-notification--in{display:none};'
 };
 export { tinyMCE };

@@ -55,14 +55,14 @@ export class LayoutUtilsService {
         title: string,
         message: string,
         btnOkText: string = 'Hủy thay đổi và đóng',
-        btnCancelText: string = 'Đóng',
+        // btnCancelText: string = 'Đóng',
         btnSaveChange: string = 'Lưu thay đổi và đóng',
         dialogSize: 'sm' | 'lg' = 'sm'): Promise<boolean> {
         const modalRef = this.modalService.open(ConfirmationDialogComponent, { size: '300px' });
         modalRef.componentInstance.title = title;
         modalRef.componentInstance.message = message;
         modalRef.componentInstance.btnOkText = btnOkText;
-        modalRef.componentInstance.btnCancelText = btnCancelText;
+        // modalRef.componentInstance.btnCancelText = btnCancelText;
         modalRef.componentInstance.btnSaveChange = btnSaveChange;
         return modalRef.result;
     }
