@@ -1,0 +1,30 @@
+version: '3.9'
+
+networks:
+  gateway-network:
+    external: true
+
+services:
+  backend:
+    image: ${REGISTRY_HOST}/${REGISTRY_PUBLISHER}/${PROJECT_NAME}:latest
+    networks:
+      - gateway-network
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        order: start-first
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=gateway-network
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.${PROJECT_NAME}-http.rule=Host(`${SUBDOMAIN}.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-http.entrypoints=http
+        - traefik.http.routers.${PROJECT_NAME}-http.middlewares=https-redirect
+        - traefik.http.routers.${PROJECT_NAME}-https.rule=Host(`${SUBDOMAIN}.${DOMAIN}`)
+        - traefik.http.routers.${PROJECT_NAME}-https.entrypoints=https
+        - traefik.http.routers.${PROJECT_NAME}-https.tls=true
+        - traefik.http.routers.${PROJECT_NAME}-https.tls.certresolver=le
+        - traefik.http.services.${PROJECT_NAME}.loadbalancer.server.port=80

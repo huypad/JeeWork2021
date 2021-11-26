@@ -1,13 +1,16 @@
-FROM node:14.15.5-slim As builder
+FROM node:14.17.1-slim As builder
+ARG NODE_ENV
+ENV NODE_OPTIONS=--max-old-space-size=8192
+
 WORKDIR /app
-COPY BackEnd/BE_jeework/package.json ./
-COPY BackEnd/BE_jeework/yarn.lock ./
-COPY BackEnd/BE_jeework/dps-lib-3.1.11.tgz ./
-RUN yarn install
-COPY BackEnd/BE_jeework /app/
-RUN yarn build --prod
+COPY ./package.json ./
+COPY ./yarn.lock ./
+COPY ./dps-lib-3.1.11.tgz ./
+RUN yarn install --production=false
+COPY . .
+RUN yarn build --configuration=${NODE_ENV}
 
 FROM nginx:1.19.8-alpine
-COPY backend.nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./backend.nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 EXPOSE 80

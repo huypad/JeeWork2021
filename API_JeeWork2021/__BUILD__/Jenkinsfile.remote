@@ -1,0 +1,49 @@
+pipeline {
+    environment {
+        REGISTRY_HOST = "registry.jee.vn"
+        REGISTRY_PUBLISHER = "dps"
+        REGISTRY_CRED = "registry"
+        PROJECT_NAME = "jeework-api"
+        DOMAIN = "jee.vn"
+        SUBDOMAIN = "jeework-api"
+        STACK_NAME = "jeework"
+
+        ASPNETCORE_ENVIRONMENT = "Production"
+        VAULT_ENDPOINT = "http://vault:8200"
+        VAULT_TOKEN = "s.F2Ds4Bv6q1KxIO6uk58k9Tfu"
+        KAFKA_BROKER = "kafka1:9999,kafka2:9999,kafka3:9999"
+        HOST_CDN = "cdn.jee.vn"
+        HOST_JEEWORK_BE = "https://jeework.jee.vn"
+        HOST_JEEWORK_API = "https://jeework-api.jee.vn"
+        HOST_ACCOUNT_API = "http://jeeaccount_api"
+        HOST_JEECOMMENT_API = "http://jeecomment_api"
+        APP_ISONLINEDB = "null"
+        APP_CONNECTIONSTRING="Data Source=192.168.199.4,1433;Initial Catalog=jeework;User ID=jeework;Password=Jee33W0rkdB"
+        APP_SECRETKEY = "6LfyWeYUAAAAAPMDrJF8PQ6hsO0ytRLRIc2fKgds"
+        APP_KEY = "ZbsHPbRqNvdgMfyG"
+        SIZE_UPLOAD = "200000000"
+
+        service = ""
+    }
+    agent any
+    stages {
+        stage('Clone repository') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+        stage('Stack deploy') {
+            steps {
+                script {
+                    docker.withRegistry("https://${REGISTRY_HOST}", REGISTRY_CRED) {
+                        dir("API_JeeWork2021/__BUILD__"){
+                            sh "docker stack deploy -c swarm.yml --with-registry-auth ${STACK_NAME}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

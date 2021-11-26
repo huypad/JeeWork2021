@@ -1,0 +1,34 @@
+pipeline {
+    environment {
+        REGISTRY_HOST = "registry.jee.vn"
+        REGISTRY_PUBLISHER = "dps"
+        REGISTRY_CRED = "registry"
+        PROJECT_NAME = "jeework-backend"
+        DOMAIN = "jee.vn"
+        SUBDOMAIN = "jeework"
+        STACK_NAME = "jeework"
+
+        service = ""
+    }
+    agent any
+    stages {
+        stage('Clone repository') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+        stage('Stack deploy') {
+            steps {
+                script {
+                    docker.withRegistry("https://${REGISTRY_HOST}", REGISTRY_CRED) {
+                        dir("BackEnd/BE_jeework/__BUILD__"){
+                            sh "docker stack deploy -c swarm.yml --with-registry-auth ${STACK_NAME}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
