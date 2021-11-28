@@ -89,12 +89,11 @@ export class GroupNameListComponent implements OnInit {
     this.dataSource.paginatorTotal$.subscribe(
       (res) => (this.paginatorNew.total = res)
     );
-    this.Visable = this.permitService.Visible_Group;
-    this.changeDetectorRefs.detectChanges();
-
-    setTimeout(() => {
-      this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
-    }, 10000);
+    // this.Visable = this.permitService.Visible_Group;
+    // this.changeDetectorRefs.detectChanges();
+    // setTimeout(() => {
+    //   this.dataSource.loading$ = new BehaviorSubject<boolean>(false);
+    // }, 1000);
   }
 
   getTitle(): string {
@@ -110,9 +109,9 @@ export class GroupNameListComponent implements OnInit {
       this.paginatorNew.pageSize
     );
     this.dataSource.LoadGroup(queryParams);
-    // setTimeout((x) => {
-    //   this.loadPage();
-    // }, 500);
+    setTimeout((x) => {
+      this.loadPage();
+    }, 500);
 
   }
   loadPage() {
@@ -187,13 +186,7 @@ export class GroupNameListComponent implements OnInit {
       if (!res) {
         this.loadDataList();
       } else {
-        this.layoutUtilsService.showActionNotification(
-          _saveMessage,
-          _messageType,
-          4000,
-          true,
-          false
-        );
+        this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
         this.loadDataList();
       }
     });

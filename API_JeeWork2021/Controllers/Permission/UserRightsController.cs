@@ -49,7 +49,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Get_DSNhom")]
         [HttpGet]
         public object Get_DSNhom([FromQuery] QueryParams query)
@@ -144,7 +144,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Get_UserGroup")]
         [HttpGet]
         public object Get_DSNguoiDungNhom([FromQuery] QueryParams query)
@@ -271,7 +271,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Insert_Nhom")]
         [HttpPost]
         public async Task<BaseModel<object>> Insert_Nhom(NhomAddData data)
@@ -316,7 +316,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Insert_User")]
         [HttpPost]
         public async Task<BaseModel<object>> Insert_User(UserAddData data)
@@ -399,7 +399,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Delete_User")]
         [HttpPost]
         public async Task<BaseModel<object>> Delete_User(UserAddData data)
@@ -484,7 +484,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="id">ID_Nhom</param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Delete_Nhom")]
         [HttpGet]
         public BaseModel<object> Delete_Nhom(long id, string TenNhom)
@@ -530,7 +530,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Get_DSNguoiDung")]
         [HttpGet]
         public object Get_DSNguoiDung([FromQuery] QueryParams query)
@@ -698,7 +698,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3900")]
+        //[CusAuthorize(Roles = "3900")]
         [Route("Get_ListFunctions")]
         [HttpGet]
         public object Get_ListFunctions([FromQuery] QueryParams query)

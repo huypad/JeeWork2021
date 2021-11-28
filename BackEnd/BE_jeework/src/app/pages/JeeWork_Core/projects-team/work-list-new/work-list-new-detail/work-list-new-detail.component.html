@@ -315,8 +315,8 @@
                                                     style="flex-grow: 1; text-align: right; margin: 10px 0">
                                                     <button class="btn  {{disabledBtn?'btn-secondary':'btn-primary'}}"
                                                         style="border-radius: 20px;"
-                                                        *ngIf="CheckRoles(9) && CheckClosedTask() && is_confirm" [disabled]="isclosed"
-                                                        (click)="UpdateDescription()">
+                                                        *ngIf="CheckRoles(9) && CheckClosedTask() && is_confirm"
+                                                        [disabled]="isclosed" (click)="UpdateDescription()">
                                                         Lưu mô tả công việc
                                                         &nbsp;<i class="fa fa-check text-success" style="color: green;"
                                                             *ngIf="showsuccess"></i>
@@ -340,8 +340,8 @@
                                                 </div>
                                                 <div class="col-md-12 pd-0 m--margin-bottom-10-mobile">
                                                     <editor apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft"
-                                                        [(ngModel)]="description_tiny" (ngModelChange)="onChangeNote()" [init]="tinyMCE"
-                                                        style="margin-bottom: 15px;">
+                                                        [(ngModel)]="description_tiny" (ngModelChange)="onChangeNote()"
+                                                        [init]="tinyMCE" style="margin-bottom: 15px;">
                                                     </editor>
                                                 </div>
                                                 <!-- <div class="col-md-12 pd-0 m--margin-bottom-10-mobile" [hidden]="!chinhsuamota">

@@ -890,16 +890,7 @@ export class WorkListNewDetailComponent implements OnInit {
                         false
                     );
                 } else {
-                    this.layoutUtilsService.showActionNotification(
-                        res.error.message,
-                        MessageType.Read,
-                        999999999,
-                        true,
-                        false,
-                        3000,
-                        'top',
-                        0
-                    );
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 3000, 'top', 0);
                 }
             });
         });
@@ -1488,30 +1479,38 @@ export class WorkListNewDetailComponent implements OnInit {
             setTimeout(() => {
                 base64Str = reader.result as String;
                 const metaIdx = base64Str?.indexOf(';base64,');
-                base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
-                this.File = base64Str;
-                const _model = new AttachmentModel();
-                _model.object_type = parseInt(type);
-                _model.object_id = this.item.id_row;
-                const ct = new FileUploadModel();
-                ct.strBase64 = this.File;
-                ct.filename = this.TenFile;
-                ct.IsAdd = true;
-                const item = new UpdateWorkModel();
-                item.id_row = this.item.id_row;
-                item.key = type == '1' ? 'Attachments' : 'Attachments_result';
-                item.values = new Array<FileUploadModel>(ct);
-                this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
-                    if (res && res.status == 1) {
-                        this.LoadData();
-                        this.SendMessage(true);
-                    }
-                    else {
-                        // alert(res.error.message);
-                        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
-                        this.LoadData();
-                    }
-                });
+                if (metaIdx != undefined) {
+                    base64Str = base64Str.substr(metaIdx + 8); // Cắt meta data khỏi chuỗi base64
+                    this.File = base64Str;
+                    const _model = new AttachmentModel();
+                    _model.object_type = parseInt(type);
+                    _model.object_id = this.item.id_row;
+                    const ct = new FileUploadModel();
+                    ct.strBase64 = this.File;
+                    ct.filename = this.TenFile;
+                    ct.IsAdd = true;
+                    const item = new UpdateWorkModel();
+                    item.id_row = this.item.id_row;
+                    item.key = type == '1' ? 'Attachments' : 'Attachments_result';
+                    item.values = new Array<FileUploadModel>(ct);
+                    this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
+                        if (res && res.status == 1) {
+                            this.LoadData();
+                            this.SendMessage(true);
+                        }
+                        else {
+                            // alert(res.error.message);
+                            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                            this.LoadData();
+                        }
+                    });
+                }
+                else {
+                    this.File = '';
+                    this.layoutUtilsService.showActionNotification("File đã vượt quá giới hạn (Nhỏ hơn 15 MB)", MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                    this.LoadData();
+
+                }
             }, 100);
         } else {
             this.File = '';
@@ -1921,9 +1920,9 @@ export class WorkListNewDetailComponent implements OnInit {
     @HostListener('window:keyup.esc') onKeyUp() {
         // this.dialog.open
         // this.dialog.open(ConfirmationDialogComponent, {
-		// 	width: '400px',
+        // 	width: '400px',
         //     disableClose
-		// });
+        // });
         this.layoutUtilsService.confirm('Xác nhận', 'Bạn đã sửa đổi công việc này. Bạn có thể lưu các thay đổi, hủy các thay đổi hoặc hủy để tiếp tục chỉnh sửa')
             .then((close) => {
                 if (close) {

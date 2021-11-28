@@ -111,6 +111,7 @@ export class FunctionsGroupListComponent implements OnInit {
 
 		// this.dataSource.paginatorTotal$.subscribe(res => this.paginatorNew.total = res)
 		this.dataSource = new UserRightDataSource(this.userRightService);
+		this.dataSource.entitySubject.subscribe(val => this.productsResult = val);
 		this.loadDataList();
 	}
 	onLinkClick() {
