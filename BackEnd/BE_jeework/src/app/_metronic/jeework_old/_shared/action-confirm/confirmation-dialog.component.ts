@@ -14,7 +14,7 @@ export class ConfirmationDialogComponent implements OnInit {
   @Input() btnSaveChange: string;
   @Input() btnCancelText: string;
   @ViewChild('btnRef') buttonRef: MatButton;
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
     this.buttonRef.focus();

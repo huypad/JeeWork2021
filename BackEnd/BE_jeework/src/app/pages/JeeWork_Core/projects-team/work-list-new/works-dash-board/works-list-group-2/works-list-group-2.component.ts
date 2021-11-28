@@ -1274,7 +1274,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     ViewDetai(item) {
-        debugger
         this.router.navigate([
             '',
             { outlets: { auxName: 'aux/detail/' + item.id_row } },

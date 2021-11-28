@@ -58,7 +58,7 @@ export class LayoutUtilsService {
         // btnCancelText: string = 'Đóng',
         btnSaveChange: string = 'Lưu thay đổi và đóng',
         dialogSize: 'sm' | 'lg' = 'sm'): Promise<boolean> {
-        const modalRef = this.modalService.open(ConfirmationDialogComponent, { size: '300px' });
+        const modalRef = this.modalService.open(ConfirmationDialogComponent, { size: '280px' });
         modalRef.componentInstance.title = title;
         modalRef.componentInstance.message = message;
         modalRef.componentInstance.btnOkText = btnOkText;

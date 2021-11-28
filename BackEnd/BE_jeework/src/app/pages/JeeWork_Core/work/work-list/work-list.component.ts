@@ -272,7 +272,6 @@ export class WorkListComponent implements OnInit {
 	selected($event) {
 		this.selectedItem = $event;
 		let temp: any = {};
-		debugger
 		temp.Id = this.selectedItem.id_row;
 		this.childComponentData.DATA = this.selectedItem;
 		if (this.ChildComponentInstance != undefined)

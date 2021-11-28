@@ -687,7 +687,6 @@ export class WorkKanBanComponent implements OnInit {
     }
 
     ViewDetail(item) {
-        debugger
         this.router.navigate(['', {outlets: {auxName: 'aux/detail/' + item.id_row},}]);
     }
 

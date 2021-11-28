@@ -103,6 +103,7 @@ const routes: Routes = [
     CommonModule,
     GeneralModule,
     NgbModule,
+    
     CoreModule,
     RouterModule.forChild(routes),
     FormsModule,

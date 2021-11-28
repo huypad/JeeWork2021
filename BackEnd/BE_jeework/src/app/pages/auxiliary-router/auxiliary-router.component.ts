@@ -29,7 +29,6 @@ export class AuxiliaryRouterComponent implements OnInit {
             const ID = params.id;
             this.projectsTeamService.WorkDetail(ID).subscribe(res => {
                 if (res && res.status === 1) {
-                    debugger
                     this.openDialog(res.data);
                 } else {
                     // alert(res.error.message);
@@ -49,7 +48,6 @@ export class AuxiliaryRouterComponent implements OnInit {
         });
     }
     close() {
-        debugger
         this.router.navigate(['', { outlets: { auxName: null } }]);
     }
 

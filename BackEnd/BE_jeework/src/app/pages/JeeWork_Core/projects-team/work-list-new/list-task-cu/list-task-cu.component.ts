@@ -215,7 +215,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this._service.WorkDetail(this.detailWork).subscribe(res => {
                 if (res && res.status === 1) {
                     const item = res.data;
-                    debugger
                     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
                         width: '90vw',
                         height: '90vh',
@@ -232,7 +231,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
-        debugger
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
@@ -754,7 +752,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     ViewDetai(item) {
-        debugger
         this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
     }
     f_convertDate(v: any) {
@@ -1243,8 +1240,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.layoutUtilsService.showError(txtError);
         return false;
     }
-    @HostListener('window:beforeunload', ['$event'])
-    beforeunloadHandler(event) {
-        return false;
-    }
+    // @HostListener('window:beforeunload', ['$event'])
+    // beforeunloadHandler(event) {
+    //     return false;
+    // }
 }

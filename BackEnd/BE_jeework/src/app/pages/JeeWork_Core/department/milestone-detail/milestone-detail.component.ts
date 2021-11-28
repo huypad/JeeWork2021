@@ -217,7 +217,6 @@ export class MilestoneDetailComponent {
 	}
 
 	ViewDetail(id_row) {
-		debugger
 		this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + id_row }, }]);
 	}
 

@@ -309,7 +309,6 @@ export class RepeatedListComponent implements OnInit {
         this.selectedItem = $event;
         let temp: any = {};
         temp.Id = this.selectedItem.id_row;
-        debugger
         var url = '/users/' + this.UserID + '/detail/' + temp.Id;
         this.router.navigateByUrl(url);
     }

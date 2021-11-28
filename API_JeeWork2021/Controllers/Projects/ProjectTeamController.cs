@@ -492,7 +492,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     , default_view, p.id_template, p.meetingid, de.title as department
                                     ,coalesce(w.tong,0) as tong
                                     ,coalesce( w.ht,0) as ht, coalesce(w.quahan,0) as quahan
-                                    , '' as NguoiTao, '' as NguoiSua, , 0 as is_manager 
+                                    , '' as NguoiTao, '' as NguoiSua, 0 as is_manager 
                                     from we_project_team p 
                                     left join we_department de on de.id_row=p.id_department
                                     left join (select count(*) as tong

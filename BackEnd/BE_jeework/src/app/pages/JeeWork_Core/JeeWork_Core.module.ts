@@ -176,6 +176,7 @@ import { AngularFileViewerModule, FileViewerComponent } from '@taldor-ltd/angula
 import { previewlistComponent } from './preview/preview-list/preview-list.component';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { addlinkcloudEditComponent } from './add-link-cloud/add-link-cloud-edit/add-link-cloud-edit.component';
+import { ConfirmationDialogComponent } from 'src/app/_metronic/jeework_old/_shared/action-confirm/confirmation-dialog.component';
 @NgModule({
     imports: [
         JeeCommentModule,
@@ -357,7 +358,8 @@ import { addlinkcloudEditComponent } from './add-link-cloud/add-link-cloud-edit/
         AutomationTabManageComponent,
         DanhsachthumucComponent,
         previewlistComponent,
-        addlinkcloudEditComponent
+        addlinkcloudEditComponent,
+        ConfirmationDialogComponent
     ],
     declarations: [
         RepeatedListComponent,
@@ -441,7 +443,8 @@ import { addlinkcloudEditComponent } from './add-link-cloud/add-link-cloud-edit/
         AutomationLabelComponent,
         DanhsachthumucComponent,
         previewlistComponent,
-        addlinkcloudEditComponent
+        addlinkcloudEditComponent,
+        ConfirmationDialogComponent
     ],
     exports: [
         JeeCommentModule,
@@ -565,7 +568,8 @@ import { addlinkcloudEditComponent } from './add-link-cloud/add-link-cloud-edit/
         ApplicationPipesModule,
         FieldsCustomModule,
         previewlistComponent,
-        addlinkcloudEditComponent
+        addlinkcloudEditComponent,
+        ConfirmationDialogComponent
     ]
 })
 export class JeeWork_CoreModule {

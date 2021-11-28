@@ -64,6 +64,7 @@ import { CommunicateService } from '../work-list-new-service/communicate.service
 import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ConfirmationDialogComponent } from 'src/app/_metronic/jeework_old/_shared/action-confirm/confirmation-dialog.component';
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
@@ -337,7 +338,6 @@ export class WorkListNewDetailComponent implements OnInit {
         // this.DataID = item.id_row;
         // this.LoadData();
         // this.LoadChecklist();
-        debugger
         const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
             width: '90vw',
             height: '85vh',
@@ -1234,7 +1234,6 @@ export class WorkListNewDetailComponent implements OnInit {
                     this.SendMessage(true);
                     this.LoadData();
                     if (key == "description") {
-                        debugger
                         this.is_confirm = false;
                     }
                 } else {
@@ -1245,7 +1244,6 @@ export class WorkListNewDetailComponent implements OnInit {
             finalize(() => this.layoutUtilsService.OffWaitingDiv()),
         ).subscribe((res) => {
             if (key == 'description') {
-                debugger
                 this.showsuccess = true;
                 // this.is_confirm = true;
                 setTimeout(() => {
@@ -1919,18 +1917,19 @@ export class WorkListNewDetailComponent implements OnInit {
     onChangeNote() {
         this.is_confirm = true;
         // console.log(this.description_tiny);
-        // debugger
     }
     @HostListener('window:keyup.esc') onKeyUp() {
-        // you have modified this work item. you can save your changes, discard your changes, or cancel to continue editing
-        // discard changes, save changes
+        // this.dialog.open
+        // this.dialog.open(ConfirmationDialogComponent, {
+		// 	width: '400px',
+        //     disableClose
+		// });
         this.layoutUtilsService.confirm('Xác nhận', 'Bạn đã sửa đổi công việc này. Bạn có thể lưu các thay đổi, hủy các thay đổi hoặc hủy để tiếp tục chỉnh sửa')
             .then((close) => {
                 if (close) {
                     this.dialogRef.close(true);
                 }
             })
-            // .catch(() => console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
             .catch((err) => {
                 if (err == 'pad') {
                     this.UpdateDescription();
@@ -1939,12 +1938,11 @@ export class WorkListNewDetailComponent implements OnInit {
                 else {
                     // console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
                 }
-                debugger
             });
     }
-    @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
-        event.returnValue = false;
-    }
+    // @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
+    //     event.returnValue = false;
+    // }
     goBack() {
         if (!this.is_confirm)
             this.dialogRef.close(true);
