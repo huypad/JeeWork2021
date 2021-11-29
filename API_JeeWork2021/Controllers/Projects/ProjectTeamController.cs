@@ -1071,7 +1071,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Insert")]
         [HttpPost]
         public async Task<object> Insert([FromBody] ProjectTeamModel data)
@@ -1516,7 +1516,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Insert_Quick")]
         [HttpPost]
         public async Task<object> Insert_Quick([FromBody] ProjectTeamModel data)
@@ -1680,7 +1680,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Update")]
         [HttpPost]
         public async Task<object> Update([FromBody] ProjectTeamModel data)
@@ -1960,7 +1960,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Update-stage")]
         [HttpPost]
         public async Task<object> Update_Stage(ProjectTeamModel data)
@@ -2043,7 +2043,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// <param name="key">key: period_type, color, default_view</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("update-by-key")]
         [HttpGet]
         public async Task<object> UpdateByKey(long id, string key, string value)
@@ -2110,7 +2110,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Close")]
         [HttpPost]
         public async Task<object> Close([FromBody] ProjectTeamCloseModel data)
@@ -2176,7 +2176,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Open")]
         [HttpPost]
         public async Task<object> Open([FromBody] ProjectTeamCloseModel data)
@@ -2242,7 +2242,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Delete")]
         [HttpGet]
         public BaseModel<object> Delete(long id)
@@ -2339,7 +2339,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Change-type")]
         [HttpGet]
         public BaseModel<object> ChangeType(long id)
@@ -2389,7 +2389,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3501")]
+        //[CusAuthorize(Roles = "3501")]
         [Route("Duplicate")]
         [HttpPost]
         public async Task<object> Duplicate([FromBody] ProjectTeamDuplicateModel data)
