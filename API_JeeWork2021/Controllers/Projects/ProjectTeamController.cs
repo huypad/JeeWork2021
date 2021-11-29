@@ -1071,7 +1071,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        //[CusAuthorize(Roles = "3501")]
+        [CusAuthorize(Roles = "3501")]
         [Route("Insert")]
         [HttpPost]
         public async Task<object> Insert([FromBody] ProjectTeamModel data)
@@ -2176,7 +2176,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3501")]
+        [CusAuthorize(Roles = "3501")]
         [Route("Open")]
         [HttpPost]
         public async Task<object> Open([FromBody] ProjectTeamCloseModel data)
