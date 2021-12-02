@@ -157,7 +157,6 @@ namespace JeeWork_Core2021
             services.AddMemoryCache();
             services.addConnectionCacheService();
             services.AddTransient<ICommentService, CommentService>();
-
             services.AddLogging(builder =>
             {
                 builder.addAsyncLogger<AsyncLoggerProvider>(p => new AsyncLoggerProvider(p.GetService<IProducer>()));
@@ -170,7 +169,6 @@ namespace JeeWork_Core2021
             sendmail.Start();
             nhacnho = new NhacNho(_cache, Configuration, notifier, producer);
             nhacnho.Start();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

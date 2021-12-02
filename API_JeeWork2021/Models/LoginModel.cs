@@ -181,6 +181,8 @@ namespace JeeWork_Core2021.Models
     public class JeeWork
     {
         public string WeWorkRoles { get; set; }
+        public string roles { get; set; }
+
     }
     public class AccUsernameModel
     {

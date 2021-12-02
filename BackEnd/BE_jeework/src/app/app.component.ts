@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   OnDestroy,
   OnInit,
+  Inject,
 } from '@angular/core';
 import { TranslationService } from './modules/i18n/translation.service';
 // language list
@@ -17,6 +18,9 @@ import { SplashScreenService } from './_metronic/partials/layout/splash-screen/s
 import { Router, NavigationEnd, NavigationError } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TableExtendedService } from './_metronic/shared/crud-table';
+import { LayoutConfigService } from './_metronic/jeework_old/core/_base/layout/services/layout-config.service';
+import { Title } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'body[root]',
@@ -25,13 +29,17 @@ import { TableExtendedService } from './_metronic/shared/crud-table';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, OnDestroy {
+	loader: boolean;
   private unsubscribe: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
 
   constructor(
     private translationService: TranslationService,
     private splashScreenService: SplashScreenService,
     private router: Router,
-    private tableService: TableExtendedService
+    private tableService: TableExtendedService,
+		private layoutConfigService: LayoutConfigService,
+		private titleService: Title,
+    @Inject(DOCUMENT) private _document: HTMLDocument
   ) {
     // register translations
     this.translationService.loadTranslations(
@@ -46,6 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+		this.loader = this.layoutConfigService.getConfig('loader.enabled');
     const routerSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         // clear filtration paginations and others
@@ -63,6 +72,9 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
     this.unsubscribe.push(routerSubscription);
+    // let constant = this.layoutConfigService.getConfig('constants');
+		// this.titleService.setTitle(constant.title);
+		// this._document.getElementById('appFavicon').setAttribute('href', constant.favicon);
   }
 
   ngOnDestroy() {

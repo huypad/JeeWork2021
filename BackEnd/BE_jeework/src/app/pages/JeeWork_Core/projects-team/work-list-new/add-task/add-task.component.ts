@@ -67,7 +67,10 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.LoadData();
-    setTimeout(function () { document.getElementById('input').focus(); }, 100);
+    let input = document.getElementById("input");
+    if (input != null || input != undefined)
+      setTimeout(function () { document.getElementById('input').focus(); }, 500);
+
   }
   ngAfterViewInit() {
     var idname = "addnewtask";
@@ -78,7 +81,10 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
         ele.focus();
       }
     }, 10);
-    setTimeout(function () { document.getElementById('input').focus(); }, 100);
+    let input = document.getElementById("input");
+    if (input != null || input != undefined)
+      setTimeout(function () { document.getElementById('input').focus(); }, 500);
+
   }
 
   OnChanges() {

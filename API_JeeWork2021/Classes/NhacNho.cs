@@ -64,7 +64,7 @@ namespace API_JeeWork2021.Classes
             Time10IsRun = false;
         }
         protected void Timer10Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
+       {
             Time10IsRun = true;
             string ham = "Timer10Minute_Elapsed"; string idkh = "0"; string listKH = "";
             string ConnectionString = "";
@@ -86,7 +86,7 @@ namespace API_JeeWork2021.Classes
                                     {
                                         ham = "DataAccount"; idkh = item.ToString();
                                         List<AccUsernameModel> DataAccount = JeeWorkLiteController.GetDanhSachAccountFromCustomerID(_configuration, item);
-                                        if (DataAccount != null && !string.IsNullOrEmpty(ConnectionString))
+                                        if (DataAccount != null)
                                         {
                                             foreach (var account in DataAccount)
                                             {
@@ -129,7 +129,7 @@ namespace API_JeeWork2021.Classes
                     if (!listKH.Equals(""))
                     {
                         listKH = listKH.Substring(1);
-                        string content = " Timer60minute. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
+                        string content = " Timer10Minute_Elapsed. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
                         string error_message = "";
                         string CustemerID1 = "0";
                         ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);

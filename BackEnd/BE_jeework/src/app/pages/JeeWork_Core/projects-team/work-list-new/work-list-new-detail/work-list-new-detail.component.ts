@@ -65,6 +65,7 @@ import { LogWorkDescriptionComponent } from '../../../log-work-description/log-w
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ConfirmationDialogComponent } from 'src/app/_metronic/jeework_old/_shared/action-confirm/confirmation-dialog.component';
+import { ActivatedRoute } from '@angular/router';
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
@@ -74,6 +75,7 @@ export class WorkListNewDetailComponent implements OnInit {
     nameList: string[];
     name: string;
     constructor(
+        private activatedRoute: ActivatedRoute,
         private workService: WorkService,
         private communicateService: CommunicateService,
         private el: ElementRef,
@@ -406,6 +408,7 @@ export class WorkListNewDetailComponent implements OnInit {
         if (this.loading) {
             this.layoutUtilsService.showWaitingDiv();
         }
+        this.LoadDataWorkDetail(this.DataID);
         this.weworkService.ListStatusDynamic(this.Id_project_team)
             .subscribe((res) => {
                 if (res && res.status === 1) {
@@ -427,19 +430,19 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.options_assign = this.getOptions_Assign();
             });
         }, 500);
-        this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
-            this.layoutUtilsService.OffWaitingDiv();
-            if (res && res.status == 1) {
-                this.item = res.data;
-                this.isclosed = this.item.closed;
-                if (!this.description_tiny) {
-                    this.description_tiny = this.item.description;
-                }
-                this.changeDetectorRefs.detectChanges();
-            } else {
-                this.layoutUtilsService.showError(res.error.message);
-            }
-        });
+        // this.projectsTeamService.WorkDetail(this.DataID).subscribe((res) => {
+        //     this.layoutUtilsService.OffWaitingDiv();
+        //     if (res && res.status == 1) {
+        //         this.item = res.data;
+        //         this.isclosed = this.item.closed;
+        //         if (!this.description_tiny) {
+        //             this.description_tiny = this.item.description;
+        //         }
+        //         this.changeDetectorRefs.detectChanges();
+        //     } else {
+        //         this.layoutUtilsService.showError(res.error.message);
+        //     }
+        // });
         // this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
         //     this.changeDetectorRefs.detectChanges();
         //     if (res && res.status === 1) {
@@ -1201,7 +1204,6 @@ export class WorkListNewDetailComponent implements OnInit {
             this.chinhsuamota = !this.chinhsuamota;
         }
     }
-
     UpdateByKeyNew(task, key, value) {
         if (!this.KiemTraThayDoiCongViec(task, key)) {
             return;
@@ -1213,39 +1215,101 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.assign && task.assign.id_nv > 0) {
             item.IsStaff = true;
         }
-        if (this.loading) {
-        }
-        this.layoutUtilsService.showWaitingDiv();
-        this.projectsTeamService._UpdateByKey(item).pipe(
-            tap(() => {
-            }),
-            map(res => {
-                this.layoutUtilsService.OffWaitingDiv();
-                if (res && res.status == 1) {
-                    this.SendMessage(true);
-                    this.LoadData();
-                    if (key == "description") {
-                        this.is_confirm = false;
-                    }
-                } else {
-                    this.layoutUtilsService.showError(res.error.message);
+        // this.layoutUtilsService.showWaitingDiv();
+        this.projectsTeamService._UpdateByKey(item).subscribe(res => {
+            // this.layoutUtilsService.OffWaitingDiv();
+            if (res && res.status == 1) {
+                this.SendMessage(true);
+                this.LoadDataWorkDetail(item.id_row);
+                if (key == "description") {
+                    this.is_confirm = false;
                 }
-            }),
-            catchError((err) => throwError(err)),
-            finalize(() => this.layoutUtilsService.OffWaitingDiv()),
-        ).subscribe((res) => {
-            if (key == 'description') {
-                this.showsuccess = true;
-                // this.is_confirm = true;
-                setTimeout(() => {
-                    this.showsuccess = false;
-                    this.disabledBtn = false;
-                }, 2000);
             }
-        }, (error) => {
+            else {
+                this.layoutUtilsService.showError(res.error.message);
+            }
+            this.showsuccess = false;
             this.disabledBtn = false;
+            this.changeDetectorRefs.detectChanges();
         });
+
+        // this.layoutUtilsService.showWaitingDiv();
+        // this.projectsTeamService._UpdateByKey(item).pipe(
+        //     tap(() => {
+        //     }),
+        //     map(res => {
+        //         this.layoutUtilsService.OffWaitingDiv();
+        //         if (res && res.status == 1) {
+        //             this.SendMessage(true);
+        //             // this.LoadData();
+        //             this.LoadDataWorkDetail(item.id_row);
+        //             // this.bindStatus(res.data.value);
+        //             if (key == "description") {
+        //                 this.is_confirm = false;
+        //             }
+        //         } else {
+        //             this.layoutUtilsService.showError(res.error.message);
+        //         }
+        //     }),
+        //     catchError((err) => throwError(err)),
+        //     finalize(() => this.layoutUtilsService.OffWaitingDiv()),
+        // ).subscribe((res) => {
+        //     // console.log(res)
+        //     if (key == 'description') {
+        //         this.showsuccess = true;
+        //         setTimeout(() => {
+        //             this.showsuccess = false;
+        //             this.disabledBtn = false;
+        //         }, 1000);
+        //     }
+        // }, (error) => {
+        //     this.disabledBtn = false;
+        // });
     }
+    // UpdateByKeyNew(task, key, value) {
+    //     if (!this.KiemTraThayDoiCongViec(task, key)) {
+    //         return;
+    //     }
+    //     const item = new UpdateWorkModel();
+    //     item.id_row = task.id_row;
+    //     item.key = key;
+    //     item.value = value;
+    //     if (task.assign && task.assign.id_nv > 0) {
+    //         item.IsStaff = true;
+    //     }
+    //     this.layoutUtilsService.showWaitingDiv();
+    //     this.projectsTeamService._UpdateByKey(item).pipe(
+    //         tap(() => {
+    //         }),
+    //         map(res => {
+    //             this.layoutUtilsService.OffWaitingDiv();
+    //             if (res && res.status == 1) {
+    //                 this.SendMessage(true);
+    //                 // this.LoadData();
+    //                 this.LoadDataWorkDetail(item.id_row);
+    //                 // this.bindStatus(res.data.value);
+    //                 if (key == "description") {
+    //                     this.is_confirm = false;
+    //                 }
+    //             } else {
+    //                 this.layoutUtilsService.showError(res.error.message);
+    //             }
+    //         }),
+    //         catchError((err) => throwError(err)),
+    //         finalize(() => this.layoutUtilsService.OffWaitingDiv()),
+    //     ).subscribe((res) => {
+    //         // console.log(res)
+    //         if (key == 'description') {
+    //             this.showsuccess = true;
+    //             setTimeout(() => {
+    //                 this.showsuccess = false;
+    //                 this.disabledBtn = false;
+    //             }, 1000);
+    //         }
+    //     }, (error) => {
+    //         this.disabledBtn = false;
+    //     });
+    // }
 
     UpdateKey(_item: UpdateByKeyModel) {
         let saveMessageTranslateParam = '';

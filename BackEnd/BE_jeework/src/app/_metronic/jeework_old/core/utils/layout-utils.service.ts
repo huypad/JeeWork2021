@@ -155,12 +155,12 @@ export class LayoutUtilsService {
     //         width: '440px'
     //     });
     // }
-	deleteElement(title: string = '', description: string = '', waitDesciption: string = '', NameButton:string='Đồng ý', CancelButton:string="Không") {
-		return this.dialog.open(DeleteEntityDialogComponent, {
-			data: { title, description, waitDesciption, NameButton, CancelButton },
-			width: '440px'
-		});
-	}
+    deleteElement(title: string = '', description: string = '', waitDesciption: string = '', NameButton: string = 'Đồng ý', CancelButton: string = "Không") {
+        return this.dialog.open(DeleteEntityDialogComponent, {
+            data: { title, description, waitDesciption, NameButton, CancelButton },
+            width: '440px'
+        });
+    }
     // Method returns instance of MatDialog
     fetchElements(_data) {
         return this.dialog.open(FetchEntityDialogComponent, {
@@ -184,7 +184,6 @@ export class LayoutUtilsService {
         let _hide: string = 'nemo-hide-wait';
         let divWait = document.getElementById(v_idWaiting);
         let loader = document.getElementById(v_idWaitingLoader);
-
         if (divWait.classList.contains(_show)) {
             divWait.classList.remove(_show);
             divWait.classList.add(_hide);
@@ -224,18 +223,16 @@ export class LayoutUtilsService {
 
     }
     // Dùng cho flowchart
-    showWaitingFlow() {
+    showWaitingUpdate() {
         let v_idWaiting: string = 'flow-process-waiting-id';//id waiting
         let v_idWaitingLoader: string = 'flow-process-waiting-loader';//id waiting
         let _show: string = 'flow-show-wait';
         let _hide: string = 'flow-hide-wait';
         let divWait = document.getElementById(v_idWaiting);
         let loader = document.getElementById(v_idWaitingLoader);
-
         if (divWait.classList.contains(_show)) {
             divWait.classList.remove(_show);
             divWait.classList.add(_hide);
-
             loader.classList.remove(_show);
             loader.classList.add(_hide);
         } else {
@@ -255,20 +252,17 @@ export class LayoutUtilsService {
         }
     }
 
-    OffWaitingFlow() {
-        let v_idWaiting: string = 'flow-process-waiting-id';//id waiting
-        let v_idWaitingLoader: string = 'flow-process-waiting-loader';//id waiting
-        let _show: string = 'flow-show-wait';
-        let _hide: string = 'flow-hide-wait';
+    OffWaitingUpdate() {
+        let v_idWaiting: string = 'nemo-process-waiting-id';//id waiting
+        let v_idWaitingLoader: string = 'nemo-process-waiting-loader';//id waiting
+        let _show: string = 'nemo-show-wait';
+        let _hide: string = 'nemo-hide-wait';
         let divWait = document.getElementById(v_idWaiting);
         let loader = document.getElementById(v_idWaitingLoader);
-
         divWait.classList.remove(_show);
         divWait.classList.add(_hide);
-
         loader.classList.remove(_show);
         loader.classList.add(_hide);
-
     }
 
     // view doc

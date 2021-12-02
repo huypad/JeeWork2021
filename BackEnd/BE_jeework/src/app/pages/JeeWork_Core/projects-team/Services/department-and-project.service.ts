@@ -165,6 +165,7 @@ export class ProjectsTeamService {
 
     InsertFasttProjectTeam(item): Observable<any> {
         const httpHeaders = this.httpUtils.getHTTPHeaders();
+        // headerOptions.set('Content-Type', 'application/json');
         return this.http.post<any>(API_Project_Team + '/Insert_Quick', item, { headers: httpHeaders });
     }
 

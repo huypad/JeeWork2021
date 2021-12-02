@@ -1,5 +1,5 @@
-import {PresenceService} from './../../_metronic/partials/layout/extras/jee-chat/my-chat/services/presence.service';
-import {environment} from 'src/environments/environment';
+import { PresenceService } from './../../_metronic/partials/layout/extras/jee-chat/my-chat/services/presence.service';
+import { environment } from 'src/environments/environment';
 import {
     Component,
     OnInit,
@@ -10,9 +10,9 @@ import {
     NgZone,
     ChangeDetectorRef,
 } from '@angular/core';
-import {LayoutService, LayoutInitService} from '../../_metronic/core';
+import { LayoutService, LayoutInitService } from '../../_metronic/core';
 import KTLayoutContent from '../../../assets/js/layout/base/content';
-import {ChatService} from '../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
+import { ChatService } from '../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
 
 const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
 
@@ -46,9 +46,9 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     extrasUserOffcanvasDisplay = false;
     extrasQuickPanelDisplay = false;
     extrasScrollTopDisplay = false;
-    @ViewChild('ktAside', {static: true}) ktAside: ElementRef;
-    @ViewChild('ktHeaderMobile', {static: true}) ktHeaderMobile: ElementRef;
-    @ViewChild('ktHeader', {static: true}) ktHeader: ElementRef;
+    @ViewChild('ktAside', { static: true }) ktAside: ElementRef;
+    @ViewChild('ktHeaderMobile', { static: true }) ktHeaderMobile: ElementRef;
+    @ViewChild('ktHeader', { static: true }) ktHeader: ElementRef;
 
     constructor(
         private initService: LayoutInitService,
@@ -123,21 +123,33 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         this.extrasScrollTopDisplay = this.layout.getProp(
             'extras.scrolltop.display'
         );
-        try {
-            this.presence.connectToken();
-        } catch (err) {
-        }
+        // try {
+        //     this.presence.connectToken();
+        // } catch (err) {
+        // }
         this.subscribeToEvents();
+        this.EventCloseChatboxAll();
 
     }
+    userCurrent: string;
+    EventCloseChatboxAll() {
+        this._ngZone.run(() => {
+            this.chatService.CloseMiniChat$.subscribe(res => {
 
+                if (res && res.UserName === this.userCurrent) {
+                    this.removeChatBox(res.IdGroup);
+                    this.changeDetectorRefs.detectChanges();
+                }
+            })
+        })
+    }
     ngAfterViewInit(): void {
         if (this.ktAside) {
             for (const key in this.asideHTMLAttributes) {
                 if (this.asideHTMLAttributes.hasOwnProperty(key)) {
                     this.ktAside.nativeElement.attributes[key] = this.asideHTMLAttributes[
                         key
-                        ];
+                    ];
                 }
             }
         }
@@ -147,7 +159,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
                 if (this.headerMobileAttributes.hasOwnProperty(key)) {
                     this.ktHeaderMobile.nativeElement.attributes[
                         key
-                        ] = this.headerMobileAttributes[key];
+                    ] = this.headerMobileAttributes[key];
                 }
             }
         }
@@ -157,7 +169,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
                 if (this.headerHTMLAttributes.hasOwnProperty(key)) {
                     this.ktHeader.nativeElement.attributes[
                         key
-                        ] = this.headerHTMLAttributes[key];
+                    ] = this.headerHTMLAttributes[key];
                 }
             }
         }

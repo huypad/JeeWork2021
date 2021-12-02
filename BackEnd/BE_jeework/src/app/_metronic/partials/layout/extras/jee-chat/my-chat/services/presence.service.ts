@@ -40,69 +40,69 @@ export class PresenceService {
   }
 
 
-  connectToken() {
-    this.hubConnection = new HubConnectionBuilder()
-      .withUrl(this.hubUrl + '/presence', {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
-      }).withAutomaticReconnect()
-      .build()
-    try {
-      this.hubConnection.start().then(() => {
-        const data = this.auth.getAuthFromLocalStorage();
-        var _token = `Bearer ${data.access_token}`
-        try {
-          setTimeout(() => {
-            this.hubConnection.invoke("onConnectedTokenAsync", _token);
-          }, 2000);
+  // connectToken() {
+  //   this.hubConnection = new HubConnectionBuilder()
+  //     .withUrl(this.hubUrl + '/presence', {
+  //       skipNegotiation: true,
+  //       transport: signalR.HttpTransportType.WebSockets
+  //     }).withAutomaticReconnect()
+  //     .build()
+  //   try {
+  //     this.hubConnection.start().then(() => {
+  //       const data = this.auth.getAuthFromLocalStorage();
+  //       var _token = `Bearer ${data.access_token}`
+  //       try {
+  //         setTimeout(() => {
+  //           this.hubConnection.invoke("onConnectedTokenAsync", _token);
+  //         }, 2000);
 
-        } catch (err) {
-          console.log(err)
-        }
-        this.hubConnection.on('UserIsOnline', (username: any) => {
-          this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
-            this.onlineUsersSource.next([...usernames, username])
-            // console.log('UserIsOnline',this.onlineUsers$)
-          })
-          // this.toastr.info(username.FullName+' has connect')
-          // this.toastr.info(username.displayName+ ' has connect')
-        })
+  //       } catch (err) {
+  //         console.log(err)
+  //       }
+  //       this.hubConnection.on('UserIsOnline', (username: any) => {
+  //         this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+  //           this.onlineUsersSource.next([...usernames, username])
+  //           // console.log('UserIsOnline',this.onlineUsers$)
+  //         })
+  //         // this.toastr.info(username.FullName+' has connect')
+  //         // this.toastr.info(username.displayName+ ' has connect')
+  //       })
 
-        this.hubConnection.on('UserIsOffline', (User: any) => {
-          this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+  //       this.hubConnection.on('UserIsOffline', (User: any) => {
+  //         this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
 
-            this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username), User])
-            // this.onlineUsersSource.next([...usernames, User])
+  //           this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username), User])
+  //           // this.onlineUsersSource.next([...usernames, User])
 
-            // console.log('UserIsOffline',this.onlineUsers$)
-          })
-        })
-        this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
-          this.onlineUsersSource.next(usernames);
-        })
+  //           // console.log('UserIsOffline',this.onlineUsers$)
+  //         })
+  //       })
+  //       this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
+  //         this.onlineUsersSource.next(usernames);
+  //       })
 
-        this.hubConnection.on('NewGroupChatReceived', data => {
-          // console.log('NewGroupChatReceived',data)
-          this.NewGroupSource.next(data);
-        })
-        this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
-          // console.log('NewMessageReceived',IdGroup)
-          this.OpenmessageUsernameSource.next(IdGroup)
-        })
-
-
-      }).catch(err => {
-        //document.write(err);
-        console.log("error", err);
-      });
-    }
-    catch (err) {
-      console.log(err)
-    }
+  //       this.hubConnection.on('NewGroupChatReceived', data => {
+  //         // console.log('NewGroupChatReceived',data)
+  //         this.NewGroupSource.next(data);
+  //       })
+  //       this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
+  //         // console.log('NewMessageReceived',IdGroup)
+  //         this.OpenmessageUsernameSource.next(IdGroup)
+  //       })
 
 
+  //     }).catch(err => {
+  //       //document.write(err);
+  //       console.log("error", err);
+  //     });
+  //   }
+  //   catch (err) {
+  //     console.log(err)
+  //   }
 
-  }
+
+
+  // }
 
   async NewGroup(token: string, item: ConversationModel, dl: any) {
     return this.hubConnection.invoke('NewGroupChat', token, item, dl)

@@ -100,7 +100,18 @@ export class CuTagComponent implements OnInit {
       }
     });
   }
-
+  getColorText(_color) {
+    if (_color == '#848E9E') {
+      return 'white';
+    }
+    else return _color;
+  }
+  getbackgroundColor(_color) {
+    if (_color == 'rgb(132, 142, 158)') {
+      return '#B5BBC0';
+    }
+    else return _color;
+  }
   Create(_item: TagsModel, withBack: boolean) {
     this._service.Insert(_item).subscribe(res => {
       if (res && res.status === 1) {

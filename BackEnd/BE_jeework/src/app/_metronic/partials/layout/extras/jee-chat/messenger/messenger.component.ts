@@ -607,7 +607,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
       }
 
     })
-    console.log("this.listAllread", this.listAllread)
     this.listAllread.forEach(item => {
       //user bt
 

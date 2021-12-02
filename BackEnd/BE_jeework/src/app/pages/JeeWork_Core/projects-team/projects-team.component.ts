@@ -1,15 +1,15 @@
-import {filter, takeUntil} from 'rxjs/operators';
-import {MenuAsideService} from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
-import {MenuPhanQuyenServices} from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {QueryParamsModelNew} from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {CommonService} from './../../../_metronic/jeework_old/core/services/common.service';
+import { filter, takeUntil } from 'rxjs/operators';
+import { MenuAsideService } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-aside.service';
+import { MenuPhanQuyenServices } from './../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { QueryParamsModelNew } from './../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { CommonService } from './../../../_metronic/jeework_old/core/services/common.service';
 import {
     LayoutUtilsService,
     MessageType,
 } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {DocumentsService} from './../documents/documents.service';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {WeWorkService} from './../services/wework.services';
+import { DocumentsService } from './../documents/documents.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { WeWorkService } from './../services/wework.services';
 import {
     Component,
     OnInit,
@@ -19,26 +19,26 @@ import {
     ViewChild,
     ElementRef,
 } from '@angular/core';
-import {Router, ActivatedRoute} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
-import {ClosedProjectComponent} from './closed-project/closed-project.component';
-import {DuplicateProjectComponent} from './duplicate-project/duplicate-project.component';
-import {MatDialog} from '@angular/material/dialog';
-import {ProjectTeamEditComponent} from './project-team-edit/project-team-edit.component';
-import {ProjectsTeamService} from './Services/department-and-project.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { ClosedProjectComponent } from './closed-project/closed-project.component';
+import { DuplicateProjectComponent } from './duplicate-project/duplicate-project.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ProjectTeamEditComponent } from './project-team-edit/project-team-edit.component';
+import { ProjectsTeamService } from './Services/department-and-project.service';
 import {
     MilestoneModel,
     ProjectTeamDuplicateModel,
     ProjectTeamModel,
     ProjectViewsModel,
 } from './Model/department-and-project.model';
-import {DepartmentModel} from '../department/Model/List-department.model';
-import {UpdateStatusProjectComponent} from './update-status-project/update-status-project.component';
-import {milestoneDetailEditComponent} from '../department/milestone-detail-edit/milestone-detail-edit.component';
-import {AutomationComponent} from '../automation/automation.component';
-import {TemplateCenterComponent} from '../template-center/template-center.component';
-import {TemplateCenterUpdateComponent} from '../template-center/template-center-update/template-center-update.component';
-import {ProjectTeamEditStatusComponent} from './project-team-edit-status/project-team-edit-status.component';
+import { DepartmentModel } from '../department/Model/List-department.model';
+import { UpdateStatusProjectComponent } from './update-status-project/update-status-project.component';
+import { milestoneDetailEditComponent } from '../department/milestone-detail-edit/milestone-detail-edit.component';
+import { AutomationComponent } from '../automation/automation.component';
+import { TemplateCenterComponent } from '../template-center/template-center.component';
+import { TemplateCenterUpdateComponent } from '../template-center/template-center-update/template-center-update.component';
+import { ProjectTeamEditStatusComponent } from './project-team-edit-status/project-team-edit-status.component';
 
 @Component({
     selector: 'kt-projects-team',
@@ -132,13 +132,11 @@ export class ProjectsTeamComponent implements OnInit {
     }
 
     ngOnInit() {
-
         this._Services.currentMessage.subscribe(e => {
             if (e) {
                 this.LoadData();
             }
         });
-        this.layoutUtilsService.showWaitingDiv();
         let path = this.router.url;
         if (path) {
             const arr = path.split('/');
@@ -154,9 +152,8 @@ export class ProjectsTeamComponent implements OnInit {
                 this.activeLink = 'home';
             }
         }
-
-
         this.activatedRoute.params.subscribe((params) => {
+            // this.layoutUtilsService.showWaitingDiv();
             this.ID_Project = +params.id;
             this.LoadData();
             // this.activeLink = 'home/clickup';
@@ -178,7 +175,7 @@ export class ProjectsTeamComponent implements OnInit {
             }
         });
         this._Services.ListRole(this.ID_Project).subscribe((res) => {
-            this.layoutUtilsService.OffWaitingDiv();
+            // this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
                 this.roles = res.data;
             } else {
@@ -322,10 +319,7 @@ export class ProjectsTeamComponent implements OnInit {
     }
 
     LoadData() {
-
-
         if (this.ID_Project) {
-
             this.WeWorkService.ListViewByProject(this.ID_Project).subscribe((res) => {
                 if (res && res.status === 1) {
                     this.listDefaultView = res.data;
@@ -616,7 +610,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(ClosedProjectComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -655,7 +649,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = _item.id > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(DuplicateProjectComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -716,7 +710,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(ProjectTeamEditComponent, {
-            data: {_item, _IsEdit: _item.IsEdit, is_project: _item.is_project},
+            data: { _item, _IsEdit: _item.IsEdit, is_project: _item.is_project },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -749,7 +743,7 @@ export class ProjectsTeamComponent implements OnInit {
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
 
         const dialogRef = this.dialog.open(UpdateStatusProjectComponent, {
-            data: {_item, _IsEdit: _item.IsEdit},
+            data: { _item, _IsEdit: _item.IsEdit },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -920,7 +914,7 @@ export class ProjectsTeamComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(milestoneDetailEditComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {
@@ -984,7 +978,7 @@ export class ProjectsTeamComponent implements OnInit {
         item.id = this.item.id_row;
         item.type = 3;
         const dialogRef = this.dialog.open(AutomationComponent, {
-            data: {item},
+            data: { item },
             width: '1240px',
             height: '95vh',
         });
@@ -1000,7 +994,7 @@ export class ProjectsTeamComponent implements OnInit {
     AddTemplate() {
         const item = 'Danh sách giao diện template';
         const dialogRef = this.dialog.open(TemplateCenterComponent, {
-            data: {item},
+            data: { item },
             width: '50vw',
             height: '95vh',
         });
@@ -1018,7 +1012,7 @@ export class ProjectsTeamComponent implements OnInit {
         item.id = this.item.id_row;
         item.type = 3;
         const dialogRef = this.dialog.open(TemplateCenterUpdateComponent, {
-            data: {item, buocthuchien: value},
+            data: { item, buocthuchien: value },
             width: '50vw',
             height: '95vh',
         });

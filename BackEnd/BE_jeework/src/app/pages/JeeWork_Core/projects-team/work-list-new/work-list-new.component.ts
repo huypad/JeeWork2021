@@ -100,7 +100,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     private menuServices: MenuPhanQuyenServices,
     private overlayContainer: OverlayContainer,
     private auth: AuthService,
-    private _attservice: AttachmentService
+    private _attservice: AttachmentService,
   ) {
     this.taskinsert.clear();
     this.filter_groupby = this.listFilter_Groupby[0];
@@ -1325,10 +1325,12 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   ViewDetai(item) {
+		const url = `/user-management/users`;
     this.router.navigate([
       "",
       { outlets: { auxName: "aux/detail/" + item.id_row } },
     ]);
+    // this.router.navigate([url], { relativeTo: this.route });
   }
 
   f_convertDate(v: any) {

@@ -394,7 +394,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        //[CusAuthorize(Roles = "3402")]
+        [CusAuthorize(Roles = "3402")]
         [Route("Insert")]
         [HttpPost]
         public async Task<object> Insert(DepartmentModel data)
@@ -407,7 +407,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 string strRe = "";
                 if (string.IsNullOrEmpty(data.title))
-                    strRe += (strRe == "" ? "" : ",") + "tên ban";
+                    strRe += (strRe == "" ? "" : ",") + "tên phòng ban/thư mục";
                 //if (data.id_cocau <= 0)
                 //    strRe += (strRe == "" ? "" : ",") + "cơ cấu tổ chức";
                 if (strRe != "")
@@ -691,7 +691,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <param name="data"></param>
         /// <returns></returns>
         /// 
-        //[CusAuthorize(Roles = "3402")]
+        [CusAuthorize(Roles = "3402")]
         [Route("Insert-quick-folder")]
         [HttpPost]
         public async Task<object> InsertQuickFolder(DepartmentModel data)
@@ -969,7 +969,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
         /// <param name="data"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3402")]
+        [CusAuthorize(Roles = "3402")]
         [Route("Update")]
         [HttpPost]
         public async Task<BaseModel<object>> Update(DepartmentModel data)
@@ -1263,7 +1263,7 @@ namespace JeeWork_Core2021.Controllers.Wework
 
         /// <param name="id"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3402")]
+        [CusAuthorize(Roles = "3402")]
         [Route("Delete")]
         [HttpGet]
         public BaseModel<object> Delete(long id)

@@ -1,4 +1,4 @@
-import { filter } from 'rxjs/operators';
+import { delay, filter, take } from 'rxjs/operators';
 import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
@@ -29,7 +29,7 @@ import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
 import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges, HostListener } from '@angular/core';
 import * as moment from 'moment';
-import { ReplaySubject, SubscriptionLike } from 'rxjs';
+import { BehaviorSubject, of, ReplaySubject, SubscriptionLike } from 'rxjs';
 import { CommunicateService } from '../work-list-new-service/communicate.service';
 
 @Component({
@@ -117,8 +117,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         startDate: new Date('09/01/2020'),
         endDate: new Date('09/30/2020'),
     };
+    loadingSubject = new BehaviorSubject<boolean>(false);
     public column_sort: any = [];
-    DanhsSachCongViec: any = [];
+    DanhSachCongViec: any = [];
     reloadData = false;
     listField: any = [];
     listStatus: any = [];
@@ -195,7 +196,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                     this.idFilter = res.id;
                 }
             }
-            this.DanhsSachCongViec = [];
+            this.DanhSachCongViec = [];
             // this.LoadWork();
         });
         this.selection = new SelectionModel<WorkModel>(true, []);
@@ -206,19 +207,20 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             }
         });
         this.BindDataLite();
-        this.LoadWork();
+        this.LoadTask();
+        this.changeDetectorRefs.detectChanges();
     }
 
     ngOnChanges() {
         if (this.detailWork > 0) {
-            
             this._service.WorkDetail(this.detailWork).subscribe(res => {
                 if (res && res.status === 1) {
                     const item = res.data;
                     const dialogRef = this.dialog.open(WorkListNewDetailComponent, {
                         width: '90vw',
                         height: '90vh',
-                        data: item
+                        data: item,
+                        disableClose: true
                     });
                     dialogRef.afterClosed().subscribe(() => {
                         this.detailWork = 0;
@@ -235,64 +237,89 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.subscription.unsubscribe();
         }
     }
-    LoadWork() {
+    // LoadWork() {
+    //     this.clearList();
+    //     const queryParams = new QueryParamsModelNew(
+    //         this.filterConfiguration(),
+    //         '',
+    //         '',
+    //         0,
+    //         50,
+    //         true
+    //     );
+    //     this.DanhSachCongViec = [];
+    //     if (!this.getMystaff) {
+    //         if (this.selectedTab === 2) {
+    //             this.layoutUtilsService.showWaitingTask();
+    //             this._service.ListByFilter(queryParams).subscribe(res => {
+    //                 this.layoutUtilsService.OffWaitingTask();
+    //                 if (res && res.status === 1) {
+    //                     this.DanhSachCongViec = res.data;
+    //                     this.filterDanhSach();
+    //                     this.changeDetectorRefs.detectChanges();
+    //                 }
+    //             }, (err) => {
+    //                 this.layoutUtilsService.OffWaitingTask();
+    //             });
+    //         } else {
+    //             this.layoutUtilsService.showWaitingTask();
+    //             this._service.ListByUserCU(queryParams).subscribe(res => {
+    //                 this.layoutUtilsService.OffWaitingTask();
+    //                 if (res && res.status === 1) {
+    //                     this.DanhSachCongViec = res.data;
+    //                     this.filterDanhSach();
+    //                     this.changeDetectorRefs.detectChanges();
+    //                 }
+    //             }, (err) => {
+    //                 this.layoutUtilsService.OffWaitingTask();
+    //             });
+    //         }
+    //     } else {
+    //         this.layoutUtilsService.showWaitingTask();
+    //         this._service.ListByManageCU(queryParams).subscribe(res => {
+    //             this.layoutUtilsService.OffWaitingTask();
+    //             if (res && res.status === 1) {
+    //                 this.DanhSachCongViec = res.data;
+    //                 this.filterDanhSach();
+    //                 this.changeDetectorRefs.detectChanges();
+    //             }
+    //         }, (err) => {
+    //             this.layoutUtilsService.OffWaitingTask();
+    //         });
+    //     }
+    // }
+    LoadTask() {
         this.clearList();
         const queryParams = new QueryParamsModelNew(
-            this.filterConfiguration2(),
+            this.filterConfiguration(),
             '',
             '',
             0,
             50,
             true
         );
-        const queryParams1 = new QueryParamsModelNew(
-            this.filterConfigurationMywork(),
-            '',
-            '',
-            0,
-            50,
-            true
-        );
-        this.DanhsSachCongViec = [];
-        if (!this.getMystaff) {
-            if (this.selectedTab === 2) {
-                this.layoutUtilsService.showWaitingDiv();
-                this._service.ListByFilter(queryParams).subscribe(res => {
-                    this.layoutUtilsService.OffWaitingDiv();
-                    if (res && res.status === 1) {
-                        this.DanhsSachCongViec = res.data;
-                        this.filterDanhSach();
-                        this.changeDetectorRefs.detectChanges();
-                    }
-                }, (err) => {
-                    this.layoutUtilsService.OffWaitingDiv();
-                });
-            } else {
-                this.layoutUtilsService.showWaitingDiv();
-                this._service.ListByUserCU(queryParams1).subscribe(res => {
-                    this.layoutUtilsService.OffWaitingDiv();
-                    if (res && res.status === 1) {
-                        this.DanhsSachCongViec = res.data;
-                        this.filterDanhSach();
-                        this.changeDetectorRefs.detectChanges();
-                    }
-                }, (err) => {
-                    this.layoutUtilsService.OffWaitingFlow();
-                });
-            }
-        } else {
-            this.layoutUtilsService.showWaitingDiv();
-            this._service.ListByManageCU(queryParams1).subscribe(res => {
-                this.layoutUtilsService.OffWaitingDiv();
-                if (res && res.status === 1) {
-                    this.DanhsSachCongViec = res.data;
-                    this.filterDanhSach();
-                    this.changeDetectorRefs.detectChanges();
-                }
-            }, (err) => {
-                this.layoutUtilsService.OffWaitingDiv();
-            });
+        var api_service = this._service.ListByFilter(queryParams);
+        if (this.selectedTab === 2 && !this.getMystaff) {
+            api_service = this._service.ListByFilter(queryParams);
         }
+        else {
+            if (!this.getMystaff) {
+                api_service = this._service.ListByUserCU(queryParams);
+            }
+            else
+                api_service = this._service.ListByManageCU(queryParams);
+        }
+        this.loadingSubject.next(true);
+        this.DanhSachCongViec = [];
+        this.layoutUtilsService.showWaitingDiv();
+        api_service.subscribe(res => {
+            if (res && res.status === 1) {
+                this.DanhSachCongViec = res.data;
+                this.changeDetectorRefs.detectChanges();
+                this.layoutUtilsService.OffWaitingDiv();
+                this.filterDanhSach();
+            }
+        });
     }
     BindDataLite() {
         this.LoadListStatusByProject();
@@ -500,23 +527,15 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
     SelectedField(item) {
         this.column_sort = item;
-        this.LoadWork();
+        // this.LoadWork();
+        this.LoadTask();
     }
     filterConfiguration2(): any {
         const filter: any = {};
-        filter.groupby = this.filter_groupby.value; // assignee
-        filter.keyword = this.keyword;
-        filter.id_nv = this.ID_NV;
-        filter.displayChild = this.filter_subtask.value;
-        filter.subtask_done = this.showclosedsubtask ? 1 : 0;
-        filter.task_done = this.showclosedtask ? 1 : 0;
-        if (this.idFilter > 0) {
-            filter.id_filter = this.idFilter;
-        }
+
         return filter;
     }
-
-    filterConfigurationMywork(): any {
+    filterConfiguration(): any {
         const filter: any = {};
         filter.groupby = this.filter_groupby.value;
         filter.keyword = this.keyword;
@@ -524,20 +543,34 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         filter.displayChild = this.filter_subtask.value;
         filter.subtask_done = this.showclosedsubtask ? 1 : 0;
         filter.task_done = this.showclosedtask ? 1 : 0;
-        // công việc assign cho tôi = 1
-        if (this.filterwork > 0) {
-            filter.filter = this.filterwork;
-        }
-        // công việc tôi theo dõi = 3
-        if (this.selectedTab === 3) {
-            filter.filter = 3;
-        }
-        filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
-        filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
-        filter.collect_by = this.column_sort.value;
+        switch (this.selectedTab) {
+            case 1:
+            case 3:
+                {
+                    // công việc assign cho tôi = 1
+                    if (this.filterwork > 0) {
+                        filter.filter = this.filterwork;
+                    }
+                    // công việc tôi theo dõi = 3
+                    if (this.selectedTab === 3) {
+                        filter.filter = 3;
+                    }
+                    filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
+                    filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
+                    filter.collect_by = this.column_sort.value;
 
-        if (this.idFilter > 0) {
-            filter.id_filter = this.idFilter;
+                    if (this.idFilter > 0) {
+                        filter.id_filter = this.idFilter;
+                    }
+                    break;
+                }
+            case 2: {
+
+                if (this.idFilter > 0) {
+                    filter.id_filter = this.idFilter;
+                }
+                break;
+            }
         }
         return filter;
     }
@@ -545,11 +578,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     protected filterDanhSach() {
         // filter the banks
         this.filteredDanhSachCongViec.next(
-            this.DanhsSachCongViec
+            this.DanhSachCongViec
         );
     }
     ChangeData() {
-        this.LoadWork();
+        // this.LoadWork();
+        this.LoadTask();
     }
     getColorStatus(id_project_team, val) {
         const item = this.ListAllStatusDynamic.find(x => +x.id_row === id_project_team);
@@ -746,7 +780,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             if (result != undefined) {
                 this.filterDay.startDate = new Date(result.startDate);
                 this.filterDay.endDate = new Date(result.endDate);
-                this.LoadWork();
+                // this.LoadWork();
+                this.LoadTask();
             }
         });
     }
@@ -772,7 +807,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     GroupBy(item) {
         this.filter_groupby = item;
         this.LoadListStatusByProject();
-        this.LoadWork();
+        // this.LoadWork();
+        this.LoadTask();
     }
     ExpandNode(node) {
         node.isExpanded = !node.isExpanded;
@@ -780,12 +816,14 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     ShowCloseTask() {
         this.showclosedtask = !this.showclosedtask;
-        this.LoadWork();
+        // this.LoadWork();
+        this.LoadTask();
     }
 
     ShowClosesubTask() {
         this.showclosedsubtask = !this.showclosedsubtask;
-        this.LoadWork();
+        // this.LoadWork();
+        this.LoadTask();
     }
 
     LoadClosedTask(val) {
@@ -799,7 +837,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             return;
         }
         this.filter_subtask = item;
-        this.LoadWork();
+        // this.LoadWork();
+        this.LoadTask();
     }
     CreateTask(val) {
         const x = this.newtask;
@@ -813,7 +852,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             if (res && res.status === 1) {
                 this.CloseAddnewTask(true);
                 this.LoadListStatusByProject();
-                this.LoadWork();
+                // this.LoadWork();
+                this.LoadTask();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -824,7 +864,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this._service.DeleteTask(task.id_row).subscribe(res => {
             if (res && res.status === 1) {
                 this.LoadListStatusByProject();
-                this.LoadWork();
+                // this.LoadWork();
+                this.LoadTask();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
@@ -867,16 +908,19 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         if (task.id_nv > 0) {
             item.IsStaff = true;
         }
+
         this._service._UpdateByKey(item).subscribe(res => {
             if (res && res.status === 1) {
                 this.LoadListStatusByProject();
-                this.LoadWork();
+                // this.LoadWork();
+
             } else {
-                this.LoadWork();
+                // this.LoadWork();
                 this.layoutUtilsService.showError(res.error.message);
             }
-        });
 
+        });
+        this.LoadTask();
     }
 
     GetColorName(val) {
@@ -911,7 +955,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this._service.UpdateTask(task.id_row).subscribe(res => {
             if (res && res.status === 1) {
                 this.LoadListStatusByProject();
-                this.LoadWork();
+                this.LoadTask();
             }
         });
     }
@@ -955,7 +999,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             } else {
                 // this.layoutUtilsService.showActionNotification(_saveMessage, _messageType, 4000, true, false);
                 this.LoadListStatusByProject();
-                this.LoadWork();
+                this.LoadTask();
             }
         });
     }
@@ -1055,7 +1099,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     ReloadData(event) {
-        this.ngOnInit();
+        // this.ngOnInit();
+        this.LoadTask();
     }
 
     RemoveTag(tag, item) {
@@ -1066,13 +1111,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.WorkService.UpdateByKey(model).subscribe(res => {
             if (res && res.status === 1) {
                 this.LoadListStatusByProject();
-                this.LoadWork();
+                this.LoadTask();
             } else {
                 this.layoutUtilsService.showError(res.error.message);
             }
         });
     }
-
     showTitleFilter(id) {
         if (this.idFilter > 0) {
             const x = this.danhsachboloc.find(x => x.id_row === id);

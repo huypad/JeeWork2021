@@ -55,66 +55,126 @@ export class MessageService {
   }
 
 
+  // connectToken(idGroup: number) {
+  //   this.hubConnection = new HubConnectionBuilder()
+  //     .withUrl(this.hubUrl + "/message", {
+  //       skipNegotiation: true,
+  //       transport: signalR.HttpTransportType.WebSockets,
+  //     })
+  //     .withAutomaticReconnect()
+  //     .build();
+  //   try {
+  //     this.hubConnection
+  //       .start()
+  //       .then(() => {
+  //         const data = this.auth.getAuthFromLocalStorage();
+
+  //         var _token = `Bearer ${data.access_token}`;
+
+  //         try {
+  //           this.hubConnection.invoke("onConnectedTokenAsync", _token, idGroup);
+  //         } catch (err) {
+  //           console.log(err);
+  //         }
+
+  //         // load mess khi
+  //         this.hubConnection.on("ReceiveMessageThread", (messages) => {
+  //           const reversed = messages.reverse();
+  //           this.messageThreadSource.next(reversed);
+  //           // console.log('ReceiveMessageThread',messages)
+  //         });
+
+  //         this.hubConnection.on("SeenMessageReceived", (username) => {
+  //           this.seenMessageSource.next(username);
+  //         });
+  //         this.hubConnection.on("ReactionMessage", (data) => {
+  //           this.reaction.next(data);
+  //         });
+  //         this.hubConnection.on("HidenMessage", (data) => {
+  //           this.hidenmess.next(data);
+  //         });
+  //         this.hubConnection.on("CloseMessage", (data) => {
+  //           this.chatservices.CloseMiniChat$.next(data);
+  //         });
+  //         this.hubConnection.on("Composing", (data) => {
+  //           this.ComposingMess.next(data);
+  //         });
+  //         this.hubConnection.on("NewMessage", (message) => {
+  //           // this.messageReceived.emit(message)
+  //           this.messageThread$.pipe(take(1)).subscribe((messages) => {
+  //             this.messageThreadSource.next([...messages, message[0]]);
+  //             this.Newmessage.next(message);
+  //           });
+  //         });
+  //       })
+  //       .catch((err) => {
+  //         console.log("error", err);
+  //       });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
   connectToken(idGroup: number) {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl(this.hubUrl + "/message", {
+      .withUrl(this.hubUrl + '/message', {
         skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-      })
-      .withAutomaticReconnect()
-      .build();
+        transport: signalR.HttpTransportType.WebSockets
+      }).withAutomaticReconnect()
+      .build()
     try {
-      this.hubConnection
-        .start()
-        .then(() => {
-          const data = this.auth.getAuthFromLocalStorage();
 
-          var _token = `Bearer ${data.access_token}`;
+      this.hubConnection.start().then(() => {
 
-          try {
-            this.hubConnection.invoke("onConnectedTokenAsync", _token, idGroup);
-          } catch (err) {
-            console.log(err);
-          }
+        const data = this.auth.getAuthFromLocalStorage();
 
-          // load mess khi
-          this.hubConnection.on("ReceiveMessageThread", (messages) => {
-            const reversed = messages.reverse();
-            this.messageThreadSource.next(reversed);
-            // console.log('ReceiveMessageThread',messages)
-          });
+        var _token = `Bearer ${data.access_token}`
 
-          this.hubConnection.on("SeenMessageReceived", (username) => {
-            this.seenMessageSource.next(username);
-          });
-          this.hubConnection.on("ReactionMessage", (data) => {
-            this.reaction.next(data);
-          });
-          this.hubConnection.on("HidenMessage", (data) => {
-            this.hidenmess.next(data);
-          });
-          this.hubConnection.on("CloseMessage", (data) => {
-            this.chatservices.CloseMiniChat$.next(data);
-          });
-          this.hubConnection.on("Composing", (data) => {
-            this.ComposingMess.next(data);
-          });
-          this.hubConnection.on("NewMessage", (message) => {
-            // this.messageReceived.emit(message)
-            this.messageThread$.pipe(take(1)).subscribe((messages) => {
-              this.messageThreadSource.next([...messages, message[0]]);
-              this.Newmessage.next(message);
-            });
-          });
+        try {
+          this.hubConnection.invoke("onConnectedTokenAsync", _token, idGroup);
+
+        } catch (err) {
+          console.log(err)
+        }
+
+        // load mess khi
+        this.hubConnection.on('ReceiveMessageThread', messages => {
+          console.log('ReceiveMessageThread', messages)
+          const reversed = messages.reverse();
+          this.messageThreadSource.next(reversed);
         })
-        .catch((err) => {
-          console.log("error", err);
+
+        this.hubConnection.on('SeenMessageReceived', username => {
+          this.seenMessageSource.next(username);
+        })
+        this.hubConnection.on('HidenMessage', data => {
+          this.hidenmess.next(data);
+        })
+        this.hubConnection.on('CloseMessage', data => {
+          this.chatservices.CloseMiniChat$.next(data);
+        })
+        this.hubConnection.on('Composing', data => {
+          this.ComposingMess.next(data);
+        })
+
+        this.hubConnection.on('ReactionMessage', data => {
+          this.reaction.next(data);
         });
-    } catch (err) {
-      console.log(err);
+
+        this.hubConnection.on('NewMessage', message => {
+          this.messageThread$.pipe(take(1)).subscribe(messages => {
+            this.messageThreadSource.next([...messages, message[0]])
+            this.Newmessage.next(message);
+          })
+        })
+      }).catch(err => {
+        // document.write(err);
+      });
+
+    }
+    catch (err) {
+      console.log(err)
     }
   }
-
   async HidenMessage(token: string, IdChat: number, IdGroup: number) {
     return this.hubConnection.invoke('DeleteMessage', token, IdChat, IdGroup)
       .catch(error => console.log(error));

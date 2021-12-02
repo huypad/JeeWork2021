@@ -20,32 +20,54 @@ export class RemindService {
     ) {
     }
 
+    // connectToken() {
+    //     this.hubConnection = new HubConnectionBuilder()
+    //         .withUrl(this.hubUrl + '/remind', {
+    //             skipNegotiation: true,
+    //             transport: signalR.HttpTransportType.WebSockets
+    //         }).withAutomaticReconnect()
+    //         .build();
+
+    //     this.hubConnection.start().then(() => {
+
+    //         const data = this.auth.getAuthFromLocalStorage();
+
+    //         var _token = `Bearer ${data.access_token}`;
+    //         this.username = data['user']['username'];
+    //         this.hubConnection.invoke('onConnectedTokenAsync', _token, this.username, environment.APPCODE);
+
+    //         this.hubConnection.on('NewMessageReceived', (data: any) => {
+    //             this.NewMess$.next(data);
+    //         });
+
+
+    //     }).catch(err => {
+    //     });
+
+    // }
     connectToken() {
         this.hubConnection = new HubConnectionBuilder()
-            .withUrl(this.hubUrl + '/remind', {
-                skipNegotiation: true,
-                transport: signalR.HttpTransportType.WebSockets
-            }).withAutomaticReconnect()
-            .build();
-
+          .withUrl(this.hubUrl + '/remind', {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets
+          }).withAutomaticReconnect()
+          .build()
+    
         this.hubConnection.start().then(() => {
-
-            const data = this.auth.getAuthFromLocalStorage();
-
-            var _token = `Bearer ${data.access_token}`;
-            this.username = data['user']['username'];
-            this.hubConnection.invoke('onConnectedTokenAsync', _token, this.username, environment.APPCODE);
-
-            this.hubConnection.on('NewMessageReceived', (data: any) => {
-                this.NewMess$.next(data);
-            });
-
-
+    
+          const data = this.auth.getAuthFromLocalStorage();
+    
+          var _token = `Bearer ${data.access_token}`
+          this.username = data['user']['username'];
+          this.hubConnection.invoke("onConnectedTokenAsync", _token, this.username, environment.APPCODE);
+          this.hubConnection.on('NewMessageReceived', (data: any) => {
+            this.NewMess$.next(data)
+          })
+    
+    
         }).catch(err => {
         });
-
-    }
-
+      }
     disconnectToken() {
         const data = this.auth.getAuthFromLocalStorage();
         this.username = data['user']['username'];

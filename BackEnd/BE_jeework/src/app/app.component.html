@@ -1,5 +1,7 @@
-<app-splash-screen></app-splash-screen>
+<app-splash-screen *ngIf="loader"></app-splash-screen>
 <router-outlet></router-outlet>
 <section class="aux-container">
 	<router-outlet name="auxName"></router-outlet>
 </section>
+<div class="nemo-process-waiting nemo-hide-wait" id="nemo-process-waiting-id"></div>
+<div class="nemo-process-waiting-loader nemo-hide-wait pulse-loader" id="nemo-process-waiting-loader"></div>

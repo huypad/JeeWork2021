@@ -4209,6 +4209,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
                         {
                             var users = getUserTask(cnn, data.id_row);
+                            var userss = JeeWorkLiteController.GetUserSendNotify(loginData, data.id_row, id_log_action, 1, ConnectionString, DataAccount, cnn);
                             switch (data.key)
                             {
                                 #region Hạn chót

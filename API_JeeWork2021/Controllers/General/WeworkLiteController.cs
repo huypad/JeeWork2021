@@ -2830,14 +2830,15 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         /// </summary>
         /// <param name="objectid"></param>
         /// <param name="actionid">we_log_action - id_row</param>
-        /// <param name="position_notify">vị trí loại gửi thông báo 11000</param>
+        /// <param name="position_notify">vị trí loại gửi thông báo 11000: AppNoti, Email</param>
         /// <param name="ConnectionString">chuỗi kết nối</param>
         /// <returns></returns>
-        public static List<AccUsernameModel> GetUserSendNotify(UserJWT loginData, long objectid, long actionid, int position_notify, string ConnectionString)
+        public static List<long> GetUserSendNotify(UserJWT loginData, long objectid, long actionid, int position_notify, string ConnectionString, List<AccUsernameModel> DataAccount, DpsConnection cnn)
         {
+            List<long> listUser = new List<long>();
             try
             {
-                using (DpsConnection cnn = new DpsConnection(ConnectionString))
+                //using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     string sql_action = "", sql_projectmgr = "", sql_creator = "", sql_asssignee = "", sql_follower = "", sql_othermember = "", sql_addminapp = "";
                     int typeid = 0;
@@ -2854,7 +2855,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     dt = cnn.CreateDataTable(sql_action);
                     if (dt.Rows.Count > 0)
                     {
-                        typeid = int.Parse(dt.Rows[0]["loai_notify"].ToString());
+                        typeid = int.Parse(dt.Rows[0]["loai_notify"].ToString()); // we_log_action: 1 - phòng ban/thư mục, 2 - dự án, 3 - công việc, 4 - topic
                     }
                     string table_name = "notable";
                     string column_key = "id_row";
@@ -2877,13 +2878,24 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 table_name = "we_work";
                                 column_key = "";
                                 // Lấy list project manager
-                                id_project_team = cnn.ExecuteScalar("select id_project_team from we_work where disabled = 0 and id_row =" + objectid).ToString();
+                                string sql_parent = "";
+                                sql_parent = "select id_project_team from we_work where disabled = 0 and id_row =" + objectid;
+                                id_project_team = cnn.ExecuteScalar(sql_parent).ToString();
                                 if (!string.IsNullOrEmpty(id_project_team))
                                 {
-                                    dt_projectmgr = ListUserByProject(cnn, long.Parse(id_project_team), loginData.CustomerID);
+                                    dt_projectmgr = Get_ListUserByProject(cnn, long.Parse(id_project_team), loginData.CustomerID);
                                 }
+                                sql_parent = "";
                                 // Lấy người tạo công việc, người giao, người làm
                                 dt_works = cnn.CreateDataTable("select createdby, nguoigiao, id_nv from v_wework_new where id_row =" + objectid);
+                                // Lấy danh sách admin app
+                                dt_addminapp = Get_ListAdminApp(cnn, loginData.CustomerID, DataAccount);
+                                break;
+                            }
+                        case 4:
+                            {
+                                table_name = "we_topic";
+                                column_key = "";
                                 break;
                             }
                     }
@@ -2901,14 +2913,52 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     if (dt.Rows.Count > 0)
                     {
                         string characters = "00000";
+                        char vitri;
                         characters = dt.Rows[0]["projectmgr"].ToString();
-                        char vitri = characters[position_notify - 1];
+                        vitri = characters[position_notify - 1];
                         if ("1".Equals(vitri.ToString()))
                         {
-
+                            listUser = dt_projectmgr.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                        }
+                        if (typeid == 3)
+                        {
+                            characters = dt.Rows[0]["creator"].ToString();
+                            vitri = characters[position_notify - 1];
+                            if ("1".Equals(vitri.ToString()))
+                            {
+                                listUser = dt_works.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            }
+                            characters = dt.Rows[0]["asssignee"].ToString();
+                            if ("1".Equals(vitri.ToString()))
+                            {
+                                listUser = dt_works.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            }
+                            characters = dt.Rows[0]["follower"].ToString();
+                            if ("1".Equals(vitri.ToString()))
+                            {
+                                listUser = dt_works.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            }
+                        }
+                        else
+                        {
+                            characters = dt.Rows[0]["creator"].ToString();
+                            if ("1".Equals(vitri.ToString()))
+                            {
+                                listUser = dt_creator.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            }
+                        }
+                        characters = dt.Rows[0]["othermember"].ToString();
+                        if ("1".Equals(vitri.ToString()))
+                        {
+                            listUser = dt_projectmgr.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                        }
+                        characters = dt.Rows[0]["addminapp"].ToString();
+                        if ("1".Equals(vitri.ToString()))
+                        {
+                            listUser = dt_addminapp.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
                         }
                     }
-                    return new List<AccUsernameModel>();
+                    return listUser;
                 }
             }
             catch (Exception ex)
@@ -4407,11 +4457,11 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             dt_notify.Columns.Add("isemail");
             return dt_notify;
         }
-        public static DataTable ListUserByProject(DpsConnection cnn, long id_project_team, long customerid)
+        public static DataTable Get_ListUserByProject(DpsConnection cnn, long id_project_team, long customerid)
         {
             string sqlq = "";
             SqlConditions conds = new SqlConditions();
-            sqlq = "select * from we_project_team_user us " +
+            sqlq = "select us.* from we_project_team_user us " +
                 "join we_project_team p " +
                 "on p.id_row = us.id_project_team " +
                 "join we_department de " +
@@ -4422,6 +4472,73 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             conds.Add("us.id_project_team", id_project_team);
             conds.Add("de.idkh", customerid);
             return cnn.CreateDataTable(sqlq, "(where)", conds);
+        }
+        public static DataTable Get_ListOtherUsers(DpsConnection cnn, long otherid, long customerid, long typeid)
+        {
+            string sqlq = "";
+            switch (typeid)
+            {
+                case 1:
+                    {
+                        sqlq = "select id_row, id_user, type " +
+                            "from we_department_owner ow " +
+                            "join we_department de " +
+                            "on de.id_row = ow.id_department " +
+                            "where de.disabled = 0 " +
+                            "and ow.disabled = 0 " +
+                            "and de.idkh =" + customerid + " " +
+                            "ow.id_department=" + otherid;
+                        break;
+                    }
+                case 2:
+                    {
+                        sqlq = "select id_row, id_user, admin as type " +
+                            "from we_project_team_user us " +
+                            "join we_project_team p " +
+                            "on on p.id_row = us.id_project_team " +
+                            "join we_department de " +
+                            "on de.id_row = p.id_department " +
+                            "where p.disabled = 0 and us.disabled = 0 " +
+                            "and de.disabled = 0 " +
+                            "and us.id_project_team = " + otherid + " " +
+                            "and de.idkh" + customerid;
+                        break;
+                    }
+                case 3:
+                    {
+                        break;
+                    }
+                case 4:
+                    {
+                        break;
+                    }
+            }
+            SqlConditions conds = new SqlConditions();
+            return cnn.CreateDataTable(sqlq);
+        }
+        public static DataTable Get_ListAdminApp(DpsConnection cnn, long customerid, List<AccUsernameModel> DataAccount)
+        {
+            string sqlq = "";
+            SqlConditions conds = new SqlConditions();
+            sqlq = "select 0 as id_user, tbl_group_account.username, 1 as type from tbl_group_account " +
+                "join tbl_group on tbl_group.id_group = tbl_group_account.id_group " +
+                "where (where)";
+            conds.Add("isadmin", 1);
+            conds.Add("tbl_group.custemerid", customerid);
+            DataTable dt = new DataTable();
+            dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow item in dt.Rows)
+                {
+                    var info = DataAccount.Where(x => item["username"].ToString().Contains(x.Username.ToString())).FirstOrDefault();
+                    if (info != null)
+                    {
+                        item["id_user"] = info.UserId;
+                    }
+                }
+            }
+            return dt;
         }
         public static string GetTableNameNotify(int typeid)
         {

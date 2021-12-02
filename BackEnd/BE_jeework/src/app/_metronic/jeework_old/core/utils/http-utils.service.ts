@@ -1,9 +1,9 @@
-import {environment} from 'src/environments/environment';
-import {TokenStorage} from './../auth/_services/token-storage.service';
-import {Injectable} from '@angular/core';
-import {map, catchError, tap, switchMap} from 'rxjs/operators';
-import {HttpParams, HttpHeaders} from '@angular/common/http';
-import {AuthService} from 'src/app/modules/auth';
+import { environment } from 'src/environments/environment';
+import { TokenStorage } from './../auth/_services/token-storage.service';
+import { Injectable } from '@angular/core';
+import { map, catchError, tap, switchMap } from 'rxjs/operators';
+import { HttpParams, HttpHeaders } from '@angular/common/http';
+import { AuthService } from 'src/app/modules/auth';
 
 
 @Injectable()
@@ -24,7 +24,7 @@ export class HttpUtilsService {
         if (queryParams.more) {
             params = params.append('more', 'true');
         }
-        Object.keys(queryParams.filter).forEach(function(key) {
+        Object.keys(queryParams.filter).forEach(function (key) {
             if (typeof queryParams.filter[key] !== 'string' || queryParams.filter[key] !== '') {
                 keys.push(key);
                 values.push(queryParams.filter[key]);
@@ -43,7 +43,7 @@ export class HttpUtilsService {
             vals: ''
         };
         let keys = [], values = [];
-        Object.keys(data).forEach(function(key) {
+        Object.keys(data).forEach(function (key) {
             if (typeof data[key] !== 'string' || data[key] !== '') {
                 keys.push(key);
                 values.push(data[key]);

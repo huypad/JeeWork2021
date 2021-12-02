@@ -1,5 +1,5 @@
 <kt-portlet [options]="{hideHeader: true}" class="h-100">
-    <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'">
+    <kt-portlet-header [sticky]="true" [class]="'kt-portlet__head--lg'" style="z-index: 1 !important;">
         <ng-container ktPortletTitle>
             <h3>Chi tiết công việc</h3>
         </ng-container>
@@ -339,7 +339,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="col-md-12 pd-0 m--margin-bottom-10-mobile">
-                                                    <editor apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft"
+                                                    <editor  apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft"
                                                         [(ngModel)]="description_tiny" (ngModelChange)="onChangeNote()"
                                                         [init]="tinyMCE" style="margin-bottom: 15px;">
                                                     </editor>

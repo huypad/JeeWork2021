@@ -45,73 +45,73 @@ export class PresenceService {
     }
   
 
-  connectToken(){
-    this.hubConnection = new HubConnectionBuilder()
-  .withUrl(this.hubUrl+'/presence', {
-    skipNegotiation: true,
-    transport: signalR.HttpTransportType.WebSockets
-  }).withAutomaticReconnect()
-      .build()
-try
-{
+//   connectToken(){
+//     this.hubConnection = new HubConnectionBuilder()
+//   .withUrl(this.hubUrl+'/presence', {
+//     skipNegotiation: true,
+//     transport: signalR.HttpTransportType.WebSockets
+//   }).withAutomaticReconnect()
+//       .build()
+// try
+// {
 
 
-      this.hubConnection.start().then(()=>{
+//       this.hubConnection.start().then(()=>{
     
-      const data=this.auth.getAuthFromLocalStorage();
+//       const data=this.auth.getAuthFromLocalStorage();
 
-         var _token =`Bearer ${data.access_token}`
+//          var _token =`Bearer ${data.access_token}`
        
-         try
-         {
-           setTimeout(() => {
-            this.hubConnection.invoke("onConnectedTokenAsync",_token);  
-           }, 2000);
+//          try
+//          {
+//            setTimeout(() => {
+//             this.hubConnection.invoke("onConnectedTokenAsync",_token);  
+//            }, 2000);
        
-         }catch(err)
-         {
-         }
+//          }catch(err)
+//          {
+//          }
    
         
-        this.hubConnection.on('UserIsOnline', (username: any) => {
+//         this.hubConnection.on('UserIsOnline', (username: any) => {
           
-      this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
-        this.onlineUsersSource.next([...usernames, username])
-      })
-      // this.toastr.info(username.FullName+' has connect')
-      // this.toastr.info(username.displayName+ ' has connect')
-    })
+//       this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+//         this.onlineUsersSource.next([...usernames, username])
+//       })
+//       // this.toastr.info(username.FullName+' has connect')
+//       // this.toastr.info(username.displayName+ ' has connect')
+//     })
 
-    this.hubConnection.on('UserIsOffline', (User: any) => {
-      this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+//     this.hubConnection.on('UserIsOffline', (User: any) => {
+//       this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
         
-        this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username),User])
-        // this.onlineUsersSource.next([...usernames, User])
-      })
-    })
-    this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
-      this.onlineUsersSource.next(usernames);
-    })
+//         this.onlineUsersSource.next([...usernames.filter(x => x.Username !== User.Username),User])
+//         // this.onlineUsersSource.next([...usernames, User])
+//       })
+//     })
+//     this.hubConnection.on('GetOnlineUsers', (usernames: any[]) => {
+//       this.onlineUsersSource.next(usernames);
+//     })
 
-    this.hubConnection.on('NewGroupChatReceived', data => {
-      this.NewGroupSource.next(data);
-    })
-    this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
-      this.OpenmessageUsernameSource.next(IdGroup)
-    })
+//     this.hubConnection.on('NewGroupChatReceived', data => {
+//       this.NewGroupSource.next(data);
+//     })
+//     this.hubConnection.on('NewMessageReceived', (IdGroup: any) => {
+//       this.OpenmessageUsernameSource.next(IdGroup)
+//     })
 
     
-      }).catch(err => {
-        //  document.write(err);
-      });
-    }
-    catch(err)
-    {
-    }
+//       }).catch(err => {
+//         //  document.write(err);
+//       });
+//     }
+//     catch(err)
+//     {
+//     }
 
 
   
-}
+// }
 
 async NewGroup(token:string,item:ConversationModel,dl:any){   
   return  this.hubConnection .invoke('NewGroupChat',token,item,dl)

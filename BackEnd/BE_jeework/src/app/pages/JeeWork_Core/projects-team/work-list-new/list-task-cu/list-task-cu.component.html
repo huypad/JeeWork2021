@@ -30,7 +30,7 @@
                             <ng-container>
                                 <div class="cu-search-filter cu-search-filter_v5" style=" padding: 0 10px;">
                                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched"
-                                        style="border:0;outline:0" (keyup.enter)="LoadWork()" [(ngModel)]="keyword"
+                                        style="border:0;outline:0" (keyup.enter)="LoadTask();" [(ngModel)]="keyword"
                                         type="text" placeholder="{{ 'work.filterbytaskname' | translate}}">
                                     <div class="cu-search-filter__extra">
                                         <div class="cu-filter-value-list-dropdown ng-star-inserted">
@@ -95,7 +95,7 @@
                                                 (click)="ShowCloseTask()">
                                                 <span translate="viewsetting.showclosedtask"></span>
                                             </div>
-                                            <mat-slide-toggle [(ngModel)]="showclosedtask" (ngModelChange)="LoadWork()">
+                                            <mat-slide-toggle [(ngModel)]="showclosedtask" (ngModelChange)="LoadTask()">
                                             </mat-slide-toggle>
                                         </button>
                                         <button mat-menu-item class="d-flex">
@@ -104,7 +104,7 @@
                                                 <span translate="viewsetting.showclosedsubtask"></span>
                                             </div>
                                             <mat-slide-toggle [(ngModel)]="showclosedsubtask"
-                                                (ngModelChange)="LoadWork()">
+                                                (ngModelChange)="LoadTask()">
                                             </mat-slide-toggle>
                                         </button>
                                         <!--                                        <button mat-menu-item (click)="showemptystatus=!showemptystatus">-->
@@ -573,7 +573,8 @@
                                                                     </ng-container>
                                                                     <ng-container *ngSwitchCase="'comments'">
                                                                         <div class="item-field hide-more-text">
-                                                                            <app-task-comment (submit)="this.LoadWork()"
+                                                                            <app-task-comment
+                                                                                (submit)="this.LoadTask();"
                                                                                 [id_row]="node.id_row"
                                                                                 [value]="node[item.fieldname]">
                                                                             </app-task-comment>

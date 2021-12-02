@@ -230,16 +230,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 this.LoadMenu();
 
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 3000, 'top', 0);
             }
             this.changeDetectorRefs.detectChanges();
         });
