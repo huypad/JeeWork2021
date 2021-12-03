@@ -1,0 +1,204 @@
+  public setupTinyMce(): any {
+		if (this.EDIT_FONT_EDITOR == '' && this.EDIT_FONTSIZE_EDITOR == '') {
+			return {
+				plugins: 'paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help powerpaste ',
+				toolbar: 'undo redo |image| styleselect |  fontselect| fontsizeselect| bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
+
+				image_uploadtab: true,
+				paste_as_text: true,
+				height: 250,
+				fontsize_formats: "8pt 9pt 10pt 11pt 12pt 14pt 18pt 24pt 30pt 36pt 48pt 60pt 72pt 96pt",
+				// font_formats: 'Helvetica=Helvetica;UTM Avo=UTMAvo;',
+				font_formats: "Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; UTM Avo=UTMAvo; Impact=impact,chicago; Oswald=oswald; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
+				images_upload_url: environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'tin-tuc',
+				automatic_uploads: true,
+				images_upload_base_path: '/images',
+				convert_urls: true,
+				relative_urls: false,
+				remove_script_host: false,
+				images_upload_credentials: true,
+				images_upload_handler: function (blobInfo, success, failure) {
+					var xhr, formData;
+
+					xhr = new XMLHttpRequest();
+					xhr.withCredentials = false;
+					xhr.open('POST', environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'canh-bao');
+
+					xhr.onload = function () {
+						var json;
+
+						if (xhr.status < 200 || xhr.status >= 300) {
+							failure('HTTP Error: ' + xhr.status);
+							return;
+						}
+						json = JSON.parse(xhr.responseText);
+
+						if (!json || typeof json.imageUrl != 'string') {
+							failure('Invalid JSON: ' + xhr.responseText);
+							return;
+						}
+						success(json.imageUrl);
+					};
+					formData = new FormData();
+					formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+					xhr.send(formData);
+				},
+				init_instance_callback: function () {
+					var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
+					freeTiny.style.display = 'none';
+				},
+				content_style: '.tox-notification--in{display:none};'
+			};
+		}
+		else if (this.EDIT_FONT_EDITOR != '' && this.EDIT_FONTSIZE_EDITOR == '') {
+			return {
+				plugins: 'paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help powerpaste ',
+				toolbar: 'undo redo |image| styleselect |  fontselect| fontsizeselect| bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
+
+				image_uploadtab: true,
+				paste_as_text: true,
+				height: 250,
+				fontsize_formats: "8pt 9pt 10pt 11pt 12pt 14pt 18pt 24pt 30pt 36pt 48pt 60pt 72pt 96pt",
+				font_formats: this.EDIT_FONT_EDITOR,
+				images_upload_url: environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'tin-tuc',
+				automatic_uploads: true,
+				images_upload_base_path: '/images',
+				convert_urls: true,
+				relative_urls: false,
+				remove_script_host: false,
+				images_upload_credentials: true,
+				images_upload_handler: function (blobInfo, success, failure) {
+					var xhr, formData;
+
+					xhr = new XMLHttpRequest();
+					xhr.withCredentials = false;
+					xhr.open('POST', environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'canh-bao');
+
+					xhr.onload = function () {
+						var json;
+
+						if (xhr.status < 200 || xhr.status >= 300) {
+							failure('HTTP Error: ' + xhr.status);
+							return;
+						}
+						json = JSON.parse(xhr.responseText);
+
+						if (!json || typeof json.imageUrl != 'string') {
+							failure('Invalid JSON: ' + xhr.responseText);
+							return;
+						}
+						success(json.imageUrl);
+					};
+					formData = new FormData();
+					formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+					xhr.send(formData);
+				},
+				init_instance_callback: function () {
+					var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
+					freeTiny.style.display = 'none';
+				},
+				content_style: '.tox-notification--in{display:none};'
+			};
+		}
+		else if (this.EDIT_FONT_EDITOR == '' && this.EDIT_FONTSIZE_EDITOR != '') {
+			return {
+				plugins: 'paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help powerpaste ',
+				toolbar: 'undo redo |image| styleselect |  fontselect| fontsizeselect| bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
+
+				image_uploadtab: true,
+				paste_as_text: true,
+				height: 250,
+				fontsize_formats: this.EDIT_FONTSIZE_EDITOR,
+				font_formats: "Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; UTM Avo=UTMAvo; Impact=impact,chicago; Oswald=oswald; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
+				images_upload_url: environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'tin-tuc',
+				automatic_uploads: true,
+				images_upload_base_path: '/images',
+				convert_urls: true,
+				relative_urls: false,
+				remove_script_host: false,
+				images_upload_credentials: true,
+				images_upload_handler: function (blobInfo, success, failure) {
+					var xhr, formData;
+
+					xhr = new XMLHttpRequest();
+					xhr.withCredentials = false;
+					xhr.open('POST', environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'canh-bao');
+
+					xhr.onload = function () {
+						var json;
+
+						if (xhr.status < 200 || xhr.status >= 300) {
+							failure('HTTP Error: ' + xhr.status);
+							return;
+						}
+						json = JSON.parse(xhr.responseText);
+
+						if (!json || typeof json.imageUrl != 'string') {
+							failure('Invalid JSON: ' + xhr.responseText);
+							return;
+						}
+						success(json.imageUrl);
+					};
+					formData = new FormData();
+					formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+					xhr.send(formData);
+				},
+				init_instance_callback: function () {
+					var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
+					freeTiny.style.display = 'none';
+				},
+				content_style: '.tox-notification--in{display:none};'
+			};
+		}
+		else {
+			return {
+				plugins: 'paste print code preview  searchreplace autolink directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help powerpaste ',
+				toolbar: 'undo redo |image| styleselect |  fontselect| fontsizeselect| bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table  | removeformat code preview ',
+				image_uploadtab: true,
+				paste_as_text: true,
+				height: 250,
+				fontsize_formats: this.EDIT_FONTSIZE_EDITOR,
+				font_formats: this.EDIT_FONT_EDITOR,
+				images_upload_url: environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'tin-tuc',
+				automatic_uploads: true,
+				images_upload_base_path: '/images',
+				convert_urls: true,
+				relative_urls: false,
+				remove_script_host: false,
+				images_upload_credentials: true,
+				images_upload_handler: function (blobInfo, success, failure) {
+					var xhr, formData;
+					xhr = new XMLHttpRequest();
+					xhr.withCredentials = false;
+					xhr.open('POST', environment.ApiRoot + '/Tool/upload-img?idAcc=' + 'canh-bao');
+					xhr.onload = function () {
+						var json;
+
+						if (xhr.status < 200 || xhr.status >= 300) {
+							failure('HTTP Error: ' + xhr.status);
+							return;
+						}
+						json = JSON.parse(xhr.responseText);
+
+						if (!json || typeof json.imageUrl != 'string') {
+							failure('Invalid JSON: ' + xhr.responseText);
+							return;
+						}
+						success(json.imageUrl);
+					};
+					formData = new FormData();
+					formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+					xhr.send(formData);
+				},
+				init_instance_callback: function () {
+					var freeTiny = document.querySelector('.tox .tox-notification--in') as HTMLInputElement;
+					freeTiny.style.display = 'none';
+				},
+				content_style: '.tox-notification--in{display:none};'
+			};
+		}
+	}
