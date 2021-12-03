@@ -53,7 +53,6 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatDialogModule} from '@angular/material/dialog';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AngularFileViewerModule } from '@taldor-ltd/angular-file-viewer';
-
 // #fake-end#
 
 function appInitializer(authService: AuthService) {
@@ -92,7 +91,7 @@ function appInitializer(authService: AuthService) {
         MatMenuModule,
         MatIconModule,
         MatMomentDateModule,
-        AngularFileViewerModule
+        AngularFileViewerModule,
     ],
     providers: [
         AclService,

@@ -190,7 +190,7 @@ namespace JeeWork_Core2021.Classes
                                         EveryDayReminder(cnn, CustomerID, _connection);
                                         if (cnn.LastError != null)
                                         {
-                                            string content = " Timer60Minute_Elapsed. Lỗi Database: " + cnn.LastError.Message;
+                                            string content = " Timer60Minute_Elapsed. Lỗi Database 193: " + cnn.LastError.Message+" - Hàm: " + ham;
                                             string error_message = "";
                                             string CustemerID1 = "0";
                                             //Gửi thông báo khi phát sinh lỗi

@@ -195,7 +195,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     cnn.BeginTransaction();
-
                     if (data != null)
                     {
                         var temp = new AttachmentModel()
@@ -212,7 +211,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             case 3: sqlq = "select ISNULL((select count(*) from we_comment where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
                             case 11: sqlq = "select ISNULL((select count(*) from we_work where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
                             case 4: sqlq = "select ISNULL((select count(*) from we_project_team where Disabled=0 and id_row = " + data.object_id + "),0)"; break;
-
                             default: break;
                         }
                         if (long.Parse(cnn.ExecuteScalar(sqlq).ToString()) != 1)
@@ -243,7 +241,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     //data.id_row = idc;
                     //cnn.EndTransaction();
-
                     //if (data.email)
                     //JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 16, loginData);
                     //data.id_row = idc;

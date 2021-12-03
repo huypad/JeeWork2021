@@ -3,14 +3,18 @@ import { environment } from 'src/environments/environment';
 
 const tinyMCE = {
     // plugins: 'autoresize autosave paste print code preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern help ',
-    plugins: 'link image code paste table lists preview autolink fullscreen',
-    toolbar: 'fullscreen | undo redo | bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table | removeformat code paste pastetext preview ',
+    // plugins: 'imagetools codesample link image code paste table preview autolink fullscreen quickbars',
+    plugins: ['imagetools', 'autolink', 'codesample', 'link', 'lists', 'media', 'table', 'image', 'fullscreen', 'quickbars'],
+    toolbar: 'true | fullscreen | undo redo | bold italic underline | bullist numlist outdent indent | alignleft aligncenter alignright alignjustify | forecolor backcolor image link table | removeformat code paste pastetext preview',
     image_uploadtab: true,
     paste_block_drop: true,
     menubar: false,
     paste_as_text: true,
     paste_data_images: true,
     smart_paste: true,
+    quickbars_selection_toolbar: ' forecolor | bold italic | h2 h3 | alignleft aligncenter alignright | bullist blockquote quicklink',
+    content_style: 'img {max-width: 100%;}',
+    imagetools_toolbar: 'alignleft aligncenter alignright | rotateleft rotateright | flipv fliph | editimage imageoptions | link',
     resize: true,
     height: 100,
     min_height: 100,
@@ -24,6 +28,8 @@ const tinyMCE = {
         'border-collapse': 'collapse',
         'width': '100%'
     },
+    link_assume_external_targets: 'https',
+    inline: false,
     table_responsive_width: true,
     images_upload_url: environment.APIROOTS + '/api/attachment/upload-img',
     default_link_target: '_blank',
@@ -35,6 +41,14 @@ const tinyMCE = {
         width : "640",
         height : "1000px"
     },
+    templates: [
+        { title: 'Test template 1', content: 'Test 1' },
+        { title: 'Test template 2', content: 'Test 2' }
+      ],
+    content_css: [
+        '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+        '//www.tinymce.com/css/codepen.min.css'
+      ],
     // automatic_uploads: true,
     // images_upload_base_path: '/images',
     // images_upload_credentials: true,

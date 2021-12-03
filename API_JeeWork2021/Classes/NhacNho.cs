@@ -30,7 +30,7 @@ namespace API_JeeWork2021.Classes
         public NhacNho(IConnectionCache _cache, IConfiguration configuration, INotifier notifier, IProducer producer)
         {
             //10p chạy 1 lần 600000
-            Timer10Minute = new System.Timers.Timer(600000);
+            Timer10Minute = new System.Timers.Timer(60000);
             Timer10Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
@@ -101,7 +101,7 @@ namespace API_JeeWork2021.Classes
                                             }
                                             if (cnn.LastError != null)
                                             {
-                                                string content = " Timer10Minute_Elapsed. Lỗi Database: " + cnn.LastError.Message;
+                                                string content = " Timer10Minute_Elapsed. Lỗi Database 104: " + cnn.LastError.Message+" - Hàm: " + ham;
                                                 string error_message = "";
                                                 string CustemerID1 = "0";
                                                 //Gửi thông báo khi phát sinh lỗi
@@ -111,7 +111,7 @@ namespace API_JeeWork2021.Classes
                                     }
                                     catch (Exception ex)
                                     {
-                                        string content = " Timer10Minute_Elapsed. Lỗi Database: " + ex.Message;
+                                        string content = " Timer10Minute_Elapsed. Lỗi Database 114: " + ex.Message + " - Hàm: " + ham;
                                         string error_message = "";
                                         string CustemerID1 = "0";
                                         //Gửi thông báo khi phát sinh lỗi
@@ -272,21 +272,22 @@ namespace API_JeeWork2021.Classes
 
         public static long SLDuAnQuaHan(long UserID, long IdKH, DpsConnection cnn, IConfiguration _configuration, IProducer _producer )
         {
-            SqlConditions cond = new SqlConditions();
-            cond.Add("UserID", UserID);
-            cond.Add("IdKH", IdKH);
-            string sqlq = @$"select p.*
-                                from we_project_team p
-                                join we_department d on d.id_row = p.id_department
-                                join we_project_team_user u on u.id_project_team = p.id_row
-                                where u.disabled = 0 
-                                and id_user = @UserID 
-                                and end_date < GETUTCDATE()
-                                and p.disabled = 0 
-                                and d.disabled = 0 
-                                and IdKH=@IdKH";
+            //SqlConditions cond = new SqlConditions();
+            //cond.Add("UserID", UserID);
+            //cond.Add("IdKH", IdKH);
+            //string sqlq = @$"select p.*
+            //                    from we_project_team p
+            //                    join we_department d on d.id_row = p.id_department
+            //                    join we_project_team_user u on u.id_project_team = p.id_row
+            //                    where u.disabled = 0 
+            //                    and id_user = @UserID 
+            //                    and end_date < GETUTCDATE()
+            //                    and p.disabled = 0 
+            //                    and d.disabled = 0 
+            //                    and IdKH=@IdKH";
             DataTable dt = new DataTable();
-            dt = cnn.CreateDataTable(sqlq, cond);
+            dt = JeeWorkLiteController.project_by_manager(UserID, IdKH, cnn, "");
+            //dt = cnn.CreateDataTable(sqlq, cond);
             if (cnn.LastError != null || dt.Rows.Count < 0)
                 return 0;
             var demo = new Remider()

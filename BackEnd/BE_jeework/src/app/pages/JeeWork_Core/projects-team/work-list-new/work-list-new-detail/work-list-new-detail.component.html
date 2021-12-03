@@ -330,17 +330,6 @@
                                                         &nbsp;<i class="fa fa-check text-success" style="color: green;"
                                                             *ngIf="showsuccess"></i>
                                                     </button>
-                                                    <!-- <button mat-raised-button
-                                                        style="    border-radius: 20px;"
-                                                        class="btn  {{disabledBtn?'btn-secondary':'btn-primary'}}"
-                                                        *ngIf="CheckRoles(9) && CheckClosedTask()" [disabled]="isclosed"
-                                                        (click)="UpdateDescription()">
-
-                                                        {{ chinhsuamota?'Lưu':'Chỉnh sửa'}}
-
-                                                        <i class="fa fa-check text-success ml-1" style="color: green;"
-                                                            *ngIf="showsuccess"></i>
-                                                    </button> -->
                                                     <button class="btn -hover text-muted" [disabled]="isclosed"
                                                         (click)="View_Log_Description();">
                                                         <i class="fas fa-history pd-0"
@@ -350,22 +339,10 @@
                                                 <div class="col-md-12 pd-0 m--margin-bottom-10-mobile">
                                                     <editor apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft"
                                                         [(ngModel)]="description_tiny" (ngModelChange)="onChangeNote()"
-                                                        [init]="tinyMCE" style="margin-bottom: 15px;">
+                                                        [init]="tinyMCE" [inline]="false"
+                                                        style="position:relative; margin-bottom: 15px;">
                                                     </editor>
                                                 </div>
-                                                <!-- <div class="col-md-12 pd-0 m--margin-bottom-10-mobile" [hidden]="!chinhsuamota">
-                                                    <editor apiKey="lvp9xf6bvvm3nkaupm67ffzf50ve8femuaztgg7rkgkmsws3" [(ngModel)]="description_tiny"
-                                                        [init]="tinyMCE" style="margin-bottom: 15px;">
-                                                    </editor>
-                                                </div>
-                                                <div class="col-md-12 pd-0 m--margin-bottom-10-mobile" *ngIf="!chinhsuamota">
-                                                    <ng-container *ngIf="description_tiny;else khongconoidung">
-                                                        <span [innerHTML]="description_tiny"></span>
-                                                    </ng-container>
-                                                    <ng-template #khongconoidung>
-                                                        <span class="text-danger"> Chưa nhập nội dung mô tả.</span>
-                                                    </ng-template>
-                                                </div> -->
                                             </div>
 
                                             <div class="row" *ngIf="IsShow_MoTaCV">

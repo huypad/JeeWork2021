@@ -64,7 +64,6 @@ import { CommunicateService } from '../work-list-new-service/communicate.service
 import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ConfirmationDialogComponent } from 'src/app/_metronic/jeework_old/_shared/action-confirm/confirmation-dialog.component';
 import { ActivatedRoute } from '@angular/router';
 @Component({
     selector: 'kt-work-list-new-detail',
@@ -102,7 +101,6 @@ export class WorkListNewDetailComponent implements OnInit {
         this.list_priority = this.weworkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
     }
-
     selectedItem: any = undefined;
     itemForm: FormGroup;
     loadingSubject = new BehaviorSubject<boolean>(false);
@@ -197,7 +195,6 @@ export class WorkListNewDetailComponent implements OnInit {
     // load task
     list_Tag: any = [];
     project_team: any = '';
-
     ListChild: any = {};
     IsLoading: any = [];
     description_tiny: string;
@@ -335,7 +332,6 @@ export class WorkListNewDetailComponent implements OnInit {
         return false;
 
     }
-
     LoadChild(item) {
         // this.DataID = item.id_row;
         // this.LoadData();

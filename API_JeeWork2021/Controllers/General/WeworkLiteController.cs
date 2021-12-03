@@ -4562,6 +4562,186 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
                 return "";
             }
         }
+        public static DataSet GetListProjects(DpsConnection cnn, QueryParams query, List<AccUsernameModel> DataAccount, bool Visible, UserJWT loginData, string dieukien_where = "")
+        {
+            SqlConditions Conds = new SqlConditions();
+            string dieukienSort = "p.createddate desc";
+            dieukien_where = " p.disabled=0 and de.disabled = 0 and idkh = " + loginData.CustomerID + "";
+            if (!string.IsNullOrEmpty(query.filter["keyword"]))
+            {
+                dieukien_where += " and (p.title like N'%@keyword%' or p.description like N'%@keyword%')";
+                dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
+            }
+            if (!string.IsNullOrEmpty(query.filter["status"]))
+            {
+                dieukien_where += " and p.status=@status";
+                Conds.Add("status", query.filter["status"]);
+            }
+            if (!string.IsNullOrEmpty(query.filter["locked"]))
+            {
+                dieukien_where += " and p.locked=@locked";
+                Conds.Add("locked", query.filter["locked"]);
+            }
+            bool IsMobile = false;
+            if (!string.IsNullOrEmpty(query.filter["join"]) || !string.IsNullOrEmpty(query.filter["created_by"]))
+            {
+                IsMobile = true;
+            }
+            #region Sort data theo các dữ liệu bên dưới
+            Dictionary<string, string> sortableFields = new Dictionary<string, string>
+                        {
+                            { "priority", "priority"},
+                            { "title", "title"},
+                            { "description", "description"},
+                            { "CreatedBy", "NguoiTao"},
+                            { "CreatedDate", "CreatedDate"},
+                            { "UpdatedBy", "NguoiSua"},
+                            {"UpdatedDate","UpdatedDate" }
+                        };
+            #endregion
+            #region Ủy quyền giao việc
+            string sqluq = $@"or we_project_team_user.id_user in (select createdby from we_authorize
+                                        where id_user = {loginData.UserID} and disabled = 0 
+                                        and start_date <= GETUTCDATE() and end_date >= GETUTCDATE())";
+            #endregion
+            if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
+                dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
+            #region get list trạng thái status 
+            List<string> lstHoanthanh = cnn.CreateDataTable("select id_row from we_status where isfinal = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+            List<string> lstQuahan = cnn.CreateDataTable("select id_row from we_status where isdeadline = 1").AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+            string strhoanthanh = "0", strquahan = "0";
+            strhoanthanh = string.Join(",", lstHoanthanh);
+            strquahan = string.Join(",", lstQuahan);
+            if (string.IsNullOrEmpty(strhoanthanh))
+            {
+                strhoanthanh = "0";
+            }
+            if (string.IsNullOrEmpty(strquahan))
+            {
+                strquahan = "0";
+            }
+            #endregion
+            string sqlq = @$"select distinct p.id_row, icon, p.title, p.description, p.id_department
+                                    , p.loai, p.start_date, p.end_date, p.color, p.template, p.status
+                                    , p.stage_description, allow_percent_done, require_evaluate
+                                    , evaluate_by_assignner, allow_estimate_time, 
+                                    iif((p.end_date is not null and p.end_date < GETUTCDATE()) or p.status = 2,1,0) islate,
+                                     stop_reminder, note, is_project, period_type, p.priority
+                                    , p.createddate, p.createdby, p.Locked, p.disabled, p.updatedDate
+                                    , p.UpdatedBy, p.email_assign_work, p.email_update_work
+                                    , email_update_status, email_delete_work, 
+                                     email_update_team, email_delete_team, email_upload_file
+                                    , default_view, p.id_template, p.meetingid, de.title as department
+                                    ,coalesce(w.tong,0) as tong
+                                    ,coalesce( w.ht,0) as ht, coalesce(w.quahan,0) as quahan
+                                    , '' as NguoiTao, '' as NguoiSua, 0 as is_manager 
+                                    from we_project_team p 
+                                    left join we_department de on de.id_row=p.id_department
+                                    left join (select count(*) as tong
+                                    , COUNT(CASE WHEN w.status in (" + strhoanthanh + @") THEN 1 END) as ht
+                                    , COUNT(CASE WHEN w.status in (" + strquahan + @$")THEN 1 END) as quahan
+                                    ,w.id_project_team from we_work w where w.disabled=0 group by w.id_project_team) w 
+                                    on p.id_row=w.id_project_team 
+                                    (admin)  
+                                    " + dieukien_where + "  order by " + dieukienSort;
+            string dk_user_by_project = " join we_project_team_user " +
+                    "on we_project_team_user.id_project_team = p.id_row " +
+                    "and (we_project_team_user.id_user = " + loginData.UserID + sqluq + ")" +
+                    "where (de.id_row in (select distinct p1.id_department " +
+                    "from we_project_team p1 join we_project_team_user pu on p1.id_row = pu.id_project_team " +
+                    "where p1.Disabled = 0 and id_user = " + loginData.UserID + sqluq + ")) and ";
+            if (IsMobile)
+            {
+                if (!string.IsNullOrEmpty(query.filter["created_by"]))
+                {
+                    sqlq = sqlq.Replace("(admin)", " where p.createdBy=" + loginData.UserID + " and ");
+                }
+                if (!string.IsNullOrEmpty(query.filter["join"]))
+                {
+                    sqlq = sqlq.Replace("(admin)", dk_user_by_project);
+                }
+            }
+            else
+            {
+                if (Visible)
+                {
+                    sqlq = sqlq.Replace("(admin)", " where ");
+                }
+                else
+                {
+                    sqlq = sqlq.Replace("(admin)", dk_user_by_project);
+                }
+            }
+            sqlq += @$";select u.*,admin,'' as hoten,'' as username, '' as tenchucdanh,'' as mobile,'' as image 
+                                from we_project_team_user u 
+                                join we_project_team p on p.id_row=u.id_project_team 
+                                where u.disabled=0";
+            DataSet ds = cnn.CreateDataSet(sqlq, Conds);
+            if (cnn.LastError != null || ds == null)
+                return new DataSet();
+            else
+            {
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    // Update dự án do người đó quản lý
+                    DataTable dt_pm = new DataTable();
+                    string sql_pm = "";
+                    sql_pm = @"select pu.id_project_team, pu.id_user from we_project_team_user pu
+                                join we_project_team p on p.id_row = pu.id_project_team
+                                join we_department de on de.id_row = p.id_department
+                                where de.disabled = 0 and p.Disabled = 0 and p.Locked = 0
+                                and de.IdKH = " + loginData.CustomerID + " " +
+                                "and admin = 1 and pu.disabled = 0 " +
+                                "and pu.id_user =" + loginData.UserID;
+                    dt_pm = cnn.CreateDataTable(sql_pm);
+                    if (cnn.LastError != null || dt_pm == null)
+                        return new DataSet();
+                    bool is_update_manager = false;
+                    if (dt_pm.Rows.Count > 0)
+                    {
+                        is_update_manager = true;
+                    }
+                    #region Map info account từ JeeAccount
+                    foreach (DataRow item in ds.Tables[0].Rows)
+                    {
+                        var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (infoNguoiTao != null)
+                        {
+                            item["NguoiTao"] = infoNguoiTao.FullName;
+                        }
+                        if (infoNguoiSua != null)
+                        {
+                            item["NguoiSua"] = infoNguoiSua.FullName;
+                        }
+                        if (is_update_manager)
+                        {
+                            DataRow[] drow = dt_pm.Select("id_project_team=" + item["id_row"]);
+                            if (drow.Length > 0)
+                            {
+                                item["is_manager"] = 1;
+                            }
+                            else
+                                item["is_manager"] = 0;
+                        }
+                    }
+                    foreach (DataRow item in ds.Tables[1].Rows)
+                    {
+                        var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                        if (info != null)
+                        {
+                            item["hoten"] = info.FullName;
+                            item["username"] = info.Username;
+                            item["tenchucdanh"] = info.Jobtitle;
+                            item["mobile"] = info.PhoneNumber;
+                            item["image"] = info.AvartarImgURL;
+                        }
+                    }
+                    #endregion
+                }
+            }
+            return ds;
+        }
     }
 }
 
