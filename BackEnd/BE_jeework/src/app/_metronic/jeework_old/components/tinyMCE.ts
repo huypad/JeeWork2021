@@ -108,5 +108,6 @@ const tinyMCE = {
 			})
         });
     },
+    
 };
 export { tinyMCE };
