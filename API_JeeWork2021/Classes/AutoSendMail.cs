@@ -5,23 +5,19 @@ using DpsLibs.Data;
 using JeeWork_Core2021.Controller;
 using JeeWork_Core2021.Controllers.Wework;
 using JeeWork_Core2021.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net.Mail;
-using System.Threading.Tasks;
 using static JeeWork_Core2021.Classes.SendMail;
 
 namespace JeeWork_Core2021.Classes
 {
     public class AutoSendMail
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private IConfiguration _configuration;
         private IConnectionCache ConnectionCache;
         private string ConnectionString;

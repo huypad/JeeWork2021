@@ -21,7 +21,6 @@ namespace API_JeeWork2021.Classes
 {
     public class NhacNho
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private IConfiguration _configuration;
         private IConnectionCache ConnectionCache;
         private IProducer _producer;
@@ -64,7 +63,7 @@ namespace API_JeeWork2021.Classes
             Time10IsRun = false;
         }
         protected void Timer10Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-       {
+        {
             Time10IsRun = true;
             string ham = "Timer10Minute_Elapsed"; string idkh = "0"; string listKH = "";
             string ConnectionString = "";
@@ -90,22 +89,22 @@ namespace API_JeeWork2021.Classes
                                         {
                                             foreach (var account in DataAccount)
                                             {
-                                                ham = "SLCongviecPhuTrach"; idkh = item.ToString();
+                                                ham = "SLCongviecPhuTrach";
                                                 SLCongviecPhuTrach(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
-                                                ham = "SLCongviecQuaHan"; idkh = item.ToString();
+                                                ham = "SLCongviecQuaHan";
                                                 SLCongviecQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
-                                                ham = "SLCongViecHetHanTrongNgay"; idkh = item.ToString();
+                                                ham = "SLCongViecHetHanTrongNgay";
                                                 SLCongViecHetHanTrongNgay(account.UserId, account.CustomerID, cnn, _configuration, _producer, DataAccount);
-                                                ham = "SLDuAnQuaHan"; idkh = item.ToString();
+                                                ham = "SLDuAnQuaHan";
                                                 SLDuAnQuaHan(account.UserId, account.CustomerID, cnn, _configuration, _producer);
                                             }
                                             if (cnn.LastError != null)
                                             {
-                                                string content = " Timer10Minute_Elapsed. Lỗi Database 104: " + cnn.LastError.Message+" - Hàm: " + ham;
+                                                string content = " Timer10Minute_Elapsed. Lỗi Database 104: " + cnn.LastError.Message + " - Hàm: " + ham;
                                                 string error_message = "";
                                                 string CustemerID1 = "0";
                                                 //Gửi thông báo khi phát sinh lỗi
-                                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database 107: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                                             }
                                         }
                                     }
@@ -115,7 +114,7 @@ namespace API_JeeWork2021.Classes
                                         string error_message = "";
                                         string CustemerID1 = "0";
                                         //Gửi thông báo khi phát sinh lỗi
-                                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database 117: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                                     }
                                 }
                             }
@@ -129,30 +128,29 @@ namespace API_JeeWork2021.Classes
                     if (!listKH.Equals(""))
                     {
                         listKH = listKH.Substring(1);
-                        string content = " Timer10Minute_Elapsed. Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
+                        string content = "Danh sách khách hàng chưa có connection string để vào hệ thống JeeWork" + listKH;
                         string error_message = "";
                         string CustemerID1 = "0";
                         ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
                         using (DpsConnection cnn = new DpsConnection(ConnectionString))
                         {
-                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     string error = ex.Message;
-                    string content = " Timer10Minute_Elapsed: " + ex.Message + " - Customer: " + idkh + " - Funcion: " + ham;
-                    string error_message = "";
-                    string CustemerID1 = "0";
+                    string content = " Timer10Minute_Elapsed 144: " + ex.Message + " - Customer: " + idkh + " - Funcion: " + ham;
+                    string error_message = ex.Message;
                     using (DpsConnection cnn = new DpsConnection(ConnectionString))
                     {
                         //Gửi thông báo khi phát sinh lỗi
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database 150: ", new MailAddressCollection(), content, idkh, "", false, out error_message, cnn, ConnectionString);
                     }
                 }
                 Time10IsRun = false;
-            } 
+            }
         }
 
         /// <summary>
@@ -216,8 +214,8 @@ namespace API_JeeWork2021.Classes
 
         public static long SLCongviecPhuTrach(long UserID, long CustomerID, DpsConnection cnn, IConfiguration _configuration, IProducer _producer, List<AccUsernameModel> DataAccount)
         {
-            string StrW = " and id_nv = " + UserID +" ";
-            DataSet ds = WorkClickupController.GetWorkByEmployee(null,cnn, new QueryParams(), UserID, DataAccount, StrW );
+            string StrW = " and id_nv = " + UserID + " ";
+            DataSet ds = WorkClickupController.GetWorkByEmployee(null, cnn, new QueryParams(), UserID, DataAccount, StrW);
             var sl = ds.Tables[0].Compute("count(id_row) ", " doing = 1 ");
             var demo = new Remider()
             {
@@ -236,7 +234,7 @@ namespace API_JeeWork2021.Classes
             DateTime today = UTCdate.Date;
             DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
 
-            string StrW = " and id_nv = "+ UserID + " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
+            string StrW = " and id_nv = " + UserID + " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
             DataSet ds = WorkClickupController.GetWorkByEmployee(null, cnn, new QueryParams(), UserID, DataAccount, StrW);
             var dt = ds.Tables[0];
             if (cnn.LastError != null || dt.Rows.Count < 0)
@@ -270,7 +268,7 @@ namespace API_JeeWork2021.Classes
             return int.Parse(cvquahan.ToString());
         }
 
-        public static long SLDuAnQuaHan(long UserID, long IdKH, DpsConnection cnn, IConfiguration _configuration, IProducer _producer )
+        public static long SLDuAnQuaHan(long UserID, long IdKH, DpsConnection cnn, IConfiguration _configuration, IProducer _producer)
         {
             //SqlConditions cond = new SqlConditions();
             //cond.Add("UserID", UserID);
@@ -287,13 +285,18 @@ namespace API_JeeWork2021.Classes
             //                    and IdKH=@IdKH";
             DataTable dt = new DataTable();
             dt = JeeWorkLiteController.project_by_manager(UserID, IdKH, cnn, "");
+            int sl_duan_quahan = 0;
+            if (dt.Rows.Count > 0)
+            {
+                sl_duan_quahan = int.Parse(dt.Compute("count(id_row) ", " islate = 1").ToString());
+            }
             //dt = cnn.CreateDataTable(sqlq, cond);
             if (cnn.LastError != null || dt.Rows.Count < 0)
                 return 0;
             var demo = new Remider()
             {
                 PhanLoaiID = 804,
-                SoLuong = dt.Rows.Count,
+                SoLuong = sl_duan_quahan,
                 UserID = UserID,
                 CustomerID = IdKH,
                 DataField = "Sophu1",
