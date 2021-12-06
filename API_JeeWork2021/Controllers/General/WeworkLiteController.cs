@@ -44,7 +44,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConfiguration _iconfig;
-        private INotifier _notifier;
         private IProducer _producer;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;

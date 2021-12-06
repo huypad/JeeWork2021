@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text;
 using DPSinfra.ConnectionCache;
@@ -26,11 +25,9 @@ using Google.Apis.Auth.OAuth2;
 using System.IO;
 using Google.Apis.Services;
 using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Util.Store;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.Logger;
 using Newtonsoft.Json;
-using System.Collections.Specialized;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -5653,6 +5650,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             PageModel pageModel = new PageModel();
             try
             {
+
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -5669,53 +5667,65 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     #region filter thời gian, keyword
                     DateTime from = Common.GetDateTime();
                     DateTime to = Common.GetDateTime();
-                    if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
-                    {
-                        bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
-                        if (!from1)
-                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                    }
-                    if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
-                    {
-                        bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
-                        if (!to1)
-                            return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
-                    }
-                    int nam = DateTime.Today.Year;
-                    int thang = DateTime.Today.Month;
-                    var lastDayOfMonth = DateTime.DaysInMonth(nam, thang);
-                    if (!string.IsNullOrEmpty(query.filter["Thang"]))
-                    {
-                        thang = int.Parse(query.filter["Thang"]);
-                    }
-                    if (!string.IsNullOrEmpty(query.filter["Nam"]))
-                    {
-                        nam = int.Parse(query.filter["Nam"]);
-                    }
-                    from = new DateTime(nam, thang, 1, 0, 0, 1);
-                    to = new DateTime(nam, thang, lastDayOfMonth, 23, 59, 59);
+                    //if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+                    //{
+                    //    bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                    //    if (!from1)
+                    //        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    //}
+                    //if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+                    //{
+                    //    bool to1 = DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                    //    if (!to1)
+                    //        return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
+                    //}
+                    //int nam = DateTime.Today.Year;
+                    //int thang = DateTime.Today.Month;
+                    //var lastDayOfMonth = DateTime.DaysInMonth(nam, thang);
+                    //if (!string.IsNullOrEmpty(query.filter["Thang"]))
+                    //{
+                    //    thang = int.Parse(query.filter["Thang"]);
+                    //}
+                    //if (!string.IsNullOrEmpty(query.filter["Nam"]))
+                    //{
+                    //    nam = int.Parse(query.filter["Nam"]);
+                    //}
+                    //from = new DateTime(nam, thang, 1, 0, 0, 1);
+                    //to = GetEndDateInMonth(thang, nam);
+                    Dictionary<string, string> collect = new Dictionary<string, string>
+                        {
+                            { "CreatedDate", "CreatedDate"},
+                            { "Deadline", "deadline"},
+                            { "StartDate", "start_date"}
+                        };
+                    string collect_by = "CreatedDate";
+                    if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                        collect_by = collect[query.filter["collect_by"]];
                     #endregion
                     string strW_parent = "";
                     string strW = " ";
+                    string forme = "", assign = "", following = "";
+                    forme = "w.id_nv=@iduser";
+                    assign = "w.nguoigiao=@iduser";
                     if (!string.IsNullOrEmpty(query.filter["forme"]) && !string.IsNullOrEmpty(query.filter["assign"]) && !string.IsNullOrEmpty(query.filter["following"]))
                     {
-                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser) (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
                     }
                     if (string.IsNullOrEmpty(query.filter["forme"]) && string.IsNullOrEmpty(query.filter["assign"]) && string.IsNullOrEmpty(query.filter["following"]))
                     {
-                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
+                        strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser) (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
                     }
-                    if (!string.IsNullOrEmpty(query.filter["forme"]))//được giao
+                    if (!string.IsNullOrEmpty(query.filter["forme"]))//được giao - 41
                     {
-                        strW += " and (w.id_nv=@iduser) (parent) ";
+                        strW += " and " + forme + " (parent) ";
                     }
-                    if (!string.IsNullOrEmpty(query.filter["assign"]))//giao đi
+                    if (!string.IsNullOrEmpty(query.filter["assign"]))//giao đi - 42
                     {
-                        strW += " and (w.nguoigiao=@iduser) (parent) ";
+                        strW += " and " + assign + " (parent) ";
                     }
-                    if (!string.IsNullOrEmpty(query.filter["following"]))// theo dõi
+                    if (!string.IsNullOrEmpty(query.filter["following"]))// theo dõi - 43
                     {
-                        strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser ) (parent))";
+                        strW = $" and w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser) (parent)";
                     }
                     string displayChild = "1";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     if (!string.IsNullOrEmpty(query.filter["displayChild"]))
@@ -5732,13 +5742,15 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, loginData.UserID, DataAccount, strW);//" and w.id_nv=@iduser"
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var temp = filterWork(ds.Tables[0].AsEnumerable(), query.filter);//k bao gồm con
+                    //var temp = filterWork(ds.Tables[0].AsEnumerable(), query.filter);//k bao gồm con
+                    var temp = ds.Tables[0].AsEnumerable();
                     // Phân trang
                     int total = temp.Count();
                     if (total == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
                     //var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     var Children = from rr in temp
+                                   where !"".Equals(rr["start_date"].ToString())
                                    select new
                                    {
                                        id_row = rr["id_row"],
@@ -5749,8 +5761,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                        classNames = "",
                                        id_nv = rr["id_nv"],
                                        phanloai = calendar_getphanloai(rr["id_row"].ToString(), loginData, ConnectionString)
-                                       //imageurl = JeeWorkLiteController.genLinkImage(domain, loginData.UserID, rr["id_nv"].ToString(), _hostingEnvironment.ContentRootPath)
-                                       //Children = getChild(domain, loginData.CustomerID, "", displayChild, g.Key, g.Concat(dtChild).CopyToDataTable().AsEnumerable(), tags)
                                    };
                     return JsonResultCommon.ThanhCong(Children, pageModel, Visible);
                 }
@@ -5855,7 +5865,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         [HttpGet]
         public async Task<IActionResult> ExportExcelByUsers([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return Unauthorized();
@@ -6392,7 +6401,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             if (!string.IsNullOrEmpty(query.filter["Thang"]) && !string.IsNullOrEmpty(query.filter["Nam"]))
             {
                 from = new DateTime(nam, thang, 1, 0, 0, 1);
-                to = new DateTime(nam, thang, lastDayOfMonth, 23, 59, 59);
+                to = GetEndDateInMonth(thang, nam);
                 dieukien_where += " and w." + collect_by + ">=@from";
                 Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
                 dieukien_where += " and w." + collect_by + "<@to";
@@ -7721,6 +7730,15 @@ where u.disabled = 0 and u.loai = 2";
                 ListID = ListPhanLoai.ToArray()
             };
             return data;
+        }
+        public static DateTime GetEndDateInMonth(int thang, int nam)
+        {
+            int songaycuathang = DateTime.DaysInMonth(nam, thang);
+            IFormatProvider fm = new CultureInfo("en-US", true);
+            string d = songaycuathang.ToString() + "/" + thang.ToString() + "/" + nam.ToString();
+            DateTime result = new DateTime();
+            DateTime.TryParseExact(d, "d/M/yyyy", fm, DateTimeStyles.NoCurrentDateDefault, out result);
+            return result;
         }
     }
 }

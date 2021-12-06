@@ -3637,12 +3637,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     return "Không xét";
             }
         }
-        public static string getDepartmentofProjectTeam(DpsConnection cnn, string id_project_team)
-        {
-            string sql = "select  * from we_department where id_row = (select id_department from we_project_team where id_row = 1)";
-
-            return "";
-        }
         public static List<long> getOwnerDepartmentofProjectteam(DpsConnection cnn, UserJWT loginData, long id_project_team)
         {
             SqlConditions conds = new SqlConditions();

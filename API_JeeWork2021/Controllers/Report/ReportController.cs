@@ -2343,7 +2343,6 @@ iIf( {sql_isquahan} , 1, 0) as is_quahan, id_department, id_project_team
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string key = "";
                     string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                     string listDept = JeeWorkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     Dictionary<string, string> collect = new Dictionary<string, string>

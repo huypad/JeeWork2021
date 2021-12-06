@@ -381,7 +381,6 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
         [HttpPost]
         public async Task<object> Insert(TopicModel data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

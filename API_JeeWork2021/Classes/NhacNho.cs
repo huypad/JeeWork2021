@@ -65,7 +65,7 @@ namespace API_JeeWork2021.Classes
         protected void Timer10Minute_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             Time10IsRun = true;
-            string ham = "Timer10Minute_Elapsed"; string idkh = "0"; string listKH = "";
+            string ham = "Timer10Minute - Dòng 68"; string idkh = "0"; string listKH = "";
             string ConnectionString = "";
             if (JeeWorkLiteController.IsNotify(_configuration))
             {
