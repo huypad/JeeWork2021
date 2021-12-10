@@ -25,7 +25,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     [ApiController]
     [Route("api/work-group")]
     [EnableCors("JeeWorkPolicy")]
-    [CusAuthorize(Roles = "3400")]
+    //[CusAuthorize(Roles = "3400")]
     public class WorkGroupController : ControllerBase
     {
         private readonly IHostingEnvironment _hostingEnvironment;
