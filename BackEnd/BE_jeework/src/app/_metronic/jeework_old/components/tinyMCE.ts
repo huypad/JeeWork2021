@@ -24,9 +24,19 @@ const tinyMCE = {
     language: 'vi',
     language_url: './assets/tinymce/langs/vi.js',
     font_formats: 'Arial',
+    fontsize_formats: "8pt 10pt 12pt 13pt 14pt 18pt 24pt 36pt",
     table_default_styles: {
         'border-collapse': 'collapse',
         'width': '100%'
+    },
+    mobile: {
+        plugins: 'print preview  importcss searchreplace autolink autosave save directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+    },
+    menu: {
+        tc: {
+            title: 'TinyComments',
+            items: 'addcomment showcomments deleteallconversations'
+        }
     },
     link_assume_external_targets: 'https',
     inline: false,
@@ -34,27 +44,33 @@ const tinyMCE = {
     images_upload_url: environment.APIROOTS + '/api/attachment/upload-img',
     default_link_target: '_blank',
     link_context_toolbar: true,
-    theme_advanced_buttons3_add : "fullscreen",
-    fullscreen_new_window : true,
-    fullscreen_settings : {
-      theme_advanced_path_location : "top",
-        width : "640",
-        height : "1000px"
+    theme_advanced_buttons3_add: "fullscreen",
+    fullscreen_new_window: true,
+    fullscreen_settings: {
+        theme_advanced_path_location: "top",
+        width: "640",
+        height: "1000px"
     },
+    link_list: [
+        { title: 'My page 1', value: 'https://www.tiny.cloud' },
+        { title: 'My page 2', value: 'http://www.moxiecode.com' }
+    ],
+    image_list: [
+        { title: 'My page 1', value: 'https://www.tiny.cloud' },
+        { title: 'My page 2', value: 'http://www.moxiecode.com' }
+    ],
+    image_class_list: [
+        { title: 'None', value: '' },
+        { title: 'Some class', value: 'class-name' }
+    ],
+    importcss_append: true,
     templates: [
-        { title: 'Test template 1', content: 'Test 1' },
-        { title: 'Test template 2', content: 'Test 2' }
-      ],
-    content_css: [
-        '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-        '//www.tinymce.com/css/codepen.min.css'
-      ],
-    // automatic_uploads: true,
-    // images_upload_base_path: '/images',
-    // images_upload_credentials: true,
-    // autosave_ask_before_unload: true, // Tự động save
-    // autosave_interval: '10s', // thời gian tự động save
-    // autosave_restore_when_empty: true,
+        { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+        { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+        { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+    ],
+    template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+    template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
     images_upload_handler: function (blobInfo, success, failure) {
         var xhr, formData;
         xhr = new XMLHttpRequest();
@@ -86,6 +102,13 @@ const tinyMCE = {
             freeTiny.style.display = 'none';
         }
     },
+    // tinymce.init({
+    //     setup: (editor)=>{
+    //        editor.on('init', ()=>{
+    //           $(editor.contentDocument).find('a').prop('title', 'my new title');
+    //        });
+    //     }
+    //  });
     setup: function (editor) {
         editor.on('BeforeSetContent', e => {
             if (e.content && e.content.includes('blob:')) {
@@ -113,13 +136,33 @@ const tinyMCE = {
             }
         });
     },
-    function(ed){
-        ed.on('init', function() { 
-			(ed.getWin()).bind('resize', function(e){
-				console.log('Editor window resized!');
-			})
+    function(ed) {
+        ed.onInit.add(function (ed) {
+            debugger
+            ed.on('init', function (e) {
+            debugger
+            });
+            // Get position before an execCommand is processed
+            ed.on('BeforeExecCommand', function (e) {
+                var cmd = e.command.toLowerCase();
+
+                if (cmd !== 'undo' && cmd !== 'redo' && cmd !== 'mcerepaint') {
+                    // endTyping();
+                    // self.beforeChange();
+                    debugger
+                }
+            });
+            // Add undo level after an execCommand call was made
+            ed.on('ExecCommand', function (e) {
+                var cmd = e.command.toLowerCase();
+
+                if (cmd !== 'undo' && cmd !== 'redo' && cmd !== 'mcerepaint') {
+                    // addNonTypingUndoLevel(e);
+                    debugger
+                }
+            });
         });
     },
-    
 };
+
 export { tinyMCE };

@@ -180,7 +180,7 @@ export class WorkListNewDetailComponent implements OnInit {
     require_evaluate = false;
     newtask = true;
     loading = true;
-    isclosed = true;
+    isclosed = false;
     TenFile = '';
     File = '';
     filemodel: any;
@@ -201,7 +201,7 @@ export class WorkListNewDetailComponent implements OnInit {
 
     /** LOAD DATA */
     ngOnInit() {
-
+        this.tinyMCE = tinyMCE;
         this.workService.currentMessage.subscribe(message => {
         });
         this.data = this.datalog;
@@ -222,10 +222,13 @@ export class WorkListNewDetailComponent implements OnInit {
                 }
             }
         );
-        this.tinyMCE = tinyMCE;
         this.LoadData();
         this.LoadChecklist();
         this.LoadObjectID();
+    }
+    ngAfterViewInit() {
+        // this.is_confirm = false;
+
     }
     getHeight(): any {
         let obj = window.location.href.split('/').find(x => x == 'tabs-references');
@@ -530,7 +533,7 @@ export class WorkListNewDetailComponent implements OnInit {
         // if (this.IsAdminGroup) {
         //     return true;
         // }
-        if (this.item.closed) {
+        if (this.item.closed != undefined && this.item.closed) {
             return false;
         } else {
             return true;
@@ -1745,7 +1748,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     ReloadDatas(event) {
-        this.LoadData();
+        this.LoadDataWorkDetail(this.DataID);
         this.SendMessage(true);
     }
 
@@ -1973,16 +1976,10 @@ export class WorkListNewDetailComponent implements OnInit {
     }
     ngOnDestroy() {
     }
-    onChangeNote() {
+    onChangeNote(): void {
         this.is_confirm = true;
-        // console.log(this.description_tiny);
     }
     @HostListener('window:keyup.esc') onKeyUp() {
-        // this.dialog.open
-        // this.dialog.open(ConfirmationDialogComponent, {
-        // 	width: '400px',
-        //     disableClose
-        // });
         this.layoutUtilsService.confirm('Xác nhận', 'Bạn đã sửa đổi công việc này. Bạn có thể lưu các thay đổi, hủy các thay đổi hoặc hủy để tiếp tục chỉnh sửa')
             .then((close) => {
                 if (close) {
@@ -2000,6 +1997,7 @@ export class WorkListNewDetailComponent implements OnInit {
             });
     }
     // @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
+    //     debugger
     //     event.returnValue = false;
     // }
     goBack() {
@@ -2054,9 +2052,6 @@ export class WorkListNewDetailComponent implements OnInit {
     SendMessage(value) {
         this.communicateService.changeMessage(value);
     }
-
     imagesUploadHandler = (blobInfo, success, failure) => {
     };
-
-
 }

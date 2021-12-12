@@ -633,7 +633,6 @@ export class MessengerComponent implements OnInit, OnDestroy, OnChanges {
 
           }
           else {
-            console.log("Eror")
           }
         })
       }

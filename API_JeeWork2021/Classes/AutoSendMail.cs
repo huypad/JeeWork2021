@@ -166,7 +166,7 @@ namespace JeeWork_Core2021.Classes
             {
                 if (Time60IsRun) return;
                 Time60IsRun = true;
-                string _connection = ""; string ham = "EveryDayReminderEveryDayReminder - Dòng 172"; string idkh = "0"; string listKH = "";
+                string _connection = ""; string ham = "EveryDay Reminder - Dòng 172"; string idkh = "0"; string listKH = "";
                 try
                 {
                     #region danh sách customer
@@ -182,7 +182,7 @@ namespace JeeWork_Core2021.Classes
                                 {
                                     using (DpsConnection cnn = new DpsConnection(_connection))
                                     {
-                                        ham = "EveryDayReminder"; idkh = CustomerID.ToString();
+                                        ham = "EveryDay Reminder"; idkh = CustomerID.ToString();
                                         EveryDayReminder(cnn, CustomerID, _connection);
                                         if (cnn.LastError != null)
                                         {
@@ -190,7 +190,7 @@ namespace JeeWork_Core2021.Classes
                                             string error_message = "";
                                             string CustemerID1 = "0";
                                             //Gửi thông báo khi phát sinh lỗi
-                                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                            SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                                         }
                                     }
                                 }
@@ -209,7 +209,7 @@ namespace JeeWork_Core2021.Classes
                             _connection = JeeWorkLiteController.getConnectionString(ConnectionCache, 1119, _configuration);
                             using (DpsConnection cnn = new DpsConnection(_connection))
                             {
-                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                                SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Cảnh báo khách hàng chưa có connection string ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                             }
                         }
                     }
@@ -224,7 +224,7 @@ namespace JeeWork_Core2021.Classes
                     using (DpsConnection cnn = new DpsConnection(_connection))
                     {
                         //Gửi thông báo khi phát sinh lỗi
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                     }
                 }
                 Time60IsRun = false;
@@ -831,7 +831,7 @@ namespace JeeWork_Core2021.Classes
                         string error_message = "";
                         string CustemerID1 = "0";
                         //Gửi thông báo khi phát sinh lỗi
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
                     }
                 }
                 else
@@ -854,7 +854,7 @@ namespace JeeWork_Core2021.Classes
                 string error_message = "";
                 string CustemerID1 = "0";
                 //Gửi thông báo khi phát sinh lỗi
-                SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
+                SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi chạy tự động. Lỗi Database: ", new MailAddressCollection(), content, CustemerID1, "", false, out error_message, cnn, ConnectionString);
             }
         }
         public static void SendErrorReport(string custemerid, string errormsg, JeeWorkConfig config, string ConnectionString)
@@ -874,7 +874,7 @@ namespace JeeWork_Core2021.Classes
                         if (!string.IsNullOrEmpty(mcc))
                             cc.Add(mcc);
                         string error_message = "";
-                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[JeeWork] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi từ API", new MailAddressCollection(), errormsg, "", "", false, out error_message, cnn, ConnectionString);
+                        SendMail.SendWithConnection("huypaddaica@gmail.com", "[Jee Platform - Jee Work] " + UTCdate.Date.ToString("dd/MM/yyyy HH:mm") + " Lỗi từ API", new MailAddressCollection(), errormsg, "", "", false, out error_message, cnn, ConnectionString);
                     }
                 }
             }

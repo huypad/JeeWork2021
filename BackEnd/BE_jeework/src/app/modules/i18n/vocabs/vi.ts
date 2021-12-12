@@ -248,6 +248,7 @@ export const locale = {
             doimatkhau: 'Đổi mật khẩu',
             idnv: 'ID_NV',
             deadline: 'Hạn chót',
+            dangdong: 'Đang đóng',
             cancel: 'Đóng',
             // G
             gui: 'Gửi',

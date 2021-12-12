@@ -62,10 +62,10 @@ export class WorkGroupEditComponent implements OnInit {
 		@Inject(MAT_DIALOG_DATA) public DATA: any,
 	) { }
 	ngOnInit() {
-
 		this.item = this.DATA._item;
-		if (this.item.id_row > 0)
-			this.is_edit = true;
+		debugger
+		// if (this.item.id_row > 0)
+		// 	this.is_edit = true;
 		this.id_project_team = parseInt(this.item.id_project_team);
 		this.tinyMCE = tinyMCE;
 		const filter: any = {};
@@ -77,15 +77,15 @@ export class WorkGroupEditComponent implements OnInit {
 			}
 			this.changeDetectorRefs.detectChanges();
 		});
-		this.createForm();
 		//Detail
 		this.workServices.DetailWorkGroup(this.item.id_row).subscribe(res => {
 			if (res && res.status == 1) {
 				this.item = res.data;
-				this.createForm();
+				this.is_edit = true;
+				// this.createForm();
 			}
-		}
-		)
+		});
+		this.createForm();
 		this.changeDetectorRefs.detectChanges();
 	}
 	createForm() {
@@ -94,7 +94,7 @@ export class WorkGroupEditComponent implements OnInit {
 			reviewer: ['' + this.item.reviewer ? this.item.reviewer : ''],
 			NoiDung: ['' + this.item.description],
 		});
-		// this.itemForm.controls["title"].markAsTouched();
+		this.itemForm.controls["title"].markAsTouched();
 	}
 
 	getTitle(): string {

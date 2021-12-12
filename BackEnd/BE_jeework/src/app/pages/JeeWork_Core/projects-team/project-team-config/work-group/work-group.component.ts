@@ -160,6 +160,7 @@ export class WorkGroupComponent implements OnInit {
       _item.id_row > 0
         ? "GeneralKey.capnhatthanhcong"
         : "GeneralKey.themthanhcong";
+        debugger
     const dialogRef = this.dialog.open(WorkGroupEditComponent, {
       data: { _item },
     });
@@ -202,7 +203,9 @@ export class WorkGroupComponent implements OnInit {
             this.loadDataList();
           }
           else {
-            this.LayoutUtilsService.showError(res.error.message);
+            // this.LayoutUtilsService.showError(res.error.message);
+        this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 9999999, 'top', 0);
+
           }
         });
       }

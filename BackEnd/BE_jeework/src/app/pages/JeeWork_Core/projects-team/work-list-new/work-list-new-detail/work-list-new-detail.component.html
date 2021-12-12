@@ -337,9 +337,8 @@
                                                     </button>
                                                 </div>
                                                 <div class="col-md-12 pd-0 m--margin-bottom-10-mobile">
-                                                    <editor apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft"
-                                                        [(ngModel)]="description_tiny" (ngModelChange)="onChangeNote()"
-                                                        [init]="tinyMCE" [inline]="false"
+                                                    <editor [(ngModel)]="description_tiny"
+                                                        (ngModelChange)="onChangeNote()" [init]="tinyMCE"
                                                         style="position:relative; margin-bottom: 15px;">
                                                     </editor>
                                                 </div>

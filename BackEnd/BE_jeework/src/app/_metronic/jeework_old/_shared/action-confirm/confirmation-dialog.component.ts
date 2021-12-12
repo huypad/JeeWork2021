@@ -17,7 +17,7 @@ export class ConfirmationDialogComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
-    this.buttonRef.focus();
+    // this.buttonRef.focus();
   }
 
   public decline() {

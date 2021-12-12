@@ -23,7 +23,6 @@ export class AuxiliaryRouterJWComponent implements OnInit {
 
     ) {
         const snapshot: RouterStateSnapshot = router.routerState.snapshot;
-        console.log("snapshot-AuxiliaryRouterJWComponent", snapshot);  // <-- hope it helps
     }
     ngOnInit() {
         this.loading$ = this.loadingSubject.asObservable();
@@ -34,12 +33,9 @@ export class AuxiliaryRouterJWComponent implements OnInit {
             if (ID && ID > 0) {
                 this.projectsTeamService.WorkDetail(ID).subscribe(res => {
                     if (res && res.status === 1) {
-                        console.log("activatedRoute", AuxiliaryRouterJWComponent.dialogRef);
                         if (AuxiliaryRouterJWComponent.dialogRef == null)
                             this.openDialogJW(res.data);
                     } else {
-                        console.log("activatedRoute-close", res);
-
                         this.close();
                         // alert(res.error.message);
                         this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);

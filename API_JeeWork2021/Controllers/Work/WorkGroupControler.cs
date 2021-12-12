@@ -43,7 +43,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             _configuration = configuration;
             _logger = logger;
         }
-
         [Route("List")]
         [HttpGet]
         public object List([FromQuery] QueryParams query)
