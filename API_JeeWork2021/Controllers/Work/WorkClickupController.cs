@@ -3164,34 +3164,68 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     #endregion
                     data.id_row = idc;
+                    var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 1, ConnectionString, DataAccount, cnn);
+                    var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 2, ConnectionString, DataAccount, cnn);
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
+                    int templateguimail = 10;
+                    SendNotifyModel noti = new SendNotifyModel();
+                    noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                    string workname = data.title;
+                    string TitleLanguageKey = "ww_themmoicongviec";
                     #endregion
-                    JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
-                    #region Notify thêm mới công việc
-                    Hashtable has_replace = new Hashtable();
-                    for (int i = 0; i < data.Users.Count; i++)
+                    if (users_loai1.Count > 0)
                     {
                         NotifyModel notify_model = new NotifyModel();
-                        has_replace = new Hashtable();
+                        Hashtable has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
-                        has_replace.Add("tencongviec", data.title);
+                        has_replace.Add("tencongviec", workname);
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
-                        notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", data.title);
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                            .Replace("$tencongviec$", workname);
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if (info is not null)
+                        for (int i = 0; i < users_loai1.Count; i++)
                         {
-                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            notify_model.To_IDNV = users_loai1[i].ToString();
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            }
                         }
                     }
-                    #endregion
+                    JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration);
+                    //#region Lấy thông tin để thông báo
+                    //SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
+                    //#endregion
+                    //JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
+                    //#region Notify thêm mới công việc
+                    //Hashtable has_replace = new Hashtable();
+                    //for (int i = 0; i < data.Users.Count; i++)
+                    //{
+                    //    NotifyModel notify_model = new NotifyModel();
+                    //    has_replace = new Hashtable();
+                    //    has_replace.Add("nguoigui", loginData.Username);
+                    //    has_replace.Add("tencongviec", data.title);
+                    //    notify_model.AppCode = "WORK";
+                    //    notify_model.From_IDNV = loginData.UserID.ToString();
+                    //    notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                    //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", data.title);
+                    //    notify_model.ReplaceData = has_replace;
+                    //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                    //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                    //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //    if (info is not null)
+                    //    {
+                    //        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //    }
+                    //}
+                    //#endregion
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -3903,6 +3937,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             {
                 int id_log_action = data.id_log_action;
                 string log_content = "";
+                bool is_delete_assign = false;
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -3980,6 +4015,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     "from we_status where disabled = 0 and id_project_team = @id_project_team";
                     DataTable dt_StatusID = new DataTable();
                     dt_StatusID = cnn.CreateDataTable(sql_status, new SqlConditions() { { "id_project_team", id_project_team.ToString() } });
+                    int templateguimail = 0;
+                    string TitleLanguageKey = "", key_special = "";
+                    bool is_assign = false;
+                    long loai = 1;
+                    Hashtable has_replace = new Hashtable();
+                    SendNotifyModel noti = new SendNotifyModel();
+                    var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, data.id_row, id_log_action, 1, ConnectionString, DataAccount, cnn);
+                    var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, data.id_row, id_log_action, 2, ConnectionString, DataAccount, cnn);
                     if (data.key != "Tags" && data.key != "Attachments" && data.key != "Attachments_result" && data.key != "assign" && data.key != "follower")
                     {
                         Hashtable val = new Hashtable();
@@ -4155,577 +4198,221 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             if (dt_user.Rows.Count > 0)
                                 NhacNho.UpdateQuantityTask_Users(long.Parse(dt_user.Rows[0]["id_nv"].ToString()), loginData.CustomerID, "-", _configuration, _producer);
                         }
-                        // gửi event sau khi update thành công
-                        #region event đổi độ ưu tiên công việc
-                        if ("clickup_prioritize".Equals(data.key))
+                        switch (data.key)
                         {
-                            postauto.eventid = 2;
-                            if (string.IsNullOrEmpty(old.Rows[0]["clickup_prioritize"].ToString()))
-                            {
-                                postauto.data_input = "any"; // giá trị cũ
-                            }
-                            else
-                            {
-                                postauto.data_input = old.Rows[0]["clickup_prioritize"].ToString(); // giá trị cũ
-                            }
-                            postauto.data_input += "," + data.value; // giá trị mới
-                            //postauto.data_input = datapost;
-                            Automation.SendAutomation(postauto, _configuration, _producer);
+                            #region Hạn chót
+                            case "deadline":
+                                TitleLanguageKey = "ww_chinhsuadeadline";
+                                key_special = "ww_xoadeadline";
+                                if (data.value != null)
+                                    templateguimail = 12;
+                                else
+                                    templateguimail = 33;
+                                postauto.eventid = 3;
+                                Automation.SendAutomation(postauto, _configuration, _producer);
+                                break;
+                            #endregion
+                            #region Ngày bắt đầu
+                            case "start_date":
+                                if (data.value != null)
+                                {
+                                    templateguimail = 27;
+                                    TitleLanguageKey = "ww_chinhsuathoigianbatdau";
+                                    postauto.eventid = 4;
+                                    Automation.SendAutomation(postauto, _configuration, _producer);
+                                }
+                                else
+                                {
+                                    templateguimail = 32;
+                                    TitleLanguageKey = "ww_xoathoigianbatdau";
+                                }
+                                break;
+                            #endregion
+                            #region Mô tả
+                            case "description":
+                                templateguimail = 28;
+                                TitleLanguageKey = "ww_chinhsuamota";
+                                break;
+                            #endregion
+                            #region Tên công việc
+                            case "title":
+                                templateguimail = 11;
+                                TitleLanguageKey = "ww_chinhsuacongviec";
+                                break;
+                            #endregion
+                            #region Trạng thái
+                            case "status":
+                                templateguimail = 21;
+                                TitleLanguageKey = "ww_capnhattrangthaicongviec";
+                                DataTable dts = cnn.CreateDataTable("select * from we_status where id_row = " + data.value);
+                                if (dts.Rows.Count > 0)
+                                {
+                                    key_special = dts.Rows[0]["StatusName"].ToString();
+                                }
+                                postauto.eventid = 1;
+                                if (string.IsNullOrEmpty(old.Rows[0]["status"].ToString()))
+                                {
+                                    postauto.data_input = "any";
+                                }
+                                else
+                                {
+                                    postauto.data_input = old.Rows[0]["status"].ToString(); // giá trị cũ
+                                }
+                                postauto.data_input += "," + data.value; // giá trị mới
+                                                                         //postauto.data_input = datapost;
+                                Automation.SendAutomation(postauto, _configuration, _producer);
+                                break;
+                            #endregion
+                            #region Kết quả công việc
+                            case "result":
+                                templateguimail = 31;
+                                TitleLanguageKey = "ww_capnhatketquacongviec";
+                                break;
+                            #endregion
+                            #region Thời gian dự kiến
+                            case "estimates":
+                                templateguimail = 26;
+                                TitleLanguageKey = "ww_capnhatthoigianuoctinh";
+                                break;
+                            #endregion
+                            #region Độ ưu tiên
+                            case "clickup_prioritize":
+                                templateguimail = 25;
+                                TitleLanguageKey = "ww_thaydoidouutiencongviec";
+                                postauto.eventid = 2;
+                                if (string.IsNullOrEmpty(old.Rows[0]["clickup_prioritize"].ToString()))
+                                {
+                                    postauto.data_input = "any"; // giá trị cũ
+                                }
+                                else
+                                {
+                                    postauto.data_input = old.Rows[0]["clickup_prioritize"].ToString(); // giá trị cũ
+                                }
+                                postauto.data_input += "," + data.value; // giá trị mới
+                                                                         //postauto.data_input = datapost;
+                                Automation.SendAutomation(postauto, _configuration, _producer);
+                                break;
+                                #endregion
                         }
-                        #endregion
-                        #region event post automation -- deadline or start_date
-                        if ("deadline".Equals(data.key)) // key deadline
-                        {
-                            postauto.eventid = 3;
-                            Automation.SendAutomation(postauto, _configuration, _producer);
-                        }
-                        if ("start_date".Equals(data.key))// key start_date
-                        {
-                            postauto.eventid = 4;
-                            Automation.SendAutomation(postauto, _configuration, _producer);
-                        }
-                        #endregion
-                        #region event thay đổi trạng thái
-                        if ("status".Equals(data.key))
-                        {
-                            postauto.eventid = 1;
-                            if (string.IsNullOrEmpty(old.Rows[0]["status"].ToString()))
-                            {
-                                postauto.data_input = "any";
-                            }
-                            else
-                            {
-                                postauto.data_input = old.Rows[0]["status"].ToString(); // giá trị cũ
-                            }
-                            postauto.data_input += "," + data.value; // giá trị mới
-                                                                     //postauto.data_input = datapost;
-                            Automation.SendAutomation(postauto, _configuration, _producer);
-                        }
-                        #endregion
-                        #region Send notify by column task
-                        if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                        {
-                            var users = getUserTask(cnn, data.id_row);
-                            var userss = JeeWorkLiteController.GetUserSendNotify(loginData, data.id_row, id_log_action, 1, ConnectionString, DataAccount, cnn);
-                            switch (data.key)
-                            {
-                                #region Hạn chót
-                                case "deadline":
-                                    int templateguimail = 0;
-                                    cnn.EndTransaction();
-                                    if (data.value != null)
-                                        templateguimail = 12;
-                                    else
-                                        templateguimail = 33;
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, templateguimail, loginData, ConnectionString, _notifier, _configuration, old);
-                                    if (users.Count > 0)
-                                    {
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
-                                        #endregion
-                                        #region Notify chỉnh sửa công việc
-                                        Hashtable has_replace = new Hashtable();
-                                        for (int i = 0; i < users.Count; i++)
-                                        {
-                                            NotifyModel notify_model = new NotifyModel();
-                                            has_replace = new Hashtable();
-                                            has_replace.Add("nguoigui", loginData.Username);
-                                            has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WORK";
-                                            notify_model.From_IDNV = loginData.UserID.ToString();
-                                            notify_model.To_IDNV = users[i].ToString();
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuadeadline", "", "vi");
-                                            if (data.value == null)
-                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoadeadline", "", "vi");
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                            notify_model.ReplaceData = has_replace;
-                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                            if (info is not null)
-                                            {
-                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                            }
-                                        }
-                                        #endregion
-                                    }
-                                    break;
-                                #endregion
-                                #region Ngày bắt đầu
-                                case "start_date":
-                                    DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                    if (dt_user.Rows.Count > 0)
-                                    {
-                                        //users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                        cnn.EndTransaction();
-                                        int idtemplateguimail = 0;
-                                        if (data.value != null)
-                                        {
-                                            idtemplateguimail = 27;
-                                        }
-                                        else
-                                        {
-                                            idtemplateguimail = 32;
-                                        }
-                                        JeeWorkLiteController.SendEmail(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
-                                        #endregion
-                                        #region Notify chỉnh sửa công việc
-                                        for (int i = 0; i < users.Count; i++)
-                                        {
-                                            NotifyModel notify_model = new NotifyModel();
-                                            Hashtable has_replace = new Hashtable();
-                                            has_replace.Add("nguoigui", loginData.Username);
-                                            has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WORK";
-                                            notify_model.From_IDNV = loginData.UserID.ToString();
-                                            notify_model.To_IDNV = users[i].ToString();
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuathoigianbatdau", "", "vi");
-                                            if (data.value == null)
-                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoathoigianbatdau", "", "vi");
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                            notify_model.ReplaceData = has_replace;
-                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                            if (info is not null)
-                                            {
-                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                            }
-                                        }
-                                        #endregion
-                                    }
-                                    break;
-                                #endregion
-                                #region Mô tả
-                                case "description":
-                                    dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                    if (dt_user.Rows.Count > 0)
-                                    {
-                                        //users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                        cnn.EndTransaction();
-                                        JeeWorkLiteController.SendEmail(data.id_row, users, 28, loginData, ConnectionString, _notifier, _configuration, old);
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(28, ConnectionString);
-                                        #endregion
-                                        #region Notify chỉnh sửa công việc
-                                        Hashtable has_replace = new Hashtable();
-                                        for (int i = 0; i < users.Count; i++)
-                                        {
-                                            NotifyModel notify_model = new NotifyModel();
-                                            has_replace = new Hashtable();
-                                            has_replace.Add("nguoigui", loginData.Username);
-                                            has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WORK";
-                                            notify_model.From_IDNV = loginData.UserID.ToString();
-                                            notify_model.To_IDNV = users[i].ToString();
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuamota", "", "vi");
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                            notify_model.ReplaceData = has_replace;
-                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                            if (info is not null)
-                                            {
-                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                            }
-                                        }
-                                        #endregion
-                                    }
-                                    break;
-                                #endregion
-                                #region Tên công việc
-                                case "title":
-                                    cnn.EndTransaction();
-                                    ////users = getUserTask(cnn, data.id_row);
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, 11, loginData, ConnectionString, _notifier, _configuration, old);
-                                    if (users.Count > 0)
-                                    {
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(11, ConnectionString);
-                                        #endregion
-                                        #region Notify chỉnh sửa công việc
-                                        Hashtable has_replace = new Hashtable();
-                                        for (int i = 0; i < users.Count; i++)
-                                        {
-                                            NotifyModel notify_model = new NotifyModel();
-                                            has_replace = new Hashtable();
-                                            has_replace.Add("nguoigui", loginData.Username);
-                                            has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WORK";
-                                            notify_model.From_IDNV = loginData.UserID.ToString();
-                                            notify_model.To_IDNV = users[i].ToString();
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_chinhsuacongviec", "", "vi");
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                            notify_model.ReplaceData = has_replace;
-                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                            if (info is not null)
-                                            {
-                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                            }
-                                        }
-                                        #endregion
-                                    }
-                                    break;
-                                #endregion
-                                #region Trạng thái
-                                case "status":
-                                    cnn.EndTransaction();
-                                    dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                    if (dt_user.Rows.Count > 0)
-                                    {
-                                        //users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                        string lst_user = string.Join(",", users);
-                                        var userProcess = cnn.CreateDataTable($"select * from we_work_process where WorkID = {data.id_row} and StatusID = {data.value} and Checker not in ({ string.Join(",", users) })");
-                                        if (userProcess.Rows.Count > 0)
-                                        {
-                                            foreach (DataRow item in userProcess.Rows)
-                                            {
-                                                users.Add(long.Parse(item["checker"].ToString()));
-                                            }
-                                        }
-                                        DataTable dts = cnn.CreateDataTable("select * from we_status where id_row = " + data.value);
-                                        if (dts.Rows.Count > 0)
-                                        {
-                                            JeeWorkLiteController.SendEmail(data.id_row, users, 21, loginData, ConnectionString, _notifier, _configuration);
-                                            #region Lấy thông tin để thông báo
-                                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(21, ConnectionString);
-                                            #endregion
-                                            #region Notify cập nhật trạng thái công việc
-                                            Hashtable has_replace = new Hashtable();
-                                            for (int i = 0; i < users.Count; i++)
-                                            {
-                                                NotifyModel notify_model = new NotifyModel();
-                                                has_replace = new Hashtable();
-                                                has_replace.Add("nguoigui", loginData.Username);
-                                                has_replace.Add("tencongviec", workname);
-                                                notify_model.AppCode = "WORK";
-                                                notify_model.From_IDNV = loginData.UserID.ToString();
-                                                notify_model.To_IDNV = users[i].ToString();
-                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhattrangthaicongviec", "", "vi");
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$trangthai$", dts.Rows[0]["StatusName"].ToString());
-                                                notify_model.ReplaceData = has_replace;
-                                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                                try
-                                                {
-                                                    if (notify_model != null)
-                                                    {
-                                                        Knoti = new APIModel.Models.Notify();
-                                                    }
-                                                }
-                                                catch
-                                                { }
-                                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                                if (info is not null)
-                                                {
-                                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                                }
-                                            }
-                                            #endregion
-                                        }
-                                    }
-                                    break;
-                                #endregion
-                                #region Kết quả công việc
-                                case "result":
-                                    dt_user = cnn.CreateDataTable("select distinct * from (select id_nv from v_wework_new where (where) and id_nv is not null union all select CreatedBy from v_wework_new where (where) and id_nv is not null ) US", "(where)", sqlcond);
-                                    if (dt_user.Rows.Count > 0)
-                                    {
-                                        //users = dt_user.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
-                                        cnn.EndTransaction();
-                                        JeeWorkLiteController.SendEmail(data.id_row, users, 31, loginData, ConnectionString, _notifier, _configuration, old);
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(31, ConnectionString);
-                                        #endregion
-                                        #region Notify chỉnh sửa công việc
-                                        Hashtable has_replace = new Hashtable();
-                                        for (int i = 0; i < users.Count; i++)
-                                        {
-                                            NotifyModel notify_model = new NotifyModel();
-                                            has_replace = new Hashtable();
-                                            has_replace.Add("nguoigui", loginData.Username);
-                                            has_replace.Add("tencongviec", workname);
-                                            notify_model.AppCode = "WORK";
-                                            notify_model.From_IDNV = loginData.UserID.ToString();
-                                            notify_model.To_IDNV = users[i].ToString();
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhatketquacongviec", "", "vi");
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                            notify_model.ReplaceData = has_replace;
-                                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                            if (info is not null)
-                                            {
-                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                            }
-                                        }
-                                        #endregion
-                                    }
-                                    break;
-                                #endregion
-                                #region Thời gian dự kiến
-                                case "estimates":
-                                    cnn.EndTransaction();
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, 26, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Notify chỉnh sửa công việc
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        Hashtable has_replace = new Hashtable();
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(26, ConnectionString);
-                                        #endregion
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhatthoigianuoctinh", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace(" $value$", data.value.ToString());
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                    break;
-                                #endregion
-                                #region Độ ưu tiên
-                                case "clickup_prioritize":
-                                    cnn.EndTransaction();
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, 25, loginData, ConnectionString, _notifier, _configuration, old);
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        Hashtable has_replace = new Hashtable();
-                                        #region Lấy thông tin để thông báo
-                                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(25, ConnectionString);
-                                        #endregion
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thaydoidouutiencongviec", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    break;
-                                    #endregion
-                            }
-                        }
-                        #endregion
                     }
                     else
                     {
+                        is_assign = true;
                         if ("assign".Equals(data.key) || "follower".Equals(data.key))//assign , follower cho 1 người mới hoặc xóa
                         {
+                            if ("follower".Equals(data.key))
+                            {
+                                loai = 2;
+                                templateguimail = 24;
+                                TitleLanguageKey = "ww_xoafollower";
+                                id_log_action = 57;
+                            }
+                            if ("assign".Equals(data.key))
+                            {
+                                loai = 1;
+                                templateguimail = 22;
+                                TitleLanguageKey = "ww_xoaassign";
+                                postauto.eventid = 5;
+                            }
                             if (data.value != null)
                             {
-                                bool isAssign = false; // = true: thêm người, = false: xóa người
-                                Hashtable val1 = new Hashtable();
-                                val1["id_work"] = data.id_row;
-                                val1["CreatedDate"] = Common.GetDateTime();
-                                val1["CreatedBy"] = iduser;
-                                if (string.IsNullOrEmpty(data.value.ToString()))
-                                    val1["id_user"] = DBNull.Value;
-                                else
-                                    val1["id_user"] = data.value;
-                                long loai = 1;
-                                if ("follower".Equals(data.key))
-                                    loai = 2;
-                                val1["loai"] = loai;
+                                postauto.eventid = 6;
                                 SqlConditions cond_user = new SqlConditions();
                                 cond_user.Add("id_work", data.id_row);
-                                cond_user.Add("id_user", data.value);
                                 cond_user.Add("loai", loai);
-                                var sql = @"select * from we_work_user where id_work = @id_work and id_user = @id_user and loai = @loai";
-                                DataTable dtG = cnn.CreateDataTable(sql, cond_user);
-                                if (dtG.Rows.Count > 0)
+                                cond_user.Add("disabled", 0);
+
+                                string sql_user = "";
+                                sql_user = "select id_user from we_work_user where loai = @loai and disabled = @disabled and id_work=@id_work";
+                                if (loai > 1)
                                 {
-                                    if (cnn.Delete(cond_user, "we_work_user") != 1)
+                                    cond_user.Add("id_user", data.value);
+                                    sql_user += " and id_user = @id_user";
+                                }
+                                object _user = cnn.ExecuteScalar(sql_user, cond_user);
+                                if (_user != null)
+                                {
+                                    Hashtable val = new Hashtable();
+                                    val["UpdatedDate"] = Common.GetDateTime();
+                                    val["UpdatedBy"] = iduser;
+                                    val["disabled"] = 1;
+                                    if (cnn.Update(val, cond_user, "we_work_user") != 1)
                                     {
                                         cnn.RollbackTransaction();
                                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                     }
-                                    if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
+                                    if (loai == 1) // loai = 1 assign đếm lại nhắc nhở xóa người -1
                                     {
                                         NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
                                     }
-                                }
-                                else
-                                {
-                                    // kiểm tra người khác đã tồn tại trong công việc hay chưa nếu tồn tại thì insert còn nếu tồn tại thì thông báo đã có người
-                                    var sqlckeck = @"select * from we_work_user where id_work = @id_work and loai = @loai and disabled = 0";
-                                    DataTable dtCheck = cnn.CreateDataTable(sqlckeck, cond_user);
-                                    if (dtCheck.Rows.Count > 0 && data.key == "assign")
+                                    is_delete_assign = true;
+                                    #region Lấy thông tin để thông báo
+                                    noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                                    #endregion
+                                    if (users_loai1.Count > 0)
                                     {
-                                        // xóa cv của người hiện tại
-                                        if (cnn.ExecuteNonQuery("update we_work_user set Disabled = 1 where id_work = @id_work and loai = @loai", cond_user) < 0)
+                                        NotifyModel notify_model = new NotifyModel();
+                                        has_replace = new Hashtable();
+                                        has_replace.Add("nguoigui", loginData.Username);
+                                        has_replace.Add("tencongviec", workname);
+                                        notify_model.AppCode = "WORK";
+                                        notify_model.From_IDNV = loginData.UserID.ToString();
+                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                                            .Replace("$tencongviec$", workname);
+                                        notify_model.ReplaceData = has_replace;
+                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                                        for (int i = 0; i < users_loai1.Count; i++)
                                         {
-                                            cnn.RollbackTransaction();
-                                            return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                                        }
-                                        if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở xóa người -1
-                                        {
-                                            NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "-", _configuration, _producer);
-                                        }
-                                        // Thông báo cho người được xóa
-                                        if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                                        {
-                                            // var users = new List<long> { long.Parse(data.value.ToString()) };
-                                            List<long> users = dtCheck.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
-                                            JeeWorkLiteController.SendEmail(data.id_row, users, 22, loginData, ConnectionString, _notifier, _configuration);
-                                            #region Lấy thông tin để thông báo
-                                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(22, ConnectionString);
-                                            #endregion
-                                            #region Notify assign
-                                            Hashtable has_replace = new Hashtable();
-                                            for (int i = 0; i < users.Count; i++)
+                                            notify_model.To_IDNV = users_loai1[i].ToString();
+                                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                            if (info is not null)
                                             {
-                                                NotifyModel notify_model = new NotifyModel();
-                                                has_replace = new Hashtable();
-                                                notify_model.AppCode = "WORK";
-                                                notify_model.From_IDNV = loginData.UserID.ToString();
-                                                notify_model.To_IDNV = users[i].ToString();
-                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoaassign", "", "vi");
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                                notify_model.ReplaceData = has_replace;
-                                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                                if (info is not null)
-                                                {
-                                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                                }
+                                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                                             }
-                                            #endregion
                                         }
                                     }
-                                    if (cnn.Insert(val1, "we_work_user") != 1)
+                                    JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration, old, Convert.ToInt32(_user.ToString()));
+                                }
+                                if (_user == null || !_user.ToString().Equals(data.value)) // thêm người mới và trường hợp hợp người mới từ người cũ đã xóa
+                                {
+                                    is_delete_assign = false;
+                                    Hashtable val = new Hashtable();
+                                    val["id_work"] = data.id_row;
+                                    val["createddate"] = Common.GetDateTime();
+                                    val["createdby"] = iduser;
+                                    if (string.IsNullOrEmpty(data.value.ToString()))
+                                        val["id_user"] = DBNull.Value;
+                                    else
+                                        val["id_user"] = data.value;
+                                    val["loai"] = loai;
+                                    if (cnn.Insert(val, "we_work_user") != 1)
                                     {
                                         cnn.RollbackTransaction();
                                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                     }
-                                    isAssign = true;
-                                    if (loai == 1) // loai = 1 Assign đếm lại nhắc nhở thêm người +1
+                                    users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, data.id_row, id_log_action, 1, ConnectionString, DataAccount, cnn);
+                                    users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, data.id_row, id_log_action, 2, ConnectionString, DataAccount, cnn);
+                                    if (loai == 1) // loai = 1 assign đếm lại nhắc nhở thêm người +1
                                     {
                                         NhacNho.UpdateQuantityTask_Users(long.Parse(data.value.ToString()), loginData.CustomerID, "+", _configuration, _producer);
                                     }
-                                }
-                                #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                                if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                                {
-                                    var users = new List<long> { long.Parse(data.value.ToString()) };
-                                    int idtemplatemail = 0;
+                                    #region gửi event post automation - giao việc
+                                    postauto.data_input += data.value;
+                                    #endregion
                                     if ("assign".Equals(data.key))
                                     {
-                                        if (isAssign)
-                                        {
-                                            idtemplatemail = 10;
-                                        }
-                                        else
-                                        {
-                                            idtemplatemail = 22;
-                                        }
+                                        templateguimail = 10;
+                                        TitleLanguageKey = "ww_assign";
+                                        Automation.SendAutomation(postauto, _configuration, _producer);
                                     }
                                     else
                                     {
-                                        if (isAssign)
-                                        {
-                                            idtemplatemail = 23;
-                                        }
-                                        else
-                                        {
-                                            idtemplatemail = 24;
-                                        }
+                                        templateguimail = 23;
+                                        TitleLanguageKey = "ww_follower";
                                     }
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, idtemplatemail, loginData, ConnectionString, _notifier, _configuration);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplatemail, ConnectionString);
-                                    #endregion
-                                    #region Notify assign
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_assign", "", "vi");
-                                        if (data.key == "follower")
-                                        {
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_follower", "", "vi");
-                                        }
-                                        if (!isAssign)
-                                        {
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoaassign", "", "vi");
-                                            if (data.key == "follower")
-                                            {
-                                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoafollower", "", "vi");
-                                            }
-                                        }
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
                                 }
-                                #endregion
-                                #region gửi event post automation - giao việc
-                                if (isAssign) // nếu được giao event = 5 else event = 6
-                                {
-                                    postauto.eventid = 5;
-                                }
-                                else
-                                {
-                                    postauto.eventid = 6;
-                                    if (data.key == "assign")
-                                        id_log_action = 55;
-                                    if (data.key == "follower")
-                                        id_log_action = 57;
-                                }
-                                postauto.data_input += data.value;
-                                if (data.key == "assign")
-                                {
-                                    Automation.SendAutomation(postauto, _configuration, _producer);
-                                }
-                                #endregion
                             }
                         }
                         if ("Tags".Equals(data.key))//thêm 1 tag mới
@@ -4760,45 +4447,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
-                            {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                if (dt_user.Rows.Count > 0)
-                                {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                    cnn.EndTransaction();
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, 34, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(34, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_capnhattag", "", "vi");
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                            }
-                            #endregion
+                            templateguimail = 34;
+                            TitleLanguageKey = "ww_capnhattag";
                         }
                         if ("Attachments".Equals(data.key) || "Attachments_result".Equals(data.key))//upload files mới
                         {
@@ -4823,59 +4473,81 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     }
                                 }
                             }
-                            #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                            if (JeeWorkLiteController.CheckNotify_ByConditions(id_project_team, "email_update_work", false, ConnectionString))
+                            DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                            if (dt_user.Rows.Count > 0)
                             {
-                                DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                                if (dt_user.Rows.Count > 0)
+                                var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                                cnn.EndTransaction();
+                                if ("Attachments".Equals(data.key))
                                 {
-                                    var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                                    cnn.EndTransaction();
-                                    int idtemplateguimail = 0;
-                                    if ("Attachments".Equals(data.key))
-                                    {
-                                        idtemplateguimail = 29;
-                                    }
-                                    else
-                                    {
-                                        idtemplateguimail = 30;
-                                    }
-                                    JeeWorkLiteController.SendEmail(data.id_row, users, idtemplateguimail, loginData, ConnectionString, _notifier, _configuration, old);
-                                    #region Lấy thông tin để thông báo
-                                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(idtemplateguimail, ConnectionString);
-                                    #endregion
-                                    #region Notify chỉnh sửa công việc
-                                    Hashtable has_replace = new Hashtable();
-                                    for (int i = 0; i < users.Count; i++)
-                                    {
-                                        NotifyModel notify_model = new NotifyModel();
-                                        has_replace = new Hashtable();
-                                        has_replace.Add("nguoigui", loginData.Username);
-                                        has_replace.Add("tencongviec", workname);
-                                        notify_model.AppCode = "WORK";
-                                        notify_model.From_IDNV = loginData.UserID.ToString();
-                                        notify_model.To_IDNV = users[i].ToString();
-                                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themtailieucapnhatketquacongviec", "", "vi");
-                                        if (data.key == "Attachments")
-                                        {
-                                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themtailieucongviec", "", "vi");
-                                        }
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname);
-                                        notify_model.ReplaceData = has_replace;
-                                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                        if (info is not null)
-                                        {
-                                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                        }
-                                    }
-                                    #endregion
+                                    //idtemplateguimail = 29;
+                                    templateguimail = 29;
+                                    TitleLanguageKey = "ww_themtailieucongviec";
+                                }
+                                else
+                                {
+                                    templateguimail = 34;
+                                    TitleLanguageKey = "ww_themtailieucapnhatketquacongviec";
+                                    //idtemplateguimail = 30;
                                 }
                             }
-                            #endregion
                         }
+                    }
+                    if (!is_delete_assign)
+                    {
+                        #region Lấy thông tin để thông báo
+                        noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                        #endregion
+                        SqlConditions cond_user = new SqlConditions();
+                        cond_user.Add("id_work", data.id_row);
+                        cond_user.Add("disabled", 0);
+                        cond_user.Add("loai", loai);
+                        string sql_user = "";
+                        sql_user = "select id_user from we_work_user where loai = @loai and disabled = @disabled and id_work=@id_work";
+                        if (loai > 1)
+                        {
+                            cond_user.Add("id_user", data.value);
+                            sql_user += " and id_user = @id_user";
+                        }
+                        object _user = cnn.ExecuteScalar(sql_user, cond_user);
+                        if (_user == null)
+                            _user = "0";
+                        if (users_loai1.Count > 0)
+                        {
+                            NotifyModel notify_model = new NotifyModel();
+                            has_replace = new Hashtable();
+                            has_replace.Add("nguoigui", loginData.Username);
+                            has_replace.Add("tencongviec", workname);
+                            notify_model.AppCode = "WORK";
+                            if (is_assign)
+                            {
+                                notify_model.From_IDNV = _user.ToString();
+                            }
+                            else
+                            {
+                                notify_model.From_IDNV = loginData.UserID.ToString();
+                            }
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                            if (data.value == null)
+                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(key_special, "", "vi");
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                                .Replace("$tencongviec$", workname).Replace("$value$", data.value.ToString());
+                            if ("status".Equals(data.key))
+                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$trangthai$", key_special);
+                            notify_model.ReplaceData = has_replace;
+                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                            for (int i = 0; i < users_loai1.Count; i++)
+                            {
+                                notify_model.To_IDNV = users_loai1[i].ToString();
+                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                if (info is not null)
+                                {
+                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                                }
+                            }
+                        }
+                        JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration, old, Convert.ToInt32(_user.ToString()));
                     }
                     DataTable dt = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (id_log_action > 0)
@@ -5336,7 +5008,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc");
                     }
-                    string xoacon = " in ( select id_row from v_wework_clickup_new where (id_row = " + id + " or id_parent = " + id + ") and  disabled = 0 ) ";
+                    string xoacon = " in (select id_row from v_wework_clickup_new where (id_row = " + id + " or id_parent = " + id + ") and  disabled = 0 ) ";
                     string sqlq = "update we_work set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row " + xoacon;
                     SqlConditions sqlcond = new SqlConditions();
                     sqlcond.Add("id_row", id);
@@ -5344,8 +5016,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and Id_NV is not null", "(where)", sqlcond);
                     DataTable dt_user1 = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where id_nv is not null and (where) and Id_NV is not null", "(where)", sqlcond);
                     // get users để gửi mail thông báo
-                    var users = getUserTask(cnn, id);
+                    //var users = getUserTask(cnn, id);
                     cnn.BeginTransaction();
+                    var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, id, 18, 1, ConnectionString, DataAccount, cnn);
+                    var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, id, 18, 2, ConnectionString, DataAccount, cnn);
                     if (cnn.ExecuteNonQuery(sqlq) < 1)
                     {
                         cnn.RollbackTransaction();
@@ -5367,48 +5041,86 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     Common.Ghilogfile(loginData.CustomerID.ToString(), "", LogContent, loginData.Username, ControllerContext);
                     #endregion
                     cnn.EndTransaction();
-                    #region Check dự án đó có gửi gửi mail khi xóa không
-                    long id_project = long.Parse(cnn.ExecuteScalar("select id_project_team from we_work where id_row = " + id).ToString());
-                    if (JeeWorkLiteController.CheckNotify_ByConditions(id_project, "email_delete_work", false, ConnectionString))
+                    #region Lấy thông tin để thông báo
+                    int templateguimail = 15;
+                    SendNotifyModel noti = new SendNotifyModel();
+                    noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                    string workname = old.Rows[0]["tencongviec_old"].ToString();
+                    string TitleLanguageKey = "ww_xoacongviec";
+                    #endregion
+                    string user_assign = "0";
+                    if (users_loai1.Count > 0)
                     {
-                        JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
-                        if (users.Count > 0) // dt_user.Rows.Count > 0
+                        NotifyModel notify_model = new NotifyModel();
+                        Hashtable has_replace = new Hashtable();
+                        has_replace.Add("nguoigui", loginData.Username);
+                        has_replace.Add("tencongviec", workname);
+                        notify_model.AppCode = "WORK";
+                        if (!string.IsNullOrEmpty(old.Rows[0]["id_nv"].ToString()))
                         {
-                            // var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                            // JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
-                            #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(15, ConnectionString);
-                            #endregion
-                            object workname = cnn.ExecuteScalar("select title from we_work where disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
-                            if (workname != null)
-                                workname = workname.ToString();
-                            #region Notify assign
-                            Hashtable has_replace = new Hashtable();
-                            for (int i = 0; i < users.Count; i++)
+                            user_assign = old.Rows[0]["id_nv"].ToString();
+                        }
+                        notify_model.From_IDNV = user_assign;
+                        //notify_model.From_IDNV = loginData.UserID.ToString();
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                            .Replace("$tencongviec$", workname);
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                        for (int i = 0; i < users_loai1.Count; i++)
+                        {
+                            notify_model.To_IDNV = users_loai1[i].ToString();
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
                             {
-                                NotifyModel notify_model = new NotifyModel();
-                                has_replace = new Hashtable();
-                                has_replace.Add("nguoigui", loginData.Username);
-                                has_replace.Add("tencongviec", workname);
-                                notify_model.AppCode = "WORK";
-                                notify_model.From_IDNV = loginData.UserID.ToString();
-                                notify_model.To_IDNV = users[i].ToString();
-                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoacongviec", "", "vi");
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname.ToString());
-                                notify_model.ReplaceData = has_replace;
-                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
-                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                if (info is not null)
-                                {
-                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                }
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
-                            #endregion
                         }
                     }
-                    #endregion
+                    JeeWorkLiteController.SendEmail(id, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration, old, long.Parse(user_assign));
+                    //#region Check dự án đó có gửi gửi mail khi xóa không
+                    //long id_project = long.Parse(cnn.ExecuteScalar("select id_project_team from we_work where id_row = " + id).ToString());
+                    //if (JeeWorkLiteController.CheckNotify_ByConditions(id_project, "email_delete_work", false, ConnectionString))
+                    //{
+                    //    JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
+                    //    if (users.Count > 0) // dt_user.Rows.Count > 0
+                    //    {
+                    //        // var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                    //        // JeeWorkLiteController.SendEmail(id, users, 15, loginData, ConnectionString, _notifier, _configuration);
+                    //        #region Lấy thông tin để thông báo
+                    //        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(15, ConnectionString);
+                    //        #endregion
+                    //        object workname = cnn.ExecuteScalar("select title from we_work where disabled = 1 and id_row = @id_row", new SqlConditions() { { "id_row", id } });
+                    //        if (workname != null)
+                    //            workname = workname.ToString();
+                    //        #region Notify assign
+                    //        Hashtable has_replace = new Hashtable();
+                    //        for (int i = 0; i < users.Count; i++)
+                    //        {
+                    //            NotifyModel notify_model = new NotifyModel();
+                    //            has_replace = new Hashtable();
+                    //            has_replace.Add("nguoigui", loginData.Username);
+                    //            has_replace.Add("tencongviec", workname);
+                    //            notify_model.AppCode = "WORK";
+                    //            notify_model.From_IDNV = loginData.UserID.ToString();
+                    //            notify_model.To_IDNV = users[i].ToString();
+                    //            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_xoacongviec", "", "vi");
+                    //            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", workname.ToString());
+                    //            notify_model.ReplaceData = has_replace;
+                    //            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                    //            notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                    //            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //            if (info is not null)
+                    //            {
+                    //                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //            }
+                    //        }
+                    //        #endregion
+                    //    }
+                    //}
+                    //#endregion
                     if (cnn.LastError is null && dt_user1.Rows.Count > 0)
                     {
                         List<long> danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
@@ -5984,7 +5696,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     int id_log_action = closed ? 59 : 60;
                     sqlcond.Add("id_row", id);
                     sqlcond.Add("disabled", 0);
-                    string s = "select * from we_work where (where)";
+                    string s = "select title as tencongviec_old, * from v_wework_new where (where)";
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
@@ -6026,50 +5738,94 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
                     #endregion
                     cnn.EndTransaction();
-                    #region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
-                    int TemplateId = closed ? 43 : 44;
-                    string txtnoti = closed ? "ww_dongcongviec" : "ww_mocongviec";
-                    if (JeeWorkLiteController.CheckNotify_ByConditions(long.Parse(old.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
+                    var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, id, id_log_action, 1, ConnectionString, DataAccount, cnn);
+                    var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, id, id_log_action, 2, ConnectionString, DataAccount, cnn);
+                    //#region Check dự án đó có gửi gửi mail khi chỉnh sửa công việc hay không
+                    //int TemplateId = closed ? 43 : 44;
+                    //string txtnoti = closed ? "ww_dongcongviec" : "ww_mocongviec";
+                    //if (JeeWorkLiteController.CheckNotify_ByConditions(long.Parse(old.Rows[0]["id_project_team"].ToString()), "email_update_work", false, ConnectionString))
+                    //{
+                    //    DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
+                    //    if (dt_user.Rows.Count > 0)
+                    //    {
+                    //        var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
+                    //        cnn.EndTransaction();
+                    //        JeeWorkLiteController.SendEmail(id, users, TemplateId, loginData, ConnectionString, _notifier, _configuration, old);
+                    //        #region Lấy thông tin để thông báo
+                    //        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(11, ConnectionString);
+                    //        #endregion
+                    //        #region Notify chỉnh sửa công việc
+                    //        Hashtable has_replace = new Hashtable();
+                    //        for (int i = 0; i < users.Count; i++)
+                    //        {
+                    //            NotifyModel notify_model = new NotifyModel();
+                    //            has_replace = new Hashtable();
+                    //            has_replace.Add("nguoigui", loginData.Username);
+                    //            has_replace.Add("tencongviec", old.Rows[0]["title"].ToString());
+                    //            notify_model.AppCode = "WORK";
+                    //            notify_model.From_IDNV = loginData.UserID.ToString();
+                    //            notify_model.To_IDNV = users[i].ToString();
+                    //            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(txtnoti, "", "vi");
+                    //            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", old.Rows[0]["title"].ToString());
+                    //            notify_model.ReplaceData = has_replace;
+                    //            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                    //            notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                    //            DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    //            if (DataAccount == null)
+                    //                return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    //            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //            if (info is not null)
+                    //            {
+                    //                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //            }
+                    //        }
+                    //        #endregion
+                    //    }
+                    //}
+                    //#endregion
+                    #region Lấy thông tin để thông báo
+                    int templateguimail = closed ? 43 : 44;
+                    SendNotifyModel noti = new SendNotifyModel();
+                    noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                    string workname = old.Rows[0]["tencongviec_old"].ToString();
+                    string TitleLanguageKey = closed ? "ww_dongcongviec" : "ww_mocongviec";
+                    #endregion
+                    string user_assign = "0";
+                    if (users_loai1.Count > 0)
                     {
-                        DataTable dt_user = cnn.CreateDataTable("select id_nv, title, id_row from v_wework_new where (where) and id_nv is not null", "(where)", sqlcond);
-                        if (dt_user.Rows.Count > 0)
+                        NotifyModel notify_model = new NotifyModel();
+                        Hashtable has_replace = new Hashtable();
+                        has_replace.Add("nguoigui", loginData.Username);
+                        has_replace.Add("tencongviec", workname);
+                        notify_model.AppCode = "WORK";
+                        if (!string.IsNullOrEmpty(old.Rows[0]["id_nv"].ToString()))
                         {
-                            var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
-                            cnn.EndTransaction();
-                            JeeWorkLiteController.SendEmail(id, users, TemplateId, loginData, ConnectionString, _notifier, _configuration, old);
-                            #region Lấy thông tin để thông báo
-                            SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(11, ConnectionString);
-                            #endregion
-                            #region Notify chỉnh sửa công việc
-                            Hashtable has_replace = new Hashtable();
-                            for (int i = 0; i < users.Count; i++)
+                            user_assign = old.Rows[0]["id_nv"].ToString();
+                        }
+                        notify_model.From_IDNV = user_assign;
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                            .Replace("$tencongviec$", workname);
+                        notify_model.ReplaceData = has_replace;
+                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                        for (int i = 0; i < users_loai1.Count; i++)
+                        {
+                            notify_model.To_IDNV = users_loai1[i].ToString();
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
                             {
-                                NotifyModel notify_model = new NotifyModel();
-                                has_replace = new Hashtable();
-                                has_replace.Add("nguoigui", loginData.Username);
-                                has_replace.Add("tencongviec", old.Rows[0]["title"].ToString());
-                                notify_model.AppCode = "WORK";
-                                notify_model.From_IDNV = loginData.UserID.ToString();
-                                notify_model.To_IDNV = users[i].ToString();
-                                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(txtnoti, "", "vi");
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", old.Rows[0]["title"].ToString());
-                                notify_model.ReplaceData = has_replace;
-                                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
-                                notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-                                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                                if (DataAccount == null)
-                                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-                                var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                                if (info is not null)
-                                {
-                                    bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                                }
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
                             }
-                            #endregion
                         }
                     }
-                    #endregion
+                    JeeWorkLiteController.SendEmail(id, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration, old, long.Parse(user_assign));
                     return JsonResultCommon.ThanhCong(closed);
                 }
             }

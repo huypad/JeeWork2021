@@ -23,7 +23,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     [ApiController]
     [Route("api/ww_userrights")]
     [EnableCors("JeeWorkPolicy")]
-
     public class WW_UserRightsController : ControllerBase
     {
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -49,7 +48,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Get_DSNhom")]
         [HttpGet]
         public object Get_DSNhom([FromQuery] QueryParams query)
@@ -144,7 +143,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Get_UserGroup")]
         [HttpGet]
         public object Get_DSNguoiDungNhom([FromQuery] QueryParams query)
@@ -271,7 +270,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Insert_Nhom")]
         [HttpPost]
         public async Task<BaseModel<object>> Insert_Nhom(NhomAddData data)
@@ -316,12 +315,11 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Insert_User")]
         [HttpPost]
         public async Task<BaseModel<object>> Insert_User(UserAddData data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -337,14 +335,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                     // kiểm tra account đã có trong tab_Account
                     Conds = new SqlConditions();
                     //Conds.Add("username", data.UserName);
-
                     #region Lấy dữ liệu account từ JeeAccount
                     DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
                     var info = DataAccount.Where(x => data.UserName.ToString().Contains(x.Username.ToString())).FirstOrDefault();
-
                     if (info is null)
                     {
                         return JsonResultCommon.Custom("Không tìm thấy thông tin tài khoản trong hệ thống JeeAccount");
@@ -375,7 +371,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         WeWorkRoles = role
                     };
                     objCustomData.fieldValue = datas;
-
                     var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                     if (dataJA == null)
                     {
@@ -392,19 +387,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Nhóm người dùng ---
         /// Xóa user khỏi nhóm ---
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Delete_User")]
         [HttpPost]
         public async Task<BaseModel<object>> Delete_User(UserAddData data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -468,7 +461,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.ThatBai("Lỗi cập nhật dữ liệu quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
                     }
                     cnn.EndTransaction();
-
                     #endregion
                 }
                 return JsonResultCommon.ThanhCong(data);
@@ -478,13 +470,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Xóa nhóm
         /// </summary>
         /// <param name="id">ID_Nhom</param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Delete_Nhom")]
         [HttpGet]
         public BaseModel<object> Delete_Nhom(long id, string TenNhom)
@@ -522,7 +513,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
 
         }
-
         /// <summary>
         /// Người dùng ---
         /// Load danh sách người dùng ---
@@ -530,7 +520,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        //[CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Get_DSNguoiDung")]
         [HttpGet]
         public object Get_DSNguoiDung([FromQuery] QueryParams query)
@@ -690,7 +680,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Load danh sách chức năng --- 
         /// (Column "Chỉ xem").Visible = !IsReadPermit, (Column "Chỉ xem").Check = IsRead, (Column "Sửa").Check = IsEdit, (Column "Chỉ xem").Enable = IsRead_Enable, (Column "Sửa").Enable = IsEdit_Enable /// (Column "Chỉ xem").Visible = !IsReadPermit 
@@ -807,7 +796,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 dr["IsEdit_Enable"] = false;
                             }
                         }
-
                     }
                     else // Xét trường hợp user nằm trong group
                     {
@@ -859,7 +847,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-       // [CusAuthorize(Roles = "3900")]
+        [CusAuthorize(Roles = "3900")]
         [Route("Save_Permision")]
         [HttpPost]
         public async Task<BaseModel<object>> Save_QuyenNhomNguoiDung(List<PermissionNewModel> arr_data)
@@ -912,7 +900,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (them.Length > 0) LogContent += " Thêm quyền : " + them.Substring(1);
                     if (capnhat.Length > 0) LogContent += " | Chỉnh sửa quyền : " + capnhat.Substring(1);
                     if (xoa.Length > 0) LogContent += " | Xóa quyền : " + xoa.Substring(1);
-
                     Conds = new SqlConditions();
                     Conds.Add(ColumnKey, arr_data[0].ID);
                     Conds.Add("id_chucnang", arr_data[0].ID_NhomChucNang);
@@ -962,7 +949,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                             WeWorkRoles = role
                         };
                         objCustomData.fieldValue = datas;
-
                         var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                         if (dataJA == null)
                         {
@@ -999,7 +985,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 WeWorkRoles = role
                             };
                             objCustomData.fieldValue = datas;
-
                             if (!string.IsNullOrEmpty(objCustomData.userId))
                             {
                                 var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
@@ -1011,14 +996,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                             }
                         }
                     }
-
                     #endregion
                     LogContent += " của nhóm " + arr_data[0].Ten + "(" + arr_data[0].ID + ")";
                     cnn.EndTransaction();
                     cnn.Disconnect();
                     //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
                 }
-
                 return JsonResultCommon.ThanhCong();
             }
             catch (Exception ex)
@@ -1044,8 +1027,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             {
                 return null;
             }
-
-
         }
     }
 }

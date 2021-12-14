@@ -126,7 +126,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Get_AutomationList([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

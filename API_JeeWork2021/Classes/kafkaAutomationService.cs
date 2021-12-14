@@ -665,8 +665,6 @@ where AutoID = " + AutoID + " order by RowID desc";
             else
                 val.Add("description", dr["description"]);
             val.Add("id_project_team", dr["id_project_team"]);
-
-
             if (int.Parse(cnn.ExecuteScalar("select count(*) from we_status where disabled=0 and id_row = " + dr["status"] + "and id_project_team = " + dr["id_project_team"]).ToString()) == 0)
             {
                 string sqlq1 = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + dr["id_project_team"] + "),0)";

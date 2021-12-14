@@ -2370,7 +2370,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         /// <param name="nguoigui"></param>
         /// <param name="dtUser">gồm id_nv, hoten, email</param>
         /// <returns></returns>
-        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, List<AccUsernameModel> DataAccount, IConfiguration _configuration, DataTable dtOld = null)
+        public static bool NotifyMail(int id_template, long object_id, UserJWT nguoigui, DataTable dtUser, string ConnectionString, INotifier _notifier, List<AccUsernameModel> DataAccount, IConfiguration _configuration, DataTable dtOld = null, long nguoinhan = 0)
         {
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
@@ -2466,20 +2466,20 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     #endregion
                 }
                 // lấy thông tin follower cc
-                List<long> follower = getFollowerinTask(cnn, id_template, object_id);
-                if (follower.Count > 0)
-                {
-                    foreach (var item in follower)
-                    {
-                        #region Map info account từ JeeAccount
-                        var info = DataAccount.Where(x => item.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if (info != null)
-                        {
-                            guikem += "," + info.Email;
-                        }
-                        #endregion
-                    }
-                }
+                //List<long> follower = getFollowerinTask(cnn, id_template, object_id);
+                //if (follower.Count > 0)
+                //{
+                //    foreach (var item in follower)
+                //    {
+                //        #region Map info account từ JeeAccount
+                //        var info = DataAccount.Where(x => item.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                //        if (info != null)
+                //        {
+                //            guikem += "," + info.Email;
+                //        }
+                //        #endregion
+                //    }
+                //}
                 DataRow old_values = dtOld == null ? null : dtOld.Rows[0];
                 foreach (DataRow dr in dtKey.Rows)
                 {
@@ -2510,37 +2510,70 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     title = title.Replace(key, val);
                     template = template.Replace(key, val);
                 }
+                DataTable dt_guikem = new DataTable();
+                if (nguoinhan > 0)
+                {
+                    if (dtUser.Rows.Count > 0)
+                    {
+                        var rows = dtUser.Select("guikem = 1");
+                        if (rows.Any())
+                            dt_guikem = rows.CopyToDataTable();
+                        if (dt_guikem.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr_cc in dt_guikem.Rows)
+                            {
+                                var info = DataAccount.Where(x => dr_cc["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                                if (info != null)
+                                {
+                                    if (!string.IsNullOrEmpty(info.Email))
+                                        guikem += "," + info.Email;
+                                }
+                            }
+                        }
+                        var row_us = dtUser.Select("guikem = 0");
+                        if (row_us.Any())
+                            dtUser = row_us.CopyToDataTable();
+                    }
+                }
                 //guikem = ",huytranvan1404@gmail.com"; -- để test
                 MailAddressCollection cc = new MailAddressCollection();
                 foreach (string c in guikem.Split(','))
                 {
                     if (!c.Equals("")) cc.Add(c);
                 }
-                for (int i = 0; i < dtUser.Rows.Count; i++)
+                Task.Factory.StartNew(() =>
                 {
-                    //Gửi mail cho người nhận
-                    if (!"".Equals(dtUser.Rows[i]["email"].ToString()))
+                    for (int i = 0; i < dtUser.Rows.Count; i++)
                     {
+                        //Gửi mail cho người nhận
+                        string nguoinhan_email = "", nguoinhan_hoten = "";
+                        nguoinhan_email = dtUser.Rows[i]["email"].ToString();
+                        nguoinhan_hoten = dtUser.Rows[i]["hoten"].ToString();
                         if (exclude_sender && dtUser.Rows[i]["id_nv"].ToString() == nguoigui.UserID.ToString())
                             continue;
-                        string contents = template.Replace("$nguoinhan$", dtUser.Rows[i]["hoten"].ToString());
+                        nguoinhan_email = dtUser.Rows[i]["email"].ToString();
+                        nguoinhan_hoten = dtUser.Rows[i]["hoten"].ToString();
+                        if (string.IsNullOrEmpty(nguoinhan_email))
+                        {
+                            nguoinhan_email = "huytv@dps.com.vn";
+                            template = template.Replace("$nguoinhan$", "$nguoinhan$ (" + nguoinhan_hoten + " chưa có thông tin email từ hệ thống)");
+                        }
+                        string contents = template.Replace("$nguoinhan$", nguoinhan_hoten);
                         string ErrorMessage = "";
                         var x = guikem.Split(',');
-                        //s.Send(m);
                         emailMessage asyncnotice = new emailMessage()
                         {
                             CustomerID = nguoigui.CustomerID,
                             access_token = "",
-                            to = dtUser.Rows[i]["email"].ToString(),
+                            to = nguoinhan_email,
                             cc = string.Join(",", guikem.Split(',').Where(x => !string.IsNullOrEmpty(x))),
                             subject = title,
                             html = contents //nội dung html
                         };
-                        //Task.Run(() => _notifier.sendEmail(asyncnotice));
                         MailInfo MInfo = new MailInfo();
-                        Task.Run(() => Send_Synchronized(dtUser.Rows[i]["email"].ToString(), title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier));
+                        Send_Synchronized(nguoinhan_email, title, cc, contents, nguoigui.CustomerID.ToString(), "", true, out ErrorMessage, new MailInfo(), ConnectionString, _notifier);
                     }
-                }
+                });
                 cnn.Disconnect();
             }
             return true;
@@ -2591,10 +2624,11 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static void SendEmail(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, IConfiguration _configuration, DataTable dtOld = null)
+        public static void SendEmail(long id, List<long> users, int id_template, UserJWT loginData, string ConnectionString, INotifier _notifier, IConfiguration _configuration, DataTable dtOld = null, long nguoinhan = 0)
         {
             if (users == null || users.Count == 0)
                 return;
+            users = users.Distinct().ToList();
             using (DpsConnection cnn = new DpsConnection(ConnectionString))
             {
                 List<AccUsernameModel> DataAccount = GetDanhSachAccountFromCustomerID(_configuration, loginData.CustomerID);
@@ -2602,17 +2636,26 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 dtUser.Columns.Add("id_nv");
                 dtUser.Columns.Add("hoten");
                 dtUser.Columns.Add("email");
+                dtUser.Columns.Add("guikem");
                 foreach (var item in users)
                 {
                     var info = DataAccount.Where(x => item.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    string guikem = "0";
                     if (info != null)
                     {
-                        dtUser.Rows.Add(info.UserId, info.FullName, info.Email);
+                        if (nguoinhan > 0)
+                        {
+                            if (!item.ToString().Equals(nguoinhan.ToString()))
+                            {
+                                guikem = "1";
+                            }
+                        }
+                        dtUser.Rows.Add(info.UserId, info.FullName, info.Email, guikem);
                     }
                 }
-                if (IsNotify(_configuration))
+                //if (IsNotify(_configuration))
                 {
-                    Task.Run(() => NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld));
+                    Task.Run(() => NotifyMail(id_template, id, loginData, dtUser, ConnectionString, _notifier, DataAccount, _configuration, dtOld, nguoinhan));
                 }
             }
         }
@@ -2827,7 +2870,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
         /// <summary>
         /// Lấy danh sách user để notify theo điều kiện
         /// </summary>
-        /// <param name="objectid"></param>
+        /// <param name="objectid">id của đối tượng link với project (work, topic)</param>
         /// <param name="actionid">we_log_action - id_row</param>
         /// <param name="position_notify">vị trí loại gửi thông báo 11000: AppNoti, Email</param>
         /// <param name="ConnectionString">chuỗi kết nối</param>
@@ -2841,7 +2884,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 {
                     string sql_action = "", sql_projectmgr = "", sql_creator = "", sql_asssignee = "", sql_follower = "", sql_othermember = "", sql_addminapp = "";
                     int typeid = 0;
-                    string id_project_team = "";
+                    long id_project_team = 0;
                     sql_action = "select * from we_log_action where id_row =" + actionid;
                     DataTable dt = new DataTable();
                     DataTable dt_projectmgr = new DataTable();
@@ -2868,8 +2911,15 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             }
                         case 2:
                             {
-                                table_name = "we_project_team";
-                                column_key = "";
+                                dt_projectmgr = Get_ListUserByProject(cnn, objectid, loginData.CustomerID);
+                                // Lấy list người quản lý của department nơi dự án được tạo
+                                string sql_department = "";
+                                sql_department = "select id_department from we_project_team where disabled = 0 and id_row =" + objectid;
+                                long id_department = long.Parse(cnn.ExecuteScalar(sql_department).ToString());
+                                if (id_department > 0)
+                                {
+                                    dt_othermember = Get_ListOtherUsers(cnn, id_department, loginData.CustomerID, 1);
+                                }
                                 break;
                             }
                         case 3:
@@ -2879,14 +2929,16 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                 // Lấy list project manager
                                 string sql_parent = "";
                                 sql_parent = "select id_project_team from we_work where disabled = 0 and id_row =" + objectid;
-                                id_project_team = cnn.ExecuteScalar(sql_parent).ToString();
-                                if (!string.IsNullOrEmpty(id_project_team))
+                                id_project_team = long.Parse(cnn.ExecuteScalar(sql_parent).ToString());
+                                if (id_project_team > 0)
                                 {
-                                    dt_projectmgr = Get_ListUserByProject(cnn, long.Parse(id_project_team), loginData.CustomerID);
+                                    dt_projectmgr = Get_ListUserByProject(cnn, id_project_team, loginData.CustomerID);
                                 }
                                 sql_parent = "";
                                 // Lấy người tạo công việc, người giao, người làm
                                 dt_works = cnn.CreateDataTable("select createdby, nguoigiao, id_nv from v_wework_new where id_row =" + objectid);
+                                // Lấy người theo dõi
+                                dt_follower = cnn.CreateDataTable("select id_user from we_work_user where loai = 2 and id_work =" + objectid);
                                 // Lấy danh sách admin app
                                 dt_addminapp = Get_ListAdminApp(cnn, loginData.CustomerID, DataAccount);
                                 break;
@@ -2901,14 +2953,29 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     string sqlq = "", where_project = "";
                     SqlConditions conds = new SqlConditions();
                     conds.Add("actionid", actionid);
-                    where_project = " projectid =" + objectid + "";
+                    where_project = " projectid =" + id_project_team + "";
                     sqlq = "select rowid, actionid, projectmgr, creator, asssignee, follower, othermember, addminapp, ProjectID " +
                         "from sys_notifyconfig " +
-                        "where (where) " +
-                        "and (projectid =" + objectid + " or projectid = 0)";
-                    conds.Add("ProjectID", objectid);
+                        "where (where) and ";
+                    //"and (projectid =" + objectid + " or projectid = 0)";
+                    //conds.Add("ProjectID", objectid);
                     dt = new DataTable();
-                    dt = cnn.CreateDataTable(sqlq, "(where)", conds);
+                    dt = cnn.CreateDataTable(sqlq + where_project, "(where)", conds);
+                    if (dt.Rows.Count <= 0)
+                    {
+                        where_project = " projectid = 0";
+                        dt = cnn.CreateDataTable(sqlq + where_project, "(where)", conds);
+                        if (dt.Rows.Count <= 0)
+                        {
+                            string values_default = "01111";
+                            string sql_insert = "";
+                            sql_insert = $@"insert into Sys_NotifyConfig (ActionID, ProjectMgr, Creator, Asssignee, Follower, OtherMember, AddminApp, ProjectID) 
+                                            select id_row, '01000', " + values_default + ", " + values_default + ", " + values_default + ", " + values_default + ", '01111', 0 from we_log_action where loai_notify > 1";
+                            cnn.ExecuteNonQuery(sql_insert);
+                            where_project = " projectid =" + id_project_team + "";
+                            dt = cnn.CreateDataTable(sqlq + where_project, "(where)", conds);
+                        }
+                    }
                     if (dt.Rows.Count > 0)
                     {
                         string characters = "00000";
@@ -2917,7 +2984,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         vitri = characters[position_notify - 1];
                         if ("1".Equals(vitri.ToString()))
                         {
-                            listUser = dt_projectmgr.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            listUser.AddRange(dt_projectmgr.AsEnumerable().Where(x => (bool)x["admin"]).Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList());
                         }
                         if (typeid == 3)
                         {
@@ -2925,17 +2992,17 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             vitri = characters[position_notify - 1];
                             if ("1".Equals(vitri.ToString()))
                             {
-                                listUser = dt_works.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                                listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["createdby"].ToString()) ? 0 : long.Parse(x["createdby"].ToString())).Distinct().ToList());
                             }
                             characters = dt.Rows[0]["asssignee"].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
-                                listUser = dt_works.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                                listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_nv"].ToString()) ? 0 : long.Parse(x["id_nv"].ToString())).Distinct().ToList());
                             }
                             characters = dt.Rows[0]["follower"].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
-                                listUser = dt_works.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                                listUser.AddRange(dt_follower.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_user"].ToString()) ? 0 : long.Parse(x["id_user"].ToString())).Distinct().ToList());
                             }
                         }
                         else
@@ -2943,21 +3010,23 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             characters = dt.Rows[0]["creator"].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
-                                listUser = dt_creator.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                                listUser.AddRange(dt_creator.AsEnumerable().Select(x => string.IsNullOrEmpty(x["createdby"].ToString()) ? 0 : long.Parse(x["createdby"].ToString())).Distinct().ToList());
                             }
                         }
                         characters = dt.Rows[0]["othermember"].ToString();
                         if ("1".Equals(vitri.ToString()))
                         {
-                            listUser = dt_projectmgr.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["nguoigiao"].ToString()) ? 0 : long.Parse(x["nguoigiao"].ToString())).Distinct().ToList());
                         }
                         characters = dt.Rows[0]["addminapp"].ToString();
                         if ("1".Equals(vitri.ToString()))
                         {
-                            listUser = dt_addminapp.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList();
+                            var users = new List<long> { 77098 };
+                            listUser.AddRange(users);
+                            //listUser.AddRange(dt_addminapp.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_user"].ToString()) ? 0 : long.Parse(x["id_user"].ToString())).Distinct().ToList());
                         }
                     }
-                    return listUser;
+                    return listUser.Distinct().ToList();
                 }
             }
             catch (Exception ex)
@@ -4479,13 +4548,13 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
             {
                 case 1:
                     {
-                        sqlq = "select id_row, id_user, type " +
+                        sqlq = "select ow.id_row, id_user, type " +
                             "from we_department_owner ow " +
                             "join we_department de " +
                             "on de.id_row = ow.id_department " +
                             "where de.disabled = 0 " +
                             "and ow.disabled = 0 " +
-                            "and de.idkh =" + customerid + " " +
+                            "and de.idkh =" + customerid + " and " +
                             "ow.id_department=" + otherid;
                         break;
                     }

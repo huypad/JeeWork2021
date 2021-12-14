@@ -39,10 +39,10 @@ namespace JeeWork_Core2021.Controllers.Wework
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
-        private INotifier _notifier;
-        public List<AccUsernameModel> DataAccount;
+        private static INotifier _notifier;
+        public static List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
-        private IConfiguration _configuration;
+        private static IConfiguration _configuration;
         private IProducer _producer;
         private readonly ILogger<ProjectTeamController> _logger;
         public ProjectTeamController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache, IConfiguration configuration, ILogger<ProjectTeamController> logger, IProducer producer)
@@ -1593,37 +1593,73 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
                     #endregion
                     cnn.EndTransaction();
+
+                    var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 31, 1, ConnectionString, DataAccount, cnn);
+                    var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 31, 2, ConnectionString, DataAccount, cnn);
                     #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(6, ConnectionString);
+                    int templateguimail = 6;
+                    SendNotifyModel noti = new SendNotifyModel();
+                    noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
+                    string project_team = data.title;
+                    string TitleLanguageKey = "ww_thietlapvaitroadmin";
                     #endregion
-                    data.id_row = idc;
-                    Hashtable has_replace = new Hashtable();
-                    var users_admin = new List<long> { iduser };
-                    JeeWorkLiteController.SendEmail(idc, users_admin, 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
-                    #region Notify thiết lập vai trò admin
-                    for (int i = 0; i < users_admin.Count; i++)
+                    if (users_loai1.Count > 0)
                     {
                         NotifyModel notify_model = new NotifyModel();
-                        has_replace = new Hashtable();
+                        Hashtable has_replace = new Hashtable();
                         has_replace.Add("nguoigui", loginData.Username);
-                        has_replace.Add("project_team", data.title);
+                        has_replace.Add("project_team", project_team);
                         notify_model.AppCode = "WORK";
                         notify_model.From_IDNV = loginData.UserID.ToString();
-                        notify_model.To_IDNV = users_admin[i].ToString();
-                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                            .Replace("$project_team$", project_team).Replace("$loai$", "dự án");
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if (info is not null)
+                        for (int i = 0; i < users_loai1.Count; i++)
                         {
-                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            notify_model.To_IDNV = users_loai1[i].ToString();
+                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (info is not null)
+                            {
+                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                            }
                         }
                     }
-                    #endregion
+                    JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration);
+
+                    //#region Lấy thông tin để thông báo
+                    //SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(6, ConnectionString);
+                    //#endregion
+                    //data.id_row = idc;
+                    //Hashtable has_replace = new Hashtable();
+                    //var users_admin = new List<long> { iduser };
+                    //JeeWorkLiteController.SendEmail(idc, users_admin, 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+                    //#region Notify thiết lập vai trò admin
+                    //for (int i = 0; i < users_admin.Count; i++)
+                    //{
+                    //    NotifyModel notify_model = new NotifyModel();
+                    //    has_replace = new Hashtable();
+                    //    has_replace.Add("nguoigui", loginData.Username);
+                    //    has_replace.Add("project_team", data.title);
+                    //    notify_model.AppCode = "WORK";
+                    //    notify_model.From_IDNV = loginData.UserID.ToString();
+                    //    notify_model.To_IDNV = users_admin[i].ToString();
+                    //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", data.title);
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                    //    notify_model.ReplaceData = has_replace;
+                    //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                    //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                    //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //    if (info is not null)
+                    //    {
+                    //        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //    }
+                    //}
+                    //#endregion
                     foreach (DataRow item in dt_member.Rows)
                     {
                         #region Lấy thông tin để thông báo
@@ -1635,7 +1671,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         for (int i = 0; i < users_member.Count; i++)
                         {
                             NotifyModel notify_model = new NotifyModel();
-                            has_replace = new Hashtable();
+                            Hashtable has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             has_replace.Add("project_team", data.title);
                             notify_model.AppCode = "WORK";
@@ -2512,7 +2548,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
         [HttpGet]
         public BaseModel<object> ListUser(long id)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -2606,14 +2641,12 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sqlq = "select * from we_project_team where Disabled=0 and  id_row = " + data.id_row;
+                    string sqlq = "select * from we_project_team where disabled=0 and id_row = " + data.id_row;
                     DataTable dtF = cnn.CreateDataTable(sqlq);
                     if (dtF.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Dự án/phòng ban");
-
                     sqlq = @"select * from we_project_team_user u where u.id_project_team =" + data.id_row + " and u.disabled=0";
                     DataTable dt = cnn.CreateDataTable(sqlq);
-
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     cnn.BeginTransaction();
@@ -2673,72 +2706,89 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
                     #endregion
                     cnn.EndTransaction();
-                    Hashtable has_replace = new Hashtable();
+                    string error = "";
                     List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
                     List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
-                    #region Notify thiết lập vai trò admin
                     if (users_admin.Count > 0)
                     {
-                        #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(6, ConnectionString);
-                        #endregion
-                        JeeWorkLiteController.SendEmail(data.id_row, users_admin, 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
                         for (int i = 0; i < users_admin.Count; i++)
                         {
-                            NotifyModel notify_model = new NotifyModel();
-                            has_replace = new Hashtable();
-                            has_replace.Add("nguoigui", loginData.Username);
-                            has_replace.Add("project_team", dtF.Rows[0]["title"]);
-                            notify_model.AppCode = "WORK";
-                            notify_model.From_IDNV = loginData.UserID.ToString();
-                            notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
-                            notify_model.ReplaceData = has_replace;
-                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                            { }
-                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                            if (info is not null)
-                            {
-                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                            }
+                            Notify_Project(36, 6, users_admin[i], cnn, ConnectionString, loginData, data.id_row, DataAccount, out error);
                         }
                     }
-                    #endregion
-                    #region Notify thiết lập vai trò member
                     if (users_member.Count > 0)
                     {
-                        #region Lấy thông tin để thông báo
-                        SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(5, ConnectionString);
-                        #endregion
-                        JeeWorkLiteController.SendEmail(data.id_row, users_member, 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
                         for (int i = 0; i < users_member.Count; i++)
                         {
-                            NotifyModel notify_model = new NotifyModel();
-                            has_replace = new Hashtable();
-                            has_replace.Add("nguoigui", loginData.Username);
-                            has_replace.Add("project_team", dtF.Rows[0]["title"]);
-                            notify_model.AppCode = "WORK";
-                            notify_model.From_IDNV = loginData.UserID.ToString();
-                            notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
-                            notify_model.ReplaceData = has_replace;
-                            notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                            notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                            var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                            if (info is not null)
-                            {
-                                bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                            }
+                            Notify_Project(36, 5, users_member[i], cnn, ConnectionString, loginData, data.id_row, DataAccount, out error);
                         }
                     }
-                    #endregion
+                    //Hashtable has_replace = new Hashtable();
+                    //List<long> users_admin = data.Users.Where(x => x.id_row == 0 && x.admin).Select(x => x.id_user).ToList();
+                    //List<long> users_member = data.Users.Where(x => x.id_row == 0 && !x.admin).Select(x => x.id_user).ToList();
+                    //#region Notify thiết lập vai trò admin
+                    //if (users_admin.Count > 0)
+                    //{
+                    //    #region Lấy thông tin để thông báo
+                    //    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(6, ConnectionString);
+                    //    #endregion
+                    //    JeeWorkLiteController.SendEmail(data.id_row, users_admin, 6, loginData, ConnectionString, _notifier, _configuration);//thiết lập vai trò admin
+                    //    for (int i = 0; i < users_admin.Count; i++)
+                    //    {
+                    //        NotifyModel notify_model = new NotifyModel();
+                    //        has_replace = new Hashtable();
+                    //        has_replace.Add("nguoigui", loginData.Username);
+                    //        has_replace.Add("project_team", dtF.Rows[0]["title"]);
+                    //        notify_model.AppCode = "WORK";
+                    //        notify_model.From_IDNV = loginData.UserID.ToString();
+                    //        notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                    //        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitroadmin", "", "vi");
+                    //        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
+                    //        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                    //        notify_model.ReplaceData = has_replace;
+                    //        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                    //        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                    //        { }
+                    //        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //        if (info is not null)
+                    //        {
+                    //            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //        }
+                    //    }
+                    //}
+                    //#endregion
+                    //#region Notify thiết lập vai trò member
+                    //if (users_member.Count > 0)
+                    //{
+                    //    #region Lấy thông tin để thông báo
+                    //    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(5, ConnectionString);
+                    //    #endregion
+                    //    JeeWorkLiteController.SendEmail(data.id_row, users_member, 5, loginData, ConnectionString, _notifier, _configuration);//thêm vào dự án
+                    //    for (int i = 0; i < users_member.Count; i++)
+                    //    {
+                    //        NotifyModel notify_model = new NotifyModel();
+                    //        has_replace = new Hashtable();
+                    //        has_replace.Add("nguoigui", loginData.Username);
+                    //        has_replace.Add("project_team", dtF.Rows[0]["title"]);
+                    //        notify_model.AppCode = "WORK";
+                    //        notify_model.From_IDNV = loginData.UserID.ToString();
+                    //        notify_model.To_IDNV = data.Users[i].id_user.ToString();
+                    //        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_thietlapvaitrothanhvien", "", "vi");
+                    //        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", dtF.Rows[0]["title"].ToString());
+                    //        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                    //        notify_model.ReplaceData = has_replace;
+                    //        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
+                    //        notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                    //        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //        if (info is not null)
+                    //        {
+                    //            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //        }
+                    //    }
+                    //}
+                    //#endregion
                     return JsonResultCommon.ThanhCong();
                 }
             }
@@ -2768,7 +2818,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     DataTable dt = cnn.CreateDataTable(sqlq0);
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                         return JsonResultCommon.Custom("Người dùng không thuộc dự án");
-
+                    var id_project_team = long.Parse(dt.Rows[0]["id_project_team"].ToString());
                     string sqlq = "select id_project_team from we_project_team_user where disabled=0 and id_row = " + id + "";
                     var temp = cnn.ExecuteScalar(sqlq);
                     if (temp == null)
@@ -2809,42 +2859,44 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     var users = new List<long> { long.Parse(dt.Rows[0]["id_user"].ToString()) };
                     int id_template = 42;
                     string thongbao = "ww_xoakhoiduan";
+                    string error = "";
+                    Notify_Project(36, id_template, long.Parse(dt.Rows[0]["id_user"].ToString()), cnn, ConnectionString, loginData, id_project_team, DataAccount, out error);
 
-                    #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(id_template, ConnectionString);
-                    #endregion
-                    JeeWorkLiteController.SendEmail(long.Parse(dt.Rows[0]["id_project_team"].ToString()), users, id_template, loginData, ConnectionString, _notifier, _configuration);
-                    #region Notify thiết lập vai trò member
-                    object projectname = cnn.ExecuteScalar("select title from we_project_team where Disabled = 0 and id_row = @id_row", new SqlConditions() { { "id_row", dt.Rows[0]["id_project_team"].ToString() } });
-                    if (projectname != null)
-                        projectname = projectname.ToString();
-                    Hashtable has_replace = new Hashtable();
-                    for (int i = 0; i < users.Count; i++)
-                    {
-                        NotifyModel notify_model = new NotifyModel();
-                        has_replace = new Hashtable();
-                        has_replace.Add("nguoigui", loginData.Username);
-                        has_replace.Add("project_team", projectname);
-                        notify_model.AppCode = "WORK";
-                        notify_model.From_IDNV = loginData.UserID.ToString();
-                        notify_model.To_IDNV = users[i].ToString();
-                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(thongbao, "", "vi");
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", projectname.ToString());
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
-                        notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
-                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-                        DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                        if (DataAccount == null)
-                            return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if (info is not null)
-                        {
-                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                        }
-                    }
-                    #endregion
+                    //#region Lấy thông tin để thông báo
+                    //SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(id_template, ConnectionString);
+                    //#endregion
+                    //JeeWorkLiteController.SendEmail(long.Parse(dt.Rows[0]["id_project_team"].ToString()), users, id_template, loginData, ConnectionString, _notifier, _configuration);
+                    //#region Notify thiết lập vai trò member
+                    //object projectname = cnn.ExecuteScalar("select title from we_project_team where Disabled = 0 and id_row = @id_row", new SqlConditions() { { "id_row", dt.Rows[0]["id_project_team"].ToString() } });
+                    //if (projectname != null)
+                    //    projectname = projectname.ToString();
+                    //Hashtable has_replace = new Hashtable();
+                    //for (int i = 0; i < users.Count; i++)
+                    //{
+                    //    NotifyModel notify_model = new NotifyModel();
+                    //    has_replace = new Hashtable();
+                    //    has_replace.Add("nguoigui", loginData.Username);
+                    //    has_replace.Add("project_team", projectname);
+                    //    notify_model.AppCode = "WORK";
+                    //    notify_model.From_IDNV = loginData.UserID.ToString();
+                    //    notify_model.To_IDNV = users[i].ToString();
+                    //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(thongbao, "", "vi");
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", projectname.ToString());
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                    //    notify_model.ReplaceData = has_replace;
+                    //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                    //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                    //    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    //    if (DataAccount == null)
+                    //        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //    if (info is not null)
+                    //    {
+                    //        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //    }
+                    //}
+                    //#endregion
                     return JsonResultCommon.ThanhCong();
                 }
             }
@@ -2914,44 +2966,46 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                         id_template = 6;//thiết lập vai trò admin
                         thongbao = "ww_thietlapvaitroadmin";
                     }
-
                     else
                     {
                         id_template = 7;//Thay đổi vai trò từ admin thành member
                         thongbao = "ww_thietlapvaitrothanhvien";
                     }
-                    #region Lấy thông tin để thông báo
-                    SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(id_template, ConnectionString);
-                    #endregion
-                    JeeWorkLiteController.SendEmail(id_project_team, users, id_template, loginData, ConnectionString, _notifier, _configuration);
-                    #region Notify thiết lập vai trò member
-                    object projectname = cnn.ExecuteScalar("select title from we_project_team where Disabled = 0 and id_row = @id_row", new SqlConditions() { { "id_row", id_project_team } });
-                    if (projectname != null)
-                        projectname = projectname.ToString();
-                    Hashtable has_replace = new Hashtable();
-                    for (int i = 0; i < users.Count; i++)
-                    {
-                        NotifyModel notify_model = new NotifyModel();
-                        has_replace = new Hashtable();
-                        has_replace.Add("nguoigui", loginData.Username);
-                        has_replace.Add("project_team", projectname);
-                        notify_model.AppCode = "WORK";
-                        notify_model.From_IDNV = loginData.UserID.ToString();
-                        notify_model.To_IDNV = users[i].ToString();
-                        notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(thongbao, "", "vi");
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", projectname.ToString());
-                        notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
-                        notify_model.ReplaceData = has_replace;
-                        notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
-                        notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
-                        var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                        if (info is not null)
-                        {
-                            bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                        }
-                    }
-                    #endregion
+                    string error = "";
+                    Notify_Project(36, id_template, long.Parse(dt.Rows[0]["id_user"].ToString()), cnn, ConnectionString, loginData, id_project_team, DataAccount, out error);
+
+                    //#region Lấy thông tin để thông báo
+                    //SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(id_template, ConnectionString);
+                    //#endregion
+                    //JeeWorkLiteController.SendEmail(id_project_team, users, id_template, loginData, ConnectionString, _notifier, _configuration);
+                    //#region Notify thiết lập vai trò member
+                    //object projectname = cnn.ExecuteScalar("select title from we_project_team where Disabled = 0 and id_row = @id_row", new SqlConditions() { { "id_row", id_project_team } });
+                    //if (projectname != null)
+                    //    projectname = projectname.ToString();
+                    //Hashtable has_replace = new Hashtable();
+                    //for (int i = 0; i < users.Count; i++)
+                    //{
+                    //    NotifyModel notify_model = new NotifyModel();
+                    //    has_replace = new Hashtable();
+                    //    has_replace.Add("nguoigui", loginData.Username);
+                    //    has_replace.Add("project_team", projectname);
+                    //    notify_model.AppCode = "WORK";
+                    //    notify_model.From_IDNV = loginData.UserID.ToString();
+                    //    notify_model.To_IDNV = users[i].ToString();
+                    //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(thongbao, "", "vi");
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$project_team$", projectname.ToString());
+                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$loai$", "dự án");
+                    //    notify_model.ReplaceData = has_replace;
+                    //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", id.ToString());
+                    //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", id.ToString());
+                    //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    //    if (info is not null)
+                    //    {
+                    //        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    //    }
+                    //}
+                    //#endregion
                     return JsonResultCommon.ThanhCong();
                 }
             }
@@ -3800,5 +3854,72 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             #endregion
             return true;
         }
+        public static object Notify_Project(int actionid, int templateID, long id_user, DpsConnection cnn, string ConnectionString, UserJWT loginData, long idc, List<AccUsernameModel> DataAccount, out string error)
+        {
+            error = "";
+            var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, actionid, 1, ConnectionString, DataAccount, cnn);
+            var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, actionid, 2, ConnectionString, DataAccount, cnn);
+            #region Lấy thông tin để thông báo
+            SendNotifyModel noti = new SendNotifyModel();
+            noti = JeeWorkLiteController.GetInfoNotify(templateID, ConnectionString);
+            string sqlq = @$"select p.*, de.title as department 
+                                from we_project_team p 
+                                left join we_department de 
+                                on de.id_row=p.id_department
+                                where p.disabled=0 and de.disabled=0 
+                                and p.id_row=" + idc + " " +
+                                "and idkh =" + loginData.CustomerID;
+            DataTable dt_info = new DataTable();
+            dt_info = cnn.CreateDataTable(sqlq);
+            if (dt_info.Rows.Count == 0)
+                return JsonResultCommon.KhongTonTai();
+            string project_team = dt_info.Rows[0]["title"].ToString();
+            string TitleLanguageKey = "";
+            switch (templateID)
+            {
+                case 5:
+                    TitleLanguageKey = "ww_thietlapvaitroadmin";
+                    break;
+                case 6:
+                    TitleLanguageKey = "ww_thietlapvaitrothanhvien";
+                    break;
+                case 7:
+                    TitleLanguageKey = "ww_thietlapvaitroadmin";
+                    break;
+                case 36:
+                    TitleLanguageKey = "ww_xoakhoiduan";
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+            if (users_loai1.Count > 0)
+            {
+                NotifyModel notify_model = new NotifyModel();
+                Hashtable has_replace = new Hashtable();
+                has_replace.Add("nguoigui", loginData.Username);
+                has_replace.Add("project_team", project_team);
+                notify_model.AppCode = "WORK";
+                notify_model.From_IDNV = id_user.ToString();
+                notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage(TitleLanguageKey, "", "vi");
+                notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname)
+                    .Replace("$project_team$", project_team).Replace("$loai$", "dự án");
+                notify_model.ReplaceData = has_replace;
+                notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", idc.ToString());
+                notify_model.To_Link_WebApp = noti.link.Replace("$id$", idc.ToString());
+                for (int i = 0; i < users_loai1.Count; i++)
+                {
+                    notify_model.To_IDNV = users_loai1[i].ToString();
+                    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                    if (info is not null)
+                    {
+                        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
+                    }
+                }
+            }
+            JeeWorkLiteController.SendEmail(idc, users_loai2, templateID, loginData, ConnectionString, _notifier, _configuration);
+            return true;
+        }
+
     }
 }

@@ -165,10 +165,10 @@ namespace JeeWork_Core2021
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConnectionCache _cache, INotifier notifier, IProducer producer)
         {
-            sendmail = new AutoSendMail(_cache, Configuration, notifier);
-            sendmail.Start();
-            nhacnho = new NhacNho(_cache, Configuration, notifier, producer);
-            nhacnho.Start();
+            //sendmail = new AutoSendMail(_cache, Configuration, notifier);
+            //sendmail.Start();
+            //nhacnho = new NhacNho(_cache, Configuration, notifier, producer);
+            //nhacnho.Start();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
