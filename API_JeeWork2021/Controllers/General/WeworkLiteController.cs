@@ -2979,9 +2979,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     if (dt.Rows.Count > 0)
                     {
                         string characters = "00000";
-                        char vitri;
+                        string vitri= "0";
                         characters = dt.Rows[0]["projectmgr"].ToString();
-                        vitri = characters[position_notify - 1];
+                        vitri = characters[position_notify - 1].ToString();
                         if ("1".Equals(vitri.ToString()))
                         {
                             listUser.AddRange(dt_projectmgr.AsEnumerable().Where(x => (bool)x["admin"]).Select(x => long.Parse(x["id_user"].ToString())).Distinct().ToList());
@@ -2989,17 +2989,19 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         if (typeid == 3)
                         {
                             characters = dt.Rows[0]["creator"].ToString();
-                            vitri = characters[position_notify - 1];
+                            vitri = characters[position_notify - 1].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
                                 listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["createdby"].ToString()) ? 0 : long.Parse(x["createdby"].ToString())).Distinct().ToList());
                             }
                             characters = dt.Rows[0]["asssignee"].ToString();
+                            vitri = characters[position_notify - 1].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
                                 listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_nv"].ToString()) ? 0 : long.Parse(x["id_nv"].ToString())).Distinct().ToList());
                             }
                             characters = dt.Rows[0]["follower"].ToString();
+                            vitri = characters[position_notify - 1].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
                                 listUser.AddRange(dt_follower.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_user"].ToString()) ? 0 : long.Parse(x["id_user"].ToString())).Distinct().ToList());
@@ -3008,12 +3010,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                         else
                         {
                             characters = dt.Rows[0]["creator"].ToString();
+                            vitri = characters[position_notify - 1].ToString();
                             if ("1".Equals(vitri.ToString()))
                             {
                                 listUser.AddRange(dt_creator.AsEnumerable().Select(x => string.IsNullOrEmpty(x["createdby"].ToString()) ? 0 : long.Parse(x["createdby"].ToString())).Distinct().ToList());
                             }
                         }
                         characters = dt.Rows[0]["othermember"].ToString();
+                        vitri = characters[position_notify - 1].ToString();
                         if (typeid == 2)
                         {
                             if ("1".Equals(vitri.ToString()))
@@ -3027,8 +3031,9 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             {
                                 listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["nguoigiao"].ToString()) ? 0 : long.Parse(x["nguoigiao"].ToString())).Distinct().ToList());
                             }
-                        }    
+                        }
                         characters = dt.Rows[0]["addminapp"].ToString();
+                        vitri = characters[position_notify - 1].ToString();
                         if ("1".Equals(vitri.ToString()))
                         {
                             var users = new List<long> { 77111, 77098 };

@@ -20,6 +20,7 @@ using System.IO;
 using DPSinfra.Logger;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 
 namespace JeeWork_Core2021.Classes
 {
@@ -570,39 +571,76 @@ namespace JeeWork_Core2021.Classes
             DateTime.TryParseExact(strNgay, formats, null, DateTimeStyles.None, out ngay);
             return ngay;
         }
+        //public static DataTable ReaddataFromXLSFile(string filename, string sheetname, out string error)
+        //{
+        //    string tmp_error = "";
+        //    Hashtable cond = new Hashtable();
+        //    string ConnectionString = "";
+        //    string[] s = filename.Split('.');
+        //    if (s[s.Length - 1].Equals("xlsx"))
+        //        ConnectionString = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=\"Excel 12.0 Xml;HDR=0;IMEX=1\";", filename);
+        //    if (s[s.Length - 1].Equals("xls"))
+        //        ConnectionString = string.Format("provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties='Excel 8.0;HDR=0;IMEX=1;'", filename);
+        //    DataTable dt = new DataTable();
+        //    OleDbConnection con = new OleDbConnection(ConnectionString);
+        //    try
+        //    {
+        //        con.Open();
+        //        string sql = "SELECT * FROM `" + sheetname + "$`";
+        //        OleDbCommand cmd = new OleDbCommand();
+        //        cmd.CommandText = sql;
+        //        cmd.CommandType = CommandType.Text;
+        //        cmd.Connection = con;
+
+        //        OleDbDataAdapter da = new OleDbDataAdapter(cmd);
+        //        DataTable ds = new DataTable();
+        //        da.Fill(dt);
+        //        con.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        tmp_error = ex.Message;
+        //        con.Close();
+        //    }
+        //    error = tmp_error;
+        //    return dt;
+        //}
         public static DataTable ReaddataFromXLSFile(string filename, string sheetname, out string error)
         {
-            string tmp_error = "";
-            Hashtable cond = new Hashtable();
-            string ConnectionString = "";
-            string[] s = filename.Split('.');
-            if (s[s.Length - 1].Equals("xlsx"))
-                ConnectionString = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=\"Excel 12.0 Xml;HDR=0;IMEX=1\";", filename);
-            if (s[s.Length - 1].Equals("xls"))
-                ConnectionString = string.Format("provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties='Excel 8.0;HDR=0;IMEX=1;'", filename);
             DataTable dt = new DataTable();
-            OleDbConnection con = new OleDbConnection(ConnectionString);
-            try
+            using (var excelPack = new ExcelPackage())
             {
-                con.Open();
-                string sql = "SELECT * FROM `" + sheetname + "$`";
-                OleDbCommand cmd = new OleDbCommand();
-                cmd.CommandText = sql;
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = con;
-
-                OleDbDataAdapter da = new OleDbDataAdapter(cmd);
-                DataTable ds = new DataTable();
-                da.Fill(dt);
-                con.Close();
+                using (var stream = System.IO.File.OpenRead(filename))
+                {
+                    try
+                    {
+                        excelPack.Load(stream);
+                        ExcelWorksheet worksheet = excelPack.Workbook.Worksheets[0];
+                        int colCount = worksheet.Dimension.End.Column;  //get Column Count
+                        int rowCount = worksheet.Dimension.End.Row;     //get row count
+                        for (int col = 1; col <= colCount; col++)
+                        {
+                            dt.Columns.Add(worksheet.Cells[1, col].Value?.ToString().Trim());
+                        }
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            DataRow dr = dt.NewRow();
+                            for (int col = 1; col <= colCount; col++)
+                            {
+                                dr[col - 1] = worksheet.Cells[row, col].Value?.ToString().Trim();
+                            }
+                            dt.Rows.Add(dr);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        error = ex.Message;
+                        return dt;
+                    }
+                }
+                error = "";
+                return dt;
             }
-            catch (Exception ex)
-            {
-                tmp_error = ex.Message;
-                con.Close();
-            }
-            error = tmp_error;
-            return dt;
         }
         public static bool InsertGroupType(DpsConnection cnn, long CustomerID)
         {
