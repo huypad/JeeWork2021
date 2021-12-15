@@ -2352,7 +2352,6 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 noti_mess.Content = notify_model.TitleLanguageKey;
                 noti_mess.Icon = "https://jeework.jee.vn/assets/images/Jee_Work.png";
                 noti_mess.Img = image;
-                //noti_mess.Img = "https://jeework.jee.vn/assets/images/Jee_Work.png";
                 noti_mess.Link = notify_model.To_Link_WebApp;
                 noti_mess.Domain = JeeWork_BE;
                 noti_mess.oslink = linkmobile + notify_model.To_Link_MobileApp;

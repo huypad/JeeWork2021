@@ -3122,7 +3122,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public BaseModel<object> UpdateRole(long id, int role, string key)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             bool value = true;
             if (loginData == null)
@@ -3920,6 +3919,5 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
             JeeWorkLiteController.SendEmail(idc, users_loai2, templateID, loginData, ConnectionString, _notifier, _configuration);
             return true;
         }
-
     }
 }
