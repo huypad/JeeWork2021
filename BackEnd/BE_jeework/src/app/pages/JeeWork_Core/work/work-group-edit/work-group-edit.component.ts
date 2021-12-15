@@ -63,7 +63,6 @@ export class WorkGroupEditComponent implements OnInit {
 	) { }
 	ngOnInit() {
 		this.item = this.DATA._item;
-		debugger
 		// if (this.item.id_row > 0)
 		// 	this.is_edit = true;
 		this.id_project_team = parseInt(this.item.id_project_team);

@@ -160,7 +160,6 @@ export class WorkGroupComponent implements OnInit {
       _item.id_row > 0
         ? "GeneralKey.capnhatthanhcong"
         : "GeneralKey.themthanhcong";
-        debugger
     const dialogRef = this.dialog.open(WorkGroupEditComponent, {
       data: { _item },
     });

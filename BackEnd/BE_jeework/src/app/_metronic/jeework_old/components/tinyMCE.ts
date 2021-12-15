@@ -138,9 +138,7 @@ const tinyMCE = {
     },
     function(ed) {
         ed.onInit.add(function (ed) {
-            debugger
             ed.on('init', function (e) {
-            debugger
             });
             // Get position before an execCommand is processed
             ed.on('BeforeExecCommand', function (e) {
@@ -149,7 +147,6 @@ const tinyMCE = {
                 if (cmd !== 'undo' && cmd !== 'redo' && cmd !== 'mcerepaint') {
                     // endTyping();
                     // self.beforeChange();
-                    debugger
                 }
             });
             // Add undo level after an execCommand call was made
@@ -158,7 +155,6 @@ const tinyMCE = {
 
                 if (cmd !== 'undo' && cmd !== 'redo' && cmd !== 'mcerepaint') {
                     // addNonTypingUndoLevel(e);
-                    debugger
                 }
             });
         });

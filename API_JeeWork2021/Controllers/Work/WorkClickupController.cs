@@ -3173,6 +3173,15 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     string workname = data.title;
                     string TitleLanguageKey = "ww_themmoicongviec";
                     #endregion
+                    SqlConditions cond_user = new SqlConditions();
+                    cond_user.Add("id_work", data.id_row);
+                    cond_user.Add("disabled", 0);
+                    cond_user.Add("loai", 1);
+                    string sql_user = "";
+                    sql_user = "select id_user from we_work_user where loai = @loai and disabled = @disabled and id_work=@id_work";
+                    object _user = cnn.ExecuteScalar(sql_user, cond_user);
+                    if (_user == null)
+                        _user = "0";
                     if (users_loai1.Count > 0)
                     {
                         NotifyModel notify_model = new NotifyModel();
@@ -3187,10 +3196,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         notify_model.ReplaceData = has_replace;
                         notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
                         notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
+                        string user_assign = " cho bạn";
                         for (int i = 0; i < users_loai1.Count; i++)
                         {
                             notify_model.To_IDNV = users_loai1[i].ToString();
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                            if (!_user.ToString().Equals(notify_model.To_IDNV))
+                            {
+                                user_assign = info.FullName;
+                            }
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", user_assign);
                             if (info is not null)
                             {
                                 bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
