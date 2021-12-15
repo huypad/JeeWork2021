@@ -93,7 +93,6 @@ namespace JeeAccount.Services.CommentService
             {
                 val.Add($"{COMMENT_TABLE_FIELD_COMPONENTNAME}", componenName);
                 val.Add($"{COMMENT_TABLE_FIELD_OBJECTID}", topicID);
-
                 using (DpsConnection cnn = new DpsConnection(_connectionString))
                 {
                     string sql = $"select {COMMENT_TABLE_FIELD_COMPONENTNAME} from {COMMENT_TABLE_NAME} where {COMMENT_TABLE_FIELD_COMPONENTNAME}='{componenName}'";
@@ -103,7 +102,6 @@ namespace JeeAccount.Services.CommentService
                         UpdateTopicID(cnn,componenName, topicID);
                         return;
                     }
-
                     int x = cnn.Insert(val, $"{COMMENT_TABLE_NAME}");
                     if (x <= 0)
                     {

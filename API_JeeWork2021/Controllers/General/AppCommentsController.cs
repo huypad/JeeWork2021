@@ -28,9 +28,9 @@ namespace JeeAccount.Controllers
         private IConfiguration _configuration;
         private INotifier _notifier;
         private JeeWorkConfig _config;
-        private readonly ILogger<IHostingEnvironment> _logger;
+        private readonly ILogger<CommentController> _logger;
 
-        public CommentController(ICommentService commentService, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<IHostingEnvironment> logger, IOptions<JeeWorkConfig> config)
+        public CommentController(ICommentService commentService, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<CommentController> logger, IOptions<JeeWorkConfig> config)
         {
             _config = config.Value;
             _notifier = notifier;

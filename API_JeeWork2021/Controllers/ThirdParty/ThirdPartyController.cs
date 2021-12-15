@@ -35,9 +35,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         private INotifier _notifier;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        private readonly ILogger<ConfigNotifyController> _logger;
+        private readonly ILogger<ThirdPartyController> _logger;
         public List<AccUsernameModel> DataAccount;
-        public ThirdPartyController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ConfigNotifyController> logger)
+        public ThirdPartyController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ThirdPartyController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;

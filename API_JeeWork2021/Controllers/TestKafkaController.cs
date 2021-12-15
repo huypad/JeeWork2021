@@ -205,7 +205,7 @@ namespace JeeWork_Core2021.Controllers
                 // mấy cái khác tương tự nha a
                 return Ok();
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
                 //return BadRequest(MessageReturnHelper.Exception(ex));

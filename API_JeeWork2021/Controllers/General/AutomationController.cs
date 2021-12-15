@@ -33,9 +33,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        private readonly ILogger<TemplateController> _logger;
+        private readonly ILogger<AutomationController> _logger;
         public List<AccUsernameModel> DataAccount;
-        public AutomationController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<TemplateController> logger)
+        public AutomationController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<AutomationController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;

@@ -45,8 +45,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private IProducer _producer;
-        private readonly ILogger<ProjectTeamController> _logger;
-        public TP_ProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache, IConfiguration configuration, ILogger<ProjectTeamController> logger, IProducer producer)
+        private readonly ILogger<TP_ProjectController> _logger;
+        public TP_ProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, INotifier notifier, IConnectionCache _cache, IConfiguration configuration, ILogger<TP_ProjectController> logger, IProducer producer)
         {
             ConnectionCache = _cache;
             _configuration = configuration;

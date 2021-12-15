@@ -48,8 +48,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IProducer _producer;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        private readonly ILogger<IHostingEnvironment> _logger;
-        public TP_LiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<IHostingEnvironment> logger)
+        private readonly ILogger<TP_LiteController> _logger;
+        public TP_LiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<TP_LiteController> logger)
         {
             notify = new Notification(notifier);
             _hostingEnvironment = hostingEnvironment;

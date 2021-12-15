@@ -47,8 +47,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IProducer _producer;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        private readonly ILogger<IHostingEnvironment> _logger;
-        public JeeWorkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<IHostingEnvironment> logger)
+        private readonly ILogger<JeeWorkLiteController> _logger;
+        public JeeWorkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<JeeWorkLiteController> logger)
         {
             notify = new Notification(notifier);
             _hostingEnvironment = hostingEnvironment;
@@ -3014,14 +3014,24 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             }
                         }
                         characters = dt.Rows[0]["othermember"].ToString();
-                        if ("1".Equals(vitri.ToString()))
+                        if (typeid == 2)
                         {
-                            listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["nguoigiao"].ToString()) ? 0 : long.Parse(x["nguoigiao"].ToString())).Distinct().ToList());
-                        }
+                            if ("1".Equals(vitri.ToString()))
+                            {
+                                listUser.AddRange(dt_othermember.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_user"].ToString()) ? 0 : long.Parse(x["id_user"].ToString())).Distinct().ToList());
+                            }
+                        }    
+                        else
+                        {
+                            if ("1".Equals(vitri.ToString()))
+                            {
+                                listUser.AddRange(dt_works.AsEnumerable().Select(x => string.IsNullOrEmpty(x["nguoigiao"].ToString()) ? 0 : long.Parse(x["nguoigiao"].ToString())).Distinct().ToList());
+                            }
+                        }    
                         characters = dt.Rows[0]["addminapp"].ToString();
                         if ("1".Equals(vitri.ToString()))
                         {
-                            var users = new List<long> { 77098 };
+                            var users = new List<long> { 77111, 77098 };
                             listUser.AddRange(users);
                             //listUser.AddRange(dt_addminapp.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_user"].ToString()) ? 0 : long.Parse(x["id_user"].ToString())).Distinct().ToList());
                         }

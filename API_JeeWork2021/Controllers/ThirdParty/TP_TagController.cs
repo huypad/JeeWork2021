@@ -31,9 +31,9 @@ namespace JeeWork_Core2021.Controllers.Wework
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        private readonly ILogger<TagController> _logger;
+        private readonly ILogger<TP_TagController> _logger;
         public List<AccUsernameModel> DataAccount;
-        public TP_TagController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<TagController> logger)
+        public TP_TagController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<TP_TagController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
