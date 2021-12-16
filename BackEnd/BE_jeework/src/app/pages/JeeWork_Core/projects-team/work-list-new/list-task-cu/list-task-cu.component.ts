@@ -722,6 +722,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     // Assign
     ItemSelected(val: any, task) { // chọn item
+        debugger
         if (val.id_user) {
             val.id_nv = val.id_user;
         }
@@ -737,6 +738,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     LoadUserByProject(id_project_team) {
         const filter: any = {};
+        debugger
         filter.id_project_team = id_project_team;
         this.WeWorkService.list_account(filter).subscribe(res => {
             if (res && res.status === 1) {
@@ -905,13 +907,14 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         item.id_row = task.id_row;
         item.key = key;
         item.value = value;
+        debugger
         if (task.id_nv > 0) {
             item.IsStaff = true;
         }
-
         this._service._UpdateByKey(item).subscribe(res => {
+            debugger
             if (res && res.status === 1) {
-                this.LoadListStatusByProject();
+                // this.LoadListStatusByProject();
                 // this.LoadWork();
 
             } else {
@@ -965,6 +968,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     getAssignee(id_nv) {
+        debugger
         if (+id_nv > 0 && this.listUser) {
             const assign = this.listUser.find(x => x.id_nv === id_nv);
             if (assign) {
@@ -1035,6 +1039,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     assign(node) {
+        debugger
         this.loadOptionprojectteam(node);
         const item = this.options_assign;
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
@@ -1100,6 +1105,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     ReloadData(event) {
         // this.ngOnInit();
+        debugger
         this.LoadTask();
     }
 

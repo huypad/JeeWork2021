@@ -3017,7 +3017,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         #endregion
         #region config email
         /// <summary>
-        /// 
+        /// Cấu hình gửi mail
         /// </summary>
         /// <param name="id"></param>
         /// <param name="key">key: email_assign_work, email_update_work, email_update_status, email_delete_work, email_update_team, email_delete_team, email_upload_file</param>

@@ -791,6 +791,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     ItemSelected_Assign(data) {
+        debugger
         this.selected_Assign = this.list_Assign;
         this.selected_Assign.push(data);
         const i = this._Assign.lastIndexOf('@');
@@ -1186,22 +1187,16 @@ export class WorkListNewDetailComponent implements OnInit {
     }
     chinhsuamota = false;
     UpdateDescription() {
-        // if (!this.chinhsuamota) {
-        //   this.chinhsuamota = !this.chinhsuamota;
-        //   return;
-        // }else 
-        {
-            if (this.item.description.trim() != this.description_tiny.trim()) {
-                this.disabledBtn = true;
-                if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
-                    this.description_tiny = this.item.description;
-                    return;
-                }
-                this.item.description = this.description_tiny;
-                this.UpdateByKeyNew(this.item, "description", this.description_tiny);
-            }
-            this.chinhsuamota = !this.chinhsuamota;
+        if (this.item.description.trim() != this.description_tiny.trim()) {
+            this.disabledBtn = true;
+            // if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
+            //     this.description_tiny = this.item.description;
+            //     return;
+            // }
+            this.item.description = this.description_tiny;
+            this.UpdateByKeyNew(this.item, "description", this.description_tiny);
         }
+        this.chinhsuamota = !this.chinhsuamota;
     }
     UpdateByKeyNew(task, key, value) {
         if (!this.KiemTraThayDoiCongViec(task, key)) {
@@ -1211,12 +1206,12 @@ export class WorkListNewDetailComponent implements OnInit {
         item.id_row = task.id_row;
         item.key = key;
         item.value = value;
-        if (task.assign && task.assign.id_nv > 0) {
+        debugger
+        
+        if (task.Users.length > 0 && task.Users[0].id_nv > 0) {
             item.IsStaff = true;
         }
-        // this.layoutUtilsService.showWaitingDiv();
         this.projectsTeamService._UpdateByKey(item).subscribe(res => {
-            // this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
                 this.SendMessage(true);
                 this.LoadDataWorkDetail(item.id_row);

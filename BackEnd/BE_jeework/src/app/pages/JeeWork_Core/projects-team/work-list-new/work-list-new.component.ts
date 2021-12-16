@@ -473,7 +473,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.selection.selected.splice(index, 1);
     }
   }
-
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() { }
 
@@ -546,7 +545,32 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       (err) => this.layoutUtilsService.OffWaitingDiv()
     );
   }
-
+  ReloadTask() {
+    const queryParams = new QueryParamsModelNew(
+      this.filterConfiguration(),
+      "",
+      "",
+      0,
+      50,
+      true
+    );
+    this.layoutUtilsService.showWaitingDiv();
+    this._service.ListTask(queryParams).subscribe(
+      (res) => {
+        this.layoutUtilsService.OffWaitingDiv();
+        if (res && res.status === 1) {
+          this.listStatus = res.data;
+          var itemPush = [];
+          debugger
+          this.listStatus.forEach((element) => {
+            itemPush = itemPush.concat(element.datawork);
+          });
+          this.ListTasks = itemPush;
+          this.changeDetectorRefs.detectChanges();
+        }
+      },
+    );
+  }
   async LoadNewField() {
     this.weworkService.GetValuesNewFields(this.ID_Project).subscribe((res) => {
       if (res && res.status === 1) {
@@ -1278,6 +1302,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   // Assign
   ItemSelected(val: any, task, remove = false) {
     // chọn item
+    debugger
     if (remove) {
       val.id_nv = val.userid;
     }
@@ -1325,7 +1350,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   ViewDetai(item) {
-		const url = `/user-management/users`;
+    const url = `/user-management/users`;
     this.router.navigate([
       "",
       { outlets: { auxName: "aux/detail/" + item.id_row } },
@@ -1393,17 +1418,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.UpdateInfoProject();
     this.LoadData();
   }
-
-  // loadSubtask() {
-  //     const isExpanded = this.filter_subtask.value == 'show' ? true : false;
-  //
-  //     for (const i of this.listStatus) {
-  //         i.datawork.forEach((element) => {
-  //             element.isExpanded = isExpanded;
-  //         });
-  //     }
-  // }
-
   Subtask(item) {
     if (item.value == this.filter_subtask.value) {
       return;
@@ -1432,7 +1446,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this.CloseAddnewTask(true);
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
+        this.ReloadTask();
         // setTimeout(() => {
         this.newtask = x;
         this.AddnewTask(val.status, true);
@@ -1544,20 +1559,18 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     item.id_row = task.id_row;
     item.key = key;
     item.value = value;
-    if (task.id_nv > 0) {
+    debugger
+    if (task.userId > 0) {
       item.IsStaff = true;
     }
     this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.LoadData();
+        // this.LoadData();
       } else {
-        // if (isReloadData) {
-        setTimeout(() => {
-          this.LoadData();
-        }, 500);
-        // }
+
         this.layoutUtilsService.showError(res.error.message);
       }
+      this.ReloadTask();
     });
   }
 
@@ -1759,9 +1772,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res) {
         this.selection.selected.forEach((element) => {
           this.UpdateByKey(element, "assign", res.id_nv);
-          // setTimeout(() => {
-          //   this.UpdateByKey(element, "assign", res.id_nv);
-          // }, 100);
         });
       }
     });
@@ -1790,10 +1800,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   updateStartDateList() {
     const date = moment(this.startDatelist).format("MM/DD/YYYY HH:mm");
     this.selection.selected.forEach((element) => {
-      this.UpdateByKey(
-        element,
-        "start_date",
-        moment(this.startDatelist).format("MM/DD/YYYY HH:mm")
+      this.UpdateByKey(element, "start_date", moment(this.startDatelist).format("MM/DD/YYYY HH:mm")
       );
       // this.UpdateByKey(task, 'status', status.id_row);
     });
@@ -1895,27 +1902,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   Create(_item: WorkDuplicateModel) {
     this._service.DuplicateCU(_item).subscribe((res) => {
       if (res && res.status == 1) {
-        this.layoutUtilsService.showActionNotification(
-          "Nhân bản thành công",
-          MessageType.Read,
-          3000,
-          true,
-          false,
-          3000,
-          "top",
-          1
-        );
+        this.layoutUtilsService.showActionNotification("Nhân bản thành công", MessageType.Read, 3000, true, false, 3000, "top", 1);
       } else {
-        this.layoutUtilsService.showActionNotification(
-          res.error.message,
-          MessageType.Read,
-          9999999999,
-          true,
-          false,
-          3000,
-          "top",
-          0
-        );
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, "top", 0);
       }
     });
   }

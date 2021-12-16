@@ -3170,7 +3170,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     int templateguimail = 10;
                     SendNotifyModel noti = new SendNotifyModel();
                     noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
-                    string workname = data.title;
+                    string workname = "";
+                    workname = $"\"{data.title}\"";
                     string TitleLanguageKey = "ww_themmoicongviec";
                     #endregion
                     SqlConditions cond_user = new SqlConditions();
@@ -3205,7 +3206,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             {
                                 user_assign = info.FullName;
                             }
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", user_assign);
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " cho "+ user_assign);
                             if (info is not null)
                             {
                                 bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
@@ -4395,7 +4396,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     }
                                     JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration, old, Convert.ToInt32(_user.ToString()));
                                 }
-                                if (_user == null || !_user.ToString().Equals(data.value)) // thêm người mới và trường hợp hợp người mới từ người cũ đã xóa
+                                if (_user == null || !_user.ToString().Equals(data.value.ToString())) // thêm người mới và trường hợp hợp người mới từ người cũ đã xóa
                                 {
                                     is_delete_assign = false;
                                     Hashtable val = new Hashtable();

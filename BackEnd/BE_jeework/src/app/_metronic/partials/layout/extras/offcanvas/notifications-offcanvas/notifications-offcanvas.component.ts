@@ -60,8 +60,6 @@ export class NotificationsOffcanvasComponent implements OnInit {
         if (noti.message_json.AppCode != environment.APPCODE) {
           window.open(domain + noti.message_json.Link, '_blank');
         } else {
-          debugger
-          console.log("Notify User", noti);
           let link_app = domain + noti.message_json.Link;
           this.router.navigate([link_app]);
           window.location.href = link_app;
