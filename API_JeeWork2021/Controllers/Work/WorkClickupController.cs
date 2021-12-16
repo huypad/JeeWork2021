@@ -3202,11 +3202,12 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         {
                             notify_model.To_IDNV = users_loai1[i].ToString();
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                            if (!_user.ToString().Equals(notify_model.To_IDNV))
-                            {
-                                user_assign = info.FullName;
-                            }
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " cho "+ user_assign);
+                            //if (!_user.ToString().Equals(notify_model.To_IDNV))
+                            //{
+                            //    user_assign = info.FullName;
+                            //}
+                            user_assign = dtwork.Rows[0]["project_team"].ToString() + " (Phòng ban: " + dtwork.Rows[0]["department"].ToString()+")";
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " trong dự án: "+ user_assign+"");
                             if (info is not null)
                             {
                                 bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
